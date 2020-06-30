@@ -25,6 +25,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -175,7 +176,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#clone">clone</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reallocate">reallocate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#copy">copy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#select">select</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#constructors-from-numerical-ranges">Constructors from numerical ranges</a><ul>
@@ -197,13 +197,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="manipulation.html">Manipulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="binary.html">Binary operations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logic_functions.html">Logic functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
 </ul>
 
             
@@ -344,7 +343,7 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 <span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">fptr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="p">);</span>
 <span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">T</span><span class="p">);</span>
 <span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span> <span class="n">data</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
@@ -372,7 +371,8 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">empty</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">256</span><span class="p">,</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">//Creates an empty tensor of 256x3 in CPU</span>
 </pre></div>
 </div>
 </div>
@@ -393,7 +393,9 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">empty_like</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">256</span><span class="p">,</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Tensor of 256x3 in CPU</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty_like</span><span class="p">(</span><span class="n">tensor1</span><span class="p">);</span> <span class="c1">// Empty tensor taking shape and device from tensor1</span>
 </pre></div>
 </div>
 </div>
@@ -415,7 +417,9 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">zeros</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Creates 1D tensor filled with zeros</span>
+<span class="c1">//tensor1 =&gt; [0,0,0]</span>
 </pre></div>
 </div>
 </div>
@@ -436,7 +440,10 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">zeros_like</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Tensor of 3 components in CPU</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">tensor1</span><span class="p">);</span> <span class="c1">// Tensor of 3 components in CPU filled with zeros</span>
+<span class="c1">// tensor2 =&gt; [0,0,0]</span>
 </pre></div>
 </div>
 </div>
@@ -458,7 +465,9 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">ones</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Creates 1D tensor filled with ones</span>
+<span class="c1">//tensor1 =&gt; [1,1,1]</span>
 </pre></div>
 </div>
 </div>
@@ -479,7 +488,10 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">ones_like</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Tensor of 3 components in CPU</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones_like</span><span class="p">(</span><span class="n">tensor1</span><span class="p">);</span> <span class="c1">// Tensor of 3 components in CPU filled with zeros</span>
+<span class="c1">// tensor2 =&gt; [1,1,1]</span>
 </pre></div>
 </div>
 </div>
@@ -502,7 +514,9 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">full</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">float</span> <span class="n">value</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Creates 1D tensor filled with 10s</span>
+<span class="c1">//tensor1 =&gt; [10,10,10]</span>
 </pre></div>
 </div>
 </div>
@@ -523,7 +537,10 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">full_like</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Tensor of 3 components in CPU</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full_like</span><span class="p">(</span><span class="n">tensor1</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span> <span class="c1">// Tensor of 3 components in CPU filled with 10s</span>
+<span class="c1">// tensor2 =&gt; [10,10,10]</span>
 </pre></div>
 </div>
 </div>
@@ -545,7 +562,10 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">eye</span><span class="p">(</span><span class="kt">int</span> <span class="n">rows</span><span class="p">,</span> <span class="kt">int</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">matrix1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="c1">// matrix1 =&gt; [1 3 3</span>
+<span class="c1">//             3 1 3</span>
+<span class="c1">//             3 3 1]</span>
 </pre></div>
 </div>
 </div>
@@ -568,8 +588,10 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">identity</span><span class="p">(</span><span class="kt">int</span> <span class="n">rows</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="c1">// empty?</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">matrix1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="c1">// matrix1 =&gt; [1 0 0</span>
+<span class="c1">//             0 1 0</span>
+<span class="c1">//             0 0 1]</span>
 </pre></div>
 </div>
 </div>
@@ -590,7 +612,11 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="nf">clone</span><span class="p">();</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Creates 1D tensor filled with ones</span>
+<span class="c1">//tensor1 =&gt; [1,1,1]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor2</span> <span class="o">=</span> <span class="n">tensor1</span><span class="o">-&gt;</span><span class="n">clone</span><span class="p">();</span>
+<span class="c1">//tensor2 =&gt; [1,1,1]</span>
 </pre></div>
 </div>
 </div>
@@ -629,53 +655,12 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">copy</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
-<span class="c1">//more</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="select">
-<h3>select<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor6selectERK6vectorI6stringE">
-<span id="_CPPv3N6Tensor6selectERK6vectorI6stringE"></span><span id="_CPPv2N6Tensor6selectERK6vectorI6stringE"></span><span id="Tensor::select__vector:string:CR"></span><span class="target" id="class_tensor_1ae1a8017516f3a368261645b0fd9feaee"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;string&gt; &amp;<em>indices</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Returns an array with the selected indices of the tensor. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;:5&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;:&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;3:6&quot;</span></code>. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::select” with arguments (Tensor *, Tensor *, SelDescriptor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::select” with arguments (Tensor *, Tensor *, vector&lt;int&gt;, int, int, bool) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="nf">select</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span> <span class="n">indices</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">select</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">SelDescriptor</span> <span class="o">*</span><span class="n">sd</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">select_back</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">SelDescriptor</span> <span class="o">*</span><span class="n">sd</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Creates 1D tensor filled with ones</span>
+<span class="c1">//tensor1 =&gt; [1,1,1]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor2</span><span class="p">;</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">tensor1</span><span class="p">,</span> <span class="n">tensor2</span><span class="p">);</span>
+<span class="c1">//tensor2 =&gt; [1,1,1]</span>
 </pre></div>
 </div>
 </div>
@@ -703,7 +688,8 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">arange</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">float</span> <span class="n">step</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">arange</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="c1">// tensor1 =&gt; [1.0, 1.5, 2.0, 2.5, 3.0, 3.5]</span>
 </pre></div>
 </div>
 </div>
@@ -727,7 +713,8 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">range</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">float</span> <span class="n">step</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="c1">// tensor1 =&gt; [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]</span>
 </pre></div>
 </div>
 </div>
@@ -751,7 +738,8 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">linspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">linspace</span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="c1">//tensor1 =&gt; [3.00, 4.75, 6.50, 8.25, 10.00]</span>
 </pre></div>
 </div>
 </div>
@@ -776,7 +764,8 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">logspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">float</span> <span class="n">base</span><span class="o">=</span><span class="mf">10.0f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">logspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="c1">//tensor1 =&gt; [1.2589, 2.1135, 3.5481, 5.9566, 10.0000]</span>
 </pre></div>
 </div>
 </div>
@@ -800,7 +789,8 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">geomspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="c1">//tensor1 =&gt; [1.0, 10.0, 100.0]</span>
 </pre></div>
 </div>
 </div>
@@ -894,11 +884,35 @@ Potential matches:
 </div>
 </div>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">diag_</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
- <span class="n">Tensor</span><span class="o">*</span> <span class="nf">diag</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
- <span class="k">static</span> <span class="kt">void</span> <span class="nf">diag</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">matrix1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+ <span class="c1">// matrix1 =&gt; [1 3 3</span>
+ <span class="c1">//             3 1 3</span>
+ <span class="c1">//             3 3 1]</span>
+
+
+ <span class="n">Tensor</span><span class="o">*</span> <span class="n">main_diag</span> <span class="o">=</span> <span class="n">matrix1</span><span class="o">-&gt;</span><span class="n">diag</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+ <span class="c1">// main_diag =&gt; [1,1,1]</span>
+
+ <span class="n">Tensor</span><span class="o">*</span> <span class="n">main_diag_2</span><span class="p">;</span>
+ <span class="n">Tensor</span><span class="o">::</span><span class="n">diag</span><span class="p">(</span><span class="n">matrix1</span><span class="p">,</span> <span class="n">main_diag_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+ <span class="c1">// main_diag_2 =&gt; [1,1,1]</span>
+
+ <span class="n">matrix1</span><span class="o">-&gt;</span><span class="n">diag_</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+ <span class="c1">// matrix1 =&gt; [1,1,1]</span>
 </pre></div>
 </td></tr></table></div>
 </div>

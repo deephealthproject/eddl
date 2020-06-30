@@ -25,6 +25,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -36,7 +37,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Linear algebra" href="linear_algebra.html" />
-    <link rel="prev" title="Indexing routines" href="indexing.html" /> 
+    <link rel="prev" title="Indexing &amp; Sorting" href="indexing.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -159,7 +160,7 @@
 <li class="toctree-l1"><a class="reference internal" href="create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="manipulation.html">Manipulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="binary.html">Binary operations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Input/Output Operations</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#input">Input</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#loadfs">loadfs</a></li>
@@ -178,7 +179,6 @@
 <li class="toctree-l1"><a class="reference internal" href="logic_functions.html">Logic functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
 </ul>
 
             
@@ -256,7 +256,7 @@
 <h3>loadfs<a class="headerlink" href="#loadfs" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6loadfsERNSt8ifstreamE6string">
-<span id="_CPPv3N6Tensor6loadfsERNSt8ifstreamE6string"></span><span id="_CPPv2N6Tensor6loadfsERNSt8ifstreamE6string"></span><span id="Tensor::loadfs__std::ifstreamR.string"></span><span class="target" id="class_tensor_1a0436f920da74f9572cab71407621d51e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">loadfs</code><span class="sig-paren">(</span>std::ifstream &amp;<em>ifs</em>, string <em>format</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6loadfsERNSt8ifstreamE6string" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6Tensor6loadfsERNSt8ifstreamE6string"></span><span id="_CPPv2N6Tensor6loadfsERNSt8ifstreamE6string"></span><span id="Tensor::loadfs__std::ifstreamR.string"></span><span class="target" id="class_tensor_1a0436f920da74f9572cab71407621d51e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">loadfs</code><span class="sig-paren">(</span><a class="reference internal" href="math.html#_CPPv4N6TensorStEb" title="Tensor::std">std</a>::ifstream &amp;<em>ifs</em>, string <em>format</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6loadfsERNSt8ifstreamE6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Load tensor from filestream. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Tensor </p>
@@ -309,18 +309,10 @@
 <h3>savefs<a class="headerlink" href="#savefs" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6savefsERNSt8ofstreamE6string">
-<span id="_CPPv3N6Tensor6savefsERNSt8ofstreamE6string"></span><span id="_CPPv2N6Tensor6savefsERNSt8ofstreamE6string"></span><span id="Tensor::savefs__std::ofstreamR.string"></span><span class="target" id="class_tensor_1a354d2c0bf6d6a26ffb2068aff10127a1"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">savefs</code><span class="sig-paren">(</span>std::ofstream &amp;<em>ofs</em>, string <em>format</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6savefsERNSt8ofstreamE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Load data from a text file. </p>
+<span id="_CPPv3N6Tensor6savefsERNSt8ofstreamE6string"></span><span id="_CPPv2N6Tensor6savefsERNSt8ofstreamE6string"></span><span id="Tensor::savefs__std::ofstreamR.string"></span><span class="target" id="class_tensor_1a354d2c0bf6d6a26ffb2068aff10127a1"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">savefs</code><span class="sig-paren">(</span><a class="reference internal" href="math.html#_CPPv4N6TensorStEb" title="Tensor::std">std</a>::ofstream &amp;<em>ofs</em>, string <em>format</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6savefsERNSt8ofstreamE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Save tensor to a filestream. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor Save tensor to a filestream.</p>
-</dd>
 <dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code>: Name of the file to load the tensor from. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">delimiter</span></code>: Character used to separate the columns of the file. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">headerRows</span></code>: Number of top rows to avoid, generally because they correspond to the header. </p></li>
-</ul>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ofs</span></code>: Filestream. </p></li>
@@ -412,7 +404,7 @@
         <a href="linear_algebra.html" class="btn btn-neutral float-right" title="Linear algebra" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="indexing.html" class="btn btn-neutral float-left" title="Indexing routines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="indexing.html" class="btn btn-neutral float-left" title="Indexing &amp; Sorting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

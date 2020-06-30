@@ -25,6 +25,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -159,13 +160,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/misc.html">Miscellaneous</a></li>
 </ul>
 
             
@@ -301,22 +301,10 @@ the code will be executed.</p>
 </div>
 <div class="section" id="fpga">
 <h1>FPGA<a class="headerlink" href="#fpga" title="Permalink to this headline">¶</a></h1>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7CS_FGPAERK6vectorIiEi">
-<span id="_CPPv3N4eddl7CS_FGPAERK6vectorIiEi"></span><span id="_CPPv2N4eddl7CS_FGPAERK6vectorIiEi"></span><span id="eddl::CS_FGPA__vector:i:CR.i"></span><span class="target" id="namespaceeddl_1a3f6009786e29e382a806f9a17c6637c4"></span>compserv <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CS_FGPA</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>f</em>, int <em>lsb</em> = 1<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7CS_FGPAERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Executes de code in the FPGA. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The computer service itself. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Vector of bools to set which FPGAs will be used (1=on, 0=off) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lsb</span></code>: (Multi-fpga setting) Number of batches to run before synchronizing the weights of the different FPGAs </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “CS_FGPA” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>

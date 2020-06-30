@@ -25,6 +25,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -159,7 +160,7 @@
 <li class="toctree-l1"><a class="reference internal" href="create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="manipulation.html">Manipulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="binary.html">Binary operations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Logic functions</a><ul>
@@ -198,7 +199,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
 </ul>
 
             
@@ -529,16 +529,16 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8allcloseEP6TensorP6Tensorffb">
 <span id="_CPPv3N6Tensor8allcloseEP6TensorP6Tensorffb"></span><span id="_CPPv2N6Tensor8allcloseEP6TensorP6Tensorffb"></span><span id="Tensor::allclose__TensorP.TensorP.float.float.b"></span><span class="target" id="class_tensor_1a1501f8bfba737420f7d8d1d50b76d86e"></span>bool <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">allclose</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>rtol</em> = 1e-05, float <em>atol</em> = 1e-08, bool <em>equal_nan</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8allcloseEP6TensorP6Tensorffb" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Returns True if two arrays are element-wise equal within a tolerance. </p>
+<dd><p>Returns True if two arrays accomplish, element-wise, the condition <span class="math notranslate nohighlight">\(|A-B| \leq atol+rtol\times|B|\)</span>. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>void </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rtol</span></code>: </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">atol</span></code>: </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">equal_nan</span></code>: </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rtol</span></code>: relative tolerance. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">atol</span></code>: absolute tolerance. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">equal_nan</span></code>: if <code class="docutils literal notranslate"><span class="pre">True</span></code>, then two <code class="docutils literal notranslate"><span class="pre">NaN</span></code>s will be considered equal. </p></li>
 </ul>
 </dd>
 </dl>
@@ -554,17 +554,17 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb">
 <span id="_CPPv3N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb"></span><span id="_CPPv2N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb"></span><span id="Tensor::isclose__TensorP.TensorP.TensorP.float.float.b"></span><span class="target" id="class_tensor_1adb3078270a1649ba3158bdf6cabe7440"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isclose</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em>, float <em>rtol</em> = 1e-05, float <em>atol</em> = 1e-08, bool <em>equal_nan</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Returns a boolean array where two arrays are element-wise equal within a tolerance. </p>
+<dd><p>Returns a boolean array where a position is true if elements in A and B accomplish <span class="math notranslate nohighlight">\(|A-B| \leq atol+rtol\times|B|\)</span>. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>void </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rtol</span></code>: </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">atol</span></code>: </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">equal_nan</span></code>: </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Output tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rtol</span></code>: relative tolerance. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">atol</span></code>: absolute tolerance. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">equal_nan</span></code>: if <code class="docutils literal notranslate"><span class="pre">True</span></code>, then two <code class="docutils literal notranslate"><span class="pre">NaN</span></code>s will be considered equal. </p></li>
 </ul>
 </dd>
 </dl>
@@ -577,9 +577,39 @@
 </div>
 <div class="section" id="greater">
 <h3>greater<a class="headerlink" href="#greater" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8greater_Ef">
+<span id="_CPPv3N6Tensor8greater_Ef"></span><span id="_CPPv2N6Tensor8greater_Ef"></span><span id="Tensor::greater___float"></span><span class="target" id="class_tensor_1a6249bae46ff1dff800af8d879dc6a710"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8greater_Ef" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of the input elements &gt; <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7greaterEf">
+<span id="_CPPv3N6Tensor7greaterEf"></span><span id="_CPPv2N6Tensor7greaterEf"></span><span id="Tensor::greater__float"></span><span class="target" id="class_tensor_1aee5bb77ce44d319b124921a30157af80"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the truth value of the input elements &gt; <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater” with arguments (Tensor *, Tensor *, float) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
@@ -589,15 +619,74 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater” with arguments (Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater” with arguments (Tensor *, Tensor *, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">greater_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">greater</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="greater-equal">
 <h3>greater_equal<a class="headerlink" href="#greater-equal" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor14greater_equal_Ef">
+<span id="_CPPv3N6Tensor14greater_equal_Ef"></span><span id="_CPPv2N6Tensor14greater_equal_Ef"></span><span id="Tensor::greater_equal___float"></span><span class="target" id="class_tensor_1a745ce614040b59025d624150fbf31fe6"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater_equal_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor14greater_equal_Ef" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of the input elements &gt;= <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor13greater_equalEf">
+<span id="_CPPv3N6Tensor13greater_equalEf"></span><span id="_CPPv2N6Tensor13greater_equalEf"></span><span id="Tensor::greater_equal__float"></span><span class="target" id="class_tensor_1a961d3db5ba4bf85dbfad2c4ed9956653"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater_equal</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the truth value of the input elements &gt;= <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater_equal” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater_equal” with arguments (Tensor *, Tensor *, float) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
@@ -607,15 +696,73 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater_equal” with arguments (Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater_equal” with arguments (Tensor *, Tensor *, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">greater_equal_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="less">
 <h3>less<a class="headerlink" href="#less" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5less_Ef">
+<span id="_CPPv3N6Tensor5less_Ef"></span><span id="_CPPv2N6Tensor5less_Ef"></span><span id="Tensor::less___float"></span><span class="target" id="class_tensor_1a7cc0030c584bd08e460538a704b7fcc0"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5less_Ef" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of the input elements &lt; <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4lessEf">
+<span id="_CPPv3N6Tensor4lessEf"></span><span id="_CPPv2N6Tensor4lessEf"></span><span id="Tensor::less__float"></span><span class="target" id="class_tensor_1a1fb4ec0e0b969b00188e4a428dc23aa9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the truth value of the input elements &lt; <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less” with arguments (Tensor *, Tensor *, float) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
@@ -625,15 +772,73 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">less</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less” with arguments (Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less” with arguments (Tensor *, Tensor *, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">less_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">less</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">less</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">less</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">less</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="less-equal">
 <h3>less_equal<a class="headerlink" href="#less-equal" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor11less_equal_Ef">
+<span id="_CPPv3N6Tensor11less_equal_Ef"></span><span id="_CPPv2N6Tensor11less_equal_Ef"></span><span id="Tensor::less_equal___float"></span><span class="target" id="class_tensor_1adef2087499850e0b13821305306a1011"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less_equal_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11less_equal_Ef" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of the input elements &lt;= <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor10less_equalEf">
+<span id="_CPPv3N6Tensor10less_equalEf"></span><span id="_CPPv2N6Tensor10less_equalEf"></span><span id="Tensor::less_equal__float"></span><span class="target" id="class_tensor_1a005c618fb59c33e25a84b2c3ad003acd"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less_equal</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the truth value of the input elements &lt;= <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less_equal” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less_equal” with arguments (Tensor *, Tensor *, float) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
@@ -643,15 +848,73 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less_equal” with arguments (Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less_equal” with arguments (Tensor *, Tensor *, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">less_equal_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">less_equal</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="equal">
 <h3>equal<a class="headerlink" href="#equal" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6equal_Ef">
+<span id="_CPPv3N6Tensor6equal_Ef"></span><span id="_CPPv2N6Tensor6equal_Ef"></span><span id="Tensor::equal___float"></span><span class="target" id="class_tensor_1a252f7ab0f5d10d221aa57c84f5d567a8"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">equal_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6equal_Ef" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of the input elements == <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5equalEf">
+<span id="_CPPv3N6Tensor5equalEf"></span><span id="_CPPv2N6Tensor5equalEf"></span><span id="Tensor::equal__float"></span><span class="target" id="class_tensor_1a9da367b3945c913fc9fcffcc4c386301"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">equal</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the truth value of the input elements == <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::equal” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::equal” with arguments (Tensor *, Tensor *, float) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
@@ -661,15 +924,73 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::equal” with arguments (Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::equal” with arguments (Tensor *, Tensor *, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">equal_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">equal</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="not-equal">
 <h3>not_equal<a class="headerlink" href="#not-equal" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor10not_equal_Ef">
+<span id="_CPPv3N6Tensor10not_equal_Ef"></span><span id="_CPPv2N6Tensor10not_equal_Ef"></span><span id="Tensor::not_equal___float"></span><span class="target" id="class_tensor_1a1a57075c99d3cba11cdcdcad85388e6b"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">not_equal_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10not_equal_Ef" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of the input elements != <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor9not_equalEf">
+<span id="_CPPv3N6Tensor9not_equalEf"></span><span id="_CPPv2N6Tensor9not_equalEf"></span><span id="Tensor::not_equal__float"></span><span class="target" id="class_tensor_1abbae19a7774f0b26d8dddef53c7da7a1"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">not_equal</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the truth value of the input elements != <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::not_equal” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::not_equal” with arguments (Tensor *, Tensor *, float) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
@@ -679,7 +1000,35 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::not_equal” with arguments (Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::not_equal” with arguments (Tensor *, Tensor *, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">not_equal_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">not_equal</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
