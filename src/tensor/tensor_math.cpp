@@ -250,6 +250,23 @@ void Tensor::argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 }
 
+void Tensor::argmax_d(Tensor *D, Tensor *O, Tensor *PD){
+    if (D->isCPU() && O->isCPU() && PD->isCPU()) {
+        cpu_argmax_d(D, O, PD);
+    }
+#ifdef cGPU
+    else if (D->isGPU() && O->isGPU() && PD->isGPU())
+    {
+        gpu_argmax_d(D, O, PD);
+    }
+#endif
+#ifdef cFPGA
+    else {
+        //fpga_argmax_d(D, O, PD);
+    }
+#endif
+}
+
 float Tensor::min(){
     return Tensor::min(this);
 }
@@ -380,7 +397,7 @@ float Tensor::sum(Tensor* A){
 #endif
 #ifdef cFPGA
     else {
-        fpga_sum(A);
+        return fpga_sum(A);
     }
 #endif
 

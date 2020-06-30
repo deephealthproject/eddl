@@ -70,7 +70,9 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     }
 #endif
 
+#ifdef cFPGA
     fpga_ptr = (cl::Buffer *)nullptr;
+#endif
 
     // Update values
     updateDevice(dev);
@@ -135,7 +137,7 @@ void Tensor::deleteData(){
     // Careful, you can't know is a pointer is allocated
     if(this->ptr != nullptr){
         if (this->isCPU()) {
-            delete this->ptr;
+            delete[] this->ptr;
         }
 #ifdef cGPU
         else if (this->isGPU())
@@ -146,7 +148,7 @@ void Tensor::deleteData(){
 #ifdef cFPGA
         else if (this->isFPGA())
 	{
-            fpga_delete_tensor(this->fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->size);
+            fpga_delete_tensor(this->fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->fpga_size);
 	}
 
       // delete FPGA Tensor
@@ -155,7 +157,7 @@ void Tensor::deleteData(){
     }
 }
 
-void Tensor::updateData(float *fptr){
+void Tensor::updateData(float *fptr, void *fptr2){
     // TODO: What if the new_pointer is the same?
 
     if (this->isCPU()) {
@@ -191,12 +193,12 @@ void Tensor::updateData(float *fptr){
     {
         fpga_device = device-DEV_FPGA;
         if (!initfpga[fpga_device]) {
-           #ifdef FPGA_DEBUG
-	   printf("Initializing FPGA device\n");
-           #endif
-           fpga_init(/*fpga_device*/);
-           initfpga[fpga_device]=1;
-         }
+          #ifdef FPGA_DEBUG
+          printf("Initializing FPGA device\n");
+          #endif
+          fpga_init(/*fpga_device*/);
+          initfpga[fpga_device]=1;
+        }
         if (fptr == nullptr) {
           #ifdef FPGA_DEBUG
           printf("  ([updateData fptr==null] creating tensor size %d; id being assigned %d)\n", this->size, next_fpga_tensor_id);
@@ -212,36 +214,26 @@ void Tensor::updateData(float *fptr){
           printf("  ([updateData] ptr %p fpga_ptr %p)\n", this->ptr, this->fpga_ptr);
           #endif
         } else {
-          // The data has already been created in CPU, so we need now to create a buffer in FPGA and write the buffer into it
-          // we first update the cpu buffer
+	  if ((this->fpga_ptr == (cl::Buffer *)nullptr) && (fptr2 == nullptr)) {
+	    this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
+	    this->fpga_size = this->size;
+	    this->fpga_tensor_id = next_fpga_tensor_id;
+	    next_fpga_tensor_id++;
+	    fpga_copy_to_fpga(fptr, this);
+            #ifdef FPGA_DEBUG
+	    printf("  ([updateData] fpga_ptr and incomming second pointer were null, we create a buffer with tensor id %d\n", this->fpga_tensor_id);
+            #endif
+	  } else if ((this->fpga_ptr == (cl::Buffer *)nullptr) && (fptr2 != nullptr)) {
+		  printf("fpga_ptr null but fptr2 not\n");
+		  this->fpga_size = this->size;
+		  this->fpga_ptr = (cl::Buffer *)fptr2;
+	  } else {
+		  this->fpga_size = this->size;
+		  this->fpga_ptr = (cl::Buffer *)fptr2;
+	  }
           #ifdef FPGA_DEBUG
           printf("  ([updateData fptr!=null] fptr %p tensor id %d ptr %p fpga_ptr %p size %d fpga_size %d)\n", fptr, this->fpga_tensor_id, this->ptr, this->fpga_ptr, this->size, this->fpga_size);
           #endif
-          if (this->fpga_ptr == (cl::Buffer *)nullptr) {
-            this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
-            fpga_size = this->size;
-            fpga_copy_to_fpga(fptr, this);
-            this->fpga_tensor_id = next_fpga_tensor_id++;
-            #ifdef FPGA_DEBUG
-            printf("    created tensor id %d fpga_ptr %p\n", this->fpga_tensor_id, this->fpga_ptr);
-            #endif
-          } else {
-            if (this->size != this->fpga_size) {
-              fpga_delete_tensor(fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->fpga_size);
-              //
-              this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
-              this->fpga_size = this->size;
-              fpga_copy_to_fpga(fptr, this);
-              #ifdef FPGA_DEBUG
-              printf("    reallocated tensor id %d new size %d\n", this->fpga_tensor_id, this->fpga_size);
-              #endif
-            } else {
-              //fpga_copy_to_fpga(fptr, this);
-              #ifdef FPGA_DEBUG
-              printf("    just updated the info\n");
-              #endif
-            }
-          }
           this->ptr = fptr;
         }
         // For 2 dimensions, map to data to Eigen for efficiency
@@ -254,30 +246,22 @@ void Tensor::updateData(float *fptr){
 }
 
 void Tensor::toCPU(int dev){
+    if (this->isCPU()) {
+        // printf("Tensor already in CPU\n");
+    }else{
+        float *cpu_ptr = nullptr;
+
 #ifdef cGPU
-    if (isGPU())
-    {
+        if (this->isGPU()){
+            // Reserve memory for CPU
+            cpu_ptr = get_fmem(size, "Tensor::toCPU");
 
-        // Reserve memory for CPU
-        float *cpu_ptr = get_fmem(size, "Tensor::toCPU");
-
-        // Copy GPU data to CPU
-        gpu_copy_from_gpu(this, cpu_ptr);
-
-        // Delete GPU data
-        this->deleteData();
-
-        // Assign CPU pointer
-        this->device = dev;  // Must appear after deleting the data
-        this->ptr = cpu_ptr;
-        if (ndim == 2) {
-            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
+            // Copy GPU data to CPU
+            gpu_copy_from_gpu(this, cpu_ptr);
         }
-
-    }
 #endif
 #ifdef cFPGA
-    if (isFPGA())
+        if (isFPGA())
     {
 
         // Reserve memory for CPU
@@ -285,8 +269,10 @@ void Tensor::toCPU(int dev){
 
         // Copy GPU data to CPU
         fpga_copy_from_fpga(this, cpu_ptr);
-
-        // Delete FPGA data
+    }
+#endif
+        // COMMON: Delete data in HW + reassign pointer
+        // Delete data
         this->deleteData();
 
         // Assign CPU pointer
@@ -295,14 +281,15 @@ void Tensor::toCPU(int dev){
         if (ndim == 2) {
             ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
         }
-
     }
-#endif
+
+
 }
 
 void Tensor::toGPU(int dev){
+    // TODO: Improve this with existing functions
 #ifdef cGPU
-    if (isCPU()) {
+    if (this->isCPU()) {
         this->device = dev;
         this->gpu_device = this->device - DEV_GPU;
 
@@ -318,7 +305,7 @@ void Tensor::toGPU(int dev){
         gpu_copy_to_gpu(cpu_ptr, this);
         delete cpu_ptr;
     }
-    else if (isGPU())
+    else if (this->isGPU())
     {
 //        printf("Tensor already in GPU\n");
     }
@@ -331,7 +318,7 @@ void Tensor::toGPU(int dev){
 
 void Tensor::toFPGA(int dev){
 #ifdef cFPGA
-    if (isCPU()) {
+    if (this->isCPU()) {
         this->device = dev;
         this->fpga_device = this->device - DEV_FPGA;
 
@@ -345,9 +332,10 @@ void Tensor::toFPGA(int dev){
 
         this->fpga_ptr = fpga_ptr;
         fpga_copy_to_fpga(cpu_ptr, this);
-        delete cpu_ptr;
+	// we do not remove the cpu_ptr as is used for cpuemu mode
+        //delete cpu_ptr;
     }
-    else if (isFPGA())
+    else if (this->isFPGA())
     {
 //        printf("Tensor already in FPGA\n");
     }
@@ -374,6 +362,7 @@ void Tensor::reallocate(Tensor* old_t, vector<int> *s){
         updateStrides();
     }
 
+    printf("no se debe usar\n");
     updateData(old_t->ptr);
 }
 
@@ -513,7 +502,7 @@ bool Tensor::isSquared(Tensor *A){
 }
 
 // Resizing tensors
-void Tensor::resize(int b, float *fptr) {
+void Tensor::resize(int b, float *fptr, void *fptr2) {
     if (b == shape[0]) return;
 
     // Get new shape
@@ -524,7 +513,7 @@ void Tensor::resize(int b, float *fptr) {
     updateShape(new_shape);
     updateSize();
     updateStrides();
-    if (fptr == nullptr) deleteData();  // Potential error
-    updateData(fptr);
+    if (fptr != nullptr) deleteData();  // Potential error
+    updateData(fptr, fptr2);
 }
 

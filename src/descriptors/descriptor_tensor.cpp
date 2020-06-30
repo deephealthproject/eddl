@@ -44,7 +44,7 @@ void TensorDescriptor::free_memory() {
 
 #ifdef cFPGA
     if (this->fpga_addresses != nullptr){
-      // delete FPGA addresses
+      // TODO: Missing delete FPGA addresses
     }
 #endif
 }

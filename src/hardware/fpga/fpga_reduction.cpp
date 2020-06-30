@@ -7,6 +7,7 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
 
 #include <stdexcept>
 
@@ -197,3 +198,5 @@ void fpga_reduction_back(ReduceDescriptor *RD){
   }
  _profile_fpga(_FPGA_REDUCTION_BACK, 1);
 }
+
+#endif

@@ -7,6 +7,8 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
+
 #ifndef EDDL_FPGA_HW_H
 #define EDDL_FPGA_HW_H
 
@@ -18,7 +20,7 @@
 
 extern cl::CommandQueue q;
 
-#define FPGA_DEBUG
+//#define FPGA_DEBUG
 
 #include "eddl/hardware/fpga/fpga_enables.h"
 
@@ -83,7 +85,8 @@ extern cl::Kernel kernel_floor,     kernel_inv,    kernel_log,      kernel_log2,
 extern cl::Kernel kernel_normalize, kernel_pow,    kernel_powb,     kernel_reciprocal, kernel_remainder,     kernel_round,         kernel_rsqrt;
 extern cl::Kernel kernel_sign,      kernel_sin,    kernel_sinh,     kernel_sqr,        kernel_sqrt,          kernel_tan;
 extern cl::Kernel kernel_inc,       kernel_el_div, kernel_el_mult,  kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
-extern cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d;
+extern cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d,     kernel_add_2;
+extern cl::Kernel kernel_maximum,   kernel_maximum_float, kernel_minimum, kernel_minimum_float;
 
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()
@@ -310,6 +313,9 @@ void fpga_not_equal(Tensor *A, Tensor *B, float v);
 // Legacy
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon);
 
-
+void fpga_sort(Tensor *A, Tensor *B, bool descending, bool stable);
+void fpga_argsort(Tensor *A, Tensor *B, bool descending, bool stable);
 
 #endif //EDDL_FPGA_HW_H
+
+#endif

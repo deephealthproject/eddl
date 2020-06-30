@@ -630,7 +630,7 @@ int Tensor::sameShape(Tensor *A, Tensor *B) {
     return 1;
 }
 
-int Tensor::equivalent(Tensor *A, Tensor *B, float epsilon) {
+int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_nan) {
     // Equal device
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::equivalent");
 
@@ -639,18 +639,20 @@ int Tensor::equivalent(Tensor *A, Tensor *B, float epsilon) {
 
     // Equal data
     if (A->isCPU() && B->isCPU()) {
-        return cpu_equal2(A, B, epsilon);
+//        return cpu_allclose(A, B, rtol, atol, equal_nan);
+        return cpu_equal2(A, B, atol);  // TODO: Temp!
     }
 #ifdef cGPU
     else if (A->isGPU() || B->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::equivalent");
+              return gpu_allclose(A, B, rtol, atol, equal_nan);
           }
 #endif
 #ifdef cFPGA
-    else {
-          return fpga_equal2(A, B, epsilon);
-        }
+    else if (A->isGPU() || B->isGPU())
+          {
+          return fpga_allclose(A, B, rtol, atol, equal_nan);
+          }
 #endif
 
     return 1;

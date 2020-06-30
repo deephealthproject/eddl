@@ -1418,6 +1418,7 @@ typedef NetLoss * metric;
     layer ReduceSum(layer l, vector<int> axis, bool keepdims = false);
     layer ReduceMax(layer l, vector<int> axis, bool keepdims = false);
     layer ReduceMin(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceArgMax(layer l, vector<int> axis, bool keepdims = false);
 
     // Generator Layers
 

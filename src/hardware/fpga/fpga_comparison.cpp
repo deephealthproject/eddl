@@ -7,6 +7,8 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
+
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 #include <limits>
@@ -777,3 +779,5 @@ int fpga_equal2(Tensor *A, Tensor *B, float epsilon){
   _profile_fpga(_FPGA_EQUAL2, 1);
   return ret;
 }
+
+#endif

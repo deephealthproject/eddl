@@ -7,7 +7,7 @@
 * All rights reserved
 */
 
-
+#ifdef cFPGA
 
 #include <cstdio>      /* printf, scanf, NULL */
 #include <cstdlib>     /* malloc, free, rand */
@@ -651,3 +651,5 @@ void fpga_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
   PD->tsem->unlock();
   _profile_fpga(_FPGA_D_SOFTMAX, 1);
 }
+
+#endif

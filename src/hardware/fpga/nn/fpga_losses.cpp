@@ -7,7 +7,7 @@
 * All rights reserved
 */
 
-
+#ifdef cFPGA
 
 #include <cstdio>      /* printf, scanf, NULL */
 #include <cstdlib>     /* malloc, free, rand */
@@ -29,6 +29,9 @@ void fpga_cpuemu_cent(Tensor *A, Tensor *B, Tensor *C) {
 
 void fpga_cent(Tensor *A, Tensor *B, Tensor *C){
   _profile_fpga(_FPGA_CENT, 0);
+  _profile_fpga_tensor(A);
+  _profile_fpga_tensor(B);
+  _profile_fpga_tensor(C);
 #ifndef K_ENABLED_CENT
   fpga_cpuemu_cent(A, B, C);
 #else
@@ -45,3 +48,5 @@ void fpga_cent(Tensor *A, Tensor *B, Tensor *C){
 #endif
   _profile_fpga(_FPGA_CENT, 1);
 }
+
+#endif

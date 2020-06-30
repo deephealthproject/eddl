@@ -20,6 +20,36 @@
 #include "eddl/descriptors/descriptors.h"
 
 
+//#include <thrust/transform.h>
+#include <thrust/reduce.h>
+#include <thrust/functional.h>
+#include <thrust/extrema.h>
+#include <thrust/device_vector.h>
+
+
+// GPU: Structs for Thrust ********************************************
+
+struct is_positive {
+    template <typename T>
+    bool __device__ operator()(T v) {
+        return v > 0;
+    }
+};
+
+
+struct all_close {
+    const float rtol;
+    const float atol;
+    const bool equal_nan;
+
+    all_close(float rtol_, float atol_, bool equal_nan_) : rtol(rtol_), atol(atol_), equal_nan(equal_nan_)  { /* empty */ }
+
+    __host__ __device__ bool operator()(float x, float y) const {
+        return fabsf(x - y) <= (atol + rtol * fabsf(y));
+    }
+};
+
+
 // CPU: Logic functions: Comparisons
 void gpu_isfinite(Tensor *A, Tensor* B){
     int device=A->gpu_device;
@@ -118,36 +148,31 @@ bool gpu_all(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    setDims(A);
-
-    bool result = true;
-    gpu_logical_all<<<dimGrid,dimBlock>>>(A->ptr, A->size, result);
-    check_cuda(cudaDeviceSynchronize(), "all");
-    return result;
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    return thrust::transform_reduce(thrust::device, dev_ptr, dev_ptr+A->size, is_positive{}, true, thrust::logical_and<bool>{} );
 }
 
 bool gpu_any(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    setDims(A);
-
-    bool result = false;
-    gpu_logical_any<<<dimGrid,dimBlock>>>(A->ptr, A->size, result);
-    check_cuda(cudaDeviceSynchronize(), "any");
-    return result;
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    return thrust::transform_reduce(thrust::device, dev_ptr, dev_ptr+A->size, is_positive{}, false, thrust::logical_or<bool>{} );
 }
 
 bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    setDims(A);
 
-    bool close = true;
-    gpu_logical_allclose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, rtol, atol, equal_nan, close);
-    check_cuda(cudaDeviceSynchronize(), "allclose");
-    return close;
+    thrust::device_ptr<float> A_dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_ptr<float> B_dev_ptr = thrust::device_pointer_cast(B->ptr);
+
+    thrust::device_vector<float> temp(A->size);
+    thrust::transform(A_dev_ptr, A_dev_ptr+A->size, B_dev_ptr, temp.begin(), all_close(rtol, atol, equal_nan));
+    return thrust::reduce(thrust::device, temp.begin(), temp.end(), true, thrust::logical_and<bool>{});
+    // I think transform_reduce only supports one input vector
+    // return thrust::transform_reduce(thrust::device, A_dev_ptr, A_dev_ptr+A->size, B_dev_ptr, all_close(rtol, atol, equal_nan), true, thrust::logical_and<bool>{} );
 }
 
 void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan){
@@ -156,7 +181,7 @@ void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool e
 
     setDims(A);
 
-    gpu_logical_isclose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, rtol, atol, equal_nan, A->size);
+    gpu_isclose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, rtol, atol, equal_nan, A->size);
     check_cuda(cudaDeviceSynchronize(), "isclose");
 }
 

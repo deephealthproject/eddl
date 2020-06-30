@@ -54,7 +54,7 @@ void k_relu(float *A, float *B, long int size){
       #pragma HLS PIPELINE II=1
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
-      // perform relu
+      // perform operation
       if (buffer[j] < 0.0) buffer[j] = 0.f;
     }
 

@@ -2,7 +2,7 @@
 // implemented on the FPGA
 
 //Activations
-#define K_ENABLED_RELU
+//#define K_ENABLED_RELU
 //#define K_ENABLED_D_RELU
 //#define K_ENABLED_THRESHOLDED_RELU
 //#define K_ENABLED_D_TRHESHOLDED_RELU
@@ -137,7 +137,7 @@
 //#define K_ENABLED_TAN
 //#define K_ENABLED_TANH
 //#define K_ENABLED_TRUNC
-//#define K_ENABLED_ADD
+//#define K_ENABLED_ADD_2
 //#define K_ENABLED_INC
 //#define K_ENABLED_MULT2D
 //#define K_ENABLED_EL_DIV
@@ -180,3 +180,5 @@
 //#define K_ENABLED_TRANSPOSE
 //#define K_ENABLED_DIAG
 
+//#define K_ENABLED_SORT
+//#define K_ENABLED_ARGSORT

@@ -7,6 +7,7 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
 
 #include "eddl/hardware/cpu/cpu_tensor.h"
 #include <limits>
@@ -27,6 +28,7 @@ void fpga_cpuemu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C) {
 }
 
 void fpga_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C){
+	printf("fpga_where\n");
 #ifndef K_ENABLED_WHERE
   fpga_cpuemu_where(condition, A, B, C);
 #else
@@ -34,3 +36,5 @@ void fpga_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C){
   exit(1);
 #endif
 }
+
+#endif

@@ -7,10 +7,10 @@ cmake_minimum_required(VERSION 3.9.2)
 
 # User options
 option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
-option(BUILD_PROTOBUF "Compile using Protobuf" OFF)
+option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
 option(BUILD_HPC "Compile using agressive flags" OFF)
-option(BUILD_TESTS "Compile tests" OFF)
+option(BUILD_TESTS "Compile tests" ON)
 option(USE_LOCAL_GTEST "Use the local library to avoid problems derived from the 'One Definition Rule'" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)

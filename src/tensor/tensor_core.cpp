@@ -368,8 +368,9 @@ void Tensor::sort(Tensor* A, Tensor* B, bool descending, bool stable){
     }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (A->isGPU() && B->isGPU())
+    {
+        fpga_sort(A, B, descending, stable);
     }
 #endif
 }
@@ -393,8 +394,9 @@ void Tensor::argsort(Tensor* A, Tensor* B, bool descending, bool stable){
     }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (A->isGPU() && B->isGPU())
+    {
+	fpga_argsort(A, B, descending, stable);
     }
 #endif
 }

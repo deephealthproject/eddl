@@ -904,6 +904,9 @@ namespace eddl {
         return new LRMin(l, axis, keepdims, "", DEV_CPU, 0);
     }
 
+    layer ReduceArgMax(layer l, vector<int> axis, bool keepdims){
+        return new LRArgmax(l, axis, keepdims, "", DEV_CPU, 0);
+    }
 
     // Generator Layers
     layer GaussGenerator(float mean, float stdev, vector<int> size){
