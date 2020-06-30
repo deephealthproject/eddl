@@ -22,6 +22,11 @@
 #include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
 
+
+#ifdef cFPGA
+extern void _show_profile_fpga();
+#endif
+
 #define VERBOSE 0
 
 using namespace std;
@@ -492,7 +497,7 @@ float Net::get_metric( const string  layer_name, const string  metric_name )
                 if (lout[k]->isshared) lname=lout[k]->orig->name;
             }
 
-            // if no layer specified and more than one layer then 
+            // if no layer specified and more than one layer then
             // the required metric of the last output layer will be returned
 
             if ( layer_name.size() == 0 || layer_name == lname ) {
@@ -664,11 +669,13 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
       msg("output tensor list does not match with defined output layers", "Net.fit");
     }
 
+
     // Check if all the data inputs has the same number of samples
     n = tin[0]->shape[0];
     for (i = 1; i < tin.size(); i++)
     if (tin[i]->shape[0] != n)
     msg("different number of samples in input tensor", "Net.fit");
+
 
 
     // Check if the size of the output layers matches with inputs sizes
@@ -677,8 +684,10 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     msg("different number of samples in output tensor", "Net.fit");
 
 
+
     // Set batch size
     resize(batch);
+
 
     // Create array to store batch indices (later random)
     vind sind;
@@ -726,6 +735,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     }
     fflush(stdout);
   }
+
 }
 
 
@@ -907,6 +917,10 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
   }
 
   compute_loss();
+
+#ifdef cFPGA
+  _show_profile_fpga();
+#endif
 
 }
 

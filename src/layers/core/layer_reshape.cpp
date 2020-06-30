@@ -85,7 +85,11 @@ LReshape::~LReshape()
 // virtual
 void LReshape::resize(int batch){
     ls[0]=batch;
+#ifdef cFPGA
+    output->resize(batch, parent[0]->output->ptr, parent[0]->output->fpga_ptr);
+#else
     output->resize(batch, parent[0]->output->ptr);
+#endif
 }
 
 

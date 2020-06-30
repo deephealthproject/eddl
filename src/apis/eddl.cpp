@@ -167,8 +167,24 @@ namespace eddl {
         return nullptr; // To silent warnings
     }
 
+    /*compserv CS_FPGA(const vector<int> g){
+        return CS_FPGA(g, 1, "full_mem");
+    }
+    compserv CS_FPGA(const vector<int> g, string mem){
+        return CS_FPGA(g, 1, mem);
+    }
+    compserv CS_FPGA(const vector<int> g, int lsb){
+        return CS_FPGA(g, lsb, "full_mem");
+    }
+    compserv CS_FPGA(const vector<int> g, int lsb, string mem){
+        if (mem=="low_mem") return new CompServ(0, g, {}, lsb, 2);
+        else if (mem=="mid_mem") return new CompServ(0, g, {}, lsb, 1);
+        else if (mem=="full_mem") return new CompServ(0, g, {}, lsb, 0);
+        else msg("Error mem param","CS_FPGA"); // Exits
+        return nullptr; // To silent warnings
+    }*/
 
-    compserv CS_FGPA(const vector<int> &f,int lsb){
+    compserv CS_FPGA(const vector<int> &f,int lsb){
         return new CompServ(0, {}, f,lsb);
     }
 
@@ -888,6 +904,9 @@ namespace eddl {
         return new LRMin(l, axis, keepdims, "", DEV_CPU, 0);
     }
 
+    layer ReduceArgMax(layer l, vector<int> axis, bool keepdims){
+        return new LRArgmax(l, axis, keepdims, "", DEV_CPU, 0);
+    }
 
     // Generator Layers
     layer GaussGenerator(float mean, float stdev, vector<int> size){

@@ -54,6 +54,7 @@ int main(int argc, char **argv) {
         //CS_GPU({1}) // one GPU
         //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
         CS_CPU()
+	      //CS_FPGA({1})
   );
 
   // View model

@@ -16,6 +16,11 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 using namespace std;
 
 // ***** Core (in-place) *****************************
@@ -36,7 +41,7 @@ void Tensor::fill(Tensor* A, float v){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_fill_(A,v);
     }
 #endif
 }
@@ -260,7 +265,7 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_transpose(A, N);
     }
 #endif
     B->tsem->unlock();
@@ -296,6 +301,19 @@ void Tensor::copy(Tensor *A, Tensor *B) {
         else if ((A->isGPU())&&(B->isCPU()))
           {
             gpu_copy_from_gpu(A,B->ptr);
+          }
+#endif
+#ifdef cFPGA
+        else if ((A->isFPGA())&&(B->isFPGA())) {
+          fpga_copy_fpga(A,B);
+        }
+        else if ((A->isCPU())&&(B->isFPGA()))
+          {
+            fpga_copy_to_fpga(A->ptr,B);
+          }
+        else if ((A->isFPGA())&&(B->isCPU()))
+          {
+            fpga_copy_from_fpga(A,B->ptr);
           }
 #endif
     else {
@@ -446,7 +464,7 @@ Tensor* Tensor::concat(const vector<Tensor*> A, unsigned int axis, Tensor* outpu
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_concat(output, A, axis, false);
     }
 #endif
 
@@ -515,7 +533,7 @@ void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_concat(A, t, axis, true);
     }
 #endif
 }
@@ -548,7 +566,7 @@ void Tensor::select(Tensor *A, Tensor* B, SelDescriptor *sd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_select(A, B, sd);
     }
 #endif
 
@@ -566,7 +584,7 @@ void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_select_back(A, B, sd);
     }
 #endif
 
@@ -598,7 +616,7 @@ void Tensor::set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_set_select(A, B, sd);
     }
 #endif
 }
@@ -616,7 +634,7 @@ void Tensor::set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_set_select_back(A, B, sd);
     }
 #endif
 
@@ -654,13 +672,38 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
 
         delete Bc;
     }
+    else if ((A->isFPGA()) && (B->isCPU())) {
+        Tensor *Ac=A->clone();
+        Ac->toCPU();
+
+        cpu_select(Ac, B, sind, ini, end,mask_zeros);
+
+        delete Ac;
+    }else if ((A->isCPU()) && (B->isFPGA())) {
+        Tensor *Bc=B->clone();
+        Bc->toCPU();
+        cpu_select(A, Bc, sind, ini, end,mask_zeros);
+
+        Tensor::copy(Bc,B);
+
+        delete Bc;
+    }
     #ifdef cGPU
         else if (A->isGPU() && B->isGPU())
       {
         gpu_select(A, B, sind, ini, end,mask_zeros);
       }
     #endif
+
+    #ifdef cFPGA
+        else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_select(A, B, sind, ini, end,mask_zeros);
+      }
+    #endif
+
     else {
+	    printf("1\n");
         msg("unsuppoted select", "Tensor::select");
     }
     //B->tsem->unlock();
@@ -695,13 +738,37 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
         Tensor::copy(Bc,B);
 
         delete Bc;
+    } else if ((A->isFPGA()) && (B->isCPU())) {
+        Tensor *Ac=A->clone();
+        Ac->toCPU();
+
+        cpu_deselect(Ac, B, sind, ini, end, inc,mask_zeros);
+
+        delete Ac;
+    }else if ((A->isCPU()) && (B->isFPGA())) {
+        Tensor *Bc=B->clone();
+        Bc->toCPU();
+        cpu_deselect(A, Bc, sind, ini, end, inc,mask_zeros);
+
+        Tensor::copy(Bc,B);
+
+        delete Bc;
     }
+
     #ifdef cGPU
         else if (A->isGPU() && B->isGPU())
       {
         gpu_deselect(A, B, sind, ini, end, inc,mask_zeros);
       }
     #endif
+
+    #ifdef cFPGA
+        else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_deselect(A, B, sind, ini, end, inc,mask_zeros);
+      }
+    #endif
+	
     else {
         msg("unsuppoted select", "Tensor::select");
     }

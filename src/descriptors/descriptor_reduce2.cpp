@@ -109,6 +109,13 @@ void ReduceDescriptor2::build(const vector<int>& t_ishape){
 }
 
 void ReduceDescriptor2::resize(int b){
+    // Delete previous allocations
+    this->free_memory();
+
+    this->ishape[0] = b;
+    this->oshape[0] = b;
+
+    this->build(this->ishape);
 
 }
 
@@ -118,18 +125,18 @@ void ReduceDescriptor2::build_map(bool reverse){
     int size = shape2size(this->ishape);
     this->cpu_addresses = new int[size];
 
-    if (!reverse){  // A to B
+    if (!reverse){ // Non-contiguous addresses to reduce.
         #pragma omp parallel for
-        for(int i=0; i<index.size(); i++) {
-            for(int j=0; j<index[i].size(); j++){
-                cpu_addresses[index[i][j]] = i;  // A[Original address] = reduction address
+        for(int i=0; i<index.size(); i++) {  // Reduce index
+            for(int j=0; j<index[i].size(); j++){  // Addresses to reduce
+                cpu_addresses[index[i][j]] = i;  // A[Original address to reduce] = reduction address
             }
         }
-    }else{ // B to A[0]
+    }else{ // Contiguous addresses to reduce.
         int k=0;
-        for(int i=0; i<index.size(); i++) {
-            for(int j=0; j<index[i].size(); j++){
-                cpu_addresses[k++] = index[i][j];  // A[reduction address_0] = [idx0_0, idx0_1,...]
+        for(int i=0; i<index.size(); i++) {  // Reduce index
+            for(int j=0; j<index[i].size(); j++){  // Addresses to reduce
+                cpu_addresses[k++] = index[i][j];  // A[0,1,2...] = [Original address to reduce]
             }
         }
     }

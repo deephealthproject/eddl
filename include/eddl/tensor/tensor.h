@@ -17,6 +17,10 @@
 #include <string>
 #include <mutex>
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/xcl2.hpp"
+#endif
+
 #include "Eigen/Dense"
 
 #include "eddl/utils.h"
@@ -50,6 +54,7 @@
 #define DEV_FPGA_8 2008
 
 #define MAX_GPUS 8
+#define MAX_FPGAS 8
 
 using namespace std;
 
@@ -87,6 +92,14 @@ public:
     // Aux variables
     int gpu_device;
     mutex *tsem;  // Multithreading. Tensor semaphore
+
+#ifdef cFPGA
+    // fpga-related information
+    int fpga_device;         // fpga device
+    cl::Buffer *fpga_ptr;     // open-cl buffer pointer to data
+    int fpga_tensor_id;      // for debuging and tracking tensors
+    long int fpga_size;      // buffer size (in elements)
+#endif
 
     // Constructors
     /**
@@ -145,7 +158,7 @@ public:
     void updateShape(const vector<int> &new_shape);
     void updateSize();
     void updateStrides();
-    void updateData(float* ptr);
+    void updateData(float* ptr, void *ptr2=NULL);
     void deleteData();
 
     /**
@@ -158,6 +171,10 @@ public:
     */
     void toGPU(int dev=DEV_GPU);
 
+    /**
+      *  @brief Clone a tensor to the GFPGA.
+    */
+    void toFPGA(int dev=DEV_FPGA);
     /**
       *  @brief Check if the tensor is in CPU.
       *
@@ -237,15 +254,15 @@ public:
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
 
-//    /**
-//      *  @brief Load data from a text file
-//      *
-//      *  @param filename  Name of the file to load the tensor from.
-//      *  @param delimiter    Character used to separate the columns of the file.
-//      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
-//      *  @return    Tensor
-//    */
-//    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
+    /**
+      *  @brief Load data from a text file
+      *
+      *  @param filename  Name of the file to load the tensor from.
+      *  @param delimiter    Character used to separate the columns of the file.
+      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
+      *  @return    Tensor
+    */
+    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
     /**
       *  @brief Save tensor to a filestream.
@@ -520,11 +537,49 @@ public:
     static void maximum(Tensor* A, Tensor* B, Tensor* C);
 
 
+    /**
+      *  @brief Apply a upper bound to the elements in a tensor.
+      *
+      *  @param v  Lower bound.
+      *  @return A new tensor with the values higher than v set to v.
+    */
+
     Tensor* minimum(float v);
+
+    /**
+      *  @brief Apply a upper bound to the elements in a tensor.
+      *
+      *  @param A  Input tensor.
+      *  @param v  Lower bound.
+      *  @return A new tensor with the values of A higher than v set to v.
+    */
     static Tensor* minimum(Tensor* A, float v);
+
+    /**
+      *  @brief Apply a upper bound to the elements in a tensor.
+      *
+      *  @param A  Input tensor.
+      *  @param B  Output tensor.
+      *  @param v  Upper bound.
+    */
     static void minimum(Tensor* A, Tensor* B, float v);
 
+    /**
+      *  @brief Element-wise selection of the minimum values in the same position in two tensors.
+      *
+      *  @param A  Input tensor.
+      *  @param B  Input tensor.
+      *  @return  A tensor with the lower value in the same position between A and B.
+    */
     static Tensor* minimum(Tensor* A, Tensor* B);
+
+    /**
+      *  @brief Element-wise selection of the minimum values in the same position in two tensors.
+      *
+      *  @param A  Input tensor.
+      *  @param B  Input tensor.
+      *  @param C  Output tensor with the lower value in the same position between A and B.
+    */
     static void minimum(Tensor* A, Tensor* B, Tensor* C);
 
     // Math operations (reductions) ************************
@@ -575,6 +630,7 @@ public:
     Tensor* argmax(vector<int> axis, bool keepdims);
 
     static void argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+    static void argmax_d(Tensor *D, Tensor *O, Tensor *PD);
 
     /**
     *   @brief Obtain the minimum value in the tensor
@@ -2129,26 +2185,26 @@ public:
     // Logic funcions: Comparison ops *****************************
 
     /**
-      *  @brief Returns True if two arrays are element-wise equal within a tolerance.
+      *  @brief Returns True if two arrays accomplish, element-wise, the condition \f$|A-B| \leq atol+rtol\times|B|\f$
       *
-      *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param rtol
-      *  @param atol
-      *  @param equal_nan
+      *  @param A   Input tensor.
+      *  @param B   Input tensor.
+      *  @param rtol relative tolerance.
+      *  @param atol absolute tolerance.
+      *  @param equal_nan if ``True``, then two ``NaN``s will be considered equal.
       *  @return    void
     */
-    static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns true or false
+    static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
 
     /**
-      *  @brief Returns a boolean array where two arrays are element-wise equal within a tolerance.
+      *  @brief Returns a boolean array where a position is true if elements in A and B accomplish \f$|A-B| \leq atol+rtol\times|B|\f$
       *
-      *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param C   Tensor
-      *  @param rtol
-      *  @param atol
-      *  @param equal_nan
+      *  @param A   Input tensor.
+      *  @param B   Input tensor.
+      *  @param C   Output tensor.
+      *  @param rtol relative tolerance.
+      *  @param atol absolute tolerance.
+      *  @param equal_nan if ``True``, then two ``NaN``s will be considered equal.
       *  @return    void
     */
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
@@ -2512,7 +2568,7 @@ public:
       *
       *  @return
     */
-    void resize(int b, float *fptr=nullptr);
+    void resize(int b, float *fptr=nullptr, void *fptr2=nullptr);
 
 
     // ***********************************************************
@@ -2713,7 +2769,7 @@ public:
     *   @param epsilon Error threshold.
     *   @return 1 if they are equivalent, 0 otherwise.
     */
-    static int equivalent(Tensor *A, Tensor *B, float epsilon=1e-3);  // Previously named "Tensor::equal2"
+    static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false);  // Previously named "Tensor::equal2"
 
 };
 

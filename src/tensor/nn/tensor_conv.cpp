@@ -15,7 +15,13 @@
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 namespace tensorNN{
+
 
 
 void Conv2D(ConvolDescriptor *D) {
@@ -40,7 +46,7 @@ void Conv2D(ConvolDescriptor *D) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_conv2D(D);
     }
 #endif
     D->O->tsem->unlock();
@@ -67,7 +73,7 @@ void Conv2D_grad(ConvolDescriptor *D) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_conv2D_grad(D);
     }
 #endif
     D->gK->tsem->unlock();
@@ -94,7 +100,7 @@ void Conv2D_back(ConvolDescriptor *D) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_conv2D_back(D);
     }
 #endif
     D->ID->tsem->unlock();

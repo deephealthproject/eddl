@@ -49,6 +49,26 @@ public:
 
 };
 
+class ReductionLayer2 : public Layer {
+public:
+
+    int binary;
+    float val;
+    ReduceDescriptor2 *RD2;
+    vector<int> axis;
+    bool keepdims;
+
+    ReductionLayer2(string name, int dev, int mem);
+
+    void addchild(Layer *l) override;
+
+    void addparent(Layer *l) override;
+
+    string plot(int c) override;
+
+
+};
+
 
 /// Mean Layer
 class LRMean : public ReductionLayer {
@@ -138,6 +158,25 @@ public:
     static int total_layers;
 
     LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int b) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
+/// Argmax Layer
+class LRArgmax : public ReductionLayer2 {
+public:
+    static int total_layers;
+
+
+    LRArgmax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
     void forward() override;
 

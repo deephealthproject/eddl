@@ -46,6 +46,9 @@ if(USE_CUDA)
     add_definitions(-DcGPU)
 endif()
 
+if (USE_FPGA)
+    add_definitions(-DcFPGA)
+endif()
 
 # Add test
 add_test(NAME unit_tests COMMAND unit_tests)

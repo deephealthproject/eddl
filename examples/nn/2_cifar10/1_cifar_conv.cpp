@@ -45,12 +45,19 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
-  l=MaxPool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
-  l=MaxPool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
-  l=MaxPool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});
+  l=ReLu(Conv(l,32,{3,3},{1,1}));
+
+  //l=ReLu(Normalization(Conv(l,32,{3,3},{1,1})));
+  //l=ReLu(Normalization(Conv(l,64,{3,3},{1,1})));
+  //l=ReLu(Normalization(Conv(l,128,{3,3},{1,1})));
   //l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
 
-  l=GlobalMaxPool(l);
+//  l=MaxPool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
+//  l=MaxPool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
+//  l=MaxPool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});
+//  //l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
+
+//  l=GlobalMaxPool(l);
 
 
   l=Flatten(l);
@@ -68,9 +75,10 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1}) // one GPU
+    //CS_GPU({1}) // one GPU
     //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-    //CS_CPU()
+ //   CS_CPU()
+    CS_FPGA({1}, 100)
   );
 //    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
@@ -80,19 +88,26 @@ int main(int argc, char **argv){
   // get some info from the network
   summary(net);
 
+  printf("hola1\n");
+
   // Load and preprocess training data
   Tensor* x_train = Tensor::load("cifar_trX.bin");
   Tensor* y_train = Tensor::load("cifar_trY.bin");
   x_train->div_(255.0f);
+
+  printf("hola2\n");
 
   // Load and preprocess test data
   Tensor* x_test = Tensor::load("cifar_tsX.bin");
   Tensor* y_test = Tensor::load("cifar_tsY.bin");
   x_test->div_(255.0f);
 
+  printf("hola3\n");
+
   for(int i=0;i<epochs;i++) {
     // training, list of input and output tensors, batch, epochs
     fit(net,{x_train},{y_train},batch_size, 1);
+    printf("hola4\n");
     // Evaluate train
     std::cout << "Evaluate test:" << std::endl;
     evaluate(net,{x_test},{y_test});

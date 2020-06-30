@@ -10,6 +10,8 @@
 #ifndef EDDL_CPU_TENSOR_H
 #define EDDL_CPU_TENSOR_H
 
+#include "cpu_profile.h"
+
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"
@@ -124,6 +126,7 @@ float cpu_max(Tensor *A);
 void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 int cpu_argmax(Tensor *A);
 void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+void cpu_argmax_d(Tensor *D, Tensor *O, Tensor *PD);
 std::tuple<float, int> cpu_max(float *ptr, int size, int *map);
 
 float cpu_min(Tensor *A);
