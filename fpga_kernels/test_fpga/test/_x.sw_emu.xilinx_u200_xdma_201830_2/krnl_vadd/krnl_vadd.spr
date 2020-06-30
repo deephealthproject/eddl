@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="krnl_vadd" dir="">
+  <FileSets>
+    <FileSet Name="kernel_krnl_vadd" Type="DesignSrcs">
+      <File Path="/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/src/krnl_vadd.cpp"/>
+      <Config/>
+    </FileSet>
+  </FileSets>
+  <Runs/>
+</project>

@@ -1,0 +1,112 @@
+<ENTRY>
+{
+ "session": {
+  "name": "v++_compile_krnl_vadd",
+  "pid": "0",
+  "uuid": "ec674a52-e97a-48e8-8abc-02cc55372053",
+  "description": "",
+  "timestamp": "0",
+  "outputFiles": [
+   {
+    "type": "JSON",
+    "mode": "CLIENT_ONLY",
+    "path": "/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./.tlog/v++_compile_krnl_vadd.xtl",
+    "continuous": true
+   },
+   {
+    "type": "JSON",
+    "mode": "LOCAL_IF_NO_CONNECT",
+    "path": "/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./krnl_vadd.xo.compile_summary",
+    "continuous": true
+   },
+   {
+    "type": "BINARY_PROTOBUF",
+    "mode": "LOCAL_IF_NO_CONNECT",
+    "path": "/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./krnl_vadd.xo.compile_summary.pb",
+    "continuous": true
+   }
+  ]
+ },
+ "thisFile": "/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./krnl_vadd.xo.compile_summary",
+ "connectId": "",
+ "serverToken": "",
+ "timestamp": "0"
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_CmdStep",
+ "dateTimestamp": "Mon Jun 29 07:56:44 2020",
+ "timestampMillis": "1593417404038",
+ "buildStep": {
+  "cmdId": "95cb8721-eb31-46c6-918b-b4c7221e277b",
+  "name": "v++",
+  "logFile": "/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./krnl_vadd/krnl_vadd.steps.log",
+  "commandLine": "/opt/Xilinx/Vitis/2019.2/bin/unwrapped/lnx64.o/v++  --xp \"vivado_prop:run.__KERNEL__.{STEPS.SYNTH_DESIGN.ARGS.MORE OPTIONS}={-directive sdx_optimization_effort_high}\" --xp \"misc:report=type report_timing_summary name impl_report_timing_summary_route_design_summary steps {route_design} runs {impl_1} options {-max_paths 10}\" --xp \"misc:report=type report_timing_summary name impl_report_timing_summary_post_route_phys_opt_design_summary steps {post_route_phys_opt_design} runs {impl_1} options {-max_paths 10}\" -t sw_emu --platform --save-temps -g --temp_dir ./_x.sw_emu. -c -k krnl_vadd -Isrc -o_x.sw_emu./krnl_vadd.xo src/krnl_vadd.cpp ",
+  "args": [
+   "-t",
+   "sw_emu",
+   "--platform",
+   "--save-temps",
+   "-g",
+   "--temp_dir",
+   "./_x.sw_emu.",
+   "-c",
+   "-k",
+   "krnl_vadd",
+   "-Isrc",
+   "-o_x.sw_emu./krnl_vadd.xo",
+   "src/krnl_vadd.cpp"
+  ],
+  "iniFiles": []
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Mon Jun 29 07:56:44 2020",
+ "timestampMillis": "1593417404038",
+ "status": {
+  "cmdId": "95cb8721-eb31-46c6-918b-b4c7221e277b",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Mon Jun 29 07:56:46 2020",
+ "timestampMillis": "1593417406091",
+ "report": {
+  "path": "/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./reports/krnl_vadd/v++_compile_krnl_vadd_guidance.html",
+  "name": "",
+  "fileType": "HTML",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Mon Jun 29 07:56:46 2020",
+ "timestampMillis": "1593417406091",
+ "report": {
+  "path": "/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./v++_compile_krnl_vadd_guidance.pb",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Mon Jun 29 07:56:46 2020",
+ "timestampMillis": "1593417406092",
+ "status": {
+  "cmdId": "95cb8721-eb31-46c6-918b-b4c7221e277b",
+  "state": "CS_FAILED"
+ }
+}
+</ENTRY>

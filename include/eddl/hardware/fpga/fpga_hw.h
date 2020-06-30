@@ -313,7 +313,8 @@ void fpga_not_equal(Tensor *A, Tensor *B, float v);
 // Legacy
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon);
 
-
+void fpga_sort(Tensor *A, Tensor *B, bool descending, bool stable);
+void fpga_argsort(Tensor *A, Tensor *B, bool descending, bool stable);
 
 #endif //EDDL_FPGA_HW_H
 

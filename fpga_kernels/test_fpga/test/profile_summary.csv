@@ -1,0 +1,81 @@
+Profile Summary
+Generated on: 2020-06-30 08:17:15
+Msec since Epoch: 1593505035020
+Profiled application: test_kernel
+Target platform: 
+Tool version: 2019.2
+XRT build version: 2.3.1301
+Build version branch: 2019.2
+Build version hash: 192e706aea53163a04c574f9b3fe9ed76b6ca471
+Build version date: 2019-10-24 20:05:16
+Target devices: xilinx:pcie-hw-em:7v3:1.0-0
+Flow mode: CPU Emulation
+
+OpenCL API Calls
+API Name,Number Of Calls,Total Time (ms),Minimum Time (ms),Average Time (ms),Maximum Time (ms),
+clCreateProgramWithBinary,1,4.38706,4.38706,4.38706,4.38706,
+clReleaseProgram,1,0.450718,0.450718,0.450718,0.450718,
+clGetExtensionFunctionAddress,2,0.007239,0.001202,0.0036195,0.006037,
+clReleaseCommandQueue,1,0.005569,0.005569,0.005569,0.005569,
+clGetExtensionFunctionAddressForPlatform,2,0.003322,0.000529,0.001661,0.002793,
+clCreateContext,1,0.003307,0.003307,0.003307,0.003307,
+clGetPlatformInfo,6,0.002386,0.000246,0.000397667,0.000761,
+clGetDeviceInfo,2,0.002089,0.001002,0.0010445,0.001087,
+clReleaseDevice,2,0.002055,0.000576,0.0010275,0.001479,
+clGetDeviceIDs,2,0.001891,0.000493,0.0009455,0.001398,
+clCreateCommandQueue,1,0.00147,0.00147,0.00147,0.00147,
+clReleaseContext,1,0.000996,0.000996,0.000996,0.000996,
+clRetainDevice,2,0.00088,0.000285,0.00044,0.000595,
+
+
+Kernel Execution
+Kernel,Number Of Enqueues,Total Time (ms),Minimum Time (ms),Average Time (ms),Maximum Time (ms),
+
+
+Compute Unit Utilization
+Device,Compute Unit,Kernel,Global Work Size,Local Work Size,Number Of Calls,Dataflow Execution,Max Overlapping Executions,Dataflow Acceleration,Total Time (ms),Minimum Time (ms),Average Time (ms),Maximum Time (ms),Clock Frequency (MHz),
+
+
+Data Transfer: Host to Global Memory
+Context:Number of Devices,Transfer Type,Number Of Buffer Transfers,Transfer Rate (MB/s),Average Bandwidth Utilization (%),Average Buffer Size (KB),Total Time (ms),Average Time (ms),
+
+
+Data Transfer: Kernels to Global Memory
+Device,Compute Unit/Port Name,Kernel Arguments,Memory Resources,Transfer Type,Number Of Transfers,Transfer Rate (MB/s),Average Bandwidth Utilization (%),Average Size (KB),Average Latency (ns),
+
+
+Top Data Transfer: Kernels to Global Memory
+Device,Compute Unit,Number of Transfers,Average Bytes per Transfer,Transfer Efficiency (%),Total Data Transfer (MB),Total Write (MB),Total Read (MB),Total Transfer Rate (MB/s),
+
+
+Top Kernel Execution
+Kernel Instance Address,Kernel,Context ID,Command Queue ID,Device,Start Time (ms),Duration (ms),Global Work Size,Local Work Size,
+
+
+Top Memory Writes: Host to Global Memory
+Buffer Address,Context ID,Command Queue ID,Start Time (ms),Duration (ms),Buffer Size (KB),Writing Rate(MB/s),
+
+
+Top Memory Reads: Host to Global Memory
+Buffer Address,Context ID,Command Queue ID,Start Time (ms),Duration (ms),Buffer Size (KB),Reading Rate(MB/s),
+
+
+Guidance Parameters
+Parameter,Element,Value,
+DEVICE_EXEC_TIME,xilinx:pcie-hw-em:7v3:1.0-0,0.000000,
+CU_CALLS,xilinx:pcie-hw-em:7v3:1.0-0|k_relu_1,0,
+MEMORY_BIT_WIDTH,xilinx:pcie-hw-em:7v3:1.0-0,512,
+MIGRATE_MEM,host,0,
+MEMORY_USAGE,,1,
+PLRAM_DEVICE,all,1,
+HBM_DEVICE,all,0,
+KDMA_DEVICE,all,0,
+P2P_DEVICE,all,0,
+P2P_HOST_TRANSFERS,host,0,
+PORT_BIT_WIDTH,k_relu_1/m_axi_gmem,32,
+KERNEL_COUNT,k_relu,1,
+OBJECTS_RELEASED,all,1,
+TRACE_MEMORY,all,NA,
+CU_CONTEXT_EN,all,0,
+
+

@@ -265,7 +265,8 @@ void _profile_fpga_funcname(int i, char *name) {
       case _FPGA_STD_2                  : strcpy(name, "std_2"); break;
       case _FPGA_MEDIAN                 : strcpy(name, "median"); break;
       case _FPGA_MEDIAN_2               : strcpy(name, "median_2"); break;
-
+      case _FPGA_SORT                   : strcpy(name, "sort"); break;
+      case _FPGA_ARGSORT                : strcpy(name, "argsort"); break;
 
       default                          : strcpy(name, "?????"); break;
   }
@@ -1456,6 +1457,48 @@ void fpga_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivativ
     printf("fpga_concat not implemented yet\n"); exit(1);
 #endif
     _profile_fpga(_FPGA_CONCAT, 1);
+}
+
+// -----------------------------------------------------------------
+// sort
+//
+
+void fpga_cpuemu_sort(Tensor *A, Tensor *B, bool descending, bool stable) {
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_sort(A, B, descending, stable);
+  fpga_copy_to_fpga(B->ptr, B);
+}
+
+void fpga_sort(Tensor *A, Tensor *B, bool descending, bool stable) {
+  _profile_fpga(_FPGA_SORT, 0);
+#ifndef K_ENABLED_SORT
+  fpga_cpuemu_sort(A, B, descending, stable);
+#else
+  printf("fpga_sort not implemented yet\n");
+  exit(1);
+#endif
+  _profile_fpga(_FPGA_SORT, 1);
+}
+
+// ----------------------------------------------------------------
+// argsort
+//
+
+void fpga_cpuemu_argsort(Tensor *A, Tensor *B, bool descending, bool stable) {
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_argsort(A, B, descending, stable);
+  fpga_copy_to_fpga(B->ptr, B);
+}
+
+void fpga_argsort(Tensor *A, Tensor *B, bool descending, bool stable) {
+  _profile_fpga(_FPGA_ARGSORT, 0);
+#ifndef K_ENABLED_ARGSORT
+  fpga_cpuemu_argsort(A, B, descending, stable);
+#else
+  printf("fpga_argsort not implemented yet\n");
+  exit(1);
+#endif
+  _profile_fpga(_FPGA_ARGSORT, 1);
 }
 
 #endif

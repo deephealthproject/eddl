@@ -171,7 +171,9 @@
 #define _FPGA_STD_2                 160
 #define _FPGA_MEDIAN                161
 #define _FPGA_MEDIAN_2              162
-#define _NUM_FPGA_FUNCS       163
+#define _FPGA_SORT                  163
+#define _FPGA_ARGSORT               164
+#define _NUM_FPGA_FUNCS       165
 extern int num_instances_fpga[_NUM_FPGA_FUNCS];
 void _profile_fpga(int f_id, int end);
 void _profile_fpga_tensor(Tensor *T);

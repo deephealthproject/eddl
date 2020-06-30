@@ -1,0 +1,186 @@
+<ENTRY>
+{
+ "session": {
+  "name": "v++_compile_kernel_relu",
+  "pid": "0",
+  "uuid": "4e7e44cf-d7f8-4281-b550-5b0148113ae3",
+  "description": "",
+  "timestamp": "0",
+  "outputFiles": [
+   {
+    "type": "JSON",
+    "mode": "CLIENT_ONLY",
+    "path": "/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/.tlog/v++_compile_kernel_relu.xtl",
+    "continuous": true
+   },
+   {
+    "type": "JSON",
+    "mode": "LOCAL_IF_NO_CONNECT",
+    "path": "/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xo.compile_summary",
+    "continuous": true
+   },
+   {
+    "type": "BINARY_PROTOBUF",
+    "mode": "LOCAL_IF_NO_CONNECT",
+    "path": "/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xo.compile_summary.pb",
+    "continuous": true
+   }
+  ]
+ },
+ "thisFile": "/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xo.compile_summary",
+ "connectId": "",
+ "serverToken": "",
+ "timestamp": "0"
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_CmdStep",
+ "dateTimestamp": "Mon Jun 29 09:13:27 2020",
+ "timestampMillis": "1593422007240",
+ "buildStep": {
+  "cmdId": "aebdf3ab-4b68-4418-b246-59894b836639",
+  "name": "v++",
+  "logFile": "/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu/kernel_relu.steps.log",
+  "commandLine": "/opt/Xilinx/Vitis/2019.2/bin/unwrapped/lnx64.o/v++  --xp \"vivado_prop:run.__KERNEL__.{STEPS.SYNTH_DESIGN.ARGS.MORE OPTIONS}={-directive sdx_optimization_effort_high}\" --xp \"misc:report=type report_timing_summary name impl_report_timing_summary_route_design_summary steps {route_design} runs {impl_1} options {-max_paths 10}\" --xp \"misc:report=type report_timing_summary name impl_report_timing_summary_post_route_phys_opt_design_summary steps {post_route_phys_opt_design} runs {impl_1} options {-max_paths 10}\" -t sw_emu --platform xilinx_u200_xdma_201830_2 --save-temps -g --temp_dir ./_x.sw_emu.xilinx_u200_xdma_201830_2 -c -k k_relu -Isrc -o_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xo src/kernel_relu.cpp ",
+  "args": [
+   "-t",
+   "sw_emu",
+   "--platform",
+   "xilinx_u200_xdma_201830_2",
+   "--save-temps",
+   "-g",
+   "--temp_dir",
+   "./_x.sw_emu.xilinx_u200_xdma_201830_2",
+   "-c",
+   "-k",
+   "k_relu",
+   "-Isrc",
+   "-o_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xo",
+   "src/kernel_relu.cpp"
+  ],
+  "iniFiles": []
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Mon Jun 29 09:13:27 2020",
+ "timestampMillis": "1593422007240",
+ "status": {
+  "cmdId": "aebdf3ab-4b68-4418-b246-59894b836639",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_FlowMetaData",
+ "dateTimestamp": "Mon Jun 29 09:13:36 2020",
+ "timestampMillis": "1593422016127",
+ "buildSummary": {
+  "hardwarePlatform": "xilinx_u200_xdma_201830_2.xpfm",
+  "hardwareDsa": "xilinx_u200_xdma_201830_2.dsa",
+  "platformDirectory": "/opt/xilinx/platforms/xilinx_u200_xdma_201830_2",
+  "runtime": "OpenCL",
+  "systemConfig": "Linux",
+  "flow": "BF_COMPILE",
+  "target": "TT_SW_EMU",
+  "kernels": [
+   {
+    "base": {
+     "type": "KERNEL",
+     "name": "k_relu",
+     "file": "/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xo",
+     "reports": []
+    },
+    "sources": [
+     "/home/jorga20j/test_fpga/simple_vadd/src/kernel_relu.cpp"
+    ],
+    "cuNames": []
+   }
+  ]
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Mon Jun 29 09:13:36 2020",
+ "timestampMillis": "1593422016129",
+ "buildStep": {
+  "cmdId": "2d71ea71-8708-45bc-a234-a43b59e3aad9",
+  "name": "vivado_hls",
+  "logFile": "/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu/k_relu/vivado_hls.log",
+  "commandLine": "vivado_hls -f /home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu/k_relu/k_relu.tcl -messageDb vivado_hls.pb",
+  "args": [
+   "vivado_hls",
+   "-f",
+   "/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu/k_relu/k_relu.tcl",
+   "-messageDb",
+   "vivado_hls.pb"
+  ],
+  "iniFiles": []
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Mon Jun 29 09:13:36 2020",
+ "timestampMillis": "1593422016129",
+ "status": {
+  "cmdId": "2d71ea71-8708-45bc-a234-a43b59e3aad9",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Mon Jun 29 09:13:44 2020",
+ "timestampMillis": "1593422024574",
+ "status": {
+  "cmdId": "2d71ea71-8708-45bc-a234-a43b59e3aad9",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Mon Jun 29 09:13:44 2020",
+ "timestampMillis": "1593422024682",
+ "report": {
+  "path": "/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/reports/kernel_relu/v++_compile_kernel_relu_guidance.html",
+  "name": "",
+  "fileType": "HTML",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Mon Jun 29 09:13:44 2020",
+ "timestampMillis": "1593422024682",
+ "report": {
+  "path": "/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/v++_compile_kernel_relu_guidance.pb",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Mon Jun 29 09:13:44 2020",
+ "timestampMillis": "1593422024682",
+ "status": {
+  "cmdId": "aebdf3ab-4b68-4418-b246-59894b836639",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>

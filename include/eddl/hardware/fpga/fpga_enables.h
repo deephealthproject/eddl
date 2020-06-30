@@ -180,3 +180,5 @@
 //#define K_ENABLED_TRANSPOSE
 //#define K_ENABLED_DIAG
 
+//#define K_ENABLED_SORT
+//#define K_ENABLED_ARGSORT

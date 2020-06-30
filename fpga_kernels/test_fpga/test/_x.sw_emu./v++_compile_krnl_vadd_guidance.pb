@@ -1,0 +1,3 @@
+
+µ
+v++_compile_krnl_vadd$4356a92b-1e1f-4e3c-ae8e-35e7604d59a3„v++  -t sw_emu --platform --save-temps -g --temp_dir ./_x.sw_emu. -c -k krnl_vadd -Isrc -o_x.sw_emu./krnl_vadd.xo src/krnl_vadd.cpp *€"|/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./reports/krnl_vadd/v++_compile_krnl_vadd_guidance.html2l"h/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./v++_compile_krnl_vadd_guidance.pb

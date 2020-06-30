@@ -1,0 +1,17 @@
+INFO: [v++ 60-1306] Additional information associated with this v++ compile can be found at:
+	Reports: /home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/reports/kernel_relu
+	Log files: /home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/logs/kernel_relu
+INFO: [v++ 60-1548] Creating build summary session with primary output /home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xo.compile_summary, at Mon Jun 29 09:13:28 2020
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Mon Jun 29 09:13:28 2020
+INFO: [v++ 60-1315] Creating rulecheck session with output '/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/reports/kernel_relu/v++_compile_kernel_relu_guidance.html', at Mon Jun 29 09:13:29 2020
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u200_xdma_201830_2/xilinx_u200_xdma_201830_2.xpfm
+INFO: [v++ 60-1578]   This platform contains Device Support Archive '/opt/xilinx/platforms/xilinx_u200_xdma_201830_2/hw/xilinx_u200_xdma_201830_2.dsa'
+INFO: [v++ 60-585] Compiling for software emulation target
+INFO: [v++ 60-423]   Target device: xilinx_u200_xdma_201830_2
+INFO: [v++ 60-242] Creating kernel: 'k_relu'
+
+===>The following messages were generated while  performing high-level synthesis for kernel: k_relu Log file: /home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu/k_relu/vivado_hls.log :
+INFO: [v++ 204-61] Option 'relax_ii_for_timing' is enabled, will increase II to preserve clock frequency constraints.
+INFO: [v++ 60-594] Finished kernel compilation
+INFO: [v++ 60-586] Created _x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xo
+INFO: [v++ 60-791] Total elapsed time: 0h 0m 17s
