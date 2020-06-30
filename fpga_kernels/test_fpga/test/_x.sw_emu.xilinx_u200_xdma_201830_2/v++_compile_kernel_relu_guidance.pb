@@ -1,0 +1,3 @@
+
+è
+v++_compile_kernel_relu$192a7064-34bc-44df-aa2d-37af2667689b—v++  -t sw_emu --platform xilinx_u200_xdma_201830_2 --save-temps -g --temp_dir ./_x.sw_emu.xilinx_u200_xdma_201830_2 -c -k k_relu -Isrc -o_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xo src/kernel_relu.cpp *á"Ç/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/reports/kernel_relu/v++_compile_kernel_relu_guidance.html2p"l/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/v++_compile_kernel_relu_guidance.pb

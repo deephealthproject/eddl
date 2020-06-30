@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="krnl_vadd">
+  <platform vendor="xilinx" boardid="u200" name="xdma" featureRomTime="1561465320">
+    <version major="201830" minor="2"/>
+    <description/>
+    <board name="xilinx.com:au200:1.0" vendor="xilinx.com" fpga="xcu200-fsgd2104-2-e">
+      <interfaces>
+        <interface id="int1" name="PCIe" type="gen3x16"/>
+      </interfaces>
+      <memories>
+        <memory name="ddr4_mem00" type="ddr4" size="16GB"/>
+        <memory name="ddrmem_1" type="ddr4" size="16GB"/>
+        <memory name="ddr4_mem01" type="ddr4" size="16GB"/>
+        <memory name="ddr4_mem02" type="ddr4" size="16GB"/>
+      </memories>
+      <images>
+        <image name="au200_image.jpg" type="HDPI"/>
+        <image name="" type="MDPI"/>
+        <image name="" type="LDPI"/>
+      </images>
+      <id>
+        <vendor>0x10EE</vendor>
+        <device>0x5000</device>
+        <subsystem>0x000E</subsystem>
+      </id>
+    </board>
+    <build_flow/>
+    <host architecture="x86_64"/>
+    <device name="fpga0" fpgaDevice="virtexuplus:xcu200:fsgd2104:-2:e" addrWidth="0">
+      <core name="OCL_REGION_0" target="csim" type="clc_region" clockFreq="0MHz" numComputeUnits="60">
+        <kernel name="krnl_vadd" language="c" vlnv="xilinx.com:hls:krnl_vadd:1.0" preferredWorkGroupSizeMultiple="1" workGroupSize="1" debug="true" interrupt="true" hwControlProtocol="ap_ctrl_hs">
+          <arg name="in1" addressQualifier="0" id="0" port="" size="0x8" offset="0x10" hostOffset="0x0" hostSize="0x8" type="unsigned int const *"/>
+          <arg name="in2" addressQualifier="0" id="1" port="" size="0x8" offset="0x1C" hostOffset="0x0" hostSize="0x8" type="unsigned int const *"/>
+          <arg name="out_r" addressQualifier="0" id="2" port="" size="0x8" offset="0x28" hostOffset="0x0" hostSize="0x8" type="unsigned int*"/>
+          <arg name="size" addressQualifier="0" id="3" port="" size="0x4" offset="0x34" hostOffset="0x0" hostSize="0x4" type="int"/>
+          <compileWorkGroupSize x="1" y="1" z="1"/>
+          <maxWorkGroupSize x="1" y="1" z="1"/>
+          <string_table/>
+          <instance name="krnl_vadd_1"/>
+        </kernel>
+      </core>
+    </device>
+  </platform>
+</project>

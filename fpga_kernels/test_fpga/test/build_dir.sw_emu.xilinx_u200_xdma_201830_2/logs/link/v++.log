@@ -1,0 +1,17 @@
+INFO: [v++ 60-1306] Additional information associated with this v++ link can be found at:
+	Reports: /home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/reports/link
+	Log files: /home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/logs/link
+INFO: [v++ 60-1548] Creating build summary session with primary output /home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xclbin.link_summary, at Mon Jun 29 09:13:47 2020
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Mon Jun 29 09:13:47 2020
+INFO: [v++ 60-1315] Creating rulecheck session with output '/home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/reports/link/v++_link_kernel_relu_guidance.html', at Mon Jun 29 09:13:48 2020
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u200_xdma_201830_2/xilinx_u200_xdma_201830_2.xpfm
+INFO: [v++ 60-1578]   This platform contains Device Support Archive '/opt/xilinx/platforms/xilinx_u200_xdma_201830_2/hw/xilinx_u200_xdma_201830_2.dsa'
+INFO: [v++ 60-629] Linking for software emulation target
+INFO: [v++ 60-423]   Target device: xilinx_u200_xdma_201830_2
+INFO: [v++ 60-645] kernel flags are '-g -I /home/jorga20j/test_fpga/simple_vadd/src -g'
+INFO: [v++ 60-586] Created build_dir.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xclbin
+INFO: [v++ 60-1307] Run completed. Additional information can be found in:
+	Guidance: /home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/reports/link/v++_link_kernel_relu_guidance.html
+	Steps Log File: /home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/logs/link/link.steps.log
+
+INFO: [v++ 60-791] Total elapsed time: 0h 0m 11s

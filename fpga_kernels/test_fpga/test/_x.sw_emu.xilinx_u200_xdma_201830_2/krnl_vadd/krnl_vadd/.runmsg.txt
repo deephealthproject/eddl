@@ -1,0 +1,2 @@
+performing high-level synthesis for kernel: krnl_vadd
+Log file: /home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/krnl_vadd/krnl_vadd/vivado_hls.log
