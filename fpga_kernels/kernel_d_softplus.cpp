@@ -12,7 +12,7 @@ extern "C" {
   #pragma HLS INTERFACE s_axilite port=size bundle=control
 
     for (int i = 0; i < size; i++) {
-        PD[i] += D[i] * 1/(1 + (-I[i]));  // why +=
+        PD[i] += D[i] * 1/(1 + expf(-I[i]));  // why +=
     }
 }*/
 
@@ -64,7 +64,7 @@ void k_d_softplus(float *D, float *I, long int size, float *PD){
     }
 
     /*for (int i = 0; i < size; i++) {
-        PD[i] += D[i] * 1/(1 + (-I[i]));  // why +=
+        PD[i] += D[i] * 1/(1 + expf(-I[i]));  // why +=
     }*/
     d_softplus:
     for (int j=0; j<chunk_size; j++) {
@@ -72,7 +72,11 @@ void k_d_softplus(float *D, float *I, long int size, float *PD){
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
-      buffer_pd[j] = buffer_pd[j] + buffer_d[j] * 1.0 / (1.0 + [-buffer_i[j]]);
+      #ifdef HLS_NATIVE_FUNCTION_ENABLE
+      buffer_pd[j] += native_divide(buffer_d[j], (1.0 + native_exp([-1.0 * buffer_i[j]])));
+      #else
+      buffer_pd[j] += buffer_d[j] * 1.0 / (1.0 + exp([-1.0 * buffer_i[j]]));
+      #endif
     }
 
     // burst write the result

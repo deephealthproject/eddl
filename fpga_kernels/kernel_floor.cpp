@@ -36,7 +36,7 @@ void k_floor(float *A, float *B, long int size) {
       buffer_a[j] = A[i + j];
     }
 
-    //for (int i = 0; i < size; ++i) B[i] = fabs(A[i]);
+    //for (int i = 0; i < size; ++i) B[i] = floorf(A[i]);
     floor:
     for (int j=0; j<chunk_size; j++) {
       #pragma HLS PIPELINE II=1

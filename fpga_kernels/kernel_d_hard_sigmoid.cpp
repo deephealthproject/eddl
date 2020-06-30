@@ -76,7 +76,8 @@ void k_d_hard_sigmoid(float *D, float *I, float *PD, long int size){
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
-      if((buffer_i[j] >= -2.5) || (buffer_i[j] <= 2.5)) buffer_pd[j] = buffer_pd[j] + 0.2 * buffer_d[j];    }
+      if((buffer_i[j] >= -2.5) && (buffer_i[j] <= 2.5)) buffer_pd[j] = buffer_pd[j] + 0.2 * buffer_d[j];
+    }
 
     // burst write the result
     write:

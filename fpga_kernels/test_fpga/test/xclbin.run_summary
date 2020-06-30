@@ -1,0 +1,171 @@
+{
+    "schema_version": {
+        "major": "1",
+        "minor": "0",
+        "patch": "0"
+    },
+    "files": [
+        {
+            "name": "profile_summary.csv",
+            "type": "PROFILE"
+        }
+    ],
+    "profile": {
+        "header": {
+            "name": "Profile Summary",
+            "generated": "2020-06-30 08:17:15",
+            "epochTime": "1593505035020",
+            "application": "test_kernel",
+            "platform": "Xilinx",
+            "toolVersion": "2019.2",
+            "XRT build version": "2.3.1301",
+            "Build version branch": "2019.2",
+            "Build version hash": "192e706aea53163a04c574f9b3fe9ed76b6ca471",
+            "Build version date": "2019-10-24 20:05:16",
+            "flow": "CPU Emulation",
+            "devices": [
+                "xilinx:pcie-hw-em:7v3:1.0-0"
+            ],
+            "totalTime": "5.1441689999999998"
+        },
+        "apiCalls": {
+            "clCreateProgramWithBinary": {
+                "numCalls": "1",
+                "totalTime": "4.3870649999999998",
+                "minTime": "4.3870649999999998",
+                "avgTime": "4.3870649999999998",
+                "maxTime": "4.3870649999999998"
+            },
+            "clReleaseProgram": {
+                "numCalls": "1",
+                "totalTime": "0.45071800000000017",
+                "minTime": "0.45071800000000017",
+                "avgTime": "0.45071800000000017",
+                "maxTime": "0.45071800000000017"
+            },
+            "clGetExtensionFunctionAddress": {
+                "numCalls": "2",
+                "totalTime": "0.0072390000000002175",
+                "minTime": "0.0012020000000001474",
+                "avgTime": "0.0036195000000001087",
+                "maxTime": "0.0060370000000000701"
+            },
+            "clReleaseCommandQueue": {
+                "numCalls": "1",
+                "totalTime": "0.005568999999999491",
+                "minTime": "0.005568999999999491",
+                "avgTime": "0.005568999999999491",
+                "maxTime": "0.005568999999999491"
+            },
+            "clGetExtensionFunctionAddressForPlatform": {
+                "numCalls": "2",
+                "totalTime": "0.0033219999999998251",
+                "minTime": "0.00052899999999977965",
+                "avgTime": "0.0016609999999999125",
+                "maxTime": "0.0027930000000000454"
+            },
+            "clCreateContext": {
+                "numCalls": "1",
+                "totalTime": "0.0033069999999999489",
+                "minTime": "0.0033069999999999489",
+                "avgTime": "0.0033069999999999489",
+                "maxTime": "0.0033069999999999489"
+            },
+            "clGetPlatformInfo": {
+                "numCalls": "6",
+                "totalTime": "0.0023859999999995551",
+                "minTime": "0.00024599999999974642",
+                "avgTime": "0.00039766666666659251",
+                "maxTime": "0.00076099999999978962"
+            },
+            "clGetDeviceInfo": {
+                "numCalls": "2",
+                "totalTime": "0.0020889999999997855",
+                "minTime": "0.0010019999999997253",
+                "avgTime": "0.0010444999999998927",
+                "maxTime": "0.0010870000000000601"
+            },
+            "clReleaseDevice": {
+                "numCalls": "2",
+                "totalTime": "0.0020549999999994739",
+                "minTime": "0.00057599999999968787",
+                "avgTime": "0.001027499999999737",
+                "maxTime": "0.001478999999999786"
+            },
+            "clGetDeviceIDs": {
+                "numCalls": "2",
+                "totalTime": "0.0018910000000000871",
+                "minTime": "0.00049300000000007671",
+                "avgTime": "0.00094550000000004353",
+                "maxTime": "0.0013980000000000103"
+            },
+            "clCreateCommandQueue": {
+                "numCalls": "1",
+                "totalTime": "0.0014699999999998603",
+                "minTime": "0.0014699999999998603",
+                "avgTime": "0.0014699999999998603",
+                "maxTime": "0.0014699999999998603"
+            },
+            "clReleaseContext": {
+                "numCalls": "1",
+                "totalTime": "0.00099599999999977484",
+                "minTime": "0.00099599999999977484",
+                "avgTime": "0.00099599999999977484",
+                "maxTime": "0.00099599999999977484"
+            },
+            "clRetainDevice": {
+                "numCalls": "2",
+                "totalTime": "0.0008799999999999919",
+                "minTime": "0.00028499999999986869",
+                "avgTime": "0.00043999999999999595",
+                "maxTime": "0.00059500000000012321"
+            }
+        },
+        "kernelEnqueues": "",
+        "computeUnitUtilization": "",
+        "kernels": "",
+        "hostGlobal": {
+            "writes": "",
+            "reads": ""
+        },
+        "guidanceMetadata": {
+            "DEVICE_EXEC_TIME": {
+                "xilinx:pcie-hw-em:7v3:1.0-0": "0.000000"
+            },
+            "CU_CALLS": {
+                "xilinx:pcie-hw-em:7v3:1.0-0|k_relu_1": "0"
+            },
+            "MEMORY_BIT_WIDTH": {
+                "xilinx:pcie-hw-em:7v3:1.0-0": "512"
+            },
+            "MIGRATE_MEM": {
+                "host": "0"
+            },
+            "MEMORY_USAGE": "1",
+            "PLRAM_DEVICE": {
+                "all": "1"
+            },
+            "HBM_DEVICE": {
+                "all": "0"
+            },
+            "KDMA_DEVICE": {
+                "all": "0"
+            },
+            "P2P_DEVICE": {
+                "all": "0"
+            },
+            "P2P_HOST_TRANSFERS": {
+                "host": "0"
+            },
+            "PORT_BIT_WIDTH": {
+                "k_relu_1\/m_axi_gmem": "32"
+            },
+            "KERNEL_COUNT": {
+                "k_relu": "1"
+            },
+            "OBJECTS_RELEASED": {
+                "all": "1"
+            }
+        }
+    }
+}

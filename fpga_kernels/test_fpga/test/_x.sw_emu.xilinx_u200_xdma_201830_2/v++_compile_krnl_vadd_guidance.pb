@@ -1,0 +1,3 @@
+
+∂
+v++_compile_krnl_vadd$b14ebafa-04f7-4d04-8f08-7a437897906b–v++  -t sw_emu --platform xilinx_u200_xdma_201830_2 --save-temps -g --temp_dir ./_x.sw_emu.xilinx_u200_xdma_201830_2 -c -k krnl_vadd -Isrc -o_x.sw_emu.xilinx_u200_xdma_201830_2/krnl_vadd.xo src/krnl_vadd.cpp *ö"ï/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/reports/krnl_vadd/v++_compile_krnl_vadd_guidance.html2Ü"Å/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/v++_compile_krnl_vadd_guidance.pb

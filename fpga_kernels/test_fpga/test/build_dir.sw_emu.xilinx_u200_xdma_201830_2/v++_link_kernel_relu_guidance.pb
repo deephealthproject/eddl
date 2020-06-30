@@ -1,0 +1,3 @@
+
+­
+v++_link_kernel_relu$6f1f6091-0efc-4833-aab6-65ae813880f0òv++  -t sw_emu --platform xilinx_u200_xdma_201830_2 --save-temps -g --temp_dir ./build_dir.sw_emu.xilinx_u200_xdma_201830_2 -l -obuild_dir.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xclbin _x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu.xo *ƒ"/home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/reports/link/v++_link_kernel_relu_guidance.html2t"p/home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/v++_link_kernel_relu_guidance.pb

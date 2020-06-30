@@ -41,7 +41,7 @@ void k_relu(float *A, float *B, long int size){
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
-      if (buffer[j] < 0.0) buffer[j] = 0.f;
+      if (buffer[j] < 0.0) buffer[j] = 0.0f;
     }
 
     // burst write the result

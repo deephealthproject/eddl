@@ -37,7 +37,7 @@ void k_inv(float *A, float *B, float v, long int size) {
       buffer_a[j] = A[i + j];
     }
 
-    //for (int i = 0; i < size; ++i) B[i] = fabs(A[i]);
+    //for (int i = 0; i < A->size; ++i) B[i] = v/A[i];
     inv:
     for (int j=0; j<chunk_size; j++) {
       #pragma HLS PIPELINE II=1
@@ -46,8 +46,11 @@ void k_inv(float *A, float *B, float v, long int size) {
       // perform operation
       // WARNING:
       // native_ function call may not meet requiered precission
-      //buffer_b[j] = 1 / buffer_a[j];
-      buffer_b[j] = native_divide (1.0, buffer_a[j]);
+      #ifdef HLS_NATIVE_FUNCTION_ENABLE
+      buffer_b[j] = native_divide (v, buffer_a[j]);
+      #else
+      buffer_b[j] = v/ buffer_a[j];
+      #endif
     }
 
     // burst write the result

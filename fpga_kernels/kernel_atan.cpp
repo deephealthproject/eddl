@@ -36,8 +36,8 @@ void k_atan(float *A, float *B, long int size) {
       buffer_a[j] = A[i + j];
     }
 
-    //for (int i = 0; i < size; ++i) B[i] = fabs(A[i]);
-    abs:
+    //for (int i = 0; i < size; ++i) B[i] = fatan(A[i]);
+    atan:
     for (int j=0; j<chunk_size; j++) {
       #pragma HLS PIPELINE II=1
       #pragma HLS UNROLL FACTOR=2

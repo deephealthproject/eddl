@@ -1,0 +1,32 @@
+XRT Build Version: 2.3.1301
+       Build Date: 2019-10-24 20:05:16
+          Hash ID: 192e706aea53163a04c574f9b3fe9ed76b6ca471
+Creating a default 'in-memory' xclbin image.
+
+Section: 'BITSTREAM'(0) was successfully added.
+Size   : 138248 bytes
+Format : RAW
+File   : '/home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/link/int/kernel_relu.so'
+WARNING: Skipping CLOCK_FREQ_TOPOLOGY section for count size is zero.
+WARNING: Section 'CLOCK_FREQ_TOPOLOGY' content is empty.  No data in the given JSON file.
+
+Section: 'CLOCK_FREQ_TOPOLOGY'(11) was empty.  No action taken.
+Format : JSON
+File   : '/home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/link/int/kernel_relu_xml.rtd'
+
+Section: 'BUILD_METADATA'(14) was successfully added.
+Size   : 2653 bytes
+Format : JSON
+File   : '/home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/link/int/kernel_relu_build.rtd'
+
+Section: 'EMBEDDED_METADATA'(2) was successfully added.
+Size   : 2386 bytes
+Format : RAW
+File   : '/home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/link/int/kernel_relu.xml'
+
+Section: 'DEBUG_DATA'(4) was successfully added.
+Size   : 0 bytes
+Format : RAW
+File   : '/dev/null'
+Successfully wrote (147822 bytes) to the output file: /home/jorga20j/test_fpga/simple_vadd/build_dir.sw_emu.xilinx_u200_xdma_201830_2/link/int/kernel_relu.xclbin
+Leaving xclbinutil.

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<Runs Version="1" Minor="0">
+	<Run Id="krnl_vadd" LaunchDir="/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/krnl_vadd/krnl_vadd" FlowId="Build_IP" FromStepId="vivado_hls" ToStepId="vivado_hls"/>
+</Runs>
+

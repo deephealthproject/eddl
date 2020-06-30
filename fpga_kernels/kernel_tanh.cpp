@@ -35,7 +35,8 @@ void k_tanh(float *A, float *B, long int size){
   #pragma HLS INTERFACE s_axilite port=size bundle=control
   #pragma HLS INTERFACE s_axilite port=return bundle=control
 
-  float buffer[BUFFER_SIZE];
+  float buffer_a[BUFFER_SIZE];
+  float buffer_b[BUFFER_SIZE];
 
   for (int i=0; i<size; i=i+BUFFER_SIZE) {
 
@@ -49,7 +50,7 @@ void k_tanh(float *A, float *B, long int size){
     read1:
     for (int j=0; j<chunk_size; j++) {
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
-      buffer[j] = A[i + j];
+      buffer_a[j] = A[i + j];
     }
     
     /*for (int i = 0; i < size; i++) {
@@ -63,9 +64,10 @@ void k_tanh(float *A, float *B, long int size){
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
-      float p = exp(buffer[j]);
-      float n = exp(-buffer[j]); 
-      buffer[j] = (p-n)/(p+n);
+      //float p = exp(buffer_a[j]);
+      //float n = exp(-buffer_a[j]); 
+      //buffer_b[j] = (p-n)/(p+n);
+      buffer_b[j] = tanh(buffer_a[j]);
     }
 
     // burst write the result
