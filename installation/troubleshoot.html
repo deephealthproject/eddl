@@ -278,7 +278,8 @@ to <code class="docutils literal notranslate"><span class="pre">OpenMP</span></c
 <span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
 </pre></div>
 </div>
-<p>If this doesn’t fix your problem, you can disable OpenMP through the cmake flag <code class="docutils literal notranslate"><span class="pre">BUILD_OPENMP=OFF</span></code></p>
+<p>If this doesn’t fix your problem, try updating CMake.
+As a last resort, you can always disable OpenMP and use the EDDL, by making use of the cmake flag <code class="docutils literal notranslate"><span class="pre">-D</span> <span class="pre">BUILD_OPENMP=OFF</span></code></p>
 </div>
 <div class="section" id="macos-undefined-symbols-for-architecture-x86-64">
 <h2>(MacOS) Undefined symbols for architecture x86_64<a class="headerlink" href="#macos-undefined-symbols-for-architecture-x86-64" title="Permalink to this headline">¶</a></h2>
