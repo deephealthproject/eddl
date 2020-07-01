@@ -352,7 +352,7 @@ void Tensor::reallocate(Tensor* old_t, vector<int> *s){
         updateStrides();
     }
 
-    printf("no se debe usar\n");
+    // Not recommended
     updateData(old_t->ptr);
 }
 
