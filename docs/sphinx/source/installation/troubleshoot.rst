@@ -40,7 +40,8 @@ to ``OpenMP``, we recommend you to use the `clang` compiler. To do so, you can e
     export LDFLAGS="-L/usr/local/opt/llvm/lib"
     export CPPFLAGS="-I/usr/local/opt/llvm/include"
 
-If this doesn't fix your problem, you can disable OpenMP through the cmake flag ``BUILD_OPENMP=OFF``
+If this doesn't fix your problem, try updating CMake.
+As a last resort, you can always disable OpenMP and use the EDDL, by making use of the cmake flag ``-D BUILD_OPENMP=OFF``
 
 
 
