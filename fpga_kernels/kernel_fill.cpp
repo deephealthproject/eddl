@@ -26,26 +26,6 @@ extern "C"{
     _profile(_CPU_FILL, 1);
 }
 */
-
-// from src/hardware/fpga/fpga_core.cpp
-/*void fpga_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc){
-    OCL_CHECK(err, err = kernel_fill.setArg(0, *(A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_fill.setArg(1, (int)aini));
-    OCL_CHECK(err, err = kernel_fill.setArg(2, (int)aend));
-    OCL_CHECK(err, err = kernel_fill.setArg(3, *(B->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_fill.setArg(4, (int)bini));
-    OCL_CHECK(err, err = kernel_fill.setArg(5, (int)bend));
-    OCL_CHECK(err, err = kernel_fill.setArg(6, (int)inc));
-    OCL_CHECK(err, err = kernel_fill.setArg(7, (int)A->ndim));
-    OCL_CHECK(err, err = kernel_fill.setArg(8, (long int)A->size));
-    OCL_CHECK(err, err = kernel_fill.setArg(9, (int)A->shape[0]));
-    OCL_CHECK(err, err = kernel_fill.setArg(10, (int)B->size));
-    OCL_CHECK(err, err = kernel_fill.setArg(11, (int)B->shape[0]));
-
-    OCL_CHECK(err, err = q.enqueueTask(kernel_fill, NULL, &event));
-    q.finish();
-*/
-
 #define DATA_SIZE 4096
 #define BUFFER_SIZE 1024
 

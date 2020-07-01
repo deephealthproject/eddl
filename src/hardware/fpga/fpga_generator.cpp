@@ -14,13 +14,6 @@
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
 
-// emulation switches of functions (via cpu)
-// when set the function is run on the cpu
-char fpga_set_cpuemu_rand_uniform              = 1;
-char fpga_set_cpuemu_rand_signed_uniform       = 1;
-char fpga_set_cpuemu_rand_binary               = 1;
-char fpga_set_cpuemu_rand_normal               = 1;
-
 // -----------------------------------------------------------------
 // rand_uniform
 //

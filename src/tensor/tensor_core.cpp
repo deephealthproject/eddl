@@ -705,7 +705,6 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
     #endif
 
     else {
-	    printf("1\n");
         msg("unsuppoted select", "Tensor::select");
     }
     //B->tsem->unlock();

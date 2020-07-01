@@ -76,7 +76,11 @@ void k_d_softsign(float *D, float *I, float *PD, long int size){
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
       denom[j] = 1.0 + fabs(buffer_i[j]);
+      #ifdef HLS_NATIVE_FUNCTION_ENABLE
+      buffer_pd[j] += buffer_d[j] * native_divide(1, (denom[j]*denom[j]));
+      #else
       buffer_pd[j] += buffer_d[j] * 1.0 / (denom[j]*denom[j]);
+      #endif
     }
 
     // burst write the result

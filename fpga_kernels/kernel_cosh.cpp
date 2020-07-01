@@ -44,7 +44,7 @@ void k_cosh(float *A, float *B, long int size) {
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
       // no support for native function call
-      //buffer_b[j] = cosh(buffer_a[j]);
+      buffer_b[j] = cosh(buffer_a[j]);
     }
 
     // burst write the result

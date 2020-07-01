@@ -2,8 +2,8 @@
 // implemented on the FPGA
 
 //Activations
-//#define K_ENABLED_RELU
-//#define K_ENABLED_D_RELU
+#define K_ENABLED_RELU
+#define K_ENABLED_D_RELU
 //#define K_ENABLED_THRESHOLDED_RELU
 //#define K_ENABLED_D_TRHESHOLDED_RELU
 //#define K_ENABLED_LEAKY_RELU
@@ -24,7 +24,7 @@
 //#define K_ENABLED_D_EXP
 //#define K_ENABLED_TANH
 //#define K_ENABLED_D_TANH
-//#define K_ENABLED_SOFTMAX
+#define K_ENABLED_SOFTMAX
 //#define K_ENABLED_D_SOFTMAX
 
 //Bn
@@ -96,7 +96,7 @@
 //#define K_ENABLED_RAND_NORMAL
 
 //Losses
-//#define K_ENABLED_CENT
+#define K_ENABLED_CENT
 //#define K_ENABLED_BIN_CENT    // duda
 
 // indexing
@@ -120,7 +120,7 @@
 //#define K_ENABLED_LOG10
 //#define K_ENABLED_LOGN
 //#define K_ENABLED_MOD
-//#define K_ENABLED_MULT
+#define K_ENABLED_MULT
 //#define K_ENABLED_NORMALIZE
 //#define K_ENABLED_POW
 //#define K_ENABLED_POWB
@@ -137,20 +137,20 @@
 //#define K_ENABLED_TAN
 //#define K_ENABLED_TANH
 //#define K_ENABLED_TRUNC
-//#define K_ENABLED_ADD_2
+#define K_ENABLED_ADD_2
 //#define K_ENABLED_INC
-//#define K_ENABLED_MULT2D
+#define K_ENABLED_MULT2D
 //#define K_ENABLED_EL_DIV
 //#define K_ENABLED_EL_MULT
 //#define K_ENABLED_SIGN2
-//#define K_ENABLED_SUM2D_ROWWISE
+#define K_ENABLED_SUM2D_ROWWISE
 //#define K_ENABLED_SUM2D_COLWISE
 //#define K_ENABLED_MAX
-//#define K_ENABLED_SUM
+#define K_ENABLED_SUM
 //#define K_ENABLED_SUM_ABS
 
 //Metrics
-//#define K_ENABLED_ACCURACY
+#define K_ENABLED_ACCURACY
 //#define K_ENABLED_BIN_ACCURACY
 
 //Pool
@@ -164,7 +164,7 @@
 //#define K_ENABLED_REDUCE2
 //#define K_ENABLED_REDUCE_OP
 //#define K_ENABLED_OPT2
-//#define K_ENABLED_REDUCE_SUM2D
+#define K_ENABLED_REDUCE_SUM2D
 //#define K_ENABLED_REDUCTION
 //#define K_ENABLED_REDUCTION_BACK
 

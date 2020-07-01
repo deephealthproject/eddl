@@ -60,7 +60,11 @@ void k_exp(float *A, float *B, long int size){
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
       //buffer_b[j] = exp(buffer_a[j]);
+      #ifdef HLS_NATIVE_FUNCTION_ENABLE
       buffer_b[j] = native_exp(buffer_a[j]);
+      #else
+      buffer_b[j] = exp(buffer_a[j]);
+      #endif
     }
 
     // burst write the result

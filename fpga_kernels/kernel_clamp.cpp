@@ -64,7 +64,7 @@ void k_clamp(float *A, float *B, float min, float max, long int size) {
     write:
     for (int j=0; j<chunk_size; j++) {
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
-      C[i+j] = buffer_out[j];
+      B[i+j] = buffer_b[j];
     }
   }
 } // end kernel function

@@ -61,6 +61,9 @@ int main(int argc, char **argv) {
 
     // Decoder
     layer ld=Input({outvs});
+    ld = ReduceArgMax(ld,{0});
+    ld = RandomUniform(Embedding(ld, outvs, 1,embedding),-0.05,0.05);
+
     l = Decoder(LSTM(ld,128),enc);
     layer out = Softmax(Dense(l, outvs));
 
@@ -77,9 +80,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          //CS_CPU()
     );
 
     // View model

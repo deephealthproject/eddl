@@ -1,20 +1,6 @@
 #include <math.h>
 #include <stdio.h>
 extern "C" {
-/*void k_relu(float *A, float *B, long int size){
-
-  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
-  #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
-  #pragma HLS INTERFACE s_axilite port=A  bundle=control
-  #pragma HLS INTERFACE s_axilite port=B  bundle=control
-  #pragma HLS INTERFACE s_axilite port=size bundle=control
-  #pragma HLS INTERFACE s_axilite port=return bundle=control 
-
-  for (int i=0; i<size; i++) {
-    #pragma HLS unroll factor=16
-    if (A[i] > 0.0) B[i] = A[i];
-  }
-}*/
 
 #define DATA_SIZE 4096
 #define BUFFER_SIZE 1024
@@ -55,7 +41,7 @@ void k_relu(float *A, float *B, long int size){
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
-      if (buffer[j] < 0.0) buffer[j] = 0.f;
+      if (buffer[j] < 0.0) buffer[j] = 0.0f;
     }
 
     // burst write the result

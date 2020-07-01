@@ -62,7 +62,13 @@ void k_elu(float *A, float *B, long int size, float param){
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform elu
-      if (buffer[j] < 0.0) buffer[j] = param * (expf(buffer[j] - 1.0);
+      if (buffer[j] < 0.0) {
+        #ifdef HLS_NATIVE_FUNCTION_ENABLE
+        buffer[j] = param * (native_exp((buffer[j]) - 1.0);
+        #else
+        buffer[j] = param * (exp((buffer[j]) - 1.0);
+        #endif
+      }
     }
 
     // burst write the result

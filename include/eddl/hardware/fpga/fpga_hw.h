@@ -21,6 +21,7 @@
 extern cl::CommandQueue q;
 
 //#define FPGA_DEBUG
+#define FPGA_SHOW_PROFILE
 
 #include "eddl/hardware/fpga/fpga_enables.h"
 

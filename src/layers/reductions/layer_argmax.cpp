@@ -20,7 +20,7 @@ using namespace std;
 
 int LRArgmax::total_layers = 0;
 
-LRArgmax::LRArgmax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer(name, dev, mem) {
+LRArgmax::LRArgmax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer2(name, dev, mem) {
     if(name.empty()) this->name = "reduction_argmax" + to_string(++total_layers);
 
     input=l->output;
@@ -59,8 +59,9 @@ void LRArgmax::resize(int batch){
 
 Layer *LRArgmax::share(int c, int bs, vector<Layer *> p) {
     LRArgmax *n;
-    n = new LRArgmax(p[0], axis, keepdims,  name, this->dev, this->mem_level);
+    n = new LRArgmax(p[0], axis, keepdims,  "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
+    n->isshared=true;
     return n;
 }
 

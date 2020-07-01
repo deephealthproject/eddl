@@ -33,13 +33,32 @@ public:
     int binary;
     float val;
     ReduceDescriptor *RD;
-    ReduceDescriptor2 *RD2;
     vector<int> axis;
     bool keepdims;
 
     ReductionLayer(string name, int dev, int mem);
 
     void mem_delta() override;
+
+    void addchild(Layer *l) override;
+
+    void addparent(Layer *l) override;
+
+    string plot(int c) override;
+
+
+};
+
+class ReductionLayer2 : public Layer {
+public:
+
+    int binary;
+    float val;
+    ReduceDescriptor2 *RD2;
+    vector<int> axis;
+    bool keepdims;
+
+    ReductionLayer2(string name, int dev, int mem);
 
     void addchild(Layer *l) override;
 
@@ -152,7 +171,7 @@ public:
 };
 
 /// Argmax Layer
-class LRArgmax : public ReductionLayer {
+class LRArgmax : public ReductionLayer2 {
 public:
     static int total_layers;
 
