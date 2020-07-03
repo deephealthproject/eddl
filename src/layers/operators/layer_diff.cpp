@@ -87,6 +87,10 @@ LDiff::LDiff(float k, Layer *l, string name, int dev, int mem) : OperatorLayer(n
     addparent(l);
 }
 
+LDiff::~LDiff(){
+    tin.clear();
+}
+
 void LDiff::forward(){
 
     if (binary) {

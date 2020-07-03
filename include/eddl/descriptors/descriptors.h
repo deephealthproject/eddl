@@ -115,6 +115,8 @@ public:
 
     ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
 
+    ~ConvolDescriptor();
+
     void build(Tensor *A);
     void resize(int b);
 	void enable_distributed();
@@ -134,6 +136,8 @@ public:
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, const string& p, int mem=0);
 
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
+
+    ~PoolDescriptor();
 
     void build(Tensor *A);
     void resize(int b);

@@ -72,6 +72,19 @@ LLayerNorm::LLayerNorm(Layer *parent,  float epsilon, bool affine,  string name,
     addparent(parent);
 }
 
+LLayerNorm::~LLayerNorm(){
+    delete mean;
+    delete variance;
+    delete bn_g;
+    delete bn_b;
+    delete gbn_g;
+    delete gbn_b;
+    delete opa; //output pre-affine
+
+    layers.clear();
+
+}
+
 void LLayerNorm::resize(int batch){
     if (batch!=output->shape[0]) {
         opa->reshape_(output->getShape());

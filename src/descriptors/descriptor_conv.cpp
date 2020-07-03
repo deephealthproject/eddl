@@ -57,6 +57,41 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
 
 }
 
+ConvolDescriptor::~ConvolDescriptor(){
+    delete I; // Input map
+    delete ID;// Delta input map
+    delete K; // filters
+    delete bias; // bias
+    delete gK;// gradient filters
+    delete gbias;// gradient bias
+    delete acc_gK;// Accumulated gradients for kernels
+    delete acc_gbias;// Accumulated gradients for bias
+    delete D ; // Delta
+    delete O; // Outputmap
+
+    // CPU implementation
+    delete ptrI;
+//    delete matI; // input
+//    delete matK; // kernels
+//    delete matO; // output
+//    delete matD; // Delta
+//    delete matgK; // gradient kernels
+
+#ifdef cGPU
+    delete gpuI; // input
+    delete gpuIB; // input
+    delete gpuO; // output
+    delete gpuOB; // output
+    delete gpuK; // kernels
+    delete gpugK; // gradient kernels
+    delete gpuD; // Delta
+#endif
+
+#ifdef cFPGA
+    // FPGA implementation
+    delete fpga_ptrI;
+#endif
+}
 
 void ConvolDescriptor::build(Tensor *A) {
 

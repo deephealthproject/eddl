@@ -93,6 +93,8 @@ public:
 
     LEmbedding(Layer *parent, int vocsize, int lenght, int dim, bool mask_zeros, string name, int dev, int mem);
 
+    ~LEmbedding();
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
@@ -259,6 +261,8 @@ public:
 
     LSelect(Layer *l, vector<string> indices, string name, int dev, int mem);
 
+    ~LSelect();
+
     void forward() override;
 
     void backward() override;
@@ -279,6 +283,8 @@ public:
     PermuteDescriptor *sd;
 
     LPermute(Layer *l, vector<int> dims, string name, int dev, int mem);
+
+    ~LPermute();
 
     void forward() override;
 

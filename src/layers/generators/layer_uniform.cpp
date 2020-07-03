@@ -41,6 +41,11 @@ LUniform::LUniform(float low, float high, vector<int> size, string name, int dev
 
 }
 
+LUniform::~LUniform(){
+    delete mask;
+}
+
+
 void LUniform::forward(){
     // TODO: Implement
 }

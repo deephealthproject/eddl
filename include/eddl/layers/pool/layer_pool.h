@@ -29,8 +29,13 @@ public:
     static int total_layers;
     PoolDescriptor *pd;
 
+    // Params
+    Tensor *indX, *indY;
+
     // constructors
     LPool(Layer *parent, PoolDescriptor *cd, string name, int dev, int mem);
+
+    ~LPool();
 
     void mem_delta() override;
 
@@ -47,9 +52,6 @@ public:
     LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, const string& name, int dev, int mem);
 
     LMaxPool(Layer *parent, PoolDescriptor *cd, const string& name, int dev, int mem);
-
-    // Params
-    Tensor *indX, *indY;
 
     // implementation
     void forward() override;
@@ -69,8 +71,6 @@ public:
 /// AveragePool2D Layer
 class LAveragePool : public LPool {
 public:
-    // Params
-    Tensor *indX, *indY;
 
     // constructors and clones
     LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, const string& name, int dev, int mem);

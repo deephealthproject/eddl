@@ -20,7 +20,7 @@ PermuteDescriptor::PermuteDescriptor(const vector<int>& dims, int dev) : SelDesc
 void PermuteDescriptor::build(vector<int> ishape){
     // Get input/output shapes
     this->ishape = ishape;
-    this->oshape = permute_shape(ishape, dims);
+    this->oshape = permute_shape(ishape, this->dims);
     this->cpu_addresses = permute_indices(this->ishape, this->dims);
 }
 

@@ -52,6 +52,10 @@ LSelect::LSelect(Layer *parent, vector<string> indices, string name, int dev, in
     addparent(parent);
 }
 
+LSelect::~LSelect(){
+    delete sd;
+}
+
 void LSelect::resize(int b){
     Layer::resize(b);
     sd->resize(b);  // The batch is ignored

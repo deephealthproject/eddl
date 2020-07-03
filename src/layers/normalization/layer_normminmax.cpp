@@ -72,6 +72,11 @@ LNormMinMax::LNormMinMax(Layer *parent, float epsilon, string name, int dev, int
 
 
 
+LNormMinMax::~LNormMinMax(){
+    layers.clear();
+}
+
+
 void LNormMinMax::mem_delta() {
     // TEMPORAL!
     if(this->delta == nullptr) {

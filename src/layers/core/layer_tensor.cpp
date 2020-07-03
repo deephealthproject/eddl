@@ -33,7 +33,8 @@ LTensor::LTensor(const vector<int> shape, int dev, int mem) : LinLayer("ltensor"
 
 LTensor::~LTensor()
 {
-  input = output = nullptr;
+    delete data;
+    data = input = output = nullptr;
 }
 
 // From file

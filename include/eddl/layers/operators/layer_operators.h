@@ -51,6 +51,8 @@ public:
 
     LAbs(Layer *l, string name, int dev, int mem);
 
+    ~LAbs();
+
     void forward() override;
 
     void backward() override;
@@ -72,6 +74,8 @@ public:
     LDiff(Layer *l1, Layer *l2, string name, int dev, int mem);
     LDiff(Layer *l, float k, string name, int dev, int mem);
     LDiff(float k, Layer *l, string name, int dev, int mem);
+
+    ~LDiff();
 
     void forward() override;
 
