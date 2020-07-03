@@ -183,7 +183,7 @@ void Tensor::updateData(float *fptr, void *fptr2){
 
         // If null => Reserve memory
         // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
-        if (fptr == nullptr) { this->ptr = gpu_create_tensor(gpu_device, this->size); }
+        if (fptr == nullptr) { this->ptr = gpu_create_tensor(this->gpu_device, this->size); }
         else { this->ptr = fptr; }
 
     }
