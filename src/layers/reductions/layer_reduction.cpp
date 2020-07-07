@@ -21,6 +21,9 @@ ReductionLayer::ReductionLayer(string name, int dev, int mem) : Layer(name, dev,
     binary=0;
 }
 
+ReductionLayer::~ReductionLayer(){
+    delete RD;
+}
 
 
 void ReductionLayer::mem_delta(){

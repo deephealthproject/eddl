@@ -38,6 +38,8 @@ public:
 
     ReductionLayer(string name, int dev, int mem);
 
+    ~ReductionLayer();
+
     void mem_delta() override;
 
     void addchild(Layer *l) override;
@@ -59,6 +61,9 @@ public:
     bool keepdims;
 
     ReductionLayer2(string name, int dev, int mem);
+
+    ~ReductionLayer2();
+
 
     void addchild(Layer *l) override;
 
