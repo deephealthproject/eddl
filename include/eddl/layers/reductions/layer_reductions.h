@@ -99,10 +99,11 @@ class LRVar : public ReductionLayer {
 public:
     static int total_layers;
 
-
     vector<Layer *> layers;
 
     LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
+
+    ~LRVar();
 
     void forward() override;
 
@@ -142,7 +143,6 @@ public:
 class LRMax : public ReductionLayer {
 public:
     static int total_layers;
-
 
     LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
