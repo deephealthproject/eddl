@@ -68,6 +68,11 @@ LEmbedding::LEmbedding(Layer *parent, int vocsize, int length, int dim, bool mas
 
 }
 
+LEmbedding::~LEmbedding(){
+    delete E;
+    delete gE;
+}
+
 void LEmbedding::forward()
 {
 
