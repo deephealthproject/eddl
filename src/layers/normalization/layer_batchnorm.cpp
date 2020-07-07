@@ -72,6 +72,19 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     addparent(parent);
 }
 
+LBatchNorm::~LBatchNorm(){
+    delete mean;
+    delete variance;
+    delete bn_mean;
+    delete bn_var;
+    delete bn_g;
+    delete bn_b;
+    delete gbn_g;
+    delete gbn_b;
+    delete opa; //output pre-affine
+
+    layers.clear();
+}
 
 // override functions:
 int LBatchNorm::get_trainable_params_count()
