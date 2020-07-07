@@ -282,6 +282,8 @@ public:
 
     LPermute(Layer *l, vector<int> dims, string name, int dev, int mem);
 
+    ~LPermute();
+
     void forward() override;
 
     void backward() override;
