@@ -67,18 +67,18 @@ LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, 
 }
 
 LRNN::~LRNN(){
-    delete cps;
-
-    delete preoutput;
-
-    delete Wx;
-    delete gWx;
-    delete bias;
-    delete gbias;
-
-    delete Wy;
-    delete gWy;
-    delete biasy;
+//    delete cps;
+//
+//    delete preoutput;
+//
+//    delete Wx;
+//    delete gWx;
+//    delete bias;
+//    delete gbias;
+//
+//    delete Wy;
+//    delete gWy;
+//    delete biasy;
 }
 
 // virtual
