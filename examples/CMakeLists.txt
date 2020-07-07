@@ -72,8 +72,8 @@ target_link_libraries(cifar_resnet eddl)
 add_executable(cifar_resnet_da_bn "nn/2_cifar10/6_cifar_resnet_da_bn.cpp")
 target_link_libraries(cifar_resnet_da_bn eddl)
 
-add_executable(cifar_resnet50 "nn/2_cifar10/7_cifar_resnet50_da_bn.cpp")
-target_link_libraries(cifar_resnet50 eddl)
+add_executable(cifar_resnet50_da_bn "nn/2_cifar10/7_cifar_resnet50_da_bn.cpp")
+target_link_libraries(cifar_resnet50_da_bn eddl)
 
 
 # EXAMPLES: Drive segmentation ****************************************************
@@ -82,17 +82,17 @@ target_link_libraries(drive_seg eddl)
 
 # EXAMPLES: NLP ****************************************************
 
-add_executable(sentiment_rnn "nn/4_NLP/1_sentiment_rnn.cpp")
-target_link_libraries(sentiment_rnn eddl)
+add_executable(nlp_sentiment_rnn "nn/4_NLP/1_sentiment_rnn.cpp")
+target_link_libraries(nlp_sentiment_rnn eddl)
 
-add_executable(sentiment_lstm "nn/4_NLP/2_sentiment_lstm.cpp")
-target_link_libraries(sentiment_lstm eddl)
+add_executable(nlp_sentiment_lstm "nn/4_NLP/2_sentiment_lstm.cpp")
+target_link_libraries(nlp_sentiment_lstm eddl)
 
-add_executable(machine_translation "nn/4_NLP/3_machine_translation.cpp")
-target_link_libraries(machine_translation eddl)
+add_executable(nlp_machine_translation "nn/4_NLP/3_machine_translation.cpp")
+target_link_libraries(nlp_machine_translation eddl)
 
-add_executable(text_generation "nn/4_NLP/4_text_generation.cpp")
-target_link_libraries(text_generation eddl)
+add_executable(nlp_text_generation "nn/4_NLP/4_text_generation.cpp")
+target_link_libraries(nlp_text_generation eddl)
 
 
 # EXAMPLES: Tensor ****************************************************
