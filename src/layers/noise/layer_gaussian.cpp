@@ -45,7 +45,6 @@ LGaussianNoise::~LGaussianNoise()
 void LGaussianNoise::resize(int batch){
     output->resize(batch);
     noise->resize(batch);
-    
 }
 
 

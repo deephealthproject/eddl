@@ -88,7 +88,7 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
 Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
-Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr, T->device) {}
+Tensor::Tensor(const vector<int> &shape, Tensor *T) : Tensor(shape,T->ptr, T->device) {}
 
 Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : Tensor(shape, nullptr, DEV_CPU) {
     // 0. Tensor in CPU
@@ -102,7 +102,7 @@ Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : T
     }else if ((dev >= DEV_GPU) && (dev < DEV_FPGA)) {
         this->toGPU(dev);
     }else{
-	this->toFPGA(dev);
+	    this->toFPGA(dev);
     }
 }
 
@@ -168,7 +168,7 @@ void Tensor::updateData(float *fptr, void *fptr2){
 
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
-        if (this->ndim == 2) {
+        if (this->ndim == 2){
             this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
         }
     }
@@ -492,7 +492,7 @@ bool Tensor::isSquared(Tensor *A){
 }
 
 // Resizing tensors
-void Tensor::resize(int b, float *fptr, void *fptr2) {
+void Tensor::resize(int b, float *fptr, void *fptr2, bool delete_data) {
     if (b == shape[0]) return;
 
     // Get new shape
@@ -503,7 +503,7 @@ void Tensor::resize(int b, float *fptr, void *fptr2) {
     updateShape(new_shape);
     updateSize();
     updateStrides();
-    if (fptr != nullptr) deleteData();  // Potential error
+    if (fptr != nullptr && delete_data) deleteData();  // Potential error on layers such as Reshape (passed pointer)
     updateData(fptr, fptr2);
 }
 
