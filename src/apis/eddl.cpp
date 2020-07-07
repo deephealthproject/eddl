@@ -573,7 +573,6 @@ namespace eddl {
         vector<int> shape2=lc->output->getShape();
         shape2.pop_back();
         return new LReshape(lc,shape2, "", DEV_CPU, 0);
-
     }
 
 

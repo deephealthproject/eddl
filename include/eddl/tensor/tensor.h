@@ -86,7 +86,7 @@ public:
     vector<int> stride;
 
     // Data pointers
-    float *ptr;
+    float *ptr = nullptr;
     Eigen::MatrixXf *ptr2;  // TODO: I don't like it. float or eigen, not both
 
     // Aux variables
@@ -2568,7 +2568,7 @@ public:
       *
       *  @return
     */
-    void resize(int b, float *fptr=nullptr, void *fptr2=nullptr);
+    void resize(int b, float *fptr=nullptr, void *fptr2=nullptr, bool delete_data=true);
 
 
     // ***********************************************************
