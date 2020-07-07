@@ -51,6 +51,9 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
 
 }
 
+LRVar::~LRVar(){
+    layers.clear();
+}
 
 void LRVar::mem_delta() {
     if(this->delta == nullptr) {
