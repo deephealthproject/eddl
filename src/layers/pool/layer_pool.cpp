@@ -38,6 +38,12 @@ LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : 
 
 }
 
+LPool::~LPool(){
+    delete indX;
+    delete indY;
+    delete pd;
+}
+
 void LPool::mem_delta(){
     if(this->delta == nullptr) {
         // Reserve parent's delta

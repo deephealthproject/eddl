@@ -42,6 +42,11 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, con
 }
 
 
+PoolDescriptor::~PoolDescriptor(){
+    delete indX;
+    delete indY;
+}
+
 void PoolDescriptor::build(Tensor *A) {
     if (A->ndim != 4) msg("Tensors are not 4D", "PoolDescriptor::build");
 
