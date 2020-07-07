@@ -259,6 +259,8 @@ public:
 
     LSelect(Layer *l, vector<string> indices, string name, int dev, int mem);
 
+    ~LSelect();
+
     void forward() override;
 
     void backward() override;
