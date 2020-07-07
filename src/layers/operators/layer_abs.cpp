@@ -43,6 +43,10 @@ LAbs::LAbs(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, m
     addparent(l);
 }
 
+LAbs::~LAbs(){
+    delete mask;
+}
+
 void LAbs::forward(){
     Tensor::copy(parent[0]->output,output);
     output->abs_();
