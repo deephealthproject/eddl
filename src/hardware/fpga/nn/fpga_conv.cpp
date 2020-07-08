@@ -28,7 +28,6 @@ void fpga_cpuemu_conv2D(ConvolDescriptor *D) {
   fpga_copy_from_fpga(D->I, D->I->ptr);
   cpu_conv2D(D);
   fpga_copy_to_fpga(D->O->ptr, D->O);
-  fpga_copy_memory_to_fpga(D->ptrI, D->fpga_ptrI, D->fpga_sizeI);
 }
 
 void fpga_conv2D(ConvolDescriptor *D)
@@ -90,7 +89,7 @@ void fpga_conv2D(ConvolDescriptor *D)
 //
 void fpga_cpuemu_conv2D_grad(ConvolDescriptor *D) {
   fpga_copy_from_fpga(D->D, D->D->ptr);
-  fpga_copy_memory_from_fpga(D->fpga_ptrI, D->ptrI, D->fpga_sizeI);
+//  fpga_copy_memory_from_fpga(D->fpga_ptrI, D->ptrI, D->fpga_sizeI);
   fpga_copy_from_fpga(D->gK, D->gK->ptr);
   fpga_copy_from_fpga(D->gbias, D->gbias->ptr);
   cpu_conv2D_grad(D);
@@ -145,7 +144,7 @@ void fpga_conv2D_grad(ConvolDescriptor *D)
 //
 void fpga_cpuemu_conv2D_back(ConvolDescriptor *D) {
   fpga_copy_from_fpga(D->D, D->D->ptr);
-  fpga_copy_memory_from_fpga(D->fpga_ptrI, D->ptrI, D->fpga_sizeI);
+  //fpga_copy_memory_from_fpga(D->fpga_ptrI, D->ptrI, D->fpga_sizeI);
   fpga_copy_from_fpga(D->K, D->K->ptr);
   cpu_conv2D_back(D);
   fpga_copy_to_fpga(D->ID->ptr, D->ID);
