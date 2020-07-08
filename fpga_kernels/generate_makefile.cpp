@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
   fprintf(fd, "DEVICE := xilinx_u200_xdma_201830_2\n");
   fprintf(fd, "TARGET := $(TARGETS)\n");
   fprintf(fd, "XCLBIN := xclbin\n");
-  fprintf(fd, "XCLBIN_NAME := relu\n");
+  fprintf(fd, "XCLBIN_NAME := eddl\n");
   fprintf(fd, "XOCC := /opt/Xilinx/Vitis/2019.2/bin/v++\n");
   fprintf(fd, "BUILD_DIR := _x.$(TARGET).$(DEVICE)\n");
   fprintf(fd, "BUILD_DIR_tensor = $(BUILD_DIR)/$(XCLBIN_NAME)\n");
