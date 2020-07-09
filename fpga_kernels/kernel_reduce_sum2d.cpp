@@ -12,6 +12,7 @@ void k_reduce_sum2d(float *A, float *B, int Ashape0, int Ashape1, int axis, int 
   #pragma HLS INTERFACE s_axilite port=Ashape1 bundle=control
   #pragma HLS INTERFACE s_axilite port=axis bundle=control
   #pragma HLS INTERFACE s_axilite port=incB bundle=control
+  #pragma HLS INTERFACE s_axilite port=return bundle=control
 
 
     if (axis==0){

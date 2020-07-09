@@ -9,6 +9,7 @@ void k_sum(float *A, long int size, float *sum) {
   #pragma HLS INTERFACE s_axilite port=size bundle=control
   #pragma HLS INTERFACE m_axi port=sum offset=slave bundle=gmem
   #pragma HLS INTERFACE s_axilite port=sum bundle=control
+  #pragma HLS INTERFACE s_axilite port=return bundle=control
 
   float local_sum = 0.0;
   for (int i = 0; i < size; ++i) local_sum += A[i];

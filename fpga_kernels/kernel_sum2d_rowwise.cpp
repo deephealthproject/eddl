@@ -12,6 +12,7 @@ void k_sum2d_rowwise(float *A, float *B, float *C, int Ashape0, int Ashape1) {
   #pragma HLS INTERFACE s_axilite port=C bundle=control
   #pragma HLS INTERFACE s_axilite port=Ashape0 bundle=control
   #pragma HLS INTERFACE s_axilite port=Ashape1 bundle=control
+  #pragma HLS INTERFACE s_axilite port=return bundle=control
 
   for (int i = 0; i < Ashape0; i++) {
     int p=i*Ashape1;

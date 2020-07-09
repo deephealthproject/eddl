@@ -12,6 +12,7 @@ void k_accuracy(float *A, float *B, int Ashape0, int Ashape1, int *accuracy) {
   #pragma HLS INTERFACE s_axilite port=accuracy bundle=control
   #pragma HLS INTERFACE s_axilite port=Ashape0 bundle=control
   #pragma HLS INTERFACE s_axilite port=Ashape1 bundle=control
+  #pragma HLS INTERFACE s_axilite port=return bundle=control
 
   int acc = 0;
   int aind = 0;
