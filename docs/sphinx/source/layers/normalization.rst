@@ -4,9 +4,9 @@ Normalization
 BatchNormalization
 ------------------
 
-.. doxygenfunction:: eddl::BatchNormalization(layer, bool, float, float, string)
+.. doxygenfunction:: eddl::BatchNormalization(layer parent, bool affine, float momentum, float epsilon, string name)
 
-.. doxygenfunction:: eddl::BatchNormalization(layer, float, float, bool, string)
+.. doxygenfunction:: eddl::BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.00001f, bool affine = true, string name = "")
 
 Example:
 
@@ -22,8 +22,8 @@ Example:
 LayerNormalization
 ------------------
 
-.. doxygenfunction:: eddl::LayerNormalization(layer, bool, float, string)
-.. doxygenfunction:: eddl::LayerNormalization(layer, float, bool, string)
+.. doxygenfunction:: eddl::LayerNormalization(layer parent, bool affine, float epsilon, string name)
+.. doxygenfunction:: eddl::LayerNormalization(layer parent, float epsilon = 0.00001f, bool affine = true, string name = "")
 
 Example:
 
