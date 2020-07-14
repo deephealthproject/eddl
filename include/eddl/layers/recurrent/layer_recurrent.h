@@ -87,10 +87,10 @@ public:
     int units;
     bool use_bias;
     bool bidirectional;
-    bool mask_zeros;
-    Layer *cps;
-
     static int total_layers;
+    bool mask_zeros;
+
+    Layer *cps;
 
     Tensor *state_c;
     Tensor *state_h;

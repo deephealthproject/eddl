@@ -108,50 +108,33 @@ LLSTM::LLSTM(vector<Layer *> parent, int units, bool mask_zeros, bool bidirectio
 }
 
 LLSTM::~LLSTM(){
-    delete state_c;
-    delete state_h;
-    delete delta_h;
-    delete delta_c;
+//    delete cps;
 
-    delete Wih;
-    delete Wix;
-    delete Wfh;
-    delete Wfx;
-    delete Woh;
-    delete Wox;
-    delete Wch;
-    delete Wcx;
+//    delete state_c;
+//    delete state_h;
+//    delete delta_h;
+//    delete delta_c;
 
-    delete gWih;
-    delete gWix;
-    delete gWfh;
-    delete gWfx;
-    delete gWoh;
-    delete gWox;
-    delete gWch;
-    delete gWcx;
+//    delete Wih; delete Wix;
+//    delete Wfh; delete Wfx;
+//    delete Woh; delete Wox;
+//    delete Wch; delete Wcx;
+//
+//    delete gWih; delete gWix;
+//    delete gWfh; delete gWfx;
+//    delete gWoh; delete gWox;
+//    delete gWch; delete gWcx;
+//
+////    delete in; delete fn; delete on; delete cn;
+//    delete inbias; delete fnbias; delete onbias; delete cnbias;
+//    delete ginbias; delete gfnbias; delete gonbias; delete gcnbias;
 
-    delete in;
-    delete fn;
-    delete on;
-    delete cn;
-    delete inbias;
-    delete fnbias;
-    delete onbias;
-    delete cnbias;
-    delete ginbias;
-    delete gfnbias;
-    delete gonbias;
-    delete gcnbias;
-
-    delete incn;
-    delete cn1fn;
-    delete sh;
-
-    delete mask;
-    delete psh;
-    delete psc;
-
+//    delete incn; delete cn1fn;
+//    delete sh;
+//
+//    delete mask;
+//    delete psh;
+//    delete psc;
 }
 
 // RESIZE , MEM_DELTA states

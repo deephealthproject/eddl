@@ -28,9 +28,9 @@ next_batch
 train_batch
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::train_batch(model, vector<Tensor *>, vector<Tensor *>, vector<int>)
+.. doxygenfunction:: eddl::train_batch(model, vector<Tensor*>, vector<Tensor*>, vector<int>)
 
-.. doxygenfunction:: eddl::train_batch(model, vector<Tensor *>, vector<Tensor *>)
+.. doxygenfunction:: eddl::train_batch(model, vector<Tensor*>, vector<Tensor*>)
 
 .. code-block:: c++
     
@@ -41,9 +41,9 @@ train_batch
 eval_batch
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::eval_batch(model, vector<Tensor *>, vector<Tensor *>, vector<int>)
+.. doxygenfunction:: eddl::eval_batch(model, vector<Tensor*>, vector<Tensor*>, vector<int>)
 
-.. doxygenfunction:: eddl::eval_batch(model, vector<Tensor *>, vector<Tensor *>)
+.. doxygenfunction:: eddl::eval_batch(model, vector<Tensor*>, vector<Tensor*>)
 
 .. code-block:: c++
 
@@ -73,9 +73,9 @@ reset_loss
 forward
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::forward(model, vector<Layer *>)
+.. doxygenfunction:: eddl::forward(model, vector<Layer*>)
 
-.. doxygenfunction:: eddl::forward(model, vector<Tensor *>)
+.. doxygenfunction:: eddl::forward(model, vector<Tensor*>)
 
 .. doxygenfunction:: eddl::forward(model)
 
@@ -103,7 +103,7 @@ zeroGrads
 backward
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::backward(model, vector<Tensor *>)
+.. doxygenfunction:: eddl::backward(model, vector<Tensor*>)
 
 .. code-block:: c++
     
@@ -176,13 +176,13 @@ getLoss
 newloss
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::newloss(const std::function<Layer *Layer *>&, Layer *, string)
+.. doxygenfunction:: eddl::newloss(const std::function<Layer*Layer*>&, Layer*, string)
 
 .. code-block:: c++
     
     loss newloss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
     
-.. doxygenfunction:: eddl::newloss(const std::function<Layer *vector<Layer *>>&, vector<Layer *>, string)
+.. doxygenfunction:: eddl::newloss(const std::function<Layer*vector<Layer*>>&, vector<Layer*>, string)
 .. code-block:: c++
 
     loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
@@ -203,9 +203,9 @@ getMetric
 newmetric
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::newmetric(const std::function<Layer *Layer *>&, Layer *, string)
+.. doxygenfunction:: eddl::newmetric(const std::function<Layer*Layer*>&, Layer*, string)
 
-.. doxygenfunction:: eddl::newmetric(const std::function<Layer *vector<Layer *>>&, vector<Layer *>, string)
+.. doxygenfunction:: eddl::newmetric(const std::function<Layer*vector<Layer*>>&, vector<Layer*>, string)
 
 .. code-block:: c++
     
