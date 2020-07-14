@@ -25,8 +25,8 @@ RMSProp::RMSProp(float lr, float rho, float epsilon, float weight_decay) : Optim
 }
 
 RMSProp::~RMSProp() {
-  gT1.clear();
-  gT.clear();
+    for(int i=0; i<gT.size(); i++){ delete gT[i]; }
+    for(int i=0; i<gT1.size(); i++){ delete gT1[i]; }
 }
 
 void RMSProp::change(vector<float> &p) {
