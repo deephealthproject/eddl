@@ -69,19 +69,6 @@ endif()
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Flags: Debugging
-if(BUILD_COVERAGE AND UNIX)
-    set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g --coverage")
-
-    # Apply coverage flags
-    set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
-
-    # Add sanitizers
-#    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-#        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak")  # address, leak, thread, undefined, memory
-#    endif()
-endif()
 
 if(UNIX)
     # Flags: Optimization
@@ -90,6 +77,18 @@ if(UNIX)
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+
+    # Flags: Debugging
+    if(BUILD_COVERAGE)
+        set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "--coverage")
+
+        # Apply coverage flags
+        set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
+        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
+
+        # Add sanitizers
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")  # address, leak, thread, undefined, memory
+    endif()
 
     if(BUILD_HPC)
         #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -mtune=native")  # This does not work on many machines
