@@ -51,30 +51,33 @@ int main(int argc, char **argv) {
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
 	      //CS_FPGA({1})
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
-    // View model
-    summary(net);
-
-    // Load dataset
-    Tensor* x_train = Tensor::load("mnist_trX.bin");
-    Tensor* y_train = Tensor::load("mnist_trY.bin");
-    Tensor* x_test = Tensor::load("mnist_tsX.bin");
-    Tensor* y_test = Tensor::load("mnist_tsY.bin");
-
-    // Preprocessing
-    x_train->div_(255.0f);
-    x_test->div_(255.0f);
-
-    // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
-
-    // Evaluate
-    evaluate(net, {x_test}, {y_test});
+    delete net;
+    std::cout << "end" << std::endl;
+//
+//    // View model
+//    summary(net);
+//
+//    // Load dataset
+//    Tensor* x_train = Tensor::load("mnist_trX.bin");
+//    Tensor* y_train = Tensor::load("mnist_trY.bin");
+//    Tensor* x_test = Tensor::load("mnist_tsX.bin");
+//    Tensor* y_test = Tensor::load("mnist_tsY.bin");
+//
+//    // Preprocessing
+//    x_train->div_(255.0f);
+//    x_test->div_(255.0f);
+//
+//    // Train model
+//    fit(net, {x_train}, {y_train}, batch_size, epochs);
+//
+//    // Evaluate
+//    evaluate(net, {x_test}, {y_test});
 
 }

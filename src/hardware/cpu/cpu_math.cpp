@@ -232,7 +232,7 @@ void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
 void cpu_inc(Tensor *A, Tensor *B) {
     B->tsem->lock();
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < A->size; i++){
         B->ptr[i] += A->ptr[i];
     }

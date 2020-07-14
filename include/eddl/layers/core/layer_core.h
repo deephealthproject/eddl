@@ -115,19 +115,22 @@ public:
     bool use_bias;  // TODO: Implement
 	bool distributed_training;
 
+	// Params
+	Tensor *W;
+	Tensor *gW;
+	Tensor *acc_gW;
+	Tensor *bias;
+	Tensor *gbias;
+	Tensor *acc_gbias;
+
     LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int mem);
+
+    ~LDense();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    // Params
-    Tensor *W;
-    Tensor *gW;
-	Tensor *acc_gW;
-    Tensor *bias;
-    Tensor *gbias;
-	Tensor *acc_gbias;
 
     void forward() override;
 

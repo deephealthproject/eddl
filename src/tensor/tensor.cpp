@@ -358,7 +358,7 @@ void Tensor::reallocate(Tensor* old_t, vector<int> *s){
 
 Tensor::~Tensor() {
     this->deleteData();
-    delete tsem;
+    if(this->tsem != nullptr) { this->tsem->unlock(); delete tsem; }
 }
 
 int Tensor::isCPU() { return (device == DEV_CPU); }
