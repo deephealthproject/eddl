@@ -48,12 +48,7 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
 }
 
 LDense::~LDense(){
-    delete W; W = nullptr;
-    delete gW; gW = nullptr;
-    delete acc_gW; acc_gW = nullptr;
-    delete bias; bias = nullptr;
-    delete gbias; gbias = nullptr;
-    delete acc_gbias; acc_gbias = nullptr;
+    // input, output, delta, params[], and gradients[], acc_gradients[] => deleted in ~Layer()
 }
 
 void LDense::forward() {

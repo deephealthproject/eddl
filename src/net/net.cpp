@@ -179,10 +179,10 @@ Net::~Net()
 //        mnets[i] = nullptr;
 //    }
 
-//    for (int i = 0; i < layers.size(); i++) {
-//        delete layers[i];
-//        layers[i] = nullptr;
-//    }
+    for (int i = 0; i < layers.size(); i++) {
+        delete layers[i];
+        layers[i] = nullptr;
+    }
 
     for (int i = 0; i < losses.size(); i++) {
         delete losses[i];

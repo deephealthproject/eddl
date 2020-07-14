@@ -57,15 +57,24 @@ Layer::~Layer(){
 //    if (init!=nullptr) delete this->init;
 
     //params if any
-    if (!isshared)
-      for (int i=0;i<params.size();i++)
-          delete params[i];
-
+    if (!isshared){
+        for (int i=0;i<params.size();i++){
+            delete params[i];
+        }
+    }
 
     //gradients if any
-    if (!isshared)
-      for (int i=0;i<gradients.size();i++){
-        delete gradients[i];
+    if (!isshared){
+        for (int i=0;i<gradients.size();i++){
+            delete gradients[i];
+        }
+    }
+
+    //gradients if any
+    if (!isshared){
+        for (int i=0;i<acc_gradients.size();i++){
+            delete acc_gradients[i];
+        }
     }
 }
 
@@ -87,11 +96,11 @@ void Layer::set_detach(){
 
 
 void Layer::check_target() {
-  if (target==nullptr) target=new Tensor(output->getShape(),dev);
-  else if (target->size!=output->size) {
-    delete target;
-    target=new Tensor(output->getShape(),dev);
-  }
+    if (target==nullptr) target=new Tensor(output->getShape(),dev);
+    else if (target->size!=output->size) {
+        delete target;
+        target=new Tensor(output->getShape(),dev);
+    }
 }
 
 void Layer::mem_delta_parent(){
@@ -140,7 +149,7 @@ void Layer::set_trainable(bool value){
 
 int Layer::get_trainable_params_count()
 {
-  return params.size();
+    return params.size();
 }
 
 void Layer::detach(Layer *l){
@@ -154,11 +163,11 @@ void Layer::detach(Layer *l){
 
 void Layer::reset() {
     if ((!mem_level) && (delta!=nullptr)) {
-      delta->fill_(0.0);
-      for(int i=0;i<states.size();i++)
-        states[i]->fill_(0.0);
-      for(int i=0;i<states.size();i++)
-        delta_states[i]->fill_(0.0);
+        delta->fill_(0.0);
+        for(int i=0;i<states.size();i++)
+            states[i]->fill_(0.0);
+        for(int i=0;i<states.size();i++)
+            delta_states[i]->fill_(0.0);
     }
     detached=false;
 }
