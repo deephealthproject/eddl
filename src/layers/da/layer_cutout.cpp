@@ -31,7 +31,6 @@ LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, 
 
     parent->addchild(this);
     addparent(parent);
-
 }
 
 
