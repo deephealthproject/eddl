@@ -25,9 +25,8 @@ MapReduceDescriptor::MapReduceDescriptor(Tensor *A,vector<int> axis)
   gind=nullptr;
 }
 
-MapReduceDescriptor::~MapReduceDescriptor()
-{
-  free(ind);
+MapReduceDescriptor::~MapReduceDescriptor(){
+  delete[] ind;
 }
 
 ReduceDescriptor::ReduceDescriptor() {}
@@ -39,23 +38,24 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A, vector<int> axis, string mode, boo
   factor=100;
 
 
-  if (axis.size()>=A->ndim)
-    msg("axis must be lower than tensor dim","ReduceDescriptor");
+  if (axis.size()>=A->ndim){
+      msg("axis must be lower than tensor dim","ReduceDescriptor");
+  }
 
-  for(int i=0;i<axis.size();i++)
-    if (axis[i]>=A->ndim) {
-      throw std::runtime_error("axis " + std::to_string(axis[i]-1) + " >= dim=" + std::to_string(A->ndim-1));
-    }
-
-
+  for(int i=0;i<axis.size();i++){
+      if (axis[i]>=A->ndim) {
+          throw std::runtime_error("axis " + std::to_string(axis[i]-1) + " >= dim=" + std::to_string(A->ndim-1));
+      }
+  }
 
   // Select mode (TODO: enumerations are preferred)
   if (mode=="mean") m=0;
   else if (mode=="sum") m=1;
   else if (mode=="max") m=2;
   else if (mode=="min") m=3;
-  else
+  else{
       msg("Incorrect reduction mode", "ReduceDescriptor");
+  }
 
 
   tshape os;
@@ -84,6 +84,12 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A, vector<int> axis, string mode, boo
 
   build_index();
 
+}
+
+ReduceDescriptor::~ReduceDescriptor(){
+//    delete S;
+//    delete[] ind;
+//    delete[] red;
 }
 
 void ReduceDescriptor::build_index() {
