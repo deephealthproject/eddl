@@ -87,7 +87,7 @@ public:
 
     // Data pointers
     float *ptr = nullptr;
-    Eigen::MatrixXf *ptr2 = nullptr;  // TODO: I don't like it. float or eigen, not both
+    Eigen::Map<Eigen::MatrixXf> *ptr2 = nullptr;  // TODO: I don't like it. float or eigen, not both
 
     // Aux variables
     int gpu_device;
