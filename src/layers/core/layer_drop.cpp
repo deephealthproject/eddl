@@ -36,8 +36,7 @@ LDropout::LDropout(Layer *parent, float df, bool iw, string name, int dev, int m
     addparent(parent);
 }
 
-LDropout::~LDropout()
-{
+LDropout::~LDropout(){
     delete mask;
 }
 

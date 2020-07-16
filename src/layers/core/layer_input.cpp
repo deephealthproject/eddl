@@ -24,8 +24,7 @@ LInput::LInput(Tensor *in, string name, int dev, int mem) : LinLayer(name, dev, 
     input = output = in;
 }
 
-LInput::~LInput()
-{
+LInput::~LInput(){
   if (output!=nullptr) {
     delete output;
     output=nullptr;

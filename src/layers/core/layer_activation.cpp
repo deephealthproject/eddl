@@ -140,7 +140,6 @@ void LActivation::backward(){
             tensorNN::D_Linear(delta, input, parent[0]->delta, alpha);
         }
     }
-
 }
 
 
