@@ -33,7 +33,6 @@ int LUniform::total_layers = 0;
   */
 
 LUniform::LUniform(float low, float high, vector<int> size, string name, int dev, int mem) : GeneratorLayer(name, dev, mem) {
-    // TODO: Implement
     if(name.empty()) this->name = "generator_uniform" + to_string(++total_layers);
 
     this->low=low;
@@ -47,21 +46,17 @@ LUniform::~LUniform(){
 
 
 void LUniform::forward(){
-    // TODO: Implement
 }
 
 void LUniform::backward(){
-  // TODO: Implement
 }
 
 Layer *LUniform::share(int c, int bs, vector<Layer *> p) {
-    // TODO: Implement
     clone(c,bs,p,dev);
     return nullptr;
 }
 
 Layer *LUniform::clone(int c, int bs, vector<Layer *> p, int todev) {
-    // TODO: Implement
     LUniform *n;
     n = new LUniform(low, high, size, "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
