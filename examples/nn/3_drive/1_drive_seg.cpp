@@ -155,14 +155,14 @@ int main(int argc, char **argv){
             next_batch({x_train,y_train},{xbatch,ybatch});
 
             Tensor* xout = xbatch->select({"0"});
-//            xout->mult_(255.0f);
-//            xout->save("./0.tr_out_prev.jpg");
+            xout->mult_(255.0f);
+            xout->save("./0.tr_out_prev.jpg");
             delete xout;
 
-//            Tensor* yout = ybatch->select({"0"});
-//            yout->mult_(255.0f);
-//            yout->save("./0.ts_out_prev.jpg");
-//            delete yout;
+            Tensor* yout = ybatch->select({"0"});
+            yout->mult_(255.0f);
+            yout->save("./0.ts_out_prev.jpg");
+            delete yout;
 
             // DA
             forward(danet, vector<Tensor *>{xbatch, ybatch});
@@ -180,13 +180,13 @@ int main(int argc, char **argv){
 
             delete xbatch_da;
             delete ybatch_da;
-//
-//            // We should use "mult_(255.0f)" but with normalize we can stretch its contrast and see results faster
-//            Tensor* yout2 = getOutput(out);
-//            yout2 = yout2->select({"0"});
-//            yout2->normalize_(0.0f, 255.0f);
-//            yout2->save("./out.jpg");
-//            delete yout2;
+
+            // We should use "mult_(255.0f)" but with normalize we can stretch its contrast and see results faster
+            Tensor* yout2 = getOutput(out);
+            yout2 = yout2->select({"0"});
+            yout2->normalize_(0.0f, 255.0f);
+            yout2->save("./out.jpg");
+            delete yout2;
         }
         printf("\n");
     }
