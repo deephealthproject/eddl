@@ -88,7 +88,6 @@ LDiff::LDiff(float k, Layer *l, string name, int dev, int mem) : OperatorLayer(n
 }
 
 LDiff::~LDiff(){
-    tin.clear();
 }
 
 void LDiff::forward(){

@@ -64,6 +64,7 @@ Tensor* Tensor::permute(Tensor* A, const vector<int>& dims){
 
     // Fill new tensor
     Tensor::select(A, new_t, sd);
+
     delete sd;
     return new_t;
 }
@@ -540,17 +541,18 @@ void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
 
 
 Tensor* Tensor::select(const vector<string>& indices){
-    Tensor* t = nullptr;
-
+    // Build descriptor
     auto *sd = new SelDescriptor(indices, this->device);
     sd->build(this->shape);
     sd->build_indices();
 
     // Initialize tensor
-    t = new Tensor(sd->oshape, this->device);
+    auto* t = new Tensor(sd->oshape, this->device);
 
     // Perform select
     Tensor::select(this, t, sd);
+
+    delete sd;
     return t;
 }
 

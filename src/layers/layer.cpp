@@ -47,33 +47,35 @@ Layer::Layer(string name, int dev, int mem) {
 }
 
 Layer::~Layer(){
-    if (output!=nullptr) delete output;
-    if (delta!=nullptr) delete delta;
-    if (target!=nullptr) delete target;
+    // Note: nullptr are not really needed. However, I like to have this pointers pointing to "something" just in case
+
+    if (output!=nullptr) { delete output; output = nullptr; }
+    if (delta!=nullptr)  { delete delta; delta = nullptr; }
+    if (target!=nullptr) { delete target; target = nullptr; }
 
 //    if (orig!=nullptr) delete this->orig;
 //    if (net!=nullptr) delete this->net;
-    if (reg!=nullptr) delete this->reg;
-    if (init!=nullptr) delete this->init;
+    if (reg!=nullptr)  { delete this->reg;  this->reg = nullptr; }
+    if (init!=nullptr) { delete this->init; this->init = nullptr; }
 
     //params if any
     if (!isshared){
-        for (int i=0;i<params.size();i++){
-            delete params[i];
+        for(int i=0;i<params.size();i++){
+            delete params[i]; params[i] = nullptr;
         }
     }
 
     //gradients if any
     if (!isshared){
-        for (int i=0;i<gradients.size();i++){
-            delete gradients[i];
+        for(int i=0;i<gradients.size();i++){
+            delete gradients[i]; gradients[i] = nullptr;
         }
     }
 
     //gradients if any
     if (!isshared){
-        for (int i=0;i<acc_gradients.size();i++){
-            delete acc_gradients[i];
+        for(int i=0;i<acc_gradients.size();i++){
+            delete acc_gradients[i]; acc_gradients[i] = nullptr;
         }
     }
 }
