@@ -93,7 +93,7 @@ public:
 
     LEmbedding(Layer *parent, int vocsize, int lenght, int dim, bool mask_zeros, string name, int dev, int mem);
 
-    ~LEmbedding();
+    ~LEmbedding() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -125,7 +125,7 @@ public:
 
     LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int mem);
 
-    ~LDense();
+    ~LDense() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -264,7 +264,7 @@ public:
 
     LSelect(Layer *l, vector<string> indices, string name, int dev, int mem);
 
-    ~LSelect();
+    ~LSelect() override;
 
     void forward() override;
 
@@ -287,7 +287,7 @@ public:
 
     LPermute(Layer *l, vector<int> dims, string name, int dev, int mem);
 
-    ~LPermute();
+    ~LPermute() override;
 
     void forward() override;
 

@@ -35,7 +35,7 @@ public:
     cl::Buffer *fpga_ptr;
 #endif
 
-    TensorDescriptor(int dev);
+    explicit TensorDescriptor(int dev);
     ~TensorDescriptor();
 
     // Don't mark as pure virtual because not all methods use the same parameters
@@ -54,7 +54,7 @@ public:
 
     vector<string> indices;
 
-    SelDescriptor(int dev);
+    explicit SelDescriptor(int dev);
     SelDescriptor(const vector<string>& indices, int dev);
 
     virtual void build(vector<int> ishape);
@@ -94,6 +94,8 @@ public:
     #endif
 
     ReduceDescriptor2(const vector<int>& axis, bool keepdims, int dev);
+
+    ~ReduceDescriptor2();
 
     void build(const vector<int>& ishape);
     void resize(int b) override;

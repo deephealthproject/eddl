@@ -38,7 +38,7 @@ public:
 
     ReductionLayer(string name, int dev, int mem);
 
-    ~ReductionLayer();
+    ~ReductionLayer() override;
 
     void mem_delta() override;
 
@@ -62,8 +62,7 @@ public:
 
     ReductionLayer2(string name, int dev, int mem);
 
-    ~ReductionLayer2();
-
+    ~ReductionLayer2() override;
 
     void addchild(Layer *l) override;
 
@@ -79,7 +78,6 @@ public:
 class LRMean : public ReductionLayer {
 public:
     static int total_layers;
-
 
     LRMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
@@ -103,7 +101,7 @@ public:
 
     LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
-    ~LRVar();
+    ~LRVar() override;
 
     void forward() override;
 
@@ -179,7 +177,6 @@ public:
 class LRArgmax : public ReductionLayer2 {
 public:
     static int total_layers;
-
 
     LRArgmax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
