@@ -19,6 +19,7 @@ using namespace std;
 Constraint::Constraint(string name) {
     this->name = name;
 }
+
 float Constraint::apply(Tensor *T) {
     return 0;
 }
