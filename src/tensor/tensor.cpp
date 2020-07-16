@@ -275,10 +275,7 @@ void Tensor::toCPU(int dev){
 
         // Assign CPU pointer
         this->device = dev;  // Must appear after deleting the data
-        this->ptr = cpu_ptr;
-        if (ndim == 2) {
-            ptr2 = new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
-        }
+        this->updateData(cpu_ptr);
     }
 
 
