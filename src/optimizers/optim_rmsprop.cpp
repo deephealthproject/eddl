@@ -25,8 +25,8 @@ RMSProp::RMSProp(float lr, float rho, float epsilon, float weight_decay) : Optim
 }
 
 RMSProp::~RMSProp() {
-    for(int i=0; i<gT.size(); i++){ delete gT[i]; }
-    for(int i=0; i<gT1.size(); i++){ delete gT1[i]; }
+    for(int i=0; i<gT.size(); i++){ delete gT[i]; gT[i] = nullptr; }
+    for(int i=0; i<gT1.size(); i++){ delete gT1[i]; gT1[i] = nullptr;}
 }
 
 void RMSProp::change(vector<float> &p) {
@@ -55,14 +55,12 @@ void RMSProp::setlayers(vlayer l) {
     if (isshared) return;
 
     // create momemtum tensors
-    for (int i = 0; i < layers.size(); i++)
+    for (int i = 0; i < layers.size(); i++){
         for (int j = 0; j < layers[i]->get_trainable_params_count(); j++) {
-            gT1.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
-            gT1.back()->fill_(0.0);
-            gT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
-            gT.back()->fill_(0.0);
+            gT1.emplace_back(Tensor::zeros_like(layers[i]->gradients[j]));
+            gT.emplace_back(Tensor::zeros_like(layers[i]->gradients[j]));
         }
-
+    }
 }
 
 void RMSProp::applygrads(int batch) {

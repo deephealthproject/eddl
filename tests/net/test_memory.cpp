@@ -17,14 +17,15 @@ using namespace eddl;
 
 TEST(NetTestSuite, net1_memory_leaks){
     // Define network
-    layer in = Input({784});
-    layer l = in;  // Aux var
+    layer in=Input({3, 32, 32});
+    layer l=in;
 
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
-
-    layer out = Softmax(Dense(l, 10));  // num_classes
+    l = Conv(l,32,{3,3},{1,1});
+    l = ReLu(l);
+    l = LeakyReLu(l);
+    l = Flatten(l);
+    l = Dense(l, 10);
+    layer out = Softmax(l);  // num_classes
     model net = Model({in}, {out});
 
     optimizer opt = rmsprop(0.01);

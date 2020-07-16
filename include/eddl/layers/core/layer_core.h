@@ -187,7 +187,7 @@ public:
 
     // constructors and clones
     LReshape(Layer *parent, vector<int> shape, string name, int dev, int mem);
-    ~LReshape() override;
+//    ~LReshape() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

@@ -53,8 +53,8 @@ Layer::~Layer(){
 
 //    if (orig!=nullptr) delete this->orig;
 //    if (net!=nullptr) delete this->net;
-//    if (reg!=nullptr) delete this->reg;
-//    if (init!=nullptr) delete this->init;
+    if (reg!=nullptr) delete this->reg;
+    if (init!=nullptr) delete this->init;
 
     //params if any
     if (!isshared){
