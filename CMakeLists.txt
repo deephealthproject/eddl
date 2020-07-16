@@ -75,19 +75,22 @@ if(UNIX)
     # READ THIS: https://wiki.gentoo.org/wiki/GCC_optimization
 
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
     # Flags: Debugging
     if(BUILD_COVERAGE)
-        set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "--coverage")
-
-        # Apply coverage flags
-        set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
-        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
+        set(CMAKE_CXX_FLAGS_DEBUG "-O1 -g")
 
         # Add sanitizers
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")  # address, leak, thread, undefined, memory
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize-recover=address")  # address, leak, thread, undefined, memory
+
+        #        set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "--coverage")
+        #
+        #        # Apply coverage flags
+        #        set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
+        #        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
     endif()
 
     if(BUILD_HPC)
