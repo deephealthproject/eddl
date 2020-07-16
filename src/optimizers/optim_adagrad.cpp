@@ -21,3 +21,7 @@ Adagrad::Adagrad(float lr, float epsilon, float weight_decay) : Optimizer() {
     this->epsilon = epsilon;
     this->weight_decay = weight_decay;
 }
+
+Adagrad::~Adagrad() {
+    for(int i=0; i<mT.size(); i++){ delete mT[i]; }
+}

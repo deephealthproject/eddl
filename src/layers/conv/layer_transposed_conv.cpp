@@ -34,5 +34,5 @@ LConvT::LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev, int me
 }
 
 LConvT::~LConvT(){
-    delete cd;
+    delete cd;  // Just in case
 }

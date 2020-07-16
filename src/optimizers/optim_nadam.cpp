@@ -24,3 +24,7 @@ Nadam::Nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule
     this->schedule_decay = schedule_decay;
 
 }
+
+Nadam::~Nadam(){
+    for(int i=0; i<mT.size(); i++){ delete mT[i]; }
+}

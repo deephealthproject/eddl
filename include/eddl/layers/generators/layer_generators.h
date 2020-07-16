@@ -69,7 +69,7 @@ public:
 
     LUniform(float low, float high, vector<int> size, string name, int dev, int mem);
 
-    ~LUniform();
+    ~LUniform() override;
 
     void forward() override;
 

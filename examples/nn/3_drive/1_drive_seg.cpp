@@ -85,7 +85,7 @@ layer UNetWithPadding(layer x)
 int main(int argc, char **argv){
 
     // Download Dataset
-    download_drive();
+    //download_drive();
 
     // Settings
     int epochs = 100000;
@@ -121,7 +121,7 @@ int main(int argc, char **argv){
           {"mse"}, // Losses
           {"mse"}, // Metrics
             CS_GPU({1}, "low_mem")
-          //CS_CPU(-1)
+//          CS_CPU(-1)
     );
     // Train on multi-gpu with sync weights every 100 batches:
 //  toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
@@ -183,10 +183,11 @@ int main(int argc, char **argv){
 
             // We should use "mult_(255.0f)" but with normalize we can stretch its contrast and see results faster
             Tensor* yout2 = getOutput(out);
-            yout2 = yout2->select({"0"});
-            yout2->normalize_(0.0f, 255.0f);
-            yout2->save("./out.jpg");
+            Tensor* yout3 = yout2->select({"0"});
+            yout3->normalize_(0.0f, 255.0f);
+            yout3->save("./out.jpg");
             delete yout2;
+            delete yout3;
         }
         printf("\n");
     }

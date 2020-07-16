@@ -25,36 +25,39 @@ using namespace std;
 
 class MapReduceDescriptor {
 public:
-   int *ind;
-   int *gind;
+    int *ind;
+    int *gind;
 
 
-   MapReduceDescriptor(Tensor *A,vector<int> axis);
-   ~MapReduceDescriptor();
+    MapReduceDescriptor(Tensor *A,vector<int> axis);
+    ~MapReduceDescriptor();
 };
 
 class ReduceDescriptor {
 public:
-   vector<int> axis;
-   bool keepdims;
-   int m;
-   int red_size;
+    vector<int> axis;
+    bool keepdims;
+    int m;
+    int red_size;
 
-   vector<vector<int>> index;
-   Tensor *I; // input
-   Tensor *O; // output
-   Tensor *D; // delta
-   Tensor *ID; // parent delta
-   Tensor *S; // indexes for max,min...
-   // for gpu:
-   int *ind;
-   float *red;
-   int factor;
+    vector<vector<int>> index;
+    Tensor *I; // input
+    Tensor *O; // output
+    Tensor *D; // delta
+    Tensor *ID; // parent delta
+    Tensor *S; // indexes for max,min...
+    // for gpu:
+    int *ind;
+    float *red;
+    int factor;
 
-   ReduceDescriptor();
-   ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool keepdims);
-   void resize(int b);
-   void build_index();
+    ReduceDescriptor();
+    ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool keepdims);
+
+    ~ReduceDescriptor();
+
+    void resize(int b);
+    void build_index();
 
 };
 
@@ -81,8 +84,8 @@ public:
     Tensor *bias= nullptr; // bias
     Tensor *gK= nullptr;// gradient filters
     Tensor *gbias= nullptr;// gradient bias
-  	Tensor *acc_gK= nullptr;// Accumulated gradients for kernels
-  	Tensor *acc_gbias= nullptr;// Accumulated gradients for bias
+    Tensor *acc_gK= nullptr;// Accumulated gradients for kernels
+    Tensor *acc_gbias= nullptr;// Accumulated gradients for bias
     Tensor *D = nullptr; // Delta
     Tensor *O= nullptr; // Outputmap
 
@@ -119,13 +122,13 @@ public:
 
     void build(Tensor *A);
     void resize(int b);
-	void enable_distributed();
+    void enable_distributed();
 
-	static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-	static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
+    static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
+    static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
     static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
 
-    };
+};
 
 
 class PoolDescriptor : public ConvolDescriptor {

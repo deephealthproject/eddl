@@ -20,6 +20,8 @@
 using namespace std;
 
 
+// TODO: IS THIS EVEN USED?
+
 int LTensor::total_layers = 0;
 
 extern ostream &operator<<(ostream &os, const vector<int> shape);
@@ -44,7 +46,7 @@ LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), D
 }
 
 // From file
-LTensor * LTensor::fromCSV(string fname) {
+LTensor* LTensor::fromCSV(string fname) {
   FILE *fe = fopen(fname.c_str(), "rt");
   if (fe == nullptr) {
       throw std::runtime_error(fname + " not found");

@@ -271,24 +271,24 @@ void Tensor::save2img(const string& filename, string format){
     }
 
     // Clone tensor and copy to CPU
-    Tensor *t = this->clone();
-    t->toCPU();  // Just in case
+    Tensor *t_cpu = this->clone();
+    t_cpu->toCPU();  // Just in case
 
     // Un/Squeeze dimensions for 2D and 4D
-    if (t->ndim == 4){ // CxHxW
-        t->squeeze_();  // Careful with: 1x3x32x1 => 3x32
+    if (t_cpu->ndim == 4){ // CxHxW
+        t_cpu->squeeze_();  // Careful with: 1x3x32x1 => 3x32
     }
-    if(t->ndim == 2){ // 1xHxW
-        t->unsqueeze_();
+    if(t_cpu->ndim == 2){ // 1xHxW
+        t_cpu->unsqueeze_();
     }
 
     // Re-order components. From CxHxW  => HxWxC
-    t = Tensor::permute(t, {1, 2, 0});  // Performs clone
+    Tensor *t = Tensor::permute(t_cpu, {1, 2, 0});  // Performs clone
+    delete t_cpu;
 
     // Normalize image (for RGB must fall between 0 and 255) => Not a good idea
     //t->normalize_(0.0f, 255.0f);
 
-    // TODO: I don't see the need to cast this (but if i remove it, it doesn't work)
     // Cast pointer
     // Data in row-major!!!
     auto* data= new uint8_t[t->size];
@@ -314,6 +314,7 @@ void Tensor::save2img(const string& filename, string format){
         msg("Format not implemented", "Tensor::save2img");
     }
 
+    delete[] data;
     delete t;
 }
 

@@ -33,7 +33,7 @@ TensorDescriptor::~TensorDescriptor() {
 
 void TensorDescriptor::free_memory() {
     if (this->cpu_addresses != nullptr) {
-        delete this->cpu_addresses;
+        delete[] this->cpu_addresses;
     }
 
 #ifdef cGPU

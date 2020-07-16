@@ -45,7 +45,7 @@ LLayerNorm::LLayerNorm(Layer *parent,  float epsilon, bool affine,  string name,
 
 
     if (affine) {
-        int size=input->size/input->shape[0];//z*r*c
+        int size= (int)input->size/input->shape[0];//z*r*c
 
         //https://pytorch.org/docs/stable/nn.html#torch.nn.LayerNorm
         //Unlike Batch Normalization which applies scalar scale and bias
@@ -73,16 +73,7 @@ LLayerNorm::LLayerNorm(Layer *parent,  float epsilon, bool affine,  string name,
 }
 
 LLayerNorm::~LLayerNorm(){
-    delete mean;
-    delete variance;
-    delete bn_g;
-    delete bn_b;
-    delete gbn_g;
-    delete gbn_b;
-    delete opa; //output pre-affine
-
-    layers.clear();
-
+    delete opa;
 }
 
 void LLayerNorm::resize(int batch){

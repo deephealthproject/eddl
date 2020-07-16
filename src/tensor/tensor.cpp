@@ -134,10 +134,17 @@ void Tensor::updateStrides() {
 }
 
 void Tensor::deleteData(){
-    // Careful, you can't know is a pointer is allocated
+    // Carefpdal, you can't know is a pointer is allocated
     if(this->ptr != nullptr){
         if (this->isCPU()) {
             delete[] this->ptr;
+
+            // Delete eigen matrix
+            if (this->ndim == 2){
+                delete this->ptr2;
+                this->ptr2 = nullptr;
+            }
+
         }
 #ifdef cGPU
         else if (this->isGPU())
@@ -153,6 +160,7 @@ void Tensor::deleteData(){
 
       // delete FPGA Tensor
 #endif
+        // Set pointer to null
         this->ptr = nullptr;
     }
 }
@@ -169,7 +177,7 @@ void Tensor::updateData(float *fptr, void *fptr2){
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
         if (this->ndim == 2){
-            this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
+            this->ptr2 = new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
         }
     }
 #ifdef cGPU
@@ -229,7 +237,7 @@ void Tensor::updateData(float *fptr, void *fptr2){
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
         if (this->ndim == 2) {
-          this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
+          this->ptr2= new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
         }
       }
 #endif
@@ -267,10 +275,7 @@ void Tensor::toCPU(int dev){
 
         // Assign CPU pointer
         this->device = dev;  // Must appear after deleting the data
-        this->ptr = cpu_ptr;
-        if (ndim == 2) {
-            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
-        }
+        this->updateData(cpu_ptr);
     }
 
 
@@ -358,7 +363,7 @@ void Tensor::reallocate(Tensor* old_t, vector<int> *s){
 
 Tensor::~Tensor() {
     this->deleteData();
-    delete tsem;
+    if(this->tsem != nullptr) { this->tsem->unlock(); delete tsem; }
 }
 
 int Tensor::isCPU() { return (device == DEV_CPU); }

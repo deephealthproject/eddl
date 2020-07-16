@@ -1074,7 +1074,7 @@ namespace eddl {
     // collect from CS when necessary
     Tensor* getOutput(layer l1){
         collectTensor(l1,"output");
-        return l1->output->clone();
+        return l1->output->clone();  // Why not return addresses so that we can easily avoid potential memory leaks?
     }
 
     Tensor* getDelta(layer l1){

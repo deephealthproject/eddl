@@ -47,6 +47,9 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
     addparent(parent);
 }
 
+LDense::~LDense(){
+    // input, output, delta, params[], and gradients[], acc_gradients[] => deleted in ~Layer()
+}
 
 void LDense::forward() {
     Tensor::mult2D(input, 0, W, 0, output, 0);

@@ -18,6 +18,9 @@ ReduceDescriptor2::ReduceDescriptor2(const vector<int>& axis, bool keepdims, int
     this->keepdims = keepdims;
 }
 
+ReduceDescriptor2::~ReduceDescriptor2(){
+    // For FPGA?
+}
 
 void ReduceDescriptor2::compute_output(){
     if (this->keepdims){

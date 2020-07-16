@@ -23,3 +23,7 @@ AdaDelta::AdaDelta(float lr, float rho, float epsilon, float weight_decay) : Opt
     this->weight_decay = weight_decay;
 
 }
+
+AdaDelta::~AdaDelta() {
+    for(int i=0; i<mT.size(); i++){ delete mT[i]; }
+}

@@ -29,9 +29,6 @@ public:
     static int total_layers;
     PoolDescriptor *pd;
 
-    // Params
-    Tensor *indX, *indY;
-
     // constructors
     LPool(Layer *parent, PoolDescriptor *cd, string name, int dev, int mem);
 

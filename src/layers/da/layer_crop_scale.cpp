@@ -26,6 +26,5 @@ LCropScale::LCropScale(Layer *parent, vector<int> from_coords, vector<int> to_co
 
 
 void LCropScale::forward() {
-
     Tensor::crop_scale(this->input, this->output, this->from_coords, this->to_coords, this->da_mode, this->cval);
 }

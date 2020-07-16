@@ -49,8 +49,14 @@ void Tensor::fill(Tensor* A, float v){
 
 void Tensor::permute_(const vector<int>& dims){
     Tensor* temp = Tensor::permute(this, dims);
-    this->deleteData();
-    this->ptr = temp->ptr;
+
+    // Update attributes
+    updateShape(temp->shape);
+    updateSize();
+    updateStrides();
+    Tensor::copy(temp, this);  // copy data
+
+    delete temp;
 }
 
 
@@ -64,6 +70,7 @@ Tensor* Tensor::permute(Tensor* A, const vector<int>& dims){
 
     // Fill new tensor
     Tensor::select(A, new_t, sd);
+
     delete sd;
     return new_t;
 }
@@ -71,8 +78,14 @@ Tensor* Tensor::permute(Tensor* A, const vector<int>& dims){
 
 void Tensor::moveaxis_(int source, int destination){
     Tensor* temp = Tensor::moveaxis(this, source, destination);
-    this->deleteData();
-    this->ptr = temp->ptr;
+
+    // Update attributes
+    updateShape(temp->shape);
+    updateSize();
+    updateStrides();
+    Tensor::copy(temp, this);  // copy data
+
+    delete temp;
 }
 
 
@@ -103,8 +116,14 @@ Tensor* Tensor::moveaxis(Tensor* A, int source, int destination){
 
 void Tensor::swapaxis_(int axis1, int axis2){
     Tensor* temp = Tensor::swapaxis(this, axis1, axis2);
-    this->deleteData();
-    this->ptr = temp->ptr;
+
+    // Update attributes
+    updateShape(temp->shape);
+    updateSize();
+    updateStrides();
+    Tensor::copy(temp, this);  // copy data
+
+    delete temp;
 }
 
 
@@ -149,6 +168,7 @@ void Tensor::reshape_(const vector<int> &new_shape){
     updateSize();
     updateStrides();
     updateData(this->ptr);  // Due to the Eigen mapping
+
 }
 
 
@@ -540,17 +560,17 @@ void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
 
 
 Tensor* Tensor::select(const vector<string>& indices){
-    Tensor* t = nullptr;
-
+    // Build descriptor
     auto *sd = new SelDescriptor(indices, this->device);
     sd->build(this->shape);
-    sd->build_indices();
 
     // Initialize tensor
-    t = new Tensor(sd->oshape, this->device);
+    auto* t = new Tensor(sd->oshape, this->device);
 
     // Perform select
     Tensor::select(this, t, sd);
+
+    delete sd;
     return t;
 }
 
@@ -594,7 +614,6 @@ void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 void Tensor::set_select(const vector<string>& indices, Tensor *A){
     auto *sd = new SelDescriptor(indices, this->device);
     sd->build(this->shape);
-    sd->build_indices();
 
     // Check if the dimensions of the selection and the tensor are compatibles
     if(sd->oshape==A->shape){

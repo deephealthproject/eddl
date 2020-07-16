@@ -26,12 +26,13 @@ void SelDescriptor::build(vector<int> ishape){
     // Get input/output shapes
     this->ishape = ishape;
     this->oshape = indices2shape(this->idxs_range);
-    this->cpu_addresses = ranges2indices(this->ishape, this->idxs_range);
+
+    // Build indices
+    this->build_indices();
 }
 
 void SelDescriptor::resize(int b){
-    // Delete previous allocations
-    this->free_memory();
+
 
     // This is only used if the batch is specified
 //    // Update batch of range
@@ -45,6 +46,9 @@ void SelDescriptor::resize(int b){
 }
 
 void SelDescriptor::build_indices(){
+    // Delete previous allocations
+    this->free_memory();
+
     // Compute index translation (output=>input)
     this->cpu_addresses = ranges2indices(this->ishape, this->idxs_range);
 }
