@@ -544,7 +544,6 @@ Tensor* Tensor::select(const vector<string>& indices){
     // Build descriptor
     auto *sd = new SelDescriptor(indices, this->device);
     sd->build(this->shape);
-    sd->build_indices();
 
     // Initialize tensor
     auto* t = new Tensor(sd->oshape, this->device);
@@ -596,7 +595,6 @@ void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 void Tensor::set_select(const vector<string>& indices, Tensor *A){
     auto *sd = new SelDescriptor(indices, this->device);
     sd->build(this->shape);
-    sd->build_indices();
 
     // Check if the dimensions of the selection and the tensor are compatibles
     if(sd->oshape==A->shape){

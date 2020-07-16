@@ -331,7 +331,7 @@ int* permute_indices(const vector<int>& ishape, const vector<int>& dims){
         }
     }
 
-    return addresses;
+    return addresses;  // Be careful! It's easy to forget about this pointer and have a memory leak
 }
 
 int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges){
@@ -365,7 +365,7 @@ int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges){
         addresses[i] = A_pos;
     }
 
-    return addresses;
+    return addresses;  // Be careful! It's easy to forget about this pointer and have a memory leak
 }
 
 bool is_number(const std::string& s){
