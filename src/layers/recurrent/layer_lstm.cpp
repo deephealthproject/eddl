@@ -109,42 +109,20 @@ LLSTM::LLSTM(vector<Layer *> parent, int units, bool mask_zeros, bool bidirectio
 
 LLSTM::~LLSTM(){
 //    delete cps;
-
 //    delete state_c;
-//    delete state_h;
-//    delete delta_h;
-//    delete delta_c;
-
-//    delete Wih; delete Wix;
-//    delete Wfh; delete Wfx;
-//    delete Woh; delete Wox;
-//    delete Wch; delete Wcx;
-//
-//    delete gWih; delete gWix;
-//    delete gWfh; delete gWfx;
-//    delete gWoh; delete gWox;
-//    delete gWch; delete gWcx;
-//
-////    delete in; delete fn; delete on; delete cn;
-//    delete inbias; delete fnbias; delete onbias; delete cnbias;
-//    delete ginbias; delete gfnbias; delete gonbias; delete gcnbias;
-
-//    delete incn; delete cn1fn;
-//    delete sh;
-//
-//    delete mask;
-//    delete psh;
-//    delete psc;
 }
 
 // RESIZE , MEM_DELTA states
 void LLSTM::mem_delta(){
     // Reserve space for delta
     if(delta == nullptr){
-        delta_h=delta = Tensor::zeros(this->output->shape, this->output->device);
+
+//        // Delete deltas
+//        for (int i = 0; i < delta_states.size(); ++i) { delete delta_states[i]; delta_states[i] = nullptr;}
+        delta_states.clear();
+        delta_h = delta = Tensor::zeros(this->output->shape, this->output->device);
         delta_c = Tensor::zeros(this->output->shape, this->output->device);
 
-        delta_states.clear();
         delta_states.push_back(delta_h);
         delta_states.push_back(delta_c);
 
@@ -173,8 +151,8 @@ void LLSTM::free_delta(){
 
 void LLSTM::resize(int batch){
     if (output!=nullptr) {
-      output->resize(batch);
-      state_c->resize(batch);
+        output->resize(batch);
+        state_c->resize(batch);
     }
 
 }
@@ -182,17 +160,17 @@ void LLSTM::resize(int batch){
 // {nxd} --> {nx1}
 void reduced_abs_sum(Tensor * input, Tensor *output)
 {
-  Tensor *A=input->clone();
-  A->abs_();
+    Tensor *A=input->clone();
+    A->abs_();
 
-  Tensor *ones=new Tensor({input->shape[1],1},input->device);
-  ones->fill_(1.0);
+    Tensor *ones=new Tensor({input->shape[1],1},input->device);
+    ones->fill_(1.0);
 
-  // {nxd} x {dx1} --> {nx1}
-  Tensor::mult2D(A,0,ones,0,output,0);
+    // {nxd} x {dx1} --> {nx1}
+    Tensor::mult2D(A,0,ones,0,output,0);
 
-  delete A;
-  delete ones;
+    delete A;
+    delete ones;
 
 }
 
@@ -200,115 +178,254 @@ void reduced_abs_sum(Tensor * input, Tensor *output)
 Tensor *replicate_tensor(Tensor *input,int d)
 {
 
-  Tensor *ones=new Tensor({1,d},input->device);
-  ones->fill_(1.0);
+    Tensor *ones=new Tensor({1,d},input->device);
+    ones->fill_(1.0);
 
-  Tensor *output=new Tensor({input->shape[0],d},input->device);
+    Tensor *output=new Tensor({input->shape[0],d},input->device);
 
-  // {nx1} x {1xd} --> {nxd}
-  Tensor::mult2D(input,0,ones,0,output,0);
+    // {nx1} x {1xd} --> {nxd}
+    Tensor::mult2D(input,0,ones,0,output,0);
 
-  delete ones;
+    delete ones;
 
-  return output;
+    return output;
 }
 
 
 // virtual
 void LLSTM::forward() {
-  if (mask_zeros) {
-    mask=new Tensor({input->shape[0],1},dev);
-    reduced_abs_sum(input,mask);
+    if (mask_zeros) {
+        mask=new Tensor({input->shape[0],1},dev);
+        reduced_abs_sum(input,mask);
 
-    Tensor::logical_not(mask,mask);
-    if (parent.size()>1) {
-      Tensor *A=replicate_tensor(mask,units);
+        Tensor::logical_not(mask,mask);
+        if (parent.size()>1) {
+            Tensor *A=replicate_tensor(mask,units);
 
-      psh=parent[1]->states[0]->clone(); //prev state_h
-      psc=parent[1]->states[1]->clone(); //prev state_c
+            psh=parent[1]->states[0]->clone(); //prev state_h
+            psc=parent[1]->states[1]->clone(); //prev state_c
 
-      Tensor::el_mult(A,psh,psh,0);
-      Tensor::el_mult(A,psc,psc,0);
-      delete A;
+            Tensor::el_mult(A,psh,psh,0);
+            Tensor::el_mult(A,psc,psc,0);
+            delete A;
+        }
+
     }
 
-  }
+
+    // input=parent[0]->output
+    in=new Tensor({input->shape[0], units}, dev);
+
+    Tensor::mult2D(parent[0]->output, 0, Wix, 0, in, 0);
+    if (parent.size()>1) {
+        Tensor::mult2D(parent[1]->states[0], 0, Wih, 0, in, 1);
+    }
+    Tensor::sum2D_rowwise(in, inbias, in);
+    tensorNN::Sigmoid(in, in);
+
+    fn=new Tensor({input->shape[0], units}, dev);
+    Tensor::mult2D(parent[0]->output, 0, Wfx, 0, fn, 0);
+    if (parent.size()>1) {
+        Tensor::mult2D(parent[1]->states[0], 0, Wfh, 0, fn, 1);
+    }
+    Tensor::sum2D_rowwise(fn, fnbias, fn);
+    tensorNN::Sigmoid(fn, fn);
+
+    on=new Tensor({input->shape[0], units}, dev);
+    Tensor::mult2D(parent[0]->output, 0, Wox, 0, on, 0);
+    if (parent.size()>1) {
+        Tensor::mult2D(parent[1]->states[0], 0, Woh, 0, on, 1);
+    }
+    Tensor::sum2D_rowwise(on, onbias, on);
+    tensorNN::Sigmoid(on, on);
+
+    cn=new Tensor({input->shape[0], units}, dev);
+    Tensor::mult2D(parent[0]->output, 0, Wcx, 0, cn, 0);
+    if (parent.size()>1) {
+        Tensor::mult2D(parent[1]->states[0], 0, Wch, 0, cn, 1);
+    }
+    Tensor::sum2D_rowwise(cn, cnbias, cn);
+    tensorNN::Tanh(cn,cn);
+
+    incn=new Tensor({input->shape[0], units}, dev);
+    Tensor::el_mult(in,cn,incn,0);
 
 
-  // input=parent[0]->output
-  in=new Tensor({input->shape[0], units}, dev);
+    cn1fn=new Tensor({input->shape[0], units}, dev);
+    if (parent.size()>1) {
+        Tensor::el_mult(parent[1]->states[1],fn,cn1fn,0);
+    }
+    else {
+        cn1fn->fill_(0.0);
+    }
 
-  Tensor::mult2D(parent[0]->output, 0, Wix, 0, in, 0);
-  if (parent.size()>1) {
-    Tensor::mult2D(parent[1]->states[0], 0, Wih, 0, in, 1);
-  }
-  Tensor::sum2D_rowwise(in, inbias, in);
-  tensorNN::Sigmoid(in, in);
+    Tensor::add(1.0,incn,1.0,cn1fn,state_c,0);
 
-  fn=new Tensor({input->shape[0], units}, dev);
-  Tensor::mult2D(parent[0]->output, 0, Wfx, 0, fn, 0);
-  if (parent.size()>1) {
-    Tensor::mult2D(parent[1]->states[0], 0, Wfh, 0, fn, 1);
-  }
-  Tensor::sum2D_rowwise(fn, fnbias, fn);
-  tensorNN::Sigmoid(fn, fn);
-
-  on=new Tensor({input->shape[0], units}, dev);
-  Tensor::mult2D(parent[0]->output, 0, Wox, 0, on, 0);
-  if (parent.size()>1) {
-    Tensor::mult2D(parent[1]->states[0], 0, Woh, 0, on, 1);
-  }
-  Tensor::sum2D_rowwise(on, onbias, on);
-  tensorNN::Sigmoid(on, on);
-
-  cn=new Tensor({input->shape[0], units}, dev);
-  Tensor::mult2D(parent[0]->output, 0, Wcx, 0, cn, 0);
-  if (parent.size()>1) {
-    Tensor::mult2D(parent[1]->states[0], 0, Wch, 0, cn, 1);
-  }
-  Tensor::sum2D_rowwise(cn, cnbias, cn);
-  tensorNN::Tanh(cn,cn);
-
-  incn=new Tensor({input->shape[0], units}, dev);
-  Tensor::el_mult(in,cn,incn,0);
-
-
-  cn1fn=new Tensor({input->shape[0], units}, dev);
-  if (parent.size()>1) {
-    Tensor::el_mult(parent[1]->states[1],fn,cn1fn,0);
-  }
-  else {
-    cn1fn->fill_(0.0);
-  }
-
-  Tensor::add(1.0,incn,1.0,cn1fn,state_c,0);
-
-  sh=new Tensor({input->shape[0], units}, dev);
+    sh=new Tensor({input->shape[0], units}, dev);
     tensorNN::Tanh(state_c,sh);
-  //ReLu(state_c,sh);
+    //ReLu(state_c,sh);
 
-  Tensor::el_mult(sh,on,state_h,0);
+    Tensor::el_mult(sh,on,state_h,0);
 
-  if (mask_zeros) {
-    Tensor::logical_not(mask,mask);
+    if (mask_zeros) {
+        Tensor::logical_not(mask,mask);
 
-    Tensor *A=replicate_tensor(mask,units);
+        Tensor *A=replicate_tensor(mask,units);
 
-    Tensor::el_mult(A,state_h,state_h,0);
-    Tensor::el_mult(A,state_c,state_c,0);
+        Tensor::el_mult(A,state_h,state_h,0);
+        Tensor::el_mult(A,state_c,state_c,0);
 
-    delete A;
+        delete A;
 
-    if (parent.size()>1) {
-      Tensor::inc(psh,state_h); //output=prev output when in=0
-      Tensor::inc(psc,state_c);
+        if (parent.size()>1) {
+            Tensor::inc(psh,state_h); //output=prev output when in=0
+            Tensor::inc(psc,state_c);
 
-      delete psh;
-      delete psc;
+            delete psh;
+            delete psc;
+        }
     }
-  }
 
-  if (!mode) { // eval mode
+    if (!mode) { // eval mode
+        delete in;
+        delete fn;
+        delete cn;
+        delete on;
+        delete incn;
+        delete cn1fn;
+        delete sh;
+        if (mask_zeros) delete mask;
+    }
+
+
+}
+
+void LLSTM::backward() {
+    //delta_h=delta;
+    //delta_c
+    if (mask_zeros) {
+        if (parent.size()>1) {
+            Tensor::logical_not(mask,mask);
+
+            Tensor *A=replicate_tensor(mask,units);
+
+            psh=delta_h->clone();
+            psc=delta_c->clone();
+
+            Tensor::el_mult(A,psh,psh,0);
+            Tensor::el_mult(A,psc,psc,0);
+
+            delete A;
+
+        }
+    }
+
+    Tensor *d1=new Tensor(delta->getShape(),dev);
+    Tensor *d2=new Tensor(delta->getShape(),dev);
+    Tensor *daux=new Tensor(delta->getShape(),dev);
+
+    Tensor::el_mult(delta,on,d1,0);
+    Tensor::el_mult(delta,sh,d2,0);
+
+    // output gate
+    daux->fill_(0.0);
+    tensorNN::D_Sigmoid(d2, on, daux);
+    Tensor::copy(daux,d2);
+
+    if (trainable) {
+        Tensor::mult2D(parent[0]->output, 1, d2, 0, gWox, 1);
+        if (parent.size()>1)
+            Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWoh, 1);
+        Tensor::reduce_sum2D(d2, gonbias, 0, 1);
+    }
+
+    Tensor::mult2D(d2, 0, Wox, 1, parent[0]->delta, 1);
+    if (parent.size()>1)
+        Tensor::mult2D(d2, 0, Woh, 1, parent[1]->delta_states[0], 1);
+
+
+    d2->fill_(0.0);
+    tensorNN::D_Tanh(d1, sh, d2);
+    Tensor::inc(d2,delta_c);
+
+    // forget gate
+    if (parent.size()>1) {
+        Tensor::el_mult(delta_c, fn, parent[1]->delta_states[1], 1);
+        Tensor::el_mult(delta_c, parent[1]->states[1], d2, 0);
+
+        daux->fill_(0.0);
+        tensorNN::D_Sigmoid(d2, fn, daux);
+        Tensor::copy(daux,d2);
+
+        if (trainable) {
+            Tensor::mult2D(parent[0]->output, 1, d2, 0, gWfx, 1);
+            Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWfh, 1);
+            Tensor::reduce_sum2D(d2, gfnbias, 0, 1);
+        }
+        Tensor::mult2D(d2, 0, Wfx, 1, parent[0]->delta, 1);
+        Tensor::mult2D(d2, 0, Wfh, 1, parent[1]->delta_states[0], 1);
+    }
+
+    Tensor::el_mult(delta_c, in, d1, 0);
+    Tensor::el_mult(delta_c, cn, d2, 0);
+
+    // Input gate
+    daux->fill_(0.0);
+    tensorNN::D_Sigmoid(d2, in, daux);
+    Tensor::copy(daux,d2);
+
+    if (trainable) {
+        Tensor::mult2D(parent[0]->output, 1, d2, 0, gWix, 1);
+        if (parent.size()>1)
+            Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWih, 1);
+        Tensor::reduce_sum2D(d2, ginbias, 0, 1);
+    }
+
+    Tensor::mult2D(d2, 0, Wix, 1, parent[0]->delta, 1);
+    if (parent.size()>1)
+        Tensor::mult2D(d2, 0, Wih, 1, parent[1]->delta_states[0], 1);
+
+    // Cn
+    daux->fill_(0.0);
+    tensorNN::D_Tanh(d1, cn, daux);
+    Tensor::copy(daux,d1);
+
+    if (trainable) {
+        Tensor::mult2D(parent[0]->output, 1, d1, 0, gWcx, 1);
+        if (parent.size()>1)
+            Tensor::mult2D(parent[1]->states[0], 1, d1, 0, gWch, 1);
+        Tensor::reduce_sum2D(d1, gcnbias, 0, 1);
+    }
+
+    Tensor::mult2D(d1, 0, Wcx, 1, parent[0]->delta, 1);
+    if (parent.size()>1)
+        Tensor::mult2D(d1, 0, Wch, 1, parent[1]->delta_states[0], 1);
+
+
+    if (mask_zeros) {
+        if (parent.size()>1) {
+            Tensor::logical_not(mask,mask);
+
+            Tensor *A=replicate_tensor(mask,units);
+
+            Tensor::el_mult(A,parent[1]->delta_states[0],parent[1]->delta_states[0],0);
+            Tensor::el_mult(A,parent[1]->delta_states[1],parent[1]->delta_states[1],0);
+            delete A;
+
+            Tensor::inc(psh,parent[1]->delta_states[0]);
+            Tensor::inc(psc,parent[1]->delta_states[1]);
+
+            delete psh;
+            delete psc;
+
+        }
+        delete mask;
+    }
+
+
+    delete d1;
+    delete d2;
+    delete daux;
     delete in;
     delete fn;
     delete cn;
@@ -316,145 +433,6 @@ void LLSTM::forward() {
     delete incn;
     delete cn1fn;
     delete sh;
-    if (mask_zeros) delete mask;
-  }
-
-
-}
-
-void LLSTM::backward() {
-  //delta_h=delta;
-  //delta_c
-  if (mask_zeros) {
-    if (parent.size()>1) {
-      Tensor::logical_not(mask,mask);
-
-      Tensor *A=replicate_tensor(mask,units);
-
-      psh=delta_h->clone();
-      psc=delta_c->clone();
-
-      Tensor::el_mult(A,psh,psh,0);
-      Tensor::el_mult(A,psc,psc,0);
-
-      delete A;
-
-    }
-  }
-
-  Tensor *d1=new Tensor(delta->getShape(),dev);
-  Tensor *d2=new Tensor(delta->getShape(),dev);
-  Tensor *daux=new Tensor(delta->getShape(),dev);
-
-  Tensor::el_mult(delta,on,d1,0);
-  Tensor::el_mult(delta,sh,d2,0);
-
-  // output gate
-  daux->fill_(0.0);
-    tensorNN::D_Sigmoid(d2, on, daux);
-  Tensor::copy(daux,d2);
-
-  if (trainable) {
-    Tensor::mult2D(parent[0]->output, 1, d2, 0, gWox, 1);
-    if (parent.size()>1)
-      Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWoh, 1);
-    Tensor::reduce_sum2D(d2, gonbias, 0, 1);
-  }
-
-  Tensor::mult2D(d2, 0, Wox, 1, parent[0]->delta, 1);
-  if (parent.size()>1)
-    Tensor::mult2D(d2, 0, Woh, 1, parent[1]->delta_states[0], 1);
-
-
-  d2->fill_(0.0);
-    tensorNN::D_Tanh(d1, sh, d2);
-  Tensor::inc(d2,delta_c);
-
-  // forget gate
-  if (parent.size()>1) {
-    Tensor::el_mult(delta_c, fn, parent[1]->delta_states[1], 1);
-    Tensor::el_mult(delta_c, parent[1]->states[1], d2, 0);
-
-    daux->fill_(0.0);
-      tensorNN::D_Sigmoid(d2, fn, daux);
-    Tensor::copy(daux,d2);
-
-    if (trainable) {
-      Tensor::mult2D(parent[0]->output, 1, d2, 0, gWfx, 1);
-      Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWfh, 1);
-      Tensor::reduce_sum2D(d2, gfnbias, 0, 1);
-    }
-    Tensor::mult2D(d2, 0, Wfx, 1, parent[0]->delta, 1);
-    Tensor::mult2D(d2, 0, Wfh, 1, parent[1]->delta_states[0], 1);
-  }
-
-  Tensor::el_mult(delta_c, in, d1, 0);
-  Tensor::el_mult(delta_c, cn, d2, 0);
-
-  // Input gate
-  daux->fill_(0.0);
-    tensorNN::D_Sigmoid(d2, in, daux);
-  Tensor::copy(daux,d2);
-
-  if (trainable) {
-    Tensor::mult2D(parent[0]->output, 1, d2, 0, gWix, 1);
-    if (parent.size()>1)
-      Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWih, 1);
-    Tensor::reduce_sum2D(d2, ginbias, 0, 1);
-  }
-
-  Tensor::mult2D(d2, 0, Wix, 1, parent[0]->delta, 1);
-  if (parent.size()>1)
-    Tensor::mult2D(d2, 0, Wih, 1, parent[1]->delta_states[0], 1);
-
-  // Cn
-  daux->fill_(0.0);
-    tensorNN::D_Tanh(d1, cn, daux);
-  Tensor::copy(daux,d1);
-
-  if (trainable) {
-    Tensor::mult2D(parent[0]->output, 1, d1, 0, gWcx, 1);
-    if (parent.size()>1)
-      Tensor::mult2D(parent[1]->states[0], 1, d1, 0, gWch, 1);
-    Tensor::reduce_sum2D(d1, gcnbias, 0, 1);
-  }
-
-  Tensor::mult2D(d1, 0, Wcx, 1, parent[0]->delta, 1);
-  if (parent.size()>1)
-    Tensor::mult2D(d1, 0, Wch, 1, parent[1]->delta_states[0], 1);
-
-
-  if (mask_zeros) {
-    if (parent.size()>1) {
-      Tensor::logical_not(mask,mask);
-
-      Tensor *A=replicate_tensor(mask,units);
-
-      Tensor::el_mult(A,parent[1]->delta_states[0],parent[1]->delta_states[0],0);
-      Tensor::el_mult(A,parent[1]->delta_states[1],parent[1]->delta_states[1],0);
-      delete A;
-
-      Tensor::inc(psh,parent[1]->delta_states[0]);
-      Tensor::inc(psc,parent[1]->delta_states[1]);
-
-      delete psh;
-      delete psc;
-
-    }
-    delete mask;
-  }
-
-
-  delete d1;
-  delete d2;
-  delete daux;
-  delete in;
-  delete fn;
-  delete cn;
-  delete on;
-  delete incn;
-  delete cn1fn;
-  delete sh;
 
 }
 
@@ -486,14 +464,14 @@ Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
     n->params.push_back(cnbias);
 
     if (n->parent.size()>1) {
-      n->Woh = Woh;
-      n->Wih = Wih;
-      n->Wfh = Wfh;
-      n->Wch = Wch;
-      n->params.push_back(Wih);
-      n->params.push_back(Wfh);
-      n->params.push_back(Woh);
-      n->params.push_back(Wch);
+        n->Woh = Woh;
+        n->Wih = Wih;
+        n->Wfh = Wfh;
+        n->Wch = Wch;
+        n->params.push_back(Wih);
+        n->params.push_back(Wfh);
+        n->params.push_back(Woh);
+        n->params.push_back(Wch);
     }
 
 
@@ -518,14 +496,14 @@ Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
     n->gradients.push_back(gonbias);
     n->gradients.push_back(gcnbias);
     if (n->parent.size()>1) {
-      n->gWoh = gWoh;
-      n->gWih = gWih;
-      n->gWfh = gWfh;
-      n->gWch = gWch;
-      n->gradients.push_back(gWih);
-      n->gradients.push_back(gWfh);
-      n->gradients.push_back(gWoh);
-      n->gradients.push_back(gWch);
+        n->gWoh = gWoh;
+        n->gWih = gWih;
+        n->gWfh = gWfh;
+        n->gWch = gWch;
+        n->gradients.push_back(gWih);
+        n->gradients.push_back(gWfh);
+        n->gradients.push_back(gWoh);
+        n->gradients.push_back(gWch);
     }
 
 
