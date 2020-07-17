@@ -5,7 +5,7 @@ Creation Routines
 
     Section in progress
 
-    Read this: https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md
+    Read this: https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md
 
 
 Constructors
@@ -15,8 +15,8 @@ Create an uninitialized tensor
 
 .. doxygenfunction:: Tensor::Tensor()
 .. doxygenfunction:: Tensor::Tensor(const vector<int>&, int)
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, float *, int)
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, Tensor *)
+.. doxygenfunction:: Tensor::Tensor(const vector<int>&, float*, int)
+.. doxygenfunction:: Tensor::Tensor(const vector<int>&, Tensor*)
 .. doxygenfunction:: Tensor::Tensor(const vector<float>&, const vector<int>&, int)
 
 .. code-block:: c++
@@ -286,7 +286,7 @@ Constructors of matrices
 
 .. doxygenfunction:: Tensor::diag_(int)
 .. doxygenfunction:: Tensor::diag(int)
-.. doxygenfunction:: Tensor::diag(Tensor *, Tensor *, int)
+.. doxygenfunction:: Tensor::diag(Tensor*, Tensor*, int)
 
 
 Example:

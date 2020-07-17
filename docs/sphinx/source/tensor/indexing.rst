@@ -5,7 +5,7 @@ Indexing & Sorting
 
     Section in progress
 
-    Read this: https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md
+    Read this: https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md
 
 Indexing
 --------------
@@ -27,8 +27,8 @@ Example:
 where
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::where(Tensor *, Tensor *, Tensor *)
-.. doxygenfunction:: Tensor::where(Tensor *, Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::where(Tensor*, Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::where(Tensor*, Tensor*, Tensor*, Tensor*)
 
 
 Example:
@@ -43,7 +43,7 @@ Example:
 select
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::select(Tensor *, Tensor *, vector<int>, int, int, bool)
+.. doxygenfunction:: Tensor::select(Tensor*, Tensor*, vector<int>, int, int, bool)
 
 
 Example:
@@ -57,7 +57,7 @@ Example:
 deselect
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::deselect(Tensor *, Tensor *, vector<int>, int, int, int, bool)
+.. doxygenfunction:: Tensor::deselect(Tensor*, Tensor*, vector<int>, int, int, int, bool)
 
 
 Example:
@@ -77,7 +77,7 @@ sort
 
 .. doxygenfunction:: Tensor::sort_(bool, bool)
 .. doxygenfunction:: Tensor::sort(bool, bool)
-.. doxygenfunction:: Tensor::sort(Tensor *, Tensor *, bool, bool)
+.. doxygenfunction:: Tensor::sort(Tensor*, Tensor*, bool, bool)
 
 
 Example:
@@ -103,7 +103,7 @@ argsort
 ^^^^^^^^^
 
 .. doxygenfunction:: Tensor::argsort(bool, bool)
-.. doxygenfunction:: Tensor::argsort(Tensor *, Tensor *, bool, bool)
+.. doxygenfunction:: Tensor::argsort(Tensor*, Tensor*, bool, bool)
 
 
 Example:

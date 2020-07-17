@@ -5,7 +5,7 @@ Manipulation
 
     Section in progress
 
-    Read this: https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md
+    Read this: https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md
 
 
 Devices and information
@@ -54,8 +54,8 @@ Check tensor device
 Check compatibility
 ^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: checkCompatibility(Tensor *, Tensor *, const string&)
-.. doxygenfunction:: checkCompatibility(Tensor *, Tensor *, Tensor *, const string&)
+.. doxygenfunction:: checkCompatibility(Tensor*, Tensor*, const string&)
+.. doxygenfunction:: checkCompatibility(Tensor*, Tensor*, Tensor*, const string&)
 
 
 .. code-block:: c++
@@ -457,8 +457,8 @@ Value operations
 fill
 ^^^^^^^
 .. doxygenfunction:: Tensor::fill_(float)
-.. doxygenfunction:: Tensor::fill(Tensor *, float)
-.. doxygenfunction:: Tensor::fill(Tensor *, int, int, Tensor *, int, int, int)
+.. doxygenfunction:: Tensor::fill(Tensor*, float)
+.. doxygenfunction:: Tensor::fill(Tensor*, int, int, Tensor*, int, int, int)
 
 .. code-block:: c++
 
