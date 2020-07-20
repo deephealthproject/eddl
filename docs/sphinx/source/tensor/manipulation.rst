@@ -54,8 +54,8 @@ Check tensor device
 Check compatibility
 ^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: checkCompatibility(Tensor*, Tensor*, const string&)
-.. doxygenfunction:: checkCompatibility(Tensor*, Tensor*, Tensor*, const string&)
+.. doxygenfunction:: checkCompatibility(Tensor *, Tensor *, const string&)
+.. doxygenfunction:: checkCompatibility(Tensor *, Tensor *, Tensor *, const string&)
 
 
 .. code-block:: c++
@@ -457,8 +457,8 @@ Value operations
 fill
 ^^^^^^^
 .. doxygenfunction:: Tensor::fill_(float)
-.. doxygenfunction:: Tensor::fill(Tensor*, float)
-.. doxygenfunction:: Tensor::fill(Tensor*, int, int, Tensor*, int, int, int)
+.. doxygenfunction:: Tensor::fill(Tensor *, float)
+.. doxygenfunction:: Tensor::fill(Tensor *, int, int, Tensor *, int, int, int)
 
 .. code-block:: c++
 
