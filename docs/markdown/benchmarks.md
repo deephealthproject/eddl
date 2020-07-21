@@ -310,6 +310,41 @@ Process finished with exit code 139 (interrupted by signal 11: SIGSEGV)
 ```
 
 
+## Desktop - MacOS Catalina - AMD Ryzen 7 2700X Eight-Core Processor - 3,4 GHz Intel Core i5 de 4 núcleos - 8 GB 2400 MHz DDR4
+
+### MNIST MLP (`1_mnist_mlp.cpp`)
+
+#### CPU
+
+
+**Optimization flags:**
+
+```
+Setup
+-------
+TARGET: CPU
+CORES: 4
+EPOCHS: 1
+C++ flags:
+-- C++ compiler: AppleClang (/Library/Developer/CommandLineTools/usr/bin/c++)
+-- C++ flags: -march=native -mtune=native
+-- C++ flags (release): -O3 -Ofast -msse -mfpmath=sse -ffast-math -ftree-vectorize
+-- C++ flags (debug): -O0 -g
+
+Training/Evaluation:
+--------------------
+Batch 600 softmax4 ( loss[soft_cross_entropy]=0.323 metric[categorical_accuracy]=0.189 ) -- 0.021 secs/batch
+12.758 secs/epoch
+Evaluate with batch size 100
+Batch 100 softmax4 ( loss[soft_cross_entropy]=0.319 metric[categorical_accuracy]=0.339 ) --
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+12684 mnist_mlp  321.1 00:13.02 8/7  0  19+  258M+ 0B   356K- 12684 1514 running *0[1]     0.00000 0.00000  501 108161+ 115  727+   363+
+```
+
+
 ## MacBook Pro 2013 - macOS Catalina (version 10.15 - Quad-Core Intel Core i7 - 2.3Ghz (8 cores) - 8GB RAM - No GPU
 
 ### MNIST MLP (`1_mnist_mlp.cpp`)
