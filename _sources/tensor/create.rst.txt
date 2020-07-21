@@ -5,7 +5,7 @@ Creation Routines
 
     Section in progress
 
-    Read this: https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md
+    Read this: https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md
 
 
 Constructors

@@ -262,7 +262,11 @@
 </li>
       <li><a href="layers/pooling.html#_CPPv4N4eddl11AveragePoolE5layerRK6vectorIiERK6vectorIiE6string6string">eddl::AveragePool (C++ function)</a>
 </li>
+      <li><a href="training/fine_grained.html#_CPPv4N4eddl8backwardE5model6vectorIP6TensorE">eddl::backward (C++ function)</a>
+</li>
       <li><a href="layers/normalization.html#_CPPv4N4eddl18BatchNormalizationE5layerbff6string">eddl::BatchNormalization (C++ function)</a>, <a href="layers/normalization.html#_CPPv4N4eddl18BatchNormalizationE5layerffb6string">[1]</a>
+</li>
+      <li><a href="model/model.html#_CPPv4N4eddl5buildE5model9optimizerRK6vectorI6stringERK6vectorI6stringEP8CompServb">eddl::build (C++ function)</a>
 </li>
       <li><a href="layers/data_transformation.html#_CPPv4N4eddl12CenteredCropE5layer6vectorIiEbf6string">eddl::CenteredCrop (C++ function)</a>
 </li>
@@ -316,6 +320,8 @@
 </li>
       <li><a href="layers/core.html#_CPPv4N4eddl9EmbeddingE5layeriiib6string">eddl::Embedding (C++ function)</a>
 </li>
+      <li><a href="training/fine_grained.html#_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE">eddl::eval_batch (C++ function)</a>, <a href="training/fine_grained.html#_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE">[1]</a>
+</li>
       <li><a href="test_score/test_score.html#_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE">eddl::evaluate (C++ function)</a>
 </li>
       <li><a href="layers/operators.html#_CPPv4N4eddl3ExpE5layer">eddl::Exp (C++ function)</a>
@@ -328,7 +334,7 @@
 </li>
       <li><a href="layers/data_transformation.html#_CPPv4N4eddl4FlipE5layeri6string">eddl::Flip (C++ function)</a>
 </li>
-      <li><a href="training/fine_grained.html#_CPPv4N4eddl7forwardE5model">eddl::forward (C++ function)</a>, <a href="training/fine_grained.html#_CPPv4N4eddl7forwardE5modeli">[1]</a>
+      <li><a href="training/fine_grained.html#_CPPv4N4eddl7forwardE5model">eddl::forward (C++ function)</a>, <a href="training/fine_grained.html#_CPPv4N4eddl7forwardE5model6vectorIP5LayerE">[1]</a>, <a href="training/fine_grained.html#_CPPv4N4eddl7forwardE5model6vectorIP6TensorE">[2]</a>, <a href="training/fine_grained.html#_CPPv4N4eddl7forwardE5modeli">[3]</a>
 </li>
       <li><a href="layers/generators.html#_CPPv4N4eddl14GaussGeneratorEff6vectorIiE">eddl::GaussGenerator (C++ function)</a>
 </li>
@@ -393,6 +399,10 @@
       <li><a href="layers/operators.html#_CPPv4N4eddl4MultE5layer5layer">eddl::Mult (C++ function)</a>, <a href="layers/operators.html#_CPPv4N4eddl4MultE5layerf">[1]</a>, <a href="layers/operators.html#_CPPv4N4eddl4MultEf5layer">[2]</a>
 </li>
       <li><a href="bundle/optimizers.html#_CPPv4N4eddl5nadamEfffff">eddl::nadam (C++ function)</a>
+</li>
+      <li><a href="training/fine_grained.html#_CPPv4N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string">eddl::newloss (C++ function)</a>, <a href="training/fine_grained.html#_CPPv4N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string">[1]</a>
+</li>
+      <li><a href="training/fine_grained.html#_CPPv4N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string">eddl::newmetric (C++ function)</a>, <a href="training/fine_grained.html#_CPPv4N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string">[1]</a>
 </li>
       <li><a href="training/fine_grained.html#_CPPv4N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE">eddl::next_batch (C++ function)</a>
 </li>
@@ -499,6 +509,8 @@
       <li><a href="model/model.html#_CPPv4N4eddl5toCPUE5modeli">eddl::toCPU (C++ function)</a>
 </li>
       <li><a href="model/model.html#_CPPv4N4eddl5toGPUE5model6vectorIiEi6string">eddl::toGPU (C++ function)</a>
+</li>
+      <li><a href="training/fine_grained.html#_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE">eddl::train_batch (C++ function)</a>, <a href="training/fine_grained.html#_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE">[1]</a>
 </li>
       <li><a href="layers/core.html#_CPPv4N4eddl9TransposeE5layer6string">eddl::Transpose (C++ function)</a>
 </li>
@@ -814,7 +826,7 @@
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor8reshape_ERK6vectorIiE">Tensor::reshape_ (C++ function)</a>
 </li>
-      <li><a href="tensor/manipulation.html#_CPPv4N6Tensor6resizeEiPfPv">Tensor::resize (C++ function)</a>
+      <li><a href="tensor/manipulation.html#_CPPv4N6Tensor6resizeEiPfPvb">Tensor::resize (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor6rotateEP6TensorP6Tensorf6vectorIiE12WrappingModef">Tensor::rotate (C++ function)</a>
 </li>
@@ -845,6 +857,8 @@
       <li><a href="tensor/math.html#_CPPv4N6Tensor7sigmoidEv">Tensor::sigmoid (C++ function)</a>
 </li>
       <li><a href="tensor/math.html#_CPPv4N6Tensor8sigmoid_Ev">Tensor::sigmoid_ (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N6Tensor4signEf">Tensor::sign (C++ function)</a>
 </li>
       <li><a href="tensor/math.html#_CPPv4N6Tensor3sinEv">Tensor::sin (C++ function)</a>
 </li>

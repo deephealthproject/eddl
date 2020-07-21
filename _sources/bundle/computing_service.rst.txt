@@ -34,19 +34,19 @@ Example:
 
 FPGA
 ====
-
-.. doxygenfunction:: CS_FGPA
+..
+.. .. doxygenfunction:: eddl::CS_FGPA(const vector<int> &f, int lsb=1)
 
 .. note::
 
     **Not implemented yet**
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    compserv CS_FGPA(const vector<int> &f, int lsb=1);
+.. Example:
+..
+.. .. code-block:: c++
+..    :linenos:
+.. 
+..     compserv CS_FGPA(const vector<int> &f, int lsb=1);
 
 
 

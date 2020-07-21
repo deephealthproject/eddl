@@ -5,7 +5,7 @@ Logic functions
 
     Section in progress
 
-    Read this: https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md
+    Read this: https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md
 
 
 Truth value testing
@@ -44,7 +44,7 @@ isfinite
 
 .. code-block:: c++
 
-    static void isfinite(Tensor *A, Tensor* B);
+    static void isfinite(Tensor *A, Tensor * B);
     
 
 isinf
@@ -54,7 +54,7 @@ isinf
 
 .. code-block:: c++
 
-    static void isinf(Tensor *A, Tensor* B);
+    static void isinf(Tensor *A, Tensor * B);
     
 
 isnan
@@ -64,7 +64,7 @@ isnan
 
 .. code-block:: c++
 
-    static void isnan(Tensor *A, Tensor* B);
+    static void isnan(Tensor *A, Tensor * B);
     
 
 isneginf
@@ -74,7 +74,7 @@ isneginf
 
 .. code-block:: c++
 
-    static void isneginf(Tensor *A, Tensor* B);
+    static void isneginf(Tensor *A, Tensor * B);
     
 
 isposinf
@@ -84,7 +84,7 @@ isposinf
 
 .. code-block:: c++
 
-    static void isposinf(Tensor *A, Tensor* B);
+    static void isposinf(Tensor *A, Tensor * B);
 
 
 
@@ -170,9 +170,9 @@ greater
 .. code-block:: c++
 
     void greater_(float v);
-    Tensor* greater(float v);
+    Tensor * greater(float v);
     static void greater(Tensor *A, Tensor *B, float v);
-    Tensor* greater(Tensor *A);
+    Tensor * greater(Tensor *A);
     static void greater(Tensor *A, Tensor *B, Tensor *C);
     static void greater(Tensor *A, Tensor *B, Tensor *C);
 
@@ -190,9 +190,9 @@ greater_equal
 .. code-block:: c++
 
     void greater_equal_(float v);
-    Tensor* greater_equal(float v);
+    Tensor * greater_equal(float v);
     static void greater_equal(Tensor *A, Tensor *B, float v);
-    Tensor* greater_equal(Tensor *A);
+    Tensor * greater_equal(Tensor *A);
     static void greater_equal(Tensor *A, Tensor *B, Tensor *C);
 
 
@@ -208,9 +208,9 @@ less
 .. code-block:: c++
 
     void less_(float v);
-    Tensor* less(float v);
+    Tensor * less(float v);
     static void less(Tensor *A, Tensor *B, float v);
-    Tensor* less(Tensor *A);
+    Tensor * less(Tensor *A);
     static void less(Tensor *A, Tensor *B, Tensor *C);
 
 
@@ -227,9 +227,9 @@ less_equal
 .. code-block:: c++
 
     void less_equal_(float v);
-    Tensor* less_equal(float v);
+    Tensor * less_equal(float v);
     static void less_equal(Tensor *A, Tensor *B, float v);
-    Tensor* less_equal(Tensor *A);
+    Tensor * less_equal(Tensor *A);
     static void less_equal(Tensor *A, Tensor *B, Tensor *C);
 
 
@@ -246,9 +246,9 @@ equal
 .. code-block:: c++
 
     void equal_(float v);
-    Tensor* equal(float v);
+    Tensor * equal(float v);
     static void equal(Tensor *A, Tensor *B, float v);
-    Tensor* equal(Tensor *A);
+    Tensor * equal(Tensor *A);
     static void equal(Tensor *A, Tensor *B, Tensor *C);
         
 
@@ -266,7 +266,7 @@ not_equal
 .. code-block:: c++
 
     void not_equal_(float v);
-    Tensor* not_equal(float v);
+    Tensor * not_equal(float v);
     static void not_equal(Tensor *A, Tensor *B, float v);
-    Tensor* not_equal(Tensor *A);
+    Tensor * not_equal(Tensor *A);
     static void not_equal(Tensor *A, Tensor *B, Tensor *C);

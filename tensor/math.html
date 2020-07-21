@@ -312,7 +312,7 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Section in progress</p>
-<p>Read this: <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md">https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md</a></p>
+<p>Read this: <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md">https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md</a></p>
 </div>
 <div class="section" id="unary-operations">
 <h2>Unary Operations<a class="headerlink" href="#unary-operations" title="Permalink to this headline">¶</a></h2>
@@ -340,7 +340,7 @@
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">abs_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">abs</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">abs</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
@@ -378,7 +378,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">acos_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">acos</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">acos</span><span class="p">();</span>
 <span class="kt">void</span> <span class="nf">acos</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -466,9 +466,9 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">add_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">add</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="kt">void</span> <span class="nf">add_</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .+ A</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">add</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .+ A</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">add</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">add_</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .+ A</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">add</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .+ A</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">add</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span> <span class="c1">// B = A + v</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">add</span><span class="p">(</span><span class="kt">float</span> <span class="n">scA</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="kt">float</span> <span class="n">scB</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="kt">int</span> <span class="n">incC</span><span class="p">);</span> <span class="c1">// C = a*A+b*B</span>
 </pre></div>
@@ -504,7 +504,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">asin_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">asin</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">asin</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">asin</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -539,7 +539,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">atan_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">atan</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">atan</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">atan</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -574,7 +574,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">ceil_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">ceil</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">ceil</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">ceil</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -622,7 +622,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">clamp_</span><span class="p">(</span><span class="kt">float</span> <span class="n">min</span><span class="p">,</span> <span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">clamp</span><span class="p">(</span><span class="kt">float</span> <span class="n">min</span><span class="p">,</span> <span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">clamp</span><span class="p">(</span><span class="kt">float</span> <span class="n">min</span><span class="p">,</span> <span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">clamp</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">min</span><span class="p">,</span> <span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -668,7 +668,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">clampmax_</span><span class="p">(</span><span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">clampmax</span><span class="p">(</span><span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">clampmax</span><span class="p">(</span><span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">clampmax</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -714,7 +714,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">clampmin_</span><span class="p">(</span><span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">clampmin</span><span class="p">(</span><span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">clampmin</span><span class="p">(</span><span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">clampmin</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -749,7 +749,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">cos_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">cos</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">cos</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">cos</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -784,7 +784,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">cosh_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">cosh</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">cosh</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">cosh</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -856,9 +856,9 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">div_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">div</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="kt">void</span> <span class="nf">div_</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this ./ A</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">div</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this ./ A</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">div</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">div_</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this ./ A</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">div</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this ./ A</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">div</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span> <span class="c1">// B = A / v</span>
 </pre></div>
 </div>
@@ -937,7 +937,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">exp_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">exp</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">exp</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">exp</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -972,7 +972,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">floor_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">floor</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">floor</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">floor</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1018,7 +1018,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">inv_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">inv</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">inv</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">);</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">inv</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1073,7 +1073,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">log_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">log</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">log</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">log</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1108,7 +1108,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">log2_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">log2</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">log2</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">log2</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1143,7 +1143,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">log10_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">log10</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">log10</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">log10</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1189,7 +1189,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">logn_</span><span class="p">(</span><span class="kt">float</span> <span class="n">n</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">logn</span><span class="p">(</span><span class="kt">float</span> <span class="n">n</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">logn</span><span class="p">(</span><span class="kt">float</span> <span class="n">n</span><span class="p">);</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">logn</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">n</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1235,7 +1235,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">mod_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">mod</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">mod</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">mod</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1307,9 +1307,9 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">mult_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">mult</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="kt">void</span> <span class="nf">mult_</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .* A</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">mult</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .* A</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">mult</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">mult_</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .* A</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">mult</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .* A</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">mult</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span> <span class="c1">// B = A * v</span>
 </pre></div>
 </div>
@@ -1344,7 +1344,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">neg_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">neg</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">neg</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">neg</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1392,7 +1392,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">normalize_</span><span class="p">(</span><span class="kt">float</span> <span class="n">min</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">max</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">normalize</span><span class="p">(</span><span class="kt">float</span> <span class="n">min</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">max</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">normalize</span><span class="p">(</span><span class="kt">float</span> <span class="n">min</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">max</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">);</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">min</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">max</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1438,7 +1438,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">pow_</span><span class="p">(</span><span class="kt">float</span> <span class="n">exp</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">pow</span><span class="p">(</span><span class="kt">float</span> <span class="n">exp</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">pow</span><span class="p">(</span><span class="kt">float</span> <span class="n">exp</span><span class="p">);</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">pow</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">min</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">exp</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1484,7 +1484,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">powb_</span><span class="p">(</span><span class="kt">float</span> <span class="n">exp</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">powb</span><span class="p">(</span><span class="kt">float</span> <span class="n">exp</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">powb</span><span class="p">(</span><span class="kt">float</span> <span class="n">exp</span><span class="p">);</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">powb</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">min</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">exp</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1519,7 +1519,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">reciprocal_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">reciprocal</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">reciprocal</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">reciprocal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1565,7 +1565,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">remainder_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">remainder</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">remainder</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">remainder</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">min</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1600,7 +1600,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">round_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">round</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">round</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">round</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1635,7 +1635,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">rsqrt_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">rsqrt</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">rsqrt</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">rsqrt</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1670,16 +1670,21 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">sigmoid_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">sigmoid</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sigmoid</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">sigmoid</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="sign">
 <h3>sign<a class="headerlink" href="#sign" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4signEf">
+<span id="_CPPv3N6Tensor4signEf"></span><span id="_CPPv2N6Tensor4signEf"></span><span id="Tensor::sign__float"></span><span class="target" id="class_tensor_1a142af13e227c403a4e3b9b3d3915534f"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sign</code><span class="sig-paren">(</span>float <em>zero_sign</em> = 0.0f<span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::sign” with arguments (Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::sign” with arguments (Tensor *, Tensor *, float) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sign</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
@@ -1687,18 +1692,8 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::sign” with arguments (Tensor *, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sign</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">sign</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">sign</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">sign</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sign</span><span class="p">(</span><span class="kt">float</span> <span class="n">zero_sign</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">sign</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">zero_sign</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1732,7 +1727,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">sin_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">sin</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sin</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">sin</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1767,7 +1762,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">sinh_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">sinh</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sinh</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">sinh</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1802,7 +1797,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">sqr_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">sqr</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sqr</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">sqr</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1837,7 +1832,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">sqrt_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">sqrt</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sqrt</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1909,9 +1904,9 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">sub_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">sub</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="kt">void</span> <span class="nf">sub_</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .- A</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">sub</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .- A</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sub</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">sub_</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .- A</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sub</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>  <span class="c1">// this = this .- A</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">sub</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span> <span class="c1">// B = A - v</span>
 </pre></div>
 </div>
@@ -1946,7 +1941,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">tan_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">tan</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">tan</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">tan</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1981,7 +1976,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">tanh_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">tanh</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">tanh</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">tanh</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -2016,7 +2011,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">trunc_</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">trunc</span><span class="p">();</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">trunc</span><span class="p">();</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">trunc</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -2054,7 +2049,7 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">add</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span> <span class="c1">// (new)C = A + B</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="nf">add</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span> <span class="c1">// (new)C = A + B</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">add</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span> <span class="c1">// C = A + B</span>
 </pre></div>
 </div>
@@ -2087,7 +2082,7 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">div</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span> <span class="c1">// (new)C = A / B</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="nf">div</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span> <span class="c1">// (new)C = A / B</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">div</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span> <span class="c1">// C = A / B</span>
 </pre></div>
 </div>
@@ -2120,7 +2115,7 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">mult</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span> <span class="c1">// (new)C = A * B</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="nf">mult</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span> <span class="c1">// (new)C = A * B</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">mult</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span> <span class="c1">// C = A * B</span>
 </pre></div>
 </div>
@@ -2153,7 +2148,7 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">sub</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span> <span class="c1">// (new)C = A - B</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sub</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span> <span class="c1">// (new)C = A - B</span>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">sub</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span> <span class="c1">// C = A - B</span>
 </pre></div>
 </div>
@@ -2204,9 +2199,9 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="nf">maximum</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span> <span class="o">*</span> <span class="nf">maximum</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="k">static</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2238,8 +2233,8 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2286,9 +2281,9 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="nf">minimum</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span> <span class="o">*</span> <span class="nf">minimum</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="k">static</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2320,8 +2315,8 @@ Potential matches:
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="n">B</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span> <span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2345,7 +2340,7 @@ Potential matches:
 </div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">median</span><span class="p">();</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">median</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">median</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2391,8 +2386,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">max</span><span class="p">();</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">max</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">max</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">max</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">max</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2438,8 +2433,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">argmax</span><span class="p">();</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2485,8 +2480,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">min</span><span class="p">();</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">min</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">min</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">min</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">min</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2532,8 +2527,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">argmin</span><span class="p">();</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2579,8 +2574,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">sum</span><span class="p">();</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">sum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">sum</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">sum</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sum</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2626,8 +2621,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">sum_abs</span><span class="p">();</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">sum_abs</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">sum_abs</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">sum_abs</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">sum_abs</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2673,8 +2668,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">prod</span><span class="p">();</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">prod</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">prod</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">prod</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">prod</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2720,8 +2715,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">mean</span><span class="p">();</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">mean</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">mean</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">mean</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">mean</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2772,8 +2767,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">std</span><span class="p">(</span><span class="kt">bool</span> <span class="n">unbiased</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">std</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">unbiased</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">std</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">unbiased</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">std</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">unbiased</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">std</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">unbiased</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2824,8 +2819,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">var</span><span class="p">(</span><span class="kt">bool</span> <span class="n">unbiased</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">var</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">unbiased</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">var</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">unbiased</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">var</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">unbiased</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">var</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">unbiased</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2871,8 +2866,8 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span> <span class="nf">mode</span><span class="p">();</span>
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">mode</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">mode</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">float</span> <span class="nf">mode</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span> <span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span> <span class="o">*</span> <span class="nf">mode</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">keepdims</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

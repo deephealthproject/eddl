@@ -22,11 +22,13 @@ Example:
     model net = Model({in1, in2}, {out});
 
 
+
+
 Build
 ----------
 
+.. doxygenfunction:: eddl::build(model, optimizer, const vector<string>&, const vector<string>&, CompServ*, bool)
 
-.. doxygenfunction:: eddl::build(model, optimizer, const vector<string>&, const vector<string>&, CompServ *, bool)
 
 
 Example:
