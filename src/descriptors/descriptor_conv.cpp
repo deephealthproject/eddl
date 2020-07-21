@@ -57,6 +57,9 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
 
 }
 
+ConvolDescriptor::~ConvolDescriptor(){
+    // input, output, delta, params[], and gradients[], acc_gradients[] => deleted in ~Layer()
+}
 
 void ConvolDescriptor::build(Tensor *A) {
 
@@ -186,7 +189,7 @@ void ConvolDescriptor::resize(int b)
 //    if (!mem_level) D->resize(b);
 
     if (I->isCPU()) {
-        delete ptrI;
+        delete[] ptrI;
         ptrI=get_fmem(b * r * c * kr * kc * kz, "ConvolDescriptor::build");
 	 _profile_add_tensor(b * r * c * kr * kc * kz);
     }

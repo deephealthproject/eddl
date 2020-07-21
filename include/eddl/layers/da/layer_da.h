@@ -27,7 +27,7 @@ class LDataAugmentation : public LinLayer {
 public:
     LDataAugmentation(Layer *parent, string name, int dev, int mem);
 
-    ~LDataAugmentation();
+    ~LDataAugmentation() override;
 
     void mem_delta() override;
     void free_delta() override;

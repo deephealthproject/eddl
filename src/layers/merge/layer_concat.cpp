@@ -36,11 +36,13 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
                 msg("Error: LConcat layers with different tensor dims");
             }
         }
-        // Check dimensions
+        // Check dimensions (10, 5, 3, 3) + (10, 2, 3, 3) => (10, 7, 3, 3)
         for (int i = 0; i < parent.size() - 1; ++i){
             for (int d = 0; d < ndim; ++d) {
                 if (d != this->axis && parent[i]->output->shape[d] != parent[i + 1]->output->shape[d]) {
-                    msg("Error: LConcat layers with different size in dim 1");
+                    msg("Error: LConcat layers with different size in dim 1 (" +
+                    to_string(parent[i]->output->shape[d])  + "!=" +
+                    to_string(parent[i + 1]->output->shape[d]) + ")");
                 }
             }
         }

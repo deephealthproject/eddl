@@ -111,6 +111,7 @@ public:
     vtensor mT;
 
     explicit AdaDelta(float lr=0.01f, float rho=0.95f, float epsilon=1e-8f, float weight_decay=0.0f);
+    ~AdaDelta();
 
 //    Optimizer *clone();
 //
@@ -131,6 +132,7 @@ public:
     vtensor mT;
 
     explicit Adagrad(float lr=0.01f, float epsilon=1e-8f, float weight_decay=0.0f);
+    ~Adagrad();
 
 //    Optimizer *clone();
 //
@@ -153,6 +155,7 @@ public:
     vtensor mT;
 
     explicit Adamax(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f);
+    ~Adamax();
 
 //    Optimizer *clone();
 //
@@ -175,6 +178,8 @@ public:
     vtensor mT;
 
     explicit Nadam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float schedule_decay=0.004f);
+
+    ~Nadam();
 
 //    Optimizer *clone();
 //

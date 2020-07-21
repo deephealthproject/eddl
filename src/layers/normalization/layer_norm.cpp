@@ -79,6 +79,8 @@ LNorm::LNorm(Layer *parent, float epsilon, string name, int dev, int mem) : LinL
 
 }
 
+LNorm::~LNorm(){
+}
 
 void LNorm::mem_delta() {
     // TEMPORAL!

@@ -21,6 +21,11 @@ ReductionLayer2::ReductionLayer2(string name, int dev, int mem) : Layer(name, de
     binary=0;
 }
 
+
+ReductionLayer2::~ReductionLayer2(){
+    delete RD2;
+}
+
 void ReductionLayer2::addchild(Layer *l) {
     child.push_back(l);
     lout++;

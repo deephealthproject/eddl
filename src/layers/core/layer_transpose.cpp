@@ -18,6 +18,9 @@
 
 using namespace std;
 
+
+// TODO: Does this even work?
+
 int LTranspose::total_layers = 0;
 
 LTranspose::LTranspose(Layer *parent, vector<int> dims, string name, int dev, int mem) : LinLayer(name, dev, mem) {

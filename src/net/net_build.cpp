@@ -490,6 +490,7 @@ void Net::resize(int b)
   }
 
   for (j = 0; j < layers.size(); j++) {
+//      cout << "[DEBUG]: resizing layer " << layers[j]->name << endl;
       layers[j]->resize(batch_size);
   }
 

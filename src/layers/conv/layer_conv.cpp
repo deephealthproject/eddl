@@ -62,6 +62,10 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
 }
 
 
+LConv::~LConv(){
+    delete cd;  // Just in case
+}
+
 // virtual
 void LConv::resize(int batch){
     cd->resize(batch);

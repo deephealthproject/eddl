@@ -55,6 +55,8 @@ public:
 
     LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem);
 
+    ~LBatchNorm();
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
@@ -92,6 +94,8 @@ public:
     vector<Layer *> layers;
 
     LLayerNorm(Layer *parent, float epsilon, bool affine, string name, int dev, int mem);
+
+    ~LLayerNorm();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -132,6 +136,8 @@ public:
 
     LGroupNorm(Layer *parent, int g,  float epsilon, bool affine,string name, int dev, int mem);
 
+    ~LGroupNorm();
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
@@ -159,6 +165,8 @@ public:
 
     LNorm(Layer *parent, float epsilon,  string name, int dev, int mem);
 
+    ~LNorm();
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
@@ -184,6 +192,8 @@ public:
     vector<Layer *> layers;
 
     LNormMax(Layer *parent, float epsilon,  string name, int dev, int mem);
+
+    ~LNormMax();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -211,6 +221,8 @@ public:
     vector<Layer *> layers;
 
     LNormMinMax(Layer *parent, float epsilon,  string name, int dev, int mem);
+
+    ~LNormMinMax();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

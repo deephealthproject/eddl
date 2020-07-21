@@ -47,25 +47,36 @@ Layer::Layer(string name, int dev, int mem) {
 }
 
 Layer::~Layer(){
-    if (output!=nullptr) delete output;
-    if (delta!=nullptr) delete delta;
-    if (target!=nullptr) delete target;
+    // Note: nullptr are not really needed. However, I like to have this pointers pointing to "something" just in case
+
+    if (output!=nullptr) { delete output; output = nullptr; }
+    if (delta!=nullptr)  { delete delta; delta = nullptr; }
+    if (target!=nullptr) { delete target; target = nullptr; }
 
 //    if (orig!=nullptr) delete this->orig;
 //    if (net!=nullptr) delete this->net;
-//    if (reg!=nullptr) delete this->reg;
-//    if (init!=nullptr) delete this->init;
+    if (reg!=nullptr)  { delete this->reg;  this->reg = nullptr; }
+    if (init!=nullptr) { delete this->init; this->init = nullptr; }
 
     //params if any
-    if (!isshared)
-      for (int i=0;i<params.size();i++)
-          delete params[i];
-
+    if (!isshared){
+        for(int i=0;i<params.size();i++){
+            delete params[i]; params[i] = nullptr;
+        }
+    }
 
     //gradients if any
-    if (!isshared)
-      for (int i=0;i<gradients.size();i++){
-        delete gradients[i];
+    if (!isshared){
+        for(int i=0;i<gradients.size();i++){
+            delete gradients[i]; gradients[i] = nullptr;
+        }
+    }
+
+    //gradients if any
+    if (!isshared){
+        for(int i=0;i<acc_gradients.size();i++){
+            delete acc_gradients[i]; acc_gradients[i] = nullptr;
+        }
     }
 }
 
@@ -87,11 +98,11 @@ void Layer::set_detach(){
 
 
 void Layer::check_target() {
-  if (target==nullptr) target=new Tensor(output->getShape(),dev);
-  else if (target->size!=output->size) {
-    delete target;
-    target=new Tensor(output->getShape(),dev);
-  }
+    if (target==nullptr) target=new Tensor(output->getShape(),dev);
+    else if (target->size!=output->size) {
+        delete target;
+        target=new Tensor(output->getShape(),dev);
+    }
 }
 
 void Layer::mem_delta_parent(){
@@ -140,7 +151,7 @@ void Layer::set_trainable(bool value){
 
 int Layer::get_trainable_params_count()
 {
-  return params.size();
+    return params.size();
 }
 
 void Layer::detach(Layer *l){
@@ -154,11 +165,11 @@ void Layer::detach(Layer *l){
 
 void Layer::reset() {
     if ((!mem_level) && (delta!=nullptr)) {
-      delta->fill_(0.0);
-      for(int i=0;i<states.size();i++)
-        states[i]->fill_(0.0);
-      for(int i=0;i<states.size();i++)
-        delta_states[i]->fill_(0.0);
+        delta->fill_(0.0);
+        for(int i=0;i<states.size();i++)
+            states[i]->fill_(0.0);
+        for(int i=0;i<states.size();i++)
+            delta_states[i]->fill_(0.0);
     }
     detached=false;
 }

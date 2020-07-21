@@ -5,7 +5,7 @@ Mathematical functions
 
     Section in progress
 
-    Read this: https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md
+    Read this: https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md
 
 
 Unary Operations
@@ -20,7 +20,7 @@ abs
 .. code-block:: c++
 
     void abs_();
-    Tensor* abs();
+    Tensor * abs();
     
 acos
 ^^^^^^^^^^^^
@@ -33,7 +33,7 @@ acos
 .. code-block:: c++
 
     void acos_();
-    Tensor* acos();
+    Tensor * acos();
     void acos(Tensor *A, Tensor *B);
     
 add
@@ -50,9 +50,9 @@ add
 .. code-block:: c++
    
     void add_(float v);
-    Tensor* add(float v);
-    void add_(Tensor* A);  // this = this .+ A
-    Tensor* add(Tensor* A);  // this = this .+ A
+    Tensor * add(float v);
+    void add_(Tensor * A);  // this = this .+ A
+    Tensor * add(Tensor * A);  // this = this .+ A
     static void add(Tensor *A, Tensor *B, float v); // B = A + v
     static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC); // C = a*A+b*B
     
@@ -66,7 +66,7 @@ asin
 .. code-block:: c++
 
     void asin_();
-    Tensor* asin();
+    Tensor * asin();
     static void asin(Tensor *A, Tensor *B);
     
 atan
@@ -79,7 +79,7 @@ atan
 .. code-block:: c++
 
     void atan_();
-    Tensor* atan();
+    Tensor * atan();
     static void atan(Tensor *A, Tensor *B);
     
 ceil
@@ -92,7 +92,7 @@ ceil
 .. code-block:: c++
 
     void ceil_();
-    Tensor* ceil();
+    Tensor * ceil();
     static void ceil(Tensor *A, Tensor *B);
 
 
@@ -106,7 +106,7 @@ clamp
 .. code-block:: c++
 
     void clamp_(float min, float max);
-    Tensor* clamp(float min, float max);
+    Tensor * clamp(float min, float max);
     static void clamp(Tensor *A, Tensor *B, float min, float max);
 
 
@@ -121,7 +121,7 @@ clampmax
 .. code-block:: c++
    
     void clampmax_(float max);
-    Tensor* clampmax(float max);
+    Tensor * clampmax(float max);
     static void clampmax(Tensor *A, Tensor *B, float max);
 
     
@@ -135,7 +135,7 @@ clampmin
 .. code-block:: c++
    
     void clampmin_(float max);
-    Tensor* clampmin(float max);
+    Tensor * clampmin(float max);
     static void clampmin(Tensor *A, Tensor *B, float max);
     
 cos
@@ -148,7 +148,7 @@ cos
 .. code-block:: c++
 
     void cos_();
-    Tensor* cos();
+    Tensor * cos();
     static void cos(Tensor *A, Tensor *B);
     
 cosh
@@ -161,7 +161,7 @@ cosh
 .. code-block:: c++
 
     void cosh_();
-    Tensor* cosh();
+    Tensor * cosh();
     static void cosh(Tensor *A, Tensor *B);
     
     
@@ -178,9 +178,9 @@ div
 .. code-block:: c++
    
     void div_(float v);
-    Tensor* div(float v);
-    void div_(Tensor* A);  // this = this ./ A
-    Tensor* div(Tensor* A);  // this = this ./ A
+    Tensor * div(float v);
+    void div_(Tensor * A);  // this = this ./ A
+    Tensor * div(Tensor * A);  // this = this ./ A
     static void div(Tensor *A, Tensor *B, float v); // B = A / v
     
 
@@ -213,7 +213,7 @@ exp
 .. code-block:: c++
 
     void exp_();
-    Tensor* exp();
+    Tensor * exp();
     static void exp(Tensor *A, Tensor *B);
 
 floor
@@ -226,7 +226,7 @@ floor
 .. code-block:: c++
 
     void floor_();
-    Tensor* floor();
+    Tensor * floor();
     static void floor(Tensor *A, Tensor *B);
 
 inv
@@ -239,7 +239,7 @@ inv
 .. code-block:: c++
 
     void inv_(float v=1.0f);
-    Tensor* inv(float v=1.0f);
+    Tensor * inv(float v=1.0f);
     static void inv(Tensor *A, Tensor *B, float v=1.0f);
 
 inc
@@ -261,7 +261,7 @@ log
 .. code-block:: c++
 
     void log_();
-    Tensor* log();
+    Tensor * log();
     static void log(Tensor *A, Tensor *B);
     
 log2
@@ -274,7 +274,7 @@ log2
 .. code-block:: c++
 
     void log2_();
-    Tensor* log2();
+    Tensor * log2();
     static void log2(Tensor *A, Tensor *B);
     
 log10
@@ -287,7 +287,7 @@ log10
 .. code-block:: c++
 
     void log10_();
-    Tensor* log10();
+    Tensor * log10();
     static void log10(Tensor *A, Tensor *B);
     
 logn
@@ -300,7 +300,7 @@ logn
 .. code-block:: c++
 
     void logn_(float n);
-    Tensor* logn(float n);
+    Tensor * logn(float n);
     static void logn(Tensor *A, Tensor *B, float n);
     
 mod
@@ -313,7 +313,7 @@ mod
 .. code-block:: c++
 
     void mod_(float v);
-    Tensor* mod(float v);
+    Tensor * mod(float v);
     static void mod(Tensor *A, Tensor *B, float v);
     
 mult
@@ -329,9 +329,9 @@ mult
 .. code-block:: c++
    
     void mult_(float v);
-    Tensor* mult(float v);
-    void mult_(Tensor* A);  // this = this .* A
-    Tensor* mult(Tensor* A);  // this = this .* A
+    Tensor * mult(float v);
+    void mult_(Tensor * A);  // this = this .* A
+    Tensor * mult(Tensor * A);  // this = this .* A
     static void mult(Tensor *A, Tensor *B, float v); // B = A * v
     
 neg
@@ -344,7 +344,7 @@ neg
 .. code-block:: c++
 
     void neg_();
-    Tensor* neg();
+    Tensor * neg();
     static void neg(Tensor *A, Tensor *B);
 
 normalize
@@ -357,7 +357,7 @@ normalize
 .. code-block:: c++
 
     void normalize_(float min=0.0f, float max=1.0f);
-    Tensor* normalize(float min=0.0f, float max=1.0f);
+    Tensor * normalize(float min=0.0f, float max=1.0f);
     static void normalize(Tensor *A, Tensor *B, float min=0.0f, float max=1.0f);
     
 pow
@@ -370,7 +370,7 @@ pow
 .. code-block:: c++
 
     void pow_(float exp);
-    Tensor* pow(float exp);
+    Tensor * pow(float exp);
     static void pow(Tensor *A, Tensor *B, float min=0.0f, float exp);
 
 
@@ -384,7 +384,7 @@ powb
 .. code-block:: c++
 
     void powb_(float exp);
-    Tensor* powb(float exp);
+    Tensor * powb(float exp);
     static void powb(Tensor *A, Tensor *B, float min=0.0f, float exp);
     
 reciprocal
@@ -397,7 +397,7 @@ reciprocal
 .. code-block:: c++
 
     void reciprocal_();
-    Tensor* reciprocal();
+    Tensor * reciprocal();
     static void reciprocal(Tensor *A, Tensor *B);
     
 remainder
@@ -410,7 +410,7 @@ remainder
 .. code-block:: c++
 
     void remainder_(float v);
-    Tensor* remainder(float v);
+    Tensor * remainder(float v);
     static void remainder(Tensor *A, Tensor *B, float min=0.0f, float v);
     
 round
@@ -423,7 +423,7 @@ round
 .. code-block:: c++
 
     void round_();
-    Tensor* round();
+    Tensor * round();
     static void round(Tensor *A, Tensor *B);
     
 rsqrt
@@ -436,7 +436,7 @@ rsqrt
 .. code-block:: c++
 
     void rsqrt_();
-    Tensor* rsqrt();
+    Tensor * rsqrt();
     static void rsqrt(Tensor *A, Tensor *B);
     
 sigmoid
@@ -449,20 +449,20 @@ sigmoid
 .. code-block:: c++
 
     void sigmoid_();
-    Tensor* sigmoid();
+    Tensor * sigmoid();
     static void sigmoid(Tensor *A, Tensor *B);
     
 sign
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sign(Tensor *)
+.. doxygenfunction:: Tensor::sign(float)
 
-.. doxygenfunction:: Tensor::sign(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::sign(Tensor *, Tensor *, float)
 
 .. code-block:: c++  
 
-    static Tensor* sign(Tensor *A);
-    static void sign(Tensor *A, Tensor *B);
+    static Tensor * sign(float zero_sign);
+    static void sign(Tensor *A, Tensor *B, float zero_sign);
     
 
 sin
@@ -475,7 +475,7 @@ sin
 .. code-block:: c++
 
     void sin_();
-    Tensor* sin();
+    Tensor * sin();
     static void sin(Tensor *A, Tensor *B);
     
 sinh
@@ -488,7 +488,7 @@ sinh
 .. code-block:: c++
 
     void sinh_();
-    Tensor* sinh();
+    Tensor * sinh();
     static void sinh(Tensor *A, Tensor *B);
     
 sqr
@@ -501,7 +501,7 @@ sqr
 .. code-block:: c++
 
     void sqr_();
-    Tensor* sqr();
+    Tensor * sqr();
     static void sqr(Tensor *A, Tensor *B);
     
 sqrt
@@ -514,7 +514,7 @@ sqrt
 .. code-block:: c++
 
     void sqrt_();
-    Tensor* sqrt();
+    Tensor * sqrt();
     static void sqrt(Tensor *A, Tensor *B);
     
 sub
@@ -530,9 +530,9 @@ sub
 .. code-block:: c++
    
     void sub_(float v);
-    Tensor* sub(float v);
-    void sub_(Tensor* A);  // this = this .- A
-    Tensor* sub(Tensor* A);  // this = this .- A
+    Tensor * sub(float v);
+    void sub_(Tensor * A);  // this = this .- A
+    Tensor * sub(Tensor * A);  // this = this .- A
     static void sub(Tensor *A, Tensor *B, float v); // B = A - v
     
 
@@ -547,7 +547,7 @@ tan
 .. code-block:: c++
 
     void tan_();
-    Tensor* tan();
+    Tensor * tan();
     static void tan(Tensor *A, Tensor *B);
     
 tanh
@@ -560,7 +560,7 @@ tanh
 .. code-block:: c++
 
     void tanh_();
-    Tensor* tanh();
+    Tensor * tanh();
     static void tanh(Tensor *A, Tensor *B);
     
 trunc
@@ -573,7 +573,7 @@ trunc
 .. code-block:: c++
 
     void trunc_();
-    Tensor* trunc();
+    Tensor * trunc();
     static void trunc(Tensor *A, Tensor *B);
 
 
@@ -588,7 +588,7 @@ add
 
 .. code-block:: c++
 
-    static Tensor* add(Tensor *A, Tensor *B); // (new)C = A + B
+    static Tensor * add(Tensor *A, Tensor *B); // (new)C = A + B
     static void add(Tensor *A, Tensor *B, Tensor *C); // C = A + B
 
 
@@ -600,7 +600,7 @@ div
 
 .. code-block:: c++
 
-    static Tensor* div(Tensor *A, Tensor *B); // (new)C = A / B
+    static Tensor * div(Tensor *A, Tensor *B); // (new)C = A / B
     static void div(Tensor *A, Tensor *B, Tensor *C); // C = A / B
 
 mult
@@ -611,7 +611,7 @@ mult
 
 .. code-block:: c++
 
-    static Tensor* mult(Tensor *A, Tensor *B); // (new)C = A * B
+    static Tensor * mult(Tensor *A, Tensor *B); // (new)C = A * B
     static void mult(Tensor *A, Tensor *B, Tensor *C); // C = A * B
 
 sub
@@ -622,7 +622,7 @@ sub
 
 .. code-block:: c++
 
-    static Tensor* sub(Tensor *A, Tensor *B); // (new)C = A - B
+    static Tensor * sub(Tensor *A, Tensor *B); // (new)C = A - B
     static void sub(Tensor *A, Tensor *B, Tensor *C); // C = A - B
 
 Reductions
@@ -637,9 +637,9 @@ Apply lower bound
 
 .. code-block:: c++
    
-    Tensor* maximum(float v);
-    static Tensor* maximum(Tensor* A, float v);
-    static void maximum(Tensor* A, Tensor* B, float v);
+    Tensor * maximum(float v);
+    static Tensor * maximum(Tensor * A, float v);
+    static void maximum(Tensor * A, Tensor * B, float v);
 
 
 Obtain maximum values
@@ -649,8 +649,8 @@ Obtain maximum values
 
 .. code-block:: c++
    
-    static Tensor* maximum(Tensor* A, Tensor* B);
-    static void maximum(Tensor* A, Tensor* B, Tensor* C);
+    static Tensor * maximum(Tensor * A, Tensor * B);
+    static void maximum(Tensor * A, Tensor * B, Tensor * C);
 
 
 Apply upper bound
@@ -662,9 +662,9 @@ Apply upper bound
 
 .. code-block:: c++
    
-    Tensor* minimum(float v);
-    static Tensor* minimum(Tensor* A, float v);
-    static void minimum(Tensor* A, Tensor* B, float v);
+    Tensor * minimum(float v);
+    static Tensor * minimum(Tensor * A, float v);
+    static void minimum(Tensor * A, Tensor * B, float v);
 
 
 Obtain minumum values
@@ -674,8 +674,8 @@ Obtain minumum values
 
 .. code-block:: c++
    
-    static Tensor* minimum(Tensor * A, Tensor * B);
-    static void minimum(Tensor * A, Tensor* B, Tensor * C);
+    static Tensor * minimum(Tensor * A, Tensor * B);
+    static void minimum(Tensor * A, Tensor * B, Tensor * C);
 
 
 median
@@ -687,7 +687,7 @@ median
 .. code-block:: c++
    
     float median();
-    static float median(Tensor* A);
+    static float median(Tensor * A);
 
 
 max
@@ -700,8 +700,8 @@ max
 .. code-block:: c++
    
     float max();
-    static float max(Tensor* A);
-    Tensor* max(vector<int> axis, bool keepdims);
+    static float max(Tensor * A);
+    Tensor * max(vector<int> axis, bool keepdims);
 
 
 argmax
@@ -714,8 +714,8 @@ argmax
 .. code-block:: c++
    
     float argmax();
-    static float argmax(Tensor* A);
-    Tensor* argmax(vector<int> axis, bool keepdims);
+    static float argmax(Tensor * A);
+    Tensor * argmax(vector<int> axis, bool keepdims);
 
 
 min
@@ -728,8 +728,8 @@ min
 .. code-block:: c++
    
     float min();
-    static float min(Tensor* A);
-    Tensor* min(vector<int> axis, bool keepdims);
+    static float min(Tensor * A);
+    Tensor * min(vector<int> axis, bool keepdims);
 
     
 argmin
@@ -742,8 +742,8 @@ argmin
 .. code-block:: c++
    
     float argmin();
-    static float argmin(Tensor* A);
-    Tensor* argmin(vector<int> axis, bool keepdims);
+    static float argmin(Tensor * A);
+    Tensor * argmin(vector<int> axis, bool keepdims);
 
 
 sum
@@ -756,8 +756,8 @@ sum
 .. code-block:: c++
    
     float sum();
-    static float sum(Tensor* A);
-    Tensor* sum(vector<int> axis, bool keepdims);
+    static float sum(Tensor * A);
+    Tensor * sum(vector<int> axis, bool keepdims);
 
 
 sum_abs
@@ -770,8 +770,8 @@ sum_abs
 .. code-block:: c++
    
     float sum_abs();
-    static float sum_abs(Tensor* A);
-    Tensor* sum_abs(vector<int> axis, bool keepdims);
+    static float sum_abs(Tensor * A);
+    Tensor * sum_abs(vector<int> axis, bool keepdims);
 
 
 prod
@@ -784,8 +784,8 @@ prod
 .. code-block:: c++
    
     float prod();
-    static float prod(Tensor* A);
-    Tensor* prod(vector<int> axis, bool keepdims);
+    static float prod(Tensor * A);
+    Tensor * prod(vector<int> axis, bool keepdims);
 
 
 mean
@@ -798,8 +798,8 @@ mean
 .. code-block:: c++
    
     float mean();
-    static float mean(Tensor* A);
-    Tensor* mean(vector<int> axis, bool keepdims);
+    static float mean(Tensor * A);
+    Tensor * mean(vector<int> axis, bool keepdims);
 
 
 std
@@ -812,8 +812,8 @@ std
 .. code-block:: c++
    
     float std(bool unbiased=true);
-    static float std(Tensor* A, bool unbiased=true);
-    Tensor* std(vector<int> axis, bool keepdims, bool unbiased=true);
+    static float std(Tensor * A, bool unbiased=true);
+    Tensor * std(vector<int> axis, bool keepdims, bool unbiased=true);
 
 
 var
@@ -826,8 +826,8 @@ var
 .. code-block:: c++
    
     float var(bool unbiased=true);
-    static float var(Tensor* A, bool unbiased=true);
-    Tensor* var(vector<int> axis, bool keepdims, bool unbiased=true);
+    static float var(Tensor * A, bool unbiased=true);
+    Tensor * var(vector<int> axis, bool keepdims, bool unbiased=true);
 
 
 mode
@@ -840,8 +840,8 @@ mode
 .. code-block:: c++
    
     float mode();
-    static float mode(Tensor* A);
-    Tensor* mode(vector<int> axis, bool keepdims);
+    static float mode(Tensor * A);
+    Tensor * mode(vector<int> axis, bool keepdims);
 
 
 Matrix Operations

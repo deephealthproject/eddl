@@ -66,6 +66,10 @@ LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, 
 
 }
 
+LRNN::~LRNN(){
+//    delete cps;
+//    delete preoutput;
+}
 
 // virtual
 void LRNN::forward() {

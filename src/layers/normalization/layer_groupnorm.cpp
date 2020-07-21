@@ -71,6 +71,12 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float epsilon, bool affine, string 
     addparent(parent);
 }
 
+LGroupNorm::~LGroupNorm(){
+    delete bn_mean;
+    delete bn_var;
+    delete opa;
+}
+
 // virtual
 void LGroupNorm::resize(int batch){
     if (batch!=output->shape[0]) {

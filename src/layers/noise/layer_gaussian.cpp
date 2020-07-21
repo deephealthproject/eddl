@@ -34,18 +34,14 @@ LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev,
 }
 
 
-LGaussianNoise::~LGaussianNoise()
-{
+LGaussianNoise::~LGaussianNoise(){
     delete noise;
-    delta=nullptr; // is destroyed by parent
-
 }
 
 // virtual
 void LGaussianNoise::resize(int batch){
     output->resize(batch);
     noise->resize(batch);
-    
 }
 
 

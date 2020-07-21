@@ -32,7 +32,6 @@ LShift::LShift(Layer *parent, vector<int> shift, WrappingMode da_mode, float cva
 
     parent->addchild(this);
     addparent(parent);
-
 }
 
 

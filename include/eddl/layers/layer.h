@@ -46,7 +46,6 @@ public:
     bool isnorm;
     bool isdecoder;
 
-
     vector<Tensor *> params;
     vector<Tensor *> gradients;
 

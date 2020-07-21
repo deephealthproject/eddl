@@ -20,7 +20,6 @@ using namespace std;
 int LEmbedding::total_layers = 0;
 
 LEmbedding::LEmbedding(Layer *parent, int vocsize, int length, int dim, bool mask_zeros, string name, int dev, int mem): LinLayer(name, dev, mem) {
-    // TODO: Implement
     if(name.empty()) this->name = "embedding" + to_string(++total_layers);
 
 
@@ -66,6 +65,11 @@ LEmbedding::LEmbedding(Layer *parent, int vocsize, int length, int dim, bool mas
     parent->addchild(this);
     addparent(parent);
 
+}
+
+LEmbedding::~LEmbedding(){
+    delete E;
+    delete gE;
 }
 
 void LEmbedding::forward()

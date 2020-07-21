@@ -52,6 +52,10 @@ LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev, int me
     addparent(parent);
 }
 
+LPermute::~LPermute(){
+    delete sd;
+}
+
 void LPermute::resize(int b){
     Layer::resize(b);
     sd->resize(b); // The batch is ignored

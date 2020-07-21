@@ -77,18 +77,19 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
     addparent(parent);
 }
 
-LReshape::~LReshape()
-{
-    output=delta=nullptr;
-}
+//LReshape::~LReshape()
+//{
+//    delete output;
+//    output=delta=nullptr;
+//}
 
 // virtual
 void LReshape::resize(int batch){
     ls[0]=batch;
 #ifdef cFPGA
-    output->resize(batch, parent[0]->output->ptr, parent[0]->output->fpga_ptr);
+    output->resize(batch, parent[0]->output->ptr, parent[0]->output->fpga_ptr, false);
 #else
-    output->resize(batch, parent[0]->output->ptr);
+    output->resize(batch, parent[0]->output->ptr, nullptr, false);
 #endif
 }
 

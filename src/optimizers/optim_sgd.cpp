@@ -25,7 +25,7 @@ SGD::SGD(float lr, float momentum, float weight_decay, bool nesterov) : Optimize
 }
 
 SGD::~SGD() {
-  mT.clear();
+    for(int i=0; i<mT.size(); i++){ delete mT[i]; }
 }
 
 void SGD::change(vector<float> &p) {

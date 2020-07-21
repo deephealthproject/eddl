@@ -67,6 +67,8 @@ public:
 
     LRNN(vector<Layer *> in, int units, string activation, bool use_bias, bool bidirectional, string name, int dev, int mem);
 
+    ~LRNN();
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
@@ -85,10 +87,10 @@ public:
     int units;
     bool use_bias;
     bool bidirectional;
-    bool mask_zeros;
-    Layer *cps;
-
     static int total_layers;
+    bool mask_zeros;
+
+    Layer *cps;
 
     Tensor *state_c;
     Tensor *state_h;
@@ -117,8 +119,9 @@ public:
     Tensor *psc;
 
 
-
     LLSTM(vector<Layer *> in, int units,  bool mask_zeros, bool bidirectional, string name, int dev, int mem);
+
+    ~LLSTM();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

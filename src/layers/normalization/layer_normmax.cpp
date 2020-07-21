@@ -65,6 +65,8 @@ LNormMax::LNormMax(Layer *parent, float epsilon, string name, int dev, int mem) 
 
 }
 
+LNormMax::~LNormMax(){
+}
 
 void LNormMax::mem_delta() {
     // TEMPORAL!

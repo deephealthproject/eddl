@@ -24,3 +24,8 @@ Adamax::Adamax(float lr, float beta_1, float beta_2, float epsilon, float weight
     this->weight_decay = weight_decay;
 
 }
+
+
+Adamax::~Adamax() {
+    for(int i=0; i<mT.size(); i++){ delete mT[i]; }
+}

@@ -86,12 +86,12 @@ public:
     vector<int> stride;
 
     // Data pointers
-    float *ptr;
-    Eigen::MatrixXf *ptr2;  // TODO: I don't like it. float or eigen, not both
+    float *ptr = nullptr;
+    Eigen::Map<Eigen::MatrixXf> *ptr2 = nullptr;  // TODO: I don't like it. float or eigen, not both
 
     // Aux variables
     int gpu_device;
-    mutex *tsem;  // Multithreading. Tensor semaphore
+    mutex *tsem = nullptr;  // Multithreading. Tensor semaphore
 
 #ifdef cFPGA
     // fpga-related information
@@ -2568,7 +2568,7 @@ public:
       *
       *  @return
     */
-    void resize(int b, float *fptr=nullptr, void *fptr2=nullptr);
+    void resize(int b, float *fptr=nullptr, void *fptr2=nullptr, bool delete_data=true);
 
 
     // ***********************************************************

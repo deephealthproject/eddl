@@ -15,6 +15,7 @@ option(USE_LOCAL_GTEST "Use the local library to avoid problems derived from the
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
+option(BUILD_SANITIZERS "Flag to compile with sanitizers information" OFF)
 
 if(WIN32)
     option(BUILD_SHARED_LIBS "" OFF) # Prefer lib over dll in windows
@@ -69,27 +70,31 @@ endif()
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Flags: Debugging
-if(BUILD_COVERAGE AND UNIX)
-    set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g --coverage")
-
-    # Apply coverage flags
-    set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
-
-    # Add sanitizers
-#    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-#        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak")  # address, leak, thread, undefined, memory
-#    endif()
-endif()
 
 if(UNIX)
     # Flags: Optimization
     # READ THIS: https://wiki.gentoo.org/wiki/GCC_optimization
 
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+    # Flags: Debugging
+    if(BUILD_SANITIZERS)
+        set(CMAKE_CXX_FLAGS_DEBUG "-O1 -g")
+
+        # Add sanitizers
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")  # address, leak, thread, undefined, memory
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize-recover=address")  # address, leak, thread, undefined, memory
+    endif()
+
+    if(BUILD_COVERAGE)
+        set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "--coverage")
+
+        # Apply coverage flags
+        set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
+        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
+    endif()
 
     if(BUILD_HPC)
         #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -mtune=native")  # This does not work on many machines
@@ -107,13 +112,13 @@ endif()
 # Windows
 if(WIN32)
     add_compile_definitions(
-        NOMINMAX # Disable min/max macros in windef.h
-        _CRT_SECURE_NO_WARNINGS # Eliminate deprecation warnings less secure functions
+            NOMINMAX # Disable min/max macros in windef.h
+            _CRT_SECURE_NO_WARNINGS # Eliminate deprecation warnings less secure functions
     )
     # Microsoft Visual C++
     add_compile_options(
-        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CXX>>:-W1> # Display level 1 (severe) warnings
-        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CXX>>:-MP> # Enable parallel compilation
+            $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CXX>>:-W1> # Display level 1 (severe) warnings
+            $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CXX>>:-MP> # Enable parallel compilation
     )
 endif()
 

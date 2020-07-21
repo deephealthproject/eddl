@@ -88,7 +88,7 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
 Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
-Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr, T->device) {}
+Tensor::Tensor(const vector<int> &shape, Tensor *T) : Tensor(shape,T->ptr, T->device) {}
 
 Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : Tensor(shape, nullptr, DEV_CPU) {
     // 0. Tensor in CPU
@@ -102,7 +102,7 @@ Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : T
     }else if ((dev >= DEV_GPU) && (dev < DEV_FPGA)) {
         this->toGPU(dev);
     }else{
-	this->toFPGA(dev);
+	    this->toFPGA(dev);
     }
 }
 
@@ -134,10 +134,17 @@ void Tensor::updateStrides() {
 }
 
 void Tensor::deleteData(){
-    // Careful, you can't know is a pointer is allocated
+    // Carefpdal, you can't know is a pointer is allocated
     if(this->ptr != nullptr){
         if (this->isCPU()) {
             delete[] this->ptr;
+
+            // Delete eigen matrix
+            if (this->ndim == 2){
+                delete this->ptr2;
+                this->ptr2 = nullptr;
+            }
+
         }
 #ifdef cGPU
         else if (this->isGPU())
@@ -153,6 +160,7 @@ void Tensor::deleteData(){
 
       // delete FPGA Tensor
 #endif
+        // Set pointer to null
         this->ptr = nullptr;
     }
 }
@@ -168,8 +176,8 @@ void Tensor::updateData(float *fptr, void *fptr2){
 
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
-        if (this->ndim == 2) {
-            this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
+        if (this->ndim == 2){
+            this->ptr2 = new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
         }
     }
 #ifdef cGPU
@@ -229,7 +237,7 @@ void Tensor::updateData(float *fptr, void *fptr2){
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
         if (this->ndim == 2) {
-          this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
+          this->ptr2= new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
         }
       }
 #endif
@@ -267,10 +275,7 @@ void Tensor::toCPU(int dev){
 
         // Assign CPU pointer
         this->device = dev;  // Must appear after deleting the data
-        this->ptr = cpu_ptr;
-        if (ndim == 2) {
-            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
-        }
+        this->updateData(cpu_ptr);
     }
 
 
@@ -358,7 +363,7 @@ void Tensor::reallocate(Tensor* old_t, vector<int> *s){
 
 Tensor::~Tensor() {
     this->deleteData();
-    delete tsem;
+    if(this->tsem != nullptr) { this->tsem->unlock(); delete tsem; }
 }
 
 int Tensor::isCPU() { return (device == DEV_CPU); }
@@ -492,7 +497,7 @@ bool Tensor::isSquared(Tensor *A){
 }
 
 // Resizing tensors
-void Tensor::resize(int b, float *fptr, void *fptr2) {
+void Tensor::resize(int b, float *fptr, void *fptr2, bool delete_data) {
     if (b == shape[0]) return;
 
     // Get new shape
@@ -503,7 +508,7 @@ void Tensor::resize(int b, float *fptr, void *fptr2) {
     updateShape(new_shape);
     updateSize();
     updateStrides();
-    if (fptr != nullptr) deleteData();  // Potential error
+    if (fptr != nullptr && delete_data) deleteData();  // Potential error on layers such as Reshape (passed pointer)
     updateData(fptr, fptr2);
 }
 

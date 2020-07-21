@@ -159,17 +159,31 @@ Net::Net(vector <Net *> vnets):Net()
 
 Net::~Net()
 {
-    for(int i=0;i<snets.size();i++){
 
-        for(int j=0;j<snets[i]->layers.size();j++) {
-            delete snets[i]->layers[j];
-            snets[i]->layers[j] = nullptr;
-        }
+//    for(int i=0;i<snets.size();i++){
+//
+//        for(int j=0;j<snets[i]->layers.size();j++) {
+//            delete snets[i]->layers[j];
+//            snets[i]->layers[j] = nullptr;
+//        }
+//    }
+
+
+//    for (int i = 0; i < snets.size(); i++) {
+//        delete snets[i];
+//        snets[i] = nullptr;
+//    }
+//
+//    for (int i = 0; i < mnets.size(); i++) {
+//        delete mnets[i];
+//        mnets[i] = nullptr;
+//    }
+
+    for (int i = 0; i < layers.size(); i++) {
+        delete layers[i];
+        layers[i] = nullptr;
     }
 
-    // TODO: CHECK REMOVE CPU
-
-/*
     for (int i = 0; i < losses.size(); i++) {
         delete losses[i];
         losses[i] = nullptr;
@@ -179,10 +193,29 @@ Net::~Net()
         delete metrics[i];
         metrics[i] = nullptr;
     }
-*/
 
+    delete cs;
     delete optimizer;
-    optimizer= nullptr;
+    delete rnet;
+
+
+//    vlayer lin;
+//    vlayer din;
+//    vlayer lout;
+//    vlayer vfts;
+//    vlayer vbts;
+//    vlayer netinput;
+
+
+    for (int i = 0; i < snets.size(); i++) {
+        for (int j = 0; j < Xs[i].size(); j++){
+            delete Xs[i][j];
+        }
+
+        for (int j = 0; j < Ys[i].size(); j++){
+            delete Ys[i][j];
+        }
+    }
 }
 
 /////////////////////////////////////////

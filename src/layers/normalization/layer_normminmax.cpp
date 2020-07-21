@@ -37,7 +37,6 @@ LNormMinMax::LNormMinMax(Layer *parent, float epsilon, string name, int dev, int
 
     // create a sub-graph
 
-
     // max
     Layer *max=new LRMax(parent, axis, true,this->name+"max", this->dev, this->mem_level);
     Layer *min=new LRMin(parent, axis, true,this->name+"max", this->dev, this->mem_level);
@@ -70,6 +69,10 @@ LNormMinMax::LNormMinMax(Layer *parent, float epsilon, string name, int dev, int
 
 }
 
+
+
+LNormMinMax::~LNormMinMax(){
+}
 
 
 void LNormMinMax::mem_delta() {
