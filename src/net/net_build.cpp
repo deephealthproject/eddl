@@ -246,7 +246,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     }
     else losses = vloss(lo);
 
-    for (int i = 0; i < lout.size(); i++) {
+    for (int i = 0; i < losses.size(); i++) {
         if (losses[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
         lout[i]->target = new Tensor(lout[i]->output->getShape(), dev);
     }
@@ -375,7 +375,7 @@ void Net::set_compserv(CompServ *cs){
             split(devsel.size(),DEV_FPGA);
           }
         }
-#endif  
+#endif
         }
     } else {
         msg("Distributed version not yet implemented", "Net.set_compserv");
