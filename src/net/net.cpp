@@ -160,13 +160,13 @@ Net::Net(vector <Net *> vnets):Net()
 Net::~Net()
 {
 
-//    for(int i=0;i<snets.size();i++){
-//
-//        for(int j=0;j<snets[i]->layers.size();j++) {
-//            delete snets[i]->layers[j];
-//            snets[i]->layers[j] = nullptr;
-//        }
-//    }
+    for(int i=0;i<snets.size();i++){
+
+        for(int j=0;j<snets[i]->layers.size();j++) {
+            delete snets[i]->layers[j];
+            snets[i]->layers[j] = nullptr;
+        }
+    }
 
 
 //    for (int i = 0; i < snets.size(); i++) {
@@ -178,25 +178,25 @@ Net::~Net()
 //        delete mnets[i];
 //        mnets[i] = nullptr;
 //    }
+//
+//    for (int i = 0; i < layers.size(); i++) {
+//        delete layers[i];
+//        layers[i] = nullptr;
+//    }
+//
+//    for (int i = 0; i < losses.size(); i++) {
+//        delete losses[i];
+//        losses[i] = nullptr;
+//    }
+//
+//    for (int i = 0; i < metrics.size(); i++) {
+//        delete metrics[i];
+//        metrics[i] = nullptr;
+//    }
 
-    for (int i = 0; i < layers.size(); i++) {
-        delete layers[i];
-        layers[i] = nullptr;
-    }
-
-    for (int i = 0; i < losses.size(); i++) {
-        delete losses[i];
-        losses[i] = nullptr;
-    }
-
-    for (int i = 0; i < metrics.size(); i++) {
-        delete metrics[i];
-        metrics[i] = nullptr;
-    }
-
-    delete cs;
-    delete optimizer;
-    delete rnet;
+//    delete cs;
+    delete optimizer; optimizer= nullptr;
+//    delete rnet;
 
 
 //    vlayer lin;
@@ -205,17 +205,17 @@ Net::~Net()
 //    vlayer vfts;
 //    vlayer vbts;
 //    vlayer netinput;
-
-
-    for (int i = 0; i < snets.size(); i++) {
-        for (int j = 0; j < Xs[i].size(); j++){
-            delete Xs[i][j];
-        }
-
-        for (int j = 0; j < Ys[i].size(); j++){
-            delete Ys[i][j];
-        }
-    }
+//
+//
+//    for (int i = 0; i < snets.size(); i++) {
+//        for (int j = 0; j < Xs[i].size(); j++){
+//            delete Xs[i][j];
+//        }
+//
+//        for (int j = 0; j < Ys[i].size(); j++){
+//            delete Ys[i][j];
+//        }
+//    }
 }
 
 /////////////////////////////////////////
