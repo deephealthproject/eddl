@@ -503,7 +503,7 @@ TEST(NetTestSuite, net_delete_drive_seg_sum){
 
 
 
-//TEST(NetTestSuite, net_delete_sentiment_rnn){
+//TEST(NetTestSuite, net_delete_nlp_sentiment_rnn){
 //    // ERROR => malloc_consolidate(): invalid chunk size
 //    int embdim=32;
 //    int vocsize= 2000;
@@ -535,7 +535,7 @@ TEST(NetTestSuite, net_delete_drive_seg_sum){
 //}
 //
 //
-//TEST(NetTestSuite, net_delete_sentiment_lstm){
+//TEST(NetTestSuite, net_delete_nlp_sentiment_lstm){
 //    // ERROR => malloc_consolidate(): invalid chunk size
 //    int embdim=32;
 //    int vocsize=2000;
@@ -566,7 +566,7 @@ TEST(NetTestSuite, net_delete_drive_seg_sum){
 //}
 //
 //
-//TEST(NetTestSuite, net_delete_machine_translation){
+//TEST(NetTestSuite, net_delete_nlp_machine_translation){
 //    // ERROR => malloc_consolidate(): invalid chunk size
 //    int invs=687;
 //    int outvs=514;
