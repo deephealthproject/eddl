@@ -106,6 +106,11 @@ Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : T
     }
 }
 
+Tensor::~Tensor() {
+    this->deleteData();
+    if(this->tsem != nullptr) { this->tsem->unlock(); delete tsem; }
+}
+
 void Tensor::updateDevice(int dev){
     this->device = dev;
 }
@@ -137,12 +142,16 @@ void Tensor::deleteData(){
     // Carefpdal, you can't know is a pointer is allocated
     if(this->ptr != nullptr){
         if (this->isCPU()) {
-            delete[] this->ptr;
+
 
             // Delete eigen matrix
             if (this->ndim == 2){
                 delete this->ptr2;
                 this->ptr2 = nullptr;
+                this->ptr = nullptr;  // Redundant
+            }else{
+                delete[] this->ptr;
+                this->ptr = nullptr;  // Redundant
             }
 
         }
@@ -359,11 +368,6 @@ void Tensor::reallocate(Tensor* old_t, vector<int> *s){
 
     // Not recommended
     updateData(old_t->ptr);
-}
-
-Tensor::~Tensor() {
-    this->deleteData();
-    if(this->tsem != nullptr) { this->tsem->unlock(); delete tsem; }
 }
 
 int Tensor::isCPU() { return (device == DEV_CPU); }

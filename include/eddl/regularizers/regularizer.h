@@ -21,8 +21,10 @@ using namespace std;
 class Regularizer {
 public:
     string name;
-    // Todo: Implement
+
     explicit Regularizer(string name);
+    ~Regularizer();
+
     virtual void apply(Tensor *T) = 0;
 };
 
@@ -31,6 +33,8 @@ public:
     float l1; // regularization factor
 
     explicit RL1(float l1);
+    ~RL1();
+
     void apply(Tensor *T) override;
 };
 
@@ -39,6 +43,8 @@ public:
     float l2; // regularization factor
 
     explicit RL2(float l2);
+    ~RL2();
+
     void apply(Tensor *T) override;
 };
 
@@ -48,6 +54,8 @@ public:
     float l2;
 
     explicit RL1L2(float l1, float l2);
+    ~RL1L2();
+
     void apply(Tensor *T) override;
 };
 

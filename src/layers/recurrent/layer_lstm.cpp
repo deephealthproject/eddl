@@ -108,8 +108,7 @@ LLSTM::LLSTM(vector<Layer *> parent, int units, bool mask_zeros, bool bidirectio
 }
 
 LLSTM::~LLSTM(){
-//    delete cps;
-//    delete state_c;
+    delete state_c;
 }
 
 // RESIZE , MEM_DELTA states

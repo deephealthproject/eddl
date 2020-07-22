@@ -20,6 +20,4 @@ Initializer::Initializer(string name) {
     this->name = name;
 }
 
-Initializer::~Initializer(){
-
-}
+Initializer::~Initializer()= default;
