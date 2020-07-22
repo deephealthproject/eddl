@@ -317,3 +317,81 @@ TEST(NetTestSuite, net_delete_mnist_auto_encoder_merging){
 //    ASSERT_TRUE(true);
 //}
 
+
+// Auxiliary function for: net_delete_cifar_resnet50_da_bg
+layer BN(layer l){
+    return BatchNormalization(l);
+}
+
+// Auxiliary function for: net_delete_cifar_resnet50_da_bg
+layer BG(layer l) {
+    return BN(l);
+}
+
+// Auxiliary function for: net_delete_cifar_resnet50_da_bg
+layer ResBlock(layer l, int filters,int half, int expand=0){
+    layer in=l;
+
+    l=ReLu(BG(Conv(l,filters,{1,1},{1,1},"same",false)));
+
+    if (half)
+        l=ReLu(BG(Conv(l,filters,{3,3},{2,2},"same",false)));
+    else
+        l=ReLu(BG(Conv(l,filters,{3,3},{1,1},"same",false)));
+
+    l=BG(Conv(l,4*filters,{1,1},{1,1},"same",false));
+
+    if (half)
+        return ReLu(Sum(BG(Conv(in,4*filters,{1,1},{2,2},"same",false)),l));
+    else
+    if (expand) return ReLu(Sum(BG(Conv(in,4*filters,{1,1},{1,1},"same",false)),l));
+    else return ReLu(Sum(in,l));
+}
+
+TEST(NetTestSuite, net_delete_cifar_resnet50_da_bg){
+    int num_classes = 10;
+
+    // network
+    layer in=Input({3,32,32});
+    layer l=in;
+
+    // Data augmentation
+    l = RandomCropScale(l, {0.8f, 1.0f});
+    l = RandomHorizontalFlip(l);
+
+    // Resnet-50
+
+    l=ReLu(BG(Conv(l,64,{3,3},{1,1},"same",false))); //{1,1}
+    //l=MaxPool(l,{3,3},{1,1},"same");
+
+    for(int i=0;i<3;i++)
+        l=ResBlock(l, 64, 0, i==0); // not half but expand the first
+
+    for(int i=0;i<4;i++)
+        l=ResBlock(l, 128,i==0);
+
+    for(int i=0;i<6;i++)
+        l=ResBlock(l, 256,i==0);
+
+    for(int i=0;i<3;i++)
+        l=ResBlock(l,512,i==0);
+
+    l=MaxPool(l,{4,4});  // should be avgpool
+
+    l=Reshape(l,{-1});
+
+    layer out=Activation(Dense(l,num_classes),"softmax");
+
+    // net define input and output layers list
+    model net=Model({in},{out});
+
+
+    // Build model
+    build(net,
+          sgd(0.001,0.9), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_CPU()
+    );
+    delete net;
+}
