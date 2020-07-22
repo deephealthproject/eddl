@@ -502,3 +502,65 @@ TEST(NetTestSuite, net_delete_drive_seg_sum){
 }
 
 
+
+//TEST(NetTestSuite, net_delete_sentiment_rnn){
+//    // ERROR => malloc_consolidate(): invalid chunk size
+//    int embdim=32;
+//    int vocsize= 2000;
+//
+//    // Define network
+//    layer in = Input({1}); //1 word
+//    layer l = in;
+//
+//    layer lE = RandomUniform(Embedding(l, vocsize, 1,embdim),-0.05,0.05);
+//
+//    l = RNN(lE,32);
+//    l = ReLu(Dense(l,256));
+//
+//    layer out = Sigmoid(Dense(l, 1));
+//    model net = Model({in}, {out});
+//
+//    optimizer opt=adam(0.001);
+//    //opt->set_clip_val(0.01);
+//
+//    // Build model
+//    build(net,
+//          opt, // Optimizer
+//          {"cross_entropy"}, // Losses
+//          {"binary_accuracy"}, // Metrics
+//          CS_CPU()
+//    );
+//
+//    delete net;
+//}
+//
+//
+//TEST(NetTestSuite, net_delete_sentiment_lstm){
+//    // ERROR => malloc_consolidate(): invalid chunk size
+//    int embdim=32;
+//    int vocsize=2000;
+//
+//    // Define network
+//    layer in = Input({1}); //1 word
+//    layer l = in;
+//
+//    layer lE = RandomUniform(Embedding(l, vocsize, 1,embdim),-0.05,0.05);
+//
+//    l = LSTM(lE,32);
+//    l = ReLu(Dense(l,256));
+//
+//    layer out = Sigmoid(Dense(l, 1));
+//    model net = Model({in}, {out});
+//
+//    optimizer opt=adam(0.001);
+//    //opt->set_clip_val(0.01);
+//
+//    // Build model
+//    build(net,
+//          opt, // Optimizer
+//          {"cross_entropy"}, // Losses
+//          {"binary_accuracy"}, // Metrics
+//          CS_CPU()
+//    );
+//    delete net;
+//}
