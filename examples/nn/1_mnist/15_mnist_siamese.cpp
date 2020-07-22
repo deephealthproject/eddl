@@ -32,10 +32,11 @@ int main(int argc, char **argv) {
     int batch_size = 100;
 
 
-    layer in1 = Input({784});
-    layer in2 = Input({784});
 
     // base model
+    // is a merge of two nets
+
+    //encoder
     layer in = Input({784});
     layer l = Activation(Dense(in, 256), "relu");
     l = Activation(Dense(l, 128), "relu");
@@ -43,25 +44,34 @@ int main(int argc, char **argv) {
     model enc=Model({in},{l});
     setName(enc,"enc");
 
+    // decoder
     in = Input({128});
     layer out = Activation(Dense(in, 64), "relu");
 
     model dec=Model({in},{out});
     setName(dec,"dec");
 
+    // merge
     model base = Model({enc,dec});
     setName(base,"base");
 
     plot(base, "base.pdf");
 
     //////
+
+    layer in1 = Input({784});
+    layer in2 = Input({784});
+
+    // get siameses
     layer out1 = getLayer(base,{in1});
     layer out2 = getLayer(base,{in2});
 
+    // combine siameses with some operations
     l=Diff(out1,out2);
     l=ReLu(Dense(l,256));
     layer outs=Sigmoid(Dense(l,784));
 
+    // build final model
     model siamese=Model({in1,in2},{outs});
     setName(siamese,"siamese");
 
@@ -70,9 +80,9 @@ int main(int argc, char **argv) {
           adam(0.0001), // Optimizer
           {"dice"}, // Losses
           {"dice"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
     );
     summary(siamese);
     plot(siamese, "model.pdf");
@@ -83,6 +93,12 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
 
     // Train model
-    fit(siamese, {x_train,x_train}, {x_train}, batch_size, epochs);
+    //fit(siamese, {x_train,x_train}, {x_train}, batch_size, epochs);
+
+    delete base;
+    delete enc;
+    delete dec;
+    delete siamese;
+
 
 }

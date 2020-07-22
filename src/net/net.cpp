@@ -67,6 +67,7 @@ int isInorig(Layer *l, vlayer vl, int &ind) {
 Net::Net() {
     batch_size=1;
     optimizer = nullptr;
+    cs = nullptr;
     name="model";
     tr_batches=0;
     flog_tr=nullptr;
@@ -148,6 +149,8 @@ Net::Net(vector <Net *> vnets):Net()
   isrecurrent=false;
   rnet=nullptr;
 
+  for(int i=0;i<vnets.size();i++)
+    mnets.push_back(vnets[i]);
 
   build_randn_table();
 
@@ -159,36 +162,19 @@ Net::Net(vector <Net *> vnets):Net()
 
 Net::~Net(){
 
+    if (mnets.size()) return;
+
     // Delete layers from each net
-    for(int i=0;i<snets.size();i++){
-
-        for(int j=0;j<snets[i]->layers.size();j++) {
-            if(snets[i]->layers[j]!= nullptr){
-//                cout << "====>" << snets[i]->layers[j]->name << endl;
-                delete snets[i]->layers[j];
-                snets[i]->layers[j] = nullptr;
-//                cout << "<==== OK" << endl;
-
-            }
-        }
-    }
-
-    // Delete mnets
-    for (int i = 0; i < mnets.size(); i++) {
-        if(mnets[i] != nullptr) {
-            delete mnets[i];
-            mnets[i] = nullptr;
-        }
+    if (snets[0]!=this) {
+    for(int i=0;i<snets.size();i++)
+      delete snets[i];
     }
 
     // Not needed. Layers deleted in the snet for above
     for (int i = 0; i < layers.size(); i++) {
         if(layers[i] != nullptr) {
-//            cout << "====>" << layers[i]->name << endl;
             delete layers[i];
             layers[i] = nullptr;
-//            cout << "<==== OK" << endl;
-
         }
     }
 
@@ -209,9 +195,13 @@ Net::~Net(){
     }
 
     // Delete pointer variables
-    delete cs; cs = nullptr;
-    delete optimizer; optimizer = nullptr;
-    delete rnet; rnet = nullptr;
+
+    // not until cs clone available
+    //if (cs!=nullptr) {delete cs; cs = nullptr;}
+
+    if (optimizer!=nullptr) {delete optimizer; optimizer = nullptr;}
+
+    if (rnet!=nullptr) {delete rnet; rnet = nullptr;}
 
     // Delete train data
     for (int i = 0; i < snets.size(); i++) {
