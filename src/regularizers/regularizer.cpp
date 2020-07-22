@@ -20,3 +20,5 @@ Regularizer::Regularizer(string name) {
     this->name = name;
 }
 
+Regularizer::~Regularizer()= default;
+

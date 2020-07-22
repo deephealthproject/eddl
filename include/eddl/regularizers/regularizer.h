@@ -23,6 +23,8 @@ public:
     string name;
 
     explicit Regularizer(string name);
+    ~Regularizer();
+
     virtual void apply(Tensor *T) = 0;
 };
 
