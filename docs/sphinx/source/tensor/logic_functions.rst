@@ -162,9 +162,9 @@ greater
 
 .. doxygenfunction:: Tensor::greater_(float)
 .. doxygenfunction:: Tensor::greater(float)
-.. doxygenfunction:: Tensor::greater(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::greater(Tensor*, Tensor*, float)
 .. doxygenfunction:: Tensor::greater(Tensor *)
-.. doxygenfunction:: Tensor::greater(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::greater(Tensor*, Tensor*, Tensor *)
 
  
 .. code-block:: c++
@@ -182,9 +182,9 @@ greater_equal
 
 .. doxygenfunction:: Tensor::greater_equal_(float)
 .. doxygenfunction:: Tensor::greater_equal(float)
-.. doxygenfunction:: Tensor::greater_equal(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::greater_equal(Tensor*, Tensor*, float)
 .. doxygenfunction:: Tensor::greater_equal(Tensor *)
-.. doxygenfunction:: Tensor::greater_equal(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::greater_equal(Tensor*, Tensor*, Tensor *)
 
 
 .. code-block:: c++
@@ -201,9 +201,9 @@ less
 
 .. doxygenfunction:: Tensor::less_(float)
 .. doxygenfunction:: Tensor::less(float)
-.. doxygenfunction:: Tensor::less(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::less(Tensor*, Tensor*, float)
 .. doxygenfunction:: Tensor::less(Tensor *)
-.. doxygenfunction:: Tensor::less(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::less(Tensor*, Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -219,9 +219,9 @@ less_equal
 
 .. doxygenfunction:: Tensor::less_equal_(float)
 .. doxygenfunction:: Tensor::less_equal(float)
-.. doxygenfunction:: Tensor::less_equal(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::less_equal(Tensor*, Tensor*, float)
 .. doxygenfunction:: Tensor::less_equal(Tensor *)
-.. doxygenfunction:: Tensor::less_equal(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::less_equal(Tensor*, Tensor*, Tensor *)
 
 
 .. code-block:: c++
@@ -238,9 +238,9 @@ equal
 
 .. doxygenfunction:: Tensor::equal_(float)
 .. doxygenfunction:: Tensor::equal(float)
-.. doxygenfunction:: Tensor::equal(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::equal(Tensor*, Tensor*, float)
 .. doxygenfunction:: Tensor::equal(Tensor *)
-.. doxygenfunction:: Tensor::equal(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::equal(Tensor*, Tensor*, Tensor *)
 
 
 .. code-block:: c++
@@ -257,9 +257,9 @@ not_equal
 
 .. doxygenfunction:: Tensor::not_equal_(float)
 .. doxygenfunction:: Tensor::not_equal(float)
-.. doxygenfunction:: Tensor::not_equal(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::not_equal(Tensor*, Tensor*, float)
 .. doxygenfunction:: Tensor::not_equal(Tensor *)
-.. doxygenfunction:: Tensor::not_equal(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::not_equal(Tensor*, Tensor*, Tensor *)
 
 
 

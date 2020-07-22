@@ -15,7 +15,7 @@ Create an uninitialized tensor
 
 .. doxygenfunction:: Tensor::Tensor()
 .. doxygenfunction:: Tensor::Tensor(const vector<int>&, int)
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, float *, int)
+.. doxygenfunction:: Tensor::Tensor(const vector<int>&, float*, int)
 .. doxygenfunction:: Tensor::Tensor(const vector<int>&, Tensor *)
 .. doxygenfunction:: Tensor::Tensor(const vector<float>&, const vector<int>&, int)
 
@@ -286,7 +286,7 @@ Constructors of matrices
 
 .. doxygenfunction:: Tensor::diag_(int)
 .. doxygenfunction:: Tensor::diag(int)
-.. doxygenfunction:: Tensor::diag(Tensor *, Tensor *, int)
+.. doxygenfunction:: Tensor::diag(Tensor*, Tensor*, int)
 
 
 Example:

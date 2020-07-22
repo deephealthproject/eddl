@@ -27,7 +27,7 @@ acos
 
 .. doxygenfunction:: Tensor::acos_
 .. doxygenfunction:: Tensor::acos()
-.. doxygenfunction:: Tensor::acos(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::acos(Tensor*, Tensor *)
 
 
 .. code-block:: c++
@@ -43,8 +43,8 @@ add
 .. doxygenfunction:: Tensor::add(float)
 .. doxygenfunction:: Tensor::add_(Tensor *)
 .. doxygenfunction:: Tensor::add(Tensor *)
-.. doxygenfunction:: Tensor::add(Tensor *, Tensor *, float)
-.. doxygenfunction:: Tensor::add(float, Tensor *, float, Tensor *, Tensor *, int)
+.. doxygenfunction:: Tensor::add(Tensor*, Tensor*, float)
+.. doxygenfunction:: Tensor::add(float, Tensor*, float, Tensor*, Tensor*, int)
 
 
 .. code-block:: c++
@@ -61,7 +61,7 @@ asin
 
 .. doxygenfunction:: Tensor::asin_
 .. doxygenfunction:: Tensor::asin()
-.. doxygenfunction:: Tensor::asin(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::asin(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -74,7 +74,7 @@ atan
 
 .. doxygenfunction:: Tensor::atan_()
 .. doxygenfunction:: Tensor::atan()
-.. doxygenfunction:: Tensor::atan(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::atan(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -87,7 +87,7 @@ ceil
 
 .. doxygenfunction:: Tensor::ceil_()
 .. doxygenfunction:: Tensor::ceil()
-.. doxygenfunction:: Tensor::ceil(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::ceil(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -101,7 +101,7 @@ clamp
 
 .. doxygenfunction:: Tensor::clamp_(float, float)
 .. doxygenfunction:: Tensor::clamp(float, float)
-.. doxygenfunction:: Tensor::clamp(Tensor *, Tensor *, float, float)
+.. doxygenfunction:: Tensor::clamp(Tensor*, Tensor*, float, float)
 
 .. code-block:: c++
 
@@ -116,7 +116,7 @@ clampmax
 
 .. doxygenfunction:: Tensor::clampmax_(float)
 .. doxygenfunction:: Tensor::clampmax(float)
-.. doxygenfunction:: Tensor::clampmax(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::clampmax(Tensor*, Tensor*, float)
 
 .. code-block:: c++
    
@@ -130,7 +130,7 @@ clampmin
 
 .. doxygenfunction:: Tensor::clampmin_(float)
 .. doxygenfunction:: Tensor::clampmin(float)
-.. doxygenfunction:: Tensor::clampmin(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::clampmin(Tensor*, Tensor*, float)
 
 .. code-block:: c++
    
@@ -143,7 +143,7 @@ cos
 
 .. doxygenfunction:: Tensor::cos_()
 .. doxygenfunction:: Tensor::cos()
-.. doxygenfunction:: Tensor::cos(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::cos(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -156,7 +156,7 @@ cosh
 
 .. doxygenfunction:: Tensor::cosh_()
 .. doxygenfunction:: Tensor::cosh()
-.. doxygenfunction:: Tensor::cosh(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::cosh(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -172,7 +172,7 @@ div
 .. doxygenfunction:: Tensor::div(float)
 .. doxygenfunction:: Tensor::div_(Tensor *)
 .. doxygenfunction:: Tensor::div(Tensor *)
-.. doxygenfunction:: Tensor::div(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::div(Tensor*, Tensor*, float)
 
 
 .. code-block:: c++
@@ -208,7 +208,7 @@ exp
 
 .. doxygenfunction:: Tensor::exp_()
 .. doxygenfunction:: Tensor::exp()
-.. doxygenfunction:: Tensor::exp(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::exp(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -221,7 +221,7 @@ floor
 
 .. doxygenfunction:: Tensor::floor_()
 .. doxygenfunction:: Tensor::floor()
-.. doxygenfunction:: Tensor::floor(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::floor(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -234,7 +234,7 @@ inv
 
 .. doxygenfunction:: Tensor::inv_(float)
 .. doxygenfunction:: Tensor::inv(float)
-.. doxygenfunction:: Tensor::inv(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::inv(Tensor*, Tensor*, float)
 
 .. code-block:: c++
 
@@ -256,7 +256,7 @@ log
 
 .. doxygenfunction:: Tensor::log_()
 .. doxygenfunction:: Tensor::log()
-.. doxygenfunction:: Tensor::log(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::log(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -269,7 +269,7 @@ log2
 
 .. doxygenfunction:: Tensor::log2_()
 .. doxygenfunction:: Tensor::log2()
-.. doxygenfunction:: Tensor::log2(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::log2(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -282,7 +282,7 @@ log10
 
 .. doxygenfunction:: Tensor::log10_()
 .. doxygenfunction:: Tensor::log10()
-.. doxygenfunction:: Tensor::log10(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::log10(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -295,7 +295,7 @@ logn
 
 .. doxygenfunction:: Tensor::logn_(float)
 .. doxygenfunction:: Tensor::logn(float)
-.. doxygenfunction:: Tensor::logn(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::logn(Tensor*, Tensor*, float)
 
 .. code-block:: c++
 
@@ -308,7 +308,7 @@ mod
 
 .. doxygenfunction:: Tensor::mod_(float)
 .. doxygenfunction:: Tensor::mod(float)
-.. doxygenfunction:: Tensor::mod(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::mod(Tensor*, Tensor*, float)
 
 .. code-block:: c++
 
@@ -323,7 +323,7 @@ mult
 .. doxygenfunction:: Tensor::mult(float)
 .. doxygenfunction:: Tensor::mult_(Tensor *)
 .. doxygenfunction:: Tensor::mult(Tensor *)
-.. doxygenfunction:: Tensor::mult(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::mult(Tensor*, Tensor*, float)
 
 
 .. code-block:: c++
@@ -339,7 +339,7 @@ neg
 
 .. doxygenfunction:: Tensor::neg_()
 .. doxygenfunction:: Tensor::neg()
-.. doxygenfunction:: Tensor::neg(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::neg(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -352,7 +352,7 @@ normalize
 
 .. doxygenfunction:: Tensor::normalize_(float, float)
 .. doxygenfunction:: Tensor::normalize(float, float)
-.. doxygenfunction:: Tensor::normalize(Tensor *, Tensor *, float, float)
+.. doxygenfunction:: Tensor::normalize(Tensor*, Tensor*, float, float)
 
 .. code-block:: c++
 
@@ -365,7 +365,7 @@ pow
 
 .. doxygenfunction:: Tensor::pow_(float)
 .. doxygenfunction:: Tensor::pow(float)
-.. doxygenfunction:: Tensor::pow(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::pow(Tensor*, Tensor*, float)
 
 .. code-block:: c++
 
@@ -379,7 +379,7 @@ powb
 
 .. doxygenfunction:: Tensor::powb_(float)
 .. doxygenfunction:: Tensor::powb(float)
-.. doxygenfunction:: Tensor::powb(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::powb(Tensor*, Tensor*, float)
 
 .. code-block:: c++
 
@@ -392,7 +392,7 @@ reciprocal
 
 .. doxygenfunction:: Tensor::reciprocal_()
 .. doxygenfunction:: Tensor::reciprocal()
-.. doxygenfunction:: Tensor::reciprocal(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::reciprocal(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -405,7 +405,7 @@ remainder
 
 .. doxygenfunction:: Tensor::remainder_(float)
 .. doxygenfunction:: Tensor::remainder(float)
-.. doxygenfunction:: Tensor::remainder(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::remainder(Tensor*, Tensor*, float)
 
 .. code-block:: c++
 
@@ -418,7 +418,7 @@ round
 
 .. doxygenfunction:: Tensor::round_()
 .. doxygenfunction:: Tensor::round()
-.. doxygenfunction:: Tensor::round(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::round(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -431,7 +431,7 @@ rsqrt
 
 .. doxygenfunction:: Tensor::rsqrt_()
 .. doxygenfunction:: Tensor::rsqrt()
-.. doxygenfunction:: Tensor::rsqrt(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::rsqrt(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -444,7 +444,7 @@ sigmoid
 
 .. doxygenfunction:: Tensor::sigmoid_()
 .. doxygenfunction:: Tensor::sigmoid()
-.. doxygenfunction:: Tensor::sigmoid(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::sigmoid(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -457,7 +457,7 @@ sign
 
 .. doxygenfunction:: Tensor::sign(float)
 
-.. doxygenfunction:: Tensor::sign(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::sign(Tensor*, Tensor*, float)
 
 .. code-block:: c++  
 
@@ -470,7 +470,7 @@ sin
 
 .. doxygenfunction:: Tensor::sin_()
 .. doxygenfunction:: Tensor::sin()
-.. doxygenfunction:: Tensor::sin(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::sin(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -483,7 +483,7 @@ sinh
 
 .. doxygenfunction:: Tensor::sinh_()
 .. doxygenfunction:: Tensor::sinh()
-.. doxygenfunction:: Tensor::sinh(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::sinh(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -496,7 +496,7 @@ sqr
 
 .. doxygenfunction:: Tensor::sqr_()
 .. doxygenfunction:: Tensor::sqr()
-.. doxygenfunction:: Tensor::sqr(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::sqr(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -509,7 +509,7 @@ sqrt
 
 .. doxygenfunction:: Tensor::sqrt_()
 .. doxygenfunction:: Tensor::sqrt()
-.. doxygenfunction:: Tensor::sqrt(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::sqrt(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -524,7 +524,7 @@ sub
 .. doxygenfunction:: Tensor::sub(float)
 .. doxygenfunction:: Tensor::sub_(Tensor *)
 .. doxygenfunction:: Tensor::sub(Tensor *)
-.. doxygenfunction:: Tensor::sub(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::sub(Tensor*, Tensor*, float)
 
 
 .. code-block:: c++
@@ -542,7 +542,7 @@ tan
 
 .. doxygenfunction:: Tensor::tan_()
 .. doxygenfunction:: Tensor::tan()
-.. doxygenfunction:: Tensor::tan(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::tan(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -555,7 +555,7 @@ tanh
 
 .. doxygenfunction:: Tensor::tanh_()
 .. doxygenfunction:: Tensor::tanh()
-.. doxygenfunction:: Tensor::tanh(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::tanh(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -568,7 +568,7 @@ trunc
 
 .. doxygenfunction:: Tensor::trunc_()
 .. doxygenfunction:: Tensor::trunc()
-.. doxygenfunction:: Tensor::trunc(Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::trunc(Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -583,8 +583,8 @@ Binary Operations
 add
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::add(Tensor *, Tensor *)
-.. doxygenfunction:: Tensor::add(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::add(Tensor*, Tensor *)
+.. doxygenfunction:: Tensor::add(Tensor*, Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -595,8 +595,8 @@ add
 div
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::div(Tensor *, Tensor *)
-.. doxygenfunction:: Tensor::div(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::div(Tensor*, Tensor *)
+.. doxygenfunction:: Tensor::div(Tensor*, Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -606,8 +606,8 @@ div
 mult
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::mult(Tensor *, Tensor *)
-.. doxygenfunction:: Tensor::mult(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::mult(Tensor*, Tensor *)
+.. doxygenfunction:: Tensor::mult(Tensor*, Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -617,8 +617,8 @@ mult
 sub
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sub(Tensor *, Tensor *)
-.. doxygenfunction:: Tensor::sub(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::sub(Tensor*, Tensor *)
+.. doxygenfunction:: Tensor::sub(Tensor*, Tensor*, Tensor *)
 
 .. code-block:: c++
 
@@ -632,8 +632,8 @@ Apply lower bound
 ^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::maximum(float)
-.. doxygenfunction:: Tensor::maximum(Tensor *, float)
-.. doxygenfunction:: Tensor::maximum(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::maximum(Tensor*, float)
+.. doxygenfunction:: Tensor::maximum(Tensor*, Tensor*, float)
 
 .. code-block:: c++
    
@@ -644,8 +644,8 @@ Apply lower bound
 
 Obtain maximum values
 ^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: Tensor::maximum(Tensor *, Tensor *)
-.. doxygenfunction:: Tensor::maximum(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::maximum(Tensor*, Tensor *)
+.. doxygenfunction:: Tensor::maximum(Tensor*, Tensor*, Tensor *)
 
 .. code-block:: c++
    
@@ -657,8 +657,8 @@ Apply upper bound
 ^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::minimum(float)
-.. doxygenfunction:: Tensor::minimum(Tensor *, float)
-.. doxygenfunction:: Tensor::minimum(Tensor *, Tensor *, float)
+.. doxygenfunction:: Tensor::minimum(Tensor*, float)
+.. doxygenfunction:: Tensor::minimum(Tensor*, Tensor*, float)
 
 .. code-block:: c++
    
@@ -669,8 +669,8 @@ Apply upper bound
 
 Obtain minumum values
 ^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: Tensor::minimum(Tensor *, Tensor *)
-.. doxygenfunction:: Tensor::minimum(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::minimum(Tensor*, Tensor *)
+.. doxygenfunction:: Tensor::minimum(Tensor*, Tensor*, Tensor *)
 
 .. code-block:: c++
    
@@ -805,7 +805,7 @@ mean
 std
 ^^^^^^^^
 .. doxygenfunction:: Tensor::std(bool)
-.. doxygenfunction:: Tensor::std(Tensor *, bool)
+.. doxygenfunction:: Tensor::std(Tensor*, bool)
 .. doxygenfunction:: Tensor::std(vector<int>, bool, bool)
 
 
@@ -819,7 +819,7 @@ std
 var
 ^^^^^^^^
 .. doxygenfunction:: Tensor::var(bool)
-.. doxygenfunction:: Tensor::var(Tensor *, bool)
+.. doxygenfunction:: Tensor::var(Tensor*, bool)
 .. doxygenfunction:: Tensor::var(vector<int>, bool, bool)
 
 

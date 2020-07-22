@@ -14,8 +14,8 @@ Matrix and vector operations
 interpolate
 ^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::interpolate(float, Tensor *, float, Tensor *)
-.. doxygenfunction:: Tensor::interpolate(float, Tensor *, float, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::interpolate(float, Tensor*, float, Tensor *)
+.. doxygenfunction:: Tensor::interpolate(float, Tensor*, float, Tensor*, Tensor *)
 
 Example:
 
@@ -37,7 +37,7 @@ trace
 ^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::trace(int)
-.. doxygenfunction:: Tensor::trace(Tensor *, int)
+.. doxygenfunction:: Tensor::trace(Tensor*, int)
 
 Example:
 
@@ -57,7 +57,7 @@ norm
 ^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::norm(string)
-.. doxygenfunction:: Tensor::norm(Tensor *, string)
+.. doxygenfunction:: Tensor::norm(Tensor*, string)
 .. doxygenfunction:: Tensor::norm(vector<int>, bool, string)
 
 Example:
