@@ -164,13 +164,13 @@ Net::~Net(){
 
     if (mnets.size()) return;
 
-    // Delete layers from each net
-    if (snets[0]!=this) {
-    for(int i=0;i<snets.size();i++)
-      delete snets[i];
+    // Delete snets first {GPU or FPGA}
+    if (snets[0]!=this) {  // check if not CPU
+      for(int i=0;i<snets.size();i++)
+        delete snets[i];
     }
 
-    // Not needed. Layers deleted in the snet for above
+    // delete layers
     for (int i = 0; i < layers.size(); i++) {
         if(layers[i] != nullptr) {
             delete layers[i];
