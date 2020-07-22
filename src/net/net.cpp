@@ -163,59 +163,62 @@ Net::~Net()
     for(int i=0;i<snets.size();i++){
 
         for(int j=0;j<snets[i]->layers.size();j++) {
-            delete snets[i]->layers[j];
-            snets[i]->layers[j] = nullptr;
+            if(snets[i]->layers[j]!= nullptr){
+                cout << "====>" << snets[i]->layers[j]->name << endl;
+                delete snets[i]->layers[j];
+                snets[i]->layers[j] = nullptr;
+                cout << "<==== OK" << endl;
+
+            }
         }
     }
 
+    for (int i = 0; i < mnets.size(); i++) {
+        if(mnets[i] != nullptr) {
+            delete mnets[i];
+            mnets[i] = nullptr;
+        }
+    }
 
-//    for (int i = 0; i < snets.size(); i++) {
-//        delete snets[i];
-//        snets[i] = nullptr;
-//    }
-//
-//    for (int i = 0; i < mnets.size(); i++) {
-//        delete mnets[i];
-//        mnets[i] = nullptr;
-//    }
-//
-//    for (int i = 0; i < layers.size(); i++) {
-//        delete layers[i];
-//        layers[i] = nullptr;
-//    }
-//
-//    for (int i = 0; i < losses.size(); i++) {
-//        delete losses[i];
-//        losses[i] = nullptr;
-//    }
-//
-//    for (int i = 0; i < metrics.size(); i++) {
-//        delete metrics[i];
-//        metrics[i] = nullptr;
-//    }
+    // Not needed
+    for (int i = 0; i < layers.size(); i++) {
+        if(layers[i] != nullptr) {
+            cout << "====>" << layers[i]->name << endl;
+            delete layers[i];
+            layers[i] = nullptr;
+            cout << "<==== OK" << endl;
 
-//    delete cs;
-    delete optimizer; optimizer= nullptr;
-//    delete rnet;
+        }
+    }
+
+    for (int i = 0; i < losses.size(); i++) {
+        if(losses[i] != nullptr) {
+            delete losses[i];
+            losses[i] = nullptr;
+        }
+    }
+
+    for (int i = 0; i < metrics.size(); i++) {
+        if(metrics[i] != nullptr) {
+            delete metrics[i];
+            metrics[i] = nullptr;
+        }
+    }
+
+    delete cs; cs = nullptr;
+    delete optimizer; optimizer = nullptr;
+    delete rnet; rnet = nullptr;
 
 
-//    vlayer lin;
-//    vlayer din;
-//    vlayer lout;
-//    vlayer vfts;
-//    vlayer vbts;
-//    vlayer netinput;
-//
-//
-//    for (int i = 0; i < snets.size(); i++) {
-//        for (int j = 0; j < Xs[i].size(); j++){
-//            delete Xs[i][j];
-//        }
-//
-//        for (int j = 0; j < Ys[i].size(); j++){
-//            delete Ys[i][j];
-//        }
-//    }
+    for (int i = 0; i < snets.size(); i++) {
+        for (int j = 0; j < Xs[i].size(); j++){
+            delete Xs[i][j];
+        }
+
+        for (int j = 0; j < Ys[i].size(); j++){
+            delete Ys[i][j];
+        }
+    }
 }
 
 /////////////////////////////////////////
