@@ -1,0 +1,51 @@
+This folder contains the tests for the fpga kernels
+
+Makefile automatically compiles kernels and test files by following next rules
+
+Add kernel name to LIST in 
+  eddl/fpga_kernels/test_fpga/Makefile
+
+kernel sources must be placed under 
+  eddl/fpga_kernels
+
+test sources must be placed under
+  eddl/fpga_kernels/test_fpga/src
+
+
+Naming convention for source files and kernel name function
+kernel file name must be: kernel_<name>.cpp
+kernel function name must be:k_<name> 
+test file name must be: test_<name.cpp>
+
+## Compilation of sources
+The Makefile accepts some parameters to customize compilation of the kernels to run in software emulation mode or in hardware
+DEVICE
+TARGET
+
+Default values are set to compile the sources for the ALVEO board in sw_emu mode
+  DEVICE = xilinx_u200_xdma_201830_2
+  TARGET = sw_emu
+
+
+Commands exeucted in the Makefile require XILINX environment variables, so before running makefile, please load load Xilinx and XRT vars
+  >> source /opt/Xilinx/Vitis/2019.2/settings64.sh
+  >> source /opt/xilinx/xrt/setup.sh
+
+In order to compile the xclbin file for emulation mode XCL_EMULATION_MODE environment variable must be set to sw_mode before running the makefile
+  >> export XCL_EMULATION_MODE=sw_emu
+
+##########
+
+# to compile all kernels in "LIST"
+  >> cd ..../eddl/fpga_kernels/test_fpga
+# environment variables must be set only once 
+  >> source /opt/Xilinx/Vitis/2019.2/settings64.sh
+  >> source /opt/xilinx/xrt/setup.sh
+  >> export XCL_EMULATION_MODE=sw_emu
+# run makefile
+  >> make all
+# This will generate all executables in current folder
+
+# to clean previous compilation files
+  >> make cleanall
+
