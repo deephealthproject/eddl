@@ -389,7 +389,7 @@ TEST(TensorTestSuite, tensor_math_reduction_mode) {
 
 #ifdef cGPU
     // TODO:: THERE ARE PROBLEMS WITH BIGGER TENSORS
-    Tensor* t_cpu = Tensor::randn({3, 100, 100});  t_cpu->round_(); // High mismatch CPU/GPU; make either 0 or 1
+    Tensor* t_cpu = Tensor::randn({3, 101, 101});  t_cpu->round_();
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     Tensor *t_cpu_mode = t_cpu->mode({1}, false);
