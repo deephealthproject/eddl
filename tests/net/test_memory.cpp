@@ -395,3 +395,110 @@ TEST(NetTestSuite, net_delete_cifar_resnet50_da_bg){
     );
     delete net;
 }
+
+// Auxiliary function for: net_delete_drive_seg
+layer UNetWithPadding(layer x, bool use_concat){
+    layer x2;
+    layer x3;
+    layer x4;
+    layer x5;
+
+    int depth=32;
+
+    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = MaxPool(x, { 2,2 }, { 2,2 });
+    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = MaxPool(x2, { 2,2 }, { 2,2 });
+    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = MaxPool(x3, { 2,2 }, { 2,2 });
+    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = MaxPool(x4, { 2,2 }, { 2,2 });
+    x5 = LeakyReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = LeakyReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 2,2 }, { 1, 1 }, "same");
+
+    if (use_concat) x4 = Concat({x4,x5});
+    else x4 = Sum(x4,x5);
+    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 2,2 }, { 1, 1 }, "same");
+
+    if (use_concat) x3 = Concat({x3,x4});
+    else x3 = Sum(x3,x4);
+    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 2,2 }, { 1, 1 }, "same");
+
+    if (use_concat) x2 = Concat({x2,x3});
+    else x2 = Sum(x2,x3);
+    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 2,2 }, { 1, 1 }, "same");
+
+    if (use_concat) x = Concat({x,x2});
+    else x = Sum(x,x2);
+    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = Conv(x, 1, { 1,1 });
+
+    return x;
+}
+
+TEST(NetTestSuite, net_delete_drive_seg_da) {
+
+    // Network for Data Augmentation
+    layer in1=Input({3,584,584});
+    layer in2=Input({1,584,584});
+
+    layer l=Concat({in1,in2});   // Cat image and mask
+    l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
+    l= CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
+    layer img=Select(l,{"0:3"}); // UnCat [0-2] image
+    layer mask=Select(l,{"3"});  // UnCat [3] mask
+    // Both, image and mask, have the same augmentation
+
+    // Define DA model inputs
+    model danet=Model({in1,in2},{});
+
+    // Build model for DA
+    build(danet);
+    delete danet;
+}
+
+TEST(NetTestSuite, net_delete_drive_seg_concat) {
+    // Build SegNet
+    bool use_concat = true;
+    layer in=Input({3,512,512});
+    layer out=Sigmoid(UNetWithPadding(in, use_concat));
+    model segnet=Model({in},{out});
+    build(segnet,
+          adam(0.00001), // Optimizer
+          {"mse"}, // Losses
+          {"mse"}, // Metrics
+          CS_CPU(-1)
+    );
+    delete segnet;
+}
+
+
+TEST(NetTestSuite, net_delete_drive_seg_sum){
+
+    // Build SegNet
+    bool use_concat = false;
+    layer in=Input({3,512,512});
+    layer out=Sigmoid(UNetWithPadding(in, use_concat));
+    model segnet=Model({in},{out});
+    build(segnet,
+          adam(0.00001), // Optimizer
+          {"mse"}, // Losses
+          {"mse"}, // Metrics
+          CS_CPU(-1)
+    );
+    delete segnet;
+}
+
+
