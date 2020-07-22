@@ -178,3 +178,62 @@ TEST(NetTestSuite, net_delete_mnist_conv){
 
     ASSERT_TRUE(true);
 }
+
+
+TEST(NetTestSuite, net_delete_mnist_rnn){
+    int num_classes = 10;
+
+    // Define network
+    layer in = Input({28});
+    layer l = in;  // Aux var
+
+    l = LeakyReLu(Dense(l, 32));
+    //l = L2(RNN(l, 128, "relu"),0.001);
+    l = L2(LSTM(l, 128),0.001);
+    l = LeakyReLu(Dense(l, 32));
+
+    layer out = Softmax(Dense(l, num_classes));
+    model net = Model({in}, {out});
+    net->verbosity_level = 0;
+
+    // Build model
+    build(net,
+          rmsprop(0.001), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_CPU()
+    );
+    delete net;
+
+    ASSERT_TRUE(true);
+}
+
+TEST(NetTestSuite, net_delete_mnist_conv1D){
+    int num_classes = 10;
+
+    // Define network
+    layer in = Input({784});
+    layer l = in;  // Aux var
+
+    l = Reshape(l,{1,784}); //image as a 1D signal with depth=1
+    l = MaxPool1D(ReLu(Conv1D(l,16, {3},{1})),{4},{4});  //MaxPool 4 stride 4
+    l = MaxPool1D(ReLu(Conv1D(l,32, {3},{1})),{4},{4});
+    l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
+    l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
+    l = Reshape(l,{-1});
+
+    layer out = Activation(Dense(l, num_classes), "softmax");
+    model net = Model({in}, {out});
+    net->verbosity_level = 0;
+
+    // Build model
+    build(net,
+          rmsprop(0.01), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_CPU()
+    );
+    delete net;
+
+    ASSERT_TRUE(true);
+}
