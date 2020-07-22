@@ -60,8 +60,8 @@ Check compatibility
 
 .. code-block:: c++
 
-    void checkCompatibility(Tensor *A, Tensor *B, const string &title);
-    void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title);
+    void checkCompatibility(Tensor*A, Tensor*B, const string &title);
+    void checkCompatibility(Tensor*A, Tensor*B, Tensor*C, const string &title);
     
 
 
@@ -227,7 +227,7 @@ squeeze
 .. code-block:: c++
 
     void squeeze_();
-    static Tensor* squeeze(Tensor *A);
+    static Tensor* squeeze(Tensor*A);
     
 unsqueeze
 ^^^^^^^^^^^^^^^
@@ -238,7 +238,7 @@ unsqueeze
 .. code-block:: c++
 
     void unsqueeze_();
-    static Tensor* unsqueeze(Tensor *A);
+    static Tensor* unsqueeze(Tensor*A);
 
 
 Joining arrays

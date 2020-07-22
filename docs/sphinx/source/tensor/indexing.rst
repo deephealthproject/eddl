@@ -27,8 +27,8 @@ Example:
 where
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::where(Tensor*, Tensor*, Tensor *)
-.. doxygenfunction:: Tensor::where(Tensor*, Tensor*, Tensor*, Tensor *)
+.. doxygenfunction:: Tensor::where(Tensor*, Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::where(Tensor*, Tensor*, Tensor*, Tensor*)
 
 
 Example:
@@ -36,8 +36,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    static Tensor* where(Tensor *condition, Tensor *A, Tensor *B);  // where(x > 0, x[random], y[ones])
-    static void where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
+    static Tensor* where(Tensor*condition, Tensor*A, Tensor*B);  // where(x > 0, x[random], y[ones])
+    static void where(Tensor*condition, Tensor*A, Tensor*B, Tensor*C);
 
 
 select
@@ -51,7 +51,7 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false);
+    static void select(Tensor*A, Tensor*B, vector<int> sind, int ini, int end, bool mask_zeros=false);
 
 
 deselect
@@ -65,7 +65,7 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
+    static void deselect(Tensor*A, Tensor*B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
 
 
 

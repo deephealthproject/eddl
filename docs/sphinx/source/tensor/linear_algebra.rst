@@ -14,8 +14,8 @@ Matrix and vector operations
 interpolate
 ^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::interpolate(float, Tensor*, float, Tensor *)
-.. doxygenfunction:: Tensor::interpolate(float, Tensor*, float, Tensor*, Tensor *)
+.. doxygenfunction:: Tensor::interpolate(float, Tensor*, float, Tensor*)
+.. doxygenfunction:: Tensor::interpolate(float, Tensor*, float, Tensor*, Tensor*)
 
 Example:
 
