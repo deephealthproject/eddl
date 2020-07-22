@@ -21,6 +21,8 @@ RL1::RL1(float l1) : Regularizer("l1") {
     this->l1 = l1;
 }
 
+RL1::~RL1()= default;;
+
 void RL1::apply(Tensor* T) {
     Tensor *S = T->clone();
 
