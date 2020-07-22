@@ -108,3 +108,73 @@ TEST(NetTestSuite, net_delete_mnist_regularizers){
     delete net;
     ASSERT_TRUE(true);
 }
+
+TEST(NetTestSuite, net_delete_mnist_da){
+    int num_classes = 10;
+
+    // Define network
+    layer in = Input({784});
+    layer l = in;  // Aux var
+
+    // Data augmentation assumes 3D tensors... images:
+    l=Reshape(l,{1,28,28});
+
+    // Data augmentation
+    l = RandomCropScale(l, {0.9f, 1.0f});
+
+    // Come back to 1D tensor for fully connected:
+    l=Reshape(l,{-1});
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+    //l = ReLu(Dense(l, 1024));
+    //l = ReLu(Dense(l, 1024));
+
+    layer out = Activation(Dense(l, num_classes), "softmax");
+    model net = Model({in}, {out});
+    net->verbosity_level = 0;
+
+    // Build model
+    build(net,
+          sgd(0.01, 0.9), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_CPU()
+    );
+    delete net;
+
+    ASSERT_TRUE(true);
+}
+
+// mnist_mlp_train_batch => No needed. Redundant
+// mnist_mlp_auto_encoder => No needed. Redundant
+
+TEST(NetTestSuite, net_delete_mnist_conv){
+    int num_classes = 10;
+
+    // Define network
+    layer in = Input({784});
+    layer l = in;  // Aux var
+
+    l = Reshape(l,{1,28,28});
+    l = MaxPool(ReLu(Conv(l,32, {3,3},{1,1})),{3,3}, {1,1}, "same");
+    l = MaxPool(ReLu(Conv(l,64, {3,3},{1,1})),{2,2}, {2,2}, "same");
+    l = MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{3,3}, {2,2}, "none");
+    l = MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2}, {2,2}, "none");
+    l = Reshape(l,{-1});
+
+    layer out = Activation(Dense(l, num_classes), "softmax");
+    model net = Model({in}, {out});
+    net->verbosity_level = 0;
+
+    // Build model
+    build(net,
+          rmsprop(0.01), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_CPU()
+    );
+    delete net;
+
+    ASSERT_TRUE(true);
+}
