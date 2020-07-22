@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<Runs Version="1" Minor="0">
-	<Run Id="k_relu" LaunchDir="/home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu/k_relu" FlowId="Build_IP" FromStepId="vivado_hls" ToStepId="vivado_hls"/>
-</Runs>
-

@@ -1,10 +1,0 @@
-
-à
-v++_compile_krnl_vadd$ec674a52-e97a-48e8-8abc-02cc553720532nf/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./.tlog/v++_compile_krnl_vadd.xtl 2kc/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./krnl_vadd.xo.compile_summary 2lf/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./krnl_vadd.xo.compile_summary.pb f/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./krnl_vadd.xo.compile_summary.pb"Mon Jun 29 07:56:44 2020(Üù–¯Ø.bû
-$95cb8721-eb31-46c6-918b-b4c7221e277bv++d/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./krnl_vadd/krnl_vadd.steps.log"˛/opt/Xilinx/Vitis/2019.2/bin/unwrapped/lnx64.o/v++  --xp "vivado_prop:run.__KERNEL__.{STEPS.SYNTH_DESIGN.ARGS.MORE OPTIONS}={-directive sdx_optimization_effort_high}" --xp "misc:report=type report_timing_summary name impl_report_timing_summary_route_design_summary steps {route_design} runs {impl_1} options {-max_paths 10}" --xp "misc:report=type report_timing_summary name impl_report_timing_summary_post_route_phys_opt_design_summary steps {post_route_phys_opt_design} runs {impl_1} options {-max_paths 10}" -t sw_emu --platform --save-temps -g --temp_dir ./_x.sw_emu. -c -k krnl_vadd -Isrc -o_x.sw_emu./krnl_vadd.xo src/krnl_vadd.cpp *-t*sw_emu*
---platform*--save-temps*-g*
---temp_dir*./_x.sw_emu.*-c*-k*	krnl_vadd*-Isrc*-o_x.sw_emu./krnl_vadd.xo*src/krnl_vadd.cpp"Mon Jun 29 07:56:44 2020(Üù–¯Ø.r(
-$95cb8721-eb31-46c6-918b-b4c7221e277b"Mon Jun 29 07:56:46 2020(ã≠–¯Ø.jÇ
-|/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./reports/krnl_vadd/v++_compile_krnl_vadd_guidance.html "Mon Jun 29 07:56:46 2020(ã≠–¯Ø.jn
-h/home/jorga20j/Vitis_Accel_Examples/cpp_kernels/simple_vadd/_x.sw_emu./v++_compile_krnl_vadd_guidance.pb "Mon Jun 29 07:56:46 2020(å≠–¯Ø.r(
-$95cb8721-eb31-46c6-918b-b4c7221e277b

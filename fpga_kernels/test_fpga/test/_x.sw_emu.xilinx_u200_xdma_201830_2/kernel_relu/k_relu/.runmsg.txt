@@ -1,2 +1,0 @@
-performing high-level synthesis for kernel: k_relu
-Log file: /home/jorga20j/test_fpga/simple_vadd/_x.sw_emu.xilinx_u200_xdma_201830_2/kernel_relu/k_relu/vivado_hls.log
