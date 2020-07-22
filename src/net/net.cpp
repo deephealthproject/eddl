@@ -157,22 +157,23 @@ Net::Net(vector <Net *> vnets):Net()
 
 
 
-Net::~Net()
-{
+Net::~Net(){
 
+    // Delete layers from each net
     for(int i=0;i<snets.size();i++){
 
         for(int j=0;j<snets[i]->layers.size();j++) {
             if(snets[i]->layers[j]!= nullptr){
-                cout << "====>" << snets[i]->layers[j]->name << endl;
+//                cout << "====>" << snets[i]->layers[j]->name << endl;
                 delete snets[i]->layers[j];
                 snets[i]->layers[j] = nullptr;
-                cout << "<==== OK" << endl;
+//                cout << "<==== OK" << endl;
 
             }
         }
     }
 
+    // Delete mnets
     for (int i = 0; i < mnets.size(); i++) {
         if(mnets[i] != nullptr) {
             delete mnets[i];
@@ -180,17 +181,18 @@ Net::~Net()
         }
     }
 
-    // Not needed
+    // Not needed. Layers deleted in the snet for above
     for (int i = 0; i < layers.size(); i++) {
         if(layers[i] != nullptr) {
-            cout << "====>" << layers[i]->name << endl;
+//            cout << "====>" << layers[i]->name << endl;
             delete layers[i];
             layers[i] = nullptr;
-            cout << "<==== OK" << endl;
+//            cout << "<==== OK" << endl;
 
         }
     }
 
+    // Delete losses
     for (int i = 0; i < losses.size(); i++) {
         if(losses[i] != nullptr) {
             delete losses[i];
@@ -198,6 +200,7 @@ Net::~Net()
         }
     }
 
+    // Delete metrics
     for (int i = 0; i < metrics.size(); i++) {
         if(metrics[i] != nullptr) {
             delete metrics[i];
@@ -205,11 +208,12 @@ Net::~Net()
         }
     }
 
+    // Delete pointer variables
     delete cs; cs = nullptr;
     delete optimizer; optimizer = nullptr;
     delete rnet; rnet = nullptr;
 
-
+    // Delete train data
     for (int i = 0; i < snets.size(); i++) {
         for (int j = 0; j < Xs[i].size(); j++){
             delete Xs[i][j];
