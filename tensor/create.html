@@ -299,32 +299,39 @@
 </p>
 </dd></dl>
 
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::Tensor” with arguments (const vector&lt;int&gt;&amp;, float *, int) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6TensorERK6vectorIiEPfi">
+<span id="_CPPv3N6Tensor6TensorERK6vectorIiEPfi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIiEPfi"></span><span id="Tensor::Tensor__vector:i:CR.floatP.i"></span><span class="target" id="class_tensor_1a2eec5df1c14495eadef9547e9794e3eb"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIiEPfi" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, float *<em>fptr</em>, int <em>dev</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Constructor of an uninitialized tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>a tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Vector of ints specifying the shape of the tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fptr</span></code>: memory pointer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">()</span>
-<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::Tensor” with arguments (const vector&lt;int&gt;&amp;, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6TensorERK6vectorIiEP6Tensor">
+<span id="_CPPv3N6Tensor6TensorERK6vectorIiEP6Tensor"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIiEP6Tensor"></span><span id="Tensor::Tensor__vector:i:CR.TensorP"></span><span class="target" id="class_tensor_1a3f3a81ffe8d20a99958f5f5e1da14291"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIiEP6Tensor" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, <a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIiEP6Tensor" title="Tensor::Tensor">Tensor</a> *<em>T</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Constructor of an uninitialized tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>a tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Vector of ints specifying the shape of the tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">T</span></code>: tensor from wich to take the shape and the device. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">()</span>
-<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6TensorERK6vectorIfERK6vectorIiEi">
 <span id="_CPPv3N6Tensor6TensorERK6vectorIfERK6vectorIiEi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIfERK6vectorIiEi"></span><span id="Tensor::Tensor__vector:float:CR.vector:i:CR.i"></span><span class="target" id="class_tensor_1a807797e2f28e5dc73e8300776cb72c67"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIfERK6vectorIiEi" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;float&gt; &amp;<em>data</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><br /></dt>
@@ -345,7 +352,7 @@ Potential matches:
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="p">();</span>
 <span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 <span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">fptr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">T</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">T</span><span class="p">);</span>
 <span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span> <span class="n">data</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -873,16 +880,21 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::diag” with arguments (Tensor *, Tensor *, int) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4diagEP6TensorP6Tensori">
+<span id="_CPPv3N6Tensor4diagEP6TensorP6Tensori"></span><span id="_CPPv2N6Tensor4diagEP6TensorP6Tensori"></span><span id="Tensor::diag__TensorP.TensorP.i"></span><span class="target" id="class_tensor_1a9426a184855c63fc43e4022ef0f6af84"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">diag</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, int <em>k</em> = 0<span class="sig-paren">)</span><br /></dt>
+<dd><p>Obtain the elements in a squared matrix diagonal. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input matrix. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output matrix. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: Offset. If k=0, main diagonal is selected. If k&gt;0, a diagonal above the main diagonal is selected. If k&lt;0, a diagonal below the main diagonal is selected. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">diag</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">diag</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2

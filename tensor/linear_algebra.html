@@ -249,26 +249,41 @@
 <h2>Matrix and vector operations<a class="headerlink" href="#matrix-and-vector-operations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="interpolate">
 <h3>interpolate<a class="headerlink" href="#interpolate" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::interpolate” with arguments (float, Tensor *, float, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor11interpolateEfP6TensorfP6Tensor">
+<span id="_CPPv3N6Tensor11interpolateEfP6TensorfP6Tensor"></span><span id="_CPPv2N6Tensor11interpolateEfP6TensorfP6Tensor"></span><span id="Tensor::interpolate__float.TensorP.float.TensorP"></span><span class="target" id="class_tensor_1a551e53a799ea8e89cf388e2e92324863"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span>float <em>factor1</em>, Tensor *<em>A</em>, float <em>factor2</em>, Tensor *<em>B</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Element-wise weighted sum (interpolation) operation of two tensors. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor C = factor1*A + factor2*B. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">factor1</span></code>: The weight for first member. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: A tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">factor2</span></code>: The weight for second member. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Another tensor. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">interpolate</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">interpolate</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::interpolate” with arguments (float, Tensor *, float, Tensor *, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor11interpolateEfP6TensorfP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor11interpolateEfP6TensorfP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor11interpolateEfP6TensorfP6TensorP6Tensor"></span><span id="Tensor::interpolate__float.TensorP.float.TensorP.TensorP"></span><span class="target" id="class_tensor_1a0e64acb8446940ffc0d19ef84b97e020"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span>float <em>factor1</em>, Tensor *<em>A</em>, float <em>factor2</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Element-wise weighted sum (interpolation) operation of two tensors. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">factor1</span></code>: The weight for first member. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: A tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">factor2</span></code>: The weight for second member. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Another tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Output tensor. C = factor1*A + factor2*B. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">interpolate</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">interpolate</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -307,16 +322,22 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::trace” with arguments (Tensor *, int) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5traceEP6Tensori">
+<span id="_CPPv3N6Tensor5traceEP6Tensori"></span><span id="_CPPv2N6Tensor5traceEP6Tensori"></span><span id="Tensor::trace__TensorP.i"></span><span class="target" id="class_tensor_1a60ca4abf8cd97b46509290e722d972fa"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">trace</code><span class="sig-paren">(</span>Tensor *<em>A</em>, int <em>k</em> = 0<span class="sig-paren">)</span><br /></dt>
+<dd><p>Sum all the elements in a matrix diagonal. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The sum of all the elements in the selected diagonal. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: Offset. Used to select the diagonal to be summed. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">trace</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">trace</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -354,18 +375,25 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::norm” with arguments (Tensor *, string) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4normEP6Tensor6string">
+<span id="_CPPv3N6Tensor4normEP6Tensor6string"></span><span id="_CPPv2N6Tensor4normEP6Tensor6string"></span><span id="Tensor::norm__TensorP.string"></span><span class="target" id="class_tensor_1aa150b9cfc84c6ed8a5bc148525b70110"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">norm</code><span class="sig-paren">(</span>Tensor *<em>A</em>, string <em>ord</em> = &quot;fro&quot;<span class="sig-paren">)</span><br /></dt>
+<dd><p>Compute the norm of a 1-D or 2-D tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The sum of all the elements in the selected diagonal. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ord</span></code>: The order of the norm. One of:<ul>
+<li><p>”fro”: Frobenius norm </p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">norm</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">norm</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">norm</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">norm</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">ReduceDescriptor2</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4normE6vectorIiEb6string">
 <span id="_CPPv3N6Tensor4normE6vectorIiEb6string"></span><span id="_CPPv2N6Tensor4normE6vectorIiEb6string"></span><span id="Tensor::norm__vector:i:.b.string"></span><span class="target" id="class_tensor_1aa361d02aa896a3219f22f7ad8d8aabb9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">norm</code><span class="sig-paren">(</span>vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em>, string <em>ord</em> = &quot;fro&quot;<span class="sig-paren">)</span><br /></dt>

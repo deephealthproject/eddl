@@ -8,21 +8,45 @@ random_indices
 
 .. doxygenfunction:: eddl::random_indices(int,int)
 
+Example:
+
 .. code-block:: c++
    
-    vector<int> random_indices(int batch_size, int num_samples);
-    
-  
+    tshape s = x_train->getShape();
+    int num_batches = s[0]/batch_size;
+ 
+    for(i=0; i<epochs; i++) {
+        reset_loss(net);
+        for(j=0; j<num_batches; j++) {
+            vector<int> indices = random_indices(batch_size, s[0]);
+            train_batch(net, {x_train}, {y_train}, indices); 
+        }
+    }
 
 
 next_batch
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::next_batch(vector<Tensor *>, vector<Tensor *>)
+.. doxygenfunction:: eddl::next_batch(vector<Tensor*>, vector<Tensor*>)
+
+Example:
 
 .. code-block:: c++
     
-    void next_batch(vector<Tensor *> in,vector<Tensor *> out);
+    Tensor* xbatch = new Tensor({batch_size, 784});
+    Tensor* ybatch = new Tensor({batch_size, 10})
+
+    tshape s = x_train->getShape();
+    int num_batches = s[0]/batch_size;
+    
+    for(i=0; i<epochs; i++) {
+       reset_loss(net);
+       for(j=0; j<num_batches; j++) {
+           next_batch({x_train, y_train}, {xbatch, ybatch});
+           train_batch(net, {xbatch}, {ybatch});
+       }
+    }
+   
 
 
 train_batch
@@ -30,12 +54,42 @@ train_batch
 
 .. doxygenfunction:: eddl::train_batch(model, vector<Tensor*>, vector<Tensor*>, vector<int>)
 
+Example:
+
+.. code-block:: c++
+
+    tshape s = x_train->getShape();
+    int num_batches = s[0]/batch_size;
+ 
+    for(i=0; i<epochs; i++) {
+        reset_loss(net);
+        for(j=0; j<num_batches; j++) {
+            vector<int> indices = random_indices(batch_size, s[0]);
+            train_batch(net, {x_train}, {y_train}, indices); 
+        }
+    }
+
+
 .. doxygenfunction:: eddl::train_batch(model, vector<Tensor*>, vector<Tensor*>)
+
+Example:
 
 .. code-block:: c++
     
-    void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
-    void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
+    Tensor* xbatch = new Tensor({batch_size, 784});
+    Tensor* ybatch = new Tensor({batch_size, 10})
+
+    tshape s = x_train->getShape();
+    int num_batches = s[0]/batch_size;
+    
+    for(i=0; i<epochs; i++) {
+       reset_loss(net);
+       for(j=0; j<num_batches; j++) {
+           next_batch({x_train, y_train}, {xbatch, ybatch});
+           train_batch(net, {xbatch}, {ybatch});
+       }
+    }
+
 
 
 eval_batch
@@ -43,12 +97,21 @@ eval_batch
 
 .. doxygenfunction:: eddl::eval_batch(model, vector<Tensor*>, vector<Tensor*>, vector<int>)
 
-.. doxygenfunction:: eddl::eval_batch(model, vector<Tensor*>, vector<Tensor*>)
+Example:
 
 .. code-block:: c++
 
-    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);   
-    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
+    for(j=0;j<num_batches;j++)  {
+        vector<int> indices(batch_size);
+        for(int i=0;i<indices.size();i++)
+            indices[i]=(j*batch_size)+i;
+            eval_batch(net, {x_test}, {y_test}, indices);
+        }
+    }
+
+
+.. doxygenfunction:: eddl::eval_batch(model, vector<Tensor*>, vector<Tensor*>)
+
         
 
 set_mode
@@ -56,9 +119,7 @@ set_mode
 
 .. doxygenfunction:: set_mode
 
-.. code-block:: c++
     
-    void set_mode(model net, int mode);
           
         
 reset_loss
@@ -66,9 +127,12 @@ reset_loss
 
 .. doxygenfunction:: eddl::reset_loss(model m)
 
+Example:
+
 .. code-block:: c++
     
-    void reset_loss(model m);
+    reset_loss(net);
+
           
 forward
 ^^^^^^^^^^^^^^^^^
@@ -77,16 +141,16 @@ forward
 
 .. doxygenfunction:: eddl::forward(model, vector<Tensor*>)
 
+Example:
+
+.. code-block:: c++
+
+   forward(net, {xbatch});
+
 .. doxygenfunction:: eddl::forward(model)
 
 .. doxygenfunction:: eddl::forward(model, int)
 
-.. code-block:: c++
-    
-    vlayer forward(model m,vector<Layer *> in);
-    vlayer forward(model m,vector<Tensor *> in);
-    vlayer forward(model m);
-    vlayer forward(model m,int b);
 
 
 zeroGrads
@@ -94,10 +158,11 @@ zeroGrads
 
 .. doxygenfunction:: eddl::zeroGrads
 
+Example:
+
 .. code-block:: c++
     
-    void zeroGrads(model m);
-          
+    zeroGrads(net);
 
 
 backward
@@ -107,10 +172,11 @@ backward
 
 .. code-block:: c++
     
-    void backward(model m,vector<Tensor *> target);
-    void backward(model net);
-    void backward(loss l);
+    backward(net, {ybatch});
           
+.. doxygenfunction:: eddl::backward(model)
+
+.. doxygenfunction:: eddl::backward(loss)
 
 
 update
@@ -118,26 +184,32 @@ update
 
 .. doxygenfunction:: eddl::update(model)
 
+Example:
+
 .. code-block:: c++
     
-    void update(model m);
+    update(net);
           
 
 print_loss       
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::print_loss
+.. doxygenfunction:: eddl::print_loss(model, int)
+
+Example:
 
 .. code-block:: c++
     
-    void print_loss(model m, int batch);
+    print_loss(net, j);
           
 
 
 clamp
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::clamp
+.. doxygenfunction:: eddl::clamp(model, float, float)
+
+Example:
 
 .. code-block:: c++
     
@@ -148,15 +220,28 @@ compute_loss
 
 .. doxygenfunction:: eddl::compute_loss(loss)
 
+Example:
+
 .. code-block:: c++
     
-    float compute_loss(loss L);
-          
+    loss mse = newloss(mse_loss, {out, target}, "mse_loss"); 
+    float my_loss = 0.0;
+    
+    for(j=0; j<num_batches; j++) {
+        next_batch({x_train},{batch});
+        zeroGrads(net);
+        forward(net, {batch});
+        my_loss += compute_loss(mse)/batch_size;
+        update(net);
+    } 
+
 
 compute_metric
 ^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: eddl::compute_metric(loss)
+
+Example:
 
 .. code-block:: c++
     
@@ -168,6 +253,8 @@ getLoss
 
 .. doxygenfunction:: eddl::getLoss
 
+Example:
+
 .. code-block:: c++
     
     Loss* getLoss(string type);
@@ -178,21 +265,28 @@ newloss
 
 .. doxygenfunction:: eddl::newloss(const std::function<Layer*Layer*>&, Layer*, string)
 
-.. code-block:: c++
-    
-    loss newloss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
-    
+
 .. doxygenfunction:: eddl::newloss(const std::function<Layer*vector<Layer*>>&, vector<Layer*>, string)
+
+Example:
+
 .. code-block:: c++
 
-    loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
-          
+   layer mse_loss(vector<layer> in) {
+       layer diff = Diff(in[0], in[1]);
+       return Mult(diff, diff);
+   }
+   
+   loss mse = newloss(mse_loss, {out, target}, "mse_loss");
+
         
 
 getMetric
 ^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: eddl::getMetric
+
+Example:
 
 .. code-block:: c++
     

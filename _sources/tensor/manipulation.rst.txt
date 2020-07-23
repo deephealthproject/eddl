@@ -54,14 +54,14 @@ Check tensor device
 Check compatibility
 ^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: checkCompatibility(Tensor *, Tensor *, const string&)
-.. doxygenfunction:: checkCompatibility(Tensor *, Tensor *, Tensor *, const string&)
+.. doxygenfunction:: checkCompatibility(Tensor*, Tensor*, const string&)
+.. doxygenfunction:: checkCompatibility(Tensor*, Tensor*, Tensor*, const string&)
 
 
 .. code-block:: c++
 
-    void checkCompatibility(Tensor *A, Tensor *B, const string &title);
-    void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title);
+    void checkCompatibility(Tensor*A, Tensor*B, const string &title);
+    void checkCompatibility(Tensor*A, Tensor*B, Tensor*C, const string &title);
     
 
 
@@ -227,7 +227,7 @@ squeeze
 .. code-block:: c++
 
     void squeeze_();
-    static Tensor* squeeze(Tensor *A);
+    static Tensor* squeeze(Tensor*A);
     
 unsqueeze
 ^^^^^^^^^^^^^^^
@@ -238,7 +238,7 @@ unsqueeze
 .. code-block:: c++
 
     void unsqueeze_();
-    static Tensor* unsqueeze(Tensor *A);
+    static Tensor* unsqueeze(Tensor*A);
 
 
 Joining arrays
@@ -304,7 +304,7 @@ scale
 flip
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::flip(Tensor *, Tensor *, int)
+.. doxygenfunction:: Tensor::flip(Tensor*, Tensor*, int)
 
 .. code-block:: c++
 
@@ -457,8 +457,8 @@ Value operations
 fill
 ^^^^^^^
 .. doxygenfunction:: Tensor::fill_(float)
-.. doxygenfunction:: Tensor::fill(Tensor *, float)
-.. doxygenfunction:: Tensor::fill(Tensor *, int, int, Tensor *, int, int, int)
+.. doxygenfunction:: Tensor::fill(Tensor*, float)
+.. doxygenfunction:: Tensor::fill(Tensor*, int, int, Tensor*, int, int, int)
 
 .. code-block:: c++
 

@@ -381,28 +381,39 @@
 </div>
 <div class="section" id="check-compatibility">
 <h3>Check compatibility<a class="headerlink" href="#check-compatibility" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “checkCompatibility” with arguments (Tensor *, Tensor *, const string&amp;) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv418checkCompatibilityP6TensorP6TensorRK6string">
+<span id="_CPPv318checkCompatibilityP6TensorP6TensorRK6string"></span><span id="_CPPv218checkCompatibilityP6TensorP6TensorRK6string"></span><span id="checkCompatibility__TensorP.TensorP.stringCR"></span><span class="target" id="tensor_8h_1a4e3ad1ec6c3e63283585641691ae4b9b"></span>void <code class="sig-name descname">checkCompatibility</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, <em class="property">const</em> string &amp;<em>title</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Check if two tensors are compatible, it is, they are in the same device and have the same shape. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code>: A string identifier to append to the output. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">checkCompatibility</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">string</span><span class="o">&amp;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">checkCompatibility</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">string</span><span class="o">&amp;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “checkCompatibility” with arguments (Tensor *, Tensor *, Tensor *, const string&amp;) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418checkCompatibilityP6TensorP6TensorP6TensorRK6string">
+<span id="_CPPv318checkCompatibilityP6TensorP6TensorP6TensorRK6string"></span><span id="_CPPv218checkCompatibilityP6TensorP6TensorP6TensorRK6string"></span><span id="checkCompatibility__TensorP.TensorP.TensorP.stringCR"></span><span class="target" id="tensor_8h_1a8009cbad293c83d1f231ad28522573a1"></span>void <code class="sig-name descname">checkCompatibility</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em>, <em class="property">const</em> string &amp;<em>title</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Check if three tensors are compatible, it is, they are in the same device and have the same shape. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code>: A string identifier to append to the output. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">checkCompatibility</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">string</span><span class="o">&amp;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">checkCompatibility</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">string</span><span class="o">&amp;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">checkCompatibility</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">title</span><span class="p">);</span>
-<span class="kt">void</span> <span class="nf">checkCompatibility</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">title</span><span class="p">);</span>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">checkCompatibility</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">title</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">checkCompatibility</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">title</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -680,7 +691,7 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">squeeze_</span><span class="p">();</span>
-<span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">squeeze</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">squeeze</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -706,7 +717,7 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">unsqueeze_</span><span class="p">();</span>
-<span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">unsqueeze</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">unsqueeze</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1189,26 +1200,39 @@ Potential matches:
 </p>
 </dd></dl>
 
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::fill” with arguments (Tensor *, float) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4fillEP6Tensorf">
+<span id="_CPPv3N6Tensor4fillEP6Tensorf"></span><span id="_CPPv2N6Tensor4fillEP6Tensorf"></span><span id="Tensor::fill__TensorP.float"></span><span class="target" id="class_tensor_1addb7064e79ae4e711dd54fb9980805b9"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">fill</code><span class="sig-paren">(</span>Tensor *<em>A</em>, float <em>v</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Fill tensor with a value. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: The output tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: the value to fill the tensor with </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">fill</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">fill</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::fill” with arguments (Tensor *, int, int, Tensor *, int, int, int) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4fillEP6TensoriiP6Tensoriii">
+<span id="_CPPv3N6Tensor4fillEP6TensoriiP6Tensoriii"></span><span id="_CPPv2N6Tensor4fillEP6TensoriiP6Tensoriii"></span><span id="Tensor::fill__TensorP.i.i.TensorP.i.i.i"></span><span class="target" id="class_tensor_1a7df6f58b9035ba1ab3dbc8aaa771fdfd"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">fill</code><span class="sig-paren">(</span>Tensor *<em>A</em>, int <em>aini</em>, int <em>aend</em>, Tensor *<em>B</em>, int <em>bini</em>, int <em>bend</em>, int <em>inc</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Fill tensor with values from another tensor. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: The tensor to take values from. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aini</span></code>: Initial position of A. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aend</span></code>: Final position of A. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: The tensor to fill </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bini</span></code>: Initial position of B </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bend</span></code>: Final position of B </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inc</span></code>: step to go from one position to the following one </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">fill</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">fill</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">});</span>
 <span class="c1">// t1 =&gt; [1,1,1]</span>
 
