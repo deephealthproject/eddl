@@ -27,8 +27,8 @@ Example:
 where
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::where(Tensor *, Tensor *, Tensor *)
-.. doxygenfunction:: Tensor::where(Tensor *, Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::where(Tensor*, Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::where(Tensor*, Tensor*, Tensor*, Tensor*)
 
 
 Example:
@@ -36,14 +36,14 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    static Tensor* where(Tensor *condition, Tensor *A, Tensor *B);  // where(x > 0, x[random], y[ones])
-    static void where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
+    static Tensor* where(Tensor*condition, Tensor*A, Tensor*B);  // where(x > 0, x[random], y[ones])
+    static void where(Tensor*condition, Tensor*A, Tensor*B, Tensor*C);
 
 
 select
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::select(Tensor *, Tensor *, vector<int>, int, int, bool)
+.. doxygenfunction:: Tensor::select(Tensor*, Tensor*, vector<int>, int, int, bool)
 
 
 Example:
@@ -51,13 +51,13 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false);
+    static void select(Tensor*A, Tensor*B, vector<int> sind, int ini, int end, bool mask_zeros=false);
 
 
 deselect
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::deselect(Tensor *, Tensor *, vector<int>, int, int, int, bool)
+.. doxygenfunction:: Tensor::deselect(Tensor*, Tensor*, vector<int>, int, int, int, bool)
 
 
 Example:
@@ -65,7 +65,7 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
+    static void deselect(Tensor*A, Tensor*B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
 
 
 
@@ -77,7 +77,7 @@ sort
 
 .. doxygenfunction:: Tensor::sort_(bool, bool)
 .. doxygenfunction:: Tensor::sort(bool, bool)
-.. doxygenfunction:: Tensor::sort(Tensor *, Tensor *, bool, bool)
+.. doxygenfunction:: Tensor::sort(Tensor*, Tensor*, bool, bool)
 
 
 Example:
@@ -103,7 +103,7 @@ argsort
 ^^^^^^^^^
 
 .. doxygenfunction:: Tensor::argsort(bool, bool)
-.. doxygenfunction:: Tensor::argsort(Tensor *, Tensor *, bool, bool)
+.. doxygenfunction:: Tensor::argsort(Tensor*, Tensor*, bool, bool)
 
 
 Example:
