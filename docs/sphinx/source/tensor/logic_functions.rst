@@ -38,7 +38,7 @@ any
     //condition = true
 
     bool condition2 =  Tensor::any(t2);
-    //condition = false
+    //condition2 = false
 
 
 Array contents
