@@ -1,5 +1,5 @@
 # list of kernel test to compile
-LIST :=mult2d \
+LIST ?=mult2d \
        relu
 
 # default target
