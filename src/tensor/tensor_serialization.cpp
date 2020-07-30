@@ -192,6 +192,29 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
 //    return t;
 //}
 
+Tensor* Tensor::load_from_ptr(void * src) {
+    char * aux_ptr = (char*) src;
+
+    // Read the number of dimensions
+    int ndim = (int) *aux_ptr;
+    aux_ptr += sizeof(int);
+
+    // Read dimensions values
+    vector<int> shape(ndim);
+    memcpy(shape.data(), aux_ptr, ndim * sizeof(int));
+    aux_ptr += ndim * sizeof(int);
+
+    // Compute the number of values of data
+    int total_size = 1;
+    for(int i=0; i < ndim; i++)
+        total_size *= shape[i];
+
+    // Read float data
+    float * data = new float[total_size];
+    memcpy(data, aux_ptr, total_size * sizeof(float));
+
+    return new Tensor(shape, data, DEV_CPU);
+}
 
 // ********* SAVE FUNCTIONS *********
 void Tensor::save(const string& filename, string format) {
@@ -369,4 +392,39 @@ void Tensor::save2txt(const string& filename, const char delimiter, const vector
 
     // Close file stream
     ofs.close();
+}
+
+std::pair<void*, size_t> Tensor::save2ptr() {
+
+    Tensor * aux_tensor;
+    bool copied;
+    // Check the tensor device to make a copy or not
+    if(!this->isCPU()){
+        aux_tensor = new Tensor(this->shape, DEV_CPU);
+        Tensor::copy(this, aux_tensor);
+        copied = true;
+    } else {
+        aux_tensor = this;
+        copied = false;
+    }
+
+    // Reserve memory for: ndims value, shape vector and tensor float data
+    size_t needed_mem = sizeof(int) + (aux_tensor->shape.size() * sizeof(int)) + (aux_tensor->size * sizeof(float));
+    void * dest = malloc(needed_mem);
+    char * aux_ptr = (char*) dest;
+
+    // Store the number of dimensions
+    memcpy(aux_ptr, &aux_tensor->ndim, sizeof(int));
+    aux_ptr += sizeof(int);
+
+    // Store the dimensions values
+    memcpy(aux_ptr, aux_tensor->shape.data(), aux_tensor->shape.size() * sizeof(int));
+    aux_ptr += aux_tensor->shape.size() * sizeof(int);
+
+    // Store the float data
+    memcpy(aux_ptr, aux_tensor->ptr, aux_tensor->size * sizeof(float));
+
+    if(copied) delete aux_tensor; // Delete the auxiliary copy in CPU
+
+    return std::make_pair(dest, needed_mem);
 }

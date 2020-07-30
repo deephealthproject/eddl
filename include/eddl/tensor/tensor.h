@@ -265,6 +265,14 @@ public:
     static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
     /**
+      *  @brief Load tensor from a void pointer.
+      *
+      *  @param src    Void pointer to the serialized tensor.
+      *  @return    Tensor
+    */
+    static Tensor* load_from_ptr(void * src);
+
+    /**
       *  @brief Save tensor to a filestream.
       *
       *  @param ofs     Filestream.
@@ -297,6 +305,14 @@ public:
       *  @return    void
     */
     void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
+
+    /**
+      *  @brief Save tensor to a void pointer.
+      *
+      *  @return    std::pair<void*, size_t> With the pointer to the data
+      *             and the size of it.
+    */
+    std::pair<void*, size_t> save2ptr();
 
     // ************************************************
     // ****** Tensor operations ***********************
