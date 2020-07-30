@@ -51,7 +51,7 @@ doxygen
 ### Sphinx
 
 ```
-cd docs/source
+cd docs/sphinx/source
 make clean; make html
 ```
 
