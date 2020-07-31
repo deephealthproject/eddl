@@ -91,10 +91,7 @@ void RMSProp::applygrads(int batch) {
 
             Tensor::add(-lr, gT[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
 
-      			/*if (layers[i]->acc_gradients.size() > 0) {
-        				Tensor::add(-lr, gT[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
-      			}
-            */
+            if (layers[i]->distributed_training) Tensor::add(-lr, gT[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
         }
     }
     else p+=layers[i]->get_trainable_params_count();

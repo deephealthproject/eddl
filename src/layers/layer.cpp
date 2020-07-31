@@ -37,6 +37,7 @@ Layer::Layer(string name, int dev, int mem) {
     trainable=true;
     iscloned=false;
     isdecoder=false;
+    distributed_training=false;
 
     orig=nullptr;
     net=nullptr;

@@ -565,12 +565,11 @@ Layer * Net::getLayer(vlayer in)
 
 }
 
-
-
-
-
 void Net::enable_distributed(){
-	for(Layer* l : layers){
-		l->enable_distributed();
-	}
+    for(Layer* l : layers)
+        l->enable_distributed();
+
+    for (int i = 0; i < snets.size(); i++)
+        for(Layer* l : snets[i]->layers)
+                   l->enable_distributed();
 }
