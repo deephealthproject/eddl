@@ -74,7 +74,8 @@ using namespace std;
 		MAT_MUL,            // implemented
 		MAX,				// implemented
 		MIN,                // implemented
-		SUB                 // implemented
+		SUB,                 // implemented
+		CONSTANT            // Not a layer, but needed for detecting this type of node
 		
 
 
@@ -177,6 +178,7 @@ using namespace std;
 		map_layers["MatMul"] = ONNX_LAYERS::MAT_MUL;
 		map_layers["Max"] = ONNX_LAYERS::MAX;
 		map_layers["Min"] = ONNX_LAYERS::MIN;
+		map_layers["Constant"] = ONNX_LAYERS::CONSTANT;
 
 		return map_layers;
 	}
@@ -1496,16 +1498,7 @@ using namespace std;
 		return new Net(input_layers, output_layers);
 	}
 
-	//Sets the weights of a input Net to the ones stored in the onnx net inside the pointer
-	void set_weights_from_onnx_pointer(Net* net, void *ptr_model, size_t model_size )
-	{
-		onnx::ModelProto model;
-		{
-			if(!model.ParseFromArray(ptr_model,model_size)){
-				cerr << "Failed to parse model." << endl;
-			}
-			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
-		}
+	void set_weights(Net* net, onnx::ModelProto model){
 
 		map<string, vector<Tensor*> > tensors = get_tensors_from_onnx(model);
 		LConv* conv;
@@ -1542,6 +1535,22 @@ using namespace std;
 				delete delete_tensors[i];
 			}
 		}
+
+	}
+
+	//Sets the weights of a input Net to the ones stored in the onnx net inside the pointer
+	void set_weights_from_onnx_pointer(Net* net, void *ptr_model, size_t model_size )
+	{
+		onnx::ModelProto model;
+		{
+			if(!model.ParseFromArray(ptr_model,model_size)){
+				cerr << "Failed to parse model." << endl;
+			}
+			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
+		}
+
+		set_weights(net, model);
+
 	}
 
 	//Sets the weights of a input Net to the ones stored in the onnx net inside the c++ string
@@ -1553,108 +1562,16 @@ using namespace std;
 			}
 			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
 		}
+		set_weights(net, model);
 
-		map<string, vector<Tensor*> > tensors = get_tensors_from_onnx(model);
-		LConv* conv;
-		LDense* dense;
-		for(Layer* l : net->layers){
-			if(!tensors.count(l->name)){
-				//cout << "Layer with name " << l->name << " is not trainable " << endl;
-				continue;
-			}
-			vector<Tensor*> layer_tensors = tensors[l->name];
-			if((conv = dynamic_cast<LConv*>(l) )){
-				if(layer_tensors.size() > 1)
-					conv->update_weights(layer_tensors[0], layer_tensors[1]);
-				else{
-					cerr << "EDDL has not implemented convolutional without bias " << endl;
-					//conv.update_weights(layer_tensors[0]);
-				}
-
-			}
-			else if((dense = dynamic_cast<LDense*>( l ) )){
-				if(layer_tensors.size() > 1)
-					dense->update_weights(layer_tensors[0], layer_tensors[1]);
-				else
-					dense->update_weights(layer_tensors[0]);
-			}
-			else cerr << "not implemented layer type" << endl;
-		}
-		//erase the map we used to free the memory
-		map<string, vector<Tensor*> >::iterator it;
-		vector<Tensor*> delete_tensors;
-		for( it = tensors.begin(); it !=tensors.end(); ++it){
-			delete_tensors=it->second;
-			for(int i = 0; i < delete_tensors.size(); ++i){
-				delete delete_tensors[i];
-			}
-		}
     }
 
-	//Accumulates the gradients stored in the pointer to the input net
-    void apply_grads_from_onnx_pointer( Net* net, void * ptr_onnx, size_t count )
-	{
-		onnx::ModelProto model;
-		{
-			if(!model.ParseFromArray(ptr_onnx,count)){
-				cerr << "Failed to parse model." << endl;
-			}
-			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
-		}
+	void apply_grads(Net* net, onnx::ModelProto model){
 
 		map<string, vector<Tensor*> > tensors = get_tensors_from_onnx(model);
 		LConv* conv;
 		LDense* dense;
-		for(Layer* l : net->layers){
-			if(!tensors.count(l->name)) {
-				//std::cerr << "EDDL doesn't find the layer in the imported net by ONNX: " << l->name << std::endl;
-				continue;
-			}
-			vector<Tensor*> layer_tensors = tensors[l->name];
-			if((conv = dynamic_cast<LConv*>(l) )){
-				if(layer_tensors.size() > 1) {
-					conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
-				} else{
-					cerr << "EDDL has not implemented convolutional without bias " << endl;
-					//conv.update_weights(layer_tensors[0]);
-				}
-
-			}
-			else if((dense = dynamic_cast<LDense*>( l ) )){
-				if(layer_tensors.size() > 1){
-					dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
-				}
-				else
-				{
-					dense->accumulate_accumulated_gradients(layer_tensors[0]);
-				}
-			}
-			else cerr << "not implemented layer type" << endl;
-		}
-		//erase the map we used to free the memory
-		map<string, vector<Tensor*> >::iterator it;
-		vector<Tensor*> delete_tensors;
-		for( it = tensors.begin(); it !=tensors.end(); ++it){
-			delete_tensors=it->second;
-			for(int i = 0; i < delete_tensors.size(); ++i){
-				delete delete_tensors[i];
-			}
-		}
-	}
-
-	//Accumulates the gradients stored in the c++ string to the input net
-    void apply_grads_from_onnx(Net* net, std::string* model_string){
-		onnx::ModelProto model;
-		{
-			if(!model.ParseFromString(*model_string)){
-				cerr << "Failed to parse model." << endl;
-			}
-			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
-		}
-
-		map<string, vector<Tensor*> > tensors = get_tensors_from_onnx(model);
-		LConv* conv;
-		LDense* dense;
+		LBatchNorm* bn;
 		for(Layer* l : net->layers){
 			if(!tensors.count(l->name)) continue;
 			vector<Tensor*> layer_tensors = tensors[l->name];
@@ -1672,6 +1589,8 @@ using namespace std;
 					dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
 				else
 					dense->accumulate_accumulated_gradients(layer_tensors[0]);
+			}else if((bn = dynamic_cast<LBatchNorm*>( l ) )){
+				bn->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
 			}
 			else cerr << "not implemented layer type" << endl;
 		}
@@ -1684,7 +1603,35 @@ using namespace std;
 				delete delete_tensors[i];
 			}
 		}
+        
+        //Distribute the new weights with applyed grads
+        net->distribute_weights();
 
+	}
+	//Accumulates the gradients stored in the pointer to the input net
+    void apply_grads_from_onnx_pointer( Net* net, void * ptr_onnx, size_t count ) {
+		onnx::ModelProto model;
+		{
+			if(!model.ParseFromArray(ptr_onnx,count)){
+				cerr << "Failed to parse model." << endl;
+			}
+			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
+		}
+		apply_grads(net, model);
+
+	}
+
+	//Accumulates the gradients stored in the c++ string to the input net
+    void apply_grads_from_onnx(Net* net, std::string* model_string){
+		onnx::ModelProto model;
+		{
+			if(!model.ParseFromString(*model_string)){
+				cerr << "Failed to parse model." << endl;
+			}
+			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
+		}
+
+		apply_grads(net, model);
     }
 
 
@@ -1760,6 +1707,27 @@ using namespace std;
 
 						break;
 					}
+				case ONNX_LAYERS::BATCHNORM:
+					{
+
+						vector<Tensor*> batchnorm_tensors;
+
+						string weights_name = node.input(1); //Get weights and dims
+						vector<float>* weights = &(map_init_values[weights_name]);
+						vector<int> dims = map_init_dims[weights_name];
+
+						batchnorm_tensors.push_back(new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev));
+
+						string bias_name = node.input(2);
+						vector<float>* bias = &(map_init_values[bias_name]);
+						vector<int> bias_dims = map_init_dims[bias_name];
+						batchnorm_tensors.push_back(new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev));
+
+						tensors[name] = batchnorm_tensors;
+
+						break;
+					}
+
 
 				default:
 					//cout << "The layer with type " << layer_type_name << " has no trainable parameters " << endl;

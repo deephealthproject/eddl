@@ -143,8 +143,23 @@ void Net::do_applygrads() {
   optimizer->applygrads(batch_size);
 }
 
+void Net::collect_acc_grads() {
+  for (int j = 0; j < layers.size(); j++)
+    for (int k = 0; k < layers[j]->acc_gradients.size(); k++) {
+      // Taking average
+      layers[j]->acc_gradients[k]->fill_(0.0);
+      for (int i = 0; i < snets.size(); i++)
+        Tensor::inc(snets[i]->layers[j]->acc_gradients[k], layers[j]->acc_gradients[k]);
+      layers[j]->acc_gradients[k]->div_(snets.size());
+    }
+}
 
-
+void Net::distribute_weights() {
+    for (int j = 0; j < layers.size(); j++)
+        for (int k = 0; k < layers[j]->params.size(); k++)
+            for (int i = 0; i < snets.size(); i++)
+                Tensor::copy(layers[j]->params[k], snets[i]->layers[j]->params[k]);
+}
 
 void Net::sync_weights() {
   //cout<<"\nSync weights...\n";

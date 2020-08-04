@@ -75,6 +75,8 @@ void SGD::applygrads(int batch) {
           for (int j = 0; j < layers[i]->get_trainable_params_count(); j++, p++) {
             Tensor::add(lr , layers[i]->gradients[j], mu, mT[p], mT[p], 0);
             Tensor::add(1.0, layers[i]->params[j], -1.0, mT[p], layers[i]->params[j], 0);
+
+            if(layers[i]->distributed_training) Tensor::add(1.0, layers[i]->acc_gradients[j], -1.0, mT[p], layers[i]->acc_gradients[j], 0);
           }
         }
         else p+=layers[i]->get_trainable_params_count();

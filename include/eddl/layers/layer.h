@@ -45,6 +45,7 @@ public:
     bool iscloned;
     bool isnorm;
     bool isdecoder;
+    bool distributed_training;
 
     vector<Tensor *> params;
     vector<Tensor *> gradients;
