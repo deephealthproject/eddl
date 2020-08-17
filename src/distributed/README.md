@@ -11,16 +11,14 @@ This specific section presents and describes the communication system of EDDL de
 
 ## Notice
 
-**This is very draft version, not ready to be used or tested **
-
-**EDDL** is an open source library for Distributed Deep Learning and Tensor Operations in C++ for **CPU**, **GPU** and **FPGA**. EDDL is developed inside the DeepHealth project. For more information about DeepHealth project go to: [deephealth-project.eu](https://deephealth-project.eu/)
+**This is very draft version, not ready to be used or tested**
 
 
-## EDDL communiation system scheme
+## EDDL communiation system
 
-#### The following figures give a general overview of the communication system:
+### The following figures give a general overview of the communication system:
 
-- Schema of the communication system for the EDDL: ![Schema of the communication system for the EDDL](images/EDDL-distributed-schema.png)
+- Diagram of the communication system for the EDDL: ![Diagram of the communication system for the EDDL](images/EDDL-distributed-schema.png)
 - Flowchart of the Master node: ![Flowchart of the Master node](images/Master-Node.png)
 - Flowchart of Worker nodes: ![Flowchart of Worker nodes](images/Worker-Node.png)
 - Timeline of network parameters interchange between master node and worker nodes: ![Timeline of network parameters interchange between master node and worker nodes](images/Timeline-in-master-and-worker-nodes.png)
