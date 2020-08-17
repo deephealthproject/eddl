@@ -11,7 +11,7 @@ This specific section presents and describes the communication system of EDDL de
 
 ## Notice
 
-**This is very draft version, not ready to be used or tested**
+**This is a very draft version, not ready to be used or tested**
 
 
 ## EDDL communication system
