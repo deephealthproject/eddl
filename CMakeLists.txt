@@ -13,6 +13,7 @@ option(BUILD_HPC "Compile using agressive flags" OFF)
 option(BUILD_TESTS "Compile tests" ON)
 option(USE_LOCAL_GTEST "Use the local library to avoid problems derived from the 'One Definition Rule'" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
+option(BUILD_RUNTIME "Compile runtime" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 option(BUILD_SANITIZERS "Flag to compile with sanitizers information" OFF)
@@ -148,6 +149,11 @@ endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif(BUILD_EXAMPLES)
+
+# Build runtime
+if(BUILD_RUNTIME)
+    add_subdirectory(runtime)
+endif(BUILD_RUNTIME)
 
 
 ###########################################################################

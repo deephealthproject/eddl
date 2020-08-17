@@ -156,6 +156,8 @@ if(BUILD_PROTOBUF)
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
     # target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
     target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME} PUBLIC ssl) # added by Jon 2020-08-17
+    target_link_libraries(${PROJECT_NAME} PUBLIC crypto) # added by Jon 2020-08-17
 
     if(MSVC)
         target_link_libraries(${PROJECT_NAME} PUBLIC
