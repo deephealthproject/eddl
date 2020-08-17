@@ -1,4 +1,4 @@
-![DeepHealth logo](images/logo-eddl.png)
+![DeepHealth logo](images/logo-eddl.png){width=60%; height=60%}
 
 ![build](https://github.com/deephealthproject/eddl/workflows/build/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/ansicolortags/badge/?version=latest)](https://deephealthproject.github.io/eddl/)
@@ -18,10 +18,10 @@ This specific section presents and describes the communication system of EDDL de
 
 #### The following figures give a general overview of the communication system:
 
-- [Schema of the communication system for the EDDL](images/EDDL-distributed-schema.png)
-- [Flowchart of the Master node](images/Master-Node.png)
-- [Flowchart of Worker nodes](images/Worker-Node.png)
-- [Timeline of network parameters interchange between master node and worker nodes](images/Timeline-in-master-and-worker-nodes.png)
+- Schema of the communication system for the EDDL: ![Schema of the communication system for the EDDL](images/EDDL-distributed-schema.png)
+- Flowchart of the Master node: ![Flowchart of the Master node](images/Master-Node.png)
+- Flowchart of Worker nodes: ![Flowchart of Worker nodes](images/Worker-Node.png)
+- Timeline of network parameters interchange between master node and worker nodes: ![Timeline of network parameters interchange between master node and worker nodes](images/Timeline-in-master-and-worker-nodes.png)
 
 
 ## Progress and coverage
