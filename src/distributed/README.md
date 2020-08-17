@@ -14,7 +14,7 @@ This specific section presents and describes the communication system of EDDL de
 **This is very draft version, not ready to be used or tested**
 
 
-## EDDL communiation system
+## EDDL communication system
 
 ### The following figures give a general overview of the communication system:
 
