@@ -1,4 +1,6 @@
-![DeepHealth logo](images/logo-eddl.png){width=60%; height=60%}
+<p style="text-align: center;">
+  <img src="images/logo-eddl.png" alt="EDDL" height="60%" width="60%">
+</p>
 
 ![build](https://github.com/deephealthproject/eddl/workflows/build/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/ansicolortags/badge/?version=latest)](https://deephealthproject.github.io/eddl/)
