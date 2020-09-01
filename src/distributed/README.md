@@ -18,6 +18,7 @@ This specific section presents and describes the communication system of EDDL de
 
 ### The following figures give a general overview of the communication system:
 
+- Diagram to illustrate report of gradients from worker nodes to the master node and update weights from master node to worker nodes in the EDDL (used in the proposal): ![Distributed Learning flow proposed for the EDDL](images/hybrid-graph-2.svg.png)
 - Diagram of the communication system for the EDDL: ![Diagram of the communication system for the EDDL](images/EDDL-distributed-schema.png)
 - Flowchart of the Master node: ![Flowchart of the Master node](images/Master-Node.png)
 - Flowchart of Worker nodes: ![Flowchart of Worker nodes](images/Worker-Node.png)
