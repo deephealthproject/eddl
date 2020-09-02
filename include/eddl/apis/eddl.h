@@ -1234,8 +1234,8 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     Parent layer after the normalization
     */
-    layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.00001f, bool affine = true,string name = "");
-    layer BatchNormalization(layer parent, bool affine, float momentum = 0.9f, float epsilon = 0.00001f, string name = "");
+    layer BatchNormalization(layer parent, float momentum = 0.99f, float epsilon = 0.001f, bool affine = true,string name = "");
+    layer BatchNormalization(layer parent, bool affine, float momentum = 0.99f, float epsilon = 0.001f, string name = "");
 
     /**
       *  @brief Layer normalization layer.
