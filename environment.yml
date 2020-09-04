@@ -9,6 +9,7 @@ dependencies:
   - zlib=1.2.*
   - protobuf=3.11.*
   - cudatoolkit
+  - openssl
   - gtest
   - graphviz  # Build & Run
   - wget

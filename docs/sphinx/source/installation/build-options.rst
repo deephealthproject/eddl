@@ -12,7 +12,7 @@ If you want to compile with CUDA support, install:
 
 - NVIDIA CUDA 9 or above
 
-Also, we highly recommend installing an Anaconda_ environment to manage the external dependencies. You will get a high-quality BLAS library (MKL) and controlled dependency versions regardless of your system.
+Also, we highly recommend installing an Anaconda_ environment to manage external dependencies. You will get a high-quality BLAS library (MKL) and controlled dependency versions regardless of your system.
 
 Once you have Anaconda_ installed, you can create and activate our
 environment by running the following commands **from the source directory**:
@@ -31,6 +31,7 @@ If you decide to manually install these dependencies in your system (make sure t
     - zlib=1.2.*
     - protobuf=3.11.*
     - cudatoolkit
+    - openssl
     - gtest
     - graphviz  # Build & Run
     - wget
@@ -75,7 +76,7 @@ To build the EDDL, you will need a recent version of cmake. Then, run the follow
 Backend support
 ^^^^^^^^^^^^^^^
 
-You can choose the hardware for which the EDDL will be compiled. By default it is compile for ``GPU``, and if it is
+You can choose the hardware for which the EDDL will be compiled. By default it is compiled for ``GPU``, and if it is
 not found (or CUDA), it is automatically disabled so that it can run of CPU (although a cmake message will be prompted).
 
 - **CPU support:** If you want to compile it for CPU, use the following cmake option:
@@ -86,7 +87,7 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 
 .. note::
 
-    Backup option for when there is no GPU, or CUDA is not found.
+    A backup option for when there is no GPU, or CUDA is not found.
 
 
 - **GPU (CUDA) support:** If you have CUDA installed, the EDDL will automatically be compiled for GPU. Additionally, you can force it's use with the following cmake option:
@@ -115,8 +116,7 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 Additional flags
 ^^^^^^^^^^^^^^^^
 
-These flags can enable/disable features of the EDDL so that you can optimized and
-troubleshoot the compilation process (see: :doc:``troubleshoot``).
+These flags can enable/disable features of the EDDL so that you can optimize and troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
 
 - **Prefix path:** Semicolon-separated list of directories specifying installation prefixes to be searched by the ``find_package()``, ``find_program()``, ``find_library()``, ``find_file()``, and ``find_path()`` commands.
@@ -145,7 +145,7 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
 .. note::
 
-    On MacOS we recommend to use ``clang`` to avoid problems with OpenMP
+    On MacOS we recommend using ``clang`` to avoid problems with OpenMP
 
 
 - **CUDA compiler:** If cmake have problems finding your cuda compiler, try setting ``CMAKE_CUDA_COMPILER``, such as:
@@ -206,7 +206,7 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
     Enabled by default
 
 
-- **Use local gtest:** Uses the local copy of the gtest repository as fail-safe. Ignored if using superbuild.
+- **Use local gtest:** Uses the local copy of the gtest repository as a fail-safe. Ignored if using superbuild.
 
 .. code:: bash
 
@@ -217,7 +217,7 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
     Enabled by default.
 
     Why this? Because the Google C++ Testing Framework uses conditional compilation for some things.
-    Because of the C++ "One Definition Rule", gtest must be compiled with exactly the same flags as
+    Because of the C++ "One Definition Rule", gtest must be compiled with the same flags as
     your C++ code under test. Therefore, to avoid or fix potential problems, we have provide you with
     this flag in advance.
 
@@ -266,6 +266,15 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
     If you want to distribute the resulting shared library, you should use the flag
     ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.
 
+- **Build distributed:** To let the EDDL work in a distributed mode, use the setting ``BUILD_DIST``:
+
+.. code:: bash
+
+    -DBUILD_DIST=ON
+
+.. note::
+
+    Enabled by default.
 
 .. _Anaconda: https://docs.conda.io/en/latest/miniconda.html
 .. _Eigen3: http://eigen.tuxfamily.org/index.php?title=Main_Page

@@ -5,6 +5,7 @@ include(CMakeFindDependencyMacro)
 SET(USE_SUPERBUILD @BUILD_SUPERBUILD@)  # Set in parent
 SET(USE_PROTOBUF @BUILD_PROTOBUF@)  # Set in parent
 SET(USE_OPENMP @USE_OPENMP@)  # Modified in a subdirectory
+SET(USE_DIST @USE_DIST@)  # Modified in a subdirectory
 SET(USE_CUDA @USE_CUDA@) # Modified in a subdirectory
 SET(USE_FPGA @USE_FPGA@) # Modified in a subdirectory
 SET(USE_SYSTEM_EIGEN @USE_SYSTEM_EIGEN@) # Modified in a subdirectory
@@ -32,6 +33,11 @@ endif()
 # FPGA
 if(USE_FPGA)
     find_dependency(OpenCL REQUIRED)
+endif()
+
+# Distributed
+if(USE_DIST)
+    find_dependency(OpenSSL REQUIRED)
 endif()
 
 if(USE_SUPERBUILD)

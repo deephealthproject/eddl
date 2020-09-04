@@ -11,6 +11,7 @@ set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
 # Initializations (Local's scope)
 SET(USE_OPENMP OFF)
+SET(USE_DIST OFF)
 SET(USE_CUDA OFF)
 SET(USE_FPGA OFF)
 
@@ -156,8 +157,6 @@ if(BUILD_PROTOBUF)
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
     # target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
     target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES})
-    target_link_libraries(${PROJECT_NAME} PUBLIC ssl) # added by Jon 2020-08-17
-    target_link_libraries(${PROJECT_NAME} PUBLIC crypto) # added by Jon 2020-08-17
 
     if(MSVC)
         target_link_libraries(${PROJECT_NAME} PUBLIC
@@ -216,6 +215,34 @@ if(BUILD_OPENMP)
     endif()
 endif()
 SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
+
+
+# Build for distributed system
+if(BUILD_DIST)
+    # Force the use of static libraries
+    if(NOT BUILD_SHARED_LIBS)
+        SET(OPENSSL_USE_STATIC_LIBS TRUE)
+    endif()
+
+    # Search OpenSSL (option 1)
+    #find_package(OpenSSL)  # There are some problems with this option
+
+    # Search OpenSSL (option 2)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(OPENSSL REQUIRED openssl)
+
+    # Add OpenSSL
+    if (OPENSSL_FOUND)
+        target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIRS}>)
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENSSL_LIBRARIES})
+        SET(USE_DIST ON) # Local's scope
+    else()
+        message(WARNING "OpenSSL not found but requested during compilation. (Falling back to: '-D BUILD_DIST=OFF')
+        Hint: Install OpenSSL")
+    endif()
+
+endif()
+SET(USE_DIST ${USE_DIST} PARENT_SCOPE)  # Parent's scope
 
 
 # CUDA
@@ -387,7 +414,7 @@ message(STATUS "-------------------------------------------" )
 message(STATUS "FPGA enabled: " ${USE_FPGA} )
 if(USE_FPGA)
 message(STATUS "OpenCL version: " ${OpenCL_VERSION_MAJOR} )
-message(STATUS "OpenCL include: " ${OpenCL_INCLUDE_DIRS} )
+message(STATUS "OpenCL include directory: " ${OpenCL_INCLUDE_DIRS} )
 message(STATUS "OpenCL libraries: " ${OpenCL_LIBRARIES} )
 endif()
 message(STATUS "-------------------------------------------" )
@@ -399,23 +426,31 @@ message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
 endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
-message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
+message(STATUS "Eigen3 include directory: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
 #message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
-#message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
+#message(STATUS "ZLIB include directory: " ${ZLIB_INCLUDE_DIRS} )
 #message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
 #message(STATUS "-------------------------------------------" )
 message(STATUS "Use Protobuf: " ${BUILD_PROTOBUF} )
 if(BUILD_PROTOBUF)
 message(STATUS "Protobuf dir: " ${Protobuf_DIR} )
-message(STATUS "Protobuf include: " ${Protobuf_INCLUDE_DIRS} )
+message(STATUS "Protobuf include directory: " ${Protobuf_INCLUDE_DIRS} )
 message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARIES} )
 message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
+endif()
+message(STATUS "-------------------------------------------" )
+message(STATUS "Use distributed: " ${BUILD_DIST} )
+if(BUILD_DIST)
+    message(STATUS "OpenSSL version: " ${OPENSSL_VERSION} )
+    message(STATUS "OpenSSL include directory: " ${OPENSSL_INCLUDE_DIR} )
+    message(STATUS "OpenSSL SSL library: " ${OPENSSL_SSL_LIBRARY} )
+    message(STATUS "OpenSSL crypto library: " ${OPENSSL_CRYPTO_LIBRARY} )
 endif()
 if(WIN32)
 message(STATUS "-------------------------------------------" )
 message(STATUS "Pthreads dir: " ${PTHREADS_INSTALL_PATH} )
-message(STATUS "Pthreads include: " ${PTHREADS_INSTALL_PATH}/include )
+message(STATUS "Pthreads include directory: " ${PTHREADS_INSTALL_PATH}/include )
 message(STATUS "Pthreads libraries: " ${PTHREADS_INSTALL_PATH}/lib )
 endif()
 message(STATUS "===========================================" )

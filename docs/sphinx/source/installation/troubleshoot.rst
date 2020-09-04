@@ -45,6 +45,33 @@ As a last resort, you can always disable OpenMP and use the EDDL, by making use 
 
 
 
+OpenSSL
+-------
+
+If you cannot compile the EDDL using the distributed mode due to OpenSSL, you might try these things:
+
+First, make you you have OpenSSL installed:
+
+- Ubuntu/Debian: ``sudo apt-get install libcrypto++-dev libssl-dev``
+- MacOS: ``brew install openssl``
+
+If this does not work, check if the following paths are correctly setup:
+
+.. code:: bash
+
+    # NOTE: This is a copy-paste from "brew", but for linux should be quite similar.
+
+    If you need to have openssl@1.1 first in your PATH run:
+      echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.zshrc
+
+    For compilers to find openssl@1.1 you may need to set:
+      export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+      export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+
+    For pkg-config to find openssl@1.1 you may need to set:
+      export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
+
+
 (MacOS) Undefined symbols for architecture x86_64
 --------------------------------------------------
 
