@@ -244,6 +244,7 @@ void Net::forward_recurrent(vector<Tensor*> tin)
 
   // prepare data for unroll net
   vtensor xt;
+  vtensor xtd;
   vtensor yt;
 
   vtensor toutr;
@@ -253,10 +254,10 @@ void Net::forward_recurrent(vector<Tensor*> tin)
   int inl;
   int outl;
 
-  prepare_recurrent(tin,tout,inl,outl,xt,yt,tinr,toutr);
+
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
   build_rnet(inl,outl);
-
 
   if ((isencoder)&&(isdecoder))
     rnet->forward(tinr);
@@ -268,6 +269,10 @@ void Net::forward_recurrent(vector<Tensor*> tin)
   for(i=0;i<xt.size();i++)
     delete xt[i];
   xt.clear();
+
+  for(i=0;i<xtd.size();i++)
+    delete xtd[i];
+  xtd.clear();
 
 }
 
@@ -360,6 +365,7 @@ void Net::backward_recurrent(vector<Tensor *> target)
 
   // prepare data for unroll net
   vtensor xt;
+  vtensor xtd;
   vtensor yt;
 
   vtensor tin;
@@ -369,8 +375,9 @@ void Net::backward_recurrent(vector<Tensor *> target)
   int inl;
   int outl;
 
-  prepare_recurrent(tin,target,inl,outl,xt,yt,tinr,toutr);
+  Tensor *Z=Tensor::zeros(target[0]->shape,target[0]->device);
 
+  prepare_recurrent(tin,target,inl,outl,xt,xtd,yt,tinr,toutr,Z);
 
   if ((isencoder)&&(isdecoder))
     rnet->backward(toutr);
@@ -739,7 +746,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 }
 
 
-void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &yt,vtensor &tinr,vtensor &toutr)
+void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z)
 {
   int i, j, k, n;
 
@@ -772,8 +779,15 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
 
   if (tout.size()) {
     if (isdecoder) {
+      //set decoder input with outputs
       for(i=0;i<tout.size();i++)
-      yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
+        xtd.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
+
+
+      //prepare output
+      for(i=0;i<tout.size();i++)
+        yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
+
       outl=yt[0]->shape[0];
       for(i=0;i<yt.size();i++) {
         if (yt[i]->shape[0]!=outl)
@@ -781,6 +795,7 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
       }
     }
   }
+
   // prepare data for unroll net
   if (isencoder) {
     int offset;
@@ -795,7 +810,19 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
   }
 
   if (isdecoder) {
+    //increase input with delayed output in xtd
     int offset;
+    for(i=0;i<xtd.size();i++) {
+      offset=xtd[i]->size/xtd[i]->shape[0];
+      vector<int>shape;
+      for(j=1;j<xtd[i]->ndim;j++)
+        shape.push_back(xtd[i]->shape[j]);
+
+      tinr.push_back(Z);
+      for(j=0;j<outl-1;j++)
+        tinr.push_back(new Tensor(shape,xtd[i]->ptr+(j*offset),xtd[i]->device));
+    }
+
     for(i=0;i<yt.size();i++) {
       offset=yt[i]->size/yt[i]->shape[0];
       vector<int>shape;
@@ -814,6 +841,7 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
 
   // prepare data for unroll net
   vtensor xt;
+  vtensor xtd;
   vtensor yt;
 
   vtensor toutr;
@@ -822,9 +850,14 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   int inl;
   int outl;
 
-  prepare_recurrent(tin,tout,inl,outl,xt,yt,tinr,toutr);
+  vector<int>shape;
+  for(j=0;j<tout[0]->ndim;j++)
+    if (j!=1) shape.push_back(tout[0]->shape[j]);
+  Tensor *Z=Tensor::zeros(shape,tout[0]->device);
 
-  build_rnet(inl,outl);
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr,Z);
+
+  if (rnet==nullptr) build_rnet(inl,outl);
 
   if ((isencoder)&&(isdecoder))
     rnet->fit(tinr,toutr,batch,epochs);
@@ -841,10 +874,17 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
     xt.clear();
   }
   if (isdecoder) {
+    for(i=0;i<xtd.size();i++)
+      delete xtd[i];
+    xtd.clear();
+
     for(i=0;i<yt.size();i++)
       delete yt[i];
     yt.clear();
   }
+
+  delete Z;
+
 }
 
 // TODO:  train_batch_recurrent
@@ -987,6 +1027,7 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
   int i,j,k;
   // prepare data for unroll net
   vtensor xt;
+  vtensor xtd;
   vtensor yt;
 
   vtensor toutr;
@@ -995,7 +1036,9 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
   int inl;
   int outl;
 
-  prepare_recurrent(tin,tout,inl,outl,xt,yt,tinr,toutr);
+  Tensor *Z=Tensor::zeros(tout[0]->shape,tout[0]->device);
+
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr,Z);
 
   if ((isencoder)&&(isdecoder))
     rnet->evaluate(tinr,toutr);
@@ -1010,6 +1053,10 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
     xt.clear();
   }
   if (isdecoder) {
+    for(i=0;i<xtd.size();i++)
+      delete xtd[i];
+    xtd.clear();
+
     for(i=0;i<yt.size();i++)
       delete yt[i];
     yt.clear();
@@ -1027,6 +1074,7 @@ vtensor Net::predict_recurrent(vtensor tin) {
 
   // prepare data for unroll net
   vtensor xt;
+  vtensor xtd;
   vtensor yt;
 
   vtensor toutr;
@@ -1036,7 +1084,7 @@ vtensor Net::predict_recurrent(vtensor tin) {
   int inl;
   int outl;
 
-  prepare_recurrent(tin,tout,inl,outl,xt,yt,tinr,toutr);
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
   out=rnet->predict(tinr);
 
