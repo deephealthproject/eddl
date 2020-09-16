@@ -80,6 +80,7 @@ private:
 
 public:
     int device;
+    bool isshared;
     unsigned int ndim;
     unsigned long int size;
     vector<int> shape;

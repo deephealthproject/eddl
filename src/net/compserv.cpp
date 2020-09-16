@@ -44,7 +44,7 @@ CompServ::CompServ(int t, const vector<int> g, const vector<int> &f,int lsb, int
       exit(EXIT_FAILURE);
     }
     else {
-      if (mem==1) fprintf(stderr,"CS with full memory setup\n");
+      if (mem==0) fprintf(stderr,"CS with full memory setup\n");
       if (mem==1) fprintf(stderr,"CS with mid memory setup\n");
       if (mem==2) fprintf(stderr,"CS with low memory setup\n");
     }
@@ -53,7 +53,7 @@ CompServ::CompServ(int t, const vector<int> g, const vector<int> &f,int lsb, int
 
 CompServ * CompServ::share() {
   CompServ *n=new CompServ();
-  
+
   n->type=type;
   n->local_threads=local_threads;
   n->local_gpus=local_gpus;

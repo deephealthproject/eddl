@@ -274,7 +274,7 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
           if ((isdecoder)&&(layers[j]->lin==0)) {
             vlayer par;
             Layer *n=layers[j]->share(i-inl, batch_size, par);
-            //nin[i].push_back(n);
+            nin[i].push_back(n);
             din.push_back(n); // decoder inputs
             nlayers[i].push_back(n);
           }
@@ -324,8 +324,9 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
 vlayer ninl;
 vlayer noutl;
 for (i = 0; i < inl+outl; i++)
-  for (j = 0; j < nin[i].size(); j++)
+  for (j = 0; j < nin[i].size(); j++) {
     ninl.push_back(nin[i][j]);
+  }
 
 for (i = 0; i < outl; i++)
   for (j = 0; j < nout[i].size(); j++)
