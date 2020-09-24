@@ -37,7 +37,8 @@ if(MSVC)
         optimized ${GTEST_BOTH_LIBRARIES}
         debug ${GTEST_BOTH_LIBRARIES_D})
 else()
-    target_link_libraries(unit_tests PUBLIC eddl ${GTEST_BOTH_LIBRARIES})
+    find_package(Threads)
+    target_link_libraries(unit_tests PUBLIC eddl ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 
