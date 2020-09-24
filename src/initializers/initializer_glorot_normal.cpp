@@ -36,8 +36,12 @@ void IGlorotNormal::apply(Tensor* params)
   else if (params->ndim == 2) {
       params->rand_normal(0.0f, ::sqrtf(2.0f / (params->shape[0]+params->shape[1])));
     }
-  else if (params->ndim == 4) // only fan_in
-      params->rand_normal(0.0f, ::sqrtf(1.0f / ((float)params->size / params->shape[0])));
+  else if (params->ndim == 4) {
+      int rf=params->shape[2]*params->shape[3];
+      int fin=rf*params->shape[1];
+      int fout=rf*params->shape[0];
+      params->rand_normal(0.0f, ::sqrtf(2.0f / (float)(fin+fout)));
+    }
   else {
       params->rand_signed_uniform(0.1f);
   }

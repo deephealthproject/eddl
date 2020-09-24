@@ -40,10 +40,18 @@ void IGlorotUniform::apply(Tensor* params) {
         float limits=sqrtf(6.0f / (params->shape[0]+params->shape[1]));
         params->mult_(limits);
       }
-    else if (params->ndim == 4) { // only fan_in
+    else if (params->ndim == 4) { // EDDL (output_depth, input_depth, kr,kc)
+
+        int rf=params->shape[2]*params->shape[3];
+        int fin=rf*params->shape[1];
+        int fout=rf*params->shape[0];
+        
         params->rand_signed_uniform(1.0);
-        float limits=sqrtf(3.0f / (params->shape[1]+params->shape[2]+params->shape[3]));
+
+        float limits=sqrtf(6.0 / (float)(fin+fout));
+
         params->mult_(limits);
+
     }
     else {
       params->rand_signed_uniform(0.1f);
