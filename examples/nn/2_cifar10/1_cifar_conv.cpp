@@ -27,8 +27,6 @@ layer Normalization(layer l)
 
   return l;
   //return BatchNormalization(l);
-
-
 }
 
 int main(int argc, char **argv){
@@ -37,7 +35,7 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = 1;
+  int epochs = 100;
   int batch_size = 100;
   int num_classes = 10;
 
@@ -45,19 +43,12 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
-  l=ReLu(Conv(l,32,{3,3},{1,1}));
+  l=MaxPool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
+  l=MaxPool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
+  l=MaxPool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});
+  l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
 
-  //l=ReLu(Normalization(Conv(l,32,{3,3},{1,1})));
-  //l=ReLu(Normalization(Conv(l,64,{3,3},{1,1})));
-  //l=ReLu(Normalization(Conv(l,128,{3,3},{1,1})));
-  //l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
-
-//  l=MaxPool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
-//  l=MaxPool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
-//  l=MaxPool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});
-//  //l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
-
-//  l=GlobalMaxPool(l);
+  l=GlobalMaxPool(l);
 
 
   l=Flatten(l);
@@ -72,7 +63,7 @@ int main(int argc, char **argv){
 
   // Build model
   build(net,
-    sgd(0.01, 0.9), // Optimizer
+    adam(0.001), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     CS_GPU({1}) // one GPU

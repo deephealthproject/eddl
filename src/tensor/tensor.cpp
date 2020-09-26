@@ -91,6 +91,7 @@ Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 Tensor::Tensor(const vector<int> &shape, Tensor *T) : Tensor(shape,T->ptr, T->device) {}
 
 Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : Tensor(shape, nullptr, DEV_CPU) {
+    isshared=false;
     // 0. Tensor in CPU
 
     // 1. Copy data from vector to pointer (CPU)
@@ -140,8 +141,8 @@ void Tensor::updateStrides() {
 
 void Tensor::deleteData(){
     // Carefpdal, you can't know is a pointer is allocated
-    if (isshared) return;
-    
+    //if (isshared) return;
+
     if(this->ptr != nullptr){
         if (this->isCPU()) {
             // Delete eigen matrix

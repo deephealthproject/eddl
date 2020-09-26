@@ -40,25 +40,25 @@ __global__ void  gpu_traspose_batch_depth(float *ptrB, float *ptr, int b,int z,i
 
 }
 
-__global__ void  gpu_addbias_k(float *O, int batch, int r,int c,int nk,float *bias)
+__global__ void  gpu_addbias_k(float *O, int batch, int r,int c,int nk,float *bias,int offset)
 {
   int size=nk*r*c;
   int thread_id_x=threadIdx.x;
 
-  int p=blockIdx.x*size+thread_id_x*r*c;
+  int p=blockIdx.x*size+(thread_id_x+offset)*r*c;
   for (int i = 0; i < r*c; i++)
-     O[p+i]+=bias[thread_id_x];
+     O[p+i]+=bias[thread_id_x+offset];
 
 }
 
-__global__ void  gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *bias)
+__global__ void  gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *bias, int offset)
 {
   int size=nk*r*c;
   int thread_id_x=threadIdx.x;
 
-  int p=blockIdx.x*size+thread_id_x*r*c;
+  int p=blockIdx.x*size+(thread_id_x+offset)*r*c;
   for (int i = 0; i < r*c; i++)
-    atomicAdd(&(bias[thread_id_x]),D[p+i]);
+    atomicAdd(&(bias[thread_id_x+offset]),D[p+i]);
 
 }
 

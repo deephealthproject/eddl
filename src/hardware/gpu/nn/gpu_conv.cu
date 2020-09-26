@@ -93,9 +93,15 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
   }
 
-  if (D->use_bias) gpu_addbias_k<<<D->O->shape[0],D->bias->shape[0]>>>(D->O->ptr, D->O->shape[0], D->r,D->c,D->nk,D->bias->ptr);
+  if (D->use_bias) {
+    int size=D->bias->shape[0];
+    for(int i=0;i<size;i+=1024) {
+      int s=min(1024,size-i);
+      gpu_addbias_k<<<D->O->shape[0],s>>>(D->O->ptr, D->O->shape[0], D->r,D->c,D->nk,D->bias->ptr,i);
+      check_cuda(cudaDeviceSynchronize(),"gpu_addbias");
+    }
+  }
 
-  check_cuda(cudaDeviceSynchronize(),"gpu_addbias");
 
 
 }
@@ -134,8 +140,15 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
     }
   }
 
-  if (D->use_bias) gpu_deltabias_k<<<D->D->shape[0],D->bias->shape[0]>>>(D->D->ptr, D->D->shape[0], D->r,D->c,D->nk,D->gbias->ptr);
-  check_cuda(cudaDeviceSynchronize(),"gpu_deltabias");
+  if (D->use_bias) {
+    int size=D->bias->shape[0];
+    for(int i=0;i<size;i+=1024) {
+      int s=min(1024,size-i);
+      gpu_deltabias_k<<<D->D->shape[0],s>>>(D->D->ptr, D->D->shape[0], D->r,D->c,D->nk,D->gbias->ptr,i);
+      check_cuda(cudaDeviceSynchronize(),"gpu_deltabias");
+    }
+  }
+
 
 }
 
