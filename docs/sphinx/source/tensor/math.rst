@@ -502,9 +502,19 @@ logn
 
 .. code-block:: c++
 
-    void logn_(float n);
-    Tensor* logn(float n);
-    static void logn(Tensor*A, Tensor*B, float n);
+    Tensor* t1 = new Tensor::Tensor({0.5224, 0.9354, 0.7257, 0.1301, 0.2251}, {5}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->logn(10.0);
+    // r1 => [-0.2820, -0.0290, -0.1392, -0.8857, -0.6476]
+
+    Tensor::log10(t1, r2, 10);
+    // r2 => [-0.2820, -0.0290, -0.1392, -0.8857, -0.6476]
+
+    t1->logn_(10);
+    // t1 => [-0.2820, -0.0290, -0.1392, -0.8857, -0.6476]
+
     
 mod
 ^^^^^^^^^^^^

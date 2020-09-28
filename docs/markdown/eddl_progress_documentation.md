@@ -427,27 +427,27 @@ empty ❌
 | zeros   |      ✔️      |       ✔️      | needs comments in the .h |
 | ones    |      ✔️      |       ✔️      | needs comments in the .h |
 | full    |      ✔️      |       ✔️      | needs comments in the .h |
-| eye     |      ❌️     |       ✔️      | needs comments in the .h |
+| eye     |      ✔️      |       ✔️      | needs comments in the .h |
 | identity |     ✔️      |       ✔️      | needs comments in the .h |
 
 ### From existing data
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| clone   |      ❌️     |       ✔️      | needs comments in the .h |
+| clone   |      ✔️     |       ✔️      | needs comments in the .h |
 | reallocate |   ❌️     |       ✔️      | needs comments in the .h |
-| copy    |      ❌️     |       ✔️      | needs comments in the .h |
+| copy    |      ✔️     |       ✔️      | needs comments in the .h |
 
 
 ### Numerical ranges
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| arange  |      ❌️     |       ✔️      | needs comments in the .h |
-| range   |      ❌️     |       ✔️      | needs comments in the .h |
-| linspace |     ❌️     |       ✔️      | needs comments in the .h |
-| logspace |     ❌️     |       ✔️      | needs comments in the .h |
-| geomspace |    ❌️     |       ✔️      | needs comments in the .h |
+| arange  |      ✔️     |       ✔️      | needs comments in the .h |
+| range   |      ✔️     |       ✔️      | needs comments in the .h |
+| linspace |     ✔️     |       ✔️      | needs comments in the .h |
+| logspace |     ✔️     |       ✔️      | needs comments in the .h |
+| geomspace |    ✔️     |       ✔️      | needs comments in the .h |
 
 ### Random
 
@@ -460,7 +460,7 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| diag    |      ❌️     |       ✔️      | needs comments in the .h |
+| diag    |      ✔️     |       ✔️      | needs comments in the .h |
 
 
 ## Manipulation
@@ -477,8 +477,8 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| reshape |      ❌️     |       ✔️      | needs comments in the .h |
-| flatten |      ❌️     |       ✔️      | needs comments in the .h |
+| reshape |      ✔️     |       ✔️      | needs comments in the .h |
+| flatten |      ✔️     |       ✔️      | needs comments in the .h |
 
 ### Transpose-like operations
 
@@ -505,20 +505,20 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| shift   |      ❌️     |       ✔️      | needs comments in the .h |
-| rotate  |      ❌️     |       ✔️      | needs comments in the .h |
-| scale   |      ❌️     |       ✔️      | needs comments in the .h |
-| flip    |      ❌️     |       ✔️      | needs comments in the .h |
-| crop    |      ❌️     |       ✔️      | needs comments in the .h |
-| crop_scale |   ❌️     |       ✔️      | needs comments in the .h |
-| cutout  |      ❌️     |       ✔️      | needs comments in the .h |
-| shift_random | ❌️     |       ✔️      | needs comments in the .h |
-| rotate_random |❌️     |       ✔️      | needs comments in the .h |
-| scale_random | ❌️     |       ✔️      | needs comments in the .h |
-| flip_random |  ❌️     |       ✔️      | needs comments in the .h |
-| crop_random |  ❌️     |       ✔️      | needs comments in the .h |
-| crop_scale_random| ❌️ |       ✔️      | needs comments in the .h |
-| cutout_random |❌️     |       ✔️      | needs comments in the .h |
+| shift   |      ✔️     |       ✔️      | needs comments in the .h |
+| rotate  |      ✔️     |       ✔️      | needs comments in the .h |
+| scale   |      ✔️     |       ✔️      | needs comments in the .h |
+| flip    |      ✔️     |       ✔️      | needs comments in the .h |
+| crop    |      ✔️     |       ✔️      | needs comments in the .h |
+| crop_scale |   ✔️     |       ✔️      | needs comments in the .h |
+| cutout  |      ✔️     |       ✔️      | needs comments in the .h |
+| shift_random | ✔️     |       ✔️      | needs comments in the .h |
+| rotate_random |✔️     |       ✔️      | needs comments in the .h |
+| scale_random | ✔️     |       ✔️      | needs comments in the .h |
+| flip_random |  ✔️     |       ✔️      | needs comments in the .h |
+| crop_random |  ✔️     |       ✔️      | needs comments in the .h |
+| crop_scale_random| ✔️ |       ✔️      | needs comments in the .h |
+| cutout_random |✔️     |       ✔️      | needs comments in the .h |
 
 
 ## Binary operations ❌️
@@ -562,7 +562,7 @@ empty ❌
 | save2txt |      ✔️     |       ✔️      | needs comments in the .h <br/> Check parameter explanation |
 
 
-## Linar algebra
+## Linear algebra
 
 * note: section in progress
 
