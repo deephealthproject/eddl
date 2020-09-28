@@ -300,16 +300,16 @@ div
     Tensor* r1 = t1->div(10.0);
     // r1 => [1, 2, 3, -1]
     
-    Tensor* r2 = t1->add(t2);  // this = this ./ A
+    Tensor* r2 = t1->div(t2);  // this = this ./ A
     // r2 => [10, 10, 10, -1]
 
-    Tensor::add(t1, r3, 10.0); // B = A / v
+    Tensor::div(t1, r3, 10.0); // B = A / v
     // r3 => [1, 2, 3, -1]
     
-    t2->add_(t1);  // this = this ./ A
+    t2->div_(t1);  // this = this ./ A
     // t2 => [0.1, 0.1, 0.1, -1]
 
-    t1->add_(20);
+    t1->div_(20);
     // t1 => [1, 2, 3, -1]
     
 
@@ -526,9 +526,18 @@ mod
 .. code-block:: c++
 
 
-    void mod_(float v);
-    Tensor* mod(float v);
-    static void mod(Tensor*A, Tensor*B, float v);
+    Tensor* t1 = new Tensor::Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->mod(10.0);
+    // r1 => [2, 3, 4, 5, 6]
+
+    Tensor::log10(t1, r2, 10);
+    // r2 => [2, 3, 4, 5, 6]
+
+    t1->logn_(10);
+    // t1 => [2, 3, 4, 5, 6]
     
 mult
 ^^^^^^^^^^^^
@@ -542,11 +551,25 @@ mult
 
 .. code-block:: c++
    
-    void mult_(float v);
-    Tensor* mult(float v);
-    void mult_(Tensor* A);  // this = this .* A
-    Tensor* mult(Tensor* A);  // this = this .* A
-    static void mult(Tensor*A, Tensor*B, float v); // B = A * v
+    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
+    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
+    Tensor* r3;
+    Tensor* r4;
+    
+    Tensor* r1 = t1->mult(10.0);
+    // r1 => [100, 200, 300, -100]
+    
+    Tensor* r2 = t1->mult(t2);  // this = this .* A
+    // r2 => [10, 40, 90, -100]
+
+    Tensor::mult(t1, r3, 10.0); // B = A * v
+    // r3 => [100, 200, 300, -100]
+    
+    t2->mult_(t1);  // this = this .* A
+    // t2 => [10, 40, 90, -100]
+
+    t1->mult_(10);
+    // t1 => [1, 2, 3, -1]
     
 neg
 ^^^^^^^^^^^^
@@ -557,9 +580,18 @@ neg
 
 .. code-block:: c++
 
-    void neg_();
-    Tensor* neg();
-    static void neg(Tensor*A, Tensor*B);
+    Tensor* t1 = new Tensor::Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->neg();
+    // r1 => [-12, -13, -14, -15, -16]
+
+    Tensor::neg(t1, r2);
+    // r2 => [-12, -13, -14, -15, -16]
+
+    t1->neg_();
+    // t1 => [-12, -13, -14, -15, -16]
 
 normalize
 ^^^^^^^^^^^^
@@ -623,9 +655,19 @@ remainder
 
 .. code-block:: c++
 
-    void remainder_(float v);
-    Tensor* remainder(float v);
-    static void remainder(Tensor*A, Tensor*B, float min=0.0f, float v);
+    Tensor* t1 = new Tensor::Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->remainder(10.0);
+    // r1 => [2, 3, 4, 5, 6]
+
+    Tensor::remainder(t1, r2, 10);
+    // r2 => [2, 3, 4, 5, 6]
+
+    t1->remainder_(10);
+    // t1 => [2, 3, 4, 5, 6]
+    
     
 round
 ^^^^^^^^^^^^
@@ -636,9 +678,18 @@ round
 
 .. code-block:: c++
 
-    void round_();
-    Tensor* round();
-    static void round(Tensor*A, Tensor*B);
+    Tensor* t1 = new Tensor::Tensor({2.3, 5.5, 6.1, 7.9, 10.0}, {5}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->round();
+    // r1 => [2, 6, 6, 8, 10]
+
+    Tensor::round(t1, r2);
+    // r2 => [2, 6, 6, 8, 10]
+
+    t1->round_();
+    // t1 => [2, 6, 6, 8, 10]
     
 rsqrt
 ^^^^^^^^^^^^
@@ -649,10 +700,18 @@ rsqrt
 
 .. code-block:: c++
 
-    void rsqrt_();
-    Tensor* rsqrt();
-    static void rsqrt(Tensor*A, Tensor*B);
+    Tensor* t1 = new Tensor::Tensor({-0.0370,  0.2970,  1.5420, -0.9105}, {4}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
     
+    r1 = t1->rsqrt();
+    // r1 => [nan,  1.8351,  0.8053,   nan]
+
+    Tensor::rsqrt(t1, r2);
+    // r2 => [nan,  1.8351,  0.8053,   nan]
+
+    t1->rsqrt_();
+    // t1 => [nan,  1.8351,  0.8053,   nan]
 sigmoid
 ^^^^^^^^^^^^
 
@@ -662,9 +721,18 @@ sigmoid
 
 .. code-block:: c++
 
-    void sigmoid_();
-    Tensor* sigmoid();
-    static void sigmoid(Tensor*A, Tensor*B);
+    Tensor* t1 = new Tensor::Tensor({0.9213,  1.0887, -0.8858, -1.7683}, {4}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->sigmoid();
+    // r1 => [0.7153,  0.7481,  0.2920,  0.1458]
+
+    Tensor::sigmoid(t1, r2);
+    // r2 => [0.7153,  0.7481,  0.2920,  0.1458]
+
+    t1->sigmoid_();
+    // t1 => [0.7153,  0.7481,  0.2920,  0.1458]
     
 sign
 ^^^^^^^^^^^^
@@ -675,8 +743,18 @@ sign
 
 .. code-block:: c++  
 
-    static Tensor* sign(float zero_sign);
-    static void sign(Tensor*A, Tensor*B, float zero_sign);
+    Tensor* t1 = new Tensor::Tensor({0.7, -1.2, 0., 2.3}, {4}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->sign(5);
+    // r1 => [1, -1,  5,  1]
+
+    Tensor::sign(t1, r2, 5);
+    // r2 => [1, -1,  5,  1]
+
+    t1->sign_();
+    // t1 => [1, -1,  5,  1]
     
 
 sin
@@ -688,9 +766,18 @@ sin
 
 .. code-block:: c++
 
-    void sin_();
-    Tensor* sin();
-    static void sin(Tensor*A, Tensor*B);
+    Tensor* t1 = new Tensor::Tensor({-0.5461,  0.1347, -2.7266, -0.2746}, {4}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->sin();
+    // r1 => [-0.5194,  0.1343, -0.4032, -0.2711]
+
+    Tensor::sin(t1, r2);
+    // r2 => [-0.5194,  0.1343, -0.4032, -0.2711]
+
+    t1->sin_();
+    // t1 => [-0.5194,  0.1343, -0.4032, -0.2711]
     
 sinh
 ^^^^^^^^^^^^
@@ -701,9 +788,18 @@ sinh
 
 .. code-block:: c++
 
-    void sinh_();
-    Tensor* sinh();
-    static void sinh(Tensor*A, Tensor*B);
+    Tensor* t1 = new Tensor::Tensor({0.5380, -0.8632, -0.1265,  0.9399}, {4}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->sinh();
+    // r1 => [0.5644, -0.9744, -0.1268,  1.0845]
+
+    Tensor::sinh(t1, r2);
+    // r2 => [0.5644, -0.9744, -0.1268,  1.0845]
+
+    t1->sinh_();
+    // t1 => [0.5644, -0.9744, -0.1268,  1.0845]
     
 sqr
 ^^^^^^^^^^^^
@@ -727,9 +823,18 @@ sqrt
 
 .. code-block:: c++
 
-    void sqrt_();
-    Tensor* sqrt();
-    static void sqrt(Tensor*A, Tensor*B);
+    Tensor* t1 = new Tensor::Tensor({-2.0755,  1.0226,  0.0831,  0.4806}, {4}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->sqrt();
+    // r1 => [nan,  1.0112,  0.2883,  0.6933]
+
+    Tensor::sqrt(t1, r2);
+    // r2 => [nan,  1.0112,  0.2883,  0.6933]
+
+    t1->sqrt_();
+    // t1 => [nan,  1.0112,  0.2883,  0.6933]
     
 sub
 ^^^^^^^^^^^^
@@ -743,11 +848,25 @@ sub
 
 .. code-block:: c++
    
-    void sub_(float v);
-    Tensor* sub(float v);
-    void sub_(Tensor* A);  // this = this .- A
-    Tensor* sub(Tensor* A);  // this = this .- A
-    static void sub(Tensor*A, Tensor*B, float v); // B = A - v
+    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
+    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
+    Tensor* r3;
+    Tensor* r4;
+    
+    Tensor* r1 = t1->sub(10.0);
+    // r1 => [0, 10, 20, -20]
+    
+    Tensor* r2 = t1->sub(t2);  // this = this .- A
+    // r2 => [9, 18, 27, -20]
+
+    Tensor::sub(t1, r3, 10.0); // B = A - v
+    // r3 => [0, 10, 20, -20]
+    
+    t2->sub_(t1);  // this = this .- A
+    // t2 => [-9, -18, -27, 0]
+
+    t1->sub_(10);
+    // t1 => 0, 10, 20, -20]
     
 
     
