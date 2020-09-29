@@ -774,7 +774,7 @@ public:
     static float mean(Tensor* A);
 
     /**
-    *   @brief Obtain the prodmeanuct of all the element in the tensor
+    *   @brief Obtain the mean of all the elements in the tensor
     *   @param axis Vector with the axis in which to obtain the mean
     *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
     *   @return float. The tensor with the mean of elements in A on the selected axis.
@@ -782,8 +782,25 @@ public:
     Tensor* mean(vector<int> axis, bool keepdims);
     static void mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+    /**
+    *   @brief Obtain the median value of all the elements in the tensor
+    *   @return float The median value.
+    */
     float median();
+
+    /**
+    *   @brief Obtain the median value of all the elements in the tensor
+    *   @param A The tensor from which to extract the median of its values
+    *   @return float. The median value.
+    */
     static float median(Tensor* A);
+
+    /**
+    *   @brief Obtain the median value of all the elements in the tensor
+    *   @param axis Vector with the axis in which to obtain the mean
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The tensor with the mean of elements in A on the selected axis.
+    */
     Tensor* median(vector<int> axis, bool keepdims);
     static void median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 

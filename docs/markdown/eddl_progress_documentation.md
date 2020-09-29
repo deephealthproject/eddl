@@ -424,30 +424,30 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| zeros   |      ✔️      |       ✔️      | needs comments in the .h |
-| ones    |      ✔️      |       ✔️      | needs comments in the .h |
-| full    |      ✔️      |       ✔️      | needs comments in the .h |
-| eye     |      ✔️      |       ✔️      | needs comments in the .h |
-| identity |     ✔️      |       ✔️      | needs comments in the .h |
+| zeros   |      ✔️      |       ✔️      |  |
+| ones    |      ✔️      |       ✔️      |  |
+| full    |      ✔️      |       ✔️      |  |
+| eye     |      ✔️      |       ✔️      |  |
+| identity |     ✔️      |       ✔️      |  |
 
 ### From existing data
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| clone   |      ✔️     |       ✔️      | needs comments in the .h |
+| clone   |      ✔️     |       ✔️      |  |
 | reallocate |   ❌️     |       ✔️      | needs comments in the .h |
-| copy    |      ✔️     |       ✔️      | needs comments in the .h |
+| copy    |      ✔️     |       ✔️      |  |
 
 
 ### Numerical ranges
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| arange  |      ✔️     |       ✔️      | needs comments in the .h |
-| range   |      ✔️     |       ✔️      | needs comments in the .h |
-| linspace |     ✔️     |       ✔️      | needs comments in the .h |
-| logspace |     ✔️     |       ✔️      | needs comments in the .h |
-| geomspace |    ✔️     |       ✔️      | needs comments in the .h |
+| arange  |      ✔️     |       ✔️      |  |
+| range   |      ✔️     |       ✔️      |  |
+| linspace |     ✔️     |       ✔️      |  |
+| logspace |     ✔️     |       ✔️      |  |
+| geomspace |    ✔️     |       ✔️      |  |
 
 ### Random
 
@@ -460,7 +460,7 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| diag    |      ✔️     |       ✔️      | needs comments in the .h |
+| diag    |      ✔️     |       ✔️      |  |
 
 
 ## Manipulation
@@ -477,8 +477,8 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| reshape |      ✔️     |       ✔️      | needs comments in the .h |
-| flatten |      ✔️     |       ✔️      | needs comments in the .h |
+| reshape |      ✔️     |       ✔️      |  |
+| flatten |      ✔️     |       ✔️      |  |
 
 ### Transpose-like operations
 
@@ -505,20 +505,20 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| shift   |      ✔️     |       ✔️      | needs comments in the .h |
-| rotate  |      ✔️     |       ✔️      | needs comments in the .h |
-| scale   |      ✔️     |       ✔️      | needs comments in the .h |
-| flip    |      ✔️     |       ✔️      | needs comments in the .h |
-| crop    |      ✔️     |       ✔️      | needs comments in the .h |
-| crop_scale |   ✔️     |       ✔️      | needs comments in the .h |
-| cutout  |      ✔️     |       ✔️      | needs comments in the .h |
-| shift_random | ✔️     |       ✔️      | needs comments in the .h |
-| rotate_random |✔️     |       ✔️      | needs comments in the .h |
-| scale_random | ✔️     |       ✔️      | needs comments in the .h |
-| flip_random |  ✔️     |       ✔️      | needs comments in the .h |
-| crop_random |  ✔️     |       ✔️      | needs comments in the .h |
-| crop_scale_random| ✔️ |       ✔️      | needs comments in the .h |
-| cutout_random |✔️     |       ✔️      | needs comments in the .h |
+| shift   |      ✔️     |       ✔️      |  |
+| rotate  |      ✔️     |       ✔️      |  |
+| scale   |      ✔️     |       ✔️      |  |
+| flip    |      ✔️     |       ✔️      |  |
+| crop    |      ✔️     |       ✔️      |  |
+| crop_scale |   ✔️     |       ✔️      |  |
+| cutout  |      ✔️     |       ✔️      |  |
+| shift_random | ✔️     |       ✔️      |  |
+| rotate_random |✔️     |       ✔️      |  |
+| scale_random | ✔️     |       ✔️      |  |
+| flip_random |  ✔️     |       ✔️      |  |
+| crop_random |  ✔️     |       ✔️      |  |
+| crop_scale_random| ✔️ |       ✔️      |  |
+| cutout_random |✔️     |       ✔️      |  |
 
 
 ## Binary operations ❌️
@@ -538,7 +538,7 @@ empty ❌
 ### Indexing-like operations 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| select  |      ✔️      |       ✔️      | needs comments in the .h |
+| select  |      ✔️      |       ✔️      |  |
 | set_select |  ❌️      |       ✔️      | needs comments in the .h <br/> Confusing explanation |
 
 
@@ -549,17 +549,17 @@ empty ❌
 ### Input
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| loadfs  |      ✔️      |       ✔️      | needs comments in the .h |
-| load    |      ✔️      |       ✔️      | needs comments in the .h | 
-| load_from_txt |✔️      |       ✔️      | needs comments in the .h |
+| loadfs  |      ✔️      |       ✔️      |  |
+| load    |      ✔️      |       ✔️      |  | 
+| load_from_txt |✔️      |       ✔️      |  |
 
 ### Output
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| savefs  |       ✔️     |       ✔️      | needs comments in the .h <br/> Note: ONNX not yet implemented |
-| save    |       ✔️     |       ✔️      | needs comments in the .h <br/> Note: ONNX not yet implemented |
-| save2txt |      ✔️     |       ✔️      | needs comments in the .h <br/> Check parameter explanation |
+| savefs  |       ✔️     |       ✔️      | Note: ONNX not yet implemented |
+| save    |       ✔️     |       ✔️      | Note: ONNX not yet implemented |
+| save2txt |      ✔️     |       ✔️      | Check parameter explanation |
 
 
 ## Linear algebra
@@ -581,18 +581,18 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| all     |      ✔️      |       ✔️      | needs comments in the .h |
-| any     |      ✔️      |       ✔️      | needs comments in the .h |
+| all     |      ✔️      |       ✔️      | |
+| any     |      ✔️      |       ✔️      | |
 
 ### Array contents
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| isfinite |      ✔️     |       ✔️      | needs comments in the .h |
-| isinf   |       ✔️     |       ✔️      | needs comments in the .h |
-| isnan   |       ✔️     |       ✔️      | needs comments in the .h |
-| isneginf |      ✔️     |       ✔️      | needs comments in the .h |
-| isposinf |      ✔️     |       ✔️      | needs comments in the .h |
+| isfinite |      ✔️     |       ✔️      |  |
+| isinf   |       ✔️     |       ✔️      |  |
+| isnan   |       ✔️     |       ✔️      |  |
+| isneginf |      ✔️     |       ✔️      |  |
+| isposinf |      ✔️     |       ✔️      |  |
 
 ### Logical operations
 
@@ -628,50 +628,52 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| abs     |      ❌️     |       ✔️      | needs comments in the .h |
-| acos    |      ❌️     |       ✔️      | needs comments in the .h |
-| add     |      ❌️     |       ✔️      | needs comments in the .h <br/> three instructions |
-| asin    |      ❌️     |       ✔️      | needs comments in the .h |
-| atan    |      ❌️     |       ✔️      | needs comments in the .h |
-| ceil    |      ❌️     |       ✔️      | needs comments in the .h |
-| clamp   |      ❌️     |       ✔️      | needs comments in the .h |
-| clampmax |     ❌️     |       ✔️      | needs comments in the .h |
-| clampmin |     ❌️     |       ✔️      | needs comments in the .h |
-| cos     |      ❌️     |       ✔️      | needs comments in the .h |
-| cosh    |      ❌️     |       ✔️      | needs comments in the .h |
-| div     |      ❌️     |       ✔️      | needs comments in the .h <br/> two instructions | 
-| exp     |      ❌️     |       ✔️      | needs comments in the .h |
-| floor   |      ❌️     |       ✔️      | needs comments in the .h |
-| log     |      ❌️     |       ✔️      | needs comments in the .h |
-| log2    |      ❌️     |       ✔️      | needs comments in the .h |
-| log10   |      ❌️     |       ✔️      | needs comments in the .h |
-| logn    |      ❌️     |       ✔️      | needs comments in the .h |
-| mod     |      ❌️     |       ✔️      | needs comments in the .h |
-| mult    |      ❌️     |       ✔️      | needs comments in the .h <br/> two instructions |
-| neg     |      ❌️     |       ✔️      | needs comments in the .h |
+| abs     |      ✔️     |       ✔️      |  |
+| acos    |      ✔️     |       ✔️      |  |
+| add     |      ✔️     |       ✔️      |  |
+| asin    |      ✔️     |       ✔️      |  |
+| atan    |      ✔️     |       ✔️      |  |
+| ceil    |      ✔️     |       ✔️      |  |
+| clamp   |      ✔️     |       ✔️      |  |
+| clampmax |     ✔️     |       ✔️      |  |
+| clampmin |     ✔️     |       ✔️      |  |
+| cos     |      ✔️     |       ✔️      |  |
+| cosh    |      ✔️     |       ✔️      |  |
+| div     |      ✔️     |       ✔️      |  | 
+| exp     |      ✔️     |       ✔️      |  |
+| floor   |      ✔️     |       ✔️      |  |
+| log     |      ✔️     |       ✔️      |  |
+| log2    |      ✔️     |       ✔️      |  |
+| log10   |      ✔️     |       ✔️      |  |
+| logn    |      ✔️     |       ✔️      |  |
+| mod     |      ✔️     |       ✔️      |  |
+| mult    |      ✔️     |       ✔️      |  |
+| normalize    |      ❌️     |       ✔️      | needs comments in the .h <br/> two instructions |
+| neg     |      ✔️     |       ✔️      |  |
 | pow     |      ❌️     |       ✔️      | needs comments in the .h |
+| powb    |      ❌️     |       ✔️      | needs comments in the .h |
 | reciprocal |   ❌️     |       ✔️      | needs comments in the .h |
-| remainder |    ❌️     |       ✔️      | needs comments in the .h |
-| round   |      ❌️     |       ✔️      | needs comments in the .h |
-| rsqrt   |      ❌️     |       ✔️      | needs comments in the .h |
-| sigmoid |      ❌️     |       ✔️      | needs comments in the .h |
-| sign    |      ❌️     |       ✔️      | needs comments in the .h <br/> two instructions |
-| sin     |      ❌️     |       ✔️      | needs comments in the .h |
-| sinh    |      ❌️     |       ✔️      | needs comments in the .h |
+| remainder |    ✔️     |       ✔️      |  |
+| round   |      ✔️     |       ✔️      |  |
+| rsqrt   |      ✔️     |       ✔️      |  |
+| sigmoid |      ✔️     |       ✔️      |  |
+| sign    |      ✔️     |       ✔️      |  |
+| sin     |      ✔️     |       ✔️      |  |
+| sinh    |      ✔️     |       ✔️      |  |
 | sqr     |      ❌️     |       ✔️      | needs comments in the .h |
-| sqrt    |      ❌️     |       ✔️      | needs comments in the .h |
-| sub     |      ❌️     |       ✔️      | needs comments in the .h |
-| sum     |      ❌️     |       ✔️      | needs comments in the .h <br/> three different instructions |
-| tan     |      ❌️     |       ✔️      | needs comments in the .h |
-| tanh    |      ❌️     |       ✔️      | needs comments in the .h |
-| trunc   |      ❌️     |       ✔️      | needs comments in the .h |
+| sqrt    |      ✔️     |       ✔️      |  |
+| sub     |      ✔️     |       ✔️      |  |
+| sum     |      ✔️     |       ✔️      |  |
+| tan     |      ✔️     |       ✔️      |  |
+| tanh    |      ✔️     |       ✔️      |  |
+| trunc   |      ✔️     |       ✔️      |  |
 
 ### Reductions
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| max     |      ❌️     |       ✔️      | needs comments in the .h |
-| min     |      ❌️     |       ✔️      | needs comments in the .h |
+| max     |      ✔️     |       ✔️      |  |
+| min     |      ✔️     |       ✔️      |  |
 
 
 ## Miscellaneous
@@ -682,15 +684,15 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| toCPU   |     ❌️      |       ✔️      | needs comments in the .h |
-| toGPU   |     ❌️      |       ✔️      | needs comments in the .h |
-| isCPU   |     ❌️      |       ✔️      | needs comments in the .h |
-| isGPU   |     ❌️      |       ✔️      | needs comments in the .h |
-| isFPGA  |     ❌️      |       ✔️      | needs comments in the .h |
-| isSquared |   ❌️      |       ✔️      | needs comments in the .h |
-| copy    |     ❌️      |       ✔️      | needs comments in the .h |
-| clone   |     ❌️      |       ✔️      | needs comments in the .h |
-| info    |     ❌️      |       ✔️      | needs comments in the .h |
-| print   |     ❌️      |       ✔️      | needs comments in the .h |
-| valid_indices | ❌️    |       ✔️      | needs comments in the .h |
-| get_address_rowmajor |❌️|     ✔️      | needs comments in the .h |
+| toCPU   |     ✔️      |       ✔️      |  |
+| toGPU   |     ✔️      |       ✔️      |  |
+| isCPU   |     ✔️      |       ✔️      |  |
+| isGPU   |     ✔️      |       ✔️      |  |
+| isFPGA  |     ✔️      |       ✔️      |  |
+| isSquared |   ✔️      |       ✔️      |  |
+| copy    |     ✔️      |       ✔️      |  |
+| clone   |     ✔️      |       ✔️      |  |
+| info    |     ✔️      |       ✔️      |  |
+| print   |     ✔️      |       ✔️      |  |
+| valid_indices | ✔️    |       ✔️      |  |
+| get_address_rowmajor |✔️|     ✔️      |  |

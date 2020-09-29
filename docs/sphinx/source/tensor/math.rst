@@ -766,18 +766,7 @@ sin
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-0.5461,  0.1347, -2.7266, -0.2746}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->sin();
-    // r1 => [-0.5194,  0.1343, -0.4032, -0.2711]
-
-    Tensor::sin(t1, r2);
-    // r2 => [-0.5194,  0.1343, -0.4032, -0.2711]
-
-    t1->sin_();
-    // t1 => [-0.5194,  0.1343, -0.4032, -0.2711]
+    c
     
 sinh
 ^^^^^^^^^^^^
@@ -879,9 +868,18 @@ tan
 
 .. code-block:: c++
 
-    void tan_();
-    Tensor* tan();
-    static void tan(Tensor*A, Tensor*B);
+    Tensor* t1 = new Tensor::Tensor({-1.2027, -1.7687,  0.4412, -1.3856}, {4}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->tan();
+    // r1 => [-2.5930,  4.9859,  0.4722, -5.3366]
+
+    Tensor::tan(t1, r2);
+    // r2 => [-2.5930,  4.9859,  0.4722, -5.3366]
+
+    t1->tan_();
+    // t1 => [-2.5930,  4.9859,  0.4722, -5.3366]
     
 tanh
 ^^^^^^^^^^^^
@@ -892,9 +890,18 @@ tanh
 
 .. code-block:: c++
 
-    void tanh_();
-    Tensor* tanh();
-    static void tanh(Tensor*A, Tensor*B);
+    Tensor* t1 = new Tensor::Tensor({0.8986, -0.7279,  1.1745,  0.261}, {4}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->tanh();
+    // r1 => [0.7156, -0.6218,  0.8257,  0.2553]
+
+    Tensor::tanh(t1, r2);
+    // r2 => [0.7156, -0.6218,  0.8257,  0.2553]
+
+    t1->tanh_();
+    // t1 => [0.7156, -0.6218,  0.8257,  0.2553]
     
 trunc
 ^^^^^^^^^^^^
@@ -905,9 +912,18 @@ trunc
 
 .. code-block:: c++
 
-    void trunc_();
-    Tensor* trunc();
-    static void trunc(Tensor*A, Tensor*B);
+    Tensor* t1 = new Tensor::Tensor({3.4742,  0.5466, -0.8008, -0.9079}, {4}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+    
+    r1 = t1->trunc();
+    // r1 => [3,  0, -0, -0]
+
+    Tensor::trunc(t1, r2);
+    // r2 => [3,  0, -0, -0]
+
+    t1->trunc_();
+    // t1 => [3,  0, -0, -0]
 
 
 Binary Operations
@@ -921,8 +937,16 @@ add
 
 .. code-block:: c++
 
-    static Tensor* add(Tensor*A, Tensor*B); // (new)C = A + B
-    static void add(Tensor*A, Tensor*B, Tensor*C); // C = A + B
+    Tensor* t1 = new Tensor::Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
+    Tensor* t2 = new Tensor::Tensor({2, 3, 4, 5}, {4}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+
+    r1 = Tensor::add(t1, t2); //(new)r1 = t1 + t2
+    // r1 => [3, 5, 7, 9] 
+
+    Tensor::add(t1, t2, r2); // C = A + B
+    // r2 => [3, 5, 7, 9] 
 
 
 div
@@ -933,8 +957,24 @@ div
 
 .. code-block:: c++
 
-    static Tensor* div(Tensor*A, Tensor*B); // (new)C = A / B
-    static void div(Tensor*A, Tensor*B, Tensor*C); // C = A / B
+    Tensor* t1 = Tensor::eye(3, 3, DEV_CPU);
+    // matrix1 => [1 3 3
+    //             3 1 3
+    //             3 3 1]
+
+    Tensor* t2 = new Tensor::Tensor(2, 2, 2}, {3}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+
+    r1 = Tensor::div(t1, t2); //(new)r1 = t1 / t2
+    // r1 => [0.5, 1.5, 1.5
+              1.5, 0.5, 1.5
+              1.5, 1.5, 0.5] 
+
+    Tensor::add(t1, t2, r2); // C = A / B
+    // r2 => [0.5, 1.5, 1.5
+              1.5, 0.5, 1.5
+              1.5, 1.5, 0.5] 
 
 mult
 ^^^^^^^^^^^^
@@ -944,8 +984,24 @@ mult
 
 .. code-block:: c++
 
-    static Tensor* mult(Tensor*A, Tensor*B); // (new)C = A * B
-    static void mult(Tensor*A, Tensor*B, Tensor*C); // C = A * B
+    Tensor* t1 = Tensor::eye(3, 3, DEV_CPU);
+    // matrix1 => [1 3 3
+    //             3 1 3
+    //             3 3 1]
+
+    Tensor* t2 = new Tensor::Tensor(2, 2, 2}, {3}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+
+    r1 = Tensor::mult(t1, t2); //(new)r1 = t1 * t2
+    // r1 => [2, 6, 6
+              6, 2, 6
+              6, 6, 2] 
+
+    Tensor::mult(t1, t2, r2); // C = A * B
+    // r2 => [2, 6, 6
+              6, 2, 6
+              6, 6, 2] 
 
 sub
 ^^^^^^^^^^^^
@@ -955,9 +1011,24 @@ sub
 
 .. code-block:: c++
 
-    static Tensor* sub(Tensor*A, Tensor*B); // (new)C = A - B
-    static void sub(Tensor*A, Tensor*B, Tensor*C); // C = A - B
+    Tensor* t1 = Tensor::eye(3, 3, DEV_CPU);
+    // matrix1 => [1 3 3
+    //             3 1 3
+    //             3 3 1]
 
+    Tensor* t2 = new Tensor::Tensor(2, 2, 2}, {3}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+
+    r1 = Tensor::sub(t1, t2); //(new)r1 = t1 - t2
+    // r1 => [-1, 1, 1
+              1, -1, 1
+              1, 1, -1] 
+
+    Tensor::sub(t1, t2, r2); // C = A - B
+    // r2 => [-1, 1, 1
+              1, -1, 1
+              1, 1, -1]
 Reductions
 ------------------
 
@@ -1019,8 +1090,19 @@ median
 
 .. code-block:: c++
    
-    float median();
-    static float median(Tensor* A);
+
+    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* r1;
+    Tensor* r2;
+
+    float median1 = t1->median();
+    // median1 = 3
+
+    float median2 = Tensor::median(t1);
+    // median2 = 3
+
+    Tensor* median(vector<int> axis, bool keepdims);
+    static void median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
 
 max
@@ -1031,9 +1113,21 @@ max
 
 
 .. code-block:: c++
+
+    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* r1;
+
+    float max1 = t1->max();
+    // max1 = 5
+
+    float max2 = Tensor::max(t1);
+    // max2 = 5
+    
    
-    float max();
-    static float max(Tensor* A);
+    Tensor* matrix1 = Tensor::eye(3, 3, DEV_CPU);
+    // matrix1 => [1 3 3
+    //             3 1 3
+    //             3 3 1]
     Tensor* max(vector<int> axis, bool keepdims);
 
 
@@ -1046,8 +1140,16 @@ argmax
 
 .. code-block:: c++
    
-    float argmax();
-    static float argmax(Tensor* A);
+    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* r1;
+
+    float argmax1 = t1->argmax();
+    // argmax1 = 2
+
+    float argmax2 = Tensor::argmax(t1);
+    // argmax2 = 2
+    
+
     Tensor* argmax(vector<int> axis, bool keepdims);
 
 
@@ -1060,8 +1162,16 @@ min
 
 .. code-block:: c++
    
-    float min();
-    static float min(Tensor* A);
+    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* r1;
+
+    float min1 = t1->min();
+    // min1 = 1
+
+    float min2 = Tensor::min(t1);
+    // min2 = 1
+
+    
     Tensor* min(vector<int> axis, bool keepdims);
 
     
@@ -1074,8 +1184,15 @@ argmin
 
 .. code-block:: c++
    
-    float argmin();
-    static float argmin(Tensor* A);
+    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+
+    float argmin1 = t1->argmin();
+    // argmin1 = 4
+
+    float argmin2 = Tensor::argmin(t1);
+    // argmin2 = 4
+
+
     Tensor* argmin(vector<int> axis, bool keepdims);
 
 
@@ -1088,8 +1205,14 @@ sum
 
 .. code-block:: c++
    
-    float sum();
-    static float sum(Tensor* A);
+    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+
+    float sum1 = t1->sum();
+    // sum1 = 15
+
+    float sum2 = Tensor::sum(t1);
+    // sum2 = 15
+
     Tensor* sum(vector<int> axis, bool keepdims);
 
 
@@ -1102,8 +1225,16 @@ sum_abs
 
 .. code-block:: c++
    
-    float sum_abs();
-    static float sum_abs(Tensor* A);
+    Tensor* t1 = new Tensor::Tensor(-2, -3, -5, -4, -1}, {5}, DEV_CPU);
+
+    float sum1 = t1->sum_abs();
+    // sum1 = 15
+
+    float sum2 = Tensor::sum_abs(t1);
+    // sum2 = 15
+
+
+
     Tensor* sum_abs(vector<int> axis, bool keepdims);
 
 
@@ -1116,8 +1247,16 @@ prod
 
 .. code-block:: c++
    
-    float prod();
-    static float prod(Tensor* A);
+
+    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+
+    float prod1 = t1->prod();
+    // prod1 = 120
+
+    float prod2 = Tensor::prod(t1);
+    // prod2 = 120
+
+    
     Tensor* prod(vector<int> axis, bool keepdims);
 
 
@@ -1130,8 +1269,15 @@ mean
 
 .. code-block:: c++
    
-    float mean();
-    static float mean(Tensor* A);
+    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+
+    float mean1 = t1->mean();
+    // mean1 = 3
+
+    float mean2 = Tensor::mean(t1);
+    // mean2 = 3
+
+
     Tensor* mean(vector<int> axis, bool keepdims);
 
 
@@ -1144,8 +1290,15 @@ std
 
 .. code-block:: c++
    
-    float std(bool unbiased=true);
-    static float std(Tensor* A, bool unbiased=true);
+    Tensor* t1 = new Tensor::Tensor({-0.8166, -1.3802, -0.3560}, {3}, DEV_CPU);
+
+    float std1 = t1->std();
+    // std1 = 0.5130
+
+    float std2 = Tensor::std(t1);
+    // std2 = 0.5130
+
+    
     Tensor* std(vector<int> axis, bool keepdims, bool unbiased=true);
 
 
@@ -1158,8 +1311,15 @@ var
 
 .. code-block:: c++
    
-    float var(bool unbiased=true);
-    static float var(Tensor* A, bool unbiased=true);
+    Tensor* t1 = new Tensor::Tensor({-0.3425, -1.2636, -0.4864}, {3}, DEV_CPU);
+
+    float var1 = t1->var();
+    // var1 = 0.2455
+
+    float var2 = Tensor::var(t1);
+    // var2 = 0.2455
+
+
     Tensor* var(vector<int> axis, bool keepdims, bool unbiased=true);
 
 
@@ -1172,8 +1332,15 @@ mode
 
 .. code-block:: c++
    
-    float mode();
-    static float mode(Tensor* A);
+    Tensor* t1 = new Tensor::Tensor({2, 2, 1, 5 ,3}, {5}, DEV_CPU);
+
+    float mode1 = t1->mode();
+    // mode1 = 2
+
+    float mode2 = Tensor::mode(t1);
+    // mode2 = 2
+
+
     Tensor* mode(vector<int> axis, bool keepdims);
 
 
@@ -1188,9 +1355,30 @@ sum
 .. doxygenfunction:: Tensor::sum2D_colwise
 
 .. code-block:: c++
-   
-    static void sum2D_rowwise(Tensor*A, Tensor*B, Tensor*C);
-    static void sum2D_colwise(Tensor*A, Tensor*B, Tensor*C);
+
+    Tensor* matrix1 = Tensor::eye(3, 3, DEV_CPU);
+    // matrix1 => [1 3 3
+    //             3 1 3
+    //             3 3 1]
+
+    Tensor* matrix2 = Tensor::identity(3, DEV_CPU);
+    // matrix2 => [1 0 0
+    //             0 1 0
+    //             0 0 1]
+
+    Tensor* r1;
+    Tensor* r2;
+
+    Tensor::sum2D_rowwise(matrix1, matrix2, r1);
+    // r1 => [2 3 3
+    //        3 2 3
+    //        3 3 2]
+
+    Tensor::sum2D_colwise(matrix1, matrix2, r2);
+    // r2 => [2 3 3
+    //        3 2 3
+    //        3 3 2]
+
 
 
 mult
@@ -1199,5 +1387,26 @@ mult
 .. doxygenfunction:: Tensor::mult2D
 
 .. code-block:: c++
+
+    Tensor* matrix1 = Tensor::eye(3, 3, DEV_CPU);
+    // matrix1 => [1 3 3
+    //             3 1 3
+    //             3 3 1]
+
+    Tensor* matrix2 = Tensor::identity(3, DEV_CPU);
+    // matrix2 => [1 0 0
+    //             0 1 0
+    //             0 0 1]
+
+    Tensor* matrix3 = Tensor::identity(3, DEV_CPU);
+    // matrix2 => [1 0 0
+    //             0 1 0
+    //             0 0 1]
+
+
+    Tensor::mult2D(matrix1, 0 matrix2, 1, matrix3, 1);
+    // matrix3 => [2 0 0
+    //             0 2 0
+    //             0 0 2]
+
    
-    static void mult2D(Tensor*A, int tA, Tensor*B, int tB, Tensor*C, int incC);
