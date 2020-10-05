@@ -1679,7 +1679,6 @@ typedef NetLoss * metric;
       *  @return     The layer l initialized with the Glorot normal
     */
     layer GlorotNormal(layer l,int seed=1234);
-
     /**
       *  @brief Glorot uniform initializer, also called Xavier uniform initializer.
       *
@@ -1691,6 +1690,31 @@ typedef NetLoss * metric;
       *  @return     The layer l initialized with the Glorot uniform
     */
     layer GlorotUniform(layer l,int seed=1234);
+
+    /**
+      *  @brief He uniform initializer
+      *
+      *  @details
+      *   It draws samples from a uniform distribution within [-limit, limit] where limit is sqrt(6 / (fan_in )) where fan_in is the number of input units in the weight tensor
+      *
+      *  @param l  Parent layer to initialize
+      *  @param seed   Used to seed the random generator
+      *  @return     The layer l initialized with the Glorot uniform
+    */
+    layer HeUniform(layer l,int seed=1234);
+
+    /**
+      *  @brief He normal initializer
+      *
+      *  @details
+      *   It draws samples from a truncated normal distribution centered on 0 with stddev = sqrt(2 / (fan_in)) where fan_in is the number of input units in the weight tensor
+      *
+      *  @param l  Parent layer to initialize
+      *  @param seed   Used to seed the random generator
+      *  @return     The layer l initialized with the Glorot normal
+    */
+    layer HeNormal(layer l,int seed=1234);
+
 
     /**
       *  @brief Random normal initializer.
