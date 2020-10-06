@@ -70,3 +70,29 @@ Example:
    :linenos:
 
     layer Constant(layer l, float v=0.1);
+
+
+HeUniform
+-------------
+
+.. doxygenfunction:: HeUniform
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+    layer HeUniform(layer l, int seed=1234);
+
+
+HeNormal
+-------------
+
+.. doxygenfunction:: HeNormal
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+    layer HeNormal(layer l,int seed=1234)
