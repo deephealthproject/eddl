@@ -26,6 +26,9 @@ https://cmake.org/cmake/help/latest/manual/cmake-env-variables.7.html
 
 Short tutorial: (Series: 1,2,3)
 https://medium.com/heuristics/c-application-development-part-1-project-structure-454b00f9eddc
+
+Shared libraries/rpaths/...
+https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html
 ```
 
 ## Requirements
@@ -51,7 +54,7 @@ doxygen
 ### Sphinx
 
 ```
-cd docs/source
+cd docs/sphinx/source
 make clean; make html
 ```
 

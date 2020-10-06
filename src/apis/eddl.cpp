@@ -1153,6 +1153,17 @@ namespace eddl {
         return l;
     }
 
+    layer HeUniform(layer l,int seed)
+    {
+        l->init=new IHeUniform(seed);
+        return l;
+    }
+    layer HeNormal(layer l,int seed)
+    {
+        l->init=new IHeNormal(seed);
+        return l;
+    }
+
     layer GlorotUniform(layer l,int seed)
     {
         l->init=new IGlorotUniform(seed);

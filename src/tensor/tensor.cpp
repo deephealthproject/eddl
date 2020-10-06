@@ -91,6 +91,7 @@ Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 Tensor::Tensor(const vector<int> &shape, Tensor *T) : Tensor(shape,T->ptr, T->device) {}
 
 Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : Tensor(shape, nullptr, DEV_CPU) {
+    isshared=false;
     // 0. Tensor in CPU
 
     // 1. Copy data from vector to pointer (CPU)
@@ -140,10 +141,10 @@ void Tensor::updateStrides() {
 
 void Tensor::deleteData(){
     // Carefpdal, you can't know is a pointer is allocated
+    //if (isshared) return;
+
     if(this->ptr != nullptr){
         if (this->isCPU()) {
-
-
             // Delete eigen matrix
             if (this->ndim == 2){
                 delete this->ptr2;
@@ -176,12 +177,12 @@ void Tensor::deleteData(){
 
 void Tensor::updateData(float *fptr, void *fptr2){
     // TODO: What if the new_pointer is the same?
-
+    isshared=false;
     if (this->isCPU()) {
         // If null => Reserve memory
         // else => point to data
         if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::updateData"); }
-        else { this->ptr = fptr; };
+        else { this->ptr = fptr; isshared=true;};
 
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
@@ -201,7 +202,7 @@ void Tensor::updateData(float *fptr, void *fptr2){
         // If null => Reserve memory
         // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
         if (fptr == nullptr) { this->ptr = gpu_create_tensor(this->gpu_device, this->size); }
-        else { this->ptr = fptr; }
+        else { this->ptr = fptr; isshared=true;}
 
     }
 #endif
@@ -316,7 +317,7 @@ void Tensor::toGPU(int dev){
 #endif
 #ifdef cFPGA
     printf("Error, toGPU with  cFPGA implementation not supported\n");
-    exit(1); 
+    exit(1);
 #endif
 }
 
@@ -515,4 +516,3 @@ void Tensor::resize(int b, float *fptr, void *fptr2, bool delete_data) {
     if (fptr != nullptr && delete_data) deleteData();  // Potential error on layers such as Reshape (passed pointer)
     updateData(fptr, fptr2);
 }
-

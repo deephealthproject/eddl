@@ -79,15 +79,18 @@ if(UNIX)
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-    # Flags: Debugging
+    # Flags: Sanitizers
+    # For the visualized output to be available, switch to Clang at least 3.8.0 or GCC at least 5.0.0
     if(BUILD_SANITIZERS)
         set(CMAKE_CXX_FLAGS_DEBUG "-O1 -g")
 
-        # Add sanitizers
+        #For more info: https://www.jetbrains.com/help/clion/google-sanitizers.html
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")  # address, leak, thread, undefined, memory
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize-recover=address")  # address, leak, thread, undefined, memory
     endif()
 
+    # Code coverage
+    # Read: https://www.jetbrains.com/help/clion/code-coverage-clion.html
     if(BUILD_COVERAGE)
         set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "--coverage")
 

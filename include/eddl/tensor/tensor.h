@@ -80,6 +80,7 @@ private:
 
 public:
     int device;
+    bool isshared=false;
     unsigned int ndim;
     unsigned long int size;
     vector<int> shape;
@@ -265,6 +266,14 @@ public:
     static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
     /**
+      *  @brief Load tensor from a void pointer.
+      *
+      *  @param src    Void pointer to the serialized tensor.
+      *  @return    Tensor
+    */
+    static Tensor* load_from_ptr(void * src);
+
+    /**
       *  @brief Save tensor to a filestream.
       *
       *  @param ofs     Filestream.
@@ -297,6 +306,14 @@ public:
       *  @return    void
     */
     void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
+
+    /**
+      *  @brief Save tensor to a void pointer.
+      *
+      *  @return    std::pair<void*, size_t> With the pointer to the data
+      *             and the size of it.
+    */
+    std::pair<void*, size_t> save2ptr();
 
     // ************************************************
     // ****** Tensor operations ***********************
@@ -757,7 +774,7 @@ public:
     static float mean(Tensor* A);
 
     /**
-    *   @brief Obtain the prodmeanuct of all the element in the tensor
+    *   @brief Obtain the mean of all the elements in the tensor
     *   @param axis Vector with the axis in which to obtain the mean
     *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
     *   @return float. The tensor with the mean of elements in A on the selected axis.
@@ -765,8 +782,25 @@ public:
     Tensor* mean(vector<int> axis, bool keepdims);
     static void mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+    /**
+    *   @brief Obtain the median value of all the elements in the tensor
+    *   @return float The median value.
+    */
     float median();
+
+    /**
+    *   @brief Obtain the median value of all the elements in the tensor
+    *   @param A The tensor from which to extract the median of its values
+    *   @return float. The median value.
+    */
     static float median(Tensor* A);
+
+    /**
+    *   @brief Obtain the median value of all the elements in the tensor
+    *   @param axis Vector with the axis in which to obtain the mean
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The tensor with the mean of elements in A on the selected axis.
+    */
     Tensor* median(vector<int> axis, bool keepdims);
     static void median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 

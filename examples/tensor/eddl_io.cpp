@@ -105,4 +105,20 @@ int main(int argc, char **argv) {
     cout << "Tensor saved! (bin)" << endl;
     cout << endl;
 
+    // ptr serialization 
+    Tensor* t7 = Tensor::randn({2, 3, 4, 4});
+    cout << "GOING TO TEST PTR SERIALIZATION" << endl;
+    cout << "Tensor before saving to ptr" << endl;
+    t7->info();
+    t7->print();
+    cout << "Saving to ptr" << endl;
+    std::pair<void*, size_t> serial_t7 = t7->save2ptr();
+    cout << "Saved to ptr" << endl;
+
+    cout << "Loading from ptr" << endl;
+    Tensor* loaded_t7 = Tensor::load_from_ptr(serial_t7.first);
+    cout << "Loaded from ptr" << endl;
+    cout << "Tensor after loading from ptr" << endl;
+    loaded_t7->info();
+    loaded_t7->print();
 }

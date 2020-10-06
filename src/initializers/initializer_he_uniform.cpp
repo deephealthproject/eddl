@@ -18,44 +18,35 @@
 using namespace std;
 
 /**
- * Glorot uniform initializer, also called Xavier uniform initializer.
+ * He uniform initialize
  *
- * It draws samples from a uniform distribution within [-limit, limit] where limit is sqrt(6 / (fan_in + fan_out))
- * where fan_in is the number of input units in the weight tensor and fan_out is the number of output
- * units in the weight tensor.
+ * It draws samples from a uniform distribution within [-limit, limit] where limit is sqrt(6 / fan_in)
+ * where fan_in is the number of input units in the weight tensor.
  *
  * @param seed int; Used to seed the random generator.
 */
-IGlorotUniform::IGlorotUniform(int seed) : Initializer("glorot_uniform") {
+IHeUniform::IHeUniform(int seed) : Initializer("He_uniform") {
     // Todo: Implement
     this->seed = seed;
 }
-void IGlorotUniform::apply(Tensor* params) {
+void IHeUniform::apply(Tensor* params) {
 
-    if (params->ndim == 1) {
-        int fin=params->shape[0];
-        int fout=params->shape[0];
-
-        params->rand_signed_uniform(1.0);
-
-        float limits=sqrtf(6.0 / (float)(fin+fout));
-
-        params->mult_(limits);
-      }
+    if (params->ndim == 1)
+        //params->rand_signed_uniform(0.1f);
+        params->fill_(0.0f);
     else if (params->ndim == 2) {
         params->rand_signed_uniform(1.0);
-        float limits=sqrtf(6.0f / (params->shape[0]+params->shape[1]));
+        float limits=sqrtf(6.0f / params->shape[0]);
         params->mult_(limits);
       }
     else if (params->ndim == 4) { // EDDL (output_depth, input_depth, kr,kc)
 
         int rf=params->shape[2]*params->shape[3];
         int fin=rf*params->shape[1];
-        int fout=rf*params->shape[0];
-
+        
         params->rand_signed_uniform(1.0);
 
-        float limits=sqrtf(6.0 / (float)(fin+fout));
+        float limits=sqrtf(6.0 / (float)(fin));
 
         params->mult_(limits);
 

@@ -10,7 +10,5 @@ Evaluate model
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
-    //e.g.: evaluate(mymodel, {X_test}, {Y_test});
+    evaluate(mymodel, {X_test}, {Y_test});
