@@ -537,7 +537,7 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <span class="c1">// Data augmentation assumes 3D tensors... images:</span>
 <span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
 <span class="c1">// Data augmentation</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">RandomRotation</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">});</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">RandomRotation</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">-20</span><span class="p">,</span><span class="mi">30</span><span class="p">});</span>
 <span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
@@ -615,7 +615,7 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
 <span class="c1">// Data augmentation</span>
 <span class="c1">// The shift factors must fall within the range [-1.0, 1.0]</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">RandomShift</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span><span class="mf">0.3</span><span class="p">},{</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">});</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">RandomShift</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mf">-0.3</span><span class="p">,</span><span class="mf">0.3</span><span class="p">},{</span><span class="mf">-0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">});</span>
 </pre></div>
 </td></tr></table></div>
 </div>

@@ -9,10 +9,14 @@ CPU
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    compserv CS_CPU(int th=-1, string mem="low_mem");
-
+    build(net,
+          rmsprop(0.01),            // Optimizer
+          {"soft_cross_entropy"},   // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_CPU(4),                // CPU with 4 threads
+          false
+    );
 
 
 GPU
@@ -24,12 +28,14 @@ GPU
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    compserv CS_GPU(const vector<int> g={1}, int lsb=1, string mem="low_mem");
-
-    compserv CS_GPU(const vector<int> g={1}, string mem="low_mem");
-
+    build(imported_net,
+          rmsprop(0.01),            // Optimizer
+          {"soft_cross_entropy"},   // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_GPU({1}),              // one GPU
+          false
+    );
 
 
 FPGA
@@ -60,9 +66,3 @@ COMPSS
     **Not implemented yet**
 
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    compserv CS_COMPSS(string filename);

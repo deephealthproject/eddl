@@ -281,7 +281,7 @@
  <span class="n">l</span> <span class="o">=</span> <span class="n">RandomCropScale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mf">0.9f</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">});</span>
 
  <span class="c1">// Come back to 1D tensor for fully connected:</span>
- <span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="o">-</span><span class="mi">1</span><span class="p">});</span>
+ <span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">-1</span><span class="p">});</span>
  <span class="n">l</span><span class="o">=</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
  <span class="n">l</span><span class="o">=</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
  <span class="n">l</span><span class="o">=</span><span class="n">GaussianNoise</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">);</span>

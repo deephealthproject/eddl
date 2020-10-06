@@ -289,7 +289,9 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">bool</span> <span class="nf">all</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="kt">bool</span> <span class="n">condition</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">all</span><span class="p">(</span><span class="n">t1</span><span class="p">);</span>
+<span class="c1">//condition = false</span>
 </pre></div>
 </div>
 </div>
@@ -310,7 +312,14 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">bool</span> <span class="nf">any</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+
+<span class="kt">bool</span> <span class="n">condition</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">any</span><span class="p">(</span><span class="n">t1</span><span class="p">);</span>
+<span class="c1">//condition = true</span>
+
+<span class="kt">bool</span> <span class="n">condition2</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">any</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
+<span class="c1">//condition2 = false</span>
 </pre></div>
 </div>
 </div>
@@ -335,7 +344,16 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isfinite</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="n">NAN</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span><span class="p">;</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isfinite</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span>
+<span class="c1">// r1 =&gt; [false, true, true, true]</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isfinite</span><span class="p">(</span><span class="n">t2</span><span class="p">,</span> <span class="n">r2</span><span class="p">);</span>
+<span class="c1">// r2 =&gt; [true, true, true, true]</span>
 </pre></div>
 </div>
 </div>
@@ -357,7 +375,12 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isinf</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span><span class="p">;</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isinf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span>
+<span class="c1">// r1 =&gt; [true, false, false, false]</span>
 </pre></div>
 </div>
 </div>
@@ -379,7 +402,12 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isnan</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="n">NAN</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span><span class="p">;</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isnan</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span>
+<span class="c1">// r1 =&gt; [true, false, false, false]</span>
 </pre></div>
 </div>
 </div>
@@ -401,7 +429,12 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isneginf</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span><span class="p">;</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isneginf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span>
+<span class="c1">// r1 =&gt; [true, false, false, false]</span>
 </pre></div>
 </div>
 </div>
@@ -423,7 +456,12 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isposinf</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span><span class="p">;</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isposinf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span>
+<span class="c1">// r1 =&gt; [false, true, false, false]</span>
 </pre></div>
 </div>
 </div>
@@ -449,7 +487,12 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_and</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_and</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="c1">// r =&gt; [false, false, true, false, false, false]</span>
 </pre></div>
 </div>
 </div>
@@ -472,7 +515,12 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_or</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_or</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false, true, false, true, true]</span>
 </pre></div>
 </div>
 </div>
@@ -494,7 +542,11 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_not</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_and</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="c1">// r =&gt; [false, true, false, true, false, false]</span>
 </pre></div>
 </div>
 </div>
@@ -517,7 +569,12 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_xor</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_xor</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false, false, false, true, true]</span>
 </pre></div>
 </div>
 </div>
@@ -545,7 +602,30 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">bool</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="kt">float</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">equal_nan</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>  <span class="c1">// Returns true or false</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+
+<span class="kt">bool</span> <span class="n">close</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">allclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+<span class="c1">// close = false</span>
+
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-09</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+
+<span class="kt">bool</span> <span class="n">close</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">allclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+<span class="c1">// close = true</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+
+<span class="kt">bool</span> <span class="n">close</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">allclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+<span class="c1">// close = false</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+
+<span class="kt">bool</span> <span class="n">close</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">allclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+<span class="c1">// close = true</span>
 </pre></div>
 </div>
 </div>
@@ -571,7 +651,34 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isclose</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="kt">float</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">equal_nan</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>  <span class="c1">// Returns a boolean tensor</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false]</span>
+
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-09</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, true]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, true]</span>
 </pre></div>
 </div>
 </div>
@@ -654,12 +761,27 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">greater_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">greater</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater</span><span class="p">(</span><span class="mf">900.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">greater</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">900.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">900.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
+<span class="c1">// r2 =&gt; [true, true]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">greater</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, true]</span>
+
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_</span><span class="p">(</span><span class="mf">900.0</span><span class="p">);</span>
+<span class="c1">// t1 =&gt; [true, false]</span>
 </pre></div>
 </div>
 </div>
@@ -744,11 +866,27 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">greater_equal_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_equal</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
+<span class="c1">// r2 =&gt; [true, true]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, true]</span>
+
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_equal_</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// t1 =&gt; [true, false]</span>
 </pre></div>
 </div>
 </div>
@@ -833,11 +971,27 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">less_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">less</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less</span><span class="p">(</span><span class="mf">20000.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, true]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">less</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">20000.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, true]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">20000.0</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
+<span class="c1">// r2 =&gt; [true, true]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">less</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, true]</span>
+
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_</span><span class="p">(</span><span class="mf">20000.0</span><span class="p">);</span>
+<span class="c1">// t1 =&gt; [true, true]</span>
 </pre></div>
 </div>
 </div>
@@ -922,11 +1076,27 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">less_equal_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">less_equal</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_equal</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, true]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, true]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
+<span class="c1">// r2 =&gt; [true, true]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, true]</span>
+
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_equal_</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// t1 =&gt; [true, true]</span>
 </pre></div>
 </div>
 </div>
@@ -1011,11 +1181,27 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">equal_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">equal</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">equal</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
+<span class="c1">// r2 =&gt; [true, false]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="c1">// r =&gt; [true, false]</span>
+
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">equal_</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// t1 =&gt; [true, false]</span>
 </pre></div>
 </div>
 </div>
@@ -1100,11 +1286,27 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">not_equal_</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">not_equal</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">not_equal</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [false, true]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// r =&gt; [false, true]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">not_equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
+<span class="c1">// r2 =&gt; [false, true]</span>
+
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="c1">// r =&gt; [false, true]</span>
+
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">not_equal_</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
+<span class="c1">// t1 =&gt; [false, true]</span>
 </pre></div>
 </div>
 </div>
