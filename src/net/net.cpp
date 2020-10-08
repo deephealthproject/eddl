@@ -164,12 +164,16 @@ Net::~Net(){
 
     if (mnets.size()) return;
 
+    cout<<"in "<<name<<endl;
+    
     // Delete snets first {GPU or FPGA}
-    if (snets[0]!=this) {  // check if not CPU
-      for(int i=0;i<snets.size();i++)
-        delete snets[i];
+    if (snets.size()) {
+      if (snets[0]!=this) {  // check if not CPU
+	for(int i=0;i<snets.size();i++)
+	  delete snets[i];
+      }
     }
-
+    
     // delete layers
     for (int i = 0; i < layers.size(); i++) {
         if(layers[i] != nullptr) {
@@ -178,7 +182,9 @@ Net::~Net(){
         }
     }
 
+    
     // Delete losses
+    if (snets.size()) {
     for (int i = 0; i < losses.size(); i++) {
         if(losses[i] != nullptr) {
             delete losses[i];
@@ -193,11 +199,12 @@ Net::~Net(){
             metrics[i] = nullptr;
         }
     }
-
+    }
+    
     // Delete pointer variables
-
+    
     // not until cs clone available
-    //if (cs!=nullptr) {delete cs; cs = nullptr;}
+    if (cs!=nullptr) {delete cs; cs = nullptr;}
 
     if (optimizer!=nullptr) {delete optimizer; optimizer = nullptr;}
 
@@ -213,6 +220,9 @@ Net::~Net(){
             delete Ys[i][j];
         }
     }
+    
+    cout<<"out "<<name<<endl;
+    
 }
 
 /////////////////////////////////////////
