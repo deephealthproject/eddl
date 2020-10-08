@@ -164,7 +164,6 @@ Net::~Net(){
 
     if (mnets.size()) return;
 
-    cout<<"in "<<name<<endl;
     
     // Delete snets first {GPU or FPGA}
     if (snets.size()) {
@@ -221,7 +220,6 @@ Net::~Net(){
         }
     }
     
-    cout<<"out "<<name<<endl;
     
 }
 
