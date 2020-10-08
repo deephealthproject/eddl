@@ -164,7 +164,31 @@ Net::~Net(){
 
     if (mnets.size()) return;
 
-    
+    for(int i=0;i<snets.size();i++){
+
+      for(int j=0;j<snets[i]->layers.size();j++) {
+	delete snets[i]->layers[j];
+	snets[i]->layers[j] = nullptr;
+      }
+    }
+
+    // TODO: CHECK REMOVE CPU
+
+    /*
+    for (int i = 0; i < losses.size(); i++) {
+        delete losses[i];
+        losses[i] = nullptr;
+    }
+    for (int i = 0; i < metrics.size(); i++) {
+        delete metrics[i];
+        metrics[i] = nullptr;
+    }
+    */
+
+    delete optimizer;
+    optimizer= nullptr;
+
+    /*
     // Delete snets first {GPU or FPGA}
     if (snets.size()) {
       if (snets[0]!=this) {  // check if not CPU
