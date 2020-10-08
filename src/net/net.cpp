@@ -183,6 +183,7 @@ Net::~Net(){
 
     
     // Delete losses
+    /*
     if (snets.size()) {
     for (int i = 0; i < losses.size(); i++) {
         if(losses[i] != nullptr) {
@@ -199,6 +200,7 @@ Net::~Net(){
         }
     }
     }
+    
     
     // Delete pointer variables
     
@@ -219,7 +221,7 @@ Net::~Net(){
             delete Ys[i][j];
         }
     }
-    
+    */
     
 }
 
