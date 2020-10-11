@@ -141,8 +141,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#glorotuniform">GlorotUniform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#randomnormal">RandomNormal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#randomuniform">RandomUniform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#constant">Constant</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#heuniform">HeUniform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#constant">Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">HeUniform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#henormal">HeNormal</a></li>
 </ul>
 </li>
@@ -344,6 +345,30 @@
 </pre></div>
 </td></tr></table></div>
 </div>
+<div class="section" id="heuniform">
+<h2>HeUniform<a class="headerlink" href="#heuniform" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl9HeUniformE5layeri">
+<span id="_CPPv3N4eddl9HeUniformE5layeri"></span><span id="_CPPv2N4eddl9HeUniformE5layeri"></span><span id="eddl::HeUniform__layer.i"></span><span class="target" id="namespaceeddl_1a88177468e2af31ba1b5717f0ccc36da8"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">HeUniform</code><span class="sig-paren">(</span>layer <em>l</em>, int <em>seed</em> = 1234<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9HeUniformE5layeri" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>He uniform initializer. </p>
+<p>It draws samples from a uniform distribution within [-limit, limit] where limit is sqrt(6 / (fan_in )) where fan_in is the number of input units in the weight tensor</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The layer l initialized with the Glorot uniform </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to initialize </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seed</span></code>: Used to seed the random generator </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">HeUniform</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span><span class="kt">int</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
 <div class="section" id="constant">
 <h2>Constant<a class="headerlink" href="#constant" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
@@ -367,11 +392,11 @@
 </pre></div>
 </td></tr></table></div>
 </div>
-<div class="section" id="heuniform">
-<h2>HeUniform<a class="headerlink" href="#heuniform" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h2>HeUniform<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl9HeUniformE5layeri">
-<span id="_CPPv3N4eddl9HeUniformE5layeri"></span><span id="_CPPv2N4eddl9HeUniformE5layeri"></span><span id="eddl::HeUniform__layer.i"></span><span class="target" id="namespaceeddl_1a88177468e2af31ba1b5717f0ccc36da8"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">HeUniform</code><span class="sig-paren">(</span>layer <em>l</em>, int <em>seed</em> = 1234<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9HeUniformE5layeri" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N4eddl9HeUniformE5layeri"></span><span id="_CPPv2N4eddl9HeUniformE5layeri"></span><span class="target" id="namespaceeddl_1a88177468e2af31ba1b5717f0ccc36da8"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">HeUniform</code><span class="sig-paren">(</span>layer <em>l</em>, int <em>seed</em> = 1234<span class="sig-paren">)</span><br /></dt>
 <dd><p>He uniform initializer. </p>
 <p>It draws samples from a uniform distribution within [-limit, limit] where limit is sqrt(6 / (fan_in )) where fan_in is the number of input units in the weight tensor</p>
 <p><dl class="simple">
