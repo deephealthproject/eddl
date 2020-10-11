@@ -805,7 +805,12 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
       for(j=1;j<xtd[i]->ndim;j++)
         shape.push_back(xtd[i]->shape[j]);
 
-      tinr.push_back(Z);
+      vector<int>zero_shape;
+      for(j=0;j<tout[i]->ndim;j++)
+        if (j!=1) zero_shape.push_back(tout[i]->shape[j]);
+
+
+      tinr.push_back(Tensor::zeros(zero_shape,tout[i]->device));
       for(j=0;j<outl-1;j++)
         tinr.push_back(new Tensor(shape,xtd[i]->ptr+(j*offset),xtd[i]->device));
     }
@@ -837,12 +842,7 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   int inl;
   int outl;
 
-  vector<int>shape;
-  for(j=0;j<tout[0]->ndim;j++)
-    if (j!=1) shape.push_back(tout[0]->shape[j]);
-  Tensor *Z=Tensor::zeros(shape,tout[0]->device);
-
-  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr,Z);
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
   if (rnet==nullptr) build_rnet(inl,outl);
 
@@ -854,6 +854,9 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
     rnet->fit(tin,toutr,batch,epochs);
 
   if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
 
   if (isencoder) {
     for(i=0;i<xt.size();i++)
@@ -869,8 +872,6 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
       delete yt[i];
     yt.clear();
   }
-
-  delete Z;
 
 }
 

@@ -141,7 +141,7 @@ void Tensor::updateStrides() {
 
 void Tensor::deleteData(){
     // Carefpdal, you can't know is a pointer is allocated
-    //if (isshared) return;
+    if (isshared) return;
 
     if(this->ptr != nullptr){
         if (this->isCPU()) {
