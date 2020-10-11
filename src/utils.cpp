@@ -27,6 +27,8 @@
 #include <iomanip>
 #include <limits>
 
+
+
 #include "eddl/system_info.h"
 #include "eddl/utils.h"
 
@@ -87,6 +89,7 @@ float *get_fmem(unsigned long int size, const string &str){
         ptr = new float[size];
         //ptr=(float *)malloc(size*sizeof(float));
         //ptr=aligned_alloc(64, size*sizeof(float));
+        //posix_memalign((void **)&ptr, 64, size*sizeof(float));
     }
     catch (std::bad_alloc& badAlloc){
         error=true;
