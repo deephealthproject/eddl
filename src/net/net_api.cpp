@@ -14,10 +14,8 @@
 #include <fstream>
 #include <string>
 #include <chrono>
-#include <thread>
 #include <stdexcept>
 #include "eddl/net/net.h"
-#include <pthread.h>
 #include "eddl/utils.h"
 #include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
@@ -154,27 +152,16 @@ void Net::run_snets(void *(*F)(void *t))
 {
   void *status;
   int rc;
-  pthread_t thr[100];
   struct tdata td[100];
 
   int comp=snets.size();
 
+  #pragma omp taskloop num_tasks(comp)
   for (int i = 0; i < comp; i++) {
     // Thread params
     td[i].net = snets[i];
-
-    rc = pthread_create(&thr[i], nullptr, (*F), (void *) (&td[i]));
-    if (rc) {
-      throw std::runtime_error("unable to create thread " + std::to_string(rc));
-    }
-  }
-
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-    rc = pthread_join(thr[i], &status);
-    if (rc) {
-      throw std::runtime_error("unable to join thread " + std::to_string(rc));
-    }
+    // Call function
+    F(&td[i]);
   }
 }
 
