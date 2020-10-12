@@ -176,14 +176,15 @@ void Tensor::deleteData(){
     }
 }
 
-void Tensor::updateData(float *fptr, void *fptr2){
+void Tensor::updateData(float *fptr, void *fptr2,bool setshared){
     // TODO: What if the new_pointer is the same?
+    // Solved with setshared for reshape_
     isshared=false;
     if (this->isCPU()) {
         // If null => Reserve memory
         // else => point to data
         if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::updateData"); }
-        else { this->ptr = fptr; isshared=true;};
+        else { this->ptr = fptr; isshared=setshared;};
 
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
@@ -203,7 +204,7 @@ void Tensor::updateData(float *fptr, void *fptr2){
         // If null => Reserve memory
         // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
         if (fptr == nullptr) { this->ptr = gpu_create_tensor(this->gpu_device, this->size); }
-        else { this->ptr = fptr; isshared=true;}
+        else { this->ptr = fptr; isshared=setshared;}
 
     }
 #endif
@@ -397,6 +398,7 @@ void Tensor::info() {
     cout << setw(cols) << left << "contiguous: "   << true << endl; // for future
     cout << setw(cols) << left << "order: "        << 'C' << endl;  // C=>C order, F=>Fortran order
     cout << setw(cols) << left << "data pointer: " << &this->ptr << endl;
+    cout << setw(cols) << left << "is shared: " << isshared << endl;
     cout << setw(cols) << left << "type: "         << "float" << " (" << sizeof(float) << " bytes)" << endl;
     cout << setw(cols) << left << "device: " << this->getDeviceName() << " (code = " << this->device << ")" << endl;
     cout << "-------------------------------" << endl;
