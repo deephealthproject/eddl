@@ -809,7 +809,7 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
       for(j=0;j<tout[i]->ndim;j++)
         if (j!=1) zero_shape.push_back(tout[i]->shape[j]);
 
-
+      if (!isencoder) tinr.push_back(new Tensor(tin[0]->shape,tin[0]->ptr,tin[0]->device));
       tinr.push_back(Tensor::zeros(zero_shape,tout[i]->device));
       for(j=0;j<outl-1;j++)
         tinr.push_back(new Tensor(shape,xtd[i]->ptr+(j*offset),xtd[i]->device));
