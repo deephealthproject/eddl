@@ -851,7 +851,7 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   else if (isencoder)
     rnet->fit(tinr,tout,batch,epochs);
   else if (isdecoder)
-    rnet->fit(tin,toutr,batch,epochs);
+    rnet->fit(tinr,toutr,batch,epochs);
 
   if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
 

@@ -379,7 +379,7 @@ Net* Net::unroll_dec(int inl, int outl) {
   */
 
   // unroll inputs
-  nin=new vlayer[inl];
+  nin=new vlayer[inl+outl];
   nlayers=new vlayer[outl];
   nout=new vlayer[outl];
 
@@ -411,8 +411,10 @@ Net* Net::unroll_dec(int inl, int outl) {
               Layer *n;
               n=layers[j]->share(i, batch_size, par);
               nlayers[i].push_back(n);
-              if (layers[j]->lin==0)
+              if (layers[j]->lin==0) {
+                nin[i].push_back(n);
                 din.push_back(n);
+              }
             }
           }
           else msg("Unexpected error","unroll");
@@ -433,7 +435,7 @@ Net* Net::unroll_dec(int inl, int outl) {
 /////
 vlayer ninl;
 vlayer noutl;
-for (i = 0; i < inl; i++)
+for (i = 0; i < inl+outl; i++)
   for (j = 0; j < nin[i].size(); j++)
     ninl.push_back(nin[i][j]);
 
