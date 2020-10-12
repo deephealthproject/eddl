@@ -466,7 +466,7 @@ typedef NetLoss * metric;
       *  @return    (void)
     */
     void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
-    
+
     /**
       *  @brief Loads the next batch of random samples from the input vector to the output vector
       *
@@ -1828,6 +1828,15 @@ typedef NetLoss * metric;
       *  @return     (void) The binary files of EuTrans
     */
     void download_eutrans();
+
+    /**
+      *  @brief Downloads Flickr Dataset (small partition)
+      *
+      *  @see
+      *
+      *  @return     (void) The binary files of Flickr
+    */
+    void download_flickr();
 
 
 }

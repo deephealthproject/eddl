@@ -159,7 +159,7 @@ public:
     void updateShape(const vector<int> &new_shape);
     void updateSize();
     void updateStrides();
-    void updateData(float* ptr, void *ptr2=NULL);
+    void updateData(float* ptr, void *ptr2=NULL,bool setshared=true);
     void deleteData();
 
     /**
