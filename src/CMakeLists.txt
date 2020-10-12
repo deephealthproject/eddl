@@ -214,7 +214,7 @@ if(BUILD_OPENMP)
             if (${OpenMP_CXX_VERSION_MAJOR})
                 set(OpenMP_VERSION_MAJOR ${OpenMP_CXX_VERSION_MAJOR} CACHE INTERNAL "" FORCE)
             endif()
-            # target_compile_definitions(${PROJECT_NAME} PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
+            target_compile_definitions(${PROJECT_NAME} PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
             set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
             SET(USE_OPENMP ON) # Local's scope
         else()
