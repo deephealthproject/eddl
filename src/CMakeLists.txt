@@ -155,7 +155,6 @@ if(BUILD_PROTOBUF)
     # target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
     # target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES})
 
     if(MSVC)
         target_link_libraries(${PROJECT_NAME} PUBLIC
