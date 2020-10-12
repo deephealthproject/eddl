@@ -1263,6 +1263,10 @@ namespace eddl {
       download_dataset("eutrans","bin",{"2w0p7f4un6ci94v","g4k1bc6p4bow9tf","egcfin16gl9t92y","n8ks3lyqyhxx1e8"});
     }
 
+    void download_flickr(){
+      download_dataset("flickr","bin",{"452pyxe9x5jpnwb","24c2d5bm6pug8gg"});
+    }
+    
     void download_drive(){
       download_dataset("drive","npy",{"sbd8eu32adcf5oi","qp0j8oiqzf6tc1a"});
     }

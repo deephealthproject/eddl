@@ -63,6 +63,9 @@ Tensor *onehot(Tensor *in, int vocs)
 
 int main(int argc, char **argv) {
 
+    download_flickr();
+
+
     // Settings
     int epochs = 10;
     int batch_size = 8;
@@ -112,7 +115,7 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           opt, // Optimizer
-          {"cross_entropy"}, // Losses
+          {"soft_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
@@ -126,16 +129,17 @@ int main(int argc, char **argv) {
     // Load dataset
     Tensor *x_train=Tensor::load("flickr_trX.bin","bin");
     x_train->info();
+
     Tensor *y_train=Tensor::load("flickr_trY.bin","bin");
     y_train->info();
-    //y_train->print();
+
     y_train=onehot(y_train,outvs);
     y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x input_dim
+    y_train->info();
 
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
-      //evaluate(net,{x_test},{y_test});
     }
 
 }
