@@ -902,8 +902,8 @@ using namespace std;
 						int filters;
 						vector<int> kernel_shape;
 						vector<int> strides;
-						vector<int> pads;
-						bool explicit_padding = true;
+						vector<int> pads(4, 0);  // Default value. 4 zeros
+						bool explicit_padding = false;
 						int ceil_mode = 0;
 						int count_include_pad = 0;
 						vector<int> dilations;
@@ -914,8 +914,7 @@ using namespace std;
 							string attr_name = attribute.name();
 							if (!attr_name.compare("auto_pad")) { //We dont know if it is implemented
 								if(!attribute.s().compare("NOTSET")) continue;
-								if(!attribute.s().compare("VALID"))
-									explicit_padding=false;
+                                // if(!attribute.s().compare("VALID")) explicit_padding=false;
 							}
 							else if (!attr_name.compare("ceil_mode")) {
 
@@ -929,8 +928,9 @@ using namespace std;
 								}
 							}
 							else if (!attr_name.compare("pads")) {
+                                explicit_padding = true;
 								for(int h = 0; h < 4; h++){
-									pads.push_back(attribute.ints(h));
+									pads[h] = attribute.ints(h);
 								}
 							}
 							else if (!attr_name.compare("strides")) {
@@ -940,14 +940,6 @@ using namespace std;
 							}
 						}
 
-
-						if(!explicit_padding){ //We have to add 0 padding to the conv descriptor
-							pads.resize(4,0);
-							pads[0] = 0;
-							pads[1] = 0;
-							pads[2] = 0;
-							pads[3] = 0;
-						}
 
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
@@ -1396,8 +1388,8 @@ using namespace std;
 						int filters;
 						vector<int> kernel_shape;
 						vector<int> strides;
-						vector<int> pads;
-						bool explicit_padding = true;
+                        vector<int> pads(4, 0);  // Default value. 4 zeros
+                        bool explicit_padding = false;
 						int ceil_mode = 0;
 						vector<int> dilations;
 						int storage_order = 0;
@@ -1407,8 +1399,7 @@ using namespace std;
 							string attr_name = attribute.name();
 							if (!attr_name.compare("auto_pad")) { //We dont know if it is implemented
 								if(!attribute.s().compare("NOTSET")) continue;
-								if(!attribute.s().compare("VALID"))
-									explicit_padding=false;
+								// if(!attribute.s().compare("VALID")) explicit_padding=false;
 							}
 							else if (!attr_name.compare("ceil_mode")) {
 
@@ -1422,9 +1413,10 @@ using namespace std;
 								}
 							}
 							else if (!attr_name.compare("pads")) {
-								for(int h = 0; h < 4; h++){
-									pads.push_back(attribute.ints(h));
-								}
+                                explicit_padding = true;
+                                for(int h = 0; h < 4; h++){
+                                    pads[h] = attribute.ints(h);
+                                }
 							}
 							else if (!attr_name.compare("storage_order")) {
 
@@ -1434,15 +1426,6 @@ using namespace std;
 									strides.push_back(attribute.ints(h));
 								}
 							}
-						}
-
-
-						if(!explicit_padding){ //We have to add 0 padding to the conv descriptor
-							pads.resize(4,0);
-							pads[0] = 0;
-							pads[1] = 0;
-							pads[2] = 0;
-							pads[3] = 0;
 						}
 
 						string parent_name = node->input(0); //Get parent
