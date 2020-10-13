@@ -260,11 +260,11 @@ Tensor* Tensor::unsqueeze(Tensor *A){
 
 // ***** Core (static) *****************************
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
+    // TODO: Deprecated.
     // Transpose
-    // TODO: Review correctness
     B->tsem->lock();
-    if (!Tensor::sameShape(A, B))
-        msg("Tensors with different shape", "Tensor::transpose");
+    if (A->size != B->size)
+        msg("Tensors with different size", "Tensor::transpose");
 
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
 
