@@ -188,7 +188,7 @@ void ConvolDescriptor::resize(int b)
     O->resize(b);
 //    if (!mem_level) D->resize(b);
 
-    // Prevent overflow. (The multiplication of these ints might overflow "b * r * c * kr * kc * kz")
+    // Prevent overflow. (512*512*512*3*3*3 = 3,623,878,656 > MAX_INT (2,147,483,647))
     unsigned long int l_size =  (unsigned long)(b * r * c) * (unsigned long)(kr * kc * kz);
 
     if (I->isCPU()) {
@@ -214,7 +214,7 @@ void ConvolDescriptor::resize(int b)
 	fpga_sizeI = l_size * sizeof(float);
         fpga_ptrI = fpga_create_memory(fpga_sizeI);
         // We do the same on the CPU side (for smooth cpuemu)
-	delete ptrI;
+	delete[] ptrI;
         ptrI=get_fmem(l_size, "ConvolDescriptor::build");
     }
 #endif

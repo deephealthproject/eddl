@@ -995,7 +995,7 @@ void fpga_delete_tensor(int device, cl::Buffer *ptr, int fpga_tensor_id_p, int s
     }
     fpga_inuse_buffer_pool[e] = 0;
 
-    //delete ptr;
+    //delete[] ptr;
 }
 
 // ---------------------------------------------------
