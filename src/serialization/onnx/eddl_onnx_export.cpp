@@ -84,6 +84,12 @@ using namespace std;
 #ifdef cPROTO
 
 	void save_net_to_onnx_file( Net *net, string path ) {
+        // Check if the folder exists
+        string folder = path.substr(0, path.find_last_of("\\/"));
+        if(folder != path && !pathExists(folder)){
+            msg("The file could not be saved. Check if the directory exists or if you have permissions to write in it.", "ONNX::ExportNet");
+        }
+
 		// Builds all the model in onnx from the Net object
 		if (net->snets[0]->dev!=DEV_CPU)
 			net->sync_weights();
