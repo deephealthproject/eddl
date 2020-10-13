@@ -406,6 +406,11 @@ using namespace std;
 
 	//Imports a net stored in a onnx file
 	Net* import_net_from_onnx_file(std::string path, int mem) {
+        // Check if the path exists
+	    if(!pathExists(path)){
+            msg("The specified path does not exist: " + path, "ONNX::ImportNet");
+        }
+
 		// Verify that the version of the library that we linked against is
 		// compatible with the version of the headers we compiled against.
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
