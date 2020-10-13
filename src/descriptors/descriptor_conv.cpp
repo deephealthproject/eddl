@@ -190,8 +190,10 @@ void ConvolDescriptor::resize(int b)
 
     if (I->isCPU()) {
         delete[] ptrI;
-        ptrI=get_fmem(b * r * c * kr * kc * kz, "ConvolDescriptor::build");
-	 _profile_add_tensor(b * r * c * kr * kc * kz);
+        // Prevent overflow
+        unsigned long int l_size =  (unsigned long)(b * r * c) * (unsigned long)(kr * kc * kz);
+        ptrI=get_fmem(l_size, "ConvolDescriptor::build");
+	 _profile_add_tensor(l_size);
     }
 #ifdef cGPU
     else if (I->isGPU()) {
