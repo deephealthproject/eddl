@@ -2786,7 +2786,7 @@ public:
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 
 
-    static int eqsize(Tensor *A, Tensor *B);  // Legacy
+    static int eqsize(Tensor *A, Tensor *B);  // Legacy. Bad name. This checks for equal shape, not equal size.
 
     /**
     *   @brief Check if two tensors have the same shape.
