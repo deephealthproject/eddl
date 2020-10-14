@@ -104,13 +104,13 @@ public:
 
     // Constructors
     /**
-    *  @brief Constructor of an uninitialized tensor without shape and in CPU
+    *  @brief Construct an uninitialized tensor without shape and in CPU
     *
     */
     Tensor();
 
     /**
-    *  @brief Constructor of an uninitialized tensor
+    *  @brief Construct of an uninitialized tensor
     *
     *  @param shape Vector of ints specifying the shape of the tensor
     *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
@@ -119,7 +119,7 @@ public:
     explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
 
     /**
-    *  @brief Constructor of an uninitialized tensor
+    *  @brief Construct an uninitialized tensor
     *
     *  @param shape Vector of ints specifying the shape of the tensor
     *  @param fptr  memory pointer
@@ -129,7 +129,7 @@ public:
     Tensor(const vector<int> &shape, float *fptr, int dev);
 
     /**
-    *  @brief Constructor of an uninitialized tensor
+    *  @brief Construct an uninitialized tensor
     *
     *  @param shape Vector of ints specifying the shape of the tensor.
     *  @param T  tensor from wich to take the shape and the device.
@@ -138,7 +138,7 @@ public:
     Tensor(const vector<int> &shape, Tensor *T);
 
     /**
-    *  @brief Constructor of an uninitialized tensor
+    *  @brief Construct tensor with initial data
     *
     *  @param data Vector with the data to initialize the tensor with.
     *  @param shape Vector of ints specifying the shape of the tensor.
@@ -2787,6 +2787,22 @@ public:
 
 
     static int eqsize(Tensor *A, Tensor *B);  // Legacy. Bad name. This checks for equal shape, not equal size.
+
+    /**
+    *   @brief Check if two tensors are in the same device
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @return 1 if they are equivalent, 0 otherwise.
+    */
+    static bool sameDevice(Tensor *A, Tensor *B);
+
+    /**
+    *   @brief Check if two tensors have the same size. (Ignores shape)
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @return 1 if they are equivalent, 0 otherwise.
+    */
+    static bool sameSize(Tensor *A, Tensor *B);
 
     /**
     *   @brief Check if two tensors have the same shape.
