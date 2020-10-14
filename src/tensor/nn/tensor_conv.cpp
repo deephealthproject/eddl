@@ -8,6 +8,7 @@
 */
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -22,6 +23,8 @@
 
 namespace tensorNN{
 
+	PROFILING_ENABLE(Conv2D);
+
 
 
 void Conv2D(ConvolDescriptor *D) {
@@ -32,6 +35,8 @@ void Conv2D(ConvolDescriptor *D) {
     //// D is a ConvolDescriptor
     /////////////////////////////////////////////////////////////////////
     if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
+
+    PROFILING_HEADER_EXTERN(Conv2D);
 
     D->O->tsem->lock();
     if (D->I->isCPU()) {
@@ -50,6 +55,9 @@ void Conv2D(ConvolDescriptor *D) {
     }
 #endif
     D->O->tsem->unlock();
+
+    PROFILING_FOOTER(Conv2D);
+    PROFILING_PRINTF(Conv2D);
 }
 
 void Conv2D_grad(ConvolDescriptor *D) {

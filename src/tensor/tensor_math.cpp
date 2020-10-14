@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "eddl/tensor/tensor.h"
+#include "eddl/profiling.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
 #ifdef cGPU
@@ -24,6 +25,9 @@
 #endif
 
 using namespace std;
+
+PROFILING_ENABLE(sum2D_rowwise);
+PROFILING_ENABLE(mult2D);
 
 // Math operations (Tensor-Tensor, Tensor-float) ************************
 
@@ -2276,9 +2280,6 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 }
 
 
-
-
-
 void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     ///////////////////////////////////////
     //// MULT2D C=A*B
@@ -2288,6 +2289,8 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     //// Dimensions and types must be compatible
     //// Only for 2D Tensors
     ///////////////////////////////////////
+    
+    PROFILING_HEADER_EXTERN(mult2D);
 
     if ((A->device != B->device) || (A->device != C->device)) {A->info();B->info();C->info();msg("Tensors in different devices", "Tensor::mult2D");}
     if ((A->ndim != 2) || (B->ndim != 2) || (C->ndim != 2)) msg("Only 2D tensors", "Tensor::mult2D");
@@ -2325,6 +2328,9 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
       }
 #endif
     C->tsem->unlock();
+
+    PROFILING_FOOTER(mult2D);
+    PROFILING_PRINTF(mult2D);
 }
 
 
@@ -2374,6 +2380,8 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     if ((A->ndim != 2) || (B->ndim != 1) || (C->ndim != 2)) msg("sum2D_rowwise dims");
     if ((!sameShape(A, C)) || (A->shape[1] != B->shape[0])) msg("Incompatible dims", "Tensor::sum2D_rowwise");
 
+    PROFILING_HEADER(sum2D_rowwise);
+
     C->tsem->lock();
     if (A->isCPU()) {
         cpu_sum2D_rowwise(A, B, C);
@@ -2391,6 +2399,9 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
       }
 #endif
     C->tsem->unlock();
+
+    PROFILING_FOOTER(sum2D_rowwise);
+    PROFILING_PRINTF(sum2D_rowwise);
 }
 
 

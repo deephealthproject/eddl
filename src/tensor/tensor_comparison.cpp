@@ -650,7 +650,8 @@ int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_
 #endif
 #ifdef cFPGA
     else {
-          return fpga_equal2(A, B, epsilon);
+	  printf("Error, please check (FPGA), epsilon does not exist\n");
+//          return fpga_equal2(A, B, epsilon);
         }
 #endif
 

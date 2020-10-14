@@ -8,6 +8,7 @@
 */
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/profiling.h"
 
 #ifdef cFPGA
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
@@ -21,11 +22,15 @@
 
 namespace tensorNN {
 
+	PROFILING_ENABLE(ReLu);
+
 
 // ReLU
     void ReLu(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::ReLu");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::ReLu");
+
+	PROFILING_HEADER_EXTERN(ReLu);
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -44,6 +49,9 @@ namespace tensorNN {
 #endif
 
         B->tsem->unlock();
+
+	PROFILING_FOOTER(ReLu);
+	PROFILING_PRINTF(ReLu);
     }
 
 // RELU Derivative, always increment over parent delta

@@ -60,8 +60,9 @@ cl::Kernel kernel_select,      kernel_select_back, kernel_set_select, kernel_set
 cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 cl::Kernel kernel_select_nn,   kernel_select_back_nn, kernel_set_select_nn, kernel_set_select_back_nn;
 
-// conv kernels (2)
+// conv kernels (3)
 cl::Kernel kernel_im2col,      kernel_conv2d;
+cl::Kernel kernel_conv2D_K3x3_S1x1_P1x1_BS1;
 
 // create kernels (3)
 cl::Kernel kernel_range, kernel_eye, kernel_diag;
@@ -631,6 +632,10 @@ void fpga_init(){ // initialize only once
     #endif
     #ifdef K_ENABLED_CONV2D
     OCL_CHECK(err, kernel_conv2d = cl::Kernel(program,"k_conv2d", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_CONV2D_K3X3_S1X1_P1X1_BS1
+    OCL_CHECK(err, kernel_conv2D_K3x3_S1x1_P1x1_BS1 = cl::Kernel(program, "k_conv2D_K3x3_S1x1_P1x1_BS1", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_RANGE
