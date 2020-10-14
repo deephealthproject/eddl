@@ -298,12 +298,11 @@ void Tensor::copy(Tensor *A, Tensor *B) {
     ///////////////////////////////////////
     /// Copy from A to B
     //////////////////////////////////////
-    // TODO: Review correctness for ndim==2
 
-    if (!Tensor::sameShape(A, B)) {
+    if (!Tensor::sameSize(A, B)) {
         A->info();
         B->info();
-        msg("Tensors with different shape", "Tensor::copy");
+        msg("Tensors with different size", "Tensor::copy");
     }
 
     B->tsem->lock();
