@@ -125,7 +125,6 @@ The code is open source, and `available on github`_.
     tensor/logic_functions.rst
     tensor/mask_ops.rst
     tensor/math.rst
-    tensor/misc.rst
 
 
 Indices and tables
