@@ -107,23 +107,14 @@ The code is open source, and `available on github`_.
 
 .. toctree::
     :maxdepth: 1
-    :caption: Miscellaneous
-
-    misc/misc.rst
-
-
-.. toctree::
-    :maxdepth: 1
     :caption: Tensor
 
     tensor/create.rst
     tensor/manipulation.rst
-    tensor/binary.rst
     tensor/indexing.rst
     tensor/input_output.rst
     tensor/linear_algebra.rst
     tensor/logic_functions.rst
-    tensor/mask_ops.rst
     tensor/math.rst
 
 
