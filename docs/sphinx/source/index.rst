@@ -111,6 +111,7 @@ The code is open source, and `available on github`_.
 
     tensor/create.rst
     tensor/manipulation.rst
+    tensor/image.rst
     tensor/indexing.rst
     tensor/input_output.rst
     tensor/linear_algebra.rst
