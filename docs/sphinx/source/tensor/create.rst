@@ -359,7 +359,7 @@ logspace
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::logspace(0.1, 1.0, 5, 10.0, DEV_CPU);
+    Tensor* t1 = Tensor::logspace(0.1, 1.0, 5, 10.0);
     // [1.2589, 2.1135, 3.5481, 5.9566, 10.0000]
  
 
@@ -370,7 +370,7 @@ geomspace
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::geomspace(1.0, 1000.0, 3, DEV_CPU);
+    Tensor* t1 = Tensor::geomspace(1.0, 1000.0, 3);
     // [1.0, 10.0, 100.0]
  
 
@@ -387,11 +387,12 @@ randu
 
 .. code-block:: c++
 
-   Tensor* t1 = Tensor::randu({2, 3});
-   // [
-   // [0.72 0.72 0.15]
-   // [0.72 0.67 0.67]
-   // ]
+    Tensor* t1 = Tensor::randu({3, 3});
+    // [
+    // [0.11 0.17 0.01]
+    // [0.19 0.61 0.45]
+    // [0.26 0.22 0.02]
+    // ]
 
 
 randn
