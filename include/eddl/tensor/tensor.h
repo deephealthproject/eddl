@@ -484,14 +484,14 @@ public:
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
     /**
-      *  @brief Obtain the elements in a squared matrix diagonal. Inplace operation.
+      *  @brief Extract a diagonal or construct a diagonal array. In-place operation.
       *
       *  @param k  Offset. If k=0, main diagonal is selected. If k>0, a diagonal above the main diagonal is selected. If k<0, a diagonal below the main diagonal is selected.
     */
     void diag_(int k=0);
 
     /**
-      *  @brief Obtain the elements in a squared matrix diagonal.
+      *  @brief Extract a diagonal or construct a diagonal array.
       *
       *  @param k  Offset. If k=0, main diagonal is selected. If k>0, a diagonal above the main diagonal is selected. If k<0, a diagonal below the main diagonal is selected.
       *  @return  A new tensor with the elements on the selected diagonal.
@@ -499,7 +499,7 @@ public:
     Tensor* diag(int k=0);
 
     /**
-      *  @brief Obtain the elements in a squared matrix diagonal.
+      *  @brief Extract a diagonal or construct a diagonal array.
       *
       *  @param A  Input matrix.
       *  @param B  Output matrix.
