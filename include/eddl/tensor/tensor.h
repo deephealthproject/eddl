@@ -2591,11 +2591,25 @@ public:
     Tensor* clone();
 
     /**
-      *  @brief Reallocates a tensor into this one. Deprecated.
+      *  @brief Reallocates a tensor into this one.
+      *  Replaces the pointer of this tensor, with the pointer of a reference tensor.
       *
-      *  @return
+      *  @param old_t Reference tensor
+      *  @return     void
     */
-    void reallocate(Tensor* old_t, vector<int> *s = nullptr);
+    void reallocate(Tensor* old_t);
+
+    /**
+      *  @brief Reallocates a tensor into this one.
+      *  Replaces the pointer of this tensor, with the pointer of a reference tensor.
+      *  Then, the attributes of this tensor (shape, size, device) are update with
+      *  from the specified new shape.
+      *
+      *  @param old_t Reference tensor
+      *  @param shape Shape of the new tensor (optional)
+      *  @return     void
+    */
+    void reallocate(Tensor* old_t, const vector<int> &shape);
 
     /**
       *  @brief Resizes a tensor ({2, 2, 2} => {10, 2, 2}).
