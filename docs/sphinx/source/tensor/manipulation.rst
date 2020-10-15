@@ -149,7 +149,7 @@ reshape
 
 .. code-block:: c++
 
-    // Tensor* t1 = Tensor::zeros({3, 4});
+    Tensor* t1 = Tensor::zeros({3, 4});
     // [
     // [0.00 0.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00]
