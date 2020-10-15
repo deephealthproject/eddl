@@ -4,193 +4,329 @@ Image operations
 Transformations
 ----------------
 
-shift
+Shift
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::shift
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    Tensor::shift(t1, t2, {50, 100}, WrappingMode::Constant, 0.0f); // Shifts t1 50 pixels in y and 100 in x.
+    // Shifts t1 50 pixels in y and 100 in x - WP: Constant
+    Tensor::shift(t1, t2, {50, 100}, WrappingMode::Constant, 0.0f);
+    t2->save("lena_shift.jpg");
 
 
-rotate
+.. image:: ../_static/images/demos/lena_shift_wm_const.jpg
+    :width: 256
+    :align: center
+    :alt: Shift operation on Lena
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
+
+    // Shifts t1 50 pixels in y and 100 in x - WP: Original
+    Tensor::shift(t1, t2, {50, 100}, WrappingMode::Original, 0.0f);
+    t2->save("lena_shift.jpg");
+
+
+.. image:: ../_static/images/demos/lena_shift_wm_ori.jpg
+    :width: 256
+    :align: center
+    :alt: Shift operation on Lena (WP: Original)
+
+
+Rotate
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::rotate
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
-    Tensor* t3 = t2->clone();
-    Tensor::rotate(t2, t3, 60.0f, {0,0}, WrappingMode::Original); //Rotates t2 60 degrees
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-scale
+    // Rotates t1 30 degrees - WP: Constant
+    Tensor::rotate(t1, t2, 30.0f, {0,0}, WrappingMode::Constant);
+    t2->save("lena_rotate_wm_const.jpg");
+
+.. image:: ../_static/images/demos/lena_rotate_wm_const.jpg
+    :width: 256
+    :align: center
+    :alt: Rotate operation on Lena (WP: Constant)
+
+
+Scale
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::scale
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
     Tensor* t2 = Tensor::zeros({1, 3, 100, 100});
-    Tensor::scale(t1, t2, {100, 100}); //Scale the image to 100x100 px
+
+    // Scale to 100x100 pixels
+    Tensor::scale(t1, t2, {100, 100});
+    t2->save("lena_scale_100x100.jpg");
+
+.. image:: ../_static/images/demos/lena_scale_100x100.jpg
+    :width: 100
+    :align: center
+    :alt: Scale operation on Lena (to 100x100)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
+
+    // Scale to 880x880 pixels (virtual) but keeping its original size
+    Tensor::scale(t1, t2, {880, 880});
+    t2->save("lena_scale_x2_fixed.jpg");
+
+.. image:: ../_static/images/demos/lena_scale_x2_fixed.jpg
+    :width: 256
+    :align: center
+    :alt: Scale operation on Lena (x2, fixed)
 
 
-
-flip
+Flip
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::flip(Tensor*, Tensor*, int)
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    Tensor::flip(t1, t2, 0); // Flip along vertical axis
+    // Flip along horizontal axis
+    Tensor::flip(t1, t2, 1);
+    t2->save("lena_flip_h.jpg");
 
-crop
+.. image:: ../_static/images/demos/lena_flip_h.jpg
+    :width: 256
+    :align: center
+    :alt: Flip operation on Lena
+
+
+Crop
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::crop
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    Tensor::crop(t1, t2, {0, 250}, {200, 450}); //Crop the rectangle formed by {0,250} and {200,450}
+    //Crop a rectangle
+    Tensor::crop(t1, t2, {50, 250}, {250, 400});
+    t2->save("lena_cropped_big.jpg");
 
-crop_scale
+.. image:: ../_static/images/demos/lena_cropped_big.jpg
+    :width: 256
+    :align: center
+    :alt: Crop operation on Lena (big)
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty({1, 3, 200, 150});
+
+    //Crop a rectangle
+    Tensor::crop(t1, t2, {50, 250}, {250, 400});
+    t2->save("lena_cropped_small.jpg");
+
+.. image:: ../_static/images/demos/lena_cropped_small.jpg
+    :width: 88
+    :align: center
+    :alt: Crop operation on Lena (small)
+
+
+Crop & Scale
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::crop_scale
 
 .. code-block:: c++
 
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    //Crop and scale
+    Tensor::crop_scale(t1, t2, {50, 250}, {250, 400});
+    t2->save("lena_crop_scale.jpg");
 
-    Tensor::crop_scale(t1, t2, {0, 250}, {200, 450});
+.. image:: ../_static/images/demos/lena_crop_scale.jpg
+    :width: 256
+    :align: center
+    :alt: Crop and Scale operation on Lena
 
 
-cutout
+Cutout
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::cutout
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    Tensor::cutout(t1, t2, {50, 100}, {100, 400});//Fill with zeros the rectangle formed by {50,100} and {100,400}
+    // Cutout
+    Tensor::cutout(t1, t2, {50, 250}, {250, 400});
+    t2->save("lena_cutout.jpg");
 
+.. image:: ../_static/images/demos/lena_cutout.jpg
+    :width: 256
+    :align: center
+    :alt: Cutout operation on Lena
 
 
 Data augmentations
 -------------------
 
-shift_random
+Shift Random
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::shift_random
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    Tensor::shift_random(t1, t2, {0,50}, {10,100}); //Shifts t1 with a random shift value in y between 0 and 50 and in x between 10 and 100.
+    // Shift randomly image +-35% (range for the Y and X axis)
+    Tensor::shift_random(t1, t2, {-0.35f, +0.35f}, {-0.35f, +0.35f}, WrappingMode::Constant, 0.0f);
+    t2->save("lena_rnd_shift.jpg");
 
-rotate_random
+.. image:: ../_static/images/demos/lena_rnd_shift.jpg
+    :width: 256
+    :align: center
+    :alt: Random shift operation on Lena
+
+
+Rotate Random
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::rotate_random
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    static void rotate_random(t1, t2, {30,60}); //Rotate t1 with a random rotation factor between 30 and 60 degrees
+    // Rotate image randomly +-60 degrees, using the coordinates (220, 220) as anchor (from the center)
+    Tensor::rotate_random(t1, t2, {-60.0f, +60.0f}, {220, 220});
+    t2->save("lena_rnd_rotate.jpg");
 
-scale_random
+.. image:: ../_static/images/demos/lena_rnd_rotate.jpg
+    :width: 256
+    :align: center
+    :alt: Random rotate operation on Lena
+
+
+Scale Random
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::scale_random
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    Tensor::scale_random(t1, t2, {10,20}); //Scale t1 with a random scale factor between 10 and 20
+    // Scale image randomly +-25%, using NearestNeighbors interpolation
+    Tensor::scale_random(t1, t2, {0.75f, 1.25f}, WrappingMode::Nearest);
+    t2->save("lena_rnd_scale_nn.jpg");
 
-flip_random
+.. image:: ../_static/images/demos/lena_rnd_scale_nn.jpg
+    :width: 256
+    :align: center
+    :alt: Random scale operation on Lena
+
+
+Flip Random
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::flip_random
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    Tensor::flip_random(t1, t2, 0); //Flip t1 on vertical axis randomly
+    // Flip randomly on the horizontal axis (50% change)
+    Tensor::flip_random(t1, t2, 1);
+    t2->save("lena_rnd_flip.jpg");
 
-crop_random
+.. image:: ../_static/images/demos/lena_flip_h.jpg
+    :width: 256
+    :align: center
+    :alt: Random flip operation on Lena
+
+
+Crop Random
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::crop_random
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty({1, 3, 256, 256});
 
-    Tensor::crop_random(t1, t2); //Obtain a random crop from t1
+    // Crop t1 randomly with a crop size equal to the t2 size
+    Tensor::crop_random(t1, t2);
+    t2->save("lena_rnd_crop.jpg");
 
-crop_scale_random
+.. image:: ../_static/images/demos/lena_rnd_crop.jpg
+    :width: 256
+    :align: center
+    :alt: Random crop operation on Lena
+
+
+Crop & Scale Random
 ^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::crop_scale_random
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    Tensor::crop_scale_random(t1, t2, {10,20}); //Obtain a random crop from t1 and scale it randomly with a factor between 10 and 20
+    // Crop a path with size 65-95% of t1, and scale it to the t2 size
+    Tensor::crop_scale_random(t1, t2, {0.65f, 0.95f}, WrappingMode::Nearest);
+    t2->save("lena_rnd_crop_scale_nn.jpg");
 
-cutout_random
+.. image:: ../_static/images/demos/lena_rnd_crop_scale_nn.jpg
+    :width: 256
+    :align: center
+    :alt: Random Crop & Scale operation on Lena
+
+
+Cutout Random
 ^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::cutout_random
 
 .. code-block:: c++
 
-    string fname = "../../examples/data/elephant.jpg";  // Some image
-    Tensor* t1 = Tensor::load(fname);
-    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+    Tensor* t2 = Tensor::empty_like(t1);
 
-    Tensor::cutout_random(t1, t2, {50,60}, {10,100});//Set to 0 pixels in a rectangle defined by a random height between 50 and 60 and a random width between 10 and 100
+    // Cutout a patch with size 10-30% of t1 (height and width)
+    Tensor::cutout_random(t1, t2, {0.10f, 0.30f}, {0.10f, 0.30f});
+    t2->save("lena_rnd_cutout.jpg");
+
+.. image:: ../_static/images/demos/lena_rnd_cutout.jpg
+    :width: 256
+    :align: center
+    :alt: Random cutout operation on Lena
