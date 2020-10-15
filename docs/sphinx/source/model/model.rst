@@ -6,7 +6,7 @@ Constructor
 ------------
 
 
-.. doxygenfunction:: eddl::Model(vlayer, vlayer)
+.. doxygenfunction:: eddl::Model(vlayer in, vlayer out)
 
 Example:
 
@@ -27,7 +27,7 @@ Example:
 Build
 ----------
 
-.. doxygenfunction:: eddl::build(model, optimizer, const vector<string>&, const vector<string>&, CompServ*, bool)
+.. doxygenfunction:: eddl::build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs = nullptr, bool init_weights = true)
 
 
 
@@ -233,7 +233,7 @@ Example:
 
     toCPU(net);
 
-.. doxygenfunction:: eddl::toGPU(model, vector<int>, int, string)
+.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, int lsb)
 
 Example:
 
@@ -242,3 +242,14 @@ Example:
 
     
     toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
+
+
+.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, string mem)
+
+.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, int lsb, string mem)
+
+.. doxygenfunction:: eddl::toGPU(model net, vector<int> g)
+
+.. doxygenfunction:: eddl::toGPU(model net, string mem)
+
+.. doxygenfunction:: eddl::toGPU(model net)

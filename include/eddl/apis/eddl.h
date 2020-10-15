@@ -141,7 +141,6 @@ typedef NetLoss * metric;
       *  @brief Executes the code in the GPU.
       *
       *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
 
@@ -161,7 +160,6 @@ typedef NetLoss * metric;
       *
       *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
       *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different GPUs
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
     compserv CS_GPU(const vector<int> g, int lsb);
