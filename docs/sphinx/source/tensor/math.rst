@@ -24,14 +24,14 @@ abs
     // [-0.77 -0.46 -0.39]
     // ]
 
-    t1->abs_();  // In-place
+    Tensor* t2 = t1->abs(); // returns a new tensor
     // [
     // [0.31 0.08 1.59]
     // [0.77 0.46 0.39]
     // ]
 
     // Other ways
-    Tensor* t2 = t1->abs(); // return a new tensor
+    t1->abs_();  // In-place
     Tensor::abs(t1, t2); // static
 
 
