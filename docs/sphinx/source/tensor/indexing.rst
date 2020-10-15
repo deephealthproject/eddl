@@ -27,8 +27,9 @@ Example:
 where
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::where(Tensor*, Tensor*, Tensor*)
-.. doxygenfunction:: Tensor::where(Tensor*, Tensor*, Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::where(Tensor *condition, Tensor *A, Tensor *B)
+
+.. doxygenfunction:: Tensor::where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C)
 
 
 Example:
@@ -43,8 +44,9 @@ Example:
 select
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::select(Tensor*, Tensor*, vector<int>, int, int, bool)
-
+.. doxygenfunction:: Tensor::select(const vector<string> &indices)
+.. doxygenfunction:: Tensor::select(Tensor *A, Tensor *B, SelDescriptor *sd)
+.. doxygenfunction:: Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros = false)
 
 Example:
 
@@ -76,8 +78,9 @@ sort
 ^^^^^^^^^
 
 .. doxygenfunction:: Tensor::sort_(bool, bool)
-.. doxygenfunction:: Tensor::sort(bool, bool)
-.. doxygenfunction:: Tensor::sort(Tensor*, Tensor*, bool, bool)
+.. doxygenfunction:: Tensor::sort(bool descending = false, bool stable = true)
+.. doxygenfunction:: Tensor::sort(Tensor *A, Tensor *B, bool descending = false, bool stable = true)
+
 
 
 Example:
@@ -102,8 +105,8 @@ Example:
 argsort
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::argsort(bool, bool)
-.. doxygenfunction:: Tensor::argsort(Tensor*, Tensor*, bool, bool)
+.. doxygenfunction:: Tensor::argsort(bool descending = false, bool stable = true)
+.. doxygenfunction:: Tensor::argsort(Tensor *A, Tensor *B, bool descending = false, bool stable = true)
 
 
 Example:

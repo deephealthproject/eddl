@@ -25,7 +25,7 @@ loadfs
 load
 ^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::load(const string&, string)
+.. doxygenfunction:: Tensor::load(const string &filename, string format = "")
 
 .. code-block:: c++
 
@@ -66,7 +66,7 @@ save
 save2txt
 ^^^^^^^^
 
-.. doxygenfunction:: Tensor::save2txt(const string&, const char, const vector<string>&)
+.. doxygenfunction:: Tensor::save2txt(const string &filename, const char delimiter = ',', const vector<string> &header = {})
 
 .. code-block:: c++
 
