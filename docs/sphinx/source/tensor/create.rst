@@ -1,12 +1,6 @@
 Creation Routines
 =================
 
-.. note::
-
-    Section in progress
-
-    Read this: https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md
-
 
 Constructors
 -------------
@@ -14,18 +8,33 @@ Constructors
 Create an uninitialized tensor
 
 .. doxygenfunction:: Tensor::Tensor()
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, int)
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, float*, int)
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, Tensor*)
-.. doxygenfunction:: Tensor::Tensor(const vector<float>&, const vector<int>&, int)
 
 .. code-block:: c++
 
-    Tensor();    
-    Tensor* tensor1 = Tensor(const vector<int> &shape, int dev=DEV_CPU);
-    Tensor(const vector<int> &shape, float *fptr, int dev);
-    Tensor(const vector<int> &shape, Tensor*T);
-    Tensor(const vector<float>& data, const vector<int> &shape, int dev=DEV_CPU);
+   Tensor* t1 = new Tensor();
+   // []
+
+
+.. doxygenfunction:: Tensor::Tensor(const vector<int> &shape, int dev = DEV_CPU)
+
+.. code-block:: c++
+
+   Tensor* t1 = new Tensor({2, 3});
+   // [
+   // [0.00 -0.00 0.00]
+   // [-0.00 0.00 0.00]
+   // ]
+
+
+.. doxygenfunction:: Tensor::Tensor(const vector<float> &data, const vector<int> &shape, int dev = DEV_CPU)
+
+.. code-block:: c++
+
+   Tensor* t1 = new Tensor({1,2,3,4,5,6}, {2,3});
+   // [
+   // [1.00 2.00 3.00]
+   // [4.00 5.00 6.00]
+   // ]
 
 
 
@@ -41,8 +50,12 @@ empty
 
 .. code-block:: c++
 
-    vector<int> v {256,3} // Desired shape
-    Tensor* tensor1 = Tensor::empty(v, DEV_CPU); //Creates an empty tensor of 256x3 in CPU
+   Tensor* t1 = Tensor::empty({2, 3});
+   // [
+   // [0.00 -36893488147419103232.00 0.00]
+   // [-36893488147419103232.00 0.00 0.00]
+   // ]
+
 
 empty_like
 ^^^^^^^^^^^
@@ -51,10 +64,13 @@ empty_like
 
 .. code-block:: c++
 
-    vector<int> v {256,3} // Desired shape
-    Tensor* tensor1 = Tensor::empty(v, DEV_CPU); // Tensor of 256x3 in CPU
-    Tensor* tensor2 = Tensor::empty_like(tensor1); // Empty tensor taking shape and device from tensor1
-    
+   Tensor* t1 = Tensor::empty({2, 3});
+   Tensor* t2 = Tensor::empty_like(t1);
+   // [
+   // [0.00 -36893488147419103232.00 0.00]
+   // [-36893488147419103232.00 0.00 0.00]
+   // ]
+
 
 zeros
 ^^^^^^^^^
@@ -63,22 +79,28 @@ zeros
 
 .. code-block:: c++
 
-    vector<int> v {3} // Desired shape
-    Tensor* tensor1 = Tensor::zeros(v, DEV_CPU); // Creates 1D tensor filled with zeros
-    //tensor1 => [0,0,0]
+   Tensor* t1 = Tensor::zeros({2, 3});
+   // [
+   // [0.00 0.00 0.00]
+   // [0.00 0.00 0.00]
+   // ]
+
 
 zeros_like
 ^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::empty_like
+.. doxygenfunction:: Tensor::zeros_like
 
 .. code-block:: c++
 
-    vector<int> v {3} // Desired shape
-    Tensor* tensor1 = Tensor::empty(v, DEV_CPU); // Tensor of 3 components in CPU
-    Tensor* tensor2 = Tensor::zeros_like(tensor1); // Tensor of 3 components in CPU filled with zeros
-    // tensor2 => [0,0,0]
-    
+    Tensor* t1 = Tensor::empty({2, 3});
+    Tensor* t2 = Tensor::zeros_like(t1);
+   // [
+   // [0.00 0.00 0.00]
+   // [0.00 0.00 0.00]
+   // ]
+
+
 ones
 ^^^^^^^^^
 
@@ -86,9 +108,12 @@ ones
 
 .. code-block:: c++
 
-    vector<int> v {3} // Desired shape
-    Tensor* tensor1 = Tensor::ones(v, DEV_CPU); // Creates 1D tensor filled with ones
-    //tensor1 => [1,1,1]
+   Tensor* t1 = Tensor::ones({2, 3});
+   // [
+   // [1.00 1.00 1.00]
+   // [1.00 1.00 1.00]
+   // ]
+
 
 ones_like
 ^^^^^^^^^^^
@@ -97,11 +122,14 @@ ones_like
 
 .. code-block:: c++
 
-    vector<int> v {3} // Desired shape
-    Tensor* tensor1 = Tensor::empty(v, DEV_CPU); // Tensor of 3 components in CPU
-    Tensor* tensor2 = Tensor::ones_like(tensor1); // Tensor of 3 components in CPU filled with zeros
-    // tensor2 => [1,1,1]
-    
+   Tensor* t1 = Tensor::empty({2, 3});
+   Tensor* t2 = Tensor::ones_like(t1);
+   // [
+   // [1.00 1.00 1.00]
+   // [1.00 1.00 1.00]
+   // ]
+
+
 full
 ^^^^^^^^^
 
@@ -109,9 +137,12 @@ full
 
 .. code-block:: c++
 
-    vector<int> v {3} // Desired shape
-    Tensor* tensor1 = Tensor::full(v, 10, DEV_CPU); // Creates 1D tensor filled with 10s
-    //tensor1 => [10,10,10]
+   Tensor* t1 = Tensor::full({2, 3}, 10.0f);
+   // [
+   // [10.00 10.00 10.00]
+   // [10.00 10.00 10.00]
+   // ]
+
 
 full_like
 ^^^^^^^^^^^
@@ -120,11 +151,12 @@ full_like
 
 .. code-block:: c++
 
-    vector<int> v {3} // Desired shape
-    Tensor* tensor1 = Tensor::empty(v, DEV_CPU); // Tensor of 3 components in CPU
-    Tensor* tensor2 = Tensor::full_like(tensor1, 10); // Tensor of 3 components in CPU filled with 10s
-    // tensor2 => [10,10,10]
-
+   Tensor* t1 = Tensor::empty({2, 3});
+   Tensor* t2 = Tensor::full_like(t1, 10.0f);
+   // [
+   // [10.00 10.00 10.00]
+   // [10.00 10.00 10.00]
+   // ]
 
 eye
 ^^^^^^^^^
@@ -133,12 +165,23 @@ eye
 
 .. code-block:: c++
 
-    
-    Tensor* matrix1 = Tensor::eye(3, 3, DEV_CPU);
-    // matrix1 => [1 3 3
-    //             3 1 3
-    //             3 3 1]
-    
+
+   Tensor* t1 = Tensor::eye(3);
+   // [
+   // [1.00 0.00 0.00]
+   // [0.00 1.00 0.00]
+   // [0.00 0.00 1.00]
+   // ]
+
+
+   Tensor* t1 = Tensor::eye(3, -1);
+   // [
+   // [0.00 0.00 0.00]
+   // [1.00 0.00 0.00]
+   // [0.00 1.00 0.00]
+   // ]
+
+
 identity
 ^^^^^^^^^
 
@@ -146,11 +189,12 @@ identity
 
 .. code-block:: c++
 
-    Tensor* matrix1 = Tensor::identity(3, DEV_CPU);
-    // matrix1 => [1 0 0
-    //             0 1 0
-    //             0 0 1]
-
+    Tensor* t1 = Tensor::identity(3);
+   // [
+   // [1.00 0.00 0.00]
+   // [0.00 1.00 0.00]
+   // [0.00 0.00 1.00]
+   // ]
 
 
 
@@ -166,22 +210,72 @@ clone
 
 .. code-block:: c++
 
-    vector<int> v {3} // Desired shape
-    Tensor* tensor1 = Tensor::ones(v, DEV_CPU); // Creates 1D tensor filled with ones
-    //tensor1 => [1,1,1]
-    Tensor* tensor2 = tensor1->clone();
-    //tensor2 => [1,1,1]
-    
+   Tensor* tensor1 = Tensor::ones({2, 3});
+   // [
+   // [1.00 1.00 1.00]
+   // [1.00 1.00 1.00]
+   // ]
+
+   Tensor* tensor2 = tensor1->clone();
+   // [
+   // [1.00 1.00 1.00]
+   // [1.00 1.00 1.00]
+   // ]
+
 
 reallocate
 ^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::reallocate
+.. doxygenfunction:: Tensor::reallocate(Tensor *old_t, const vector<int> &shape)
 
 .. code-block:: c++
 
-    void reallocate(Tensor* old_t, vector<int> *s = nullptr);
-    
+    Tensor* t1 = new Tensor({1,2,3,4,5,6,7,8,9}, {3, 3});
+    // [
+    // [1.00 2.00 3.00]
+    // [4.00 5.00 6.00]
+    // [7.00 8.00 9.00]
+    // ]
+
+    Tensor* t2 = Tensor::zeros({1, 6});
+    // [
+    // [0.00 0.00 0.00 0.00 0.00 0.00]
+    // ]
+
+    t2->reallocate(t1);
+    // [
+    // [1.00 2.00 3.00 4.00 5.00 6.00]
+    // ]
+
+    t2->reallocate(t1, {2, 2});
+    // [
+    // [1.00 2.00]
+    // [3.00 4.00]
+    // ]
+
+    t2->reallocate(t1, {3, 2});
+    // [
+    // [1.00 2.00]
+    // [3.00 4.00]
+    // [5.00 6.00]
+    // ]
+
+    // Modify value of T1
+    t1->ptr[0] = 100.0f;
+
+    // Tensor 1
+    // [
+    // [100.00 2.00 3.00]
+    // [4.00 5.00 6.00]
+    // [7.00 8.00 9.00]
+    // ]
+
+    // Tensor 2
+    // [
+    // [100.00 2.00]
+    // [3.00 4.00]
+    // [5.00 6.00]
+    // ]
 
 copy
 ^^^^^^^^^
@@ -190,12 +284,33 @@ copy
 
 .. code-block:: c++
 
-    vector<int> v {3} // Desired shape
-    Tensor* tensor1 = Tensor::ones(v, DEV_CPU); // Creates 1D tensor filled with ones
-    //tensor1 => [1,1,1]
-    Tensor* tensor2;
-    Tensor::copy(tensor1, tensor2);
-    //tensor2 => [1,1,1]
+   Tensor* t1 = Tensor::ones({4, 3});
+   // [
+   // [1.00 1.00 1.00]
+   // [1.00 1.00 1.00]
+   // [1.00 1.00 1.00]
+   // [1.00 1.00 1.00]
+   // ]
+
+   Tensor* t2 = Tensor::zeros({6, 2, 1});
+   // [
+   // [[0.00] [0.00]]
+   // [[0.00] [0.00]]
+   // [[0.00] [0.00]]
+   // [[0.00] [0.00]]
+   // [[0.00] [0.00]]
+   // [[0.00] [0.00]]
+   // ]
+
+   Tensor::copy(t1, t2);
+   // [
+   // [[1.00] [1.00]]
+   // [[1.00] [1.00]]
+   // [[1.00] [1.00]]
+   // [[1.00] [1.00]]
+   // [[1.00] [1.00]]
+   // [[1.00] [1.00]]
+   // ]
 
 
 
@@ -211,8 +326,9 @@ arange
 
 .. code-block:: c++
 
-    Tensor* tensor1 = Tensor::arange(1.0, 4.0, 0.5, DEV_CPU);
-    // tensor1 => [1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
+    Tensor* t1 = Tensor::arange(1.0, 4.0, 0.5);
+    // [1.00 1.50 2.00 2.50 3.00 3.50]
+
     
 range
 ^^^^^^^^^
@@ -221,9 +337,10 @@ range
 
 .. code-block:: c++
 
-    Tensor* tensor1 = Tensor::range(1.0, 4.0, 0.5, DEV_CPU);
-    // tensor1 => [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
-    
+    Tensor* t1 = Tensor::range(1.0, 4.0, 0.5);
+    // [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+
+
 linspace
 ^^^^^^^^^
 
@@ -231,9 +348,10 @@ linspace
 
 .. code-block:: c++
 
-    Tensor* tensor1 = Tensor::linspace(3.0, 10.0, 5, DEV_CPU);
-    //tensor1 => [3.00, 4.75, 6.50, 8.25, 10.00]
-    
+    Tensor* t1 = Tensor::linspace(3.0, 10.0, 5);
+    // [3.00, 4.75, 6.50, 8.25, 10.00]
+
+
 logspace
 ^^^^^^^^^
 
@@ -241,8 +359,8 @@ logspace
 
 .. code-block:: c++
 
-    Tensor* tensor1 = Tensor::logspace(0.1, 1.0, 5, 10.0, DEV_CPU);
-    //tensor1 => [1.2589, 2.1135, 3.5481, 5.9566, 10.0000]
+    Tensor* t1 = Tensor::logspace(0.1, 1.0, 5, 10.0);
+    // [1.2589, 2.1135, 3.5481, 5.9566, 10.0000]
  
 
 geomspace
@@ -252,8 +370,8 @@ geomspace
 
 .. code-block:: c++
 
-    Tensor* tensor1 = Tensor::geomspace(1.0, 1000.0, 3, DEV_CPU);
-    //tensor1 => [1.0, 10.0, 100.0]
+    Tensor* t1 = Tensor::geomspace(1.0, 1000.0, 3);
+    // [1.0, 10.0, 100.0]
  
 
 Constructors from random generators
@@ -269,8 +387,14 @@ randu
 
 .. code-block:: c++
 
-    static Tensor* randu(const vector<int> &shape, int dev=DEV_CPU);
-    
+    Tensor* t1 = Tensor::randu({3, 3});
+    // [
+    // [0.11 0.17 0.01]
+    // [0.19 0.61 0.45]
+    // [0.26 0.22 0.02]
+    // ]
+
+
 randn
 ^^^^^^^^^
 
@@ -278,46 +402,41 @@ randn
 
 .. code-block:: c++
 
-    Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
+   Tensor* t1 = Tensor::randn({2, 3});
+   // [
+   // [-0.88 0.79 0.84]
+   // [-0.64 0.35 0.04]
+   // ]
 
 
 Constructors of matrices
 -------------------------
 
-.. doxygenfunction:: Tensor::diag_(int)
-.. doxygenfunction:: Tensor::diag(int)
-.. doxygenfunction:: Tensor::diag(Tensor*, Tensor*, int)
-
+.. doxygenfunction:: Tensor::diag(int k = 0)
 
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    Tensor* matrix1 = Tensor::eye(3, 3, DEV_CPU);
-    // matrix1 => [1 3 3
-    //             3 1 3
-    //             3 3 1]
+   Tensor* t1 = new Tensor({1,2,3,4,5,6,7,8,9}, {3, 3});
+   // [
+   // [1.00 2.00 3.00]
+   // [4.00 5.00 6.00]
+   // [7.00 8.00 9.00]
+   // ]
 
-    
-    Tensor* main_diag = matrix1->diag(0);
-    // main_diag => [1,1,1]
+   Tensor* t2 = t1->diag(0);
+   // [
+   // [1.00 0.00 0.00]
+   // [0.00 5.00 0.00]
+   // [0.00 0.00 9.00]
+   // ]
 
-    Tensor* main_diag_2;
-    Tensor::diag(matrix1, main_diag_2, 0);
-    // main_diag_2 => [1,1,1]
+   Tensor* t3 = t1->diag(1);
+   // [
+   // [0.00 2.00 0.00]
+   // [0.00 0.00 6.00]
+   // [0.00 0.00 0.00]
+   // ]
 
-    matrix1->diag_(0);
-    // matrix1 => [1,1,1]
 
-
-Destructors
--------------
-
-Delete a tensor to free memory
-
-.. doxygenfunction:: Tensor::~Tensor()
-
-.. code-block:: c++
-
-    ~Tensor();

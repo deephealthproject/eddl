@@ -15,9 +15,7 @@
 #include <fstream>
 #include <string>
 #include <chrono>
-#include <thread>
 #include "eddl/net/net.h"
-#include <pthread.h>
 #include "eddl/utils.h"
 #include "eddl/random.h"
 

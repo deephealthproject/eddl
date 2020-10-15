@@ -21,7 +21,6 @@ temp/
 docs/doxygen/*
 !docs/doxygen/Doxyfile
 docs/sphinx/source/_build
-docs/sphinx/source/_static
 
 # Other files
 *.dot

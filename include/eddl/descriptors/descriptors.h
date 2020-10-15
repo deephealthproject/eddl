@@ -74,7 +74,7 @@ public:
     int r, c, z;
     int padrt,padrb;
     int padcl,padcr;
-    int size;
+    int size;  // Auxiliar var
     bool use_bias;
     int mem_level; // see CS
 

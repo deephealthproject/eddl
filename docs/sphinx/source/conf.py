@@ -19,8 +19,8 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = 'EDDL'
-copyright = '2020, eddl'
-author = 'Pattern Recognition and Human Language Translation Research Center.'
+copyright = '2020, EDDL'
+author = 'Pattern Recognition and Human Language Technology research center'
 
 
 # -- General configuration ---------------------------------------------------
@@ -31,6 +31,8 @@ author = 'Pattern Recognition and Human Language Translation Research Center.'
 extensions = [
     'breathe',
     'sphinx_tabs.tabs',
+    # 'sphinxprettysearchresults',
+    # 'sphinxcontrib.lunrsearch',
 
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
@@ -45,7 +47,7 @@ breathe_projects = {"eddl" : "../../doxygen/build/xml/"}
 breathe_default_project = "eddl"
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+# templates_path = ['_templates']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -68,3 +70,7 @@ html_theme_options = {'logo_only':True, 'style_nav_header_background': '#185070'
 html_static_path = ['_static']
 
 pygments_style = 'sphinx'
+
+# html_sidebars = {
+#     '**': ['searchbox.html'],
+# }

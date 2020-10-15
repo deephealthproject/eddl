@@ -91,13 +91,13 @@ endif()
 ########################### LINK LIBRARIES ################################
 ###########################################################################
 
-# Threads
-if(UNIX) # Add setup for windows in the windows's section
-    SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
-    SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
-    find_package(Threads REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads) 
-endif()
+## Threads (Not used anymore)
+#if(UNIX) # Add setup for windows in the windows's section
+#    SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+#    SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+#    find_package(Threads REQUIRED)
+#    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+#endif()
 
 # Eigen
 if(DEFINED Eigen3_DIR)
@@ -303,19 +303,19 @@ SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
 ################################## WINDOWS ################################
 ###########################################################################
 
-if(WIN32)
-   # Threads *************************************************************
-   if(PTHREADS_INSTALL_PATH STREQUAL "")
-       message(ERROR ": Pthreads install path must be specified under Windows")
-   endif()
-   target_link_libraries(${PROJECT_NAME} PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib
-           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib
-           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib)
-   target_link_libraries(${PROJECT_NAME} PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib
-           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib
-           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib)
-   target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PTHREADS_INSTALL_PATH}/include>)
-endif()
+#if(WIN32)  (Not used anymore)
+#   # Threads *************************************************************
+#   if(PTHREADS_INSTALL_PATH STREQUAL "")
+#       message(ERROR ": Pthreads install path must be specified under Windows")
+#   endif()
+#   target_link_libraries(${PROJECT_NAME} PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib
+#           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib
+#           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib)
+#   target_link_libraries(${PROJECT_NAME} PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib
+#           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib
+#           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib)
+#   target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PTHREADS_INSTALL_PATH}/include>)
+#endif()
 
 # Microsoft Visual C++ - set static/dynamic runtime
 if(MSVC)
@@ -420,11 +420,11 @@ message(STATUS "Protobuf include: " ${Protobuf_INCLUDE_DIRS} )
 message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARIES} )
 message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
 endif()
-if(WIN32)
-message(STATUS "-------------------------------------------" )
-message(STATUS "Pthreads dir: " ${PTHREADS_INSTALL_PATH} )
-message(STATUS "Pthreads include: " ${PTHREADS_INSTALL_PATH}/include )
-message(STATUS "Pthreads libraries: " ${PTHREADS_INSTALL_PATH}/lib )
-endif()
+#if(WIN32)
+#message(STATUS "-------------------------------------------" )
+#message(STATUS "Pthreads dir: " ${PTHREADS_INSTALL_PATH} )
+#message(STATUS "Pthreads include: " ${PTHREADS_INSTALL_PATH}/include )
+#message(STATUS "Pthreads libraries: " ${PTHREADS_INSTALL_PATH}/lib )
+#endif()
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
