@@ -15,13 +15,13 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -DBUILD_SUPERBUILD=ON -DBUILD_SHARED_LIBS=OFF ..
+        cmake -G "Visual Studio 16 2019" -A x64 -T ClangCL -DBUILD_SUPERBUILD=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TARGET=CPU ..
       shell: cmd
     - name: Build
       run: cmake --build build --config Release
       shell: cmd
     - name: Test
       run: |
-            cd build
-            "bin/Release/unit_tests.exe"
+        cd build
+        "bin/Release/unit_tests.exe"
       shell: cmd

@@ -155,7 +155,6 @@ if(BUILD_PROTOBUF)
     # target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
     # target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES})
 
     if(MSVC)
         target_link_libraries(${PROJECT_NAME} PUBLIC
@@ -199,18 +198,29 @@ endif()
 
 # OpenMP
 if(BUILD_OPENMP)
-    find_package(OpenMP)
-    if (OpenMP_FOUND)
-        target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
-        if (${OpenMP_CXX_VERSION_MAJOR})
-            set(OpenMP_VERSION_MAJOR ${OpenMP_CXX_VERSION_MAJOR} CACHE INTERNAL "" FORCE)
-        endif()
-        target_compile_definitions(${PROJECT_NAME} PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
-        set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
-        SET(USE_OPENMP ON) # Local's scope
+    # find_package does not support Clang on Windows
+    if (WIN32 AND CMAKE_RC_COMPILER STREQUAL "llvm-rc") 
+        set(OpenMP_CXX_FLAGS "-Xclang -fopenmp")
+        set(OpenMP_C_FLAGS "-Xclang -fopenmp")
+        # Tell CMake where to find the OpenMP libraries.
+        get_filename_component(OpenMP_BIN_DIR ${CMAKE_CXX_COMPILER_AR} DIRECTORY)
+        get_filename_component(OpenMP_DIR ${OpenMP_BIN_DIR} DIRECTORY)
+        target_link_directories(${PROJECT_NAME} PUBLIC ${OpenMP_DIR}/lib)
+        target_link_libraries(${PROJECT_NAME} PUBLIC libomp libiomp5md)
     else()
-        message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-D BUILD_OPENMP=OFF')
-        Hint: Use a compiler with OpenMP support using: '-D CMAKE_CXX_COMPILER=path'")
+        find_package(OpenMP 4.5)
+        if (OpenMP_CXX_FOUND)
+            target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
+            if (${OpenMP_CXX_VERSION_MAJOR})
+                set(OpenMP_VERSION_MAJOR ${OpenMP_CXX_VERSION_MAJOR} CACHE INTERNAL "" FORCE)
+            endif()
+            target_compile_definitions(${PROJECT_NAME} PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
+            set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
+            SET(USE_OPENMP ON) # Local's scope
+        else()
+            message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-DBUILD_OPENMP=OFF')\n\
+            Hint: Use a compiler with OpenMP support using: '-D CMAKE_CXX_COMPILER=path'")
+        endif()
     endif()
 endif()
 SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
