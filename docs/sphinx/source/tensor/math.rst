@@ -14,19 +14,27 @@ Unary Operations
 abs
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::abs_
 .. doxygenfunction:: Tensor::abs
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-1, -2, 3}, {3}, DEV_CPU);
-    
-    Tensor* r1 = t1->abs();
-    // r1 => [1, 2, 3]
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [0.31 0.08 1.59]
+    // [-0.77 -0.46 -0.39]
+    // ]
 
-    t1->abs_();
-    // t1 => [1, 2, 3]
-    
+    t1->abs_();  // In-place
+    // [
+    // [0.31 0.08 1.59]
+    // [0.77 0.46 0.39]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->abs(); // return a new tensor
+    Tensor::abs(t1, t2); // static
+
+
 acos
 ^^^^^^^^^^^^
 
@@ -37,7 +45,7 @@ acos
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.3348, -0.5889,  0.2005, -0.1584}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({0.3348, -0.5889,  0.2005, -0.1584}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -64,8 +72,8 @@ add
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
+    Tensor* t2 = new Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
     Tensor* r3;
     Tensor* r4;
     
@@ -100,7 +108,7 @@ asin
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-0.5962,  1.4985, -0.4396,  1.4525}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({-0.5962,  1.4985, -0.4396,  1.4525}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -123,7 +131,7 @@ atan
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.2341, 0.2539, -0.6256, -0.6448}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({0.2341, 0.2539, -0.6256, -0.6448}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -147,7 +155,7 @@ ceil
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-0.6341, -1.4208, -1.0900,  0.5826}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({-0.6341, -1.4208, -1.0900,  0.5826}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -170,7 +178,7 @@ clamp
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-1.7120,  0.1734, -0.0478, -0.0922}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({-1.7120,  0.1734, -0.0478, -0.0922}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -196,7 +204,7 @@ clampmax
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.7753, -0.4702, -0.4599,  1.1899}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({0.7753, -0.4702, -0.4599,  1.1899}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -220,7 +228,7 @@ clampmin
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor({-0.0299, -2.3184,  2.1593, -0.8883}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({-0.0299, -2.3184,  2.1593, -0.8883}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -243,7 +251,7 @@ cos
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({1.4309,  1.2706, -0.8562,  0.9796}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({1.4309,  1.2706, -0.8562,  0.9796}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -266,7 +274,7 @@ cosh
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.1632,  1.1835, -0.6979, -0.7325}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({0.1632,  1.1835, -0.6979, -0.7325}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -292,8 +300,8 @@ div
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
+    Tensor* t2 = new Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
     Tensor* r3;
     Tensor* r4;
     
@@ -321,8 +329,8 @@ el_div
 .. code-block:: c++
 
 
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10, 10, 20, 30, -10}, {2,4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({10, 20, 30, -10, 10, 20, 30, -10}, {2,4}, DEV_CPU);
+    Tensor* t2 = new Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
     Tensor* r3;
 
     Tensor::el_div(t1, t2, r3, 1);
@@ -337,8 +345,8 @@ el_mult
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10, 10, 20, 30, -10}, {2,4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({10, 20, 30, -10, 10, 20, 30, -10}, {2,4}, DEV_CPU);
+    Tensor* t2 = new Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
     Tensor* r3;
 
     Tensor::el_mult(t1, t2, r3, 1);
@@ -355,7 +363,7 @@ exp
 .. code-block:: c++
 
 
-    Tensor* t1 = new Tensor::Tensor({0, 0.69314}, {2}, DEV_CPU);
+    Tensor* t1 = new Tensor({0, 0.69314}, {2}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -378,7 +386,7 @@ floor
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-0.8166,  1.5308, -0.2530, -0.2091}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({-0.8166,  1.5308, -0.2530, -0.2091}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -401,7 +409,7 @@ inv
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -433,7 +441,7 @@ log
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -456,7 +464,7 @@ log2
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({ 0.8419, 0.8003, 0.9971, 0.5287, 0.0490}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor({ 0.8419, 0.8003, 0.9971, 0.5287, 0.0490}, {5}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -479,7 +487,7 @@ log10
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.5224, 0.9354, 0.7257, 0.1301, 0.2251}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor({0.5224, 0.9354, 0.7257, 0.1301, 0.2251}, {5}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -502,7 +510,7 @@ logn
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.5224, 0.9354, 0.7257, 0.1301, 0.2251}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor({0.5224, 0.9354, 0.7257, 0.1301, 0.2251}, {5}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -526,7 +534,7 @@ mod
 .. code-block:: c++
 
 
-    Tensor* t1 = new Tensor::Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -552,8 +560,8 @@ mult
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
+    Tensor* t2 = new Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
     Tensor* r3;
     Tensor* r4;
     
@@ -581,7 +589,7 @@ neg
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -656,7 +664,7 @@ remainder
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -679,7 +687,7 @@ round
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({2.3, 5.5, 6.1, 7.9, 10.0}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor({2.3, 5.5, 6.1, 7.9, 10.0}, {5}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -701,7 +709,7 @@ rsqrt
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-0.0370,  0.2970,  1.5420, -0.9105}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({-0.0370,  0.2970,  1.5420, -0.9105}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -722,7 +730,7 @@ sigmoid
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.9213,  1.0887, -0.8858, -1.7683}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({0.9213,  1.0887, -0.8858, -1.7683}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -744,7 +752,7 @@ sign
 
 .. code-block:: c++  
 
-    Tensor* t1 = new Tensor::Tensor({0.7, -1.2, 0., 2.3}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({0.7, -1.2, 0., 2.3}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -790,7 +798,7 @@ sinh
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.5380, -0.8632, -0.1265,  0.9399}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({0.5380, -0.8632, -0.1265,  0.9399}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -825,7 +833,7 @@ sqrt
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-2.0755,  1.0226,  0.0831,  0.4806}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({-2.0755,  1.0226,  0.0831,  0.4806}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -851,8 +859,8 @@ sub
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
+    Tensor* t2 = new Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
     Tensor* r3;
     Tensor* r4;
     
@@ -882,7 +890,7 @@ tan
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-1.2027, -1.7687,  0.4412, -1.3856}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({-1.2027, -1.7687,  0.4412, -1.3856}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -904,7 +912,7 @@ tanh
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.8986, -0.7279,  1.1745,  0.261}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({0.8986, -0.7279,  1.1745,  0.261}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -926,7 +934,7 @@ trunc
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({3.4742,  0.5466, -0.8008, -0.9079}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({3.4742,  0.5466, -0.8008, -0.9079}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
     
@@ -951,8 +959,8 @@ add
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({2, 3, 4, 5}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
+    Tensor* t2 = new Tensor({2, 3, 4, 5}, {4}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
 
@@ -976,7 +984,7 @@ div
     //             3 1 3
     //             3 3 1]
 
-    Tensor* t2 = new Tensor::Tensor(2, 2, 2}, {3}, DEV_CPU);
+    Tensor* t2 = new Tensor(2, 2, 2}, {3}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
 
@@ -1003,7 +1011,7 @@ mult
     //             3 1 3
     //             3 3 1]
 
-    Tensor* t2 = new Tensor::Tensor(2, 2, 2}, {3}, DEV_CPU);
+    Tensor* t2 = new Tensor(2, 2, 2}, {3}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
 
@@ -1030,7 +1038,7 @@ sub
     //             3 1 3
     //             3 3 1]
 
-    Tensor* t2 = new Tensor::Tensor(2, 2, 2}, {3}, DEV_CPU);
+    Tensor* t2 = new Tensor(2, 2, 2}, {3}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
 
@@ -1105,7 +1113,7 @@ median
 .. code-block:: c++
    
 
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
     Tensor* r1;
     Tensor* r2;
 
@@ -1128,7 +1136,7 @@ max
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
     Tensor* r1;
 
     float max1 = t1->max();
@@ -1154,7 +1162,7 @@ argmax
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
     Tensor* r1;
 
     float argmax1 = t1->argmax();
@@ -1176,7 +1184,7 @@ min
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
     Tensor* r1;
 
     float min1 = t1->min();
@@ -1198,7 +1206,7 @@ argmin
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
 
     float argmin1 = t1->argmin();
     // argmin1 = 4
@@ -1219,7 +1227,7 @@ sum
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
 
     float sum1 = t1->sum();
     // sum1 = 15
@@ -1239,7 +1247,7 @@ sum_abs
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor(-2, -3, -5, -4, -1}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor(-2, -3, -5, -4, -1}, {5}, DEV_CPU);
 
     float sum1 = t1->sum_abs();
     // sum1 = 15
@@ -1262,7 +1270,7 @@ prod
 .. code-block:: c++
    
 
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
 
     float prod1 = t1->prod();
     // prod1 = 120
@@ -1283,7 +1291,7 @@ mean
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
 
     float mean1 = t1->mean();
     // mean1 = 3
@@ -1304,7 +1312,7 @@ std
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor({-0.8166, -1.3802, -0.3560}, {3}, DEV_CPU);
+    Tensor* t1 = new Tensor({-0.8166, -1.3802, -0.3560}, {3}, DEV_CPU);
 
     float std1 = t1->std();
     // std1 = 0.5130
@@ -1325,7 +1333,7 @@ var
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor({-0.3425, -1.2636, -0.4864}, {3}, DEV_CPU);
+    Tensor* t1 = new Tensor({-0.3425, -1.2636, -0.4864}, {3}, DEV_CPU);
 
     float var1 = t1->var();
     // var1 = 0.2455
@@ -1346,7 +1354,7 @@ mode
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor::Tensor({2, 2, 1, 5 ,3}, {5}, DEV_CPU);
+    Tensor* t1 = new Tensor({2, 2, 1, 5 ,3}, {5}, DEV_CPU);
 
     float mode1 = t1->mode();
     // mode1 = 2
