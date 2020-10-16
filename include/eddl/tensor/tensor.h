@@ -883,7 +883,6 @@ public:
 
     /**
     *   @brief Element-wise abs operation
-    *   @param A The tensor where the operation is applied
     *   @return A new tensor with abs applied over A
     */
     Tensor* abs();
@@ -909,8 +908,7 @@ public:
 
     /**
     *   @brief Element-wise acos operation
-    *   @param A The tensor where the operation is applied
-    *   @param B A new tensor with acos applied over A
+    *   @param B A new tensor with acos applied
     */
     static void acos(Tensor *A, Tensor *B);
 
