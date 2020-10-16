@@ -877,7 +877,7 @@ public:
 
     // Math operations (unary) ************************
     /**
-    *   @brief Inplace element-wise abs operation
+    *   @brief In-place element-wise abs operation
     */
     void abs_();
 
@@ -895,12 +895,12 @@ public:
     static void abs(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise acos operation
+    *   @brief In-place element-wise acos operation
     */
     void acos_();
 
     /**
-    *   @brief Inplace element-wise acos operation
+    *   @brief In-place element-wise acos operation
     *   @param A. The tensor where the operation is applied
     *   @return A new tensor with abs applied over A
     */
@@ -913,7 +913,7 @@ public:
     static void acos(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise add operation of a tensor and a real value
+    *   @brief In-place element-wise add operation of a tensor and a real value
     *   @param v. The real number to add
     */
     void add_(float v);
@@ -926,7 +926,7 @@ public:
     Tensor* add(float v);
 
     /**
-    *   @brief Inplace element-wise add operation of two tensors
+    *   @brief In-place element-wise add operation of two tensors
     *   @param A The tensor to be added.
     */
     void add_(Tensor* A);  // this = this .+ A
@@ -947,7 +947,7 @@ public:
     static void add(Tensor *A, Tensor *B, float v); // B = A + v
 
     /**
-    *   @brief Inplace element-wise asin operation
+    *   @brief In-place element-wise asin operation
     */
     void asin_();
 
@@ -966,7 +966,7 @@ public:
 
 
     /**
-    *   @brief Inplace element-wise atan operation
+    *   @brief In-place element-wise atan operation
     */
     void atan_();
 
@@ -984,7 +984,7 @@ public:
     static void atan(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise ceil operation
+    *   @brief In-place element-wise ceil operation
     */
     void ceil_();
 
@@ -1002,7 +1002,7 @@ public:
     static void ceil(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace clamp all elements in the input tensor to the range [min, max].
+    *   @brief In-place clamp all elements in the input tensor to the range [min, max].
     *   @param min The lower bound of the clamping range.
     *   @param max The upper bound of the clamping range.
     */
@@ -1026,7 +1026,7 @@ public:
     static void clamp(Tensor *A, Tensor *B, float min, float max);
 
     /**
-    *   @brief Inplace clamp all elements in the input tensor to the range [-infty, max].
+    *   @brief In-place clamp all elements in the input tensor to the range [-infty, max].
     *   @param max The upper bound of the clamping range.
     */
     void clampmax_(float max);
@@ -1047,7 +1047,7 @@ public:
     static void clampmax(Tensor *A, Tensor *B, float max);
 
     /**
-    *   @brief Inplace clamp all elements in the input tensor to the range [min, +infty].
+    *   @brief In-place clamp all elements in the input tensor to the range [min, +infty].
     *   @param min The lower bound of the clamping range.
     */
     void clampmin_(float min);
@@ -1068,7 +1068,7 @@ public:
     static void clampmin(Tensor *A, Tensor *B, float min);
 
     /**
-    *   @brief Inplace element-wise cos operation
+    *   @brief In-place element-wise cos operation
     */
     void cos_();
 
@@ -1086,7 +1086,7 @@ public:
     static void cos(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise cosh operation
+    *   @brief In-place element-wise cosh operation
     */
     void cosh_();
 
@@ -1104,7 +1104,7 @@ public:
     static void cosh(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise division operation of a tensor and a real value
+    *   @brief In-place element-wise division operation of a tensor and a real value
     *   @param v The real number to divide by
     */
     void div_(float v);
@@ -1117,13 +1117,13 @@ public:
     Tensor* div(float v);
 
     /**
-    *   @brief Inplace element-wise division operation of two tensors
+    *   @brief In-place element-wise division operation of two tensors
     *   @param A. The tensor to divide by
     */
     void div_(Tensor* A); // this = this ./ A
 
     /**
-    *   @brief Inplace element-wise division operation of two tensors
+    *   @brief In-place element-wise division operation of two tensors
     *   @param A The tensor to divide by
     *   @return A new tensor with the division.
     */
@@ -1138,7 +1138,7 @@ public:
     static void div(Tensor *A, Tensor *B, float v); // B = A / v
 
     /**
-    *   @brief Inplace element-wise exp operation of a tensor
+    *   @brief In-place element-wise exp operation of a tensor
     */
     void exp_();
 
@@ -1156,7 +1156,7 @@ public:
     static void exp(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise floor operation
+    *   @brief In-place element-wise floor operation
     */
     void floor_();
 
@@ -1174,7 +1174,7 @@ public:
     static void floor(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise 1/x operation
+    *   @brief In-place element-wise 1/x operation
     *   @param v the value multiplying the inverse
     */
     void inv_(float v=1.0f);
@@ -1195,7 +1195,7 @@ public:
     static void inv(Tensor *A, Tensor *B, float v=1.0f);
 
     /**
-    *   @brief Inplace element-wise log operation
+    *   @brief In-place element-wise log operation
     */
     void log_();
 
@@ -1213,7 +1213,7 @@ public:
     static void log(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise log2 operation
+    *   @brief In-place element-wise log2 operation
     */
     void log2_();
 
@@ -1231,7 +1231,7 @@ public:
     static void log2(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise log10 operation
+    *   @brief In-place element-wise log10 operation
     */
     void log10_();
 
@@ -1249,7 +1249,7 @@ public:
     static void log10(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise logn operation.
+    *   @brief In-place element-wise logn operation.
     *   @param n The base of the logarithm.
     */
     void logn_(float n);
@@ -1270,7 +1270,7 @@ public:
     static void logn(Tensor *A, Tensor *B, float n);
 
     /**
-    *   @brief Inplace element-wise mod operation.
+    *   @brief In-place element-wise mod operation.
     *   @param v The mod operator
     */
     void mod_(float v);
@@ -1291,7 +1291,7 @@ public:
     static void mod(Tensor *A, Tensor *B, float v);
 
     /**
-    *   @brief Inplace multiplication operation of a tensor by a scalar.
+    *   @brief In-place multiplication operation of a tensor by a scalar.
     *   @param v. The value to multiply by
     */
     void mult_(float v);
@@ -1304,7 +1304,7 @@ public:
     Tensor* mult(float v);
 
     /**
-    *   @brief Inplace element-wise  multiplication operation of two 1D tensors.
+    *   @brief In-place element-wise  multiplication operation of two 1D tensors.
     *   @param A The tensor to multiply by.
     */
     void mult_(Tensor* A); // this = this .* A
@@ -1325,7 +1325,7 @@ public:
     static void mult(Tensor *A, Tensor *B, float v); // B = A * v
 
     /**
-    *   @brief Inplace element-wise change of sign operation.
+    *   @brief In-place element-wise change of sign operation.
     */
     void neg_();
 
@@ -1343,14 +1343,14 @@ public:
     static void neg(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise normalization of values in a given range.
+    *   @brief In-place element-wise normalization of values in a given range.
     *   @param min. The lower bound of the new range
     *   @param max. The upper bound of the new range
     */
     void normalize_(float min=0.0f, float max=1.0f);
 
     /**
-    *   @brief Inplace element-wise normalization of values in a given range.
+    *   @brief In-place element-wise normalization of values in a given range.
     *   @param min. The lower bound of the new range.
     *   @param max. The upper bound of the new range.
     *   @return A tensor with the result.
@@ -1358,7 +1358,7 @@ public:
     Tensor* normalize(float min=0.0f, float max=1.0f);
 
     /**
-    *   @brief Inplace element-wise normalization of values in a given range.
+    *   @brief In-place element-wise normalization of values in a given range.
     *   @param A The tensor where the operation is applied.
     *   @param B The output tensor.
     *   @param min. The lower bound of the new range
@@ -1368,7 +1368,7 @@ public:
 
 
     /**
-    *   @brief Inplace element-wise power operation with base e.
+    *   @brief In-place element-wise power operation with base e.
     *   @param exp The exponent
     */
     void pow_(float exp);
@@ -1389,7 +1389,7 @@ public:
     static void pow(Tensor *A, Tensor *B, float exp);
 
     /**
-    *   @brief Inplace element-wise power operation.
+    *   @brief In-place element-wise power operation.
     *   @param base The base of the power
     */
     void powb_(float base);
@@ -1410,7 +1410,7 @@ public:
     static void powb(Tensor *A, Tensor *B, float base);
 
     /**
-    *   @brief Inplace element-wise reciprocal operation.
+    *   @brief In-place element-wise reciprocal operation.
     */
     void reciprocal_();
 
@@ -1428,7 +1428,7 @@ public:
     static void reciprocal(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise reminder operation.
+    *   @brief In-place element-wise reminder operation.
     *   @param v. The real to divide A by
     */
     void remainder_(float v);
@@ -1449,7 +1449,7 @@ public:
     static void remainder(Tensor *A, Tensor *B, float v);
 
     /**
-    *   @brief Inplace element-wise round operation.
+    *   @brief In-place element-wise round operation.
     */
     void round_();
 
@@ -1467,7 +1467,7 @@ public:
     static void round(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise inverse square root operation.
+    *   @brief In-place element-wise inverse square root operation.
     */
     void rsqrt_();
 
@@ -1485,7 +1485,7 @@ public:
     static void rsqrt(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise sigmoid operation.
+    *   @brief In-place element-wise sigmoid operation.
     */
     void sigmoid_();
 
@@ -1507,7 +1507,7 @@ public:
     static void sign(Tensor *A, Tensor *B, float zero_sign=0.0f);
 
     /**
-    *   @brief Inplace element-wise sin operation.
+    *   @brief In-place element-wise sin operation.
     */
     void sin_();
 
@@ -1525,7 +1525,7 @@ public:
     static void sin(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise sinh operation.
+    *   @brief In-place element-wise sinh operation.
     */
     void sinh_();
 
@@ -1543,7 +1543,7 @@ public:
     static void sinh(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise square operation. More efficient than using pow_(A, 2).
+    *   @brief In-place element-wise square operation. More efficient than using pow_(A, 2).
     */
     void sqr_();
 
@@ -1561,7 +1561,7 @@ public:
     static void sqr(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise square root operation.
+    *   @brief In-place element-wise square root operation.
     */
     void sqrt_();
 
@@ -1579,7 +1579,7 @@ public:
     static void sqrt(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise substraction operation of a tensor and a scalar.
+    *   @brief In-place element-wise substraction operation of a tensor and a scalar.
     *   @param v The value to substract to A.
     */
     void sub_(float v);
@@ -1593,7 +1593,7 @@ public:
     Tensor* sub(float v);
 
     /**
-    *   @brief Inplace element-wise substraction operation of two tensors.
+    *   @brief In-place element-wise substraction operation of two tensors.
     *   @param A. The tensor to substract.
     */
     void sub_(Tensor* A); // this = this .- A
@@ -1614,7 +1614,7 @@ public:
     static void sub(Tensor *A, Tensor *B, float v);
 
     /**
-    *   @brief Inplace element-wise tan operation.
+    *   @brief In-place element-wise tan operation.
     */
     void tan_();
 
@@ -1632,7 +1632,7 @@ public:
     static void tan(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise tanh operation.
+    *   @brief In-place element-wise tanh operation.
     */
     void tanh_();
 
@@ -1650,7 +1650,7 @@ public:
     static void tanh(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise truncate operation.
+    *   @brief In-place element-wise truncate operation.
     */
     void trunc_();
 
@@ -1772,7 +1772,7 @@ public:
     static void fill(Tensor* A, float v);
 
     /**
-    *   @brief Inplace permutation of tensor dimensions
+    *   @brief In-place permutation of tensor dimensions
     *   @param dims A vector containing the new order of the dimensions.
     */
     void permute_(const vector<int>& dims);
@@ -1792,7 +1792,7 @@ public:
     static Tensor* swapaxis(Tensor* A, int axis1, int axis2);
 
     /**
-    *   @brief Set a new shape to a tensor inplace.
+    *   @brief Set a new shape to a tensor in-place.
     *   @param new_shape A vector containing the new shape.
     */
     void reshape_(const vector<int> &new_shape);
@@ -1805,7 +1805,7 @@ public:
     static Tensor* reshape(Tensor *A, const vector<int> &shape);
 
     /**
-    *   @brief Inplace conversion tensor to a 1D tensor.
+    *   @brief In-place conversion tensor to a 1D tensor.
     */
     void flatten_();
 
@@ -2241,7 +2241,7 @@ public:
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
 
     /**
-      *  @brief Return the truth value of the input elements > ``v`` element-wise. Inplace operation.
+      *  @brief Return the truth value of the input elements > ``v`` element-wise. In-place operation.
       *
       *  @param v   Value to make the comparison with.
       *  @return    void
@@ -2284,7 +2284,7 @@ public:
     static void greater(Tensor *A, Tensor *B, Tensor *C);
 
     /**
-      *  @brief Return the truth value of the input elements >= ``v`` element-wise. Inplace operation.
+      *  @brief Return the truth value of the input elements >= ``v`` element-wise. In-place operation.
       *
       *  @param v   Value to make the comparison with.
       *  @return    void
@@ -2328,7 +2328,7 @@ public:
     static void greater_equal(Tensor *A, Tensor *B, Tensor *C);
 
     /**
-      *  @brief Return the truth value of the input elements < ``v`` element-wise. Inplace operation.
+      *  @brief Return the truth value of the input elements < ``v`` element-wise. In-place operation.
       *
       *  @param v   Value to make the comparison with.
       *  @return    void
@@ -2373,7 +2373,7 @@ public:
     static void less(Tensor *A, Tensor *B, Tensor *C);
 
     /**
-      *  @brief Return the truth value of the input elements <= ``v`` element-wise. Inplace operation.
+      *  @brief Return the truth value of the input elements <= ``v`` element-wise. In-place operation.
       *
       *  @param v   Value to make the comparison with.
       *  @return    void
@@ -2417,7 +2417,7 @@ public:
     static void less_equal(Tensor *A, Tensor *B, Tensor *C);
 
     /**
-      *  @brief Return the truth value of the input elements == ``v`` element-wise. Inplace operation.
+      *  @brief Return the truth value of the input elements == ``v`` element-wise. In-place operation.
       *
       *  @param v   Value to make the comparison with.
       *  @return    void
@@ -2461,7 +2461,7 @@ public:
     static void equal(Tensor *A, Tensor *B, Tensor *C);
 
     /**
-      *  @brief Return the truth value of the input elements != ``v`` element-wise. Inplace operation.
+      *  @brief Return the truth value of the input elements != ``v`` element-wise. In-place operation.
       *
       *  @param v   Value to make the comparison with.
       *  @return    void
@@ -2508,7 +2508,7 @@ public:
     // TODO: cross, einsum, flip, dot, etc
 
     /**
-      *  @brief Sort a tensor inplace.
+      *  @brief Sort a tensor in-place.
       *
       *  @param descending   Wether to sort the tensor descending or not.
       *  @param stable   Wether to use stable sorting or not. Stable sorting keeps the order of equal elements.
@@ -2630,21 +2630,21 @@ public:
     void rand_multinomial(); // Todo
 
     /**
-      *  @brief Generates uniformly distributed random samples inplace.
+      *  @brief Generates uniformly distributed random samples in-place.
       *
       *  @param v  Scale factor of the values generated by the uniform distribution.
     */
     void rand_uniform(float v);
 
     /**
-      *  @brief Generates signed uniformly distributed random samples inplace.
+      *  @brief Generates signed uniformly distributed random samples in-place.
       *
       *  @param v  Scale factor of the values generated by the signed uniform distribution.
     */
     void rand_signed_uniform(float v);
 
     /**
-      *  @brief Generates normal distributed random samples inplace.
+      *  @brief Generates normal distributed random samples in-place.
       *
       *  @param m  Mean of the normal distribution.
       *  @param s  Standard deviation of the normal distribution.
@@ -2653,7 +2653,7 @@ public:
     void rand_normal(float m, float s, bool fast_math=true);
 
     /**
-      *  @brief Generates binary distributed random samples inplace.
+      *  @brief Generates binary distributed random samples in-place.
       *
       *  @param v Binarization threshold. 1 if rnd() >= t, 0 otherwise
     */
