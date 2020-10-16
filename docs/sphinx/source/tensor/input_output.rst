@@ -52,7 +52,7 @@ save
     t1->save("save.jpg");
 
 .. image:: ../_static/images/demos/save.jpg
-    :width: 256
+    :width: 100
     :align: center
     :alt: Save tensor as an image
 

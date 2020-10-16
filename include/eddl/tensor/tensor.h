@@ -290,9 +290,8 @@ public:
       *  @param filename    Name of the file to save the tensor to.
       *  @param format    Filetype. The accepted filetypes are the following:
       *                     - Images: png, bmp, tga, jpg, jpeg, hdr.
-      *                     - Numpy: npy, npz
       *                     - Text: csv, tsv, txt
-      *                     - Other: bin, onnx
+      *                     - Other: bin
       *  @return    void
     */
     void save(const string& filename, string format="");
@@ -2082,7 +2081,7 @@ public:
 
     /**
     *   @brief Returns a tensor containing the indices of nonzero elements.
-    *   @param sort_indices Whether to sort the indices or not.
+    *   @param sort_indices Whether to sort the indices or not. (default: not sorted)
     *
     *   @return A tensor containing the indices of the nonzero elements.
     */
