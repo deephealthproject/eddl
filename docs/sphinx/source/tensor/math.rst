@@ -878,7 +878,7 @@ Binary Operations
     // [7.00 7.00 7.00]
     // ]
 
-    //Other ways
+    // Other ways
     Tensor* t3 = t1->add(t2);  // returns new tensor
 
 
