@@ -248,8 +248,7 @@ public:
       *  @param filename  Name of the file to load the tensor from.
       *  @param format    Filetype. The accepted filetypes are the following:
       *                     - Images: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm.
-      *                     - Numpy: npy, npz
-      *                     - Other: bin, onnx
+      *                     - Other: bin
       *  @return    Tensor
     */
     static Tensor* load(const string& filename, string format="");
