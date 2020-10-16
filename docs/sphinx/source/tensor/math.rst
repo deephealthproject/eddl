@@ -626,10 +626,10 @@ rsqrt
 
     t1->rsqrt_();
     // t1 => [nan,  1.8351,  0.8053,   nan]
-sigmoid
+
+Sigmoid
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sigmoid_()
 .. doxygenfunction:: Tensor::sigmoid()
 .. doxygenfunction:: Tensor::sigmoid(Tensor *A, Tensor *B)
 
@@ -637,7 +637,7 @@ sigmoid
 
     Tensor* t1 = new Tensor({0.9213,  1.0887, -0.8858, -1.7683}, {4}, DEV_CPU);
     Tensor* r1;
-    Tensor* r2;
+    Tensor* r2 = Tesor::zeros({1,4});;
     
     r1 = t1->sigmoid();
     // r1 => [0.7153,  0.7481,  0.2920,  0.1458]
@@ -645,10 +645,11 @@ sigmoid
     Tensor::sigmoid(t1, r2);
     // r2 => [0.7153,  0.7481,  0.2920,  0.1458]
 
-    t1->sigmoid_();
+    t1->sigmoid_(); // In-place
     // t1 => [0.7153,  0.7481,  0.2920,  0.1458]
     
-sign
+    
+Sign
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::sign(float zero_sign = 0.0f)
@@ -659,7 +660,7 @@ sign
 
     Tensor* t1 = new Tensor({0.7, -1.2, 0., 2.3}, {4}, DEV_CPU);
     Tensor* r1;
-    Tensor* r2;
+    Tensor* r2 = Tensor::zeros({1,4});
     
     r1 = t1->sign(5);
     // r1 => [1, -1,  5,  1]
@@ -667,22 +668,21 @@ sign
     Tensor::sign(t1, r2, 5);
     // r2 => [1, -1,  5,  1]
 
-    t1->sign_();
+    t1->sign_(5); // In-place
     // t1 => [1, -1,  5,  1]
     
 
-sin
+Sin
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sin_()
 .. doxygenfunction:: Tensor::sin()
 .. doxygenfunction:: Tensor::sin(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-0.5461,  0.1347, -2.7266, -0.2746}, {4}, DEV_CPU);
+    Tensor* t1 = new Tensor({-0.5461,  0.1347, -2.7266, -0.2746}, {4}, DEV_CPU);
     Tensor* r1;
-    Tensor* r2;
+    Tensor* r2 = Tensor::zeros({1,4});
 
     r1 = t1->sin();
     // r1 => [-0.5194,  0.1343, -0.4032, -0.2711]
@@ -690,14 +690,13 @@ sin
     Tensor::sin(t1, r2);
     // r2 => [-0.5194,  0.1343, -0.4032, -0.2711]
 
-    t1->sin_();
+    t1->sin_(); // In-place
     // t1 => [-0.5194,  0.1343, -0.4032, -0.2711]
 
     
-sinh
+Sinh
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sinh_()
 .. doxygenfunction:: Tensor::sinh()
 .. doxygenfunction:: Tensor::sinh(Tensor *A, Tensor *B)
 
@@ -713,26 +712,35 @@ sinh
     Tensor::sinh(t1, r2);
     // r2 => [0.5644, -0.9744, -0.1268,  1.0845]
 
-    t1->sinh_();
+    t1->sinh_(); // In-place
     // t1 => [0.5644, -0.9744, -0.1268,  1.0845]
     
-sqr
+Sqr
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sqr_()
 .. doxygenfunction:: Tensor::sqr()
 .. doxygenfunction:: Tensor::sqr(Tensor *A, Tensor *B)
 
 .. code-block:: c++
-
-    void sqr_();
-    Tensor* sqr();
-    static void sqr(Tensor*A, Tensor*B);
     
-sqrt
+    Tensor* t1 = Tensor::randn({1,4});
+    // t1 => [0.9317, 0.1404, -0.1551, 1.2608]
+
+    Tensor* r1;
+    Tensor* r2 = Tensor::zeros({1,4});
+
+    r1 = t1->sqr();
+    // r1 => [0.8680, 0.0197, 0.0241, 1.5896]
+
+    Tensor::sqr(t1, r2);
+    // r2 => [0.8680, 0.0197, 0.0241, 1.5896]
+
+    t1->sqr_(); // In-place
+    // t1 => [0.8680, 0.0197, 0.0241, 1.5896]
+    
+Sqrt
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sqrt_()
 .. doxygenfunction:: Tensor::sqrt()
 .. doxygenfunction:: Tensor::sqrt(Tensor *A, Tensor *B)
 
@@ -743,20 +751,18 @@ sqrt
     Tensor* r2;
     
     r1 = t1->sqrt();
-    // r1 => [nan,  1.0112,  0.2883,  0.6933]
+    // r1 => [-nan,  1.0112,  0.2883,  0.6933]
 
     Tensor::sqrt(t1, r2);
-    // r2 => [nan,  1.0112,  0.2883,  0.6933]
+    // r2 => [-nan,  1.0112,  0.2883,  0.6933]
 
-    t1->sqrt_();
-    // t1 => [nan,  1.0112,  0.2883,  0.6933]
+    t1->sqrt_(); // In-place
+    // t1 => [-nan,  1.0112,  0.2883,  0.6933]
     
-sub
+Sub
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sub_(float v)
 .. doxygenfunction:: Tensor::sub(float v)
-.. doxygenfunction:: Tensor::sub_(Tensor *A)
 .. doxygenfunction:: Tensor::sub(Tensor *A)
 .. doxygenfunction:: Tensor::sub(Tensor *A, Tensor *B, float v)
 .. doxygenfunction:: Tensor::sub(Tensor *A, Tensor *B, Tensor *C)
@@ -766,30 +772,31 @@ sub
    
     Tensor* t1 = new Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
     Tensor* t2 = new Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
-    Tensor* r3;
-    Tensor* r4;
     
-    Tensor* r1 = t1->sub(10.0);
-    // r1 => [0, 10, 20, -20]
-    
-    Tensor* r2 = t1->sub(t2);  // this = this .- A
-    // r2 => [9, 18, 27, -20]
+    Tensor* r1;
+    Tensor* r2;
+    Tensor* r3 = Tensor::zeros({1,4});
 
-    Tensor::sub(t1, r3, 10.0); // B = A - v
-    // r3 => [0, 10, 20, -20]
-    
-    t2->sub_(t1);  // this = this .- A
-    // t2 => [-9, -18, -27, 0]
+    r1 = t1->sub(10.0f);
+    // r1 => [0.0, 10.0, 20.0, -20.0]
 
-    t1->sub_(10);
-    // t1 => 0, 10, 20, -20]
+    r2 = t1->sub(t2);
+    // r2 => [9.0, 18.0, 27.0, -20.0]
+
+    Tensor::sub(t1, r3, 10.0f);
+    // r3 => [0.0, 10.0, 20.0, -20.0]
+
+    t1->sub_(t2); // In-place
+    // t1 => [9.0, 18.0, 27.0, -20.0]
+
+    t2->sub_(1.0f); // In-place
+    // t2 => [0.0, 1.0, 2.0, 9.0]
     
 
     
-tan
+Tan
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::tan_()
 .. doxygenfunction:: Tensor::tan()
 .. doxygenfunction:: Tensor::tan(Tensor *A, Tensor *B)
 
@@ -797,21 +804,20 @@ tan
 
     Tensor* t1 = new Tensor({-1.2027, -1.7687,  0.4412, -1.3856}, {4}, DEV_CPU);
     Tensor* r1;
-    Tensor* r2;
+    Tensor* r2 = Tensor::zeros({1,4});
     
     r1 = t1->tan();
-    // r1 => [-2.5930,  4.9859,  0.4722, -5.3366]
+    // r1 => [-2.5929,  4.9868,  0.4722, -5.3378]
 
     Tensor::tan(t1, r2);
-    // r2 => [-2.5930,  4.9859,  0.4722, -5.3366]
+    // r2 => [-2.5929,  4.9868,  0.4722, -5.3378]
 
-    t1->tan_();
-    // t1 => [-2.5930,  4.9859,  0.4722, -5.3366]
+    t1->tan_(); // In-place
+    // t1 => [-2.5929,  4.9868,  0.4722, -5.3378]
     
-tanh
+Tanh
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::tanh_()
 .. doxygenfunction:: Tensor::tanh()
 .. doxygenfunction:: Tensor::tanh(Tensor *A, Tensor *B)
 
@@ -819,7 +825,7 @@ tanh
 
     Tensor* t1 = new Tensor({0.8986, -0.7279,  1.1745,  0.261}, {4}, DEV_CPU);
     Tensor* r1;
-    Tensor* r2;
+    Tensor* r2 = Tensor::zeros({1,4});
     
     r1 = t1->tanh();
     // r1 => [0.7156, -0.6218,  0.8257,  0.2553]
@@ -827,13 +833,12 @@ tanh
     Tensor::tanh(t1, r2);
     // r2 => [0.7156, -0.6218,  0.8257,  0.2553]
 
-    t1->tanh_();
+    t1->tanh_(); // In-place
     // t1 => [0.7156, -0.6218,  0.8257,  0.2553]
     
-trunc
+Trunc
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::trunc_()
 .. doxygenfunction:: Tensor::trunc()
 .. doxygenfunction:: Tensor::trunc(Tensor *A, Tensor *B)
 
@@ -841,7 +846,7 @@ trunc
 
     Tensor* t1 = new Tensor({3.4742,  0.5466, -0.8008, -0.9079}, {4}, DEV_CPU);
     Tensor* r1;
-    Tensor* r2;
+    Tensor* r2 = Tensor::zeros({1,4});
     
     r1 = t1->trunc();
     // r1 => [3,  0, -0, -0]
@@ -849,7 +854,7 @@ trunc
     Tensor::trunc(t1, r2);
     // r2 => [3,  0, -0, -0]
 
-    t1->trunc_();
+    t1->trunc_(); // In-place
     // t1 => [3,  0, -0, -0]
 
 
