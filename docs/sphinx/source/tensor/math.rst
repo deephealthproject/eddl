@@ -1,17 +1,10 @@
 Mathematical functions
 ========================
 
-.. note::
-
-    Section in progress
-
-    Read this: https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md
-
-
 Unary Operations
 ------------------
 
-abs
+Abs
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::abs()
@@ -24,18 +17,18 @@ abs
     // [-0.77 -0.46 -0.39]
     // ]
 
-    Tensor* t2 = t1->abs(); // returns a new tensor
+    t1->abs_();  // In-place
     // [
     // [0.31 0.08 1.59]
     // [0.77 0.46 0.39]
     // ]
 
     // Other ways
-    t1->abs_();  // In-place
+    Tensor* t2 = t1->abs(); // returns a new tensor
     Tensor::abs(t1, t2); // static
 
 
-acos
+Acos
 ^^^^^^^^^^^^
 .. doxygenfunction:: Tensor::acos()
 
@@ -43,68 +36,47 @@ acos
 .. code-block:: c++
 
     Tensor* t1 = Tensor::randn({2, 3});
-    //[
-    //[0.421916 -0.809582 0.270156]
-    //[0.421916 -0.809582 0.270156]
-    //]
+    // [
+    // [0.42 -0.80 0.27]
+    // [0.42 -0.80 0.27]
+    // ]
 
-    Tensor* t2 = t1->acos(); //returns a new tensor
-    //[
-    //[1.135239 2.514236 1.297241]
-    //[1.124589 0.785564 1.770275]
-    //]
-
-    //Other ways
     t1->acos_(); // In-place
+    // [
+    // [1.13 2.51 1.29]
+    // [1.12 0.78 1.77]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->acos(); // returns a new tensor
     Tensor::acos(t1, t2); // static
     
     
-    
-add
+Add
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::add(float v)
-.. doxygenfunction:: Tensor::add(Tensor *A)
-
 
 .. code-block:: c++
-   
-    Tensor* t1 = Tensor::randn({2, 3});
-    //[
-    //[-1.077109 0.275531 -1.723440]
-    //[-0.650982 -0.368148 0.603280]
-    //]
 
-    Tensor* t2 = Tensor::randn({2, 3});
-    //[
-    //[0.469210 -0.509885 -0.612898]
-    //[-0.824089 0.211768 0.455668]
-    //]
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
 
-    Tensor* t3 = t1->add(5.0); // returns new tensor
-    //[
-    //[3.922891 5.275531 3.276560]
-    //[4.349018 4.631852 5.603280]
-    //]
-    
-    //Other ways
-    t1->add_(5.0); // In-place 
-    Tensor::add(t1, t2, 5.0); // source
+    t1->add_(2.0); // In-place
+    // [
+    // [7.00 7.00 7.00]
+    // [7.00 7.00 7.00]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->add(2.0f); // returns new tensor
+    Tensor::add(t1, t2, 2.0f); // static
 
 
-    Tensor* t4 = t1->add(t2);  // returns new tensor
-    //[
-    //[-1.077109 0.275531 -1.723440]
-    //[-0.650982 -0.368148 0.603280]
-    //]
-
-    //Other ways
-    t2->add_(t1);  // In-place
-    Tensor::add(1, t1, 2, t2, t5, 1); // t5 = 1*t1+2*t2
-
-
-
-asin
+Asin
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::asin()
@@ -112,23 +84,23 @@ asin
 .. code-block:: c++
 
     Tensor* t1 = Tensor::randn({2, 3});
-    //[
-    //[-0.999594 0.245688 0.393194]
-    //[-0.019528 1.644241 0.011732]
-    //]
+    // [
+    // [-0.99 0.24 0.39]
+    // [-0.01 1.64 0.01]
+    // ]
 
-    Tensor* t2 = t1->asin(); //returns a new tensor
-    //[
-    //[-1.542301 0.248230 0.404103]
-    //[-0.019529 nan 0.011732]
-    //]
-
-    //Other ways
     t1->asin_(); // In-place
+    // [
+    // [-1.54 0.24 0.40]
+    // [-0.01 nan 0.01]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->asin(); // returns a new tensor
     Tensor::asin(t1, t2); // static
 
     
-atan
+Atan
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::atan()
@@ -136,24 +108,23 @@ atan
 .. code-block:: c++
 
     Tensor* t1 = Tensor::randn({2, 3});
-    //[
-    //[-0.825105 -0.042412 0.299847]
-    //[-0.801194 -0.035207 0.511185]
-    //]
+    // [
+    // [-0.82 -0.04 0.29]
+    // [-0.80 -0.03 0.51]
+    // ]
 
-    Tensor* t2 = t1->atan(); //returns a new tensor
-    //[
-    //[-0.689863 -0.042386 0.291317]
-    //[-0.675468 -0.035192 0.472556]
-    //]
-
-    //Other ways
     t1->atan_(); // In-place
+    // [
+    // [-0.68 -0.04 0.29]
+    // [-0.67 -0.03 0.47]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->atan(); // returns a new tensor
     Tensor::atan(t1, t2); // static
 
 
-    
-ceil
+Ceil
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::ceil()
@@ -161,53 +132,44 @@ ceil
 .. code-block:: c++
 
     Tensor* t1 = Tensor::randn({2, 3});
-    //[
-    //[-0.155769 0.637625 -0.761679]
-    //[0.188277 -0.126176 0.181912]
-    //]
+    // [
+    // [-0.15 0.63 -0.76]
+    // [0.18 -0.12 0.18]
+    // ]
 
-    Tensor* t2 = t1->ceil(); //returns a new tensor
-    //[
-    //[-0.000000 1.000000 -0.000000]
-    //[1.000000 -0.000000 1.000000]
-    //]
-
-    //Other ways
     t1->ceil_(); // In-place
+    // [
+    // [-0.00 1.00 -0.00]
+    // [1.00 -0.00 1.00]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->ceil(); // returns a new tensor
     Tensor::ceil(t1, t2); // static
 
 
-clamp
+Clamp
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::clamp(float min, float max)
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::randn({2, 3});
-    //[
-    //[-0.790502 0.085963 0.692432]
-    //[0.624829 0.488210 0.788121]
-    //]
+    Tensor* t1 = Tensor::range(-10.0f, 10.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor* t2 = t1->clamp(0.0, 0.5); //returns a new tensor
-    //[
-    //[0.000000 0.085963 0.500000]
-    //[0.500000 0.488210 0.500000]
-    //]
+    t1->clamp_(-2.0f, 7.0f); // In-place
+    // [-2.00 -2.00 -2.00 -2.00 -1.00 0.00 1.00 2.00 3.00 3.00 3.00]
 
-    //Other ways
-    t1->clamp_(0.0, 0.5); // In-place
-    Tensor::clamp(t1, t2, 0.0, 0.5); // static
+    // Other ways
+    Tensor* t2 = t1->clamp(-2.0f, 7.0f); // returns a new tensor
+    Tensor::clamp(t1, t2, -2.0f, 7.0f); // static
 
 
-    
 clampmax
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clampmax_(float)
 .. doxygenfunction:: Tensor::clampmax(float max)
-.. doxygenfunction:: Tensor::clampmax(Tensor *A, Tensor *B, float max)
 
 .. code-block:: c++
 
@@ -252,9 +214,7 @@ clampmin
 cos
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::cos_()
 .. doxygenfunction:: Tensor::cos()
-.. doxygenfunction:: Tensor::cos(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -275,9 +235,7 @@ cos
 cosh
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::cosh_()
 .. doxygenfunction:: Tensor::cosh()
-.. doxygenfunction:: Tensor::cosh(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -298,67 +256,20 @@ cosh
 div
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::div_(float v)
 .. doxygenfunction:: Tensor::div(float v)
-.. doxygenfunction:: Tensor::div_(Tensor *A)
+
+.. code-block:: c++
+
+    blablabla
+
 .. doxygenfunction:: Tensor::div(Tensor *A)
-.. doxygenfunction:: Tensor::div(Tensor *A, Tensor *B, float v)
 
 
 .. code-block:: c++
    
-    Tensor* t1 = new Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
-    Tensor* r3;
-    Tensor* r4;
-    
-    Tensor* r1 = t1->div(10.0);
-    // r1 => [1, 2, 3, -1]
-    
-    Tensor* r2 = t1->div(t2);  // this = this ./ A
-    // r2 => [10, 10, 10, -1]
-
-    Tensor::div(t1, r3, 10.0); // B = A / v
-    // r3 => [1, 2, 3, -1]
-    
-    t2->div_(t1);  // this = this ./ A
-    // t2 => [0.1, 0.1, 0.1, -1]
-
-    t1->div_(20);
-    // t1 => [1, 2, 3, -1]
+   On the binary section
     
 
-el_div
-^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::el_div
-
-.. code-block:: c++
-
-
-    Tensor* t1 = new Tensor({10, 20, 30, -10, 10, 20, 30, -10}, {2,4}, DEV_CPU);
-    Tensor* t2 = new Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
-    Tensor* r3;
-
-    Tensor::el_div(t1, t2, r3, 1);
-    // r3 => [10, 10, 10, -1
-    //        10, 10, 10, -1]
-
-
-el_mult
-^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::el_mult
-
-.. code-block:: c++
-
-    Tensor* t1 = new Tensor({10, 20, 30, -10, 10, 20, 30, -10}, {2,4}, DEV_CPU);
-    Tensor* t2 = new Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
-    Tensor* r3;
-
-    Tensor::el_mult(t1, t2, r3, 1);
-    // r3 => [10, 40, 90, -100
-    //        10, 40, 90, -100]
 
 exp
 ^^^^^^^^^^^^
@@ -430,15 +341,6 @@ inv
     // t1 => [1,  0.5, 0.33, 0.25]
 
 
-inc
-^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::inc
-
-.. code-block:: c++
-
-    static void inc(Tensor*A, Tensor*B);
-    
 log
 ^^^^^^^^^^^^
 
@@ -557,12 +459,8 @@ mod
 mult
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::mult_(float v)
 .. doxygenfunction:: Tensor::mult(float v)
-.. doxygenfunction:: Tensor::mult_(Tensor *A)
 .. doxygenfunction:: Tensor::mult(Tensor *A)
-.. doxygenfunction:: Tensor::mult(Tensor *A, Tensor *B, float v)
-.. doxygenfunction:: Tensor::mult(Tensor *A, Tensor *B,  Tensor *C)
 
 
 .. code-block:: c++
@@ -958,31 +856,36 @@ trunc
 Binary Operations
 -------------------
 
-add
-^^^^^^^^^^^^
-
 .. doxygenfunction:: Tensor::add(Tensor *A, Tensor *B)
-.. doxygenfunction:: Tensor::add(Tensor *A, Tensor *B, Tensor *C)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor({2, 3, 4, 5}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
 
-    r1 = Tensor::add(t1, t2); //(new)r1 = t1 + t2
-    // r1 => [3, 5, 7, 9] 
+    Tensor* t2 = Tensor::full({2, 3}, 2.0f);
+    // [
+    // [2.00 2.00 2.00]
+    // [2.00 2.00 2.00]
+    // ]
 
-    Tensor::add(t1, t2, r2); // C = A + B
-    // r2 => [3, 5, 7, 9] 
+    t1->add_(t2);  // In-place
+    // [
+    // [7.00 7.00 7.00]
+    // [7.00 7.00 7.00]
+    // ]
+
+    //Other ways
+    Tensor* t3 = t1->add(t2);  // returns new tensor
 
 
 div
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::div(Tensor *A, Tensor *B)
-.. doxygenfunction:: Tensor::div(Tensor *A, Tensor *B, Tensor *C)
 
 .. code-block:: c++
 
