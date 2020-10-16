@@ -1,85 +1,85 @@
 Linear algebra
 ==============
 
-.. note::
-
-    Section in progress
-
-    Read this: https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md
-
 
 Matrix and vector operations
 -------------------------------
 
-interpolate
+Interpolate
 ^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::interpolate(float factor1, Tensor *A, float factor2, Tensor *B)
-.. doxygenfunction:: Tensor::interpolate(float factor1, Tensor *A, float factor2, Tensor *B, Tensor *C)
 
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    Tensor* t1 = new Tensor::Tensor({1,2,3,4,5,6}, {6}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({0,1,2,3,4,5}, {6}, DEV_CPU);
-    Tensor* t3;
+   Tensor* t1 = Tensor::full({2, 3}, 1.0f);
+   // [
+   // [1.00 1.00 1.00]
+   // [1.00 1.00 1.00]
+   // ]
 
-    Tensor* result = Tensor::interpolate(0.5, t1, 0.6, t2); // (new)result = f1*A + f2*B
-    // result => [0.5, 1.6, 2.7, 3.8, 4.9, 6]
+   Tensor* t2 = Tensor::full({2, 3}, 10.0f);
+   // [
+   // [10.00 10.00 10.00]
+   // [10.00 10.00 10.00]
+   // ]
 
-    Tensor::interpolate(0.5, t1, 0,6, t2, t3);  // t3 = f1*A + f2*B
-    // t3 => [0.5, 1.6, 2.7, 3.8, 4.9, 6]
+    Tensor* t3 = Tensor::interpolate(2.5f, t1, 0.5f, t2);  // a*t1 + b*t2
+   // [
+   // [7.50 7.50 7.50]
+   // [7.50 7.50 7.50]
+   // ]
 
 
-trace
+Trace
 ^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::trace(int k = 0)
-.. doxygenfunction:: Tensor::trace(Tensor *A, int k = 0)
 
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    Tensor* matrix1 = Tensor::eye(3, 3, DEV_CPU);
-    // matrix1 => [1 3 3
-    //             3 1 3
-    //             3 3 1]
+   Tensor* t1 = new Tensor({1, 3, 5, 4, 1, 3, 5, 4, 1}, {3, 3});
+   // [
+   // [1.00 3.00 5.00]
+   // [4.00 1.00 3.00]
+   // [5.00 4.00 1.00]
+   // ]
 
-    float tr =  matrix1->trace(0); // tr = 3
-    float tr2 = Tensor::trace(matrix1, 0); // tr2 = 3
+   float tr0 = t1->trace(0);
+   // 3
+
+   float tr1 = t1->trace(1);
+   // 6
 
 
-norm
+Norm
 ^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::norm(string ord = "fro")
-.. doxygenfunction:: Tensor::norm(Tensor *A, string ord = "fro")
 .. doxygenfunction:: Tensor::norm(vector<int> axis, bool keepdims, string ord = "fro")
 
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    Tensor* matrix1 = Tensor::eye(3, 3, DEV_CPU);
-    // matrix1 => [1 3 3
-    //             3 1 3
-    //             3 3 1]
+   Tensor* t1 = new Tensor({1,2,3,4,5,6}, {3, 2});
+   // [
+   // [1.00 2.00 3.00]
+   // [4.00 5.00 6.00]
+   // ]
 
-    Tensor* t1 = new Tensor::Tensor({1,2,3,4,5,6}, {6}, DEV_CPU);
+   // Global (reduce on all axis)
+   float n1 = t1->norm();
+   // 9.53939
 
+   // Reduced on axis 0
+   Tensor* t2 = t1->norm({0}, false); // keepdims==false
+   // [4.12 5.39 6.71]
 
-    float m_norm = matrix1->norm(); //Frobenius norm of matrix1
-    // m_norm => 7.5498
-
-    float t_norm = Tensor::norm(t1); //Frobenius norm of t1
-    // t_norm => 9.5394
-
-    Tensor* m_norm2 = matrix1->norm({0}, false);//Frobenius norm over rows in matrix1
-    // m_norm2 => [4.3589, 4.3589, 4.3589]
-
+   // Other ways
+   Tensor::norm(t1, "fro");
 
