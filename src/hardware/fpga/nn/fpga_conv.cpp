@@ -89,6 +89,9 @@ void fpga_conv2D(ConvolDescriptor *D)
   if ((stride_rows == 1) && (stride_cols == 1) && (Krows == 3) && (Kcols == 3) && (batch_size == 1) && (padding_rows == 1) && (padding_cols == 1)) {
     fpga_conv2D_K3x3_S1x1_P1x1_BS1(I, Irows, Icols, Ichannels, K, B, O, Ochannels);
   } else {
+    #if !defined(K_ENABLED_CONV2D)
+    fpga_cpuemu_conv2D(D);
+    #else
     OCL_CHECK(err, err = kernel_conv2d.setArg(0, batch_size));
     OCL_CHECK(err, err = kernel_conv2d.setArg(1, I));
     OCL_CHECK(err, err = kernel_conv2d.setArg(2, Irows));    // input
@@ -110,6 +113,7 @@ void fpga_conv2D(ConvolDescriptor *D)
 
     OCL_CHECK(err, err = q.enqueueTask(kernel_conv2d, NULL, &event));
     q.finish();
+    #endif
   }
 #endif
   _profile_fpga(_FPGA_CONV2D, 1);

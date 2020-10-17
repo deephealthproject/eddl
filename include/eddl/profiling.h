@@ -35,3 +35,14 @@
                     prof_##fn##_calls, prof_##fn##_time, \
             100.0 * prof_##fn##_time / acc, (float) prof_##fn##_time / (float) prof_##fn##_calls);
 #endif
+
+
+
+//CxHxW
+//
+//HxWxC
+//
+//GxHxWxC (C=4)   Reshape + Permute
+//
+//32xHxW -> Reshape -> 8x4xHxW -> Permute(0, 2, 3, 1) -> 8xHxWx4   // hay capas y funciones
+

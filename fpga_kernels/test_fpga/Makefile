@@ -1,5 +1,5 @@
 # list of kernel test to compile
-LIST ?=conv2D_K3x3_S1x1_P1x1_BS1
+LIST ?=conv2D_K3x3_S1x1_P1x1_BS1_ap
 
 # default target
 all build clean cleanall: KERNELS

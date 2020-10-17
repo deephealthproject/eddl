@@ -331,8 +331,11 @@ void fpga_init(){ // initialize only once
     cl_int err;
     std::string binaryFile = "eddl.xclbin";
     unsigned fileBufSize;
-    std::vector<cl::Device> devices = xcl::get_xil_devices();
-    cl::Device device = devices[0];
+    //std::vector<cl::Device> devices = xcl::get_xil_devices();
+    //cl::Device device = devices[0];
+    auto devices = xcl::get_xil_devices();
+    auto device = devices[0];
+
     OCL_CHECK(err, context = cl::Context(device, NULL, NULL, NULL, &err));
     OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
     char *fileBuf = xcl::read_binary_file(binaryFile, fileBufSize);
@@ -342,8 +345,27 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, program = cl::Program(context, devices, bins, NULL, &err));
 
     #ifdef K_ENABLED_RELU
+    printf("creating ReLu kernel\n");
     OCL_CHECK(err, kernel_relu = cl::Kernel(program,"k_relu", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
+
+  // prueba
+  cl::Event event;
+  cl::Buffer b1;
+  cl::Buffer b2;
+  long sizeA = 1024;
+  OCL_CHECK(err,b1 = cl::Buffer(context,CL_MEM_READ_WRITE, sizeA*sizeof(float), NULL, &err));
+  OCL_CHECK(err,b2 = cl::Buffer(context,CL_MEM_READ_WRITE, sizeA*sizeof(float), NULL, &err));
+  OCL_CHECK(err, err = kernel_relu.setArg(0, b1));
+  OCL_CHECK(err, err = kernel_relu.setArg(1, b2));
+  OCL_CHECK(err, err = kernel_relu.setArg(2, sizeA));
+  OCL_CHECK(err, err = q.enqueueTask(kernel_relu, NULL, &event));
+  printf("relu kernel lanzado en init\n");
+  //  event.wait();
+  q.finish();
+
+
+
     #endif
     #ifdef K_ENABLED_D_RELU
     OCL_CHECK(err, kernel_d_relu = cl::Kernel(program,"k_d_relu", &err));
@@ -637,6 +659,38 @@ void fpga_init(){ // initialize only once
     #ifdef K_ENABLED_CONV2D_K3X3_S1X1_P1X1_BS1
     OCL_CHECK(err, kernel_conv2D_K3x3_S1x1_P1x1_BS1 = cl::Kernel(program, "k_conv2D_K3x3_S1x1_P1x1_BS1", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
+
+    // prueba
+    cl::Event event1;
+    cl::Buffer I;
+    cl::Buffer K;
+    cl::Buffer B;
+    cl::Buffer O;
+    int Ich = 4;
+    int W = 256;
+    int H = 256;
+    int Och = 4;
+    int arg = 0;
+
+    OCL_CHECK(err,I = cl::Buffer(context,CL_MEM_READ_WRITE, Ich * W * H * sizeof(float), NULL, &err));
+    OCL_CHECK(err,K = cl::Buffer(context,CL_MEM_READ_WRITE, 3 * 3 * Ich * Och * sizeof(float), NULL, &err));
+    OCL_CHECK(err,B = cl::Buffer(context,CL_MEM_READ_WRITE, Och * sizeof(float), NULL, &err));
+    OCL_CHECK(err,O = cl::Buffer(context,CL_MEM_READ_WRITE, Och * W * H * sizeof(float), NULL, &err));
+
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, H));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, W));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, Ich));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, K));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, B));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, Och));
+
+    OCL_CHECK(err, err = q.enqueueTask(kernel_conv2D_K3x3_S1x1_P1x1_BS1, NULL, &event1));
+    printf("conv kernel lanzado en init\n");
+    //  event.wait();
+    q.finish();
+
     #endif
     #ifdef K_ENABLED_RANGE
     OCL_CHECK(err, kernel_range = cl::Kernel(program,"k_range", &err));
