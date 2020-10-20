@@ -208,6 +208,26 @@ if(BUILD_OPENMP)
         target_link_directories(${PROJECT_NAME} PUBLIC ${OpenMP_DIR}/lib)
         target_link_libraries(${PROJECT_NAME} PUBLIC libomp libiomp5md)
     else()
+
+        # I had some problems with OpenMP on my mac so to fix it, I found this:
+        # https://stackoverflow.com/questions/46414660/macos-cmake-and-openmp
+        if(APPLE)
+            set(CMAKE_C_COMPILER clang)
+            set(CMAKE_CXX_COMPILER clang++)
+
+            if(CMAKE_C_COMPILER_ID MATCHES "Clang\$")
+                set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
+                set(OpenMP_C_LIB_NAMES "omp")
+                set(OpenMP_omp_LIBRARY omp)
+            endif()
+
+            if(CMAKE_CXX_COMPILER_ID MATCHES "Clang\$")
+                set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
+                set(OpenMP_CXX_LIB_NAMES "omp")
+                set(OpenMP_omp_LIBRARY omp)
+            endif()
+        endif()
+
         find_package(OpenMP 4.5)
         if (OpenMP_CXX_FOUND)
             target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
