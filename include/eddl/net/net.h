@@ -106,6 +106,10 @@ public:
     Net *unroll_dec(int inl, int outl);
     void build_rnet(int inl,int outl);
     Layer* getLayer(vlayer in);
+    Layer* getLayer(string l);
+    void removeLayer(string l);
+    void setTrainable(string lanme, bool val);
+
 
     int inNet(Layer *l);
     void walk(Layer *l);

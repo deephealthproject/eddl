@@ -66,6 +66,10 @@ typedef NetLoss * metric;
     void setName(model m, string name);
 
     layer getLayer(Net *net, vlayer in);
+    layer getLayer(Net *net, string l);
+    void removeLayer(Net *net, string l);
+    void setTrainable(model net, string lanme, bool val);
+
 
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
 
@@ -1647,7 +1651,6 @@ typedef NetLoss * metric;
     layer Decoder(layer l, layer ld, string op="concat");
 
     // Layers Methods
-    void set_trainable(layer l, bool val);
     vlayer getOut(model net);
 
     // Manage tensors inside layers

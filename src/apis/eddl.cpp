@@ -49,6 +49,22 @@ namespace eddl {
       return net->getLayer(in);
     }
 
+    layer getLayer(model net, string lname)
+    {
+      return net->getLayer(lname);
+    }
+
+    void removeLayer(model net, string lname)
+    {
+      net->removeLayer(lname);
+    }
+
+    void setTrainable(model net, string lname, bool val)
+    {
+        net->setTrainable(lname,val);
+    }
+
+
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
         if (cs== nullptr){
@@ -1042,10 +1058,6 @@ namespace eddl {
     //////////////////////////////
     // Layers Methods
     //////////////////////////////
-    void set_trainable(layer l, bool val)
-    {
-        l->set_trainable(val);
-    }
 
     vlayer getOut(model net)
     {
@@ -1266,7 +1278,7 @@ namespace eddl {
     void download_flickr(){
       download_dataset("flickr","bin",{"452pyxe9x5jpnwb","24c2d5bm6pug8gg"});
     }
-    
+
     void download_drive(){
       download_dataset("drive","npy",{"sbd8eu32adcf5oi","qp0j8oiqzf6tc1a"});
     }

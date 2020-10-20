@@ -160,6 +160,7 @@ void Tensor::reshape_(const vector<int> &new_shape){
 
     // Check if the new size is compatible
     if(new_size!=this->size){
+        cout<<new_size<<"!="<<size<<endl;
         msg("Not compatible shapes", "Tensor::reshape_");
     }
 

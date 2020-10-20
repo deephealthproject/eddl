@@ -24,9 +24,7 @@ bool cpu_all(Tensor *A){
             {
                 res = false;
             }
-#if OpenMP_VERSION_MAJOR >= 4
             #pragma omp cancel for
-#endif // OpenMP_VERSION_MAJOR >= 4
         }
     }
     _profile(_CPU_ALL, 1);
@@ -46,9 +44,8 @@ bool cpu_any(Tensor *A){
             {
                 res = true;
             }
-#if OpenMP_VERSION_MAJOR >= 4
             #pragma omp cancel for
-#endif // OpenMP_VERSION_MAJOR >= 4
+
         }
     }
     _profile(_CPU_ANY, 1);
@@ -158,9 +155,7 @@ bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
                 if(first_idx < 0) { first_idx=i; }
 
             }
-#if OpenMP_VERSION_MAJOR >= 4
             #pragma omp cancel for
-#endif // OpenMP_VERSION_MAJOR >= 4
         }
     }
     _profile(_CPU_ALLCLOSE, 1);

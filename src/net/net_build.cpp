@@ -513,6 +513,64 @@ void Net::resize(int b)
 
 }
 
+void Net::setTrainable(string lname, bool val)
+{
+  for(int i=0;i<layers.size();i++) {
+    if (layers[i]->name==lname) {
+      Layer *l=layers[i];
+      l->trainable=val;
+
+      for(int j=0;j<snets.size();j++) {
+        for(int k=0;k<snets[j]->layers.size();k++)
+          if (snets[j]->layers[k]->orig==l) snets[j]->layers[k]->trainable=val;
+      }//snets
+    }//if
+  }//layers
+}
+
+
+void Net::removeLayer(string lname)
+{
+  for(int i=0;i<layers.size();i++) {
+    if (layers[i]->name==lname) {
+      cout<<"removing "<<lname<<endl;
+      Layer *l=layers[i];
+
+      for(int j=0;j<l->parent.size();j++) {
+        Layer *p=l->parent[j];
+        for(int k=0;k<p->child.size();k++) {
+          if (p->child[k]==l) {
+            p->child.erase(p->child.begin() + k);
+          }
+        }//child
+        // create new outputs from parents
+        lout.push_back(p);
+      }//parent
+
+      // remove lname from out if is in
+      //layers.erase(layers.begin() + i);
+      for(int j=0;j<lout.size();j++) {
+        cout<<lout[j]->name<<endl;
+        if (lout[j]->name==lname) lout.erase(lout.begin()+j);
+      }
+      // remove lname from list of layers
+      layers.erase(layers.begin() + i);
+      delete l;
+      return;
+    }//if
+  }// for layers
+}
+
+Layer * Net::getLayer(string lname)
+{
+  for(int i=0;i<layers.size();i++) {
+    //cout<<layers[i]->name<<endl;
+    if (layers[i]->name==lname) return layers[i];
+  }
+
+  return nullptr;
+}
+
 Layer * Net::getLayer(vlayer in)
 {
   int i,j,k,l,ind;

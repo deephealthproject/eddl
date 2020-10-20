@@ -145,7 +145,7 @@ void Layer::resize(int batch){
 
 }
 
-void Layer::set_trainable(bool value){
+void Layer::setTrainable(bool value){
     trainable=value;
 }
 
