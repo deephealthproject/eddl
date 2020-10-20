@@ -14,12 +14,12 @@
 
 #include <hls_stream.h>
 
-#define DEBUG_VERBOSE
+// #define DEBUG_VERBOSE
 
 extern "C" {
 
-#define data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
-//#define data_type float
+// #define data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
+#define data_type float
 
 // To allow using defines inside Xilinx pragmas
 #define PRAGMA_SUB(x) _Pragma (#x)
@@ -28,9 +28,9 @@ extern "C" {
 // Fixed parameters (optimized at compilation/synthesis time)
 #define KW       3  // kernel width
 #define KH       3  // kernel height
-#define CPI      16  // channels per input port
-#define CPO      16  // channels per output port
-//
+#define CPI      4  // channels per input port
+#define CPO      4  // channels per output port
+
 #define WMAX 256
 #define WHMAX 256*256
 
@@ -53,82 +53,75 @@ struct frame_t {
   pixel_in_t pixel[9];
 };
 
-// --------------------------------------------------------------------------------------
-// read_input:
-// The function reads and writes the kernels, bias and data in different stream.
-// Data are sent to padding module, kenels to mul and bias to add modules.
-// LOOP FLOW
-// ko = 0
-// b = 0
-//   for o_iter 0 .. n
-//        read bias[b..b+3]
-//        b = b + 4
-//        d = 0
-//        ki = 0
-//        for i_iter 0 .. n
-//            read kernel[ki..ki+3][ko..ko+3]
-//            ki = ki +4
-//            read data[d..d+3]
-//            d = d + 4
-//
-//        ko = ko + 4
-//
+// ---------------------------------------------------------------------------------------
+// read_bias. Reading bias from memory and sending to add module.
 //
 // Arguments:
-//   ptr  : Pointer to input data (in)
-//   k_ptr: pointer to kernels (in)
-//   b_ptr: pointer to bias (in)
-//   out  : data output stream (out)
-//   k_out: pointer to kernel (out)
-//   b_out: pointer to bias (out)
+//   b_ptr                : pointer to bias
+//   b_out               :  output streams
 //
-static void read_input(int H, int W, int I, int O, int I_ITER, int O_ITER, pixel_in_t *ptr, data_type *k_ptr, data_type *b_ptr, hls::stream<frame_t> &k_out, hls::stream<pixel_out_t> &b_out, hls::stream<pixel_in_t> &out) {
+static void read_bias(int O_ITER, data_type *b_ptr, hls::stream<pixel_out_t> &b_out){
 
 #ifdef DEBUG_VERBOSE
-  printf("read_input: start\n");
+  printf("read_bias: start\n");
+#endif
+  pixel_out_t bias;
+  #pragma HLS ARRAY_PARTITION variable=bias dim=0
+
+  for (int o_iter = 0; o_iter < O_ITER; o_iter++){
+    // printf("o_iter = %d \n ", o_iter);
+    //Sending bias to add in pack of CPO bias
+    read_loop_bias_load:
+      for (int b=0; b<CPO; b++) {
+        #pragma HLS PIPELINE II=1
+        data_type v = b_ptr[b+CPO*o_iter];
+        bias.pixel[b] = v;
+      }
+      b_out << bias;
+    }
+#ifdef DEBUG_VERBOSE
+  printf("read_bias: end\n");
+#endif
+}
+
+// ---------------------------------------------------------------------------------------
+// read_kernel. Adds padding to the input and forwards it through the output
+//
+// Arguments:
+//   k_ptr                : pointer to kernels
+//   k_out               :  output stream
+//
+static void read_kernel(int O_ITER, int I_ITER, data_type *k_ptr, hls::stream<frame_t> &k_out){
+
+#ifdef DEBUG_VERBOSE
+  printf("read_kernel: start\n");
 #endif
 
   frame_t frame_k;
   #pragma HLS ARRAY_PARTITION variable=frame_k dim=0
-
-  pixel_out_t bias;
-  #pragma HLS ARRAY_PARTITION variable=bias dim=0
-
-  pixel_in_t data;
-  #pragma HLS ARRAY_PARTITION variable=data dim=0
-
+  //Sending kernels to mul in pack of CPI*CPO kernels
+  int kernel_size_cpo = CPO*KH*KW; //kernels size each i_iter
+  int i_offset = I_ITER * CPI * CPO * KH * KW; //addr_k offset for each i_iter
+  int cpo = 0; //index for kernel size
+  int kx = 0; //index for channels
 
   read_input_o_iter_loop:
   for (int o_iter = 0; o_iter < O_ITER; o_iter++){
-    //Sending bias to add in pack of CPO bias
-    // int data_pointer = 0;
-    read_loop_bias_load:
-      for (int b=0; b<CPO; b++) {
-        #pragma HLS PIPELINE II=1
-        //data_type v = b_ptr[b];
-        bias.pixel[0] = 1;
-        b_out << bias;
-      }
     read_input_i_iter_loop:
     for (int i_iter = 0; i_iter < I_ITER; i_iter++){
-      // printf("o_iter = %d -- i_iter = %d \n ", o_iter, i_iter);
-      //Sending kernels to mul in pack of CPI*CPO kernels
-      int kernel_size_cpo = CPO*KH*KW; //kernels size each i_iter
-      int i_offset = I_ITER * CPI * CPO * KH * KW; //addr_k offset for each i_iter
-      int cpo = 0; //index for kernel size
-      int kx = 0; //index for channels
+
       read_loop_kernel_load_ext:
       for(int i = 0; i < CPI; i++){
         // printf("i = %d -- kernel_size_cpo = %d \n", i, kernel_size_cpo);
         read_loop_kernel_load_int:
         for (int j = 0; j < kernel_size_cpo; j++) {
-           // int addr_k = j + i*kernel_size_cpo*I_ITER + i_iter*i_offset + o_iter*kernel_size_cpo;
-           // data_type v = k_ptr[addr_k];
-          frame_k.pixel[kx].pixel[cpo] = 1;
+          int addr_k = j + i*kernel_size_cpo*I_ITER + i_iter*i_offset + o_iter*kernel_size_cpo;
+          data_type v = k_ptr[addr_k];
+          frame_k.pixel[kx].pixel[cpo] = v;
 
           #ifdef DEBUG_VERBOSE
-          //printf("[%d]:", addr_k);
-          //printf("%6.4f ", float(v));
+          printf("[%d]:", addr_k);
+          printf("%6.4f ", v);
           #endif
 
           kx = kx + 1;
@@ -143,30 +136,45 @@ static void read_input(int H, int W, int I, int O, int I_ITER, int O_ITER, pixel
           }
         }
       }
-
-    //Sending data to padding  in pack of CPI channels
-
-    read_loop_data_load_i:
-      for (int r=0; r<H*W; r++) {
-        #pragma HLS PIPELINE II=1
-        // printf("r = %d \n", r);
-        // data = ptr[offset_read];
-        #ifdef DEBUG_VERBOSE
-        printf("data.pixel[0] = %6.2f  ", float(data.pixel[0]));
-        printf("data.pixel[1] = %6.2f  ", float(data.pixel[1]));
-        printf("data.pixel[2] = %6.2f  ", float(data.pixel[2]));
-        printf("data.pixel[3] = %6.2f  \n", float(data.pixel[3]));
-        #endif
-        out  << ptr[r];
-        // data_pointer++;
-      }
-
-   } //i_iter
-} //o_iter
-
+    } //i_iter
+  } //o_iter
 
 #ifdef DEBUG_VERBOSE
-  printf("read_input: end\n");
+  printf("read_kernel: end\n");
+#endif
+
+}
+
+// --------------------------------------------------------------------------------------
+// read_data: Reading data from memory and sending to conv module
+// Arguments:
+//   ptr  : Pointer to input data (in)
+//   out  : data output stream (out)
+//
+static void read_data(int H, int W, int I_ITER, int O_ITER, pixel_in_t *ptr, hls::stream<pixel_in_t> &out) {
+
+#ifdef DEBUG_VERBOSE
+  printf("read_data: start\n");
+#endif
+
+  read_input_o_iter_loop:
+  for (int o_iter = 0; o_iter < O_ITER; o_iter++){
+    //Sending data to padding  in pack of CPI channels
+    read_loop_data_load_i:
+      for (int r=0; r<H*W*I_ITER; r++) {
+        #pragma HLS PIPELINE II=1
+        #ifdef DEBUG_VERBOSE
+        printf("addres = %d \n", r);
+        pixel_in_t data;
+        data = ptr[r];
+        for(int cpi = 0;cpi<CPI;cpi++) printf("data.pixel[%d] = %6.2f  ", cpi, float(data.pixel[cpi]));
+        #endif
+        out  << ptr[r];
+      }
+    } //o_iter
+
+#ifdef DEBUG_VERBOSE
+  printf("read_data: end\n");
 #endif
 }
 
@@ -202,14 +210,18 @@ for (int cpi=0; cpi<CPI; cpi++) zero.pixel[cpi] = 0.f;
         #pragma HLS_PIPELINE II=1
         if (h==0 || h == H+1 || w == 0 || w == W+1) {
           data = zero;
-        } else {
-	  data = in.read();
-	}
+        }
+        else {
+	         data = in.read();
+	      }
+        #ifdef DEBUG_VERBOSE
+        for(int cpi = 0;cpi<CPI;cpi++) printf("data.pixel[%d] = %6.2f  ", cpi, float(data.pixel[cpi]));
+        printf("\n");
+        #endif
         out << data;
       }
     }
   } // iter
-
 
 
 #ifdef DEBUG_VERBOSE
@@ -262,23 +274,15 @@ static void write_output(int H, int W, int O_ITER, pixel_out_t *ptr, hls::stream
 #endif
 
 
-
-  // int data_pointer = 0;
-
-  // write_output_o_iter_loop:
-  // for (int o_iter = 0; o_iter<O_ITER; o_iter++){
-    //writes must be performed with pixel_in_t struct
     write_output_data_size_loop:
     for (int i=0; i<H*W*O_ITER; i++) {
       pixel_out_t p = in.read();
       ptr[i] = p;
-      // data_pointer++;
       #ifdef DEBUG_VERBOSE
       printf("i = %d \n",  i);
       for (int cpo=0; cpo<CPO; cpo++) printf("ptr--p.pixel[%d] = %6.2f \n", cpo, float(p.pixel[cpo]));
       #endif
     }
-  // } //o_iter
 
 
 
@@ -532,13 +536,22 @@ static void add(int H, int W, int I_ITER, int O_ITER, hls::stream<pixel_out_t> &
   for (int o_iter = 0; o_iter<O_ITER; o_iter++){
 
     //We receive bias in packs of CPO
+    // add_load_bias_loop:
+    // for (int b=0; b<CPO; b++) {
+    //   #pragma HLS PIPELINE II=1
+    //   pixel_out_t p_out;
+    //   p_out = b_in.read();
+    //   bias[b] = p_out.pixel[0];
+    // }
+    //We receive bias in packs of CPO
+    pixel_out_t p_out;
+    p_out = b_in.read();
     add_load_bias_loop:
     for (int b=0; b<CPO; b++) {
       #pragma HLS PIPELINE II=1
-      pixel_out_t p_out;
-      p_out = b_in.read();
-      bias[b] = p_out.pixel[0];
+      bias[b] = p_out.pixel[b];
     }
+
 
     #ifdef DEBUG_VERBOSE
     for (int b=0; b<CPO; b++) {
@@ -650,9 +663,10 @@ static void conv(int H, int W, int I, int O, int I_ITER, int O_ITER, hls::stream
   static hls::stream<frame_t>     str_cvt_mul;  // cvt->mul
   static hls::stream<pixel_out_t> str_mul_add;  // mul->add
 
+  int ITER = O_ITER*I_ITER;
   // topology
   #pragma HLS dataflow
-  padding(H, W, I_ITER * O_ITER, in, str_pad_cvt);          // padding
+  padding(H, W, ITER, in, str_pad_cvt);          // padding
   cvt(H, W, I_ITER, O_ITER, str_pad_cvt, str_cvt_mul, 0);  // cvt
   mul(H, W, I_ITER, O_ITER, str_cvt_mul, k_in, str_mul_add, 0);  // mul
   add(H, W, I_ITER, O_ITER, str_mul_add, b_in, out);             // add
@@ -664,9 +678,9 @@ void k_conv2D_K3x3_S1x1_P1x1_BS1_ap(pixel_in_t *ptr_data, int H, int W, int I, d
   #pragma HLS INTERFACE s_axilite port=H bundle=control
   #pragma HLS INTERFACE s_axilite port=I bundle=control
   #pragma HLS INTERFACE s_axilite port=O bundle=control
-  #pragma HLS INTERFACE m_axi port=ptr_data offset=slave bundle=gmem   max_read_burst_length=256 max_write_burst_length=256
-  #pragma HLS INTERFACE m_axi port=ptr_kernel offset=slave bundle=gmem max_read_burst_length=256 max_write_burst_length=256
-  #pragma HLS INTERFACE m_axi port=ptr_bias offset=slave bundle=gmem   max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_data offset=slave bundle=gmem  max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_kernel offset=slave bundle=gmem1 max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_bias offset=slave bundle=gmem2   max_read_burst_length=256 max_write_burst_length=256
   #pragma HLS INTERFACE m_axi port=ptr_out  offset=slave bundle=gmem   max_read_burst_length=256 max_write_burst_length=256
   #pragma HLS INTERFACE s_axilite port=return bundle=control
 
@@ -679,21 +693,23 @@ void k_conv2D_K3x3_S1x1_P1x1_BS1_ap(pixel_in_t *ptr_data, int H, int W, int I, d
   int O_ITER = O/CPO;
 
   // input and output streams
-  static hls::stream<pixel_in_t> out_read;
+  static hls::stream<pixel_in_t> out_read_data;
   static hls::stream<frame_t> out_read_kernel;
   static hls::stream<pixel_out_t> out_read_bias;
   static hls::stream<pixel_out_t> out_conv;
 
   // stream sizes
-  #pragma HLS STREAM variable = out_read depth = 32
+  #pragma HLS STREAM variable = out_read_data depth = 32
   #pragma HLS STREAM variable = out_read_kernel depth = 32
   #pragma HLS STREAM variable = out_read_bias depth = 32
   #pragma HLS STREAM variable = out_conv depth = 32
-  #pragma HLS STREAM variable = out_relu depth = 32
+  // #pragma HLS STREAM variable = out_relu depth = 32
 
   #pragma HLS dataflow
-  read_input(H, W, I, O, I_ITER, O_ITER, ptr_data, ptr_kernel, ptr_bias, out_read_kernel, out_read_bias, out_read);
-  conv(H, W, I, O, I_ITER, O_ITER, out_read, out_read_kernel, out_read_bias, out_conv);
+  read_data(H, W, I_ITER, O_ITER, ptr_data, out_read_data);
+  read_bias(O_ITER, ptr_bias, out_read_bias);
+  read_kernel(O_ITER, I_ITER, ptr_kernel, out_read_kernel);
+  conv(H, W, I, O, I_ITER, O_ITER, out_read_data, out_read_kernel, out_read_bias, out_conv);
   write_output(H, W, O_ITER, ptr_out, out_conv);
 }
 
