@@ -427,7 +427,22 @@ Sigmoid
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [0.11 0.87 0.18]
+    // [2.13 -0.13 0.12]
+    // ]
+
+
+    t1->sigmoid_();  // In-place
+    // [
+    // [0.53 0.70 0.54]
+    // [0.89 0.47 0.53]
+    // ]
+
+    // Other ways 
+    Tensor* t2 = t1->sigmoid(); // returns a new tensor
+    Tensor::sigmoid(t1, t2); // static
     
     
 Sign
@@ -439,7 +454,16 @@ Sign
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::linspace(-1,1,5);
+    // [-1.00 -0.50 0.00 0.50 1.00]
+
+
+    t1->sign_(5);  // In-place
+    // [-1.00 -1.00 5.00 1.00 1.00]
+
+    // Other ways
+    Tensor* t2 = t1->sign(5); // returns a new tensor
+    Tensor::sign(t1, t2, 5); // static
     
 
 Sin
