@@ -55,7 +55,7 @@ Acos
 Add
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::add(float v)
+.. doxygenfunction:: Tensor::add(float)
 
 .. code-block:: c++
 
@@ -151,109 +151,196 @@ Ceil
 Clamp
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clamp(float min, float max)
+.. doxygenfunction:: Tensor::clamp(float, float)
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(-10.0f, 10.0f);
+    Tensor* t1 = Tensor::range(-5.0f, 5.0f);
     // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    t1->clamp_(-2.0f, 7.0f); // In-place
+    t1->clamp_(-2.0f, 3.0f); // In-place
     // [-2.00 -2.00 -2.00 -2.00 -1.00 0.00 1.00 2.00 3.00 3.00 3.00]
 
     // Other ways
-    Tensor* t2 = t1->clamp(-2.0f, 7.0f); // returns a new tensor
-    Tensor::clamp(t1, t2, -2.0f, 7.0f); // static
+    Tensor* t2 = t1->clamp(-2.0f, 3.0f); // returns a new tensor
+    Tensor::clamp(t1, t2, -2.0f, 3.0f); // static
 
 
-clampmax
+Clampmax
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clampmax(float max)
+.. doxygenfunction:: Tensor::clampmax(float)
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::range(-5.0f, 5.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
+
+    t1->clampmax_(3.0f); // In-place
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 3.00 3.00]
+
+    // Other ways
+    Tensor* t2 = t1->clampmax(3.0f); // returns a new tensor
+    Tensor::clampmax(t1, t2, 3.0f); // static
    
 
     
-clampmin
+Clampmin
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clampmin_(float)
-.. doxygenfunction:: Tensor::clampmin(float min)
-.. doxygenfunction:: Tensor::clampmin(Tensor *A, Tensor *B, float min)
+
+.. doxygenfunction:: Tensor::clampmin(float)
 
 .. code-block:: c++
 
-    blablabla
+     Tensor* t1 = Tensor::range(-5.0f, 5.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
+
+    t1->clampmin_(3.0f); // In-place
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 3.00 3.00]
+
+    // Other ways
+    Tensor* t2 = t1->clampmin(3.0f); // returns a new tensor
+    Tensor::clampmin(t1, t2, 3.0f); // static
 
     
-cos
+Cos
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::cos()
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-0.58 0.45 -1.14]
+    // [-0.24 -1.15 -1.33]
+    // ]
+
+    t1->cos_(); // In-place
+    // [
+    // [0.83 0.90 0.41]
+    // [0.97 0.41 0.23]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->cos(); // returns a new tensor
+    Tensor::cos(t1, t2); // static
 
     
-cosh
+Cosh
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::cosh()
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-1.52 -0.52 0.31]
+    // [0.85 1.06 0.26]
+    // ]
+
+    t1->cosh_(); // In-place
+    // [
+    // [2.40 1.14 1.05]
+    // [1.39 1.62 1.04]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->cosh(); // returns a new tensor
+    Tensor::cosh(t1, t2); // static
   
     
-div
+Div
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::div(float v)
+.. doxygenfunction:: Tensor::div(float)
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    t1->div_(2.0); // In-place
+    // [
+    // [2.50 2.50 2.50]
+    // [2.50 2.50 2.50]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->div(2.0f); // returns new tensor
+    Tensor::div(t1, t2, 2.0f); // static
     
 
 
-exp
+Exp
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::exp_()
 .. doxygenfunction:: Tensor::exp()
-.. doxygenfunction:: Tensor::exp(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
+
+    t1->exp_(); // In-place
+    // [0.01 0.02 0.05 0.14 0.37 1.00 2.72 7.39 20.09 54.60 148.41]
+
+    // Other ways
+    Tensor* t2 = t1->exp(); // returns new tensor
+    Tensor::exp(t1, t2); // static
 
 
-floor
+Floor
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::floor_()
 .. doxygenfunction:: Tensor::floor()
-.. doxygenfunction:: Tensor::floor(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [0.47 1.39 0.94]
+    // [0.98 1.16 0.40]
+    // ]
+
+    t1->floor_(); // In-place
+    // [
+    // [0.00 1.00 0.00]
+    // [0.00 1.00 0.00]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->floor(); // returns new tensor
+    Tensor::floor(t1, t2); // static
 
 
-inv
+Inv
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::inv_(float)
-.. doxygenfunction:: Tensor::inv(float v = 1.0f)
-.. doxygenfunction:: Tensor::inv(Tensor *A, Tensor *B, float v = 1.0f)
+.. doxygenfunction:: Tensor::inv(float)
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [0.58 -0.49 0.04]
+    // [-1.25 -1.33 0.23]
+    // ]
+
+    t1->inv_(); // In-place
+    // [
+    // [1.72 -2.04 25.16]
+    // [-0.80 -0.75 4.34]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->inv(); // returns new tensor
+    Tensor::inv(t1, t2); // static
 
 
 log
