@@ -31,7 +31,7 @@ int main(int argc, char **argv){
 
   // Download from:
   //https://www.dropbox.com/s/tn0d87dr035yhol/resnet18-v1-7.onnx
-  
+
 	Net* net_onnx = import_net_from_onnx_file(path, DEV_CPU);
 
   // Remove last layer

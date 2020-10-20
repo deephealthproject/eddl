@@ -208,6 +208,26 @@ if(BUILD_OPENMP)
         target_link_directories(${PROJECT_NAME} PUBLIC ${OpenMP_DIR}/lib)
         target_link_libraries(${PROJECT_NAME} PUBLIC libomp libiomp5md)
     else()
+
+        # I had some problems with OpenMP on my mac so to fix it, I found this:
+        # https://stackoverflow.com/questions/46414660/macos-cmake-and-openmp
+#        if(APPLE)
+#            set(CMAKE_C_COMPILER clang)
+#            set(CMAKE_CXX_COMPILER clang++)
+#
+#            if(CMAKE_C_COMPILER_ID MATCHES "Clang\$")
+#                set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
+#                set(OpenMP_C_LIB_NAMES "omp")
+#                set(OpenMP_omp_LIBRARY omp)
+#            endif()
+#
+#            if(CMAKE_CXX_COMPILER_ID MATCHES "Clang\$")
+#                set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
+#                set(OpenMP_CXX_LIB_NAMES "omp")
+#                set(OpenMP_omp_LIBRARY omp)
+#            endif()
+#        endif()
+
         find_package(OpenMP 4.5)
         if (OpenMP_CXX_FOUND)
             target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
@@ -267,6 +287,13 @@ if(USE_CUDA)
 endif()
 SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 
+# NVCC (CUDA 10) needs GCC versions to be less or equal than 8  (GCC < 9.0)
+if (USE_CUDA)
+    if(CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
+        message(WARNING "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8.
+        Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
+    endif()
+endif()
 
 # FPGA
 if(USE_FPGA)
