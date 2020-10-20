@@ -129,6 +129,8 @@ int main(int argc, char **argv) {
     Tensor *x_train=Tensor::load("flickr_trX.bin","bin");
     x_train->info();
 
+    Tensor *xtrain=Tensor::permute(x_train,{0,3,1,2});
+
     Tensor *y_train=Tensor::load("flickr_trY.bin","bin");
     y_train->info();
 
@@ -138,7 +140,7 @@ int main(int argc, char **argv) {
 
     // Train model
     for(int i=0;i<epochs;i++) {
-      fit(net, {x_train}, {y_train}, batch_size, 1);
+      fit(net, {xtrain}, {y_train}, batch_size, 1);
     }
 
 }
