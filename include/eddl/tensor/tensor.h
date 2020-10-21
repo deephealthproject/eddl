@@ -804,7 +804,7 @@ public:
 
     /**
     *   @brief Obtain the standard deviation of all the values in the tensor.
-    *   @param ubiased Whether the standard deviation is computed using the unbiased estimation or not.
+    *   @param unbiased Whether the standard deviation is computed using the unbiased estimation or not.
     *   @return The standard deviation of all the elements in the tensor.
     */
     float std(bool unbiased=true);
@@ -812,7 +812,7 @@ public:
     /**
     *   @brief Obtain the standard deviation of all the values in a tensor.
     *   @param A Input tensor.
-    *   @param ubiased Whether the standard deviation is computed using the unbiased estimation or not.
+    *   @param unbiased Whether the standard deviation is computed using the unbiased estimation or not.
     *   @return The standard deviation of all the elements in the input tensor.
     */
     static float std(Tensor* A, bool unbiased=true);
@@ -821,7 +821,7 @@ public:
     *   @brief Obtain the standard deviation of all the elements in the tensor
     *   @param axis Vector with the axis in which to obtain the standard deviation
     *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
-    *   @param ubiased Whether the standard deviation is computed using the unbiased estimation or not.
+    *   @param unbiased Whether the standard deviation is computed using the unbiased estimation or not.
     *   @return float. The tensor with the standard deviation of elements in A on the selected axis.
     */
     Tensor* std(vector<int> axis, bool keepdims, bool unbiased=true);
@@ -829,7 +829,7 @@ public:
 
     /**
     *   @brief Obtain the variance of all the values in the tensor.
-    *   @param ubiased Whether the variance is computed using the unbiased estimation or not.
+    *   @param unbiased Whether the variance is computed using the unbiased estimation or not.
     *   @return The variance of all the elements in the tensor.
     */
     float var(bool unbiased=true);
@@ -837,7 +837,7 @@ public:
     /**
     *   @brief Obtain the variance of all the values in a tensor.
     *   @param A Input tensor.
-    *   @param ubiased Whether the variance is computed using the unbiased estimation or not.
+    *   @param unbiased Whether the variance is computed using the unbiased estimation or not.
     *   @return The variance of all the elements in the input tensor.
     */
     static float var(Tensor* A, bool unbiased=true);
@@ -846,7 +846,7 @@ public:
     *   @brief Obtain the variance of all the elements in the tensor
     *   @param axis Vector with the axis in which to obtain the variance.
     *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
-    *   @param ubiased Whether the variance is computed using the unbiased estimation or not.
+    *   @param unbiased Whether the variance is computed using the unbiased estimation or not.
     *   @return float. The tensor with the variance of elements in A on the selected axis.
     */
     Tensor* var(vector<int> axis, bool keepdims, bool unbiased=true);
