@@ -610,6 +610,22 @@ void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 
 }
 
+void Tensor::set_select(const vector<string>& indices, float value){
+    auto *sd = new SelDescriptor(indices, this->device);
+    sd->build(this->shape);
+
+    Tensor* A = Tensor::full(sd->oshape, value);
+
+    // Check if the dimensions of the selection and the tensor are compatibles
+    if(sd->oshape==A->shape){
+        Tensor::set_select(this, A, sd);
+    }else{
+        msg("Incompatible dimensions", "Tensor::set_select");
+    }
+
+    delete A;
+    delete sd;
+}
 
 void Tensor::set_select(const vector<string>& indices, Tensor *A){
     auto *sd = new SelDescriptor(indices, this->device);
@@ -621,6 +637,8 @@ void Tensor::set_select(const vector<string>& indices, Tensor *A){
     }else{
         msg("Incompatible dimensions", "Tensor::set_select");
     }
+
+    delete sd;
 }
 
 void Tensor::set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
