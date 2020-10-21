@@ -1838,8 +1838,6 @@ public:
 
 
     // ***** Transformations *****************************
-
-
     /**
      *   @brief Shift the tensor. The array is shifted using spline interpolation. Points outside the boundaries of the input are filled according to the given mode.
      *   @param shift vector of shifts along the axes.

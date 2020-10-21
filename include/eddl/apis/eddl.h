@@ -40,14 +40,14 @@
 // EDDL namespace defines the API
 namespace eddl {
 
-typedef Layer* layer;
-typedef Net* model;
-typedef Optimizer* optimizer;
-typedef Initializer* initializer;
-typedef Regularizer* regularizer;
-typedef CompServ* compserv;
-typedef NetLoss * loss;
-typedef NetLoss * metric;
+    typedef Layer* layer;
+    typedef Net* model;
+    typedef Optimizer* optimizer;
+    typedef Initializer* initializer;
+    typedef Regularizer* regularizer;
+    typedef CompServ* compserv;
+    typedef NetLoss * loss;
+    typedef NetLoss * metric;
 
     ///////////////////////////////////////
     //  MODEL METHODS
@@ -857,23 +857,23 @@ typedef NetLoss * metric;
                int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
 
-     /**
-    *  @brief 1D Convolution layer.
-    *
-    *  @param parent  Parent layer
-    *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
-    *  @param kernel_size  Vector of 1 integers, specifying the height and width of the 2D convolution window.
-    *  @param strides  Vector of 1 integers, specifying the strides of the convolution along the height and width
-    *  @param padding  One of "none", "valid" or "same"
-    *  @param use_bias  Boolean, whether the layer uses a bias vector.
-    *  @param groups  Number of blocked connections from input channels to output channels
-    *  @param dilation_rate  Vector of 1 integers, specifying the dilation rate to use for dilated convolution
-    *  @param name  A name for the operation
-    *  @return     Convolution layer
-  */
-  layer Conv1D(layer parent, int filters,  vector<int> kernel_size,
-             vector<int> strides = {1}, string padding = "same", bool use_bias = true,
-             int groups = 1, const vector<int> dilation_rate = {1}, string name = "");
+    /**
+   *  @brief 1D Convolution layer.
+   *
+   *  @param parent  Parent layer
+   *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+   *  @param kernel_size  Vector of 1 integers, specifying the height and width of the 2D convolution window.
+   *  @param strides  Vector of 1 integers, specifying the strides of the convolution along the height and width
+   *  @param padding  One of "none", "valid" or "same"
+   *  @param use_bias  Boolean, whether the layer uses a bias vector.
+   *  @param groups  Number of blocked connections from input channels to output channels
+   *  @param dilation_rate  Vector of 1 integers, specifying the dilation rate to use for dilated convolution
+   *  @param name  A name for the operation
+   *  @return     Convolution layer
+ */
+    layer Conv1D(layer parent, int filters,  vector<int> kernel_size,
+                 vector<int> strides = {1}, string padding = "same", bool use_bias = true,
+                 int groups = 1, const vector<int> dilation_rate = {1}, string name = "");
 
 
     /**
@@ -1000,6 +1000,7 @@ typedef NetLoss * metric;
       *  @return     Output of affine transformation
     */
     layer Affine(layer parent, float angle=0, float translate=0, float scale=0, float shear=0, string name="");  // TODO: Implement
+
     /**
       *  @brief Crops the given image at `[(top, left), (bottom, right)]`.
       *
@@ -1037,6 +1038,7 @@ typedef NetLoss * metric;
       *  @return     Output of color jitter transformation
     */
     layer ColorJitter(layer parent, float brightness=0, float contrast=0, float saturation=0, float hue=0, string name="");  // TODO: Implement
+
     /**
       *  @brief Crop the given image at `[(top, left), (bottom, right)]` and scale it to the parent size.
       *
@@ -1049,6 +1051,7 @@ typedef NetLoss * metric;
       *  @return     Output of crop scale transformation
     */
     layer CropScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="constant", float constant=0.0f, string name="");
+
     /**
       *  @brief Selects a rectangle region in an image at `[(top, left), (bottom, right)]` and erases its pixels using a constant value.
       *
@@ -1060,6 +1063,7 @@ typedef NetLoss * metric;
       *  @return     Output of cutout transformation
     */
     layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
+
     /**
       *  @brief Flip the given image at `axis=n`.
       *
@@ -1133,6 +1137,7 @@ typedef NetLoss * metric;
       *  @return     Output of scale transformation
     */
     layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
+
     /**
       *  @brief Vertically flip the given image.
       *
@@ -1141,6 +1146,7 @@ typedef NetLoss * metric;
       *  @return     Output of vertical flip transformation
     */
     layer VerticalFlip(layer parent, string name="");
+
     /**
       *  @brief Normalize an image with mean and standard deviation.
       *
@@ -1175,16 +1181,17 @@ typedef NetLoss * metric;
     */
     layer RandomCrop(layer parent, vector<int> new_shape, string name= "");
 
-     /**
-      *  @brief Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size.
-      *
-      *  @param parent  Parent layer
-      *  @param factor  Factor Range for random crop
-      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
-      *  @param name  A name for the operation
-      *  @return     Output of random crop scale transformation
-    */
+    /**
+     *  @brief Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size.
+     *
+     *  @param parent  Parent layer
+     *  @param factor  Factor Range for random crop
+     *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+     *  @param name  A name for the operation
+     *  @return     Output of random crop scale transformation
+   */
     layer RandomCropScale(layer parent, vector<float> factor, string da_mode= "nearest", string name= "");
+
     /**
       *  @brief Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range `[(min_x, max_x), (min_y, max_y)]`, where these are relative values.
       *
@@ -1196,6 +1203,7 @@ typedef NetLoss * metric;
       *  @return     Output of random cutout transformation
     */
     layer RandomCutout(layer parent, vector<float> factor_x, vector<float> factor_y, float constant= 0.0f, string name= "");
+
     /**
       *  @brief Flip the given image at `axis=n` randomly with a given probability.
       *
@@ -1223,6 +1231,7 @@ typedef NetLoss * metric;
       *  @return     Output of random horizontal flip transformation
     */
     layer RandomHorizontalFlip(layer parent, string name= "");
+
     /**
       *  @brief Rotate the image randomly by an angle defined in a range `[a, b]`.
       *
@@ -1234,6 +1243,7 @@ typedef NetLoss * metric;
       *  @return     Output of rotate transformation
     */
     layer RandomRotation(layer parent, vector<float> factor, vector<int> offset_center= {0, 0}, string da_mode= "original", float constant= 0.0f, string name= "");
+
     /**
       *  @brief Resize the input image randomly by the size in a range `[a, b]`.
       *
@@ -1244,6 +1254,7 @@ typedef NetLoss * metric;
       *  @return     Output of scale transformation
     */
     layer RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string name= "");
+
     /**
       *  @brief Shift the input image randomly in range `[a, b]`.
       *
@@ -1255,6 +1266,7 @@ typedef NetLoss * metric;
       *  @return     Output of scale transformation
     */
     layer RandomShift(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode= "nearest", float constant= 0.0f, string name= "");
+
     /**
       *  @brief Vertically flip the given image randomly with a given probability.
       *
@@ -1276,6 +1288,7 @@ typedef NetLoss * metric;
       *  @return     Output of add operation with all input layers
     */
     layer Add(const vector<layer> &layers, string name = "");
+
     /**
       *  @brief Layer that averages a list of layer inputs.
       *
