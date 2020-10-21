@@ -28,14 +28,47 @@ Yes, we offer several memory levels to control the memory-speed trade-off. These
 Is it faster than PyTorch/TensorFlow/etc
 ----------------------------------------
 
-Check our benchmakrs: eddl_benchmarks_
+Check our benchmakrs: `EDDL benchmarks`_
 
 
 Is it more memory-efficient than PyTorch/TensorFlow/etc
 -------------------------------------------------------
 
 Depends on your memory setting, see the "Can I control the memory consumption?" answer.
-Also, you can take a look at our benchmakrs: eddl_benchmarks_
+Also, you can take a look at our benchmakrs: `EDDL benchmarks`_
+
+Problems with Protobuf
+----------------------------
+
+If you gent an error like this:
+
+.. code:: bash
+
+    .../eddl/src/serialization/onnx/onnx.pb.h:10:10: fatal error: google/protobuf/port_def.inc: No such file or directory
+    #include <google/protobuf/port_def.inc>
+
+First, make sure if you have protobuf installed and cmake is detecting the paths correctly:
+
+.. code:: bash
+
+    -- Protobuf include: /usr/include
+    -- Protobuf libraries: /usr/lib/x86_64-linux-gnu/libprotobuf.so-lpthread
+    -- Protobuf compiler: /usr/bin/protoc
+
+If using conda, first check if you have activated the environment: ``conda activate eddl``.
+Then, if the error persists, check if the paths of protobuf outputed by CMake have been mixed up with the paths from
+the system (in case protobuf is also installed in the system) like this:
+
+.. code:: bash
+
+    -- Protobuf dir:
+    -- Protobuf include: /usr/include
+    -- Protobuf libraries: /usr/lib/x86_64-linux-gnu/libprotobuf.so-lpthread
+    -- Protobuf compiler: /home/salvacarrion/anaconda3/envs/eddl/bin/protoc
+
+You can try to fix it by forcing cmake to look into the conda env using the flags: ``-DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX`` (We recommend to delete the ``build/`` folder to avoid cache problems)
+
+If the error persists, use the flag `-D BUILD_SUPERBUILD=ON` to download all dependencies and link them automatically to the EDDL.
 
 
 Problems with CUDA and GCC
@@ -80,4 +113,4 @@ Anyway, it is convenient to check which is the maximum GCC version that your CUD
 
 
 .. _PyEDDL: https://github.com/deephealthproject/pyeddl
-.. _eddl_benchmarks: https://github.com/jofuelo/eddl_benchmark
+.. _`EDDL benchmarks`: https://github.com/jofuelo/eddl_benchmark
