@@ -142,7 +142,7 @@ Crop
     Tensor::crop(t1, t2, {50, 250}, {250, 400});  // Static
 
 .. image:: ../_static/images/demos/lena_cropped_small.jpg
-    :width: 256
+    :width: 88
     :align: center
     :alt: Crop operation on Lena (Small)
 
@@ -159,7 +159,7 @@ Crop
     Tensor::crop(t1, t2, {50, 250}, {250, 400});  // Static
 
 .. image:: ../_static/images/demos/lena_cropped_big.jpg
-    :width: 88
+    :width: 256
     :align: center
     :alt: Crop operation on Lena (Big)
 
