@@ -167,7 +167,7 @@ void Tensor::reshape_(const vector<int> &new_shape){
     updateShape(final_shape);
     updateSize();
     updateStrides();
-    updateData(this->ptr);  // Due to the Eigen mapping
+    updateData(this->ptr,nullptr, false);  // Due to potential the Eigen mapping
 
 }
 
@@ -786,7 +786,7 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
         fpga_deselect(A, B, sind, ini, end, inc,mask_zeros);
       }
     #endif
-	
+
     else {
         msg("unsuppoted select", "Tensor::select");
     }

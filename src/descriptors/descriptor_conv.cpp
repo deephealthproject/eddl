@@ -130,8 +130,8 @@ void ConvolDescriptor::build(Tensor *A) {
         // mem for ptr, lowering im2col
         ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
 	 _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
-        new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
-        new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
+        //new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
+        //new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
         // convolution: matC=matA*matK
     }
 #ifdef cGPU

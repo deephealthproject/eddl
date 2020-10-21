@@ -59,6 +59,23 @@ public:
     void apply(Tensor *params) override;
 };
 
+class IHeNormal : public Initializer {
+public:
+    int seed;
+
+    explicit IHeNormal(int seed=-1);
+    void apply(Tensor *params) override;
+};
+
+class IHeUniform : public Initializer {
+public:
+    int seed;
+
+    explicit IHeUniform(int seed=-1);
+    void apply(Tensor *params) override;
+};
+
+
 class IRandomNormal : public Initializer {
 public:
     float mean;

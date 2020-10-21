@@ -1,7 +1,6 @@
 Fine-grained training
 =====================
 
-(todo)
 
 random_indices
 ^^^^^^^^^^^^^^^^^
@@ -241,24 +240,14 @@ compute_metric
 
 .. doxygenfunction:: eddl::compute_metric(loss)
 
-Example:
-
-.. code-block:: c++
-    
-    float compute_metric(loss L);
-          
+        
 
 getLoss
 ^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: eddl::getLoss
 
-Example:
-
-.. code-block:: c++
-    
-    Loss* getLoss(string type);
-          
+         
 
 newloss
 ^^^^^^^^^^^^^^^^^
@@ -286,12 +275,6 @@ getMetric
 
 .. doxygenfunction:: eddl::getMetric
 
-Example:
-
-.. code-block:: c++
-    
-    Metric* getMetric(string type);
-          
 
 
 newmetric
@@ -301,11 +284,7 @@ newmetric
 
 .. doxygenfunction:: eddl::newmetric(const std::function<Layer*vector<Layer*>>&, vector<Layer*>, string)
 
-.. code-block:: c++
-    
-    loss newmetric(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
-    loss newmetric(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
-          
+   
         
 detach
 ^^^^^^^^^^^^^^^^^
@@ -314,8 +293,4 @@ detach
 
 .. doxygenfunction:: eddl::detach(vlayer)
 
-.. code-block:: c++
-    
-    layer detach(layer l);
-    vlayer detach(vlayer l);
 

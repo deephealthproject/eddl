@@ -435,11 +435,65 @@ typedef NetLoss * metric;
 
 
     // Finer methods
+
+    /**
+      *  @brief Generates a random sequence of indices for a batch
+      *
+      *  @param batch_size  Length of the random sequence to generate
+      *  @param num_samples  Number of samples available, i.e. maximum value to include in the random sequence + 1
+      *  @return    Vector of integers
+    */
     vector<int> random_indices(int batch_size, int num_samples);
+
+    /**
+      *  @brief Train the model using the samples of the input vector that are on the selected indices vector
+      *
+      *  @param net Net to train
+      *  @param in Vector of samples
+      *  @param out Vector of labels or expected output
+      *  @param indices Vector of indices of the samples to train
+      *  @return    (void)
+    */
     void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
+
+    /**
+      *  @brief Evaluate the model using the samples of the input vector that are on the selected indices vector
+      *
+      *  @param net Net to evaluate
+      *  @param in Vector of samples
+      *  @param out Vector of labels or expected output
+      *  @param indices Vector of indices of the samples to evaluate
+      *  @return    (void)
+    */
     void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
+
+    /**
+      *  @brief Loads the next batch of random samples from the input vector to the output vector
+      *
+      *  @param in Vector from where the samples of the next batch should be chosen from
+      *  @param out Vector where the samples of the next batch should be stored
+      *  @return    (void)
+    */
     void next_batch(vector<Tensor *> in,vector<Tensor *> out);
+
+    /**
+      *  @brief Train the model using the samples of the input vector
+      *
+      *  @param net Net to train
+      *  @param in Vector of samples
+      *  @param out Vector of labels or expected output
+      *  @return    (void)
+    */
     void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
+
+    /**
+      *  @brief Evaluate the model using the samples of the input vector
+      *
+      *  @param net Net to evaluate
+      *  @param in Vector of samples
+      *  @param out Vector of labels or expected output
+      *  @return    (void)
+    */
     void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
 
     // Finest methods
@@ -458,9 +512,36 @@ typedef NetLoss * metric;
       *  @return     (void)
     */
     void reset_loss(model m);
+    /**
+      *  @brief Computes the gradient of the model through the forward graph using the layers in the provided vector.
+      *
+      *  @param m  Model
+      *  @param in Vector of Layer pointers
+      *  @return     (void)
+    */
     vlayer forward(model m,vector<Layer *> in);
+    /**
+      *  @brief Computes the gradient of the model through the forward graph using the tensors in the provided vector.
+      *
+      *  @param m  Model
+      *  @param in Vector of Tensor pointers
+      *  @return     (void)
+    */
     vlayer forward(model m,vector<Tensor *> in);
+    /**
+      *  @brief Computes the gradient of the model through the forward graph.
+      *
+      *  @param m  Model
+      *  @return     (void)
+    */
     vlayer forward(model m);
+    /**
+      *  @brief Computes the gradient of the model through the forward graph and resizes the batch size of the model to ``b``.
+      *
+      *  @param m  Model
+      *  @param b New batch size
+      *  @return     (void)
+    */
     vlayer forward(model m,int b);
     /**
       *  @brief Set model gradients to zero.
@@ -470,17 +551,35 @@ typedef NetLoss * metric;
     */
     void zeroGrads(model m);
     /**
-      *  @brief Calculates the gradient by passing it's argument (1x1 unit tensor by default) through the backward graph.
+      *  @brief Computes the gradient by passing its argument (1x1 unit tensor by default) through the backward graph.
       *
       *  @param net  Model
       *  @param target  Targets
       *  @return     (void)
     */
     void backward(model m,vector<Tensor *> target);
+    /**
+      *  @brief Computes the gradient of the model through the backward graph.
+      *
+      *  @param net  Model
+      *  @return     (void)
+    */
     void backward(model net);
+    /**
+      *  @brief Computes the gradient of the model associated to the given loss object through the backward graph.
+      *
+      *  @param l  Loss
+      *  @return     (void)
+    */
     void backward(loss l);
     void optimize(loss l);
     void optimize(vector <loss> l);
+    /**
+      *  @brief Updates the weights of the model
+      *
+      *  @param m  Model
+      *  @return     (void)
+    */
     void update(model m);
     /**
       *  @brief Prints model loss at some batch.
@@ -503,10 +602,22 @@ typedef NetLoss * metric;
     void clamp(model m,float min,float max);
 
     // loss and metrics methods
+    /**
+      *  @brief Computes loss of the associated model
+      *
+      *  @param L  Loss
+      *  @return (float) Computed loss
+    */
     float compute_loss(loss L);
+    /**
+      *  @brief Computes loss of the associated model (same as ``compute_loss``)
+      *
+      *  @param L  Loss
+      *  @return (float) Computed loss
+    */
     float compute_metric(loss L);
     /**
-      *  @brief Get Loss by his name.
+      *  @brief Get Loss by its name.
       *
       *  @param type  Loss name/type
       *  @return     Selected Loss
@@ -537,11 +648,38 @@ typedef NetLoss * metric;
       *  @return     Selected Metric
     */
     Metric* getMetric(string type);
+    /**
+      *  @brief Create new Loss.
+      *
+      *  @param f  Loss function
+      *  @param in  Loss input
+      *  @param name  Loss name
+      *  @return     Created Loss
+    */
     loss newmetric(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
+    /**
+      *  @brief Create new Loss.
+      *
+      *  @param f  Loss function
+      *  @param in  Loss input
+      *  @param name  Loss name
+      *  @return     Created Loss
+    */
     loss newmetric(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
 
     // graph connections
-    layer detach(layer l);
+    /**
+      *  @brief Sets a layer as detached, excluding it from the computation of the gradients.
+      *
+      *  @param l  Layer to detach
+      *  @return   Detached Layer
+    */
+    layer detach(layer l);/**
+      *  @brief Sets the provided layers as detached, excluding them from the computation of the gradients.
+      *
+      *  @param l  Layers to detach
+      *  @return   Detached Layers
+    */
     vlayer detach(vlayer l);
 
 
@@ -1541,7 +1679,6 @@ typedef NetLoss * metric;
       *  @return     The layer l initialized with the Glorot normal
     */
     layer GlorotNormal(layer l,int seed=1234);
-
     /**
       *  @brief Glorot uniform initializer, also called Xavier uniform initializer.
       *
@@ -1553,6 +1690,31 @@ typedef NetLoss * metric;
       *  @return     The layer l initialized with the Glorot uniform
     */
     layer GlorotUniform(layer l,int seed=1234);
+
+    /**
+      *  @brief He uniform initializer
+      *
+      *  @details
+      *   It draws samples from a uniform distribution within [-limit, limit] where limit is sqrt(6 / (fan_in )) where fan_in is the number of input units in the weight tensor
+      *
+      *  @param l  Parent layer to initialize
+      *  @param seed   Used to seed the random generator
+      *  @return     The layer l initialized with the Glorot uniform
+    */
+    layer HeUniform(layer l,int seed=1234);
+
+    /**
+      *  @brief He normal initializer
+      *
+      *  @details
+      *   It draws samples from a truncated normal distribution centered on 0 with stddev = sqrt(2 / (fan_in)) where fan_in is the number of input units in the weight tensor
+      *
+      *  @param l  Parent layer to initialize
+      *  @param seed   Used to seed the random generator
+      *  @return     The layer l initialized with the Glorot normal
+    */
+    layer HeNormal(layer l,int seed=1234);
+
 
     /**
       *  @brief Random normal initializer.
@@ -1666,6 +1828,15 @@ typedef NetLoss * metric;
       *  @return     (void) The binary files of EuTrans
     */
     void download_eutrans();
+
+    /**
+      *  @brief Downloads Flickr Dataset (small partition)
+      *
+      *  @see
+      *
+      *  @return     (void) The binary files of Flickr
+    */
+    void download_flickr();
 
 
 }

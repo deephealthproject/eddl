@@ -15,9 +15,7 @@
 #include <fstream>
 #include <string>
 #include <chrono>
-#include <thread>
 #include "eddl/net/net.h"
-#include <pthread.h>
 #include "eddl/utils.h"
 #include "eddl/random.h"
 
@@ -164,56 +162,16 @@ Net::~Net(){
 
     if (mnets.size()) return;
 
-    // Delete snets first {GPU or FPGA}
-    if (snets[0]!=this) {  // check if not CPU
-      for(int i=0;i<snets.size();i++)
-        delete snets[i];
+    for(int i=0;i<snets.size();i++){
+      for(int j=0;j<snets[i]->layers.size();j++) {
+        delete snets[i]->layers[j];
+        snets[i]->layers[j] = nullptr;
+      }
     }
-
-    // delete layers
-    for (int i = 0; i < layers.size(); i++) {
-        if(layers[i] != nullptr) {
-            delete layers[i];
-            layers[i] = nullptr;
-        }
-    }
-
-    // Delete losses
-    for (int i = 0; i < losses.size(); i++) {
-        if(losses[i] != nullptr) {
-            delete losses[i];
-            losses[i] = nullptr;
-        }
-    }
-
-    // Delete metrics
-    for (int i = 0; i < metrics.size(); i++) {
-        if(metrics[i] != nullptr) {
-            delete metrics[i];
-            metrics[i] = nullptr;
-        }
-    }
-
-    // Delete pointer variables
-
-    // not until cs clone available
-    //if (cs!=nullptr) {delete cs; cs = nullptr;}
-
-    if (optimizer!=nullptr) {delete optimizer; optimizer = nullptr;}
 
     if (rnet!=nullptr) {delete rnet; rnet = nullptr;}
-
-    // Delete train data
-    for (int i = 0; i < snets.size(); i++) {
-        for (int j = 0; j < Xs[i].size(); j++){
-            delete Xs[i][j];
-        }
-
-        for (int j = 0; j < Ys[i].size(); j++){
-            delete Ys[i][j];
-        }
-    }
 }
+
 
 /////////////////////////////////////////
 int Net::inNet(Layer *l) {

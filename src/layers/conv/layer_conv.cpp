@@ -128,8 +128,7 @@ void LConv::apply_accumulated_gradients() {
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
-    // TODO: share ComvDescriptor
-    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, dev,mem_level);
+    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  "share_"+name, dev,mem_level);
     n->orig = this;
     n->isshared=true;
     n->trainable = trainable;
@@ -137,13 +136,13 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     n->cd->use_bias=cd->use_bias;
 
     //share params
+
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
     n->params.clear();
 
 
     n->cd->K = cd->K;
     n->cd->bias = cd->bias;
-    n->cd->matK = cd->matK;
 
     n->params.push_back(n->cd->K);
     n->params.push_back(n->cd->bias);

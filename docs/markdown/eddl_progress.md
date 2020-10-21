@@ -194,8 +194,8 @@ Apply data transformations with random parametrization.
 | Constant | ✔️ | ✔️ | Initializer that generates tensors initialized to a constant value |
 | GlorotNormal | ✔️ | ✔️ | Glorot normal initializer, also called Xavier normal initializer. |
 | GlorotUniform | ✔️ | ✔️ | Glorot uniform initializer, also called Xavier uniform initializer. |
-| HeNormal | ❌️ | ❌️ | _He_ normal initializer. |
-| HeUniform | ❌️ | ❌️ | _He_ uniform initializer. |
+| HeNormal | ✔️ | ✔️ | _He_ normal initializer. |
+| HeUniform | ✔️ | ✔️  | _He_ uniform initializer. |
 | Identity | ❌️ | ❌️ | Initializer that generates the identity matrix. |
 | LeCunUniform | ❌️ | ❌️ | LeCun uniform initializer. |
 | LeCunNormal | ❌️ | ❌️ | LeCun normal initializer. |
