@@ -66,7 +66,7 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, WrappingMode mode, f
 
 Tensor* Tensor::rotate(float angle, vector<int> offset_center, WrappingMode mode, float cval){
     Tensor *t_new = Tensor::empty_like(this);
-    Tensor::rotate(this, t_new, angle, offset_center, mode, cval);
+    Tensor::rotate(this, t_new, angle, std::move(offset_center), mode, cval);
     return t_new;
 }
 
