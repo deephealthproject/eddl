@@ -55,7 +55,7 @@ Acos
 Add
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::add(float)
+.. doxygenfunction:: Tensor::add(float v)
 
 .. code-block:: c++
 
@@ -65,7 +65,7 @@ Add
     // [5.00 5.00 5.00]
     // ]
 
-    t1->add_(2.0); // In-place
+    t1->add_(2.0f); // In-place
     // [
     // [7.00 7.00 7.00]
     // [7.00 7.00 7.00]
@@ -151,7 +151,7 @@ Ceil
 Clamp
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clamp(float, float)
+.. doxygenfunction:: Tensor::clamp(float min, float max)
 
 .. code-block:: c++
 
@@ -169,7 +169,7 @@ Clamp
 Clampmax
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clampmax(float)
+.. doxygenfunction:: Tensor::clampmax(float max)
 
 .. code-block:: c++
 
@@ -189,7 +189,7 @@ Clampmin
 ^^^^^^^^^^^^
 
 
-.. doxygenfunction:: Tensor::clampmin(float)
+.. doxygenfunction:: Tensor::clampmin(float min)
 
 .. code-block:: c++
 
@@ -255,7 +255,7 @@ Cosh
 Div
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::div(float)
+.. doxygenfunction:: Tensor::div(float v)
 
 .. code-block:: c++
 
@@ -265,7 +265,7 @@ Div
     // [5.00 5.00 5.00]
     // ]
 
-    t1->div_(2.0); // In-place
+    t1->div_(2.0f); // In-place
     // [
     // [2.50 2.50 2.50]
     // [2.50 2.50 2.50]
@@ -322,7 +322,7 @@ Floor
 Inv
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::inv(float)
+.. doxygenfunction:: Tensor::inv(float v = 1.0f)
 
 .. code-block:: c++
 
@@ -656,6 +656,7 @@ Sign
 
 .. doxygenfunction:: Tensor::sign(float)
 
+
 .. code-block:: c++
 
     Tensor* t1 = Tensor::linspace(-1.0f, 1.0f, 5.0f);
@@ -726,6 +727,7 @@ Sqr
 
 .. code-block:: c++
     
+
     Tensor* t1 = Tensor::range(-1.0f, 5.0f);
     // [-1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
@@ -758,8 +760,8 @@ Sub
 
 .. doxygenfunction:: Tensor::sub(float)
 
-
 .. code-block:: c++
+
 
     Tensor* t1 = Tensor::full({2, 3}, 5.0f);
     // [
