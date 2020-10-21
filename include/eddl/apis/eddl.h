@@ -1048,7 +1048,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     Output of crop scale transformation
     */
-    layer CropScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
+    layer CropScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="constant", float constant=0.0f, string name="");
     /**
       *  @brief Selects a rectangle region in an image at `[(top, left), (bottom, right)]` and erases its pixels using a constant value.
       *
@@ -1121,7 +1121,7 @@ typedef NetLoss * metric;
       *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
       *  @return     Output of scale transformation
     */
-    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="nearest", float constant=0.0f, string name="");
+    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string name="");
 
     /**
       *  @brief Shift the input image `[a, b]`.
