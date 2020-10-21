@@ -28,13 +28,14 @@ Yes, we offer several memory levels to control the memory-speed trade-off. These
 Is it faster than PyTorch/TensorFlow/etc
 ----------------------------------------
 
-Check our benchmakrs: eddl_benchmarks_
+Check our benchmakrs: `EDDL benchmarks`_
 
 
 Is it more memory-efficient than PyTorch/TensorFlow/etc
 -------------------------------------------------------
 
-Depends on your memory setting (see the "Can I control the memory consumption?" answer).
+Depends on your memory setting, see the "Can I control the memory consumption?" answer.
+Also, you can take a look at our benchmakrs: `EDDL benchmarks`_
 
 .. _PyEDDL: https://github.com/deephealthproject/pyeddl
-.. _eddl_benchmarks: https://github.com/jofuelo/eddl_benchmark
+.. _`EDDL benchmarks`: https://github.com/jofuelo/eddl_benchmark

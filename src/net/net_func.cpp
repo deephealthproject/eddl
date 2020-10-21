@@ -155,13 +155,6 @@ void Net::collect_acc_grads() {
     }
 }
 
-void Net::distribute_weights() {
-    for (int j = 0; j < layers.size(); j++)
-        for (int k = 0; k < layers[j]->params.size(); k++)
-            for (int i = 0; i < snets.size(); i++)
-                Tensor::copy(layers[j]->params[k], snets[i]->layers[j]->params[k]);
-}
-
 void Net::sync_weights() {
   //cout<<"\nSync weights...\n";
   for (int j = 0; j < layers.size(); j++)

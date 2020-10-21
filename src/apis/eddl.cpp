@@ -273,8 +273,8 @@ namespace eddl {
     void fit(model net, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs){
         net->fit(in, out, batch, epochs);
     }
-    void evaluate(model net, const vector<Tensor *> &in, const vector<Tensor *> &out){
-        net->evaluate(in, out);
+    void evaluate(model net, const vector<Tensor *> &in, const vector<Tensor *> &out,int bs){
+        net->evaluate(in, out, bs);
     }
     vector<Tensor *>  predict(model m, const vector<Tensor *> &in)
     {

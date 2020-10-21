@@ -35,12 +35,15 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 ###########################################################################
 
 
-# NVCC (CUDA 10) needs GCC versions to be less or equal than 8  (GCC < 8.0; I had problems with 8.4.0)
+# NVCC (CUDA 10) needs GCC versions to be less or equal than 8  (GCC < 9.0;)
 if (USE_CUDA)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8)
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
             message(WARNING "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8.
             Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
+        else()
+            # Force CUDA host compiler
+            set(CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
         endif()
     endif()
 endif()
@@ -451,7 +454,8 @@ message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
 message(STATUS "-------------------------------------------" )
 message(STATUS "CUDA enabled: " ${USE_CUDA} )
 if(USE_CUDA)
-message(STATUS "CUDA compiler: " ${CMAKE_CUDA_COMPILER})
+message(STATUS "CUDA compiler: ${CMAKE_CUDA_COMPILER} | Version: ${CUDA_VERSION_STRING}")
+message(STATUS "CUDA host compiler: " ${CUDA_HOST_COMPILER})
 message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
 message(STATUS "CUDA toolkit: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} )
 endif()

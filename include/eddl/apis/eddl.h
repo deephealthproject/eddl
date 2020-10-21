@@ -422,9 +422,10 @@ namespace eddl {
       *  @param m  Model to train
       *  @param in  Input data (features)
       *  @param out  Output data (labels)
+      *  @param bs  Batch size (size [100])
       *  @return     (void) Evaluates the model
     */
-    void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
+    void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int bs=100);
 
     /**
       *  @brief Performs a prediction with input data
