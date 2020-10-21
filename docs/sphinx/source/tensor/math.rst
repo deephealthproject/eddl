@@ -400,7 +400,7 @@ Log10
 Logn
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::logn(float)
+.. doxygenfunction:: Tensor::logn(float n)
 
 .. code-block:: c++
 
@@ -418,7 +418,7 @@ Logn
 Mod
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::mod(float)
+.. doxygenfunction:: Tensor::mod(float v)
 
 .. code-block:: c++
 
@@ -436,7 +436,7 @@ Mod
 Mult
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::mult(float)
+.. doxygenfunction:: Tensor::mult(float v)
 
 
 .. code-block:: c++
@@ -484,7 +484,7 @@ Neg
 Normalize
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::normalize(float, float)
+.. doxygenfunction:: Tensor::normalize(float min = 0.0f, float max = 1.0f)
 
 .. code-block:: c++
 
@@ -501,7 +501,7 @@ Normalize
 Pow
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::pow(float)
+.. doxygenfunction:: Tensor::pow(float exp)
 
 .. code-block:: c++
 
@@ -525,7 +525,7 @@ Pow
 Powb
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::powb(float)
+.. doxygenfunction:: Tensor::powb(float base)
 
 .. code-block:: c++
 
@@ -571,7 +571,7 @@ Reciprocal
 Remainder
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::remainder(float)
+.. doxygenfunction:: Tensor::remainder(float v)
 
 .. code-block:: c++
 
@@ -654,7 +654,7 @@ Sigmoid
 Sign
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sign(float)
+.. doxygenfunction:: Tensor::sign(float zero_sign = 0.0f)
 
 
 .. code-block:: c++
@@ -758,7 +758,7 @@ Sqrt
 Sub
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sub(float)
+.. doxygenfunction:: Tensor::sub(float v)
 
 .. code-block:: c++
 
@@ -859,7 +859,7 @@ Binary Operations
 
 Add
 ^^^^^
-.. doxygenfunction:: Tensor::add(Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::add(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -889,7 +889,7 @@ Add
 Div
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::div(Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::div(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -918,7 +918,7 @@ Div
 Mult
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::mult(Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::mult(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -947,7 +947,7 @@ Mult
 Sub
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sub(Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::sub(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -980,7 +980,7 @@ Reductions
 Apply lower bound
 ^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::maximum(float)
+.. doxygenfunction:: Tensor::maximum(float v)
 
 .. code-block:: c++
 
@@ -1005,7 +1005,7 @@ Apply lower bound
 
 Obtain maximum values
 ^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: Tensor::maximum(Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::maximum(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -1034,7 +1034,7 @@ Obtain maximum values
 Apply upper bound
 ^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::minimum(float)
+.. doxygenfunction:: Tensor::minimum(float v)
 
 .. code-block:: c++
 
@@ -1058,7 +1058,7 @@ Apply upper bound
 
 Obtain minumum values
 ^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: Tensor::minimum(Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::minimum(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -1284,7 +1284,7 @@ Mean
 
 Std
 ^^^^^^^^
-.. doxygenfunction:: Tensor::std(bool)
+.. doxygenfunction:: Tensor::std(bool unbiased = true)
 
 
 .. code-block:: c++
@@ -1306,7 +1306,7 @@ Std
 
 Var
 ^^^^^^^^
-.. doxygenfunction:: Tensor::var(bool)
+.. doxygenfunction:: Tensor::var(bool unbiased = true)
 
 
 .. code-block:: c++
