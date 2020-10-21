@@ -34,10 +34,10 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 ###########################################################################
 
 
-# NVCC (CUDA 10) needs GCC versions to be less or equal than 8  (GCC < 8.0; I had problems with 8.4.0)
+# NVCC (CUDA 10) needs GCC versions to be less or equal than 8  (GCC < 9.0;)
 if (USE_CUDA)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8)
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
             message(WARNING "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8.
             Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
         endif()
