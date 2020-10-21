@@ -74,6 +74,7 @@ int main(int argc, char **argv) {
     x_train->reshape_({x_train->shape[0],length,1}); //batch x timesteps x input_dim
     x_test->reshape_({x_test->shape[0],length,1}); //batch x timesteps x input_dim
 
+
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);

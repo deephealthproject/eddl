@@ -142,4 +142,7 @@ int main(int argc, char **argv) {
       fit(net, {xtrain}, {y_train}, batch_size, 1);
     }
 
+
+
+
 }

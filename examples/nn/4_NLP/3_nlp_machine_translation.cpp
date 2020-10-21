@@ -85,6 +85,7 @@ int main(int argc, char **argv) {
           //CS_CPU()
     );
 
+    
     // View model
     summary(net);
 
@@ -105,28 +106,6 @@ int main(int argc, char **argv) {
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
-      //evaluate(net,{x_test},{y_test});
     }
-
-    // predict
-    /*
-    vtensor tout=predict(net,{x_train});
-
-    for(int i=0;i<x_train->shape[0];i++) {
-      for(int j=0;j<olength;j++) {
-        float max=0.0;
-        int ind;
-        int p=i*outvs;
-        for(int k=0;k<outvs;k++,p++) {
-          if (tout[j]->ptr[p]>max) {
-            max=tout[j]->ptr[p];
-            ind=k;
-          }
-        }
-        printf("%d ",ind);
-      }
-      printf("\n");
-    }
-    */
 
 }
