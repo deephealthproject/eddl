@@ -130,8 +130,9 @@ void ConvolDescriptor::build(Tensor *A) {
         // mem for ptr, lowering im2col
         ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
 	 _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
-        //new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
-        //new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
+	 matI=Eigen::Map<Eigen::MatrixXf>(ptrI, r*c,kz*kr*kc);
+  	 //matK=Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
+         //matgK=Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
         // convolution: matC=matA*matK
     }
 #ifdef cGPU
@@ -188,10 +189,13 @@ void ConvolDescriptor::resize(int b)
     O->resize(b);
 //    if (!mem_level) D->resize(b);
 
+    // Prevent overflow. (512*512*512*3*3*3 = 3,623,878,656 > MAX_INT (2,147,483,647))
+    unsigned long int l_size =  (unsigned long)(b * r * c) * (unsigned long)(kr * kc * kz);
+
     if (I->isCPU()) {
         delete[] ptrI;
-        ptrI=get_fmem(b * r * c * kr * kc * kz, "ConvolDescriptor::build");
-	 _profile_add_tensor(b * r * c * kr * kc * kz);
+        ptrI=get_fmem(l_size, "ConvolDescriptor::build");
+	 _profile_add_tensor(l_size);
     }
 #ifdef cGPU
     else if (I->isGPU()) {
@@ -208,11 +212,11 @@ void ConvolDescriptor::resize(int b)
     else if (I->isFPGA()) {
         // We reallocate memory on the FGPA for the im2col buffer
 	fpga_destroy_memory(fpga_ptrI);
-	fpga_sizeI = b * r * c * kr * kc * kz * sizeof(float);
+	fpga_sizeI = l_size * sizeof(float);
         fpga_ptrI = fpga_create_memory(fpga_sizeI);
         // We do the same on the CPU side (for smooth cpuemu)
-	delete ptrI;
-        ptrI=get_fmem(b * r * c * kr * kc * kz, "ConvolDescriptor::build");
+	delete[] ptrI;
+        ptrI=get_fmem(l_size, "ConvolDescriptor::build");
     }
 #endif
 

@@ -79,6 +79,23 @@ Drop the `formulas/brew/eddl.rb` file at `/usr/local/Homebrew/Library/Taps/homeb
 Then you can also execute; `brew`
 
 
+## Create conda env
+
+```
+# [YAML] Create environment
+conda env create -f environment.yml
+
+# [RAW] Create environment
+conda create --name myenv
+
+# Update environment
+conda env update -f environment.yml
+
+# Remove environment
+conda remove --name eddl --all
+```
+
+
 ## Build conda package
 
 ```

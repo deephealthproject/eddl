@@ -22,8 +22,14 @@ Example:
 GPU
 ====
 
-.. doxygenfunction:: eddl::CS_GPU(const vector<int>, int, string)
-.. doxygenfunction:: eddl::CS_GPU(const vector<int>, string)
+.. doxygenfunction:: eddl::CS_GPU(const vector<int> g)
+
+.. doxygenfunction:: eddl::CS_GPU(const vector<int> g, int lsb)
+
+.. doxygenfunction:: eddl::CS_GPU(const vector<int> g, int lsb, string mem)
+
+.. doxygenfunction:: eddl::CS_GPU(const vector<int> g, string mem)
+
 
 Example:
 

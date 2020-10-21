@@ -31,6 +31,22 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 
 
 ###########################################################################
+############################### BASIC CHECKS ##############################
+###########################################################################
+
+
+# NVCC (CUDA 10) needs GCC versions to be less or equal than 8  (GCC < 8.0; I had problems with 8.4.0)
+if (USE_CUDA)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8)
+            message(WARNING "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8.
+            Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
+        endif()
+    endif()
+endif()
+
+
+###########################################################################
 ############################### GET FILES #################################
 ###########################################################################
 
@@ -92,13 +108,13 @@ endif()
 ########################### LINK LIBRARIES ################################
 ###########################################################################
 
-# Threads
-if(UNIX) # Add setup for windows in the windows's section
-    SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
-    SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
-    find_package(Threads REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads) 
-endif()
+## Threads (Not used anymore)
+#if(UNIX) # Add setup for windows in the windows's section
+#    SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+#    SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+#    find_package(Threads REQUIRED)
+#    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+#endif()
 
 # Eigen
 if(DEFINED Eigen3_DIR)
@@ -156,7 +172,6 @@ if(BUILD_PROTOBUF)
     # target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
     # target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES})
 
     if(MSVC)
         target_link_libraries(${PROJECT_NAME} PUBLIC
@@ -200,18 +215,49 @@ endif()
 
 # OpenMP
 if(BUILD_OPENMP)
-    find_package(OpenMP)
-    if (OpenMP_FOUND)
-        target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
-        if (${OpenMP_CXX_VERSION_MAJOR})
-            set(OpenMP_VERSION_MAJOR ${OpenMP_CXX_VERSION_MAJOR} CACHE INTERNAL "" FORCE)
-        endif()
-        target_compile_definitions(${PROJECT_NAME} PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
-        set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
-        SET(USE_OPENMP ON) # Local's scope
+    # find_package does not support Clang on Windows
+    if (WIN32 AND CMAKE_RC_COMPILER STREQUAL "llvm-rc") 
+        set(OpenMP_CXX_FLAGS "-Xclang -fopenmp")
+        set(OpenMP_C_FLAGS "-Xclang -fopenmp")
+        # Tell CMake where to find the OpenMP libraries.
+        get_filename_component(OpenMP_BIN_DIR ${CMAKE_CXX_COMPILER_AR} DIRECTORY)
+        get_filename_component(OpenMP_DIR ${OpenMP_BIN_DIR} DIRECTORY)
+        target_link_directories(${PROJECT_NAME} PUBLIC ${OpenMP_DIR}/lib)
+        target_link_libraries(${PROJECT_NAME} PUBLIC libomp libiomp5md)
     else()
-        message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-D BUILD_OPENMP=OFF')
-        Hint: Use a compiler with OpenMP support using: '-D CMAKE_CXX_COMPILER=path'")
+
+        # I had some problems with OpenMP on my mac so to fix it, I found this:
+        # https://stackoverflow.com/questions/46414660/macos-cmake-and-openmp
+#        if(APPLE)
+#            set(CMAKE_C_COMPILER clang)
+#            set(CMAKE_CXX_COMPILER clang++)
+#
+#            if(CMAKE_C_COMPILER_ID MATCHES "Clang\$")
+#                set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
+#                set(OpenMP_C_LIB_NAMES "omp")
+#                set(OpenMP_omp_LIBRARY omp)
+#            endif()
+#
+#            if(CMAKE_CXX_COMPILER_ID MATCHES "Clang\$")
+#                set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
+#                set(OpenMP_CXX_LIB_NAMES "omp")
+#                set(OpenMP_omp_LIBRARY omp)
+#            endif()
+#        endif()
+
+        find_package(OpenMP 4.5)
+        if (OpenMP_CXX_FOUND)
+            target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
+            if (${OpenMP_CXX_VERSION_MAJOR})
+                set(OpenMP_VERSION_MAJOR ${OpenMP_CXX_VERSION_MAJOR} CACHE INTERNAL "" FORCE)
+            endif()
+            target_compile_definitions(${PROJECT_NAME} PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
+            set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
+            SET(USE_OPENMP ON) # Local's scope
+        else()
+            message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-DBUILD_OPENMP=OFF')\n\
+            Hint: Use a compiler with OpenMP support using: '-D CMAKE_CXX_COMPILER=path'")
+        endif()
     endif()
 endif()
 SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
@@ -286,7 +332,6 @@ if(USE_CUDA)
 endif()
 SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 
-
 # FPGA
 if(USE_FPGA)
     find_package(OpenCL)
@@ -322,19 +367,19 @@ SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
 ################################## WINDOWS ################################
 ###########################################################################
 
-if(WIN32)
-   # Threads *************************************************************
-   if(PTHREADS_INSTALL_PATH STREQUAL "")
-       message(ERROR ": Pthreads install path must be specified under Windows")
-   endif()
-   target_link_libraries(${PROJECT_NAME} PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib
-           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib
-           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib)
-   target_link_libraries(${PROJECT_NAME} PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib
-           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib
-           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib)
-   target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PTHREADS_INSTALL_PATH}/include>)
-endif()
+#if(WIN32)  (Not used anymore)
+#   # Threads *************************************************************
+#   if(PTHREADS_INSTALL_PATH STREQUAL "")
+#       message(ERROR ": Pthreads install path must be specified under Windows")
+#   endif()
+#   target_link_libraries(${PROJECT_NAME} PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib
+#           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib
+#           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib)
+#   target_link_libraries(${PROJECT_NAME} PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib
+#           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib
+#           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib)
+#   target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PTHREADS_INSTALL_PATH}/include>)
+#endif()
 
 # Microsoft Visual C++ - set static/dynamic runtime
 if(MSVC)
@@ -399,7 +444,7 @@ message(STATUS "Build shared libs: " ${BUILD_SHARED_LIBS} )
 message(STATUS "Build coverage: " ${BUILD_COVERAGE} )
 message(STATUS "Superbuild: " ${BUILD_SUPERBUILD} )
 message(STATUS "-------------------------------------------" )
-message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER})")
+message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER}) | Version: ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
 message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
 message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
@@ -439,6 +484,7 @@ message(STATUS "Protobuf include directory: " ${Protobuf_INCLUDE_DIRS} )
 message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARIES} )
 message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
 endif()
+<<<<<<< HEAD
 message(STATUS "-------------------------------------------" )
 message(STATUS "Use distributed: " ${BUILD_DIST} )
 if(BUILD_DIST)
@@ -453,5 +499,13 @@ message(STATUS "Pthreads dir: " ${PTHREADS_INSTALL_PATH} )
 message(STATUS "Pthreads include directory: " ${PTHREADS_INSTALL_PATH}/include )
 message(STATUS "Pthreads libraries: " ${PTHREADS_INSTALL_PATH}/lib )
 endif()
+=======
+#if(WIN32)
+#message(STATUS "-------------------------------------------" )
+#message(STATUS "Pthreads dir: " ${PTHREADS_INSTALL_PATH} )
+#message(STATUS "Pthreads include: " ${PTHREADS_INSTALL_PATH}/include )
+#message(STATUS "Pthreads libraries: " ${PTHREADS_INSTALL_PATH}/lib )
+#endif()
+>>>>>>> 7e92b09a7beb637dec4e386730994a7f2c712062
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )

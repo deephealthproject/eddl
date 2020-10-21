@@ -24,7 +24,7 @@ Subtraction
 
 Computes the subtract operation
 
-.. doxygenfunction:: eddl::Diff(layer, layer)
+.. doxygenfunction:: Diff(layer l1, layer l2)
 
 Example:
 
@@ -35,7 +35,7 @@ Example:
    layer l = Diff(l1, l2); // l1 and l2 are layers with the same shape
 
 
-.. doxygenfunction:: eddl::Diff(layer, float)
+.. doxygenfunction:: Diff(layer l1, float k)
 
 Example:
 
@@ -46,7 +46,7 @@ Example:
    l = Diff(l, 0.5);
 
 
-.. doxygenfunction:: eddl::Diff(float, layer)
+.. doxygenfunction:: Diff(float k, layer l1)
 
 
 Example:
@@ -64,7 +64,7 @@ Division
 
 Computes the division operation
 
-.. doxygenfunction:: eddl::Div(layer, layer)
+.. doxygenfunction:: Div(layer l1, layer l2)
 
 Example:
 
@@ -76,7 +76,7 @@ Example:
 
 
 
-.. doxygenfunction:: eddl::Div(layer, float)
+.. doxygenfunction:: Div(layer l1, float k)
 
 Example:
 
@@ -88,7 +88,7 @@ Example:
 
 
 
-.. doxygenfunction:: eddl::Div(float, layer)
+.. doxygenfunction:: Div(float k, layer l1)
 
 Example:
 
@@ -181,7 +181,7 @@ Multiplication
 
 Computes the product operation
 
-.. doxygenfunction:: eddl::Mult(layer,layer)
+.. doxygenfunction:: Mult(layer l1, layer l2)
 
 Example:
 
@@ -192,7 +192,7 @@ Example:
    layer l = Mult(l1, l2); // l1 and l2 are layers with the same shape
    
 
-.. doxygenfunction:: eddl::Mult(layer,float)
+.. doxygenfunction:: Mult(layer l1, float k)
 
 Example:
 
@@ -203,7 +203,7 @@ Example:
    l = Mult(l, 2.0);
 
 
-.. doxygenfunction:: eddl::Mult(float,layer)
+.. doxygenfunction:: Mult(float k, layer l1)
 
 Example:
 
@@ -220,9 +220,9 @@ Power
 
 Computes the power operation
 
-.. doxygenfunction:: eddl::Pow(layer,layer)
+.. doxygenfunction:: Pow(layer l1, layer l2)
 
-.. doxygenfunction:: eddl::Pow(layer,float)
+.. doxygenfunction:: Pow(layer l1, float k)
 
 
 
@@ -252,7 +252,7 @@ Addition
 
 Computes the power operation
 
-.. doxygenfunction:: eddl::Sum(layer, layer)
+.. doxygenfunction:: Sum(layer l1, layer l2)
 
 Example:
 
@@ -263,7 +263,7 @@ Example:
    layer l = Sum(l1, l2); // l1 and l2 are layers with the same shape
 
 
-.. doxygenfunction:: eddl::Sum(layer, float)
+.. doxygenfunction:: Sum(layer l1, float k)
 
 Example:
 
@@ -273,7 +273,7 @@ Example:
    ...
    l = Sum(l, 0.5);
 
-.. doxygenfunction:: eddl::Sum(float, layer)
+.. doxygenfunction:: Sum(float k, layer l1)
 
 Example:
 

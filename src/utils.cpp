@@ -99,7 +99,7 @@ float *get_fmem(unsigned long int size, const string &str){
     // Check for errors
     // Not enough free memory
     if (error) {
-        delete ptr;
+        delete[] ptr;
         throw std::runtime_error("Error allocating " + string(bytes2human(size * sizeof(float))) + " in " + string(str));
     }
 

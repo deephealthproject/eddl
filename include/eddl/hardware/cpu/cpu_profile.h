@@ -152,6 +152,6 @@
 #define _NUM_CPU_FUNCS       147
 extern int num_instances[_NUM_CPU_FUNCS];
 void _profile(int f_id, int end);
-void _profile_add_tensor(long size);
+void _profile_add_tensor(unsigned long int size);
 
 #endif

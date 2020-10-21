@@ -75,6 +75,8 @@ target_link_libraries(cifar_resnet_da_bn eddl)
 add_executable(cifar_resnet50_da_bn "nn/2_cifar10/7_cifar_resnet50_da_bn.cpp")
 target_link_libraries(cifar_resnet50_da_bn eddl)
 
+add_executable(cifar_pretrained "nn/2_cifar10/8_cifar_pretrained.cpp")
+target_link_libraries(cifar_pretrained eddl)
 
 # EXAMPLES: Drive segmentation ****************************************************
 add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
@@ -93,6 +95,9 @@ target_link_libraries(nlp_machine_translation eddl)
 
 add_executable(nlp_text_generation "nn/4_NLP/4_nlp_text_generation.cpp")
 target_link_libraries(nlp_text_generation eddl)
+
+add_executable(nlp_text_generation_pretrained "nn/4_NLP/5_nlp_text_generation_pretrained.cpp")
+target_link_libraries(nlp_text_generation_pretrained eddl)
 
 
 # EXAMPLES: Tensor ****************************************************
@@ -119,7 +124,10 @@ if(BUILD_PROTOBUF)
 
     add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
     target_link_libraries(onnx_import eddl)
+<<<<<<< HEAD
 
     add_executable(onnx_gradients "onnx/4_onnx_test_gradients.cpp")
     target_link_libraries(onnx_gradients eddl)
+=======
+>>>>>>> 7e92b09a7beb637dec4e386730994a7f2c712062
 endif()

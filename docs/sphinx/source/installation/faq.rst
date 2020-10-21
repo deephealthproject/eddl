@@ -25,5 +25,20 @@ Yes, we offer several memory levels to control the memory-speed trade-off. These
 - ``low_mem``: Optimized for hardware with restricted memory capabilities.
 
 
+<<<<<<< HEAD
+=======
+Is it faster than PyTorch/TensorFlow/etc
+----------------------------------------
+
+Check our benchmakrs: eddl_benchmarks_
+
+
+Is it more memory-efficient than PyTorch/TensorFlow/etc
+-------------------------------------------------------
+
+Depends on your memory setting (see the "Can I control the memory consumption?" answer).
+
+>>>>>>> 7e92b09a7beb637dec4e386730994a7f2c712062
 
 .. _PyEDDL: https://github.com/deephealthproject/pyeddl
+.. _eddl_benchmarks: https://github.com/jofuelo/eddl_benchmark

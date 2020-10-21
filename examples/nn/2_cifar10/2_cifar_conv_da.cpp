@@ -29,8 +29,8 @@ int main(int argc, char **argv){
     download_cifar10();
 
     // Settings
-    int epochs = 5;
-    int batch_size = 100;
+    int epochs = 100;
+    int batch_size = 128;
     int num_classes = 10;
 
     // network
@@ -38,25 +38,24 @@ int main(int argc, char **argv){
     layer l=in;
 
     // Data augmentation
-//   l = RandomShift(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
-//   l = RandomRotation(l, {-30.0f, +30.0f});
-//   l = RandomScale(l, {0.85f, 2.0f});
-//   l = RandomFlip(l, 1);
-//   l = RandomCrop(l, {28, 28});
-//   l = RandomCropScale(l, {0.f, 1.0f});
-//   l = RandomCutout(l, {0.0f, 0.3f}, {0.0f, 0.3f});
+    l = RandomHorizontalFlip(l);
+    l = RandomCropScale(l, {0.8f, 1.0f});
+    l = RandomCutout(l,{0.1,0.5},{0.1,0.5});
+    ////
 
-    // l=Select(l, {"1", "1:31", "1:31"});
-    l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2});
+    l=MaxPool(ReLu(BatchNormalization(HeUniform(Conv(l,32,{3,3},{1,1},"same",false)))),{2,2});
+
+    l=MaxPool(ReLu(BatchNormalization(HeUniform(Conv(l,64,{3,3},{1,1},"same",false)))),{2,2});
+
+    l=MaxPool(ReLu(BatchNormalization(HeUniform(Conv(l,128,{3,3},{1,1},"same",false)))),{2,2});
+
+    l=MaxPool(ReLu(BatchNormalization(HeUniform(Conv(l,256,{3,3},{1,1},"same",false)))),{2,2});
 
     l=Reshape(l,{-1});
 
-    l=Activation(Dense(l,128),"relu");
+    l=Activation(BatchNormalization(Dense(l,128)),"relu");
 
-    layer out=Activation(Dense(l,num_classes),"softmax");
+    layer out=Activation(BatchNormalization(Dense(l,num_classes)),"softmax");
 
     // net define input and output layers list
     model net=Model({in},{out});
@@ -64,7 +63,7 @@ int main(int argc, char **argv){
 
     // Build model
     build(net,
-          sgd(0.01, 0.9), // Optimizer
+          adam(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
@@ -97,5 +96,13 @@ int main(int argc, char **argv){
         evaluate(net,{x_test},{y_test});
     }
 
+    setlr(net,{0.0001});
 
+    for(int i=0;i<epochs;i++) {
+        // training, list of input and output tensors, batch, epochs
+        fit(net,{x_train},{y_train},batch_size, 1);
+        // Evaluate train
+        std::cout << "Evaluate test:" << std::endl;
+        evaluate(net,{x_test},{y_test});
+    }
 }

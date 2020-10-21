@@ -73,6 +73,9 @@ void Net::do_backward() {
     cout<<"START BACKWARD\n";
   }
   for (int i = 0; i < vbts.size(); i++) {
+
+    if (!vbts[i]->trainable) return;
+
     if(this->verbosity_level >= 1){
       std::cout << vbts[i]->name << std::endl;
     }

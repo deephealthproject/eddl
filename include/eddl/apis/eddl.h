@@ -66,6 +66,10 @@ typedef NetLoss * metric;
     void setName(model m, string name);
 
     layer getLayer(Net *net, vlayer in);
+    layer getLayer(Net *net, string l);
+    void removeLayer(Net *net, string l);
+    void setTrainable(model net, string lanme, bool val);
+
 
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
 
@@ -141,7 +145,6 @@ typedef NetLoss * metric;
       *  @brief Executes the code in the GPU.
       *
       *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
 
@@ -161,7 +164,6 @@ typedef NetLoss * metric;
       *
       *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
       *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different GPUs
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
     compserv CS_GPU(const vector<int> g, int lsb);
@@ -1649,7 +1651,6 @@ typedef NetLoss * metric;
     layer Decoder(layer l, layer ld, string op="concat");
 
     // Layers Methods
-    void set_trainable(layer l, bool val);
     vlayer getOut(model net);
 
     // Manage tensors inside layers
