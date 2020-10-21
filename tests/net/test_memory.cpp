@@ -469,20 +469,20 @@ TEST(NetTestSuite, net_delete_drive_seg_da) {
     delete danet;
 }
 
-TEST(NetTestSuite, net_delete_drive_seg_concat) {
-    // Build SegNet
-    bool use_concat = true;
-    layer in=Input({3,512,512});
-    layer out=Sigmoid(UNetWithPadding(in, use_concat));
-    model segnet=Model({in},{out});
-    build(segnet,
-          adam(0.00001), // Optimizer
-          {"mse"}, // Losses
-          {"mse"}, // Metrics
-          CS_CPU(-1)
-    );
-    delete segnet;
-}
+//TEST(NetTestSuite, net_delete_drive_seg_concat) {
+//    // Build SegNet
+//    bool use_concat = true;
+//    layer in=Input({3,512,512});
+//    layer out=Sigmoid(UNetWithPadding(in, use_concat));
+//    model segnet=Model({in},{out});
+//    build(segnet,
+//          adam(0.00001), // Optimizer
+//          {"mse"}, // Losses
+//          {"mse"}, // Metrics
+//          CS_CPU(-1)
+//    );
+//    delete segnet;
+//}
 
 //
 //TEST(NetTestSuite, net_delete_drive_seg_sum){
