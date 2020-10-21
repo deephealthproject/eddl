@@ -124,10 +124,7 @@ if(BUILD_PROTOBUF)
 
     add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
     target_link_libraries(onnx_import eddl)
-<<<<<<< HEAD
 
     add_executable(onnx_gradients "onnx/4_onnx_test_gradients.cpp")
     target_link_libraries(onnx_gradients eddl)
-=======
->>>>>>> 7e92b09a7beb637dec4e386730994a7f2c712062
 endif()
