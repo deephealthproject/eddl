@@ -7,17 +7,18 @@ Transformations
 Shift
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::shift
+.. doxygenfunction:: Tensor::shift(vector<int> shift, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
     // Shifts t1 50 pixels in y and 100 in x - WP: Constant
-    Tensor::shift(t1, t2, {50, 100}, WrappingMode::Constant, 0.0f);
+    Tensor* t2 = t1->shift({50, 100}, WrappingMode::Constant, 0.0f);
     t2->save("lena_shift.jpg");
 
+    // Other ways
+    Tensor::shift(t1, t2, {50, 100}, WrappingMode::Constant, 0.0f);  // static
 
 .. image:: ../_static/images/demos/lena_shift_wm_const.jpg
     :width: 256
@@ -27,11 +28,13 @@ Shift
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
     // Shifts t1 50 pixels in y and 100 in x - WP: Original
-    Tensor::shift(t1, t2, {50, 100}, WrappingMode::Original, 0.0f);
+    Tensor* t2 = t1->shift({50, 100}, WrappingMode::Original, 0.0f);
     t2->save("lena_shift.jpg");
+
+    // Other ways
+    Tensor::shift(t1, t2, {50, 100}, WrappingMode::Original, 0.0f);  // static
 
 
 .. image:: ../_static/images/demos/lena_shift_wm_ori.jpg
@@ -43,16 +46,18 @@ Shift
 Rotate
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::rotate
+.. doxygenfunction:: Tensor::rotate(float angle, vector<int> offset_center = {0, 0}, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
     // Rotates t1 30 degrees - WP: Constant
-    Tensor::rotate(t1, t2, 30.0f, {0,0}, WrappingMode::Constant);
+    Tensor* t2 = t1->rotate(30.0f, {0,0}, WrappingMode::Constant);
     t2->save("lena_rotate_wm_const.jpg");
+
+    // Other ways
+    Tensor::rotate(t1, t2, 30.0f, {0,0}, WrappingMode::Constant);  // Static
 
 .. image:: ../_static/images/demos/lena_rotate_wm_const.jpg
     :width: 256
@@ -63,16 +68,18 @@ Rotate
 Scale
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::scale
+.. doxygenfunction:: Tensor::scale(vector<int> new_shape, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f, bool keep_size = false)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::zeros({1, 3, 100, 100});
 
     // Scale to 100x100 pixels
-    Tensor::scale(t1, t2, {100, 100});
+    Tensor* t2 = t1->scale({100, 100}); // keep_size==false
     t2->save("lena_scale_100x100.jpg");
+
+    // Other ways
+    Tensor::scale(t1, t2, {100, 100});  // Static
 
 .. image:: ../_static/images/demos/lena_scale_100x100.jpg
     :width: 100
@@ -82,11 +89,13 @@ Scale
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
     // Scale to 880x880 pixels (virtual) but keeping its original size
-    Tensor::scale(t1, t2, {880, 880});
+    Tensor* t2 = t1->scale({880, 880}, WrappingMode::Constant, 0.0f, true); // Keep_size==true
     t2->save("lena_scale_x2_fixed.jpg");
+
+    // Other ways
+    Tensor::scale(t1, t2, {880, 880});  // Static
 
 .. image:: ../_static/images/demos/lena_scale_x2_fixed.jpg
     :width: 256
@@ -97,16 +106,18 @@ Scale
 Flip
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::flip(Tensor*, Tensor*, int)
+.. doxygenfunction:: Tensor::flip(int axis = 0)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
     // Flip along horizontal axis
-    Tensor::flip(t1, t2, 1);
+    Tensor* t2 = t1->flip(1);
     t2->save("lena_flip_h.jpg");
+
+    // Other ways
+    Tensor::flip(t1, t2, 1);  // Static
 
 .. image:: ../_static/images/demos/lena_flip_h.jpg
     :width: 256
@@ -117,51 +128,57 @@ Flip
 Crop
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::crop
+.. doxygenfunction:: Tensor::crop(vector<int> coords_from, vector<int> coords_to, float cval = 0.0f, bool keep_size = false)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
-    //Crop a rectangle
-    Tensor::crop(t1, t2, {50, 250}, {250, 400});
-    t2->save("lena_cropped_big.jpg");
-
-.. image:: ../_static/images/demos/lena_cropped_big.jpg
-    :width: 256
-    :align: center
-    :alt: Crop operation on Lena (big)
-
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty({1, 3, 200, 150});
-
-    //Crop a rectangle
-    Tensor::crop(t1, t2, {50, 250}, {250, 400});
+    // Crop a rectangle
+    Tensor* t2 = t1->crop({50, 250}, {250, 400});  // keep_size==false
     t2->save("lena_cropped_small.jpg");
+
+    // Other ways
+    Tensor::crop(t1, t2, {50, 250}, {250, 400});  // Static
 
 .. image:: ../_static/images/demos/lena_cropped_small.jpg
     :width: 88
     :align: center
-    :alt: Crop operation on Lena (small)
+    :alt: Crop operation on Lena (Small)
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
+
+    // Crop a rectangle
+    Tensor* t2 = t1->crop({50, 250}, {250, 400}, 0.0f, true);  // keep_size==true
+    t2->save("lena_cropped_big.jpg");
+
+    // Other ways
+    Tensor::crop(t1, t2, {50, 250}, {250, 400});  // Static
+
+.. image:: ../_static/images/demos/lena_cropped_big.jpg
+    :width: 256
+    :align: center
+    :alt: Crop operation on Lena (Big)
 
 
 Crop & Scale
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::crop_scale
+.. doxygenfunction:: Tensor::crop_scale(vector<int> coords_from, vector<int> coords_to, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
-    //Crop and scale
-    Tensor::crop_scale(t1, t2, {50, 250}, {250, 400});
+    // Crop and scale
+    Tensor* t2 = t1->crop_scale({50, 250}, {250, 400});
     t2->save("lena_crop_scale.jpg");
+
+    // Other ways
+    Tensor::crop_scale(t1, t2, {50, 250}, {250, 400});  // Static
 
 .. image:: ../_static/images/demos/lena_crop_scale.jpg
     :width: 256
@@ -172,16 +189,18 @@ Crop & Scale
 Cutout
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::cutout
+.. doxygenfunction:: Tensor::cutout(vector<int> coords_from, vector<int> coords_to, float cval = 0.0f)
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_();  // 4D tensor needed
 
     // Cutout
-    Tensor::cutout(t1, t2, {50, 250}, {250, 400});
+    Tensor* t2 = t1->cutout({50, 250}, {250, 400});
     t2->save("lena_cutout.jpg");
+
+    // Other ways
+    Tensor::cutout(t1, t2, {50, 250}, {250, 400});  // Static
 
 .. image:: ../_static/images/demos/lena_cutout.jpg
     :width: 256

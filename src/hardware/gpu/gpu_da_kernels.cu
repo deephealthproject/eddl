@@ -95,19 +95,21 @@ __device__ void gpu_single_scale(long int thread_id_x, float* A, float* B, int b
     //--------------
     //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
 
-    // Interpolate indices
-    if(mode==2) { // Nearest
-        int Ai = ((Bi + offsets[0]) * irows) / new_shape[0];
-        int Aj = ((Bj + offsets[1]) * icols) / new_shape[1];
 
-        if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols) {
-            int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
-            B[thread_id_x] = A[A_pos];
-        } else {
-            B[thread_id_x] = constant;  // Equivalent to constant
+    int Ai = ((Bi + offsets[0]) * irows) / new_shape[0];
+    int Aj = ((Bj + offsets[1]) * icols) / new_shape[1];
+
+    if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols) {
+        int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
+        B[thread_id_x] = A[A_pos];
+    } else {
+        if(mode==0){ // Constant
+            B[thread_id_x] = constant;
+        }else if(mode == 5){  // Original
+            B[thread_id_x] = A[thread_id_x];
+        }else{
+            printf("Mode (%d) not implemented (%s)", mode, "Tensor::gpu_single_scale");
         }
-    }else{
-        printf("Mode (%d) not implemented (%s)\n", mode, "Tensor::gpu_single_scale");
     }
 }
 
@@ -173,16 +175,11 @@ __device__ void gpu_single_crop_scale(long int thread_id_x, float* A, float* B, 
     int Bi = thread_id_x / B_stride[2] % orows;
     int Bj = thread_id_x / B_stride[3] % ocols;
 
-    // Interpolate indices
-    if(mode==2) { // Nearest
-        int Ai = (Bi * A_hc) / orows + coords_from[0];
-        int Aj = (Bj * A_wc) / ocols + coords_from[1];
+    int Ai = (Bi * A_hc) / orows + coords_from[0];
+    int Aj = (Bj * A_wc) / ocols + coords_from[1];
 
-        int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
-        B[thread_id_x] = A[A_pos];
-    }else{
-        printf("Mode (%d) not implemented (%s)\n", mode, "Tensor::gpu_single_crop_scale");
-    }
+    int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
+    B[thread_id_x] = A[A_pos];
 }
 
 
