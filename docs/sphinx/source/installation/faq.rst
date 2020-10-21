@@ -37,6 +37,5 @@ Is it more memory-efficient than PyTorch/TensorFlow/etc
 Depends on your memory setting, see the "Can I control the memory consumption?" answer.
 Also, you can take a look at our benchmakrs: `EDDL benchmarks`_
 
-
 .. _PyEDDL: https://github.com/deephealthproject/pyeddl
 .. _`EDDL benchmarks`: https://github.com/jofuelo/eddl_benchmark

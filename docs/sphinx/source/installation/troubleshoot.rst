@@ -159,3 +159,5 @@ Anyway, it is convenient to check which is the maximum GCC version that your CUD
     As of the CUDA 9 release, gcc 6 is fully supported on Ubuntu 16.04, Ubuntu 17.04 and Fedora 25.
     The CUDA 9.2 release adds support for gcc 7
     The CUDA 10.1 release adds support for gcc 8
+
+If the problem persists, reinstall CUDA from the `official site <https://developer.nvidia.com/cuda-downloads>`_
