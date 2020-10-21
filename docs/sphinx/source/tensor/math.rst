@@ -561,7 +561,23 @@ Sin
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.78 -0.31 -0.34]
+    // [-0.26 -0.63 0.51]
+    // ]
+
+    t1->sin_();  // In-place
+    // [
+    // [-0.71 -0.30 -0.33]
+    // [-0.26 -0.59 0.49]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->sin(); // returns a new tensor
+    Tensor::sin(t1, t2); // static
+
+
 
     
 Sinh
@@ -572,7 +588,21 @@ Sinh
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.68 -0.85 -0.07]
+    // [0.16 -1.12 1.51]
+    // ]
+
+    t1->sinh_();  // In-place
+    // [
+    // [-0.73 -0.95 -0.07]
+    // [0.16 -1.38 2.16]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->sinh(); // returns a new tensor
+    Tensor::sinh(t1, t2); // static
     
 Sqr
 ^^^^^^^^^^^^
@@ -582,7 +612,21 @@ Sqr
 
 .. code-block:: c++
     
-    blablabla
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.66 0.01 1.41]
+    // [0.12 0.63 0.39]
+    // ]
+
+    t1->sqr_();  // In-place
+    // [
+    // [0.43 0.00 1.98]
+    // [0.01 0.40 0.16]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->sqr(); // returns a new tensor
+    Tensor::sqr(t1, t2); // static
     
 Sqrt
 ^^^^^^^^^^^^
@@ -592,20 +636,46 @@ Sqrt
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [1.18 1.11 -0.29]
+    // [-0.15 0.50 0.60]
+    // ]
+
+    t1->sqrt_();  // In-place
+    // [
+    // [1.09 1.06 -nan]
+    // [-nan 0.71 0.77]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->sqrt(); // returns a new tensor
+    Tensor::sqrt(t1, t2); // static
     
 Sub
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::sub(float v)
-.. doxygenfunction:: Tensor::sub(Tensor *A)
 .. doxygenfunction:: Tensor::sub(Tensor *A, Tensor *B, float v)
-.. doxygenfunction:: Tensor::sub(Tensor *A, Tensor *B, Tensor *C)
 
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::ones({2,3});
+    // [
+    // [1.00 1.00 1.00]
+    // [1.00 1.00 1.00]
+    // ]
+
+    t1->sub_(2.5f);  // In-place
+    // [
+    // [-1.50 -1.50 -1.50]
+    // [-1.50 -1.50 -1.50]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->sub(2.5f); // returns a new tensor
+    Tensor::sub(t1, t2, 2.5f); // static
     
 
     
@@ -617,7 +687,21 @@ Tan
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.38 -1.88 -0.82]
+    // [0.15 0.03 -0.61]
+    // ]
+
+    t1->tan_();  // In-place
+    // [
+    // [-0.39 3.17 -1.07]
+    // [0.16 0.03 -0.70]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->tan(); // returns a new tensor
+    Tensor::tan(t1, t2); // static
     
 Tanh
 ^^^^^^^^^^^^
@@ -627,7 +711,21 @@ Tanh
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [0.50 -0.24 -1.07]
+    // [-0.63 0.76 1.21]
+    // ]
+
+    t1->tanh_();  // In-place
+    // [
+    // [0.46 -0.23 -0.79]
+    // [-0.56 0.64 0.84]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->tanh(); // returns a new tensor
+    Tensor::tanh(t1, t2); // static
     
 Trunc
 ^^^^^^^^^^^^
@@ -637,7 +735,21 @@ Trunc
 
 .. code-block:: c++
 
-    blablabla
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [1.24 1.79 -0.31]
+    // [0.86 -0.37 1.23]
+    // ]
+
+    t1->trunc_();  // In-place
+    // [
+    // [1.00 1.00 -0.00]
+    // [0.00 -0.00 1.00]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->trunc(); // returns a new tensor
+    Tensor::trunc(t1, t2); // static
 
 
 Binary Operations
