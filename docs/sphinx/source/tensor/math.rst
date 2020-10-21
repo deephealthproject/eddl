@@ -510,7 +510,6 @@ Sigmoid
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::sigmoid()
-.. doxygenfunction:: Tensor::sigmoid(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -537,7 +536,6 @@ Sign
 
 .. doxygenfunction:: Tensor::sign(float zero_sign = 0.0f)
 
-.. doxygenfunction:: Tensor::sign(Tensor *A, Tensor *B, float zero_sign = 0.0f)
 
 .. code-block:: c++
 
@@ -557,7 +555,6 @@ Sin
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::sin()
-.. doxygenfunction:: Tensor::sin(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -584,7 +581,6 @@ Sinh
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::sinh()
-.. doxygenfunction:: Tensor::sinh(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -608,7 +604,6 @@ Sqr
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::sqr()
-.. doxygenfunction:: Tensor::sqr(Tensor *A, Tensor *B)
 
 .. code-block:: c++
     
@@ -632,7 +627,6 @@ Sqrt
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::sqrt()
-.. doxygenfunction:: Tensor::sqrt(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -656,7 +650,6 @@ Sub
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::sub(float v)
-.. doxygenfunction:: Tensor::sub(Tensor *A, Tensor *B, float v)
 
 
 .. code-block:: c++
@@ -683,7 +676,6 @@ Tan
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::tan()
-.. doxygenfunction:: Tensor::tan(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -707,7 +699,6 @@ Tanh
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::tanh()
-.. doxygenfunction:: Tensor::tanh(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
@@ -731,7 +722,6 @@ Trunc
 ^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::trunc()
-.. doxygenfunction:: Tensor::trunc(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
