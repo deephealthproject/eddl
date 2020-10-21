@@ -17,7 +17,6 @@
 #include "eddl/net/net.h"
 #include "eddl/utils.h"
 #include "eddl/random.h"
-
 #include "eddl/layers/core/layer_core.h"
 
 #ifdef cGPU

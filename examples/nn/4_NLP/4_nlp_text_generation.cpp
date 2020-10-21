@@ -26,16 +26,16 @@ layer ResBlock(layer l, int filters,int nconv,int half) {
   layer in=l;
 
   if (half)
-      l=ReLu(Conv(l,filters,{3,3},{2,2}));
+      l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{2,2})));
   else
-      l=ReLu(Conv(l,filters,{3,3},{1,1}));
+      l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
 
 
   for(int i=0;i<nconv-1;i++)
-    l=ReLu(Conv(l,filters,{3,3},{1,1}));
+    l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
 
   if (half)
-    return Sum(Conv(in,filters,{1,1},{2,2}),l);
+    return Sum(BatchNormalization(Conv(in,filters,{1,1},{2,2})),l);
   else
     return Sum(l,in);
 }
@@ -66,8 +66,8 @@ int main(int argc, char **argv) {
     download_flickr();
 
     // Settings
-    int epochs = 10;
-    int batch_size = 8;
+    int epochs = 100;
+    int batch_size = 24;
 
     int olength=20;
     int outvs=2000;
@@ -116,20 +116,19 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          //CS_CPU()
     );
 
     // View model
     summary(net);
 
-
     // Load dataset
     Tensor *x_train=Tensor::load("flickr_trX.bin","bin");
-    x_train->info();
+    x_train->info(); //1000,256,256,3
 
-    Tensor *xtrain=Tensor::permute(x_train,{0,3,1,2});
+    Tensor *xtrain=Tensor::permute(x_train,{0,3,1,2});//1000,3,256,256
 
     Tensor *y_train=Tensor::load("flickr_trY.bin","bin");
     y_train->info();

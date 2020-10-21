@@ -522,7 +522,10 @@ void Net::setTrainable(string lname, bool val)
 
       for(int j=0;j<snets.size();j++) {
         for(int k=0;k<snets[j]->layers.size();k++)
-          if (snets[j]->layers[k]->orig==l) snets[j]->layers[k]->trainable=val;
+          if (snets[j]->layers[k]->orig==l) {
+            cout<<"Setting device layer "<<snets[j]->layers[k]->name<<" trainable="<<val<<endl;
+            snets[j]->layers[k]->trainable=val;
+          }
       }//snets
     }//if
   }//layers
