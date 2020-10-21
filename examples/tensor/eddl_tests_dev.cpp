@@ -32,17 +32,14 @@ using namespace eddl;
 int main(int argc, char **argv) {
     cout << "Tests for development. Ignore." << endl;
 
-    Tensor* t1 = Tensor::randn({2, 3});
-    t1->print(2);
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_();  // 4D tensor needed
 
-    t1->abs_();  // In-place
-    //t1->print(2);
+    // Cutout
+    Tensor* t2 = t1->cutout({50, 250}, {250, 400});
+    t2->save("lena_cutout.jpg");
 
-    Tensor* t2 = t1->abs(); // returns a new tensor
-    t2->print(2);
-
-    Tensor::abs(t1, t2); // static
-    t2->print(2);
+    // Other ways
+    Tensor::cutout(t1, t2, {50, 250}, {250, 400});  // Static
 
     cout << "Done!" << endl;
 
