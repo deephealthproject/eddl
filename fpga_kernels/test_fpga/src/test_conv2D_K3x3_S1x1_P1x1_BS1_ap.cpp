@@ -1,3 +1,38 @@
+//
+// test_conv2D. 
+//
+// Constants:
+//
+//  - CPI
+//  - CPO
+//  - KW = 3
+//  - KH = 3
+//  - PW = 1
+//  - PH = 1
+//  - SW = 1
+//  - SH = 1
+//
+//  Arguments:
+//
+//  - W
+//  - H
+//  - I
+//  - O
+//  
+//  Data formats: 
+//
+//  - kernel   : GO x GI x CPO x CPI x KH x KW
+//  - bias     : O
+//  - data_in  : GI x H x W x CPI
+//  - data_out : GO x H x W x CPO
+//
+//  GI = I / CPI
+//  GO = O / CPO
+//
+//
+
+
+
 #include <cstdio>      /* printf, scanf, NULL */
 #include <cstdlib>     /* malloc, free, rand */
 
@@ -23,27 +58,31 @@ cl::CommandQueue q;
 cl::Program program;
 
 
-#define W    256 //256
-#define H    256 //256
-#define C    16  //I
-#define COUT 16  //O
+#define W    4 // 256 //256
+#define H    4 // 256 //256
+#define GI   2
+#define CPI  2 // 16
+#define I    GI * CPI
+#define GO   2 // 16
+#define CPO  2
+#define O    GO * CPO
 #define KW   3
 #define KH   3
 
 // buffers
-data_type data_in[  W   * H  * C       ]  __attribute__ ((__aligned__(16)));
-data_type kernel [ KW   * KH * C * COUT]  __attribute__ ((__aligned__(16)));
-data_type bias   [ COUT                ]  __attribute__ ((__aligned__(16)));
-data_type out    [  W   * H  * COUT    ]  __attribute__ ((__aligned__(16)));
-data_type out_cpu[  W   * H  * COUT    ]  __attribute__ ((__aligned__(16)));
+data_type data_in[  GI * W * H * CPI                 ]  __attribute__ ((__aligned__(16)));
+data_type kernel [  GO * GI * CPO * CPI * KW * KH    ]  __attribute__ ((__aligned__(16)));
+data_type bias   [  O                                ]  __attribute__ ((__aligned__(16)));
+data_type out    [  GO * W * H * CPO                 ]  __attribute__ ((__aligned__(16)));
+data_type out_cpu[  GO * W * H * CPO                 ]  __attribute__ ((__aligned__(16)));
 
 void cpu_conv2d() {
 
-  int size_out = W * H * COUT;
+  int size_out = GO * W * H * CPO;
   for (int i=0; i<size_out; i++) out_cpu[i] = 0.f;
 
-  for (int c=0; c<C; c++) {
-    for (int cout=0; cout<COUT; cout++) {
+  for (int c=0; c<I; c++) {
+    for (int cout=0; cout<O; cout++) {
       for (int h=0; h<H; h++) {
         for (int w=0; w<W; w++) {
           for (int kh=0; kh<KH; kh++) {
@@ -51,9 +90,25 @@ void cpu_conv2d() {
 	      int data_h = (h-1)+kh;
 	      int data_w = (w-1)+kw;
 	      int padding = (data_h == -1) | (data_w == -1) | (data_w == W) | (data_h == H);
-	      int addr_k = (c * COUT * KW * KH) + (cout * KW * KH) + (kh * KW) + kw;
-              int addr_p = (data_h * W * C) + (data_w * C) + c;
-	      int addr_o = (h * W * COUT) + (w * COUT) + cout;
+	      // kernel position
+	      int gki = c / CPI;
+	      int ki = c % CPI;
+	      int gko = cout / CPO;
+	      int ko = cout % CPO;
+	      int addr_k = (gko * KW * KH * GI * CPO * CPI) + 
+		           (gki * KW * KH * CPO * CPI) +
+			   (ko * KW * KH * CPI) + 
+			   (ki * KW * KH) +
+			   (kh * KW) + kw;
+	      // data_in pixel position
+	      int gi = c / CPI;
+	      int i = c % CPI;
+              int addr_p = (gi * W * H * CPI) + (data_h * W * CPI) + (data_w * CPI) + i;
+	      // data_out pixel position
+	      int go = cout / CPO;
+	      int o = cout % CPO;
+	      int addr_o = (go * W * H * CPO) + (h * W * CPO) + (w * CPO) + o;
+	      // operation
 	      if (!padding) out_cpu[addr_o] += data_in[addr_p] * kernel[addr_k];
 	    }
 	  }
@@ -63,10 +118,14 @@ void cpu_conv2d() {
   }
 
   // añadimos bias
-  for (int cout=0; cout<COUT; cout++) {
+  for (int cout=0; cout<O; cout++) {
     for (int h=0; h<H; h++) {
       for (int w=0; w<W; w++) {
-        int addr_o = (h * W * COUT) + (w * COUT) + cout;
+	// data_out pixel position
+	int go = cout / CPO;
+	int o = cout % CPO;
+        int addr_o = (go * W * H * CPO) + (h * W * CPO) + (w * CPO) + o;
+	// bias operation
         out_cpu[addr_o] += bias[cout];
       }
     }
@@ -85,12 +144,16 @@ void cpu_conv2d() {
 
 void cpu_print_data_in() {
   printf("data in:\n");
-  for (int c=0; c<C; c++) {
+  for (int c=0; c<I; c++) {
     printf(" channel %d:\n", c);
     printf("   ");
     for (int h=0; h<H; h++) {
       for (int w=0; w<W; w++) {
-	int addr_p = (h * W * C) + (w * C) + c;
+	// data_in pixel position
+	int gi = c / CPI;
+	int i = c % CPI;
+	int addr_p = (gi * W * H * CPI) + (h * W * CPI) + (w * CPI) + i;
+	//
         printf("%6.2f ", float(data_in[addr_p]));
       }
       printf("\n");
@@ -102,12 +165,21 @@ void cpu_print_data_in() {
 
 void cpu_print_kernels() {
   printf("kernels:\n");
-  for (int c=0; c<C; c++) {
-    for (int cout=0; cout<COUT; cout++) {
+  for (int cout=0; cout<O; cout++) {
+    for (int c=0; c<I; c++) {
       printf("kernel c=%d cout %d:\n", c, cout);
       for (int kh=0; kh<KH; kh++) {
         for (int kw=0; kw<KW; kw++) {
-	  int addr_k = (c * COUT * KW * KH) + (cout * KW * KH) + (kh * KW) + kw;
+           // kernel position
+           int gki = c / CPI;
+           int ki = c % CPI;
+           int gko = cout / CPO;
+           int ko = cout % CPO;
+           int addr_k = (gko * KW * KH * GI * CPO * CPI) + 
+                        (gki * KW * KH * CPO * CPI) +
+                        (ko * KW * KH * CPI) + 
+                        (ki * KW * KH) +
+                        (kh * KW) + kw;
 	  printf("%6.2f ", float(kernel[addr_k]));
 	}
 	printf("\n");
@@ -118,7 +190,7 @@ void cpu_print_kernels() {
 
 void cpu_print_bias() {
   printf("bias:\n");
-  for (int cout=0; cout<COUT; cout++) {
+  for (int cout=0; cout<O; cout++) {
     printf("%6.2f ", float(bias[cout]));
   }
   printf("\n");
@@ -126,11 +198,14 @@ void cpu_print_bias() {
 
 void cpu_print_out() {
   printf("output: cpu (fpga)\n");
-  for (int cout=0; cout<COUT; cout++) {
+  for (int cout=0; cout<O; cout++) {
     printf("channel %d:\n", cout);
     for (int h=0; h<H; h++) {
       for (int w=0; w<W; w++) {
-        int addr_o = (h * W * COUT) + (w * COUT) + cout;
+	// data_out pixel position
+	int go = cout / CPO;
+	int o = cout % CPO;
+        int addr_o = (go * W * H * CPO) + (h * W * CPO) + (w * CPO) + o;
         printf(" %10.6f (%10.6f) (diff %10.6f) | ", float(out_cpu[addr_o]), float(out[addr_o]), float(out_cpu[addr_o]-out[addr_o]));
       }
       printf("\n");
@@ -141,10 +216,13 @@ void cpu_print_out() {
 void check_result() {
 
   int error = 0;
-  for (int cout=0; cout<COUT; cout++) {
+  for (int cout=0; cout<O; cout++) {
     for (int h=0; h<H; h++) {
       for (int w=0; w<W; w++) {
-        int addr_o = (h * W * COUT) + (w * COUT) + cout;
+	// data_out pixel position
+	int go = cout / CPO;
+	int o = cout % CPO;
+        int addr_o = (go * W * H * CPO) + (h * W * CPO) + (w * CPO) + o;
         if (fabs(out_cpu[addr_o] - out[addr_o]) > 0.001) {
           printf("Results mismatch at cout %d h %d w %d: %6.4f %6.4f (diff %6.4f)\n", cout, h, w, float(out_cpu[addr_o]), float(out[addr_o]), fabs(float(out_cpu[addr_o]-out[addr_o])));
           error = 1;
@@ -231,7 +309,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  printf("Test CONV: [WxHxC] = [%dx%dx%d] -> [WxHxC] = [%dx%dx%d] (kernel [%dx%d], stride [1x1], padding [1x1])\n", W, H, C, W, H, COUT, KW, KH);
+  printf("Test CONV: [GIxWxHxCPI] = [%dx%dx%dx%d] -> [GOxWxHxCPO] = [%d%dx%dx%d] (kernel [%dx%d], stride [1x1], padding [1x1])\n", GI, W, H, CPI, GO, W, H, CPO, KW, KH);
 
   std::string binaryFile = argv[1];
   cl_int err;
@@ -254,10 +332,10 @@ int main(int argc, char **argv) {
   OCL_CHECK(err, kernel_conv2d_2 = cl::Kernel(program,"k_conv2D_K3x3_S1x1_P1x1_BS1_ap", &err));
   std::cout << "Kernel sucessfully created" << std::endl ;
 
-  size_t size_data_in_bytes = W*H*C*sizeof(data_type);
-  size_t size_output_in_bytes = W*H*COUT * sizeof(data_type);
-  size_t size_kernel_in_bytes = KW * KH * C * COUT * sizeof(data_type);
-  size_t size_bias_in_bytes = COUT * sizeof(data_type);
+  size_t size_data_in_bytes = W * H * I * sizeof(data_type);
+  size_t size_output_in_bytes = W * H * O * sizeof(data_type);
+  size_t size_kernel_in_bytes = KW * KH * I * O * sizeof(data_type);
+  size_t size_bias_in_bytes = O * sizeof(data_type);
   // Allocate memory on the host and fill with random data.
 
   //-----------------------------
@@ -268,25 +346,27 @@ int main(int argc, char **argv) {
 
   std::cout << "Filling buffer with useful data" << std::endl ;
   int addr = 0;
-  for (int h=0; h<H; h++) {
-    for (int w=0; w<W; w++) {
-      for (int c=0; c<C; c++) {
-	       data_type value = (c*W*H) + (data_type)(h*W)+w; //c+1; // (data_type)((c * 25) + (h * W) + w);
-         data_in[addr] = dist(gen); //value;
-	       addr++;
+  for (int gi=0; gi<GI; gi++) {
+    for (int h=0; h<H; h++) {
+      for (int w=0; w<W; w++) {
+        for (int c=0; c<CPI; c++) {
+          data_type value = (gi * W * H * CPI) + (c * W * H) + (data_type)(h * W) + w; //c+1; // (data_type)((c * 25) + (h * W) + w);
+          data_in[addr] = value; //dist(gen); //value;
+          addr++;
+	}
       }
     }
   }
 
   std::cout << "Filling kernel buffer with useful data" << std::endl;
   int kernel_id = 1;
-  for (int c=0; c<C; c++) {
-    for (int cout=0; cout<COUT; cout++) {
+  for (int c=0; c<I; c++) {
+    for (int cout=0; cout<O; cout++) {
       for (int kh=0; kh<KH; kh++) {
-	       for (int kw=0; kw<KW; kw++) {
+	for (int kw=0; kw<KW; kw++) {
           data_type value = (data_type)kernel_id;
-          int addr_k = (c * COUT * KW * KH) + (cout * KW * KH) + (kh * KW) + kw;
-	         kernel[addr_k] = dist(gen);
+          int addr_k = (cout * I * KW * KH) + (c * KW * KH) + (kh * KW) + kw;
+          kernel[addr_k] = value; //dist(gen);
         }
       }
       kernel_id++;
@@ -294,7 +374,7 @@ int main(int argc, char **argv) {
   }
 
   std::cout << "Filling bias buffer with useful data" << std::endl;
-  for (int cout=0; cout<COUT; cout++) bias[cout] = cout; //dist(gen);
+  for (int cout=0; cout<O; cout++) bias[cout] = cout; //dist(gen);
 
   //-----------------------------
   // THIS PAIR OF EVENTS WILL BE USED TO TRACK WHEN A KERNEL IS FINISHED WITH
@@ -324,11 +404,11 @@ int main(int argc, char **argv) {
   OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, buffer_a));
   OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, H));
   OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, W));
-  OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, C));
+  OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, I));
   OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, buffer_k));
   OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, buffer_bias));
   OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, buffer_b));
-  OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, COUT));
+  OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, O));
 
   //-----------------------------
   // Copy input data to device global memory
@@ -371,13 +451,13 @@ int main(int argc, char **argv) {
 
   std::cout << "computing conv in CPU..." << std::endl;
 
- // cpu_print_data_in();
-  // cpu_print_kernels();
- // cpu_print_bias();
-  // cpu_conv2d();
- // cpu_print_out();
+  cpu_print_data_in();
+  cpu_print_kernels();
+  cpu_print_bias();
+  cpu_conv2d();
+  cpu_print_out();
 
-  // check_result();
+  check_result();
 
   //-----------------------------
   std::cout << "" << std::endl;
