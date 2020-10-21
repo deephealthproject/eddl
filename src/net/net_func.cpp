@@ -145,8 +145,6 @@ void Net::do_applygrads() {
 }
 
 
-
-
 void Net::sync_weights() {
   //cout<<"\nSync weights...\n";
   for (int j = 0; j < layers.size(); j++)

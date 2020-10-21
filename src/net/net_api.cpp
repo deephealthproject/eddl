@@ -954,12 +954,12 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 
 
 ///////////////////////////////////////////
-void Net::evaluate(vtensor tin, vtensor tout) {
+void Net::evaluate(vtensor tin, vtensor tout,int bs) {
 
   int i, j, k, n;
 
   if (isrecurrent) {
-    evaluate_recurrent(tin,tout);
+    evaluate_recurrent(tin,tout,bs);
   }
   else{
 
@@ -972,8 +972,6 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     // Check data consistency
     n = tin[0]->shape[0];
 
-
-
     for (i = 1; i < tin.size(); i++)
     if (tin[i]->shape[0] != n)
     msg("different number of samples in input tensor", "Net.evaluate");
@@ -982,6 +980,7 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     if (tout[i]->shape[0] != n)
     msg("different number of samples in output tensor", "Net.evaluate");
 
+    resize(bs);
 
     printf("Evaluate with batch size %d\n",batch_size);
 
@@ -1011,8 +1010,10 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 }
 
 ///////////////////////////////////////////
-void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
-  int i,j,k;
+void Net::evaluate_recurrent(vtensor tin, vtensor tout, int bs) {
+
+  int i;
+
   // prepare data for unroll net
   vtensor xt;
   vtensor xtd;
@@ -1024,16 +1025,20 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
   int inl;
   int outl;
 
-  Tensor *Z=Tensor::zeros(tout[0]->shape,tout[0]->device);
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
-  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr,Z);
+  if (rnet==nullptr) build_rnet(inl,outl);
 
+  cout<<"OK"<<endl;
   if ((isencoder)&&(isdecoder))
-    rnet->evaluate(tinr,toutr);
-  else if (isencoder)
-    rnet->evaluate(tinr,tout);
+    rnet->evaluate(tinr,toutr,bs);
+  else if (isencoder){cout<<"OKenc"<<endl;
+    rnet->evaluate(tinr,tout,bs);}
   else if (isdecoder)
-    rnet->evaluate(tin,toutr);
+    rnet->evaluate(tinr,toutr,bs);
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
 
   if (isencoder) {
     for(i=0;i<xt.size();i++)
