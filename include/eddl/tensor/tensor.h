@@ -1839,6 +1839,22 @@ public:
 
     // ***** Transformations *****************************
 
+
+    /**
+     *   @brief Shift the tensor. The array is shifted using spline interpolation. Points outside the boundaries of the input are filled according to the given mode.
+     *   @param shift vector of shifts along the axes.
+     *   @param mode Must be one of the following:
+     *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+     *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+     *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+     *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+     *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+     */
+    Tensor* shift(vector<int> shift, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+
     /**
     *   @brief Shift the tensor. The array is shifted using spline interpolation. Points outside the boundaries of the input are filled according to the given mode.
     *   @param A Input tensor.
@@ -1854,6 +1870,20 @@ public:
     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
     static void shift(Tensor *A,Tensor *B, vector<int> shift, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+        /**
+    *   @brief Rotate the tensor. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
+    *   @param angle The rotation angle in degrees.
+    *   @param mode Must be one of the following:
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+    */
+    Tensor* rotate(float angle, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
 
     /**
     *   @brief Rotate the tensor. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
@@ -1873,6 +1903,22 @@ public:
 
     /**
     *   @brief Scale the tensor. The array is scaled using spline interpolation.
+    *   @param new_shape Vector with the target size.
+    *   @param mode Must be one of the following:
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+    *   @param Keep original size
+    */
+    Tensor* scale(vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, bool keep_size=false);
+
+
+    /**
+    *   @brief Scale the tensor. The array is scaled using spline interpolation.
     *   @param A Input tensor.
     *   @param B Output tensor.
     *   @param new_shape Vector with the target size.
@@ -1885,7 +1931,13 @@ public:
     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
-    static void scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
+    static void scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+    /**
+    *   @brief Flip the tensor.
+    *   @param axis The axis used to flip the tensor.
+    */
+    Tensor* flip(int axis=0);
 
     /**
     *   @brief Flip the tensor.
@@ -1897,6 +1949,16 @@ public:
 
     /**
     *   @brief Crop the tensor.
+    *   @param coords_from Coordinates of the initial point of the crop.
+    *   @param coords_to Coordinates of the final point of the crop.
+    *   @param cval Value to fill past edges.
+    *   @param Keep original size
+    */
+    Tensor* crop(vector<int> coords_from, vector<int> coords_to, float cval=0.0f, bool keep_size=false);
+
+
+    /**
+    *   @brief Crop the tensor.
     *   @param A Input tensor.
     *   @param B Output tensor.
     *   @param coords_from Coordinates of the initial point of the crop.
@@ -1904,6 +1966,22 @@ public:
     *   @param cval Value to fill past edges.
     */
     static void crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval=0.0f);
+
+    /**
+    *   @brief Crop and scale the tensor. The array is scaled using spline interpolation.
+    *   @param coords_from Coordinates of the initial point of the crop.
+    *   @param coords_to Coordinates of the final point of the crop.
+    *   @param mode Must be one of the following:
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+    */
+    Tensor* crop_scale(vector<int> coords_from, vector<int> coords_to, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
 
     /**
     *   @brief Crop and scale the tensor. The array is scaled using spline interpolation.
@@ -1920,7 +1998,16 @@ public:
     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
-    static void crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
+    static void crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+    /**
+    *   @brief Set to a constant value a region of the tensor.
+    *   @param coords_from Coordinates of the initial point of the crop.
+    *   @param coords_to Coordinates of the final point of the crop.
+    *   @param cval Value to fill the crop region with.
+    */
+    Tensor* cutout(vector<int> coords_from, vector<int> coords_to, float cval=0.0f);
+
 
     /**
     *   @brief Set to a constant value a region of the tensor.
