@@ -30,6 +30,22 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 
 
 ###########################################################################
+############################### BASIC CHECKS ##############################
+###########################################################################
+
+
+# NVCC (CUDA 10) needs GCC versions to be less or equal than 8  (GCC < 8.0; I had problems with 8.4.0)
+if (USE_CUDA)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8)
+            message(WARNING "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8.
+            Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
+        endif()
+    endif()
+endif()
+
+
+###########################################################################
 ############################### GET FILES #################################
 ###########################################################################
 
@@ -287,14 +303,6 @@ if(USE_CUDA)
 endif()
 SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 
-# NVCC (CUDA 10) needs GCC versions to be less or equal than 8  (GCC < 9.0)
-if (USE_CUDA)
-    if(CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
-        message(WARNING "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8.
-        Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
-    endif()
-endif()
-
 # FPGA
 if(USE_FPGA)
     find_package(OpenCL)
@@ -407,7 +415,7 @@ message(STATUS "Build shared libs: " ${BUILD_SHARED_LIBS} )
 message(STATUS "Build coverage: " ${BUILD_COVERAGE} )
 message(STATUS "Superbuild: " ${BUILD_SUPERBUILD} )
 message(STATUS "-------------------------------------------" )
-message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER})")
+message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER}) | Version: ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
 message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
 message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
