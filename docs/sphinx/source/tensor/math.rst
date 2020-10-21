@@ -1,8 +1,8 @@
 Mathematical functions
 ========================
 
-Unary Operations
-------------------
+Point-wise
+-----------
 
 Abs
 ^^^^^^^^^^^^
@@ -414,7 +414,58 @@ Logn
     Tensor* t2 = t1->logn(5.0f); // returns new tensor
     Tensor::logn(t1, t2, 5.0f); // static
 
-    
+
+Maximum
+^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::maximum(float v)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.63 -0.10 0.01]
+    // [-1.47 -0.84 0.54]
+    // ]
+
+
+    Tensor* t2 = t1->maximum(0.3f);  // returns a new tensor
+    // [
+    // [0.30 0.30 0.30]
+    // [0.30 0.30 0.54]
+    // ]
+
+    // Other ways
+    Tensor::maximum(t1, 0.3f) // source
+    Tensor::maximum(t1, t2, 0.3f); // static
+
+
+
+Minimum
+^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::minimum(float v)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-1.30 -1.05 0.49]
+    // [0.03 0.09 0.28]
+    // ]
+
+
+    Tensor* t2 = t1->minimum(0.3f);  // returns a new tensor
+    // [
+    // [-1.30 -1.05 0.30]
+    // [0.03 0.09 0.28]
+    // ]
+
+    // Other ways
+    Tensor::minimum(t1, 0.3f) // source
+    Tensor::minimum(t1, t2, 0.3f); // static
+
+
 Mod
 ^^^^^^^^^^^^
 
@@ -854,8 +905,8 @@ Trunc
     Tensor::trunc(t1, t2); // static
 
 
-Binary Operations
--------------------
+Element-wise
+-------------
 
 Add
 ^^^^^
@@ -914,6 +965,62 @@ Div
     // Other ways
     Tensor* t3 = t1->div(t2);  // returns new tensor
     Tensor::add(t1, t2, t3) //source
+
+
+Maximum
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: Tensor::maximum(Tensor *A, Tensor *B)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.25 -1.21 -0.04]
+    // [-0.74 0.12 -0.59]
+    // ]
+
+    Tensor* t2 = Tensor::randn({2,3});
+    // [
+    // [0.05 -1.72 -0.50]
+    // [0.17 -0.00 0.11]
+    // ]
+
+    Tensor* t3 = Tensor::maximum(t1, t2);  // returns a new tensor
+    // [
+    // [0.05 -1.21 -0.04]
+    // [0.17 0.12 0.11]
+    // ]
+
+    // Other ways
+    Tensor::maximum(t1, t2, t3); // static
+
+
+Minimum
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: Tensor::minimum(Tensor *A, Tensor *B)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.25 -0.75 -0.53]
+    // [0.29 0.88 1.98]
+    // ]
+
+    Tensor* t2 = Tensor::randn({2,3});
+    // [
+    // [-1.37 0.95 -0.59]
+    // [-1.26 1.16 -0.21]
+    // ]
+
+    Tensor* t3 = Tensor::minimum(t1, t2);  // returns a new tensor
+    // [
+    // [-1.37 -0.75 -0.59]
+    // [-1.26 0.88 -0.21]
+    // ]
+
+    // Other ways
+    Tensor::minimum(t1, t2, t3); // static
 
 Mult
 ^^^^^^^^^^^^
@@ -977,156 +1084,6 @@ Sub
 Reductions
 ------------------
 
-Apply lower bound
-^^^^^^^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::maximum(float v)
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::randn({2,3});
-    // [
-    // [-0.63 -0.10 0.01]
-    // [-1.47 -0.84 0.54]
-    // ]
-
-
-    Tensor* t2 = t1->maximum(0.3f);  // returns a new tensor
-    // [
-    // [0.30 0.30 0.30]
-    // [0.30 0.30 0.54]
-    // ]
-
-    // Other ways
-    Tensor::maximum(t1, 0.3f) // source
-    Tensor::maximum(t1, t2, 0.3f); // static
-
-
-
-Obtain maximum values
-^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: Tensor::maximum(Tensor *A, Tensor *B)
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::randn({2,3});
-    // [
-    // [-0.25 -1.21 -0.04]
-    // [-0.74 0.12 -0.59]
-    // ]
-
-    Tensor* t2 = Tensor::randn({2,3});
-    // [
-    // [0.05 -1.72 -0.50]
-    // [0.17 -0.00 0.11]
-    // ]
-
-    Tensor* t3 = Tensor::maximum(t1, t2);  // returns a new tensor
-    // [
-    // [0.05 -1.21 -0.04]
-    // [0.17 0.12 0.11]
-    // ]
-
-    // Other ways
-    Tensor::maximum(t1, t2, t3); // static
-
-
-Apply upper bound
-^^^^^^^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::minimum(float v)
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::randn({2,3});
-    // [
-    // [-1.30 -1.05 0.49]
-    // [0.03 0.09 0.28]
-    // ]
-
-
-    Tensor* t2 = t1->minimum(0.3f);  // returns a new tensor
-    // [
-    // [-1.30 -1.05 0.30]
-    // [0.03 0.09 0.28]
-    // ]
-
-    // Other ways
-    Tensor::minimum(t1, 0.3f) // source
-    Tensor::minimum(t1, t2, 0.3f); // static
-
-
-Obtain minumum values
-^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: Tensor::minimum(Tensor *A, Tensor *B)
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::randn({2,3});
-    // [
-    // [-0.25 -0.75 -0.53]
-    // [0.29 0.88 1.98]
-    // ]
-
-    Tensor* t2 = Tensor::randn({2,3});
-    // [
-    // [-1.37 0.95 -0.59]
-    // [-1.26 1.16 -0.21]
-    // ]
-
-    Tensor* t3 = Tensor::minimum(t1, t2);  // returns a new tensor
-    // [
-    // [-1.37 -0.75 -0.59]
-    // [-1.26 0.88 -0.21]
-    // ]
-
-    // Other ways
-    Tensor::minimum(t1, t2, t3); // static
-
-
-Median
-^^^^^^^^
-.. doxygenfunction:: Tensor::median()
-
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::randn({2,3});
-    // [
-    // [-1.24 0.51 0.51]
-    // [0.30 0.55 -0.04]
-    // ]
-
-
-    float x = t1->median() 
-    // 0.40
-
-    // Other ways
-    Tensor::median(t1); // static (returns float)
-    t1->median({0}, true); // axis (returns tensor)
-
-
-Max
-^^^^^^^^
-.. doxygenfunction:: Tensor::max()
-
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::randn({2,3});
-    // [
-    // [0.55 0.23 -0.33]
-    // [-0.33 -0.10 -0.46]
-    // ]
-
-
-    float x = t1->max()  
-    // 0.55
-
-    // Other ways
-    Tensor::max(t1); // static (returns float)
-    t1->max({0}, true); // axis (returns tensor)
-
 
 Argmax
 ^^^^^^^^
@@ -1135,41 +1092,24 @@ Argmax
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::randn({2,3});
+    Tensor* t1 = Tensor::randn({2, 3});
     // [
-    // [1.22 1.10 0.11]
-    // [-0.87 0.47 -0.61]
+    // [2.13 -0.14 -0.15]
+    // [1.53 0.96 0.31]
     // ]
 
-
-    int x = t1->argmax() 
+    // Global (reduce on all axis)
+    int n1 = t1->argmax();
     // 0
 
-    // Other ways
-    Tensor::argmax(t1); // static (returns int)
-    t1->argmax({0}, true); // axis (returns tensor)
-
-
-Min
-^^^^^^^^
-.. doxygenfunction:: Tensor::min()
-
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::randn({2,3});
-    // [
-    // [0.22 -0.83 0.70]
-    // [0.88 -0.07 1.19]
-    // ]
-
-
-    float x = t1->min()  
-    // -0.83
+    // Reduced on axis 0
+    Tensor* t2 = t1->argmax({0}, false); // keepdims==false
+    // [0 1 1]
 
     // Other ways
-    Tensor::min(t1); // static (returns float)
-    t1->min({0}, true); // axis (returns tensor)
+    int n2 = Tensor::argmax(t1); // static (returns int)
+    Tensor* t3 = t1->argmax({0}, true); // axis (returns tensor)
+
 
     
 Argmin
@@ -1179,85 +1119,50 @@ Argmin
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::randn({2,3});
+    Tensor* t1 = Tensor::randn({2, 3});
     // [
-    // [1.22 1.10 0.11]
-    // [-0.87 0.47 -0.61]
+    // [-0.34 -0.13 -0.41]
+    // [-1.09 -0.08 -1.85]
     // ]
 
+    // Global (reduce on all axis)
+    int n1 = t1->argmin();
+    // 5
 
-    int x = t1->argmin() 
-    // 0
+    // Reduced on axis 0
+    Tensor* t2 = t1->argmin({0}, false); // keepdims==false
+    t2->print(2);
 
     // Other ways
-    Tensor::argmin(t1); // static (returns int)
-    t1->argmin({0}, true); // axis (returns tensor)
+    int n2 = Tensor::argmin(t1); // static (returns int)
+    Tensor* t3 = t1->argmin({0}, true); // axis (returns tensor)
 
 
-Sum
+
+Max
 ^^^^^^^^
-.. doxygenfunction:: Tensor::sum()
+.. doxygenfunction:: Tensor::max()
 
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::full({2,3}, 5.0f);
+    Tensor* t1 = Tensor::randn({2, 3});
     // [
-    // [5.00 5.00 5.00]
-    // [5.00 5.00 5.00]
+    // [-0.79 -0.54 0.28]
+    // [1.12 0.38 -1.25]
     // ]
 
+    // Global (reduce on all axis)
+    float n1 = t1->max();
+    // 1.12
 
-    float x = t1->sum()  
-    // 30.00
-
-    // Other ways
-    Tensor::sum(t1); // static (returns float)
-    t1->sum({0}, true); // axis (returns tensor)
-
-
-Sum_abs
-^^^^^^^^
-.. doxygenfunction:: Tensor::sum_abs()
-
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::full({2,3}, -5.0f);
-    // [
-    // [-5.00 -5.00 -5.00]
-    // [-5.00 -5.00 -5.00]
-    // ]
-
-
-    float x = t1->sum_abs()  
-    // 30.00
+    // Reduced on axis 0
+    Tensor* t2 = t1->max({0}, false); // keepdims==false
+    // [1.12 0.38 0.28]
 
     // Other ways
-    Tensor::sum_abs(t1); // static (returns float)
-    t1->sum_abs({0}, true); // axis (returns tensor)
-
-
-Prod
-^^^^^^^^
-.. doxygenfunction:: Tensor::prod()
-
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::full({2,3}, 5.0f);
-    // [
-    // [5.00 5.00 5.00]
-    // [5.00 5.00 5.00]
-    // ]
-
-
-    float x = t1->prod()  
-    // 15625.00
-
-    // Other ways
-    Tensor::prod(t1); // static (returns float)
-    t1->prod({0}, true); // axis (returns tensor)
+    float n2 = Tensor::max(t1); // static (returns float)
+    Tensor* t3 = t1->max({0}, true); // axis (returns tensor)
 
 
 Mean
@@ -1267,63 +1172,79 @@ Mean
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::randn({2,3});
+    Tensor* t1 = Tensor::randn({2, 3});
     // [
-    // [0.62 0.08 -0.05]
-    // [1.15 0.08 -0.04]
+    // [-0.01 0.40 -0.07]
+    // [1.14 0.13 -0.49]
     // ]
 
+    // Global (reduce on all axis)
+    float n1 = t1->mean();
+    // 0.18
 
-    float x = t1->mean() 
-    // 0.31
+    // Reduced on axis 0
+    Tensor* t2 = t1->mean({0}, false); // keepdims==false
+    // [0.57 0.26 -0.28]
 
     // Other ways
-    Tensor::mean(t1); // static (returns float)
-    t1->mean({0}, true); // axis (returns tensor)
+    float n2 = Tensor::mean(t1); // static (returns float)
+    Tensor* t3 = t1->mean({0}, true); // axis (returns tensor)
 
 
-Std
+Median
 ^^^^^^^^
-.. doxygenfunction:: Tensor::std(bool unbiased = true)
+.. doxygenfunction:: Tensor::median()
 
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::randn({2,3});
+    Tensor* t1 = Tensor::randn({2, 3});
     // [
-    // [0.22 0.02 -0.79]
-    // [-0.11 0.06 -0.81]
+    // [0.24 -0.86 0.36]
+    // [0.18 -0.93 -1.07]
     // ]
 
+    // Global (reduce on all axis)
+    float n1 = t1->median();
+    // -0.34
 
-    float x = t1->std() 
-    // 0.45
+    // Reduced on axis 0
+    Tensor* t2 = t1->median({0}, false); // keepdims==false
+    // [0.21 -0.90 -0.35]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->median({1}, false); // keepdims==false
+    // [0.24 -0.93]
 
     // Other ways
-    Tensor::std(t1); // static (returns float)
-    t1->std({0}, true, true); // axis (returns tensor) 
+    float n2 = Tensor::mean(t1); // static (returns float)
+    Tensor* t4 = t1->median({0}, true); // axis (returns tensor)
 
 
-Var
+Min
 ^^^^^^^^
-.. doxygenfunction:: Tensor::var(bool unbiased = true)
+.. doxygenfunction:: Tensor::min()
 
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::randn({2,3});
+    Tensor* t1 = Tensor::randn({2, 3});
     // [
-    // [-1.16 0.14 0.72]
-    // [0.17 1.28 0.54]
+    // [-1.11 -0.00 0.34]
+    // [-0.16 0.13 -0.39]
     // ]
 
+    // Global (reduce on all axis)
+    float n1 = t1->min();
+    // -1.11
 
-    float x = t1->var() 
-    // 0.67
+    // Reduced on axis 0
+    Tensor* t2 = t1->min({0}, false); // keepdims==false
+    // [-1.11 -0.00 -0.39]
 
     // Other ways
-    Tensor::var(t1); // static (returns float)
-    t1->var({0}, true, true); // axis (returns tensor)
+    float n2 = Tensor::min(t1); // static (returns float)
+    Tensor* t3 = t1->min({0}, true); // axis (returns tensor)
 
 
 Mode
@@ -1333,19 +1254,200 @@ Mode
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::eye(3);
+    Tensor* t1 = new Tensor({1, 1, 1, 3, 2, 3, 3, 2, 3}, {3, 3});
     // [
-    // [1.00 0.00 0.00]
-    // [0.00 1.00 0.00]
-    // [0.00 0.00 1.00]
+    // [1.00 1.00 1.00]
+    // [3.00 2.00 3.00]
+    // [3.00 2.00 3.00]
     // ]
 
+    // Global (reduce on all axis)
+    float n1 = t1->mode();
+    // 3
 
+    // Reduced on axis 0
+    Tensor* t2 = t1->mode({0}, false); // keepdims==false
+    // [3.00 2.00 3.00]
 
-    float x = t1->mode() 
-    // 0.00
+    // Reduced on axis 1
+    Tensor* t3 = t1->mode({1}, false); // keepdims==false
+    // [1.00 3.00 3.00]
 
     // Other ways
-    Tensor::mode(t1); // static (returns float)
-    t1->mode({0}, true); // axis (returns tensor)
+    float n2 = Tensor::mode(t1); // static (returns float)
+    Tensor* t4 = t1->mode({0}, true); // axis (returns tensor)
+
+
+Norm
+^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::norm(vector<int> axis, bool keepdims, string ord = "fro")
+
+Example:
+
+.. code-block:: c++
+
+   Tensor* t1 = new Tensor({1,2,3,4,5,6}, {3, 2});
+   // [
+   // [1.00 2.00 3.00]
+   // [4.00 5.00 6.00]
+   // ]
+
+   // Global (reduce on all axis)
+   float n1 = t1->norm();
+   // 9.53939
+
+   // Reduced on axis 0
+   Tensor* t2 = t1->norm({0}, false); // keepdims==false
+   // [4.12 5.39 6.71]
+
+   // Other ways
+   Tensor::norm(t1, "fro");
+
+
+Prod
+^^^^^^^^
+.. doxygenfunction:: Tensor::prod()
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    // Global (reduce on all axis)
+    float n1 = t1->prod();
+    // 15625
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->prod({0}, false); // keepdims==false
+    // [25.00 25.00 25.00]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->prod({1}, false); // keepdims==false
+    // [125.00 125.00]
+
+    // Other ways
+    float n2 = Tensor::prod(t1); // static (returns float)
+    Tensor* t4 = t1->prod({0}, true); // axis (returns tensor)
+
+
+Std
+^^^^^^^^
+.. doxygenfunction:: Tensor::std(bool unbiased = true)
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [0.14 0.29 -0.51]
+    // [0.15 -0.82 0.21]
+    // ]
+
+    // Global (reduce on all axis)
+    float n1 = t1->std();
+    // 0.45
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->std({0},  false, true); // keepdims==false, unbiased=true
+    // [0.01 0.79 0.50]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->std({1}, false, true); // keepdims==false, unbiased=true
+    // [0.42 0.58]
+
+    // Other ways
+    float n2 = Tensor::std(t1); // static (returns float)
+
+Sum
+^^^^^^^^
+.. doxygenfunction:: Tensor::sum()
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    // Global (reduce on all axis)
+    float n1 = t1->sum();
+    // 30
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->sum({0}, false); // keepdims==false
+    // [10.00 10.00 10.00]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->sum({1}, false); // keepdims==false
+    // [15.00 15.00]
+
+    // Other ways
+    float n2 = Tensor::sum(t1); // static (returns float)
+    Tensor* t4 = t1->sum({0}, true); // axis (returns tensor)
+
+
+Sum Abs
+^^^^^^^^
+.. doxygenfunction:: Tensor::sum_abs()
+
+
+.. code-block:: c++
+
+    Tensor* t1 = new Tensor({-5, 5, 5, -5, -5, 5}, {2, 3});
+    // [
+    // [-5.00 5.00 5.00]
+    // [-5.00 -5.00 5.00]
+    // ]
+
+    // Global (reduce on all axis)
+    float n1 = t1->sum_abs();
+    // 30
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->sum_abs({0}, false); // keepdims==false
+    // [10.00 10.00 10.00]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->sum_abs({1}, false); // keepdims==false
+    // [15.00 15.00]
+
+    // Other ways
+    float n2 = Tensor::sum_abs(t1); // static (returns float)
+    Tensor* t4 = t1->sum_abs({0}, true); // axis (returns tensor)
+
+
+Var
+^^^^^^^^
+.. doxygenfunction:: Tensor::var(bool unbiased = true)
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [0.23 -1.09 0.09]
+    // [0.09 1.68 -0.06]
+    // ]
+
+    // Global (reduce on all axis)
+    float n1 = t1->var();
+    // 0.78
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->var({0},  false, true); // keepdims==false, unbiased=true
+    // [0.01 3.84 0.01]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->var({1}, false, true); // keepdims==false, unbiased=true
+    // [0.52 0.93]
+
+    // Other ways
+    float n2 = Tensor::var(t1); // static (returns int)
 
