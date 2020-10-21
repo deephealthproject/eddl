@@ -56,30 +56,3 @@ Example:
    // 6
 
 
-Norm
-^^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::norm(string ord = "fro")
-.. doxygenfunction:: Tensor::norm(vector<int> axis, bool keepdims, string ord = "fro")
-
-Example:
-
-.. code-block:: c++
-
-   Tensor* t1 = new Tensor({1,2,3,4,5,6}, {3, 2});
-   // [
-   // [1.00 2.00 3.00]
-   // [4.00 5.00 6.00]
-   // ]
-
-   // Global (reduce on all axis)
-   float n1 = t1->norm();
-   // 9.53939
-
-   // Reduced on axis 0
-   Tensor* t2 = t1->norm({0}, false); // keepdims==false
-   // [4.12 5.39 6.71]
-
-   // Other ways
-   Tensor::norm(t1, "fro");
-
