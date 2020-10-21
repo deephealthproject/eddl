@@ -97,6 +97,37 @@ Example:
 Set Select
 ^^^^^^^^^^^
 
+.. doxygenfunction:: set_select(const vector<string> &indices, float value)
+
+Example:
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::ones({3, 4});
+    t1->set_select({"0", "2"}, 2.0f); // Set element (0, 2) to "2"
+    // [
+    // [1.00 1.00 2.00 1.00]
+    // [1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00]
+    // ]
+
+    Tensor* t2 = Tensor::ones({3, 4});
+    t2->set_select({":", "2"}, 5.0f);  // Set 2nd column to "5"
+    // [
+    // [1.00 1.00 5.00 1.00]
+    // [1.00 1.00 5.00 1.00]
+    // [1.00 1.00 5.00 1.00]
+    // ]
+
+    Tensor* t3 = Tensor::ones({3, 4});
+    t3->set_select({"0:2", "-2:"}, 7.0f);  // Set 3rd and 4th column from 1st and 2nd row to "7"
+    // [
+    // [1.00 1.00 7.00 7.00]
+    // [1.00 1.00 7.00 7.00]
+    // [1.00 1.00 1.00 1.00]
+    // ]
+
+
 .. doxygenfunction:: set_select(const vector<string> &indices, Tensor *A)
 
 Example:
