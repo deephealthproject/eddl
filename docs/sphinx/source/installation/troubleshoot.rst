@@ -2,19 +2,25 @@ Troubleshoot
 ============
 
 
-Segmentation fault (core dumped)
---------------------------------
+Compilation
+------------
 
-- **CPU:** This is probably because your processor does not support AVX instructions.
-- **GPU:** Make sure you are using the computing service: `CS_GPU`.
+
+Running an example
+^^^^^^^^^^^^^^^^^^^^
+
+If you get an error like: ``Segmentation fault (core dumped)`` run running an example, this could be because you
+haven't changed the computing service used in the example. (e.g: It uses de GPU and you don't have one)
+
+Also, if it is using CPU and the library has been compile for CPU, it could be because your processor does not
+support AVX instructions.
 
 
 OpenMP
--------
+^^^^^^^^
 
-If you are using MacOS, we have noticed several problems with default c++ compiler. If one of those problems relate
-to ``OpenMP``, we recommend you to use the `clang` compiler. To do so, you can execute the following commands
-(or append them to ``.zprofile``):
+We have noticed several problems with default c++ compiler in Mac OS. If this is your case, we recommend you to use
+the `clang` compiler. To do so, you can execute the following commands (or append them to ``.zprofile``):
 
 .. code:: bash
 
@@ -28,13 +34,17 @@ As a last resort, you can always disable OpenMP and use the EDDL, by making use 
 
 
 
-(MacOS) Undefined symbols for architecture x86_64
---------------------------------------------------
+Undefined symbols for architecture x86_64
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This error might be due to a conflict with the default compilers. A simple workaround is to force the use ``CClang``
-(for instance) for C and C++, and then install the EDDL again:
+This error might be due to the CMake cache or a conflict between compilers.
+
+First, try to delete the ``build/`` folder and run ``cmake`` again. If this doesn't work, try to force a specific
+compiler either with the flag: ``-DCMAKE_CXX_COMPILER`` or by exporting these variables to your environment:
 
 .. code:: bash
+
+    # In MacOS we recommend CLang
 
     # Set env variables
     export CC=/usr/local/opt/llvm/bin/clang
@@ -43,34 +53,26 @@ This error might be due to a conflict with the default compilers. A simple worka
     export CPPFLAGS="-I/usr/local/opt/llvm/include"
 
 
-Import/Export Numpy files
--------------------------
+Memory
+------
 
-(Theoretical) Numpy files include a version numbering for the format (independent of the Numpy version).
-So if a file it's written using a future format (>= 3.0) that is not backward compatible with the previous importers
-and we haven't updated our importer, we won't be able to import the numpy file properly.
+Memory optimization
+^^^^^^^^^^^^^^^^^^^^^^
 
-If this is your case, please, create a new issue on `github issue`_ and temporally save your numpy file using and older version format (use Numpy).
-
-
-.. _github issue: https://github.com/deephealthproject/eddl/issues
-
-
-My model doesn't fit on the GPU but on X deep-learning framework does
----------------------------------------------------------------------
-
-You can change the memory consumption through these memory levels:
+You can change the memory consumption through three different levels of memory optimization:
 
 - ``full_mem`` (default): No memory bound (highest speed at the expense of the memory requirements)
 - ``mid_mem``: Slight memory optimization (good trade-off memory-speed)
 - ``low_mem``: Optimized for hardware with restricted memory capabilities.
 
-Take into account that these levels respond to the classical memory-speed trade-off
+Take into account that these levels respond to the typical memory-speed trade-off
 
 
+Protobuf
+---------
 
-Problems with Protobuf
-----------------------------
+Missing includes
+^^^^^^^^^^^^^^^^^
 
 If you gent an error like this:
 
@@ -103,8 +105,31 @@ You can try to fix it by forcing cmake to look into the conda env using the flag
 If the error persists, use the flag `-D BUILD_SUPERBUILD=ON` to download all dependencies and link them automatically to the EDDL.
 
 
-Problems with ONNX functions, onnx.pb.h/onnx.pb.cc, etc
---------------------------------------------------------
+Missing lib
+^^^^^^^^^^^^^^^^^
+
+If you get an error like this...
+
+.. code:: bash
+
+    make[2]: *** No rule to make target 'cmake/third_party/protobuf/lib/libprotobuf.a', needed by 'lib64/libeddl.so'.  Stop.
+
+
+...it is because when using ``-DBUILD_SUPERBUILD=ON``, all critical dependencies are downloaded and compiled locally. These
+compiled libraries can be found in ``eddl/build/cmake/third_party/``. The problem with the protobuf static library is
+that in some systems, it can be found either on ``protobuf/lib/`` or ``protobuf/lib64/``.
+
+Because the EDDL looks into ``lib/`` (by default), when the protobuf library appears in ``lib64/`` we cannot find it.
+To fix this, create a symbolic link from ``lib64/`` to ``lib/``:
+
+.. code:: bash
+
+    # Inside: eddl/build/cmake/third_party/protobuf/
+    ln -s lib64 lib
+
+
+ONNX functions
+^^^^^^^^^^^^^^^
 
 If the ONNX functions don't work, it might be due to a problem with protobuf so:
 
@@ -120,8 +145,12 @@ If the ONNX functions don't work, it might be due to a problem with protobuf so:
    Additionally, we recommend to make use of the anaconda environment (see :doc:`installation` section for more details).
 
 
-Problems with CUDA and GCC
-----------------------------
+
+CUDA
+-----
+
+Unsupported GNU version
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you gent an error like this:
 
@@ -149,6 +178,7 @@ Anyway, it is convenient to check which is the maximum GCC version that your CUD
 .. code: bash
 
     # Answer from SO: https://stackoverflow.com/questions/6622454/cuda-incompatible-with-my-gcc-version#comment56532695_8693381
+    # More: https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
 
     As of the CUDA 4.1 release, gcc 4.5 is now supported. gcc 4.6 and 4.7 are unsupported.
     As of the CUDA 5.0 release, gcc 4.6 is now supported. gcc 4.7 is unsupported.
@@ -159,5 +189,36 @@ Anyway, it is convenient to check which is the maximum GCC version that your CUD
     As of the CUDA 9 release, gcc 6 is fully supported on Ubuntu 16.04, Ubuntu 17.04 and Fedora 25.
     The CUDA 9.2 release adds support for gcc 7
     The CUDA 10.1 release adds support for gcc 8
+    The CUDA 11.1 release adds support for gcc 9
 
 If the problem persists, reinstall CUDA from the `official site <https://developer.nvidia.com/cuda-downloads>`_
+
+
+IDEs
+-----
+
+
+CLion
+^^^^^^
+
+I usually have to set additional flags in order to make CLion able to run the EDDL smoothly:
+
+.. code:: bash
+
+    -DBUILD_TARGET=GPU
+    -DCMAKE_C_COMPILER=/usr/bin/gcc-8
+    -DCMAKE_CXX_COMPILER=/usr/bin/g++-8
+    -DCMAKE_CUDA_COMPILER=/usr/bin/nvcc
+    -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-8
+    -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-11.1
+
+If you want to run it using the conda environment, add:
+
+.. code:: bash
+
+    -DCMAKE_INSTALL_PREFIX=/path/to/dir
+    -DCMAKE_PREFIX_PATH=/path/to/dir
+
+    # Note:
+    To get the path, activate the environment a type:
+    echo $CONDA_PREFIX
