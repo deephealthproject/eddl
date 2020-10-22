@@ -775,9 +775,11 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
       //set decoder input with outputs
       for(i=0;i<tout.size();i++)
         xtd.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
-      cout<<"done\n";      fflush(stdout);
+      cout<<"done\n";
+      fflush(stdout);
 
       cout<<"Preparing output tensors for unrolling decoder...";
+      fflush(stdout);
       //prepare output
       for(i=0;i<tout.size();i++)
         yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
@@ -787,7 +789,8 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
         if (yt[i]->shape[0]!=outl)
         msg("Output tensors with different time steps","fit_recurrent");
       }
-      cout<<"done\n";      fflush(stdout);
+      cout<<"done\n";
+      fflush(stdout);
 
     }
 
@@ -1039,7 +1042,7 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout, int bs) {
 
   prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
-  if (rnet==nullptr) build_rnet(inl,outl);
+  build_rnet(inl,outl);
 
   cout<<"OK"<<endl;
   if ((isencoder)&&(isdecoder))
