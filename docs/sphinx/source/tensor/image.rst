@@ -91,7 +91,7 @@ Scale
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
 
     // Scale to 880x880 pixels (virtual) but keeping its original size
-    Tensor* t2 = t1->scale({880, 880}, WrappingMode::Constant, 0.0f, true); // Keep_size==true
+    Tensor* t2 = t1->scale({880, 880}, WrappingMode::Constant, 0.0f, true); // keep_size==true
     t2->save("lena_scale_x2_fixed.jpg");
 
     // Other ways
@@ -214,16 +214,18 @@ Data augmentations
 Shift Random
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::shift_random
+.. doxygenfunction:: Tensor::shift_random(vector<float> factor_x, vector<float> factor_y, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
     // Shift randomly image +-35% (range for the Y and X axis)
-    Tensor::shift_random(t1, t2, {-0.35f, +0.35f}, {-0.35f, +0.35f}, WrappingMode::Constant, 0.0f);
+    Tensor* t2 = t1->shift_random({-0.35f, +0.35f}, {-0.35f, +0.35f}, WrappingMode::Constant, 0.0f);
     t2->save("lena_rnd_shift.jpg");
+
+    // Other ways
+    Tensor::shift_random(t1, t2, {-0.35f, +0.35f}, {-0.35f, +0.35f}, WrappingMode::Constant, 0.0f);  // static
 
 .. image:: ../_static/images/demos/lena_rnd_shift.jpg
     :width: 256
@@ -234,16 +236,18 @@ Shift Random
 Rotate Random
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::rotate_random
+.. doxygenfunction:: Tensor::rotate_random(vector<float> factor, vector<int> offset_center = {0, 0}, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
     // Rotate image randomly +-60 degrees, using the coordinates (220, 220) as anchor (from the center)
-    Tensor::rotate_random(t1, t2, {-60.0f, +60.0f}, {220, 220});
+    Tensor* t2 = t1->rotate_random({-60.0f, +60.0f}, {220, 220});
     t2->save("lena_rnd_rotate.jpg");
+
+    // Other ways
+    Tensor::rotate_random(t1, t2, {-60.0f, +60.0f}, {220, 220});
 
 .. image:: ../_static/images/demos/lena_rnd_rotate.jpg
     :width: 256
@@ -254,16 +258,18 @@ Rotate Random
 Scale Random
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::scale_random
+.. doxygenfunction:: Tensor::scale_random(vector<float> factor, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
-    // Scale image randomly +-25%, using NearestNeighbors interpolation
-    Tensor::scale_random(t1, t2, {0.75f, 1.25f}, WrappingMode::Nearest);
+    // Scale image randomly +-25%
+    Tensor* t2 = t1->scale_random({0.75f, 1.25f});
     t2->save("lena_rnd_scale_nn.jpg");
+
+    // Other ways
+    Tensor::scale_random(t1, t2, {0.75f, 1.25f});
 
 .. image:: ../_static/images/demos/lena_rnd_scale_nn.jpg
     :width: 256
@@ -274,16 +280,18 @@ Scale Random
 Flip Random
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::flip_random
+.. doxygenfunction:: Tensor::flip_random(int axis)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
     // Flip randomly on the horizontal axis (50% change)
-    Tensor::flip_random(t1, t2, 1);
+    Tensor* t2 = t1->flip_random(1);
     t2->save("lena_rnd_flip.jpg");
+
+    // Other ways
+    Tensor::flip_random(t1, t2, 1);
 
 .. image:: ../_static/images/demos/lena_flip_h.jpg
     :width: 256
@@ -294,19 +302,21 @@ Flip Random
 Crop Random
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::crop_random
+.. doxygenfunction:: Tensor::crop_random(int height, int width)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty({1, 3, 256, 256});
 
-    // Crop t1 randomly with a crop size equal to the t2 size
-    Tensor::crop_random(t1, t2);
+    // Crop t1 randomly with a crop size with height=200px and width=150px
+    Tensor* t2 = t1->crop_random(200, 150);
     t2->save("lena_rnd_crop.jpg");
 
+    // Other ways
+    Tensor::crop_random(t1, t2);
+
 .. image:: ../_static/images/demos/lena_rnd_crop.jpg
-    :width: 256
+    :width: 150
     :align: center
     :alt: Random crop operation on Lena
 
@@ -314,16 +324,19 @@ Crop Random
 Crop & Scale Random
 ^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::crop_scale_random
+.. doxygenfunction:: Tensor::crop_scale_random(vector<float> factor, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
     // Crop a path with size 65-95% of t1, and scale it to the t2 size
-    Tensor::crop_scale_random(t1, t2, {0.65f, 0.95f}, WrappingMode::Nearest);
+    Tensor* t2 = t1->crop_scale_random({0.65f, 0.95f});
     t2->save("lena_rnd_crop_scale_nn.jpg");
+
+    // Other ways
+    Tensor::crop_scale_random(t1, t2, {0.65f, 0.95f});
+
 
 .. image:: ../_static/images/demos/lena_rnd_crop_scale_nn.jpg
     :width: 256
@@ -334,16 +347,18 @@ Crop & Scale Random
 Cutout Random
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::cutout_random
+.. doxygenfunction:: Tensor::cutout_random(vector<float> factor_x, vector<float> factor_y, float cval = 0.0f)
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_(); //4D tensor needed
-    Tensor* t2 = Tensor::empty_like(t1);
 
     // Cutout a patch with size 10-30% of t1 (height and width)
-    Tensor::cutout_random(t1, t2, {0.10f, 0.30f}, {0.10f, 0.30f});
+    Tensor* t2 = t1->cutout_random({0.10f, 0.30f}, {0.10f, 0.30f});
     t2->save("lena_rnd_cutout.jpg");
+
+    // Other ways
+    Tensor::cutout_random(t1, t2, {0.10f, 0.30f}, {0.10f, 0.30f});
 
 .. image:: ../_static/images/demos/lena_rnd_cutout.jpg
     :width: 256
