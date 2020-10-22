@@ -162,12 +162,27 @@ Net::~Net(){
 
     if (mnets.size()) return;
 
+
+    // IF CPU : net = snets[0]   snets.push_back(this)
+
+   // IF GPU: net , snets[0]= clone en GPU
+
     for(int i=0;i<snets.size();i++){
       for(int j=0;j<snets[i]->layers.size();j++) {
-        delete snets[i]->layers[j];
-        snets[i]->layers[j] = nullptr;
+        if (snets[i]->layers[j]!=nullptr) {
+          delete snets[i]->layers[j];
+          snets[i]->layers[j] = nullptr;
+        }
       }
     }
+
+    //TODO:
+    /*
+    if (GPU){
+      for(int j=0;j<layers.size();j++)
+         delete layers[j];
+    }
+    */
 
     if (rnet!=nullptr) {delete rnet; rnet = nullptr;}
 }

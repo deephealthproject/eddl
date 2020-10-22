@@ -463,17 +463,16 @@ void Net::build_rnet(int inl,int outl) {
   else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
   else todev = DEV_CPU;
 
-  if ((rnet==nullptr)||(inl!=rnet->lin.size())) {
+  if (rnet!=nullptr) delete rnet;
 
-   if (rnet!=nullptr) delete rnet;
+  ////////////////////////////////////////
+  // Create an unrolled version on CPU
+  ////////////////////////////////////////
+  if ((isencoder)&&(isdecoder)) rnet=unroll_enc_dec(inl,outl);
+  else if (!isdecoder) rnet=unroll_enc(inl,outl);
+  else rnet=unroll_dec(inl,outl);
 
-   // Create an unrolled version on CPU
-   if ((isencoder)&&(isdecoder)) rnet=unroll_enc_dec(inl,outl);
-   else if (!isdecoder) rnet=unroll_enc(inl,outl);
-   else rnet=unroll_dec(inl,outl);
-
-
-   for(i=0;i<rnet->layers.size();i++) {
+  for(i=0;i<rnet->layers.size();i++) {
      rnet->layers[i]->isrecurrent=false;
      rnet->layers[i]->net=rnet;
      rnet->layers[i]->orig=rnet->layers[i];
@@ -482,7 +481,6 @@ void Net::build_rnet(int inl,int outl) {
    rnet->isdecoder=isdecoder;
    rnet->isencoder=isencoder;
 
-   rnet->plot("rmodel.pdf","LR");
 
    vloss lr;
    for(i=0;i<losses.size();i++) lr.push_back(losses[i]->clone());
@@ -490,23 +488,18 @@ void Net::build_rnet(int inl,int outl) {
    vmetrics mr;
    for(i=0;i<metrics.size();i++) mr.push_back(metrics[i]->clone());
 
-   rnet->name="rnet";
 
    rnet->build(optimizer->share(),lr,mr,cs->share(),false);
-   //cout<<rnet->summary();
-   fflush(stdout);
+
    rnet->plot("rmodel.pdf","LR");
    rnet->name="rnet";
 
 
-   //getchar();
-   //cout<<rnet->summary();
-
+   ////////////////////////////////////////
+   // Create an unrolled version on Device
+   ////////////////////////////////////////
    if (todev!=DEV_CPU) {
      // unroll CS devices and link
-     for(i=0;i<rnet->snets.size();i++)
-       delete rnet->snets[i];
-     rnet->snets.clear();
      for(i=0;i<snets.size();i++) {
        if ((isencoder)&&(isdecoder))
          rnet->snets.push_back(snets[i]->unroll_enc_dec(inl,outl));
@@ -532,8 +525,9 @@ void Net::build_rnet(int inl,int outl) {
              rnet->snets[i]->layers[j]->orig=rnet->layers[j];
              rnet->snets[i]->layers[j]->net=rnet;
        }
-      }
-    }
+     }
+   }
+
 
    rnet->flog_tr=flog_tr;
    rnet->flog_ts=flog_ts;
@@ -544,5 +538,5 @@ void Net::build_rnet(int inl,int outl) {
 
    fflush(stdout);
 
-  }
+
 }

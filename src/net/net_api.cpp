@@ -704,7 +704,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
       reset_loss();
 
       // For each batch
-      for (j = 0; j < num_batches; j++) {
+      for (j = 0; j < 2; j++) {
 
         // Set random indices
         for (k = 0; k < batch_size; k++) sind[k] = rand() % n;
@@ -752,6 +752,8 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
   inl=outl=1;
 
   if (tin.size()) {
+    cout<<"Preparing input tensors for unrolling encoder...";      fflush(stdout);
+
     if (isencoder) {
       for(i=0;i<tin.size();i++)
         xt.push_back(Tensor::permute(tin[i],{1,0,2})); // time x batch x dim
@@ -762,15 +764,20 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
           msg("Input tensors with different time steps","fit_recurrent");
       }
     }
+    cout<<"done\n";      fflush(stdout);
+
   }
 
   if (tout.size()) {
     if (isdecoder) {
+      cout<<"Preparing input tensors for unrolling decoder...";
+      fflush(stdout);
       //set decoder input with outputs
       for(i=0;i<tout.size();i++)
         xtd.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
+      cout<<"done\n";      fflush(stdout);
 
-
+      cout<<"Preparing output tensors for unrolling decoder...";
       //prepare output
       for(i=0;i<tout.size();i++)
         yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
@@ -780,7 +787,10 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
         if (yt[i]->shape[0]!=outl)
         msg("Output tensors with different time steps","fit_recurrent");
       }
+      cout<<"done\n";      fflush(stdout);
+
     }
+
   }
 
   // prepare data for unroll net
@@ -826,6 +836,8 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
           toutr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset),yt[i]->device));
     }
   }
+
+  cout<<"Tensors unrolled\n";
 }
 
 void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
@@ -844,7 +856,7 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
 
   prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
-  if (rnet==nullptr) build_rnet(inl,outl);
+  build_rnet(inl,outl);
 
   if ((isencoder)&&(isdecoder))
     rnet->fit(tinr,toutr,batch,epochs);
@@ -1056,8 +1068,6 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout, int bs) {
   }
 
 }
-
-
 
 
 

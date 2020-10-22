@@ -78,6 +78,7 @@ Layer::~Layer(){
             delete acc_gradients[i]; acc_gradients[i] = nullptr;
         }
     }
+
 }
 
 void Layer::initialize() {
