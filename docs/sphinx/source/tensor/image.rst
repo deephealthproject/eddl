@@ -302,7 +302,7 @@ Flip Random
 Crop Random
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::crop_random(int height, int width)
+.. doxygenfunction:: Tensor::crop_random(int height, int width, float cval = 0.0f, bool keep_size = false)
 
 .. code-block:: c++
 
