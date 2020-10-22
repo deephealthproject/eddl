@@ -295,6 +295,12 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
 
 
 
+Tensor* Tensor::shift_random(vector<float> factor_x, vector<float> factor_y, WrappingMode mode, float cval){
+    Tensor *t_new = Tensor::empty_like(this);
+    Tensor::shift_random(this, t_new, factor_x, factor_y, mode, cval);
+    return t_new;
+}
+
 
 void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, WrappingMode mode, float cval){
     // Parameter check
@@ -329,6 +335,11 @@ void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<f
 }
 
 
+Tensor* Tensor::rotate_random(vector<float> factor, vector<int> offset_center, WrappingMode mode, float cval){
+    Tensor *t_new = Tensor::empty_like(this);
+    Tensor::rotate_random(this, t_new, factor, offset_center, mode, cval);
+    return t_new;
+}
 
 void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, WrappingMode mode, float cval) {
     // Check dimensions
@@ -352,6 +363,14 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
         fpga_rotate_random(A, B,  std::move(factor), std::move(offset_center), mode, cval);
     }
 #endif
+}
+
+Tensor* Tensor::scale_random(vector<float> factor, WrappingMode mode, float cval){
+    // We don't accept keep_size!
+
+    Tensor *t_new = Tensor::empty_like(this);
+    Tensor::scale_random(this, t_new, factor, mode, cval);
+    return t_new;
 }
 
 void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode, float cval) {
@@ -382,6 +401,12 @@ void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMo
 }
 
 
+Tensor* Tensor::flip_random(int axis){
+    Tensor *t_new = Tensor::empty_like(this);
+    Tensor::flip_random(this, t_new, axis);
+    return t_new;
+}
+
 void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
     // Parameter check
     if(axis != 0 && axis != 1){
@@ -411,6 +436,28 @@ void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
 #endif
 }
 
+Tensor* Tensor::crop_random(int height, int width, float cval, bool keep_size){
+    // Check height and width
+    if(height <= 0 || height > this->shape[2]){
+        msg("The height must be smaller than the current tensor height and greater than zero", "Tensor::crop_random");
+    }
+    if(width <= 0 || width > this->shape[3]){
+        msg("The width must be smaller than the current tensor width and greater than zero", "Tensor::crop_random");
+    }
+
+    // Perform crop
+    Tensor *t_new;
+    if(keep_size){
+        t_new = Tensor::full(this->shape, cval);
+        // Canvas => Paste patch
+        msg("'keep_size=true' not yet implemented", "Tensor::crop_random");
+    }else{
+        t_new = Tensor::full({this->shape[0], this->shape[1], height, width}, cval);
+        Tensor::crop_random(this, t_new);  // Get patch => Copy
+    }
+    return t_new;
+}
+
 void Tensor::crop_random(Tensor *A, Tensor *B) {
     // Check dimensions
     if (A->ndim != 4 || B->ndim != 4){
@@ -431,6 +478,12 @@ void Tensor::crop_random(Tensor *A, Tensor *B) {
         fpga_crop_random(A, B);
     }
 #endif
+}
+
+Tensor* Tensor::crop_scale_random(vector<float> factor, WrappingMode mode, float cval){
+    Tensor *t_new = Tensor::empty_like(this);
+    Tensor::crop_scale_random(this, t_new, factor, mode, cval);
+    return t_new;
 }
 
 void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode, float cval) {
@@ -459,6 +512,12 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, Wrapp
         fpga_crop_scale_random(A, B, std::move(factor), mode, cval);
     }
 #endif
+}
+
+Tensor* Tensor::cutout_random(vector<float> factor_x, vector<float> factor_y, float cval){
+    Tensor *t_new = Tensor::empty_like(this);
+    Tensor::cutout_random(this, t_new, factor_x, factor_y, cval);
+    return t_new;
 }
 
 void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float cval) {
