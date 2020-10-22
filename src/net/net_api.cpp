@@ -704,7 +704,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
       reset_loss();
 
       // For each batch
-      for (j = 0; j < 2; j++) {
+      for (j = 0; j < num_batches; j++) {
 
         // Set random indices
         for (k = 0; k < batch_size; k++) sind[k] = rand() % n;
