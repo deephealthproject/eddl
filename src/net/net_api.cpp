@@ -355,16 +355,14 @@ void Net::backward_recurrent(vector<Tensor *> target)
   vtensor xtd;
   vtensor yt;
 
-  vtensor tin;
-  vtensor tinr;
   vtensor toutr;
+  vtensor tinr;
+  vtensor tin;
 
   int inl;
   int outl;
 
-  Tensor *Z=Tensor::zeros(target[0]->shape,target[0]->device);
-
-  prepare_recurrent(tin,target,inl,outl,xt,xtd,yt,tinr,toutr,Z);
+  prepare_recurrent(tin,target,inl,outl,xt,xtd,yt,tinr,toutr);
 
   if ((isencoder)&&(isdecoder))
     rnet->backward(toutr);
@@ -373,10 +371,13 @@ void Net::backward_recurrent(vector<Tensor *> target)
   else if (isdecoder)
     rnet->backward(toutr);
 
+  for(i=0;i<xt.size();i++)
+    delete xt[i];
+  xt.clear();
 
-  for(i=0;i<yt.size();i++)
-    delete yt[i];
-  yt.clear();
+  for(i=0;i<xtd.size();i++)
+    delete xtd[i];
+  xtd.clear();
 
 }
 
@@ -752,8 +753,6 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
   inl=outl=1;
 
   if (tin.size()) {
-    cout<<"Preparing input tensors for unrolling encoder...";      fflush(stdout);
-
     if (isencoder) {
       for(i=0;i<tin.size();i++)
         xt.push_back(Tensor::permute(tin[i],{1,0,2})); // time x batch x dim
@@ -764,22 +763,15 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
           msg("Input tensors with different time steps","fit_recurrent");
       }
     }
-    cout<<"done\n";      fflush(stdout);
 
   }
 
   if (tout.size()) {
     if (isdecoder) {
-      cout<<"Preparing input tensors for unrolling decoder...";
-      fflush(stdout);
       //set decoder input with outputs
       for(i=0;i<tout.size();i++)
         xtd.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
-      cout<<"done\n";
-      fflush(stdout);
 
-      cout<<"Preparing output tensors for unrolling decoder...";
-      fflush(stdout);
       //prepare output
       for(i=0;i<tout.size();i++)
         yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
@@ -789,8 +781,6 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
         if (yt[i]->shape[0]!=outl)
         msg("Output tensors with different time steps","fit_recurrent");
       }
-      cout<<"done\n";
-      fflush(stdout);
 
     }
 
@@ -840,7 +830,7 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
     }
   }
 
-  cout<<"Tensors unrolled\n";
+  //cout<<"Tensors unrolled\n";
 }
 
 void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
