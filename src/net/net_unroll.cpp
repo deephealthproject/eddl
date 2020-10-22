@@ -458,12 +458,25 @@ return rnet;
 void Net::build_rnet(int inl,int outl) {
   int i, j, k, n;
   int todev;
+  bool do_unroll=false;
 
-  if (cs->local_gpus.size() > 0) todev = DEV_GPU;
-  else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
-  else todev = DEV_CPU;
+  // Check if it is necessary to unroll again
+  if (rnet==nullptr) do_unroll=true;
+  else {
+    // check squence lengths and current unrolled rnet
+    if ((isencoder)&&(isdecoder)) {
+      if ( ((inl+outl)!=rnet->lin.size()) || (outl!=rnet->lout.size()) )
+        do_unroll=true;
+    }
+    else if ((isencoder)&&(inl!=rnet->lin.size())) do_unroll=true;
+    else if (outl!=rnet->lout.size()) do_unroll=true;
+  }
 
-  if (rnet!=nullptr) delete rnet;
+  if (!do_unroll) return;
+
+  // TODO: problems deleting unrolled on GPU
+  //if (rnet!=nullptr) delete rnet
+
 
   ////////////////////////////////////////
   // Create an unrolled version on CPU
@@ -494,6 +507,9 @@ void Net::build_rnet(int inl,int outl) {
    rnet->plot("rmodel.pdf","LR");
    rnet->name="rnet";
 
+   if (cs->local_gpus.size() > 0) todev = DEV_GPU;
+   else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
+   else todev = DEV_CPU;
 
    ////////////////////////////////////////
    // Create an unrolled version on Device
