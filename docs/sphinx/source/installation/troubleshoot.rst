@@ -128,6 +128,60 @@ To fix this, create a symbolic link from ``lib64/`` to ``lib/``:
     ln -s lib64 lib
 
 
+No matching function
+^^^^^^^^^^^^^^^^^^^^^
+
+See question below (``Old version of protoc``).
+
+
+Old version of protoc
+^^^^^^^^^^^^^^^^^^^^^
+
+This is because your version of protobuf is not compatible with the ONNX files we provide (``onnx.pb.h/cc`` and
+``onnx.proto``). We know our that the current version of the EDDL v0.7 (at the moment of writing this) works with
+protobuf 3.11, to to install it, you can either use the conda environment (recommended):
+
+.. code:: bash
+
+    # Install dependencies
+    conda env create -f environment.yml
+    conda activate eddl
+
+...or install protobuf manually:
+
+.. code:: bash
+
+    # Variables
+    PROTOBUF_VERSION=3.11.4
+
+    # Install requirements
+    sudo apt-get install -y wget
+    sudo apt-get install -y autoconf automake libtool curl make g++ unzip
+
+    # Download source
+    wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-cpp-$PROTOBUF_VERSION.tar.gz
+    tar -xf protobuf-cpp-$PROTOBUF_VERSION.tar.gz
+
+    # Build and install
+    cd protobuf-$PROTOBUF_VERSION
+    ./configure
+    make -j$(nproc)
+    make install  # you may need sudo
+    ldconfig
+
+
+If everything is correct, cmake should output something like this, and compile without problems.
+
+
+.. code::
+
+    -- Use Protobuf: ON
+    -- Protobuf dir:
+    -- Protobuf include: /usr/local/include
+    -- Protobuf libraries: /usr/local/lib/libprotobuf.so-lpthread
+    -- Protobuf compiler: /usr/local/bin/protoc
+
+
 ONNX functions
 ^^^^^^^^^^^^^^^
 
