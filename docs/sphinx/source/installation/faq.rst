@@ -2,37 +2,44 @@ FAQ
 ===
 
 
+Python library
+---------------
+
 Is there a Python version?
---------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Yes, the PyEDDL_ is the EDDL version for the Python lovers
 
 
+Is the PyEDDL develop by the same team
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sort of. We all are part of the DeepHealth project, and although each team is specialized
+in developing and supporting different libraries, we all contribute to the other projects so that all the DeepHealth
+ecosystem can work smoothly.
+
+
+Contributions
+---------------
+
+
 Can I contribute?
-------------------
+^^^^^^^^^^^^^^^^^^
 
 Yes, but first open a new issue to explain and discuss your contribution.
 
 
-Can I control the memory consumption?
--------------------------------------
-
-Yes, we offer several memory levels to control the memory-speed trade-off. These levels are:
-
-
-- ``full_mem`` (default): No memory bound (highest speed at the expense of the memory requirements)
-- ``mid_mem``: Slight memory optimization (good trade-off memory-speed)
-- ``low_mem``: Optimized for hardware with restricted memory capabilities.
-
+Performance
+---------------
 
 Is it faster than PyTorch/TensorFlow/etc
-----------------------------------------
+^^^^^^^^^^^^^^^^^^
 
 Check our benchmakrs: `EDDL benchmarks`_
 
 
 Is it more memory-efficient than PyTorch/TensorFlow/etc
--------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Depends on your memory setting, see the "Can I control the memory consumption?" answer.
 Also, you can take a look at our benchmakrs: `EDDL benchmarks`_
