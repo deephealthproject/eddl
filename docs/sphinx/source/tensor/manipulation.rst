@@ -384,13 +384,13 @@ Fill constant
 Fill Random Uniform
 ^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::rand_uniform
+.. doxygenfunction:: Tensor::fill_rand_uniform_
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::empty({2, 3});
 
-    t1->rand_uniform(1.0f);  // In-place
+    t1->fill_rand_uniform_(1.0f);  // In-place
     // [
     // [0.10 0.53 0.88]
     // [0.57 0.57 0.89]
@@ -401,13 +401,13 @@ Fill Random Uniform
 Fill Random Signed Uniform
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::rand_signed_uniform
+.. doxygenfunction:: Tensor::fill_rand_signed_uniform_
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::empty({2, 3});
 
-    t1->rand_signed_uniform(1.0f);  // In-place
+    t1->fill_rand_signed_uniform_(1.0f);  // In-place
     // [
     // [0.22 -0.34 -0.78]
     // [-0.03 0.10 0.90]
@@ -417,13 +417,13 @@ Fill Random Signed Uniform
 Fill Random Normal
 ^^^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::rand_normal
+.. doxygenfunction:: Tensor::fill_rand_normal_
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::empty({2, 3});
 
-    t1->rand_normal(0.0f, 1.0f);  // In-place
+    t1->fill_rand_normal_(0.0f, 1.0f);  // In-place
     // [
     // [-0.57 0.49 -1.09]
     // [0.75 0.37 -0.32]
@@ -432,13 +432,13 @@ Fill Random Normal
 
 Fill Random Binary
 ^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: Tensor::rand_binary
+.. doxygenfunction:: Tensor::fill_rand_binary_
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::empty({2, 3});
 
-    t1->rand_binary(0.5f);  // In-place
+    t1->fill_rand_binary_(0.5f);  // In-place
     // [
     // [0.00 1.00 0.00]
     // [1.00 1.00 0.00]
