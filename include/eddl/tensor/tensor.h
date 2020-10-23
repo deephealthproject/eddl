@@ -1185,12 +1185,12 @@ public:
     */
     Tensor* inv(float v=1.0f);
 
-     /**
-    *   @brief Element-wise 1/x operation
-    *   @param A The input tensor.
-    *   @param B The output tensor.
-    *   @param v the value multiplying the inverse.
-    */
+    /**
+   *   @brief Element-wise 1/x operation
+   *   @param A The input tensor.
+   *   @param B The output tensor.
+   *   @param v the value multiplying the inverse.
+   */
     static void inv(Tensor *A, Tensor *B, float v=1.0f);
 
     /**
@@ -1765,6 +1765,13 @@ public:
 
     /**
     *   @brief Fill tensor with a value
+    *   @param v the value to fill the tensor with
+    *   @return A new tensor with the result
+    */
+    Tensor* fill(float v);
+
+    /**
+    *   @brief Fill tensor with a value
     *   @param A The output tensor.
     *   @param v the value to fill the tensor with
     */
@@ -1777,17 +1784,44 @@ public:
     void permute_(const vector<int>& dims);
 
     /**
+    *   @brief In-place permutation of tensor dimensions
+    *   @param dims A vector containing the new order of the dimensions.
+    *   @return A new tensor with the result
+    */
+    Tensor* permute(const vector<int>& dims);
+
+    /**
     *   @brief Permutation of tensor dimensions
     *   @param A The output vector where te permutation is stored.
     *   @param dims A vector containing the new order of the dimensions.
+    *   @return A new tensor with the result
     */
     static Tensor* permute(Tensor* A, const vector<int>& dims);
 
 
     void moveaxis_(int source, int destination);
+
+    /**
+    *   @brief Move axes of an array to new positions.
+    *   @param source Original position of the axis to move. These must be unique.
+    *   @param destination Destination position for the original axis. These must also be unique
+    *   @return A new tensor with the result
+    */
+    Tensor* moveaxis(int source, int destination);
+
     static Tensor* moveaxis(Tensor* A, int source, int destination);
 
     void swapaxis_(int axis1, int axis2);
+
+    /**
+    *   @brief Interchange two axes of an array.
+    *   @param axis1 First axis.
+    *   @param destination Destination position for the original axis. These must also be unique
+    *   @return axis2 Second axis.
+    *   @return A new tensor with the result
+    */
+    Tensor* swapaxis(int axis1, int axis2);
+
     static Tensor* swapaxis(Tensor* A, int axis1, int axis2);
 
     /**
@@ -1797,9 +1831,17 @@ public:
     void reshape_(const vector<int> &new_shape);
 
     /**
+    *   @brief Set a new shape to a tensor in-place.
+    *   @param new_shape A vector containing the new shape.
+    *   @return A new tensor with the result
+    */
+    Tensor* reshape(const vector<int> &new_shape);
+
+    /**
     *   @brief Set a new shape to a tensor.
     *   @param A The output vector where te reshape is stored.
     *   @param dims A vector containing the new shape.
+    *   @return A new tensor with the result
     */
     static Tensor* reshape(Tensor *A, const vector<int> &shape);
 
@@ -1809,8 +1851,15 @@ public:
     void flatten_();
 
     /**
+    *   @brief In-place conversion tensor to a 1D tensor.
+    *   @return A new tensor with the result
+    */
+    Tensor* flatten();
+
+    /**
     *   @brief Conversion tensor to a 1D tensor.
     *   @param A Output tensor where the flatten is stored.
+    *   @return A new tensor with the result
     */
     static Tensor* flatten(Tensor *A);
 
@@ -1821,7 +1870,14 @@ public:
 
     /**
     *   @brief Remove all the dimensions of size 1 from the vector.
+    *   @return A new tensor with the result
+    */
+    Tensor* squeeze();
+
+    /**
+    *   @brief Remove all the dimensions of size 1 from the vector.
     *   @param A Output tensor where the squeeze is stored.
+    *   @return A new tensor with the result
     */
     static Tensor* squeeze(Tensor *A);
 
@@ -1832,7 +1888,14 @@ public:
 
     /**
     *   @brief Add a dimension of size 1 at the beginning of the tensor.
+    *   @return A new tensor with the result
+    */
+    Tensor* unsqueeze();
+
+    /**
+    *   @brief Add a dimension of size 1 at the beginning of the tensor.
     *   @param A Output tensor where the unsqueeze is stored.
+    *   @return A new tensor with the result
     */
     static Tensor* unsqueeze(Tensor *A);
 
@@ -1869,18 +1932,18 @@ public:
     */
     static void shift(Tensor *A,Tensor *B, vector<int> shift, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
 
-        /**
-    *   @brief Rotate the tensor. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
-    *   @param angle The rotation angle in degrees.
-    *   @param mode Must be one of the following:
-    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
-    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
-    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
-    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
-    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
-    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
-    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
-    */
+    /**
+*   @brief Rotate the tensor. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
+*   @param angle The rotation angle in degrees.
+*   @param mode Must be one of the following:
+*        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+*        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+*        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+*        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+*        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+*        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+*   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+*/
     Tensor* rotate(float angle, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
 
     /**
@@ -2551,12 +2614,12 @@ public:
     */
     void less_equal_(float v);
 
-     /**
-      *  @brief Return the truth value of the input elements <= ``v`` element-wise.
-      *
-      *  @param v   Value to make the comparison with.
-      *  @return    A tensor with the true values.
-    */
+    /**
+     *  @brief Return the truth value of the input elements <= ``v`` element-wise.
+     *
+     *  @param v   Value to make the comparison with.
+     *  @return    A tensor with the true values.
+   */
     Tensor* less_equal(float v);
 
     /**
@@ -2613,12 +2676,12 @@ public:
     */
     static void equal(Tensor *A, Tensor *B, float v);
 
-     /**
-      *  @brief Return the truth value of ``this == A`` element-wise.
-      *
-      *  @param A   Input tensor.
-      *  @return    A tensor with the true values.
-    */
+    /**
+     *  @brief Return the truth value of ``this == A`` element-wise.
+     *
+     *  @param A   Input tensor.
+     *  @return    A tensor with the true values.
+   */
     Tensor* equal(Tensor *A);
 
     /**
@@ -2895,9 +2958,9 @@ public:
     *   @param bend Final position of B
     *   @param inc step to go from one position to the following one
     */
-    static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
-    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false);
-    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
+    static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);  // TODO DEPRECATED
+    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false); // TODO DEPRECATED
+    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false); // TODO DEPRECATED
     static void tile(Tensor *A, Tensor *B);
 
     // TODO: REFACTOR!!! ************************
