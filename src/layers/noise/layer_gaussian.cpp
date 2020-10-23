@@ -73,7 +73,7 @@ void LGaussianNoise::free_delta() {
 
 void LGaussianNoise::forward() {
     if (mode == TRMODE) {
-        noise->rand_normal(0.0, stdev);
+        noise->fill_rand_normal_(0.0, stdev);
         Tensor::add(1.0, input, 1.0, noise, output, 0);
     } else {
         Tensor::copy(input, output);

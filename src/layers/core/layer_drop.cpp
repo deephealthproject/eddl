@@ -49,7 +49,7 @@ void LDropout::resize(int batch){
 
 void LDropout::forward() {
     if (mode == TRMODE) {
-        mask->rand_binary(1.0 - df);
+        mask->fill_rand_binary_(1.0 - df);
         Tensor::el_mult(input, mask, output, 0);
     } else {
         Tensor::copy(input, output);
