@@ -1,0 +1,227 @@
+/*
+* EDDL Library - European Distributed Deep Learning Library.
+* Version: 0.7
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* All rights reserved
+*/
+
+
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+
+#include "eddl/layers/conv/layer_conv.h"
+
+using namespace std;
+
+
+int LConv1D::total_layers = 0;
+
+// constructors and clones
+
+LConv1D::LConv1D(Layer *parent, const vector<int> &ks, const vector<int> &st,
+             const vector<int> &p, string name, int dev, int mem) : LConv1D(parent, new ConvolDescriptor(ks, st, p, mem), name, dev, mem) {}
+
+LConv1D::LConv1D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
+             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv1D(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, use_bias, mem), name, dev, mem) {
+    // TODO: Implement (Fix initialization)
+};
+
+LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+    if (parent->output->ndim != 3) msg("LConv only works over 3D tensors", "LConv1D::LConv1D");
+
+    // Check dev with tensor dev
+
+    // Set default name
+    if(name.empty()) this->name = "conv1D" + to_string(++total_layers);
+
+    input = parent->output;
+
+    // Reshape the 2D input to a 3D tensor
+    vector<int> in_shape = input->getShape();
+    in_shape.push_back(1);
+    input_reshaped = new Tensor(in_shape, input);
+
+    cd = D;
+    cd->build(input_reshaped);  // Using the 3D tensor
+
+    // Reshape the 3D output from conv to a 2D tensor
+    vector<int> out_shape = cd->O->getShape();
+    out_shape.pop_back();
+    output = new Tensor(out_shape, cd->O);
+
+//  delta = cd->D;
+//  cd->ID = parent->delta;
+
+    params.push_back(cd->K);
+    params.push_back(cd->bias);
+
+    gradients.push_back(cd->gK);
+    gradients.push_back(cd->gbias);
+
+    distributed_training = false;
+    cd->acc_gK = nullptr;
+    cd->acc_gbias = nullptr;
+
+    parent->addchild(this);
+    addparent(parent);
+}
+
+
+LConv1D::~LConv1D(){
+//    delete cd;  // Just in case
+}
+
+// virtual
+void LConv1D::resize(int batch){
+    // Resize but keeping the pointer to the input before the reshape
+    input_reshaped->resize(batch, input->ptr); 
+
+    cd->resize(batch);
+
+    // Resize but keeping the pointer to the output of the descriptor
+    output->resize(batch, cd->O->ptr);
+}
+
+void LConv1D::mem_delta(){
+    if(this->delta == nullptr) {
+        // Reserve parent's delta
+        parent[0]->mem_delta();
+        cd->ID = parent[0]->delta;
+
+        // Show delta with the output shape of the Conv1D
+        delta = Tensor::zeros(output->shape, output->device);
+        // Reshape delta for convol descriptor
+        cd->D = new Tensor(cd->O->shape, delta);
+
+        if(this->verbosity_level >= 2) {
+            std::cout << "Booked delta for: " + this->name << std::endl;
+        }
+    }
+}
+
+void LConv1D::forward() {
+    tensorNN::Conv2D(this->cd);
+}
+
+void LConv1D::backward() {
+    //get gradients with provided delta
+    if (trainable) { tensorNN::Conv2D_grad(this->cd); }
+
+    // backprop delta
+    if (this->parent.size()) {
+        tensorNN::Conv2D_back(this->cd);
+    }
+
+    // Regularizer
+    if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}
+}
+
+void LConv1D::update_weights(Tensor* w, Tensor* bias) {
+    Tensor::copy( w, cd->K );
+    if ( bias != nullptr ) Tensor::copy( bias, cd->bias );
+}
+
+void LConv1D::accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {
+    cd->K->add_( gw );
+    if ( gbias != nullptr ) cd->bias->add_( gbias );
+}
+
+void LConv1D::reset_accumulated_gradients() {
+    cd->acc_gK->fill_(0.0);
+    cd->acc_gbias->fill_(0.0);
+}
+
+void LConv1D::apply_accumulated_gradients() {
+    cd->K->add_( cd->acc_gK );
+    cd->bias->add_( cd->acc_gbias );
+
+    // Regularizer
+    if(reg!= nullptr) {reg->apply(cd->K);}
+}
+
+Layer *LConv1D::share(int c, int bs, vector<Layer *> p) {
+    LConv1D *n = new LConv1D(p[0], cd->ksize, cd->stride, cd->pad,  "share_"+name, dev,mem_level);
+    n->orig = this;
+    n->isshared=true;
+    n->trainable = trainable;
+
+    n->cd->use_bias=cd->use_bias;
+
+    //share params
+
+    for (int i = 0; i < n->params.size(); i++) delete n->params[i];
+    n->params.clear();
+
+
+    n->cd->K = cd->K;
+    n->cd->bias = cd->bias;
+
+    n->params.push_back(n->cd->K);
+    n->params.push_back(n->cd->bias);
+
+    //share gradients
+    for (int i = 0; i < n->gradients.size(); i++) delete n->gradients[i];
+    n->gradients.clear();
+
+    n->cd->gK = cd->gK;
+    n->cd->gbias = cd->gbias;
+
+    n->gradients.push_back(n->cd->gK);
+    n->gradients.push_back(n->cd->gbias);
+
+
+    if ( distributed_training ) {
+        n->acc_gradients.clear();
+
+        n->cd->acc_gK  = cd->acc_gK;
+        n->cd->acc_gbias  = cd->acc_gbias;
+
+        n->acc_gradients.push_back(n->cd->acc_gK);
+        n->acc_gradients.push_back(n->cd->acc_gbias);
+    }
+
+    n->reg=reg;
+    n->init=init;
+
+    return n;
+}
+
+Layer *LConv1D::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    LConv1D *n = new LConv1D(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
+    n->trainable = trainable;
+
+    n->orig = this;
+    n->cd->use_bias=cd->use_bias;
+
+    n->reg=reg;
+    n->init=init;
+
+
+    return n;
+}
+
+
+string LConv1D::plot(int c) {
+    string s;
+
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+
+    return s;
+}
+
+void LConv1D::reset_name_counter() {
+    total_layers = 0;
+}
+
+void LConv1D::enable_distributed() {
+    distributed_training = true;
+    cd->enable_distributed();
+
+    acc_gradients.push_back(cd->acc_gK);
+    acc_gradients.push_back(cd->acc_gbias);
+}

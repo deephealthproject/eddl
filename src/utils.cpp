@@ -134,7 +134,7 @@ string bytes2human(unsigned long long int bytes, int decimals){
 #ifdef EDDL_LINUX
 unsigned long get_free_mem() {
         std::string token;
-        std::string type = "MemFree:";
+        std::string type = "MemAvailable:";
         std::ifstream file("/proc/meminfo");
         while(file >> token) {
             if(token == type) {

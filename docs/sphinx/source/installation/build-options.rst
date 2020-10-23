@@ -22,14 +22,21 @@ environment by running the following commands **from the source directory**:
     conda env create -f environment.yml
     conda activate eddl
 
+You can also update your environment with:
+
+.. code:: bash
+
+    conda env update -f environment.yml
+
 If you decide to manually install these dependencies in your system (make sure they are at standard paths):
 
 .. code::
 
     - cmake>=3.9.2
     - eigen>=3.3.7
-    - zlib=1.2.*
-    - protobuf=3.11.*
+    - protobuf
+    - libprotobuf  # We need to avoid problems with paths (idk why)
+    - zlib
     - cudatoolkit
     - openssl
     - gtest
@@ -38,12 +45,11 @@ If you decide to manually install these dependencies in your system (make sure t
     - doxygen  # Docs
     - python
     - pip
-
     - pip:
-        - sphinx==3.0.3
-        - sphinx_rtd_theme==0.4.3
-        - sphinx-tabs==1.1.13
-        - breathe==4.16.0
+    - sphinx==3.2.1
+    - sphinx_rtd_theme==0.5.0
+    - sphinx-tabs==1.3.0
+    - breathe==4.22.1
 
 
 .. note::
@@ -125,6 +131,10 @@ These flags can enable/disable features of the EDDL so that you can optimize and
 
     -DCMAKE_PREFIX_PATH=/path/to/dir
 
+.. note::
+
+    If using conda, get the path by activating the environment, and typing ``echo $CONDA_PREFIX``
+
 
 - **Installation paths:** To change the installation paths, use the following cmake option:
 
@@ -135,13 +145,14 @@ These flags can enable/disable features of the EDDL so that you can optimize and
 .. note::
 
     Defaults to ``/usr/local`` on UNIX and ``c:/Program Files`` on Windows.
+    If using conda, get the path by activating the environment, and typing ``echo $CONDA_PREFIX``
 
 
 - **C++ compiler:** If you have problems with the default g++ compiler, try setting ``EIGEN3_INCLUDE_DIR``, such as:
 
 .. code:: bash
 
-    -DCMAKE_CXX_COMPILER=/path/to/c++compiler
+    -DCMAKE_CXX_COMPILER=/path/to/c++compiler  # /usr/bin/g++-8
 
 .. note::
 
@@ -152,25 +163,35 @@ These flags can enable/disable features of the EDDL so that you can optimize and
 
 .. code:: bash
 
-    -DCMAKE_CUDA_COMPILER=/path/to/cuda compiler
+    -DCMAKE_CUDA_COMPILER=/path/to/cuda compiler  #/usr/bin/nvcc
 
 .. note::
 
     You can also create a symbolic link: (unix) ``sudo ln -s usr/local/cuda-{VERSION} /usr/local/cuda``
 
 
+- **CUDA host compiler:** If cmake have problems finding your cuda host compiler, try setting ``CMAKE_CUDA_COMPILER``, such as:
+
+.. code:: bash
+
+    -DCMAKE_CUDA_HOST_COMPILER=/path/to/cuda compiler  # /usr/bin/g++-8
+
+.. note::
+
+    You can also create a symbolic link: (unix) ``sudo ln -s usr/local/cuda-{VERSION} /usr/local/cuda``
+
 - **CUDA Toolkit:** If CMake is unable to find CUDA automatically, try setting ``CUDA_TOOLKIT_ROOT_DIR``, such as:
 
 .. code:: bash
 
-    -DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda
+    -DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda   # /usr/local/cuda-11.1
 
 
 - **Eigen3:** At the core of many numerical operations, we use Eigen3_. If CMake is unable to find Eigen3 automatically, try setting ``Eigen3_DIR``, such as:
 
 .. code:: bash
 
-    -DEigen3_DIR=/path/to/eigen
+    -DEigen3_DIR=/path/to/eigen  # /usr/lib/cmake/eigen3
 
 
 - **Use OpenMP:** To enable/disabled OpenMP, use the setting ``BUILD_OPENMP``, such as:

@@ -1910,7 +1910,7 @@ public:
     *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
-    *   @param Keep original size
+    *   @param keep_size Keep original size
     */
     Tensor* scale(vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, bool keep_size=false);
 
@@ -1950,7 +1950,7 @@ public:
     *   @param coords_from Coordinates of the initial point of the crop.
     *   @param coords_to Coordinates of the final point of the crop.
     *   @param cval Value to fill past edges.
-    *   @param Keep original size
+    *   @param keep_size Keep original size
     */
     Tensor* crop(vector<int> coords_from, vector<int> coords_to, float cval=0.0f, bool keep_size=false);
 
@@ -2019,6 +2019,23 @@ public:
 
     // ***** Data augmentation *****************************
 
+
+    /**
+     *   @brief Shift the tensor with a random shift value taken from a specified range. The array is shifted using spline interpolation. Points outside the boundaries of the input are filled according to the given mode.
+     *   @param factor_x vector with the lower and upper values for shift in axis x.
+     *   @param factor_y vector with the lower and upper values for shift in axis y.
+     *   @param mode Must be one of the following:
+     *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+     *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+     *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+     *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+     *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+     */
+    Tensor* shift_random(vector<float> factor_x, vector<float> factor_y, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+
     /**
     *   @brief Shift the tensor with a random shift value taken from a specified range. The array is shifted using spline interpolation. Points outside the boundaries of the input are filled according to the given mode.
     *   @param A Input tensor.
@@ -2038,6 +2055,22 @@ public:
 
     /**
     *   @brief Rotate the tensor with a random angle in a specified range. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
+    *   @param factor The rotation angle range in degrees.
+    *   @param offset_center The center where to perform the rotation
+    *   @param mode Must be one of the following:
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+    */
+    Tensor* rotate_random(vector<float> factor, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+
+    /**
+    *   @brief Rotate the tensor with a random angle in a specified range. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
     *   @param A Input tensor.
     *   @param B Output tensor.
     *   @param factor The rotation angle range in degrees.
@@ -2054,6 +2087,21 @@ public:
     static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
 
     /**
+     *   @brief Scale the tensor wit a random factor in a specified range. The array is scaled using spline interpolation.
+     *   @param factor Vector with minimum and maximum scale factors.
+     *   @param mode Must be one of the following:
+     *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+     *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+     *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+     *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+     *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+     */
+    Tensor* scale_random(vector<float> factor, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+
+    /**
     *   @brief Scale the tensor wit a random factor in a specified range. The array is scaled using spline interpolation.
     *   @param A Input tensor.
     *   @param B Output tensor.
@@ -2067,7 +2115,13 @@ public:
     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
-    static void scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
+    static void scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+    /**
+    *   @brief Flip the tensor with some probability.
+    *   @param axis The axis used to flip the tensor.
+    */
+    Tensor* flip_random(int axis);
 
     /**
     *   @brief Flip the tensor with some probability.
@@ -2079,10 +2133,33 @@ public:
 
     /**
     *   @brief Crop randomly the tensor.
+    *   @param height Height of the crop (must be smaller than the original image)
+    *   @param width Width of the crop (must be smaller than the original image)
+    *   @param keep_size Keep original size
+    */
+    Tensor* crop_random(int height, int width, float cval=0.0f, bool keep_size=false);
+
+    /**
+    *   @brief Crop randomly the tensor.
     *   @param A Input tensor.
     *   @param B Output tensor.
     */
     static void crop_random(Tensor *A, Tensor *B);
+
+    /**
+     *   @brief Crop randomly and scale the tensor with a random factor in a specified range. The array is scaled using spline interpolation.
+     *   @param factor Vector with minimum and maximum scale factors.
+     *   @param mode Must be one of the following:
+     *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+     *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+     *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+     *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+     *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+     */
+    Tensor* crop_scale_random(vector<float> factor, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
 
     /**
     *   @brief Crop randomly and scale the tensor with a random factor in a specified range. The array is scaled using spline interpolation.
@@ -2098,7 +2175,17 @@ public:
     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
-    static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
+    static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+
+    /**
+    *   @brief Set to a constant value a region of the tensor.
+    *   @param factor_x vector with the lower and upper values for cut in axis x.
+    *   @param factor_y vector with the lower and upper values for cut in axis y.
+    *   @param cval Value to fill the crop region with.
+    */
+    Tensor* cutout_random(vector<float> factor_x, vector<float> factor_y, float cval=0.0f);
+
 
     /**
     *   @brief Set to a constant value a region of the tensor.

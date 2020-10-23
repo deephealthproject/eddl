@@ -577,18 +577,9 @@ namespace eddl {
     layer Conv1D(layer parent, int filters, vector<int> kernel_size,
                vector<int> strides, string padding,  bool use_bias,
                int groups, vector<int> dilation_rate,string name){
-
-        vector<int> shape=parent->output->getShape();
-        shape.push_back(1);
-        LReshape *l=new LReshape(parent, shape, "", DEV_CPU, 0);
-
         kernel_size.push_back(1);
         strides.push_back(1);
-        LConv *lc=new LConv(l, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
-
-        vector<int> shape2=lc->output->getShape();
-        shape2.pop_back();
-        return new LReshape(lc,shape2, "", DEV_CPU, 0);
+        return new LConv1D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
 
