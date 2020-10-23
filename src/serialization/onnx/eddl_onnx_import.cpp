@@ -5,6 +5,7 @@
 #include "eddl/layers/conv/layer_conv.h"
 #include "eddl/layers/normalization/layer_normalization.h"
 #include "eddl/layers/pool/layer_pool.h"
+#include "eddl/layers/recurrent/layer_recurrent.h"
 #include <map>
 #include <set>
 #include <algorithm>
@@ -74,7 +75,8 @@ using namespace std;
 		MAT_MUL,            // implemented
 		MAX,				// implemented
 		MIN,                // implemented
-		SUB                 // implemented
+		SUB,                // implemented
+		LSTM                // not implemented yet
 		
 
 
@@ -177,6 +179,7 @@ using namespace std;
 		map_layers["MatMul"] = ONNX_LAYERS::MAT_MUL;
 		map_layers["Max"] = ONNX_LAYERS::MAX;
 		map_layers["Min"] = ONNX_LAYERS::MIN;
+		map_layers["LSTM"] = ONNX_LAYERS::LSTM;
 
 		return map_layers;
 	}
@@ -674,6 +677,7 @@ using namespace std;
 						string auto_pad_option = "";
 						bool auto_pad = false;
 						vector<float> *bias;
+                        bool conv1d = false;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
@@ -699,15 +703,21 @@ using namespace std;
 								for( int h = 0; h<attribute.ints_size(); h++){
 									kernel_shape.push_back(attribute.ints(h));
 								}
+								if(attribute.ints_size() == 1){ // If is conv1D, we make the equivalent in conv2D
+									conv1d = true;
+								}
 							}
 							else if (!attr_name.compare("pads")) { //
-								for(int h = 0; h < 4; h++){
+								for(int h = 0; h < attribute.ints_size(); h++){
 									pads.push_back(attribute.ints(h));
 								}
 							}
 							else if (!attr_name.compare("strides")) { //
 								for(int h = 0; h < attribute.ints_size(); h++){
 									strides.push_back(attribute.ints(h));
+								}
+								if(attribute.ints_size() == 1){ // If is conv1D, we make the equivalent in conv2D
+									conv1d = true;
 								}
 							}
 						}
@@ -728,7 +738,17 @@ using namespace std;
 						vector<float>* weights = &(map_init_values[weights_name]);
 						vector<int> dims = map_init_dims[weights_name];
 
+						if(parent_shape.size() == 3){
+							conv1d = true;
+						}
 
+						if(conv1d){
+							strides.push_back(1);
+							kernel_shape.push_back(1);
+                            dims.push_back(1);
+                            pads.push_back(0);
+                            pads.push_back(0);
+						}
 
 						filters = dims[0];
 						string name = node->name();
@@ -739,7 +759,8 @@ using namespace std;
 						}
 						else convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, node->input_size() > 2, mem);
 
-						actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
+						if(conv1d) actual_layer = new LConv1D(parent, convol_descriptor, name, dev, mem);
+                        else actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
 
 						if(node->input_size() > 2){
 							string bias_name = node->input(2);
@@ -756,7 +777,6 @@ using namespace std;
 						delete weights_tensor;
 						break;
 					}
-
 				case ONNX_LAYERS::DENSE:
 					{
 						int ndim;
@@ -1452,6 +1472,212 @@ using namespace std;
 						int w=parent_shape[3];
 
 						actual_layer = new LMaxPool(parent, {h,w},{1,1}, "none", "gpool", dev, mem);
+					}
+                case ONNX_LAYERS::LSTM:
+					{
+						vector<float> activation_alpha; //Values for configuring some activations with extra parameters
+						vector<float> activation_beta;  //Values for configuring some activations with extra parameters
+						vector<string> activations;     //Activation functions in order for each gate
+						float clip = -1;                //Value for clipping
+						string direction = "";          //Forward, backward or reverse (Forward by default)
+						int hidden_size = -1;           //Number of neurons in the hidden layer
+						int input_forget = 0;			//If 1, couple the input and forget gates
+						cout << "Detected LSTM" << endl;
+
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("activation_alpha")) { //Not used yet in eddl but implemented
+								for( int h = 0; h<attribute.floats_size(); h++){
+									activation_alpha.push_back(attribute.floats(h));
+								}
+							}
+							else if (!attr_name.compare("activation_beta")) { //Not used yet in eddl but implemented
+								for( int h = 0; h<attribute.floats_size(); h++){
+									activation_beta.push_back(attribute.floats(h));
+								}
+							}
+							else if (!attr_name.compare("activations")) { //Not used yet in eddl but implemented. We default to Sigmoid, Sigmoid, Sigmoid, TanH
+								for( int h = 0; h<attribute.strings_size(); h++){
+									activations.push_back(attribute.strings(h));
+								}
+							}
+							else if (!attr_name.compare("clip")) { //Not used yet in eddl but implemented
+								clip = attribute.f();
+							}
+							else if (!attr_name.compare("direction")) { //Not used yet in eddl but implemented. We default to forward
+								direction = attribute.s();
+							}
+							else if (!attr_name.compare("hidden_size")) { //
+								hidden_size = attribute.i();
+							}
+							else if (!attr_name.compare("input_forget")) { //Not used yet in eddl but we read it
+								input_forget = attribute.i();
+							}
+						}
+
+						cout << "getting parent" << endl;
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
+						
+						if(hidden_size < 0){
+							cerr << "Model contains a LSTM without the number of neurons" << endl;
+						}
+
+						cout << "getting gate weights" << endl;
+						string weights_gates = node->input(1); //Get weights and dims
+						vector<float>* weights_g = &(map_init_values[weights_gates]);
+						vector<int> dims_g = map_init_dims[weights_gates];
+
+						vector<int> dims_input_lstm = {dims_g[2], dims_g[1]/4};
+
+						vector<float>* weights_input_g = new vector<float>;
+						vector<float>* weights_output_g = new vector<float>;
+						vector<float>* weights_forget_g = new vector<float>;
+						vector<float>* weights_cell_g = new vector<float>;
+						weights_input_g->assign( weights_g->begin() + hidden_size * 0  , weights_g->begin() + hidden_size * 1);
+						weights_output_g->assign(weights_g->begin() + hidden_size * 1  , weights_g->begin() + hidden_size * 2);
+						weights_forget_g->assign(weights_g->begin() + hidden_size * 2  , weights_g->begin() + hidden_size * 3);
+						weights_cell_g->assign(  weights_g->begin() + hidden_size * 3  , weights_g->begin() + hidden_size * 4);
+
+						string recurrence_weights_gates = node->input(2); //Get weights and dims
+						vector<float>* recurrence_weights_g = &(map_init_values[recurrence_weights_gates]);
+						vector<int> recurrence_dims_g = map_init_dims[recurrence_weights_gates];
+
+						vector<int> dims_recurrent_lstm = {recurrence_dims_g[2], recurrence_dims_g[2]};
+
+						vector<float>* recurrence_weights_input_g = new vector<float>;
+						vector<float>* recurrence_weights_output_g = new vector<float>;
+						vector<float>* recurrence_weights_forget_g = new vector<float>;
+						vector<float>* recurrence_weights_cell_g = new vector<float>;
+						recurrence_weights_input_g->assign( recurrence_weights_g->begin() + hidden_size * 0  , recurrence_weights_g->begin() + hidden_size * 1);
+						recurrence_weights_output_g->assign(recurrence_weights_g->begin() + hidden_size * 1  , recurrence_weights_g->begin() + hidden_size * 2);
+						recurrence_weights_forget_g->assign(recurrence_weights_g->begin() + hidden_size * 2  , recurrence_weights_g->begin() + hidden_size * 3);
+						recurrence_weights_cell_g->assign(  recurrence_weights_g->begin() + hidden_size * 3  , recurrence_weights_g->begin() + hidden_size * 4);
+
+						LLSTM* lstm = new LLSTM({parent}, hidden_size, 0, 0, name, dev, mem);
+
+						cout << "Copying input weights" << endl;
+
+						Tensor* weights_input_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_input_g), dev);
+						Tensor::copy(weights_input_tensor, lstm->Wix );
+						delete weights_input_tensor;
+						delete weights_input_g;
+
+						Tensor* weights_output_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_output_g), dev);
+						Tensor::copy(weights_output_tensor, lstm->Wox );
+						delete weights_output_tensor;
+						delete weights_output_g;
+
+						Tensor* weights_forget_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_forget_g), dev);
+						Tensor::copy(weights_forget_tensor, lstm->Wfx );
+						delete weights_forget_tensor;
+						delete weights_forget_g;
+
+						Tensor* weights_cell_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_cell_g), dev);
+						Tensor::copy(weights_forget_tensor, lstm->Wcx );
+						delete weights_cell_tensor;
+						delete weights_cell_g;
+
+						cout << "Copying recurrence weights" << endl;
+
+						Tensor* recurrence_weights_input_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_input_g), dev);
+						cout << "Tensor created" << endl;
+						Tensor::copy(recurrence_weights_input_tensor, lstm->Wih );
+						delete recurrence_weights_input_tensor;
+						delete recurrence_weights_input_g;
+
+						Tensor* recurrence_weights_output_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_output_g), dev);
+						cout << "Tensor created" << endl;
+						Tensor::copy(recurrence_weights_output_tensor, lstm->Woh );
+						delete recurrence_weights_output_tensor;
+						delete recurrence_weights_output_g;
+
+						Tensor* recurrence_weights_forget_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_forget_g), dev);
+						cout << "Tensor created" << endl;
+						Tensor::copy(recurrence_weights_forget_tensor, lstm->Wfh );
+						delete recurrence_weights_forget_tensor;
+						delete recurrence_weights_forget_g;
+
+						Tensor* recurrence_weights_cell_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_cell_g), dev);
+						cout << "Tensor created" << endl;
+						Tensor::copy(recurrence_weights_cell_tensor, lstm->Wch );
+						delete recurrence_weights_cell_tensor;
+						delete recurrence_weights_cell_g;
+
+						string biases_name = node->input(3); //Get weights and dims
+						vector<float>* biases = &(map_init_values[biases_name]);
+						vector<int> biases_dims = map_init_dims[biases_name];
+						cout << "Creating bias dims" << endl;
+						vector<int> bias_dims = {hidden_size};
+						cout << "Bias dims created" << endl;
+
+						vector<float>* bias_input = new vector<float>;
+						vector<float>* bias_output = new vector<float>;
+						vector<float>* bias_forget = new vector<float>;
+						vector<float>* bias_cell = new vector<float>;
+
+						vector<float>* bias_recurrence_input = new vector<float>;
+						vector<float>* bias_recurrence_output = new vector<float>;
+						vector<float>* bias_recurrence_forget = new vector<float>;
+						vector<float>* bias_recurrence_cell = new vector<float>;
+
+						bias_input->assign(  biases->begin() + hidden_size * 0  , biases->begin() + hidden_size * 1);
+						bias_output->assign( biases->begin() + hidden_size * 1  , biases->begin() + hidden_size * 2);
+						bias_forget->assign( biases->begin() + hidden_size * 2  , biases->begin() + hidden_size * 3);
+						bias_cell->assign(   biases->begin() + hidden_size * 3  , biases->begin() + hidden_size * 4);
+
+						bias_recurrence_input->assign(  biases->begin() + hidden_size * 4  , biases->begin() + hidden_size * 5);
+						bias_recurrence_output->assign( biases->begin() + hidden_size * 5  , biases->begin() + hidden_size * 6);
+						bias_recurrence_forget->assign( biases->begin() + hidden_size * 6  , biases->begin() + hidden_size * 7);
+						bias_recurrence_cell->assign(   biases->begin() + hidden_size * 7  , biases->begin() + hidden_size * 8);
+
+						cout << "Copying bias weights" << endl;
+
+						Tensor* bias_input_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_input), dev);
+						Tensor::copy(bias_input_tensor, lstm->inbias );
+						delete bias_input_tensor;
+						delete bias_input;
+
+						Tensor* bias_output_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_output), dev);
+						Tensor::copy(bias_output_tensor, lstm->onbias );
+						delete bias_output_tensor;
+						delete bias_output;
+
+						Tensor* bias_forget_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_forget), dev);
+						Tensor::copy(bias_forget_tensor, lstm->fnbias );
+						delete bias_forget_tensor;
+						delete bias_forget;
+
+						Tensor* bias_cell_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_cell), dev);
+						Tensor::copy(bias_cell_tensor, lstm->cnbias );
+						delete bias_cell_tensor;
+						delete bias_cell;
+
+						/* In eddl we don't have bias for the recurrent weights
+						Tensor* bias_recurrence_input_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_input), dev);
+						Tensor::copy(bias_recurrence_input_tensor, lstm-> );
+						delete bias_recurrence_input_tensor;
+						delete bias_recurrence_input;
+
+						Tensor* bias_recurrence_output_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_output), dev);
+						Tensor::copy(bias_recurrence_output_tensor, lstm-> );
+						delete bias_recurrence_output_tensor;
+						delete bias_recurrence_output;
+
+						Tensor* bias_recurrence_forget_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_forget), dev);
+						Tensor::copy(bias_recurrence_forget_tensor, lstm-> );
+						delete bias_recurrence_forget_tensor;
+						delete bias_recurrence_forget;
+
+						Tensor* bias_recurrence_cell_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_cell), dev);
+						Tensor::copy(bias_recurrence_cell_tensor, lstm-> );
+						delete bias_recurrence_cell_tensor;
+						delete bias_recurrence_cell;
+						*/
+
+						actual_layer = lstm;
 					}
 					break;
 
