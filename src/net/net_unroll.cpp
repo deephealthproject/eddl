@@ -515,6 +515,7 @@ void Net::build_rnet(int inl,int outl) {
    // Create an unrolled version on Device
    ////////////////////////////////////////
    if (todev!=DEV_CPU) {
+     cout<<"Unroll on device"<<endl;
      // unroll CS devices and link
      for(i=0;i<snets.size();i++) {
        if ((isencoder)&&(isdecoder))
