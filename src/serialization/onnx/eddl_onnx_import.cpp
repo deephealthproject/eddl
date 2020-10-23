@@ -1482,7 +1482,6 @@ using namespace std;
 						string direction = "";          //Forward, backward or reverse (Forward by default)
 						int hidden_size = -1;           //Number of neurons in the hidden layer
 						int input_forget = 0;			//If 1, couple the input and forget gates
-						cout << "Detected LSTM" << endl;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
@@ -1516,7 +1515,6 @@ using namespace std;
 							}
 						}
 
-						cout << "getting parent" << endl;
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
@@ -1525,10 +1523,10 @@ using namespace std;
 							cerr << "Model contains a LSTM without the number of neurons" << endl;
 						}
 
-						cout << "getting gate weights" << endl;
 						string weights_gates = node->input(1); //Get weights and dims
 						vector<float>* weights_g = &(map_init_values[weights_gates]);
 						vector<int> dims_g = map_init_dims[weights_gates];
+                        int input_size = dims_g[2];
 
 						vector<int> dims_input_lstm = {dims_g[2], dims_g[1]/4};
 
@@ -1536,10 +1534,11 @@ using namespace std;
 						vector<float>* weights_output_g = new vector<float>;
 						vector<float>* weights_forget_g = new vector<float>;
 						vector<float>* weights_cell_g = new vector<float>;
-						weights_input_g->assign( weights_g->begin() + hidden_size * 0  , weights_g->begin() + hidden_size * 1);
-						weights_output_g->assign(weights_g->begin() + hidden_size * 1  , weights_g->begin() + hidden_size * 2);
-						weights_forget_g->assign(weights_g->begin() + hidden_size * 2  , weights_g->begin() + hidden_size * 3);
-						weights_cell_g->assign(  weights_g->begin() + hidden_size * 3  , weights_g->begin() + hidden_size * 4);
+                        int w_size = input_size * hidden_size;
+						weights_input_g->assign( weights_g->begin() + w_size * 0  , weights_g->begin() + w_size * 1);
+						weights_output_g->assign(weights_g->begin() + w_size * 1  , weights_g->begin() + w_size * 2);
+						weights_forget_g->assign(weights_g->begin() + w_size * 2  , weights_g->begin() + w_size * 3);
+						weights_cell_g->assign(  weights_g->begin() + w_size * 3  , weights_g->begin() + w_size * 4);
 
 						string recurrence_weights_gates = node->input(2); //Get weights and dims
 						vector<float>* recurrence_weights_g = &(map_init_values[recurrence_weights_gates]);
@@ -1551,14 +1550,13 @@ using namespace std;
 						vector<float>* recurrence_weights_output_g = new vector<float>;
 						vector<float>* recurrence_weights_forget_g = new vector<float>;
 						vector<float>* recurrence_weights_cell_g = new vector<float>;
-						recurrence_weights_input_g->assign( recurrence_weights_g->begin() + hidden_size * 0  , recurrence_weights_g->begin() + hidden_size * 1);
-						recurrence_weights_output_g->assign(recurrence_weights_g->begin() + hidden_size * 1  , recurrence_weights_g->begin() + hidden_size * 2);
-						recurrence_weights_forget_g->assign(recurrence_weights_g->begin() + hidden_size * 2  , recurrence_weights_g->begin() + hidden_size * 3);
-						recurrence_weights_cell_g->assign(  recurrence_weights_g->begin() + hidden_size * 3  , recurrence_weights_g->begin() + hidden_size * 4);
+                        w_size = hidden_size * hidden_size;
+						recurrence_weights_input_g->assign( recurrence_weights_g->begin() + w_size * 0  , recurrence_weights_g->begin() + w_size * 1);
+						recurrence_weights_output_g->assign(recurrence_weights_g->begin() + w_size * 1  , recurrence_weights_g->begin() + w_size * 2);
+						recurrence_weights_forget_g->assign(recurrence_weights_g->begin() + w_size * 2  , recurrence_weights_g->begin() + w_size * 3);
+						recurrence_weights_cell_g->assign(  recurrence_weights_g->begin() + w_size * 3  , recurrence_weights_g->begin() + w_size * 4);
 
 						LLSTM* lstm = new LLSTM({parent}, hidden_size, 0, 0, name, dev, mem);
-
-						cout << "Copying input weights" << endl;
 
 						Tensor* weights_input_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_input_g), dev);
 						Tensor::copy(weights_input_tensor, lstm->Wix );
@@ -1580,28 +1578,22 @@ using namespace std;
 						delete weights_cell_tensor;
 						delete weights_cell_g;
 
-						cout << "Copying recurrence weights" << endl;
-
 						Tensor* recurrence_weights_input_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_input_g), dev);
-						cout << "Tensor created" << endl;
 						Tensor::copy(recurrence_weights_input_tensor, lstm->Wih );
 						delete recurrence_weights_input_tensor;
 						delete recurrence_weights_input_g;
 
 						Tensor* recurrence_weights_output_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_output_g), dev);
-						cout << "Tensor created" << endl;
 						Tensor::copy(recurrence_weights_output_tensor, lstm->Woh );
 						delete recurrence_weights_output_tensor;
 						delete recurrence_weights_output_g;
 
 						Tensor* recurrence_weights_forget_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_forget_g), dev);
-						cout << "Tensor created" << endl;
 						Tensor::copy(recurrence_weights_forget_tensor, lstm->Wfh );
 						delete recurrence_weights_forget_tensor;
 						delete recurrence_weights_forget_g;
 
 						Tensor* recurrence_weights_cell_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_cell_g), dev);
-						cout << "Tensor created" << endl;
 						Tensor::copy(recurrence_weights_cell_tensor, lstm->Wch );
 						delete recurrence_weights_cell_tensor;
 						delete recurrence_weights_cell_g;
@@ -1609,9 +1601,7 @@ using namespace std;
 						string biases_name = node->input(3); //Get weights and dims
 						vector<float>* biases = &(map_init_values[biases_name]);
 						vector<int> biases_dims = map_init_dims[biases_name];
-						cout << "Creating bias dims" << endl;
 						vector<int> bias_dims = {hidden_size};
-						cout << "Bias dims created" << endl;
 
 						vector<float>* bias_input = new vector<float>;
 						vector<float>* bias_output = new vector<float>;
@@ -1632,8 +1622,6 @@ using namespace std;
 						bias_recurrence_output->assign( biases->begin() + hidden_size * 5  , biases->begin() + hidden_size * 6);
 						bias_recurrence_forget->assign( biases->begin() + hidden_size * 6  , biases->begin() + hidden_size * 7);
 						bias_recurrence_cell->assign(   biases->begin() + hidden_size * 7  , biases->begin() + hidden_size * 8);
-
-						cout << "Copying bias weights" << endl;
 
 						Tensor* bias_input_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_input), dev);
 						Tensor::copy(bias_input_tensor, lstm->inbias );
