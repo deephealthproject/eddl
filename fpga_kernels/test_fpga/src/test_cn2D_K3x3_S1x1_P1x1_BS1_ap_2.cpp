@@ -44,6 +44,7 @@
 #include "xcl2.hpp"
 
 #include <ap_fixed.h>
+#include <sys/time.h>
 
 using std::vector;
 
@@ -56,25 +57,66 @@ cl::Buffer buf;
 cl::Context context;
 cl::CommandQueue q;
 cl::Program program;
+std::string binaryFile;
 
+#define WMAX 256
+#define HMAX 256
+#define IMAX 512
+#define OMAX 512
 
-#define W    256 //256
-#define H    256 //256
-#define GI   2
-#define CPI  4 // 16
-#define I    GI * CPI
-#define GO   2 // 16
-#define CPO  4
-#define O    GO * CPO
-#define KW   3
-#define KH   3
+#define CPI 4
+#define CPO 4
+
+#define KW 3
+#define KH 3
+
+int W;
+int H;
+int GI;
+int GO;
+int I;
+int O;
+
 
 // buffers
-data_type data_in[  GI * W * H * CPI                 ]  __attribute__ ((__aligned__(16)));
-data_type kernel [  GO * GI * CPO * CPI * KW * KH    ]  __attribute__ ((__aligned__(16)));
-data_type bias   [  O                                ]  __attribute__ ((__aligned__(16)));
-data_type out    [  GO * W * H * CPO                 ]  __attribute__ ((__aligned__(16)));
-data_type out_cpu[  GO * W * H * CPO                 ]  __attribute__ ((__aligned__(16)));
+data_type *data_in; //[  IMAX * W * H * CPI               ]  __attribute__ ((__aligned__(16)));
+data_type *kernel; // [  GO * GI * CPO * CPI * KW * KH    ]  __attribute__ ((__aligned__(16)));
+data_type *bias;//   [  O                                ]  __attribute__ ((__aligned__(16)));
+data_type *out;   // [  GO * W * H * CPO                 ]  __attribute__ ((__aligned__(16)));
+data_type *out_cpu; //[  GO * W * H * CPO                 ]  __attribute__ ((__aligned__(16)));
+
+void allocate_buffers() {
+  data_in = (data_type*)malloc(I * W * H * sizeof(data_type));
+  kernel = (data_type*)malloc(I * O * KW * KH * sizeof(data_type));
+  bias = (data_type*)malloc(O * sizeof(data_type));
+  out = (data_type*)malloc(O * W * H * sizeof(data_type));
+  out_cpu = (data_type*)malloc(O * W * H * sizeof(data_type));
+}
+
+void parse_arguments(int argc, char **argv) {
+  if (argc != 6) {
+    printf("syntax:\n%s <XCLBIN File> <W> <H> <I> <O>\n", argv[0]);
+    exit(1);
+  }
+
+  binaryFile = argv[1];  
+  W = atoi(argv[2]);
+  H = atoi(argv[3]);
+  I = atoi(argv[4]);
+  O = atoi(argv[5]);
+  if ((I % CPI) != 0) {printf("Error, I must me multiple of %d\n", CPI); exit(1);}
+  if ((O % CPO) != 0) {printf("Error, O must be multiple of %d\n", CPO); exit(1);}
+  GI = I / CPI;
+  GO = O / CPO;
+}
+
+void deallocate_buffers() {
+  free(data_in);
+  free(kernel);
+  free(bias);
+  free(out);
+  free(out_cpu);
+}
 
 void cpu_conv2d() {
 
@@ -223,7 +265,7 @@ void check_result() {
 	int go = cout / CPO;
 	int o = cout % CPO;
         int addr_o = (go * W * H * CPO) + (h * W * CPO) + (w * CPO) + o;
-        if (fabs(out_cpu[addr_o] - out[addr_o]) > 0.001) {
+        if (fabs(float(out_cpu[addr_o]) - float(out[addr_o])) > 0.001) {
           printf("Results mismatch at cout %d h %d w %d: %6.4f %6.4f (diff %6.4f)\n", cout, h, w, float(out_cpu[addr_o]), float(out[addr_o]), fabs(float(out_cpu[addr_o]-out[addr_o])));
           error = 1;
 	  return;
@@ -304,27 +346,38 @@ void set_callback(cl::Event event, const char *queue_name) {
 //---------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char **argv) {
-  if (argc != 2) {
-    std::cout << "Usage: " << argv[0] << " <XCLBIN File>" << std::endl;
-    return EXIT_FAILURE;
-  }
 
-  printf("Test CONV: [GIxWxHxCPI] = [%dx%dx%dx%d] -> [GOxWxHxCPO] = [%d%dx%dx%d] (kernel [%dx%d], stride [1x1], padding [1x1])\n", GI, W, H, CPI, GO, W, H, CPO, KW, KH);
+  parse_arguments(argc, argv);
 
-  std::string binaryFile = argv[1];
+  printf("Test CONV: [GIxWxHxCPI] = [%dx%dx%dx%d] -> [GOxWxHxCPO] = [%dx%dx%dx%d] (kernel [%dx%d], stride [1x1], padding [1x1])\n", GI, W, H, CPI, GO, W, H, CPO, KW, KH);
+
+  allocate_buffers();
+
   cl_int err;
   cl::Kernel kernel_conv2d_2;
 
   std::cout << "Creating Context..." << std::endl;
+
+  printf("1\n");
   auto devices = xcl::get_xil_devices();
+  printf("2\n");
   auto device = devices[0];
+
+  printf("hola1\n");
+
   OCL_CHECK(err, cl::Context context(device, NULL, NULL, NULL, &err));
+
+  printf("hola2\n");
   OCL_CHECK(err, cl::CommandQueue q(context, device, CL_QUEUE_PROFILING_ENABLE, &err));
+
+  printf("hola\n");
 
   std::string device_name = device.getInfo<CL_DEVICE_NAME>();
   auto fileBuf = xcl::read_binary_file(binaryFile);
   cl::Program::Binaries bins{{fileBuf.data(), fileBuf.size()}};
   devices.resize(1);
+
+  printf("hola2\n");
 
   OCL_CHECK(err, cl::Program program(context, devices, bins, NULL, &err));
   std::cout << "Device " << device_name.c_str() << ": program successful!" << std::endl;
@@ -342,7 +395,7 @@ int main(int argc, char **argv) {
   // fill data vector with random data
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<data_type> dist(-1.0f, 1.0f);
+  std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
 
   std::cout << "Filling buffer with useful data" << std::endl ;
   int addr = 0;
@@ -351,7 +404,7 @@ int main(int argc, char **argv) {
       for (int w=0; w<W; w++) {
         for (int c=0; c<CPI; c++) {
           data_type value = (gi * W * H * CPI) + (c * W * H) + (data_type)(h * W) + w; //c+1; // (data_type)((c * 25) + (h * W) + w);
-          data_in[addr] = value; //dist(gen); //value;
+          data_in[addr] = dist(gen); //value;
           addr++;
 	}
       }
@@ -366,7 +419,7 @@ int main(int argc, char **argv) {
 	for (int kw=0; kw<KW; kw++) {
           data_type value = (data_type)kernel_id;
           int addr_k = (cout * I * KW * KH) + (c * KW * KH) + (kh * KW) + kw;
-          kernel[addr_k] = value; //dist(gen);
+          kernel[addr_k] = dist(gen);
         }
       }
       kernel_id++;
@@ -374,15 +427,15 @@ int main(int argc, char **argv) {
   }
 
   std::cout << "Filling bias buffer with useful data" << std::endl;
-  for (int cout=0; cout<O; cout++) bias[cout] = cout; //dist(gen);
+  for (int cout=0; cout<O; cout++) bias[cout] = dist(gen);
 
   //-----------------------------
   // THIS PAIR OF EVENTS WILL BE USED TO TRACK WHEN A KERNEL IS FINISHED WITH
   // THE INPUT BUFFERS. ONCE THE KERNEL IS FINISHED PROCESSING THE DATA, A NEW
   // SET OF ELEMENTS WILL BE WRITTEN INTO THE BUFFER.
-  vector<cl::Event> kernel_events(1);
+  vector<cl::Event> kernel_events(GO);
   vector<cl::Event> read_events(1);
-  vector<cl::Event> write_events(1);
+  vector<cl::Event> write_events(3);
   cl::Buffer buffer_a;
   cl::Buffer buffer_b;
   cl::Buffer buffer_k;
@@ -394,19 +447,37 @@ int main(int argc, char **argv) {
   // Device-to-host communication
   std::cout << "Creating Buffers..." << std::endl;
 
-  OCL_CHECK(err, buffer_a = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_data_in_bytes, &data_in, &err));
-  OCL_CHECK(err, buffer_b = cl::Buffer(context, CL_MEM_WRITE_ONLY  | CL_MEM_USE_HOST_PTR , size_output_in_bytes, &out, &err));
-  OCL_CHECK(err, buffer_k = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_kernel_in_bytes, &kernel, &err));
-  OCL_CHECK(err, buffer_bias = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_bias_in_bytes, &bias, &err));
+  OCL_CHECK(err, buffer_a = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_data_in_bytes, data_in, &err));
+  OCL_CHECK(err, buffer_b = cl::Buffer(context, CL_MEM_WRITE_ONLY  | CL_MEM_USE_HOST_PTR , size_output_in_bytes, out, &err));
+  OCL_CHECK(err, buffer_k = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_kernel_in_bytes, kernel, &err));
+  OCL_CHECK(err, buffer_bias = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_bias_in_bytes, bias, &err));
 
   //Arguments for loop
-  int I_ITER = I/CPI; //GO
-  int O_ITER = O/CPO; //GO
   int offset_bias = 0;  //offset to pointer bias each loop
   int offset_kernel = 0; //offset to pointer kernel each loop
   int offset_data_out = 0; //offset to poiter output data loop
 
-  for (int o_iter = 0; o_iter < O_ITER; o_iter++){
+  //-----------------------------
+  // Copy input data to device global memory
+  // std::cout << "Copying data (Host to Device)..." << std::endl;
+  // Because we are passing the write_events, it returns an event object
+  // that identifies this particular command and can be used to query
+  // or queue a wait for this particular command to complete.
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects( {buffer_a}, 0 /*0 means from host*/, NULL, &write_events[0]));
+  set_callback(write_events[0], "ooo_queue");
+
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects( {buffer_k}, 0 /*0 means from host*/, NULL, &write_events[1]));
+  set_callback(write_events[1], "ooo_queue");
+
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects( {buffer_bias}, 0 /*0 means from host*/, NULL, &write_events[2]));
+  set_callback(write_events[2], "ooo_queue");  
+  
+  // timint stats
+  unsigned long long prof_time;
+  struct timeval prof_t1;
+  gettimeofday(&prof_t1, NULL);
+
+  for (int o_iter = 0; o_iter < GO; o_iter++){
     // set kernel arguments
     int arg = 0;
     OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, buffer_a));
@@ -423,19 +494,8 @@ int main(int argc, char **argv) {
 
     // Update the offset poiter to bias, kernels and output data
     offset_bias = offset_bias + CPO;
-    offset_kernel = offset_kernel + KW * KH * CPO * I_ITER * CPI;
+    offset_kernel = offset_kernel + KW * KH * CPO * GI * CPI;
     offset_data_out = offset_data_out +  H * W;
-    //-----------------------------
-    // Copy input data to device global memory
-    // std::cout << "Copying data (Host to Device)..." << std::endl;
-    // Because we are passing the write_events, it returns an event object
-    // that identifies this particular command and can be used to query
-    // or queue a wait for this particular command to complete.
-    OCL_CHECK(err, err = q.enqueueMigrateMemObjects( {buffer_a}, 0 /*0 means from host*/, NULL, &write_events[0]));
-    set_callback(write_events[0], "ooo_queue");
-
-    OCL_CHECK(err, err = q.enqueueMigrateMemObjects( {buffer_k}, 0 /*0 means from host*/, NULL, &write_events[0]));
-    set_callback(write_events[0], "ooo_queue");
 
     //-----------------------------
     // printf("Enqueueing NDRange kernel.\n");
@@ -445,24 +505,30 @@ int main(int argc, char **argv) {
     // Launch the Kernel
     std::vector<cl::Event> waitList;
     waitList.push_back(write_events[0]);
-    OCL_CHECK(err, err = q.enqueueNDRangeKernel(kernel_conv2d_2, 0, 1, 1, &waitList, &kernel_events[0]));
-    set_callback(kernel_events[0], "ooo_queue");
+    waitList.push_back(write_events[1]);
+    waitList.push_back(write_events[2]);
+    OCL_CHECK(err, err = q.enqueueNDRangeKernel(kernel_conv2d_2, 0, 1, 1, &waitList, &kernel_events[o_iter]));
+    set_callback(kernel_events[o_iter], "ooo_queue");
+  }
 
-    // std::cout << "Getting Results (Device to Host)..." << std::endl;
-    std::vector<cl::Event> eventList;
-    eventList.push_back(kernel_events[0]);
-    // This operation only needs to wait for the kernel call.
-    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_b}, CL_MIGRATE_MEM_OBJECT_HOST, &eventList, &read_events[0]));
-    set_callback(read_events[0], "ooo_queue");
-    OCL_CHECK(err, err = read_events[0].wait());
+  // we wait all kernels to have completed
+  for (int o_iter = 0; o_iter < GO; o_iter++) {
+    OCL_CHECK(err, err = kernel_events[o_iter].wait());
+  }
 
+  // timing
+  struct timeval prof_t2;
+  gettimeofday(&prof_t2, NULL);
+  prof_time = ((prof_t2.tv_sec - prof_t1.tv_sec) * 1000000) + (prof_t2.tv_usec - prof_t1.tv_usec);
+  printf("Timing: %8lld usec\n", prof_time);
 
-}
-
-
-
-
-
+  // std::cout << "Getting Results (Device to Host)..." << std::endl;
+  std::vector<cl::Event> eventList;
+  eventList.push_back(kernel_events[0]);
+  // This operation only needs to wait for the kernel call.
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_b}, CL_MIGRATE_MEM_OBJECT_HOST, &eventList, &read_events[0]));
+  set_callback(read_events[0], "ooo_queue");
+  OCL_CHECK(err, err = read_events[0].wait());
 
   // Wait for all of the OpenCL operations to complete
   std::cout << "Waiting..." << std::endl;
@@ -484,6 +550,8 @@ int main(int argc, char **argv) {
   std::cout << "" << std::endl;
   std::cout << "All done" << std::endl;
   std::cout << "quit now" << std::endl;
+
+  deallocate_buffers();
 
   // exit
   return 0;

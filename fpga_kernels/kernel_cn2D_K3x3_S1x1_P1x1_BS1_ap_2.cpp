@@ -18,7 +18,7 @@
 
 extern "C" {
 
-// #define data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
+//#define data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
 #define data_type float
 
 // To allow using defines inside Xilinx pragmas
