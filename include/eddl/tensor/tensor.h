@@ -1831,7 +1831,7 @@ public:
     void reshape_(const vector<int> &new_shape);
 
     /**
-    *   @brief Set a new shape to a tensor in-place.
+    *   @brief Set a new shape to a tensor.
     *   @param new_shape A vector containing the new shape.
     *   @return A new tensor with the result
     */

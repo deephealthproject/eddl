@@ -53,16 +53,12 @@ isfinite
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({NAN, 0.0, 1.0, 2.0}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({0, 1 , 2, 3}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
+    Tensor* t1 = Tensor::full({4}, 5.0f);
+    Tensor* r1 = nullptr;
 
     Tensor::isfinite(t1, r1);
-    // r1 => [false, true, true, true]
+    //[true, true, true, true]
 
-    Tensor::isfinite(t2, r2);
-    // r2 => [true, true, true, true]
     
 
 isinf
@@ -72,12 +68,11 @@ isinf
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({INFINITY, 0.0, 1.0, 2.0}, {4}, DEV_CPU);
-    Tensor* r1;
-
+    Tensor* t1 = Tensor::full({4}, 5.0f);
+    Tensor* r1 = nullptr;
 
     Tensor::isinf(t1, r1);
-    // r1 => [true, false, false, false]
+    //[false, false, false, false]
 
 isnan
 ^^^^^^^^^^^^^^
@@ -86,12 +81,11 @@ isnan
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({NAN, 0.0, 1.0, 2.0}, {4}, DEV_CPU);
-    Tensor* r1;
-
+    Tensor* t1 = Tensor::full({4}, 5.0f);
+    Tensor* r1 = nullptr;
 
     Tensor::isnan(t1, r1);
-    // r1 => [true, false, false, false]
+    //[false, false, false, false]
     
 
 isneginf

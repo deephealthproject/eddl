@@ -422,7 +422,7 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Tensor  |     ❌️      |       ✔️      | needs comments in the .h |
+| Tensor  |     ✔️      |       ✔️      | needs comments in the .h |
 
 ### Ones and zeros
 
@@ -439,7 +439,7 @@ empty ❌
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | clone   |      ✔️     |       ✔️      |  |
-| reallocate |   ❌️     |       ✔️      | needs comments in the .h |
+| reallocate |   ✔️     |       ✔️      |  |
 | copy    |      ✔️     |       ✔️      |  |
 
 
@@ -457,8 +457,8 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| randu   |      ❌️     |       ✔️      | needs comments in the .h |
-| randn   |      ❌️     |       ✔️      | needs comments in the .h |
+| randu   |      ✔️     |       ✔️      |  |
+| randn   |      ✔️     |       ✔️      |  |
 
 ### Build matrices
 
@@ -475,7 +475,7 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Tensor  |      ❌️     |       ✔️      | needs comments in the .h |
+| Tensor  |      ✔️     |       ✔️      |  |
 
 ### Changing array shape
 
@@ -488,22 +488,22 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| permute |      ❌️     |       ✔️      | needs comments in the .h |
-| moveaxis |     ❌️     |       ✔️      | needs comments in the .h |
-| swapaxis |     ❌️     |       ✔️      | needs comments in the .h |
+| permute |      ✔️     |       ✔️      |  |
+| moveaxis |     ✔️     |       ✔️      |  |
+| swapaxis |     ✔️     |       ✔️      |  |
 
 ### Changing number of dimensions
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| squeeze |      ❌️     |       ✔️      | needs comments in the .h |
-| unsqueeze |    ❌️     |       ✔️      | needs comments in the .h |
+| squeeze |      ✔️     |       ✔️      |  |
+| unsqueeze |    ✔️     |       ✔️      |  |
 
 ### Joining arrays
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| concat  |      ❌️     |       ✔️      | needs comments in the .h |
+| concat  |      ✔️     |       ✔️      |  |
 
 ### Rearranging elements and transformations
 
@@ -543,7 +543,7 @@ empty ❌
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | select  |      ✔️      |       ✔️      |  |
-| set_select |  ❌️      |       ✔️      | needs comments in the .h <br/> Confusing explanation |
+| set_select |  ✔️      |       ✔️      |  |
 
 
 ## Input/Output Operations
@@ -652,11 +652,11 @@ empty ❌
 | logn    |      ✔️     |       ✔️      |  |
 | mod     |      ✔️     |       ✔️      |  |
 | mult    |      ✔️     |       ✔️      |  |
-| normalize    |      ❌️     |       ✔️      | needs comments in the .h <br/> two instructions |
+| normalize    |      ✔️     |       ✔️      |  |
 | neg     |      ✔️     |       ✔️      |  |
-| pow     |      ❌️     |       ✔️      | needs comments in the .h |
-| powb    |      ❌️     |       ✔️      | needs comments in the .h |
-| reciprocal |   ❌️     |       ✔️      | needs comments in the .h |
+| pow     |      ✔️     |       ✔️      |  |
+| powb    |      ✔️     |       ✔️      |  |
+| reciprocal |   ✔️     |       ✔️      |  |
 | remainder |    ✔️     |       ✔️      |  |
 | round   |      ✔️     |       ✔️      |  |
 | rsqrt   |      ✔️     |       ✔️      |  |
@@ -664,7 +664,7 @@ empty ❌
 | sign    |      ✔️     |       ✔️      |  |
 | sin     |      ✔️     |       ✔️      |  |
 | sinh    |      ✔️     |       ✔️      |  |
-| sqr     |      ❌️     |       ✔️      | needs comments in the .h |
+| sqr     |      ✔️     |       ✔️      |  |
 | sqrt    |      ✔️     |       ✔️      |  |
 | sub     |      ✔️     |       ✔️      |  |
 | sum     |      ✔️     |       ✔️      |  |
