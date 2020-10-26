@@ -197,12 +197,10 @@ using namespace std;
 		}
 
 		size_t num_elements = raw_size / sizeof(T);
-		printf("Converting tensor values\n");
 		const void* src_ptr = static_cast<const void*>(onnx_tensor.raw_data().data());
 		field.resize(num_elements, 0);
 		void* target_ptr = static_cast<void*>(field.data());
 		memcpy(target_ptr, src_ptr, raw_size);
-		printf("Tensor values converted succesfully\n");
 		return true;
 	}
 
@@ -836,17 +834,9 @@ using namespace std;
 						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
 
 						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
-						if(transB){
-							vector<int> reverse_dims;
-							for(int h = dims.size()-1; h >= 0; h--){
-								reverse_dims.push_back(dims[h]);
-							}
-							Tensor* weights_tensor_T = new Tensor(reverse_dims, dev);
-							Tensor::transpose(weights_tensor, weights_tensor_T, {1,0});
-							Tensor::copy(weights_tensor_T, dense->W );
-							delete weights_tensor_T;
-						}
-						else Tensor::copy(weights_tensor, dense->W );
+						if(transB)
+                            weights_tensor->permute_({1, 0});
+						Tensor::copy(weights_tensor, dense->W);
 						delete weights_tensor;
 						if(use_bias){
 							bias_name = node->input(2);
