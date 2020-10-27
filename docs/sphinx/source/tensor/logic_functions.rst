@@ -12,7 +12,7 @@ Truth value testing
 ---------------------------
 
 
-all
+All
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::all
@@ -24,7 +24,7 @@ all
     //condition = false
     
 
-any
+Any
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::any
@@ -46,76 +46,164 @@ Array contents
 
 
 
-isfinite
+Isfinite
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isfinite
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::full({4}, 5.0f);
-    Tensor* r1 = nullptr;
+    Tensor* t1 = Tensor::empty({5,1});
+    t1->ptr[0] = 12;
+    t1->ptr[1] = INFINITY;
+    t1->ptr[2] = NAN;
+    t1->ptr[3] = -INFINITY;
+    t1->ptr[4] = +INFINITY;
+    // [
+    // [12.00]
+    // [inf]
+    // [nan]
+    // [-inf]
+    // [inf]
+    // ]
 
-    Tensor::isfinite(t1, r1);
-    //[true, true, true, true]
+    Tensor* r1 = nullptr;
+    Tensor::isfinite(t1, r1); //source
+    // [
+    // [1.00]
+    // [0.00]
+    // [0.00]
+    // [0.00]
+    // [0.00]
+    // ]
 
     
 
-isinf
+Isinf
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isinf
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::full({4}, 5.0f);
+    Tensor* t1 = Tensor::empty({5,1});
+    t1->ptr[0] = 12;
+    t1->ptr[1] = INFINITY;
+    t1->ptr[2] = NAN;
+    t1->ptr[3] = -INFINITY;
+    t1->ptr[4] = +INFINITY;
+    // [
+    // [12.00]
+    // [inf]
+    // [nan]
+    // [-inf]
+    // [inf]
+    // ]
+
     Tensor* r1 = nullptr;
+    Tensor::isinf(t1, r1); //source
+    // [
+    // [0.00]
+    // [1.00]
+    // [0.00]
+    // [1.00]
+    // [1.00]
+    // ]
 
-    Tensor::isinf(t1, r1);
-    //[false, false, false, false]
-
-isnan
+Isnan
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isnan
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::full({4}, 5.0f);
-    Tensor* r1 = nullptr;
+    Tensor* t1 = Tensor::empty({5,1});
+    t1->ptr[0] = 12;
+    t1->ptr[1] = INFINITY;
+    t1->ptr[2] = NAN;
+    t1->ptr[3] = -INFINITY;
+    t1->ptr[4] = +INFINITY;
+    // [
+    // [12.00]
+    // [inf]
+    // [nan]
+    // [-inf]
+    // [inf]
+    // ]
 
-    Tensor::isnan(t1, r1);
-    //[false, false, false, false]
+    Tensor* r1 = nullptr;
+    Tensor::isnan(t1, r1); //source
+    // [
+    // [0.00]
+    // [0.00]
+    // [1.00]
+    // [0.00]
+    // [0.00]
+    // ]
     
 
-isneginf
+Isneginf
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isneginf
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-INFINITY, INFINITY, 1.0, 2.0}, {4}, DEV_CPU);
-    Tensor* r1;
+    Tensor* t1 = Tensor::empty({5,1});
+    t1->ptr[0] = 12;
+    t1->ptr[1] = INFINITY;
+    t1->ptr[2] = NAN;
+    t1->ptr[3] = -INFINITY;
+    t1->ptr[4] = +INFINITY;
+    // [
+    // [12.00]
+    // [inf]
+    // [nan]
+    // [-inf]
+    // [inf]
+    // ]
 
-
-    Tensor::isneginf(t1, r1);
-    // r1 => [true, false, false, false]
+    Tensor* r1 = nullptr;
+    Tensor::isneginf(t1, r1); //source
+    // [
+    // [0.00]
+    // [0.00]
+    // [0.00]
+    // [1.00]
+    // [0.00]
+    // ]
     
 
-isposinf
+Isposinf
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isposinf
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-INFINITY, INFINITY, 1.0, 2.0}, {4}, DEV_CPU);
-    Tensor* r1;
+    Tensor* t1 = Tensor::empty({5,1});
+    t1->ptr[0] = 12;
+    t1->ptr[1] = INFINITY;
+    t1->ptr[2] = NAN;
+    t1->ptr[3] = -INFINITY;
+    t1->ptr[4] = +INFINITY;
+    // [
+    // [12.00]
+    // [inf]
+    // [nan]
+    // [-inf]
+    // [inf]
+    // ]
 
-
-    Tensor::isposinf(t1, r1);
-    // r1 => [false, true, false, false]
+    Tensor* r1 = nullptr;
+    Tensor::isposinf(t1, r1); //source
+    // [
+    // [0.00]
+    // [1.00]
+    // [0.00]
+    // [0.00]
+    // [1.00]
+    // ]
 
 
 
@@ -123,356 +211,690 @@ Logical operations
 ---------------------------
 
 
-logical_and
+Logical_and
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::logical_and
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({true,false,true,false,true,true}, {6}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({false,false,true,false,false,false}, {6}, DEV_CPU);
-    Tensor* r;
+    Tensor* t1 = Tensor::full({5,5}, 1.0f);
+    // [
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // ]
 
-    Tensor::logical_and(t1, t2, r);
-    // r => [false, false, true, false, false, false]
+
+    Tensor* t2 = Tensor::full({5,5}, 0.0f);
+    // [
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // ]
+
+    Tensor* r = nullptr;
+
+    Tensor::logical_and(t1, t2, r); //source
+    // [
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // ]
         
 
-logical_or
+Logical_or
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::logical_or
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({true,false,true,false,true,true}, {6}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({false,false,true,false,false,false}, {6}, DEV_CPU);
-    Tensor* r;
+    Tensor* t1 = Tensor::full({5,5}, 1.0f);
+    // [
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // ]
 
-    Tensor::logical_or(t1, t2, r);
-    // r => [true, false, true, false, true, true]
+
+    Tensor* t2 = Tensor::full({5,5}, 0.0f);
+    // [
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // ]
+
+    Tensor* r = nullptr;
+
+    Tensor::logical_or(t1, t2, r); //source
+    // [
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // ]
         
 
-logical_not
+Logical_not
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::logical_not
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({true,false,true,false,true,true}, {6}, DEV_CPU);
-    Tensor* r;
+    Tensor* t1 = Tensor::full({5,5}, 1.0f);
+    // [
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // ]
 
-    Tensor::logical_and(t1, r);
-    // r => [false, true, false, true, false, false]
+    Tensor* r = nullptr;
+
+    Tensor::logical_not(t1, r); //source
+    // [
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // ]
         
 
-logical_xor
+Logical_xor
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::logical_xor
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({true,false,true,false,true,true}, {6}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({false,false,true,false,false,false}, {6}, DEV_CPU);
-    Tensor* r;
+    Tensor* t1 = Tensor::full({5,5}, 1.0f);
+    // [
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // ]
 
-    Tensor::logical_xor(t1, t2, r);
-    // r => [true, false, false, false, true, true]
+
+    Tensor* t2 = Tensor::full({5,5}, 0.0f);
+    // [
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // [0.000000 0.000000 0.000000 0.000000 0.000000]
+    // ]
+
+    Tensor* r = nullptr;
+
+    Tensor::logical_xor(t1, t2, r); //source
+    // [
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // ]
 
 
 
 Comparison
 ---------------------------
 
+Unary Operations
+^^^^^^^^^^^^^^^^^^^^
+Greater
+^^^^^^^^^^^^^^
 
-allclose
+.. doxygenfunction:: Tensor::greater(float v)
+
+ 
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.00 2.00 3.00 4.00 5.00]
+    // [6.00 7.00 8.00 9.00 10.00]
+    // [11.00 12.00 13.00 14.00 15.00]
+    // [16.00 17.00 18.00 19.00 20.00]
+    // [21.00 22.00 23.00 24.00 25.00]
+    // ]
+
+    t1->greater_(3.0f); // In-place
+    // [
+    // [0.00 0.00 0.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // ]
+
+    // Other Ways
+    Tensor* t2 = t1->greater(3.0f); // returns new tensor
+    Tensor::greater(t1, t2, 3.0f); //source
+
+
+Greater_equal
+^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::greater_equal(float v)
+
+
+.. code-block:: c++
+
+
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.00 2.00 3.00 4.00 5.00]
+    // [6.00 7.00 8.00 9.00 10.00]
+    // [11.00 12.00 13.00 14.00 15.00]
+    // [16.00 17.00 18.00 19.00 20.00]
+    // [21.00 22.00 23.00 24.00 25.00]
+    // ]
+
+    t1->greater_equal_(3.0f); // In-place
+    // [
+    // [0.00 0.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // ]
+
+    // Other Ways
+    Tensor* t2 = t1->greater_equal(3.0f); // returns new tensor
+    Tensor::greater_equal(t1, t2, 3.0f); //source
+
+
+
+
+Less
+^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::less(float v)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.00 2.00 3.00 4.00 5.00]
+    // [6.00 7.00 8.00 9.00 10.00]
+    // [11.00 12.00 13.00 14.00 15.00]
+    // [16.00 17.00 18.00 19.00 20.00]
+    // [21.00 22.00 23.00 24.00 25.00]
+    // ]
+
+    t1->less_(3.0f); // In-place
+    // [
+    // [1.00 1.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // ]
+
+    // Other Ways
+    Tensor* t2 = t1->less(3.0f); // returns new tensor
+    Tensor::less_(t1, t2, 3.0f); //source
+
+
+
+Less_equal
+^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::less_equal(float v)
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.00 2.00 3.00 4.00 5.00]
+    // [6.00 7.00 8.00 9.00 10.00]
+    // [11.00 12.00 13.00 14.00 15.00]
+    // [16.00 17.00 18.00 19.00 20.00]
+    // [21.00 22.00 23.00 24.00 25.00]
+    // ]
+
+    t1->less_equal_(3.0f); // In-place
+    // [
+    // [1.00 1.00 1.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // ]
+
+    // Other Ways
+    Tensor* t2 = t1->less_equal(3.0f); // returns new tensor
+    Tensor::less_equal(t1, t2, 3.0f); //source
+    
+
+
+Equal
+^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::equal(float v)
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.00 2.00 3.00 4.00 5.00]
+    // [6.00 7.00 8.00 9.00 10.00]
+    // [11.00 12.00 13.00 14.00 15.00]
+    // [16.00 17.00 18.00 19.00 20.00]
+    // [21.00 22.00 23.00 24.00 25.00]
+    // ]
+
+    t1->equal_(3.0f); // In-place
+    // [
+    // [0.00 0.00 1.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // ]
+
+    // Other Ways
+    Tensor* t2 = t1->equal(3.0f); // returns new tensor
+    Tensor::equal(t1, t2, 3.0f); //source
+
+
+    
+        
+
+Not_equal
+^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::not_equal(float v)
+
+
+
+.. code-block:: c++
+
+
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.00 2.00 3.00 4.00 5.00]
+    // [6.00 7.00 8.00 9.00 10.00]
+    // [11.00 12.00 13.00 14.00 15.00]
+    // [16.00 17.00 18.00 19.00 20.00]
+    // [21.00 22.00 23.00 24.00 25.00]
+    // ]
+
+    t1->not_equal_(3.0f); // In-place
+    // [
+    // [1.00 1.00 0.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // ]
+
+    // Other Ways
+    Tensor* t2 = t1->not_equal(3.0f); // returns new tensor
+    Tensor::not_equal(t1, t2, 3.0f); //source
+
+
+
+Binary Operations
+^^^^^^^^^^^^^^^^^^^^^
+
+
+Allclose
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::allclose
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({10000.0, 1e-07}, {2}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({10000.0, 1e-08}, {2}, DEV_CPU);
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
 
-    bool close =  Tensor::allclose(t1, t2, 1e-05, 1e-08, false);  
-    // close = false
 
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
+    t2->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
 
-    Tensor* t1 = new Tensor::Tensor({10000.0, 1e-08}, {2}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({10000.0, 1e-09}, {2}, DEV_CPU);
-
-    bool close =  Tensor::allclose(t1, t2, 1e-05, 1e-08, false);  
-    // close = true
-
-    Tensor* t1 = new Tensor::Tensor({1.0, NAN}, {2}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1.0, NAN}, {2}, DEV_CPU);
-
-    bool close =  Tensor::allclose(t1, t2, 1e-05, 1e-08, false);  
-    // close = false
-
-    Tensor* t1 = new Tensor::Tensor({1.0, NAN}, {2}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1.0, NAN}, {2}, DEV_CPU);
-
-    bool close =  Tensor::allclose(t1, t2, 1e-05, 1e-08, true);  
-    // close = true
+    float result = Tensor::allclose(t1, t2);
+    // 1.00
     
 
-isclose
+Isclose
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isclose
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({10000.0, 1e-07}, {2}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({10000.0, 1e-08}, {2}, DEV_CPU);
-    Tensor* r;
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
 
-    Tensor::isclose(t1, t2, r, 1e-05, 1e-08, false);  
-    // r => [true, false]
+
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
+    t2->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
+
+    Tensor* t3 = new Tensor({5,5});
 
 
-    Tensor* t1 = new Tensor::Tensor({10000.0, 1e-08}, {2}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({10000.0, 1e-09}, {2}, DEV_CPU);
-    Tensor* r;
-
-    Tensor::isclose(t1, t2, r, 1e-05, 1e-08, false);  
-    // r => [true, true]
-
-    Tensor* t1 = new Tensor::Tensor({1.0, NAN}, {2}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1.0, NAN}, {2}, DEV_CPU);
-    Tensor* r;
-
-    Tensor::isclose(t1, t2, r, 1e-05, 1e-08, false);  
-    // r => [true, false]
-
-    Tensor* t1 = new Tensor::Tensor({1.0, NAN}, {2}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1.0, NAN}, {2}, DEV_CPU);
-    Tensor* r;
-
-    Tensor::isclose(t1, t2, r, 1e-05, 1e-08, false);  
-    // r => [true, true]
+    Tensor::isclose(t1, t2, t3);  
+    // [
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // [1.000000 1.000000 1.000000 1.000000 1.000000]
+    // ]
 
         
 
-greater
+Greater
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::greater_(float)
-.. doxygenfunction:: Tensor::greater(float v)
-.. doxygenfunction:: Tensor::greater(Tensor *A, Tensor *B, float v)
 .. doxygenfunction:: Tensor::greater(Tensor *A)
-.. doxygenfunction:: Tensor::greater(Tensor *A, Tensor *B, Tensor *C)
 
  
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({10000.0, 1e-07}, {2}, DEV_CPU);
-    Tensor* r;
-
-    r = t1->greater(900.0);
-    // r => [true, false]
-
-
-    Tensor::greater(t1, r, 900.0);
-    // r => [true, false]
-
-    Tensor* t2 = new Tensor::Tensor({900.0, 1e-08}, {2}, DEV_CPU);
-    Tensor* r2 =  t1->greater(t2);
-    // r2 => [true, true]
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
 
 
-    Tensor::greater(t1, t2, r);
-    // r => [true, true]
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
+    t2->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
+
+    Tensor* t3 = t1->greater(t2); // returns new tensor
+    // [
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // ]
+
+    // Other Ways
+    Tensor::greaterl(t1, t2, t3); //source
 
 
-    t1->greater_(900.0);
-    // t1 => [true, false]
-
-
-greater_equal
+Greater_equal
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::greater_equal_(float)
-.. doxygenfunction:: Tensor::greater_equal(float v)
-.. doxygenfunction:: Tensor::greater_equal(Tensor *A, Tensor *B, float v)
 .. doxygenfunction:: Tensor::greater_equal(Tensor *A)
-.. doxygenfunction:: Tensor::greater_equal(Tensor *A, Tensor *B, Tensor *C)
 
 
 .. code-block:: c++
 
 
-    Tensor* t1 = new Tensor::Tensor({10000.0, 1e-07}, {2}, DEV_CPU);
-    Tensor* r;
-
-    r = t1->greater_equal(10000.0);
-    // r => [true, false]
-
-
-    Tensor::greater_equal(t1, r, 10000.0);
-    // r => [true, false]
-
-    Tensor* t2 = new Tensor::Tensor({10000.0, 1e-08}, {2}, DEV_CPU);
-    Tensor* r2 =  t1->greater_equal(t2);
-    // r2 => [true, true]
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
 
 
-    Tensor::greater_equal(t1, t2, r);
-    // r => [true, true]
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
+    t2->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
+
+    Tensor* t3 = t1->greater_equal(t2); // returns new tensor
+    // [
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // ]
+
+    // Other Ways
+    Tensor::greater_equal(t1, t2, t3); //source
 
 
-    t1->greater_equal_(10000.0);
-    // t1 => [true, false]
 
 
-
-
-less
+Less
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::less_(float)
-.. doxygenfunction:: Tensor::less(float v)
-.. doxygenfunction:: Tensor::less(Tensor *A, Tensor *B, float v)
 .. doxygenfunction:: Tensor::less(Tensor *A)
-.. doxygenfunction:: Tensor::less(Tensor *A, Tensor *B, Tensor *C)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({10000.0, 1e-07}, {2}, DEV_CPU);
-    Tensor* r;
-
-    r = t1->less(20000.0);
-    // r => [true, true]
-
-
-    Tensor::less(t1, r, 20000.0);
-    // r => [true, true]
-
-    Tensor* t2 = new Tensor::Tensor({20000.0, 1e-05}, {2}, DEV_CPU);
-    Tensor* r2 =  t1->less(t2);
-    // r2 => [true, true]
-
-
-    Tensor::less(t1, t2, r);
-    // r => [true, true]
-
-
-    t1->less_(20000.0);
-    // t1 => [true, true]
-
-
-
-less_equal
-^^^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::less_equal_(float)
-.. doxygenfunction:: Tensor::less_equal(float v)
-.. doxygenfunction:: Tensor::less_equal(Tensor *A, Tensor *B, float v)
-.. doxygenfunction:: Tensor::less_equal(Tensor *A)
-.. doxygenfunction:: Tensor::less_equal(Tensor *A, Tensor *B, Tensor *C)
-
-
-.. code-block:: c++
-
-    Tensor* t1 = new Tensor::Tensor({10000.0, 1e-07}, {2}, DEV_CPU);
-    Tensor* r;
-
-    r = t1->less_equal(10000.0);
-    // r => [true, true]
-
-
-    Tensor::less_equal(t1, r, 10000.0);
-    // r => [true, true]
-
-    Tensor* t2 = new Tensor::Tensor({10000.0, 1e-05}, {2}, DEV_CPU);
-    Tensor* r2 =  t1->less_equal(t2);
-    // r2 => [true, true]
-
-
-    Tensor::less_equal(t1, t2, r);
-    // r => [true, true]
-
-
-    t1->less_equal_(10000.0);
-    // t1 => [true, true]
     
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
 
 
-equal
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
+    t2->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
+
+    Tensor* t3 = t1->less(t2); // returns new tensor
+    // [
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // ]
+
+    // Other Ways
+    Tensor::less(t1, t2, t3); //source
+
+
+
+Less_equal
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::equal_(float)
-.. doxygenfunction:: Tensor::equal(float v)
-.. doxygenfunction:: Tensor::equal(Tensor *A, Tensor *B, float v)
-.. doxygenfunction:: Tensor::equal(Tensor *A)
-.. doxygenfunction:: Tensor::equal(Tensor *A, Tensor *B, Tensor *C)
+.. doxygenfunction:: Tensor::less_equal(Tensor *A)
 
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({10000.0, 1e-07}, {2}, DEV_CPU);
-    Tensor* r;
-
-    r = t1->equal(10000.0);
-    // r => [true, false]
-
-
-    Tensor::equal(t1, r, 10000.0);
-    // r => [true, false]
-
-    Tensor* t2 = new Tensor::Tensor({10000.0, 1e-05}, {2}, DEV_CPU);
-    Tensor* r2 =  t1->equal(t2);
-    // r2 => [true, false]
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
 
 
-    Tensor::equal(t1, t2, r);
-    // r => [true, false]
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
+    t2->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
+
+    Tensor* t3 = t1->less_equal(t2); // returns new tensor
+    // [
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // ]
+
+    // Other Ways
+    Tensor::less_equal(t1, t2, t3); //source
 
 
-    t1->equal_(10000.0);
-    // t1 => [true, false]
+Equal
+^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::equal(Tensor *A)
+
+
+.. code-block:: c++
+    
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
+
+
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
+    t2->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
+
+    Tensor* t3 = t1->equal(t2); // returns new tensor
+    // [
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // [1.00 1.00 1.00 1.00 1.00]
+    // ]
+
+    // Other Ways
+    Tensor::equal(t1, t2, t3); //source
 
 
     
         
 
-not_equal
+Not_equal
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::not_equal_(float)
-.. doxygenfunction:: Tensor::not_equal(float v)
-.. doxygenfunction:: Tensor::not_equal(Tensor *A, Tensor *B, float v)
 .. doxygenfunction:: Tensor::not_equal(Tensor *A)
-.. doxygenfunction:: Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C)
-
 
 
 .. code-block:: c++
 
 
-    Tensor* t1 = new Tensor::Tensor({10000.0, 1e-07}, {2}, DEV_CPU);
-    Tensor* r;
-
-    r = t1->not_equal(10000.0);
-    // r => [false, true]
-
-
-    Tensor::not_equal(t1, r, 10000.0);
-    // r => [false, true]
-
-    Tensor* t2 = new Tensor::Tensor({10000.0, 1e-05}, {2}, DEV_CPU);
-    Tensor* r2 =  t1->not_equal(t2);
-    // r2 => [false, true]
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
+    t1->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
 
 
-    Tensor::not_equal(t1, t2, r);
-    // r => [false, true]
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
+    t2->reshape_({5,5});
+    // [
+    // [1.000000 2.000000 3.000000 4.000000 5.000000]
+    // [6.000000 7.000000 8.000000 9.000000 10.000000]
+    // [11.000000 12.000000 13.000000 14.000000 15.000000]
+    // [16.000000 17.000000 18.000000 19.000000 20.000000]
+    // [21.000000 22.000000 23.000000 24.000000 25.000000]
+    // ]
 
+    Tensor* t3 = t1->not_equal(t2); // returns new tensor
+    // [
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // [0.00 0.00 0.00 0.00 0.00]
+    // ]
 
-    t1->not_equal_(10000.0);
-    // t1 => [false, true]
+    // Other Ways
+    Tensor::not_equal(t1, t2, t3); //source
 

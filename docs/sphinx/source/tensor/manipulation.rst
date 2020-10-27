@@ -145,7 +145,7 @@ Changing array shape
 reshape
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: reshape(const vector<int> &new_shape)
+.. doxygenfunction:: Tensor::reshape(const vector<int> &new_shape)
 
 .. code-block:: c++
 
