@@ -19,7 +19,7 @@ All
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({true,false,false,false,true,true}, {6}, DEV_CPU);
+    Tensor* t1 = new Tensor::Tensor({true,false,false,false,true,true}, {2, 3});
     bool condition =  Tensor::all(t1);
     //condition = false
     
@@ -31,8 +31,8 @@ Any
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({true,false,false,false,true,true}, {6}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({false,false,false,false,false,false}, {6}, DEV_CPU);
+    Tensor* t1 = new Tensor::Tensor({true,false,false,false,true,true}, {2, 3});
+    Tensor* t2 = new Tensor::Tensor({false,false,false,false,false,false}, {2, 3});
 
     bool condition =  Tensor::any(t1);
     //condition = true
@@ -45,8 +45,7 @@ Array contents
 -----------------
 
 
-
-Isfinite
+is finite?
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isfinite
@@ -68,7 +67,7 @@ Isfinite
     // ]
 
     Tensor* r1 = nullptr;
-    Tensor::isfinite(t1, r1); //source
+    Tensor::isfinite(t1, r1); // static
     // [
     // [1.00]
     // [0.00]
@@ -79,7 +78,7 @@ Isfinite
 
     
 
-Isinf
+is inf?
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isinf
@@ -101,7 +100,7 @@ Isinf
     // ]
 
     Tensor* r1 = nullptr;
-    Tensor::isinf(t1, r1); //source
+    Tensor::isinf(t1, r1); // static
     // [
     // [0.00]
     // [1.00]
@@ -110,7 +109,7 @@ Isinf
     // [1.00]
     // ]
 
-Isnan
+is NaN?
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isnan
@@ -132,7 +131,7 @@ Isnan
     // ]
 
     Tensor* r1 = nullptr;
-    Tensor::isnan(t1, r1); //source
+    Tensor::isnan(t1, r1); // static
     // [
     // [0.00]
     // [0.00]
@@ -142,7 +141,7 @@ Isnan
     // ]
     
 
-Isneginf
+is -inf?
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isneginf
@@ -164,7 +163,7 @@ Isneginf
     // ]
 
     Tensor* r1 = nullptr;
-    Tensor::isneginf(t1, r1); //source
+    Tensor::isneginf(t1, r1); // static
     // [
     // [0.00]
     // [0.00]
@@ -174,7 +173,7 @@ Isneginf
     // ]
     
 
-Isposinf
+is +inf?
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isposinf
@@ -196,7 +195,7 @@ Isposinf
     // ]
 
     Tensor* r1 = nullptr;
-    Tensor::isposinf(t1, r1); //source
+    Tensor::isposinf(t1, r1); // static
     // [
     // [0.00]
     // [1.00]
@@ -211,8 +210,8 @@ Logical operations
 ---------------------------
 
 
-Logical_and
-^^^^^^^^^^^^^^
+Logical AND: "A & B"
+^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::logical_and
 
@@ -239,7 +238,7 @@ Logical_and
 
     Tensor* r = nullptr;
 
-    Tensor::logical_and(t1, t2, r); //source
+    Tensor::logical_and(t1, t2, r); // static
     // [
     // [0.000000 0.000000 0.000000 0.000000 0.000000]
     // [0.000000 0.000000 0.000000 0.000000 0.000000]
@@ -249,8 +248,8 @@ Logical_and
     // ]
         
 
-Logical_or
-^^^^^^^^^^^^^^
+Logical OR: "A | B"
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::logical_or
 
@@ -277,7 +276,7 @@ Logical_or
 
     Tensor* r = nullptr;
 
-    Tensor::logical_or(t1, t2, r); //source
+    Tensor::logical_or(t1, t2, r); // static
     // [
     // [1.000000 1.000000 1.000000 1.000000 1.000000]
     // [1.000000 1.000000 1.000000 1.000000 1.000000]
@@ -287,8 +286,8 @@ Logical_or
     // ]
         
 
-Logical_not
-^^^^^^^^^^^^^^
+Logical NOT: "~A"
+^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::logical_not
 
@@ -305,7 +304,7 @@ Logical_not
 
     Tensor* r = nullptr;
 
-    Tensor::logical_not(t1, r); //source
+    Tensor::logical_not(t1, r); // static
     // [
     // [0.000000 0.000000 0.000000 0.000000 0.000000]
     // [0.000000 0.000000 0.000000 0.000000 0.000000]
@@ -315,8 +314,8 @@ Logical_not
     // ]
         
 
-Logical_xor
-^^^^^^^^^^^^^^
+Logical XOR (Exclusive OR): "A ^ B"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::logical_xor
 
@@ -343,7 +342,7 @@ Logical_xor
 
     Tensor* r = nullptr;
 
-    Tensor::logical_xor(t1, t2, r); //source
+    Tensor::logical_xor(t1, t2, r); // static
     // [
     // [1.000000 1.000000 1.000000 1.000000 1.000000]
     // [1.000000 1.000000 1.000000 1.000000 1.000000]
@@ -359,16 +358,16 @@ Comparison
 
 Unary Operations
 ^^^^^^^^^^^^^^^^^^^^
-Greater
-^^^^^^^^^^^^^^
+
+Greater than: "A > B"
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::greater(float v)
 
  
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -388,11 +387,11 @@ Greater
 
     // Other Ways
     Tensor* t2 = t1->greater(3.0f); // returns new tensor
-    Tensor::greater(t1, t2, 3.0f); //source
+    Tensor::greater(t1, t2, 3.0f); // static
 
 
-Greater_equal
-^^^^^^^^^^^^^^
+Greater equal: "A >= B"
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::greater_equal(float v)
 
@@ -400,8 +399,7 @@ Greater_equal
 .. code-block:: c++
 
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -421,20 +419,19 @@ Greater_equal
 
     // Other Ways
     Tensor* t2 = t1->greater_equal(3.0f); // returns new tensor
-    Tensor::greater_equal(t1, t2, 3.0f); //source
+    Tensor::greater_equal(t1, t2, 3.0f); // static
 
 
 
 
-Less
-^^^^^^^^^^^^^^
+Less than: "A < B"
+^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::less(float v)
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -454,53 +451,41 @@ Less
 
     // Other Ways
     Tensor* t2 = t1->less(3.0f); // returns new tensor
-    Tensor::less_(t1, t2, 3.0f); //source
+    Tensor::less_(t1, t2, 3.0f); // static
 
 
 
-Less_equal
-^^^^^^^^^^^^^^
+Less equal: "A <= B"
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::less_equal(float v)
 
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
-    t1->reshape_({5,5});
-    // [
-    // [1.00 2.00 3.00 4.00 5.00]
-    // [6.00 7.00 8.00 9.00 10.00]
-    // [11.00 12.00 13.00 14.00 15.00]
-    // [16.00 17.00 18.00 19.00 20.00]
-    // [21.00 22.00 23.00 24.00 25.00]
-    // ]
+    Tensor* t1 = Tensor::range(-2, 3); t1->reshape_({2, 3});
+    t1->print(2);  // Temp.
 
-    t1->less_equal_(3.0f); // In-place
-    // [
-    // [1.00 1.00 1.00 0.00 0.00]
-    // [0.00 0.00 0.00 0.00 0.00]
-    // [0.00 0.00 0.00 0.00 0.00]
-    // [0.00 0.00 0.00 0.00 0.00]
-    // [0.00 0.00 0.00 0.00 0.00]
-    // ]
+    Tensor* t2 = Tensor::randn({2, 3});
+    t2->print(2);  // Temp.
+
+    Tensor* t3 = t1->less_equal(t2); // returns new tensor
+    t3->print(2);  // Temp.
 
     // Other Ways
-    Tensor* t2 = t1->less_equal(3.0f); // returns new tensor
-    Tensor::less_equal(t1, t2, 3.0f); //source
+    Tensor::less_equal(t1, t2, t3); // static
     
 
 
-Equal
-^^^^^^^^^^^^^^
+Equal: "A == B"
+^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::equal(float v)
 
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -520,14 +505,14 @@ Equal
 
     // Other Ways
     Tensor* t2 = t1->equal(3.0f); // returns new tensor
-    Tensor::equal(t1, t2, 3.0f); //source
+    Tensor::equal(t1, t2, 3.0f); // static
 
 
     
         
 
-Not_equal
-^^^^^^^^^^^^^^
+Not Equal: "A != B"
+^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::not_equal(float v)
 
@@ -536,8 +521,7 @@ Not_equal
 .. code-block:: c++
 
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -557,7 +541,7 @@ Not_equal
 
     // Other Ways
     Tensor* t2 = t1->not_equal(3.0f); // returns new tensor
-    Tensor::not_equal(t1, t2, 3.0f); //source
+    Tensor::not_equal(t1, t2, 3.0f); // static
 
 
 
@@ -565,15 +549,14 @@ Binary Operations
 ^^^^^^^^^^^^^^^^^^^^^
 
 
-Allclose
+All Close?
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::allclose
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -583,8 +566,7 @@ Allclose
     // ]
 
 
-    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
-    t2->reshape_({5,5});
+    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -597,15 +579,14 @@ Allclose
     // 1.00
     
 
-Isclose
+Is Close?
 ^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::isclose
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -615,8 +596,7 @@ Isclose
     // ]
 
 
-    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
-    t2->reshape_({5,5});
+    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -639,16 +619,15 @@ Isclose
 
         
 
-Greater
-^^^^^^^^^^^^^^
+Greater Than: "A > B"
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::greater(Tensor *A)
 
  
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -658,8 +637,7 @@ Greater
     // ]
 
 
-    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
-    t2->reshape_({5,5});
+    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -678,11 +656,11 @@ Greater
     // ]
 
     // Other Ways
-    Tensor::greaterl(t1, t2, t3); //source
+    Tensor::greaterl(t1, t2, t3); // static
 
 
-Greater_equal
-^^^^^^^^^^^^^^
+Greater Equal: "A >= B"
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::greater_equal(Tensor *A)
 
@@ -690,8 +668,7 @@ Greater_equal
 .. code-block:: c++
 
 
-    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -701,8 +678,7 @@ Greater_equal
     // ]
 
 
-    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
-    t2->reshape_({5,5});
+    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -721,21 +697,20 @@ Greater_equal
     // ]
 
     // Other Ways
-    Tensor::greater_equal(t1, t2, t3); //source
+    Tensor::greater_equal(t1, t2, t3); // static
 
 
 
 
-Less
-^^^^^^^^^^^^^^
+Less Than: "A < B"
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::less(Tensor *A)
 
 .. code-block:: c++
 
     
-    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -745,8 +720,7 @@ Less
     // ]
 
 
-    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
-    t2->reshape_({5,5});
+    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -765,20 +739,19 @@ Less
     // ]
 
     // Other Ways
-    Tensor::less(t1, t2, t3); //source
+    Tensor::less(t1, t2, t3); // static
 
 
 
-Less_equal
-^^^^^^^^^^^^^^
+Less Equal: "A <= B"
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::less_equal(Tensor *A)
 
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -788,8 +761,7 @@ Less_equal
     // ]
 
 
-    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
-    t2->reshape_({5,5});
+    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -808,19 +780,18 @@ Less_equal
     // ]
 
     // Other Ways
-    Tensor::less_equal(t1, t2, t3); //source
+    Tensor::less_equal(t1, t2, t3); // static
 
 
-Equal
-^^^^^^^^^^^^^^
+Equal: "A == B"
+^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::equal(Tensor *A)
 
 
 .. code-block:: c++
     
-    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -830,8 +801,7 @@ Equal
     // ]
 
 
-    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
-    t2->reshape_({5,5});
+    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -850,14 +820,14 @@ Equal
     // ]
 
     // Other Ways
-    Tensor::equal(t1, t2, t3); //source
+    Tensor::equal(t1, t2, t3); // static
 
 
     
         
 
-Not_equal
-^^^^^^^^^^^^^^
+Not Equal: "A != B"
+^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: Tensor::not_equal(Tensor *A)
 
@@ -865,8 +835,7 @@ Not_equal
 .. code-block:: c++
 
 
-    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
-    t1->reshape_({5,5});
+    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -876,8 +845,7 @@ Not_equal
     // ]
 
 
-    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
-    t2->reshape_({5,5});
+    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
     // [
     // [1.000000 2.000000 3.000000 4.000000 5.000000]
     // [6.000000 7.000000 8.000000 9.000000 10.000000]
@@ -896,5 +864,5 @@ Not_equal
     // ]
 
     // Other Ways
-    Tensor::not_equal(t1, t2, t3); //source
+    Tensor::not_equal(t1, t2, t3); // static
 
