@@ -23,6 +23,14 @@ Embedding
 
 .. doxygenfunction:: Embedding
 
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+   layer l =  Input({1});
+   l = Embedding(l, 2000, 1, 32);
+
 
 
 Reshape

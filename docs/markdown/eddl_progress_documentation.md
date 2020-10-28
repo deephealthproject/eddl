@@ -100,7 +100,7 @@
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | Dense   |     ✔️       |      ✔️       |          |
-| Embedding |   ✔️       |     ❌️       |          |
+| Embedding |   ✔️       |      ✔️       |          |
 | Reshape |     ✔️       |      ✔️       |          |
 | Flatten |     ✔️       |      ✔️       |          |
 | Input   |     ✔️       |      ✔️       |          |
@@ -198,7 +198,7 @@
 | MaxPooling |    ✔️     |      ✔️       |          |
 | GlobalMaxPooling | ✔️  |      ✔️       |          |
 | AveragePooling |   ✔️  |      ❌️      |          |
-| GlobalAveragePooling | ✔️ |   ❌️      |          |
+| GlobalAveragePooling | ✔️ |   ✔️       |          |
 
 
 ## Normalization

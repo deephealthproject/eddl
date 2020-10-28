@@ -69,4 +69,14 @@ GlobalAveragePooling
 
 .. doxygenfunction:: GlobalAveragePool
 
+.. code-block:: c++
+    :linenos:
+
+    ...
+    l = ResBlock(l, 512,2,1);
+    l = ResBlock(l, 512,2,0);
+
+    l = GlobalAveragePool(l);
+    ...
+
 
