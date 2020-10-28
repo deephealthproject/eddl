@@ -9,14 +9,13 @@ Add
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   layer in1=Input({3,584,584});
-   layer in2=Input({3,584,584});
+   layer in1 = Input({3,584,584});
+   layer in2 = Input({3,584,584});
 
-   layer l=Add({in1,in2});
-   ...
+   layer l = Add({in1,in2});
+   
+
 
 
 Average
@@ -27,14 +26,12 @@ Average
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   layer in1=Input({3,584,584});
-   layer in2=Input({3,584,584});
+   layer in1 = Input({3,584,584});
+   layer in2 = Input({3,584,584});
 
-   layer l=Average({in1,in2});
-   ...
+   layer l = Average({in1,in2});
+   
 
 
 Concat
@@ -45,14 +42,12 @@ Concat
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   layer in1=Input({3,584,584});
-   layer in2=Input({1,584,584});
+   layer in1 = Input({3,584,584});
+   layer in2 = Input({1,584,584});
 
-   layer l=Concat({in1,in2});
-   ...
+   layer l = Concat({in1,in2});
+   
 
 
 MatMul
@@ -65,14 +60,12 @@ It takes as input a list of layers, all of the same shape, and returns a single 
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   layer in1=Input({3,584,584});
-   layer in2=Input({3,584,584});
+   layer in1 = Input({3,584,584});
+   layer in2 = Input({3,584,584});
 
-   layer l=MatMul({in1,in2});
-   ...
+   layer l = MatMul({in1,in2});
+   
 
 
 Maximum
@@ -83,14 +76,12 @@ Maximum
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   layer in1=Input({3,584,584});
-   layer in2=Input({3,584,584});
+   layer in1 = Input({3,584,584});
+   layer in2 = Input({3,584,584});
 
-   layer l=Maximum({in1,in2});
-   ...
+   layer l = Maximum({in1,in2});
+   
 
 
 Minimum
@@ -101,14 +92,12 @@ Minimum
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   layer in1=Input({3,584,584});
-   layer in2=Input({3,584,584});
+   layer in1 = Input({3,584,584});
+   layer in2 = Input({3,584,584});
 
-   layer l=Minimum({in1,in2});
-   ...
+   layer l = Minimum({in1,in2});
+   
 
 
 Subtract
@@ -119,12 +108,10 @@ Subtract
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   layer in1=Input({3,584,584});
-   layer in2=Input({3,584,584});
+   layer in1 = Input({3,584,584});
+   layer in2 = Input({3,584,584});
 
-   layer l=Subtract({in1,in2});
-   ...
+   layer l = Subtract({in1,in2});
+   
 

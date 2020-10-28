@@ -11,7 +11,6 @@ Generates a gaussian noise output (typically used for GANs)
 Example:
 
 .. code-block:: c++
-   :linenos:
 
    layer gin = GaussGenerator(0.0, 1, {3, 32, 32});
 

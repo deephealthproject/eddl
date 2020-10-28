@@ -11,9 +11,7 @@ The Softmax activation function is: ``softmax(x) = exp(x) / reduce_sum(exp(x))``
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
    l = Softmax(l);
 
 
@@ -27,9 +25,7 @@ The Sigmoid activation function is: ``sigmoid(x) = 1 / (1 + exp(-x))``
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
    l = Sigmoid(l);
 
 
@@ -47,9 +43,7 @@ The ReLu activation function is:
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
    l = ReLu(l);
 
 
@@ -69,10 +63,8 @@ The Thresholded ReLu activation function is:
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
-    l = ThresholdedReLu(l, 1.0);
+   l = ThresholdedReLu(l, 1.0);
 
 
 
@@ -91,10 +83,8 @@ The Leaky ReLu activation function is:
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
-    l = LeakyReLu(l, 0.01);
+   l = LeakyReLu(l, 0.01);
 
 
 
@@ -113,10 +103,8 @@ The ELu activation function is:
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
-    l = Elu(l, 1.0);
+   l = Elu(l, 1.0);
 
 SeLu
 --------
@@ -134,10 +122,8 @@ where ``alpha = 1.6732632423543772848170429916717`` and ``scale = 1.050700987355
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
-    l = Selu(l);
+   l = Selu(l);
 
 
 Exponential
@@ -150,10 +136,8 @@ The Exponential activation function is: ``exp(x)``
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
-    l = Exponential(l);
+   l = Exponential(l);
 
 
 
@@ -168,10 +152,8 @@ The Softplus activation function is: ``softplus(x) = log(1 + exp(x))``
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
-    l = Softplus(l);
+   l = Softplus(l);
 
 
 
@@ -187,10 +169,8 @@ The Softsign activation function is: ``softsign(x) = x / (1 + abs(x))``
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
-    l = Softsign(l);
+   l = Softsign(l);
 
 
 
@@ -206,10 +186,8 @@ The Linear activation function is: ``linear(x) = alpha * x``
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
-    l = Linear(l, 1.0);
+   l = Linear(l, 1.0);
 
 
 
@@ -223,7 +201,5 @@ The Tanh activation function is: ``tanh(x) = sinh(x)/cosh(x) = ((exp(x) - exp(-x
 Example:
 
 .. code-block:: c++
-   :linenos:
    
-   ...
-    l = Tanh(l);
+   l = Tanh(l);
