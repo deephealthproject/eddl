@@ -277,15 +277,17 @@ void cpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable){
             }
         }
 
-        // Denominator (+max_value)
+        // Numerator
         float denominator = 0.0f;
         for(int j=start; j<end; j++){
-            denominator += ::expf(A->ptr[j]);
+            float value = ::expf(A->ptr[j] - max_value);
+            B->ptr[j] = value;
+            denominator += value;
         }
 
         // Softmax
         for(int j=start; j<end; j++){
-            B->ptr[j] = ::expf(A->ptr[j] - max_value)/denominator;
+            B->ptr[j] /= denominator;
         }
     }
 }

@@ -631,7 +631,7 @@ namespace tensorNN {
 
         B->tsem->lock();
         if (A->isCPU()) {
-            cpu_full_softmax(A, B, 1, false);
+            cpu_full_softmax(A, B, 1, true);
         }
 #ifdef cGPU
         else if (A->isGPU())
