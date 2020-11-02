@@ -59,4 +59,6 @@ string printVector(vector<T> myvector){
 enum WrappingMode {Constant=0, Reflect=1, Nearest=2, Mirror=3, Wrap=4, Original=5};
 WrappingMode getWrappingMode(string mode);
 
+void __show_profile();
+
 #endif //EDDL_UTILS_H

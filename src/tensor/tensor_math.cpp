@@ -26,69 +26,6 @@
 
 using namespace std;
 
-// profiling declarations
-PROFILING_ENABLE(maximum);
-PROFILING_ENABLE(minimum);
-PROFILING_ENABLE(max);
-PROFILING_ENABLE(argmax);
-PROFILING_ENABLE(argmax_d);
-PROFILING_ENABLE(min);
-PROFILING_ENABLE(argmin);
-PROFILING_ENABLE(sum);
-PROFILING_ENABLE(sum_abs);
-PROFILING_ENABLE(prod);
-PROFILING_ENABLE(mean);
-PROFILING_ENABLE(median);
-PROFILING_ENABLE(std);
-PROFILING_ENABLE(var);
-PROFILING_ENABLE(mode);
-PROFILING_ENABLE(abs);
-PROFILING_ENABLE(acos);
-PROFILING_ENABLE(add);
-PROFILING_ENABLE(asin);
-PROFILING_ENABLE(atan);
-PROFILING_ENABLE(cell);
-PROFILING_ENABLE(clamp);
-PROFILING_ENABLE(clampmax);
-PROFILING_ENABLE(clampmin);
-PROFILING_ENABLE(cos);
-PROFILING_ENABLE(cosh);
-PROFILING_ENABLE(div);
-PROFILING_ENABLE(exp);
-PROFILING_ENABLE(floor);
-PROFILING_ENABLE(inv);
-PROFILING_ENABLE(log);
-PROFILING_ENABLE(log2);
-PROFILING_ENABLE(log10);
-PROFILING_ENABLE(logn);
-PROFILING_ENABLE(mod);
-PROFILING_ENABLE(mult);
-PROFILING_ENABLE(neg);
-PROFILING_ENABLE(normalize);
-PROFILING_ENABLE(pow);
-PROFILING_ENABLE(powb);
-PROFILING_ENABLE(reciprocal);
-PROFILING_ENABLE(remainder);
-PROFILING_ENABLE(round);
-PROFILING_ENABLE(rsqrt);
-PROFILING_ENABLE(sigmoid);
-PROFILING_ENABLE(sign);
-PROFILING_ENABLE(sin);
-PROFILING_ENABLE(sinh);
-PROFILING_ENABLE(sqr);
-PROFILING_ENABLE(sqrt);
-PROFILING_ENABLE(sub);
-PROFILING_ENABLE(tan);
-PROFILING_ENABLE(tanh);
-PROFILING_ENABLE(trunc);
-PROFILING_ENABLE(inc);
-PROFILING_ENABLE(eldiv);
-PROFILING_ENABLE(mult2D);
-PROFILING_ENABLE(el_mult);
-PROFILING_ENABLE(sum2D_rowwise);
-PROFILING_ENABLE(reduce_sum2D);
-PROFILING_ENABLE(sum2D_colwise);
-
 // Math operations (Tensor-Tensor, Tensor-float) ************************
 
 Tensor* Tensor::maximum(float v){
@@ -105,7 +42,7 @@ Tensor* Tensor::maximum(Tensor* A, float v){
 
 void Tensor::maximum(Tensor* A, Tensor* B, float v){
 
-    PROFILING_HEADER(maximum);
+    PROFILING_HEADER_EXTERN(maximum);
 
     if (A->isCPU() && B->isCPU()){
         cpu_maximum(A, B, v);
@@ -133,7 +70,7 @@ Tensor* Tensor::maximum(Tensor* A, Tensor* B){
 
 void Tensor::maximum(Tensor* A, Tensor* B, Tensor* C){
 
-    PROFILING_HEADER(maximum);
+    PROFILING_HEADER_EXTERN(maximum);
 
     if (A->isCPU() && B->isCPU() && C->isCPU()){
         cpu_maximum(A, B, C);
@@ -167,7 +104,7 @@ Tensor* Tensor::minimum(Tensor* A, float v){
 
 void Tensor::minimum(Tensor* A, Tensor* B, float v){
 
-    PROFILING_HEADER(minimum);
+    PROFILING_HEADER_EXTERN(minimum);
 
     if (A->isCPU() && B->isCPU()){
         cpu_minimum(A, B, v);
@@ -195,7 +132,7 @@ Tensor* Tensor::minimum(Tensor* A, Tensor* B){
 
 void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
 
-    PROFILING_HEADER(minimum);
+    PROFILING_HEADER_EXTERN(minimum);
 
     if (A->isCPU() && B->isCPU() && C->isCPU()){
         cpu_minimum(A, B, C);
@@ -226,7 +163,7 @@ float Tensor::max(){
 
 float Tensor::max(Tensor* A){
 
-    PROFILING_HEADER(max);
+    PROFILING_HEADER_EXTERN(max);
 
     if (A->isCPU()) {
         return cpu_max(A);
@@ -264,7 +201,7 @@ Tensor* Tensor::max(vector<int> axis, bool keepdims){
 
 void Tensor::max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 
-    PROFILING_HEADER(max);
+    PROFILING_HEADER_EXTERN(max);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_max(A, B, rd);
@@ -293,7 +230,7 @@ int Tensor::argmax(){
 
 int Tensor::argmax(Tensor* A){
 
-    PROFILING_HEADER(argmax);
+    PROFILING_HEADER_EXTERN(argmax);
 
     if (A->isCPU()) {
         PROFILING_FOOTER(argmax);
@@ -334,7 +271,7 @@ Tensor* Tensor::argmax(vector<int> axis, bool keepdims){
 
 void Tensor::argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 
-    PROFILING_HEADER(argmax);
+    PROFILING_HEADER_EXTERN(argmax);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_argmax(A, B, rd);
@@ -356,7 +293,7 @@ void Tensor::argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 
 void Tensor::argmax_d(Tensor *D, Tensor *O, Tensor *PD){
 
-    PROFILING_HEADER(argmax_d);
+    PROFILING_HEADER_EXTERN(argmax_d);
 
     if (D->isCPU() && O->isCPU() && PD->isCPU()) {
         cpu_argmax_d(D, O, PD);
@@ -383,7 +320,7 @@ float Tensor::min(){
 
 float Tensor::min(Tensor* A){
 
-    PROFILING_HEADER(min);
+    PROFILING_HEADER_EXTERN(min);
 
     if (A->isCPU()) {
         PROFILING_FOOTER(min);
@@ -424,7 +361,7 @@ Tensor* Tensor::min(vector<int> axis, bool keepdims){
 
 void Tensor::min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 
-    PROFILING_HEADER(min);
+    PROFILING_HEADER_EXTERN(min);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_min(A, B, rd);
@@ -452,7 +389,7 @@ int Tensor::argmin(){
 
 int Tensor::argmin(Tensor* A){
 
-    PROFILING_HEADER(argmin);
+    PROFILING_HEADER_EXTERN(argmin);
 
     if (A->isCPU()) {
         PROFILING_FOOTER(argmin);
@@ -493,7 +430,7 @@ Tensor* Tensor::argmin(vector<int> axis, bool keepdims){
 
 void Tensor::argmin(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 
-    PROFILING_HEADER(argmin);
+    PROFILING_HEADER_EXTERN(argmin);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_argmin(A, B, rd);
@@ -522,7 +459,7 @@ float Tensor::sum(){
 
 float Tensor::sum(Tensor* A){
 
-    PROFILING_HEADER(sum);
+    PROFILING_HEADER_EXTERN(sum);
 
     if (A->isCPU()) {
         PROFILING_FOOTER(sum);
@@ -565,7 +502,7 @@ Tensor* Tensor::sum(vector<int> axis, bool keepdims){
 
 void Tensor::sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 
-    PROFILING_HEADER(sum);
+    PROFILING_HEADER_EXTERN(sum);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_sum(A, B, rd);
@@ -592,7 +529,7 @@ float Tensor::sum_abs(){
 
 float Tensor::sum_abs(Tensor* A){
 
-    PROFILING_HEADER(sum_abs);
+    PROFILING_HEADER_EXTERN(sum_abs);
 
     if (A->isCPU()) {
 
@@ -635,7 +572,7 @@ Tensor* Tensor::sum_abs(vector<int> axis, bool keepdims){
 
 void Tensor::sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 
-    PROFILING_HEADER(sum_abs);
+    PROFILING_HEADER_EXTERN(sum_abs);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_sum_abs(A, B, rd);
@@ -662,7 +599,7 @@ float Tensor::prod(){
 
 float Tensor::prod(Tensor* A){  // AKA factorial
 
-    PROFILING_HEADER(prod);
+    PROFILING_HEADER_EXTERN(prod);
 
     if (A->isCPU()) {
         PROFILING_FOOTER(prod);
@@ -704,7 +641,7 @@ Tensor* Tensor::prod(vector<int> axis, bool keepdims){
 
 void Tensor::prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 
-    PROFILING_HEADER(prod);
+    PROFILING_HEADER_EXTERN(prod);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_prod(A, B, rd);
@@ -749,7 +686,7 @@ Tensor* Tensor::mean(vector<int> axis, bool keepdims){
 
 void Tensor::mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 
-    PROFILING_HEADER(mean);
+    PROFILING_HEADER_EXTERN(mean);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_mean(A, B, rd);
@@ -778,7 +715,7 @@ float Tensor::median(){
 
 float Tensor::median(Tensor* A){
 
-    PROFILING_HEADER(median);
+    PROFILING_HEADER_EXTERN(median);
 
     float res = 0.0f;
 
@@ -821,7 +758,7 @@ Tensor* Tensor::median(vector<int> axis, bool keepdims){
 
 void Tensor::median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 
-    PROFILING_HEADER(median);
+    PROFILING_HEADER_EXTERN(median);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_median(A, B, rd);
@@ -848,7 +785,7 @@ float Tensor::std(bool unbiased){
 
 float Tensor::std(Tensor* A, bool unbiased){
 
-    PROFILING_HEADER(std);
+    PROFILING_HEADER_EXTERN(std);
 
     if (A->isCPU()) {
         PROFILING_FOOTER(std);
@@ -890,7 +827,7 @@ Tensor* Tensor::std(vector<int> axis, bool keepdims, bool unbiased){
 
 void Tensor::std(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
 
-    PROFILING_HEADER(std);
+    PROFILING_HEADER_EXTERN(std);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_std(A, B, rd, unbiased);
@@ -918,7 +855,7 @@ float Tensor::var(bool unbiased){
 
 float Tensor::var(Tensor* A, bool unbiased){
 
-    PROFILING_HEADER(var);
+    PROFILING_HEADER_EXTERN(var);
 
     if (A->isCPU()) {
 
@@ -964,7 +901,7 @@ Tensor* Tensor::var(vector<int> axis, bool keepdims, bool unbiased){
 
 void Tensor::var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
 
-    PROFILING_HEADER(var);
+    PROFILING_HEADER_EXTERN(var);
 
     if (A->isCPU() && B->isCPU()) {
         cpu_var(A, B, rd, unbiased);
@@ -993,23 +930,23 @@ int Tensor::mode(){
 
 int Tensor::mode(Tensor* A){
 
-    PROFILING_HEADER(mode);
+    PROFILING_HEADER_EXTERN(mode);
 
     if (A->isCPU()) {
-	PROFILING_FOOTER(mode);
+	    PROFILING_FOOTER(mode);
         return cpu_mode(A);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
-	PROFILING_FOOTER(mode);
+	    PROFILING_FOOTER(mode);
         return gpu_mode(A);
     }
 #endif
 #ifdef cFPGA
     else if (A->isFPGA())
     {
-	PROFILING_FOOTER(mode);
+	    PROFILING_FOOTER(mode);
         return fpga_mode(A);
     }
 #endif
@@ -1035,6 +972,9 @@ Tensor* Tensor::mode(vector<int> axis, bool keepdims){
 }
 
 void Tensor::mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+
+    PROFILING_HEADER_EXTERN(mode);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_mode(A, B, rd);
     }
@@ -1050,6 +990,8 @@ void Tensor::mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         fpga_mode(A, B, rd);
     }
 #endif
+
+    PROFILING_FOOTER(mode);
 }
 
 
@@ -1064,6 +1006,9 @@ Tensor* Tensor::abs(){
 }
 
 void Tensor::abs(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(abs);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_abs(A, B);
     }
@@ -1079,6 +1024,8 @@ void Tensor::abs(Tensor *A, Tensor *B){
         fpga_abs(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(abs);
 }
 
 
@@ -1093,6 +1040,9 @@ Tensor* Tensor::acos(){
 }
 
 void Tensor::acos(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(acos);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_acos(A, B);
     }
@@ -1108,6 +1058,8 @@ void Tensor::acos(Tensor *A, Tensor *B){
         fpga_acos(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(acos);
 }
 
 
@@ -1132,6 +1084,8 @@ Tensor* Tensor::add(Tensor* A){
 }
 
 void Tensor::add(Tensor *A, Tensor *B, float v){
+    PROFILING_HEADER_EXTERN(add);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_add(A, B, v);
     }
@@ -1147,6 +1101,8 @@ void Tensor::add(Tensor *A, Tensor *B, float v){
         fpga_add(A, B, v);
       }
 #endif
+
+    PROFILING_FOOTER(add);
 }
 
 
@@ -1162,6 +1118,9 @@ Tensor* Tensor::asin(){
 }
 
 void Tensor::asin(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(asin);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_asin(A, B);
     }
@@ -1177,6 +1136,8 @@ void Tensor::asin(Tensor *A, Tensor *B){
         fpga_asin(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(asin); 
 }
 
 
@@ -1193,6 +1154,9 @@ Tensor* Tensor::atan(){
 
 
 void Tensor::atan(Tensor *A, Tensor *B){
+    
+    PROFILING_HEADER_EXTERN(atan);    
+
     if (A->isCPU() && B->isCPU()) {
         cpu_atan(A, B);
     }
@@ -1208,6 +1172,8 @@ void Tensor::atan(Tensor *A, Tensor *B){
         fpga_atan(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(atan);
 }
 
 
@@ -1224,6 +1190,9 @@ Tensor* Tensor::ceil(){
 
 
 void Tensor::ceil(Tensor *A, Tensor *B){
+    
+    PROFILING_HEADER_EXTERN(ceil);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_ceil(A, B);
     }
@@ -1239,6 +1208,8 @@ void Tensor::ceil(Tensor *A, Tensor *B){
         fpga_ceil(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(ceil);
 }
 
 
@@ -1255,6 +1226,9 @@ Tensor* Tensor::clamp(float min, float max){
 
 
 void Tensor::clamp(Tensor *A, Tensor *B, float min, float max){
+
+    PROFILING_HEADER_EXTERN(clamp);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_clamp(A, B, min, max);
     }
@@ -1270,6 +1244,8 @@ void Tensor::clamp(Tensor *A, Tensor *B, float min, float max){
         fpga_clamp(A, B, min, max);
       }
 #endif
+
+    PROFILING_FOOTER(clamp);
 }
 
 
@@ -1319,6 +1295,9 @@ Tensor* Tensor::cos(){
 
 
 void Tensor::cos(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(cos);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_cos(A, B);
     }
@@ -1334,6 +1313,8 @@ void Tensor::cos(Tensor *A, Tensor *B){
         fpga_cos(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(cos);
 }
 
 
@@ -1349,6 +1330,9 @@ Tensor* Tensor::cosh(){
 }
 
 void Tensor::cosh(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(cosh);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_cosh(A, B);
     }
@@ -1364,6 +1348,8 @@ void Tensor::cosh(Tensor *A, Tensor *B){
         fpga_cosh(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(cosh);
 }
 
 
@@ -1409,6 +1395,9 @@ Tensor* Tensor::exp(){
 
 
 void Tensor::exp(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(exp);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_exp(A, B);
     }
@@ -1424,6 +1413,8 @@ void Tensor::exp(Tensor *A, Tensor *B){
         fpga_exp(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(exp);
 }
 
 
@@ -1440,6 +1431,9 @@ Tensor* Tensor::floor(){
 
 
 void Tensor::floor(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(floor);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_floor(A, B);
     }
@@ -1455,6 +1449,8 @@ void Tensor::floor(Tensor *A, Tensor *B){
         fpga_floor(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(floor);
 }
 
 
@@ -1471,6 +1467,9 @@ Tensor* Tensor::inv(float v){
 
 
 void Tensor::inv(Tensor *A, Tensor *B, float v){
+
+    PROFILING_HEADER_EXTERN(inv);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_inv(A, B, v);
     }
@@ -1486,6 +1485,8 @@ void Tensor::inv(Tensor *A, Tensor *B, float v){
         fpga_inv(A, B, v);
       }
 #endif
+
+    PROFILING_FOOTER(inv);   
 }
 
 
@@ -1502,6 +1503,9 @@ Tensor* Tensor::log(){
 
 
 void Tensor::log(Tensor *A, Tensor *B){
+    
+    PROFILING_HEADER_EXTERN(log);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_log(A, B);
     }
@@ -1517,6 +1521,8 @@ void Tensor::log(Tensor *A, Tensor *B){
         fpga_log(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(log);
 }
 
 
@@ -1533,6 +1539,9 @@ Tensor* Tensor::log2(){
 
 
 void Tensor::log2(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(log2);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_log2(A, B);
     }
@@ -1548,6 +1557,8 @@ void Tensor::log2(Tensor *A, Tensor *B){
         fpga_log2(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(log2);
 }
 
 
@@ -1564,6 +1575,9 @@ Tensor* Tensor::log10(){
 
 
 void Tensor::log10(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(log10);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_log10(A, B);
     }
@@ -1579,6 +1593,8 @@ void Tensor::log10(Tensor *A, Tensor *B){
         fpga_log10(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(log10);
 }
 
 
@@ -1595,6 +1611,9 @@ Tensor* Tensor::logn(float n){
 
 
 void Tensor::logn(Tensor *A, Tensor *B, float n){
+    
+    PROFILING_HEADER_EXTERN(logn);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_logn(A, B, n);
     }
@@ -1610,6 +1629,8 @@ void Tensor::logn(Tensor *A, Tensor *B, float n){
         fpga_logn(A, B, n);
       }
 #endif
+
+    PROFILING_FOOTER(logn);
 }
 
 
@@ -1626,6 +1647,9 @@ Tensor* Tensor::mod(float v){
 
 
 void Tensor::mod(Tensor *A, Tensor *B, float v){
+
+    PROFILING_HEADER_EXTERN(mod);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_mod(A, B, v);
     }
@@ -1641,6 +1665,8 @@ void Tensor::mod(Tensor *A, Tensor *B, float v){
         fpga_mod(A, B, v);
       }
 #endif
+
+    PROFILING_FOOTER(mod);
 }
 
 
@@ -1669,6 +1695,9 @@ Tensor* Tensor::mult(Tensor* A){
 
 
 void Tensor::mult(Tensor *A, Tensor *B, float v){
+
+    PROFILING_HEADER_EXTERN(mult);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_mult(A, B, v);
     }
@@ -1684,6 +1713,8 @@ void Tensor::mult(Tensor *A, Tensor *B, float v){
         fpga_mult(A, B, v);
       }
 #endif
+
+    PROFILING_FOOTER(mult);
 }
 
 
@@ -1717,6 +1748,9 @@ Tensor* Tensor::normalize(float min, float max){
 
 
 void Tensor::normalize(Tensor *A, Tensor *B, float min, float max){
+
+    PROFILING_HEADER_EXTERN(normalize);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_normalize(A, B, min, max);
     }
@@ -1732,6 +1766,8 @@ void Tensor::normalize(Tensor *A, Tensor *B, float min, float max){
         fpga_normalize(A, B, min, max);
       }
 #endif
+
+    PROFILING_FOOTER(normalize);
 }
 
 
@@ -1748,6 +1784,9 @@ Tensor* Tensor::pow(float exp){
 
 
 void Tensor::pow(Tensor *A, Tensor *B, float exp){
+    
+    PROFILING_HEADER_EXTERN(pow);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_pow(A, B, exp);
     }
@@ -1763,6 +1802,8 @@ void Tensor::pow(Tensor *A, Tensor *B, float exp){
         fpga_pow(A, B, exp);
       }
 #endif
+
+    PROFILING_FOOTER(pow);
 }
 
 
@@ -1779,6 +1820,9 @@ Tensor* Tensor::powb(float base){
 
 
 void Tensor::powb(Tensor *A, Tensor *B, float base){
+
+    PROFILING_HEADER_EXTERN(powb);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_powb(A, B, base);
     }
@@ -1794,6 +1838,8 @@ void Tensor::powb(Tensor *A, Tensor *B, float base){
         fpga_powb(A, B, base);
       }
 #endif
+
+    PROFILING_FOOTER(powb);
 }
 
 
@@ -1827,6 +1873,9 @@ Tensor* Tensor::remainder(float v){
 
 
 void Tensor::remainder(Tensor *A, Tensor *B, float v){
+
+    PROFILING_HEADER_EXTERN(remainder);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_remainder(A, B, v);
     }
@@ -1842,6 +1891,9 @@ void Tensor::remainder(Tensor *A, Tensor *B, float v){
         fpga_remainder(A, B, v);
       }
 #endif
+
+
+    PROFILING_FOOTER(remainder);
 }
 
 
@@ -1858,6 +1910,9 @@ Tensor* Tensor::round(){
 
 
 void Tensor::round(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(round);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_round(A, B);
     }
@@ -1873,6 +1928,8 @@ void Tensor::round(Tensor *A, Tensor *B){
         fpga_round(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(round);
 }
 
 
@@ -1889,6 +1946,9 @@ Tensor* Tensor::rsqrt(){
 
 
 void Tensor::rsqrt(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(rsqrt);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_rsqrt(A, B);
     }
@@ -1904,6 +1964,8 @@ void Tensor::rsqrt(Tensor *A, Tensor *B){
         fpga_rsqrt(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(rsqrt);
 }
 
 
@@ -1920,6 +1982,9 @@ Tensor* Tensor::sigmoid(){
 
 
 void Tensor::sigmoid(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(sigmoid);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_sigmoid(A, B);
     }
@@ -1935,6 +2000,8 @@ void Tensor::sigmoid(Tensor *A, Tensor *B){
         fpga_sigmoid(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(sigmoid);
 }
 
 
@@ -1951,6 +2018,9 @@ Tensor* Tensor::sign(float zero_sign){
 
 
 void Tensor::sign(Tensor *A, Tensor *B, float zero_sign) {
+
+    PROFILING_HEADER_EXTERN(sign);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_sign(A, B, zero_sign);
     }
@@ -1966,6 +2036,8 @@ void Tensor::sign(Tensor *A, Tensor *B, float zero_sign) {
         fpga_sign(A, B, zero_sign);
       }
 #endif
+
+    PROFILING_FOOTER(sign);
 }
 
 
@@ -1982,6 +2054,9 @@ Tensor* Tensor::sin(){
 
 
 void Tensor::sin(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(sin);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_sin(A, B);
     }
@@ -1997,6 +2072,8 @@ void Tensor::sin(Tensor *A, Tensor *B){
         fpga_sin(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(sin);
 }
 
 
@@ -2013,6 +2090,9 @@ Tensor* Tensor::sinh(){
 
 
 void Tensor::sinh(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(sinh);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_sinh(A, B);
     }
@@ -2028,6 +2108,8 @@ void Tensor::sinh(Tensor *A, Tensor *B){
         fpga_sinh(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(sinh);
 }
 
 
@@ -2044,6 +2126,9 @@ Tensor* Tensor::sqr(){
 
 
 void Tensor::sqr(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(sqr);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_sqr(A, B);
     }
@@ -2059,6 +2144,8 @@ void Tensor::sqr(Tensor *A, Tensor *B){
         fpga_sqr(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(sqr);
 }
 
 
@@ -2075,6 +2162,9 @@ Tensor* Tensor::sqrt(){
 
 
 void Tensor::sqrt(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(sqrt);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_sqrt(A, B);
     }
@@ -2090,6 +2180,8 @@ void Tensor::sqrt(Tensor *A, Tensor *B){
         fpga_sqrt(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(sqrt);
 }
 
 
@@ -2135,6 +2227,9 @@ Tensor* Tensor::tan(){
 
 
 void Tensor::tan(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(tan);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_tan(A, B);
     }
@@ -2150,6 +2245,8 @@ void Tensor::tan(Tensor *A, Tensor *B){
         fpga_tan(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(tan);
 }
 
 
@@ -2166,6 +2263,9 @@ Tensor* Tensor::tanh(){
 
 
 void Tensor::tanh(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(tanh);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_tanh(A, B);
     }
@@ -2181,6 +2281,8 @@ void Tensor::tanh(Tensor *A, Tensor *B){
         fpga_tanh(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(tanh);
 }
 
 
@@ -2197,6 +2299,9 @@ Tensor* Tensor::trunc(){
 
 
 void Tensor::trunc(Tensor *A, Tensor *B){
+
+    PROFILING_HEADER_EXTERN(trunc);
+    
     if (A->isCPU() && B->isCPU()) {
         cpu_trunc(A, B);
     }
@@ -2212,6 +2317,8 @@ void Tensor::trunc(Tensor *A, Tensor *B){
         fpga_trunc(A, B);
       }
 #endif
+
+    PROFILING_FOOTER(trunc);
 }
 
 
@@ -2405,6 +2512,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
     ///////////////////////////////////////
     int aux = 0;
 
+    PROFILING_HEADER_EXTERN(add);
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::add_");
     if ((!sameShape(A, B)) || (!sameShape(A, C))) {
@@ -2432,11 +2540,15 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 #endif
 
     C->tsem->unlock();
+
+    PROFILING_FOOTER(add);
 }
 
 
 void Tensor::inc(Tensor *A, Tensor *B) {
     // TODO: Review against add
+
+    PROFILING_HEADER_EXTERN(inc);
 
     if (!Tensor::sameShape(A, B))
         msg("Tensors with different shape", "Tensor::inc");
@@ -2467,10 +2579,9 @@ void Tensor::inc(Tensor *A, Tensor *B) {
         Tensor::add(1,n,1,B,B,0);
         delete n;
     }
+
+    PROFILING_FOOTER(inc);
 }
-
-
-
 
 void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
@@ -2481,6 +2592,8 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_div");
     if ((!sameShape(A, B)) || (!sameShape(A, C))) msg("Incompatible dims", "Tensor::el_div");
+
+    PROFILING_HEADER_EXTERN(el_div);
 
     C->tsem->lock();
     if (A->isCPU()) {
@@ -2499,6 +2612,8 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
       }
 #endif
     C->tsem->unlock();
+
+    PROFILING_FOOTER(el_div);
 }
 
 
@@ -2561,6 +2676,9 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
     //// incC 1 means C+=A.*B (increment over C)
     //// Dimensions must be compatible
     ///////////////////////////////////////
+
+    PROFILING_HEADER_EXTERN(el_mult);
+
     C->tsem->lock();
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_mult");
     if ((!sameShape(A, B)) || (!sameShape(A, C))) {
@@ -2586,6 +2704,8 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
       }
 #endif
     C->tsem->unlock();
+
+    PROFILING_FOOTER(el_mult);    
 }
 
 
@@ -2601,7 +2721,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     if ((A->ndim != 2) || (B->ndim != 1) || (C->ndim != 2)) msg("sum2D_rowwise dims");
     if ((!sameShape(A, C)) || (A->shape[1] != B->shape[0])) msg("Incompatible dims", "Tensor::sum2D_rowwise");
 
-    PROFILING_HEADER(sum2D_rowwise);
+    PROFILING_HEADER_EXTERN(sum2D_rowwise);
 
     C->tsem->lock();
     if (A->isCPU()) {
@@ -2637,6 +2757,8 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
     if ((A->ndim - 1) != B->ndim) msg("Incorrect dims", "Tensor::reduce_sum2D");
     if ((A->shape[1 - axis] != B->shape[0])) msg("Incompatible dims", "Tensor::reduce_sum2D");
 
+    PROFILING_HEADER_EXTERN(reduce_sum2D);
+
     B->tsem->lock();
     if (A->isCPU()) {
         cpu_reduce_sum2D(A, B, axis, incB);
@@ -2654,6 +2776,8 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
       }
 #endif
     B->tsem->unlock();
+
+    PROFILING_FOOTER(reduce_sum2D);    
 }
 
 void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
@@ -2667,6 +2791,8 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
         msg("Tensors in different devices", "Tensor::sum2D_colwise");
     if ((A->ndim != 2) || (B->ndim != 1) || (C->ndim != 2)) msg("sum2D_colwise dims");
     if ((!sameShape(A, C)) || (A->shape[0] != B->shape[0])) msg("Incompatible dims", "Tensor::sum2D_colwise");
+
+    PROFILING_HEADER_EXTERN(sum2D_colwise);
 
     C->tsem->lock();
     if (A->isCPU()) {
@@ -2685,4 +2811,6 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
       }
 #endif
     C->tsem->unlock();
+
+    PROFILING_FOOTER(sum2D_colwise);    
 }

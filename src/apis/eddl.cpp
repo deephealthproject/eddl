@@ -15,6 +15,7 @@
 #include <stdexcept>
 
 #include "eddl/apis/eddl.h"
+#include "eddl/utils.h"
 
 
 using namespace std;
@@ -293,6 +294,11 @@ namespace eddl {
     }
     void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices){
         net->train_batch(in, out, indices,1);
+    }
+
+    void show_profile() {
+        printf("profile:\n");
+        __show_profile();
     }
 
     void next_batch(vector<Tensor *> in,vector<Tensor *> out)

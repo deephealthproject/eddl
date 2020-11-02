@@ -31,6 +31,7 @@
 
 #include "eddl/system_info.h"
 #include "eddl/utils.h"
+#include "eddl/profiling.h"
 
 #ifdef EDDL_LINUX
 #include "sys/mman.h"
@@ -417,4 +418,138 @@ WrappingMode getWrappingMode(string mode){
     }else {  // constant
         return WrappingMode::Constant;
     }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Profiling
+
+// profiling declarations
+PROFILING_ENABLE(maximum);
+PROFILING_ENABLE(minimum);
+PROFILING_ENABLE(max);
+PROFILING_ENABLE(argmax);
+PROFILING_ENABLE(argmax_d);
+PROFILING_ENABLE(min);
+PROFILING_ENABLE(argmin);
+PROFILING_ENABLE(sum);
+PROFILING_ENABLE(sum_abs);
+PROFILING_ENABLE(prod);
+PROFILING_ENABLE(mean);
+PROFILING_ENABLE(median);
+PROFILING_ENABLE(std);
+PROFILING_ENABLE(var);
+PROFILING_ENABLE(mode);
+PROFILING_ENABLE(abs);
+PROFILING_ENABLE(acos);
+PROFILING_ENABLE(add);
+PROFILING_ENABLE(asin);
+PROFILING_ENABLE(atan);
+PROFILING_ENABLE(cell);
+PROFILING_ENABLE(clamp);
+PROFILING_ENABLE(clampmax);
+PROFILING_ENABLE(clampmin);
+PROFILING_ENABLE(cos);
+PROFILING_ENABLE(cosh);
+PROFILING_ENABLE(div);
+PROFILING_ENABLE(exp);
+PROFILING_ENABLE(floor);
+PROFILING_ENABLE(inv);
+PROFILING_ENABLE(log);
+PROFILING_ENABLE(log2);
+PROFILING_ENABLE(log10);
+PROFILING_ENABLE(logn);
+PROFILING_ENABLE(mod);
+PROFILING_ENABLE(mult);
+PROFILING_ENABLE(neg);
+PROFILING_ENABLE(normalize);
+PROFILING_ENABLE(pow);
+PROFILING_ENABLE(powb);
+PROFILING_ENABLE(reciprocal);
+PROFILING_ENABLE(remainder);
+PROFILING_ENABLE(round);
+PROFILING_ENABLE(rsqrt);
+PROFILING_ENABLE(sigmoid);
+PROFILING_ENABLE(sign);
+PROFILING_ENABLE(sin);
+PROFILING_ENABLE(sinh);
+PROFILING_ENABLE(sqr);
+PROFILING_ENABLE(sqrt);
+PROFILING_ENABLE(sub);
+PROFILING_ENABLE(tan);
+PROFILING_ENABLE(tanh);
+PROFILING_ENABLE(trunc);
+PROFILING_ENABLE(inc);
+PROFILING_ENABLE(el_div);
+PROFILING_ENABLE(mult2D);
+PROFILING_ENABLE(el_mult);
+PROFILING_ENABLE(sum2D_rowwise);
+PROFILING_ENABLE(reduce_sum2D);
+PROFILING_ENABLE(sum2D_colwise);
+PROFILING_ENABLE(ceil);
+
+void __show_profile() {
+
+  // profiling declarations
+  PROFILING_PRINTF(maximum);
+  PROFILING_PRINTF(minimum);
+  PROFILING_PRINTF(max);
+  PROFILING_PRINTF(argmax);
+  PROFILING_PRINTF(argmax_d);
+  PROFILING_PRINTF(min);
+  PROFILING_PRINTF(argmin);
+  PROFILING_PRINTF(sum);
+  PROFILING_PRINTF(sum_abs);
+  PROFILING_PRINTF(prod);
+  PROFILING_PRINTF(mean);
+  PROFILING_PRINTF(median);
+  PROFILING_PRINTF(std);
+  PROFILING_PRINTF(var);
+  PROFILING_PRINTF(mode);
+  PROFILING_PRINTF(abs);
+  PROFILING_PRINTF(acos);
+  PROFILING_PRINTF(add);
+  PROFILING_PRINTF(asin);
+  PROFILING_PRINTF(atan);
+  PROFILING_PRINTF(cell);
+  PROFILING_PRINTF(clamp);
+  PROFILING_PRINTF(clampmax);
+  PROFILING_PRINTF(clampmin);
+  PROFILING_PRINTF(cos);
+  PROFILING_PRINTF(cosh);
+  PROFILING_PRINTF(div);
+  PROFILING_PRINTF(exp);
+  PROFILING_PRINTF(floor);
+  PROFILING_PRINTF(inv);
+  PROFILING_PRINTF(log);
+  PROFILING_PRINTF(log2);
+  PROFILING_PRINTF(log10);
+  PROFILING_PRINTF(logn);
+  PROFILING_PRINTF(mod);
+  PROFILING_PRINTF(mult);
+  PROFILING_PRINTF(neg);
+  PROFILING_PRINTF(normalize);
+  PROFILING_PRINTF(pow);
+  PROFILING_PRINTF(powb);
+  PROFILING_PRINTF(reciprocal);
+  PROFILING_PRINTF(remainder);
+  PROFILING_PRINTF(round);
+  PROFILING_PRINTF(rsqrt);
+  PROFILING_PRINTF(sigmoid);
+  PROFILING_PRINTF(sign);
+  PROFILING_PRINTF(sin);
+  PROFILING_PRINTF(sinh);
+  PROFILING_PRINTF(sqr);
+  PROFILING_PRINTF(sqrt);
+  PROFILING_PRINTF(sub);
+  PROFILING_PRINTF(tan);
+  PROFILING_PRINTF(tanh);
+  PROFILING_PRINTF(trunc);
+  PROFILING_PRINTF(inc);
+  PROFILING_PRINTF(el_div);
+  PROFILING_PRINTF(mult2D);
+  PROFILING_PRINTF(el_mult);
+  PROFILING_PRINTF(sum2D_rowwise);
+  PROFILING_PRINTF(reduce_sum2D);
+  PROFILING_PRINTF(sum2D_colwise);
+  PROFILING_PRINTF(ceil);
 }
