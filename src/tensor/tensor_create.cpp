@@ -147,13 +147,13 @@ Tensor* Tensor::identity(int rows, int dev){
 
 Tensor* Tensor::randu(const vector<int> &shape, int dev){
     auto t = new Tensor(shape, dev);
-    t->rand_uniform(1.0f);
+    t->fill_rand_uniform_(1.0f);
     return t;
 }
 
 Tensor* Tensor::randn(const vector<int> &shape, int dev){
     auto t = new Tensor(shape, dev);
-    t->rand_normal(0.0f, 1.0f, false);
+    t->fill_rand_normal_(0.0f, 1.0f, false);
     return t;
 }
 

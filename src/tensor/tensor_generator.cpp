@@ -22,7 +22,7 @@
 
 using namespace std;
 
-void Tensor::rand_uniform(float v) {
+void Tensor::fill_rand_uniform_(float v) {
     if (isCPU()) {
         cpu_rand_uniform(this, v);
     }
@@ -40,8 +40,13 @@ void Tensor::rand_uniform(float v) {
 
 }
 
+Tensor* Tensor::fill_rand_uniform(float v){
+    Tensor* t_new = Tensor::empty_like(this);
+    t_new->fill_rand_uniform_(v);
+    return t_new;
+}
 
-void Tensor::rand_signed_uniform(float v) {
+void Tensor::fill_rand_signed_uniform_(float v) {
     if (isCPU()) {
         cpu_rand_signed_uniform(this, v);
     }
@@ -57,11 +62,39 @@ void Tensor::rand_signed_uniform(float v) {
     }
 #endif
 
+}
+
+Tensor* Tensor::fill_rand_signed_uniform(float v){
+    Tensor* t_new = Tensor::empty_like(this);
+    t_new->fill_rand_signed_uniform_(v);
+    return t_new;
+}
+
+void Tensor::fill_rand_normal_(float m, float s, bool fast_math) {
+    if (isCPU()) {
+        cpu_rand_normal(this, m, s, fast_math);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_rand_normal(this,m,s);
+      }
+#endif
+#ifdef cFPGA
+    else {
+        fpga_rand_normal(this, m, s, fast_math);
+    }
+#endif
 
 }
 
+Tensor* Tensor::fill_rand_normal(float m, float s, bool fast_math) {
+    Tensor* t_new = Tensor::empty_like(this);
+    t_new->fill_rand_normal_(m, s, fast_math);
+    return t_new;
+}
 
-void Tensor::rand_binary(float v) {
+void Tensor::fill_rand_binary_(float v) {
     if (isCPU()) {
         cpu_rand_binary(this, v);
     }
@@ -79,21 +112,8 @@ void Tensor::rand_binary(float v) {
 
 }
 
-
-void Tensor::rand_normal(float m, float s, bool fast_math) {
-    if (isCPU()) {
-        cpu_rand_normal(this, m, s, fast_math);
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        gpu_rand_normal(this,m,s);
-      }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_rand_normal(this, m, s, fast_math);
-    }
-#endif
-
+Tensor* Tensor::fill_rand_binary(float v) {
+    Tensor* t_new = Tensor::empty_like(this);
+    t_new->fill_rand_binary_(v);
+    return t_new;
 }

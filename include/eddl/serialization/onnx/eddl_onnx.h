@@ -9,6 +9,7 @@
 #include "eddl/layers/layer.h"
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/conv/layer_conv.h"
+#include "eddl/layers/recurrent/layer_recurrent.h"
 #include "eddl/layers/pool/layer_pool.h"
 #include "eddl/layers/merge/layer_merge.h"
 #include "eddl/layers/operators/layer_operators.h"

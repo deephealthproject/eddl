@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
     layer in = Input({1}); //1 word
     layer l = in;
 
-    layer lE = Dropout(RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05),0.5); // mask_zeros=true
+    layer lE = RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05); // mask_zeros=true
     layer enc = LSTM(lE,128,true);  // mask_zeros=true
 
     // Decoder
@@ -85,9 +85,9 @@ int main(int argc, char **argv) {
           //CS_CPU()
     );
 
+
     // View model
     summary(net);
-
 
     // Load dataset
     Tensor *x_train=Tensor::load("eutrans_trX.bin","bin");
@@ -105,28 +105,10 @@ int main(int argc, char **argv) {
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
-      //evaluate(net,{x_test},{y_test});
     }
 
-    // predict
-    /*
-    vtensor tout=predict(net,{x_train});
+   delete net;
 
-    for(int i=0;i<x_train->shape[0];i++) {
-      for(int j=0;j<olength;j++) {
-        float max=0.0;
-        int ind;
-        int p=i*outvs;
-        for(int k=0;k<outvs;k++,p++) {
-          if (tout[j]->ptr[p]>max) {
-            max=tout[j]->ptr[p];
-            ind=k;
-          }
-        }
-        printf("%d ",ind);
-      }
-      printf("\n");
-    }
-    */
+
 
 }

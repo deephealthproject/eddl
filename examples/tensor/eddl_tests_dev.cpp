@@ -32,54 +32,15 @@ using namespace eddl;
 int main(int argc, char **argv) {
     cout << "Tests for development. Ignore." << endl;
 
-    // Overload operations
-    Tensor t1 = *Tensor::full({5,5}, 1.0f);
-    Tensor t2 = *Tensor::full({5,5}, 2.0f);
-    Tensor t3 = ((t1 / t1) + (t2 * t2)) + 10;
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_();  // 4D tensor needed
 
-    t1.print();
-    t2.print();
-    t3.print();
+    // Cutout
+    Tensor* t2 = t1->cutout({50, 250}, {250, 400});
+    t2->save("lena_cutout.jpg");
 
-    // Mixed
-    t3 = ((t1 / t1) + (t2 * t2));
+    // Other ways
+    Tensor::cutout(t1, t2, {50, 250}, {250, 400});  // Static
 
-    // Tensor op Scalar
-    t3 = t3 + 10;
-    t3 = t3 - 10;
-    t3 = t3 * 10;
-    t3 = t3 / 10;
+    cout << "Done!" << endl;
 
-    // Scalar op Tensor
-    t3 = 10 + t3;
-    t3 = 10 - t3;
-    t3 = 10 * t3;
-    t3 = 10 / t3;
-
-    // Tensor op= Tensor
-    t3 += t2;
-    t3 -= t2;
-    t3 *= t2;
-    t3 /= t2;
-
-    // Tensor op= Scalar
-    t3 += 5;
-    t3 -= 5;
-    t3 *= 5;
-    t3 /= 5;
-
-
-    // Test concat
-    Tensor* t5 = Tensor::range(1, 0+3*2*2, 1.0f); t5->reshape_({3, 2, 2}); t5->print();
-    Tensor* t6 = Tensor::range(11, 10+3*2*2, 1.0f); t6->reshape_({3, 2, 2}); t6->print();
-    Tensor* t7 = Tensor::range(101, 100+3*2*2, 1.0f); t7->reshape_({3, 2, 2}); t7->print();
-
-    // Concat
-    Tensor* t8 = Tensor::concat({t5, t6, t7}, 2);
-    t8->print();
-
-     Tensor::concat_back(t8, {t5, t6, t7}, 2);
-     t5->print();
-     t6->print();
-     t7->print();
 }

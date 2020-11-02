@@ -29,8 +29,8 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
-    int batch_size = 1000;
+    int epochs = 3;
+    int batch_size = 100;
     int num_classes = 10;
 
     // Define network

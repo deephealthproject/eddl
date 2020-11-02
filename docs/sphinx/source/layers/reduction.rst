@@ -12,9 +12,7 @@ Reduced mean
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
     l = ReduceMean(l, {1}, true);
 
 
@@ -37,9 +35,7 @@ Reduced sum
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
     l = ReduceSum(l, {1}, true);
 
 
@@ -55,9 +51,7 @@ Reduced max
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
     l = ReduceMax(l, {1}, true);
 
 
@@ -71,7 +65,5 @@ Reduced min
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
     l = ReduceMin(l, {1}, true);
