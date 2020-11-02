@@ -317,14 +317,8 @@ void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD) {
 
             for(int j=0; j<n_features; j++){
 
-                // Cases
-                if(i==j){
-                    trans_d = SM->ptr[i] * (1.0f - SM->ptr[j]);
-                }else{
-                    trans_d = -SM->ptr[i] * SM->ptr[j];
-                }
-
                 // Set new delta
+                trans_d = SM->ptr[i] * ((float)(i==j) - SM->ptr[j]);
                 D->ptr[step_i+j] = PD->ptr[step_i+j] * trans_d;
             }
         }
