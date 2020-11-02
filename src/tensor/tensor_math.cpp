@@ -26,8 +26,68 @@
 
 using namespace std;
 
-PROFILING_ENABLE(sum2D_rowwise);
+// profiling declarations
+PROFILING_ENABLE(maximum);
+PROFILING_ENABLE(minimum);
+PROFILING_ENABLE(max);
+PROFILING_ENABLE(argmax);
+PROFILING_ENABLE(argmax_d);
+PROFILING_ENABLE(min);
+PROFILING_ENABLE(argmin);
+PROFILING_ENABLE(sum);
+PROFILING_ENABLE(sum_abs);
+PROFILING_ENABLE(prod);
+PROFILING_ENABLE(mean);
+PROFILING_ENABLE(median);
+PROFILING_ENABLE(std);
+PROFILING_ENABLE(var);
+PROFILING_ENABLE(mode);
+PROFILING_ENABLE(abs);
+PROFILING_ENABLE(acos);
+PROFILING_ENABLE(add);
+PROFILING_ENABLE(asin);
+PROFILING_ENABLE(atan);
+PROFILING_ENABLE(cell);
+PROFILING_ENABLE(clamp);
+PROFILING_ENABLE(clampmax);
+PROFILING_ENABLE(clampmin);
+PROFILING_ENABLE(cos);
+PROFILING_ENABLE(cosh);
+PROFILING_ENABLE(div);
+PROFILING_ENABLE(exp);
+PROFILING_ENABLE(floor);
+PROFILING_ENABLE(inv);
+PROFILING_ENABLE(log);
+PROFILING_ENABLE(log2);
+PROFILING_ENABLE(log10);
+PROFILING_ENABLE(logn);
+PROFILING_ENABLE(mod);
+PROFILING_ENABLE(mult);
+PROFILING_ENABLE(neg);
+PROFILING_ENABLE(normalize);
+PROFILING_ENABLE(pow);
+PROFILING_ENABLE(powb);
+PROFILING_ENABLE(reciprocal);
+PROFILING_ENABLE(remainder);
+PROFILING_ENABLE(round);
+PROFILING_ENABLE(rsqrt);
+PROFILING_ENABLE(sigmoid);
+PROFILING_ENABLE(sign);
+PROFILING_ENABLE(sin);
+PROFILING_ENABLE(sinh);
+PROFILING_ENABLE(sqr);
+PROFILING_ENABLE(sqrt);
+PROFILING_ENABLE(sub);
+PROFILING_ENABLE(tan);
+PROFILING_ENABLE(tanh);
+PROFILING_ENABLE(trunc);
+PROFILING_ENABLE(inc);
+PROFILING_ENABLE(eldiv);
 PROFILING_ENABLE(mult2D);
+PROFILING_ENABLE(el_mult);
+PROFILING_ENABLE(sum2D_rowwise);
+PROFILING_ENABLE(reduce_sum2D);
+PROFILING_ENABLE(sum2D_colwise);
 
 // Math operations (Tensor-Tensor, Tensor-float) ************************
 
@@ -44,6 +104,9 @@ Tensor* Tensor::maximum(Tensor* A, float v){
 }
 
 void Tensor::maximum(Tensor* A, Tensor* B, float v){
+
+    PROFILING_HEADER(maximum);
+
     if (A->isCPU() && B->isCPU()){
         cpu_maximum(A, B, v);
     }
@@ -59,6 +122,7 @@ void Tensor::maximum(Tensor* A, Tensor* B, float v){
     }
 #endif
 
+    PROFILING_FOOTER(maximum);
 }
 
 Tensor* Tensor::maximum(Tensor* A, Tensor* B){
@@ -68,6 +132,9 @@ Tensor* Tensor::maximum(Tensor* A, Tensor* B){
 }
 
 void Tensor::maximum(Tensor* A, Tensor* B, Tensor* C){
+
+    PROFILING_HEADER(maximum);
+
     if (A->isCPU() && B->isCPU() && C->isCPU()){
         cpu_maximum(A, B, C);
     }
@@ -83,6 +150,7 @@ void Tensor::maximum(Tensor* A, Tensor* B, Tensor* C){
     }
 #endif
 
+    PROFILING_FOOTER(maximum);
 }
 
 Tensor* Tensor::minimum(float v){
@@ -98,6 +166,9 @@ Tensor* Tensor::minimum(Tensor* A, float v){
 }
 
 void Tensor::minimum(Tensor* A, Tensor* B, float v){
+
+    PROFILING_HEADER(minimum);
+
     if (A->isCPU() && B->isCPU()){
         cpu_minimum(A, B, v);
     }
@@ -113,6 +184,7 @@ void Tensor::minimum(Tensor* A, Tensor* B, float v){
     }
 #endif
 
+    PROFILING_FOOTER(minimum);
 }
 
 Tensor* Tensor::minimum(Tensor* A, Tensor* B){
@@ -122,6 +194,9 @@ Tensor* Tensor::minimum(Tensor* A, Tensor* B){
 }
 
 void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
+
+    PROFILING_HEADER(minimum);
+
     if (A->isCPU() && B->isCPU() && C->isCPU()){
         cpu_minimum(A, B, C);
     }
@@ -137,6 +212,7 @@ void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
     }
 #endif
 
+    PROFILING_FOOTER(minimum);
 }
 
 
@@ -149,6 +225,9 @@ float Tensor::max(){
 
 
 float Tensor::max(Tensor* A){
+
+    PROFILING_HEADER(max);
+
     if (A->isCPU()) {
         return cpu_max(A);
     }
@@ -164,6 +243,9 @@ float Tensor::max(Tensor* A){
         return fpga_max(A);
     }
 #endif
+
+    PROFILING_FOOTER(max);
+
     return 0.0f; // Never used, this is for the compiler warning
 }
 
@@ -181,6 +263,9 @@ Tensor* Tensor::max(vector<int> axis, bool keepdims){
 }
 
 void Tensor::max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+
+    PROFILING_HEADER(max);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_max(A, B, rd);
     }
@@ -195,6 +280,8 @@ void Tensor::max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         fpga_max(A, B, rd);
     }
 #endif
+
+    PROFILING_FOOTER(max);
 }
 
 
@@ -205,20 +292,28 @@ int Tensor::argmax(){
 
 
 int Tensor::argmax(Tensor* A){
+
+    PROFILING_HEADER(argmax);
+
     if (A->isCPU()) {
+        PROFILING_FOOTER(argmax);
         return cpu_argmax(A);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
+        PROFILING_FOOTER(argmax);
         return gpu_argmax(A);
     }
 #endif
 #ifdef cFPGA
     else {
-        fpga_argmax(A);
+        PROFILING_FOOTER(argmax);
+        return fpga_argmax(A);
     }
 #endif
+
+    PROFILING_FOOTER(argmax);
 
     msg("Invalid device", "Tensor::argmax");
     return 0.0f; // Never used, this is for the compiler warning
@@ -238,6 +333,9 @@ Tensor* Tensor::argmax(vector<int> axis, bool keepdims){
 }
 
 void Tensor::argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+
+    PROFILING_HEADER(argmax);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_argmax(A, B, rd);
     }
@@ -252,9 +350,14 @@ void Tensor::argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         fpga_argmax(A, B, rd);
     }
 #endif
+
+    PROFILING_FOOTER(argmax);
 }
 
 void Tensor::argmax_d(Tensor *D, Tensor *O, Tensor *PD){
+
+    PROFILING_HEADER(argmax_d);
+
     if (D->isCPU() && O->isCPU() && PD->isCPU()) {
         cpu_argmax_d(D, O, PD);
     }
@@ -269,6 +372,8 @@ void Tensor::argmax_d(Tensor *D, Tensor *O, Tensor *PD){
         //fpga_argmax_d(D, O, PD);
     }
 #endif
+
+    PROFILING_FOOTER(argmax_d);
 }
 
 float Tensor::min(){
@@ -277,20 +382,28 @@ float Tensor::min(){
 
 
 float Tensor::min(Tensor* A){
+
+    PROFILING_HEADER(min);
+
     if (A->isCPU()) {
+        PROFILING_FOOTER(min);
         return cpu_min(A);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
-        return gpu_min(A);
+        PROFILING_FOOTER(min);
+	return gpu_min(A);
     }
 #endif
 #ifdef cFPGA
     else {
-        fpga_min(A);
+        PROFILING_FOOTER(min);
+        return fpga_min(A);
     }
 #endif
+
+    PROFILING_FOOTER(min);
 
     msg("Invalid device", "Tensor::min");
     return 0.0f; // Never used, this is for the compiler warning
@@ -310,6 +423,9 @@ Tensor* Tensor::min(vector<int> axis, bool keepdims){
 }
 
 void Tensor::min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+
+    PROFILING_HEADER(min);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_min(A, B, rd);
     }
@@ -324,6 +440,8 @@ void Tensor::min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         fpga_min(A, B, rd);
     }
 #endif
+
+    PROFILING_FOOTER(min);
 }
 
 
@@ -333,20 +451,28 @@ int Tensor::argmin(){
 
 
 int Tensor::argmin(Tensor* A){
+
+    PROFILING_HEADER(argmin);
+
     if (A->isCPU()) {
+        PROFILING_FOOTER(argmin);
         return cpu_argmin(A);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
+        PROFILING_FOOTER(argmin);
         return gpu_argmin(A);
     }
 #endif
 #ifdef cFPGA
     else {
-        fpga_argmin(A);
+        PROFILING_FOOTER(argmin);
+        return fpga_argmin(A);
     }
 #endif
+
+    PROFILING_FOOTER(argmin);
 
     msg("Invalid device", "Tensor::argmax");
     return 0.0f; // Never used, this is for the compiler warning
@@ -366,6 +492,9 @@ Tensor* Tensor::argmin(vector<int> axis, bool keepdims){
 }
 
 void Tensor::argmin(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+
+    PROFILING_HEADER(argmin);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_argmin(A, B, rd);
     }
@@ -381,6 +510,8 @@ void Tensor::argmin(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         fpga_argmin(A, B, rd);
     }
 #endif
+
+    PROFILING_FOOTER(argmin);
 }
 
 
@@ -390,20 +521,30 @@ float Tensor::sum(){
 
 
 float Tensor::sum(Tensor* A){
+
+    PROFILING_HEADER(sum);
+
     if (A->isCPU()) {
+        PROFILING_FOOTER(sum);
         return cpu_sum(A);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
+
+        PROFILING_FOOTER(sum);
         return gpu_sum(A);
     }
 #endif
 #ifdef cFPGA
     else {
+
+        PROFILING_FOOTER(sum);
         return fpga_sum(A);
     }
 #endif
+
+    PROFILING_FOOTER(sum);
 
     msg("Invalid device", "Tensor::sum");
     return 0.0f; // Never used, this is for the compiler warning
@@ -423,6 +564,9 @@ Tensor* Tensor::sum(vector<int> axis, bool keepdims){
 }
 
 void Tensor::sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+
+    PROFILING_HEADER(sum);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_sum(A, B, rd);
     }
@@ -437,6 +581,8 @@ void Tensor::sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         fpga_sum(A, B, rd);
     }
 #endif
+
+    PROFILING_FOOTER(sum);
 }
 
 float Tensor::sum_abs(){
@@ -445,20 +591,29 @@ float Tensor::sum_abs(){
 
 
 float Tensor::sum_abs(Tensor* A){
+
+    PROFILING_HEADER(sum_abs);
+
     if (A->isCPU()) {
-        return cpu_sum_abs(A);
+
+        PROFILING_FOOTER(sum_abs);
+	return cpu_sum_abs(A);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
+        PROFILING_FOOTER(sum_abs);
         return gpu_sum_abs(A);
     }
 #endif
 #ifdef cFPGA
     else {
+        PROFILING_FOOTER(sum_abs);
         return fpga_sum_abs(A);
     }
 #endif
+
+    PROFILING_FOOTER(sum_abs);
 
     msg("Invalid device", "Tensor::sum_abs");
     return 0.0f; // Never used, this is for the compiler warning
@@ -479,6 +634,9 @@ Tensor* Tensor::sum_abs(vector<int> axis, bool keepdims){
 }
 
 void Tensor::sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+
+    PROFILING_HEADER(sum_abs);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_sum_abs(A, B, rd);
     }
@@ -493,6 +651,8 @@ void Tensor::sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         fpga_sum_abs(A, B, rd);
     }
 #endif
+
+    PROFILING_FOOTER(sum_abs);
 }
 
 float Tensor::prod(){
@@ -501,20 +661,28 @@ float Tensor::prod(){
 
 
 float Tensor::prod(Tensor* A){  // AKA factorial
+
+    PROFILING_HEADER(prod);
+
     if (A->isCPU()) {
+        PROFILING_FOOTER(prod);
         return cpu_prod(A);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
+        PROFILING_FOOTER(prod);
         return gpu_prod(A);
     }
 #endif
 #ifdef cFPGA
     else {
-        fpga_prod(A);
+        PROFILING_FOOTER(prod);
+        return fpga_prod(A);
     }
 #endif
+
+    PROFILING_FOOTER(prod);
 
     msg("Invalid device", "Tensor::prod");
     return 0.0f; // Never used, this is for the compiler warning
@@ -535,6 +703,9 @@ Tensor* Tensor::prod(vector<int> axis, bool keepdims){
 }
 
 void Tensor::prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+
+    PROFILING_HEADER(prod);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_prod(A, B, rd);
     }
@@ -549,6 +720,8 @@ void Tensor::prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         fpga_prod(A, B, rd);
     }
 #endif
+
+    PROFILING_FOOTER(prod);
 }
 
 
@@ -575,6 +748,9 @@ Tensor* Tensor::mean(vector<int> axis, bool keepdims){
 }
 
 void Tensor::mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+
+    PROFILING_HEADER(mean);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_mean(A, B, rd);
     }
@@ -589,6 +765,8 @@ void Tensor::mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         fpga_mean(A, B, rd);
     }
 #endif
+
+    PROFILING_FOOTER(mean);
 }
 
 
@@ -599,6 +777,9 @@ float Tensor::median(){
 
 
 float Tensor::median(Tensor* A){
+
+    PROFILING_HEADER(median);
+
     float res = 0.0f;
 
     // Clone tensor (needs to be sorted first)
@@ -619,6 +800,8 @@ float Tensor::median(Tensor* A){
     }
 #endif
 
+    PROFILING_FOOTER(median);
+
     delete tmp;
     return res;
 }
@@ -637,6 +820,9 @@ Tensor* Tensor::median(vector<int> axis, bool keepdims){
 }
 
 void Tensor::median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+
+    PROFILING_HEADER(median);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_median(A, B, rd);
     }
@@ -651,10 +837,9 @@ void Tensor::median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         fpga_median(A, B, rd);
     }
 #endif
+
+    PROFILING_FOOTER(median);
 }
-
-
-
 
 float Tensor::std(bool unbiased){
     return Tensor::std(this, unbiased);
@@ -662,20 +847,28 @@ float Tensor::std(bool unbiased){
 
 
 float Tensor::std(Tensor* A, bool unbiased){
+
+    PROFILING_HEADER(std);
+
     if (A->isCPU()) {
+        PROFILING_FOOTER(std);
         return cpu_std(A, unbiased);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
+        PROFILING_FOOTER(std);
         return gpu_std(A, unbiased);
     }
 #endif
 #ifdef cFPGA
     else {
+        PROFILING_FOOTER(std);
         fpga_std(A, unbiased);
     }
 #endif
+
+    PROFILING_FOOTER(std);
 
     msg("Invalid device", "Tensor::std");
     return 0.0f; // Never used, this is for the compiler warning
@@ -696,6 +889,9 @@ Tensor* Tensor::std(vector<int> axis, bool keepdims, bool unbiased){
 }
 
 void Tensor::std(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+
+    PROFILING_HEADER(std);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_std(A, B, rd, unbiased);
     }
@@ -710,6 +906,8 @@ void Tensor::std(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
         fpga_std(A, B, rd, unbiased);
     }
 #endif
+
+    PROFILING_FOOTER(std);
 }
 
 
@@ -719,21 +917,32 @@ float Tensor::var(bool unbiased){
 
 
 float Tensor::var(Tensor* A, bool unbiased){
+
+    PROFILING_HEADER(var);
+
     if (A->isCPU()) {
+
+        PROFILING_FOOTER(var);
         return cpu_var(A, unbiased);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
+
+        PROFILING_FOOTER(var);
         return gpu_var(A, unbiased);
     }
 #endif
 #ifdef cFPGA
     else if (A->isFPGA())
     {
-	return fpga_var(A, unbiased);
+
+        PROFILING_FOOTER(var);
+        return fpga_var(A, unbiased);
     }
 #endif
+
+    PROFILING_FOOTER(var);
 
     msg("Invalid device", "Tensor::var");
     return 0.0f; // Never used, this is for the compiler warning
@@ -754,6 +963,9 @@ Tensor* Tensor::var(vector<int> axis, bool keepdims, bool unbiased){
 }
 
 void Tensor::var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+
+    PROFILING_HEADER(var);
+
     if (A->isCPU() && B->isCPU()) {
         cpu_var(A, B, rd, unbiased);
     }
@@ -769,6 +981,8 @@ void Tensor::var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
         fpga_var(A, B, rd, unbiased);
     }
 #endif
+
+    PROFILING_FOOTER(var);
 }
 
 
@@ -778,21 +992,29 @@ int Tensor::mode(){
 
 
 int Tensor::mode(Tensor* A){
+
+    PROFILING_HEADER(mode);
+
     if (A->isCPU()) {
+	PROFILING_FOOTER(mode);
         return cpu_mode(A);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
+	PROFILING_FOOTER(mode);
         return gpu_mode(A);
     }
 #endif
 #ifdef cFPGA
     else if (A->isFPGA())
     {
+	PROFILING_FOOTER(mode);
         return fpga_mode(A);
     }
 #endif
+
+    PROFILING_FOOTER(mode);
 
     msg("Invalid device", "Tensor::mode");
     return 0; // Never used, this is for the compiler warning
@@ -2289,7 +2511,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     //// Dimensions and types must be compatible
     //// Only for 2D Tensors
     ///////////////////////////////////////
-    
+   
     PROFILING_HEADER_EXTERN(mult2D);
 
     if ((A->device != B->device) || (A->device != C->device)) {A->info();B->info();C->info();msg("Tensors in different devices", "Tensor::mult2D");}
@@ -2330,7 +2552,6 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     C->tsem->unlock();
 
     PROFILING_FOOTER(mult2D);
-    PROFILING_PRINTF(mult2D);
 }
 
 
@@ -2401,7 +2622,6 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     C->tsem->unlock();
 
     PROFILING_FOOTER(sum2D_rowwise);
-    PROFILING_PRINTF(sum2D_rowwise);
 }
 
 
