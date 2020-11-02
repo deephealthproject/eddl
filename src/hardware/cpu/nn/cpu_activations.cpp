@@ -309,8 +309,6 @@ void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD) {
     for(int bi=0; bi<D->shape[axis]; bi++){
         // Contiguous data
         int start = bi*D->stride[axis];
-        int end = start+D->stride[axis];
-        float trans_d;
 
         for(int i=0; i<n_features; i++){
             int step_i = i*D->stride[0];
@@ -318,7 +316,7 @@ void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD) {
             for(int j=0; j<n_features; j++){
 
                 // Set new delta
-                trans_d = SM->ptr[i] * ((float)(i==j) - SM->ptr[j]);
+                float trans_d = SM->ptr[i] * ((float)(i==j) - SM->ptr[j]);
                 D->ptr[step_i+j] = PD->ptr[step_i+j] * trans_d;
             }
         }
