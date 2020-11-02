@@ -486,6 +486,22 @@ PROFILING_ENABLE(sum2D_rowwise);
 PROFILING_ENABLE(reduce_sum2D);
 PROFILING_ENABLE(sum2D_colwise);
 PROFILING_ENABLE(ceil);
+// da
+PROFILING_ENABLE(shift);
+PROFILING_ENABLE(rotate);
+PROFILING_ENABLE(scale);
+PROFILING_ENABLE(flip);
+PROFILING_ENABLE(crop);
+PROFILING_ENABLE(crop_scale);
+PROFILING_ENABLE(cutout);
+PROFILING_ENABLE(shift_random);
+PROFILING_ENABLE(rotate_random);
+PROFILING_ENABLE(scale_random);
+PROFILING_ENABLE(flip_random);
+PROFILING_ENABLE(crop_random);
+PROFILING_ENABLE(crop_scale_random);
+PROFILING_ENABLE(cutout_random);
+
 
 void __show_profile() {
 
@@ -552,4 +568,20 @@ void __show_profile() {
   PROFILING_PRINTF(reduce_sum2D);
   PROFILING_PRINTF(sum2D_colwise);
   PROFILING_PRINTF(ceil);
+  // da
+  PROFILING_PRINTF(shift);
+  PROFILING_PRINTF(rotate);
+  PROFILING_PRINTF(scale);
+  PROFILING_PRINTF(flip);
+  PROFILING_PRINTF(crop);
+  PROFILING_PRINTF(crop_scale);
+  PROFILING_PRINTF(cutout);
+  PROFILING_PRINTF(shift_random);
+  PROFILING_PRINTF(rotate_random);
+  PROFILING_PRINTF(scale_random);
+  PROFILING_PRINTF(flip_random);
+  PROFILING_PRINTF(crop_random);
+  PROFILING_PRINTF(crop_scale_random);
+  PROFILING_PRINTF(cutout_random);
+
 }
