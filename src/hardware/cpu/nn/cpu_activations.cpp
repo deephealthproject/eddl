@@ -250,3 +250,81 @@ void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
   PD->tsem->unlock();
     _profile(_CPU_D_SOFTMAX, 1);
 }
+
+
+void cpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable){
+    if(axis==1){
+        cpu_full_softmax_batched(A, B, stable);
+    }else{ msg("Not implemented Error", "cpu_full_softmax"); }
+}
+
+void cpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable){
+    // Walk through batches
+    int axis = 0;
+
+    #pragma omp parallel for
+    for(int bi=0; bi<A->shape[axis]; bi++){
+        // Contiguous data
+        int start = bi*A->stride[axis];
+        int end = start+A->stride[axis];
+
+        // Numerical stability (opt.)
+        // stable => first value, no stable => 0.0f
+        float max_value = 0.0f;
+        if(stable){
+            for(int j=start; j<end; j++){
+                if (A->ptr[j] > max_value) { max_value = A->ptr[j]; }
+            }
+        }
+
+        // Denominator (+max_value)
+        float denominator = 0.0f;
+        for(int j=start; j<end; j++){
+            denominator += ::expf(A->ptr[j]);
+        }
+
+        // Softmax
+        for(int j=start; j<end; j++){
+            B->ptr[j] = ::expf(A->ptr[j] - max_value)/denominator;
+        }
+    }
+}
+
+void cpu_d_full_softmax(Tensor *D, Tensor *I, Tensor *PD, int axis) {
+    if(axis==1){
+        cpu_d_full_softmax_batched(D, I, PD);
+    }else{ msg("Not implemented Error", "cpu_d_full_softmax"); }
+}
+
+void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD) {
+    Tensor* SM = I; // Alias (softmax)
+
+    // Walk through batches
+    int axis = 0;
+    int n_features = D->shape[1];
+
+    #pragma omp parallel for
+    for(int bi=0; bi<D->shape[axis]; bi++){
+        // Contiguous data
+        int start = bi*D->stride[axis];
+        int end = start+D->stride[axis];
+        float trans_d;
+
+        for(int i=0; i<n_features; i++){
+            int step_i = i*D->stride[0];
+
+            for(int j=0; j<n_features; j++){
+
+                // Cases
+                if(i==j){
+                    trans_d = SM->ptr[i] * (1.0f - SM->ptr[j]);
+                }else{
+                    trans_d = -SM->ptr[i] * SM->ptr[j];
+                }
+
+                // Set new delta
+                D->ptr[step_i+j] = PD->ptr[step_i+j] * trans_d;
+            }
+        }
+    }
+}

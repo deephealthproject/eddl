@@ -505,6 +505,11 @@ namespace eddl {
         return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
     }
 
+    layer FullSoftmax(layer parent, string name){
+        vector<float> params = {};
+        return new LActivation(parent,"full_softmax", params, name, DEV_CPU, 0);
+    }
+
     layer Sigmoid(layer parent, string name){
         vector<float> params = {};
         return new LActivation(parent,"sigmoid", params, name, DEV_CPU, 0);

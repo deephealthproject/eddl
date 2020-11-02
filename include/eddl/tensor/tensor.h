@@ -146,6 +146,8 @@ public:
     *  @return a tensor
     */
     Tensor(const vector<float>& data, const vector<int> &shape, int dev=DEV_CPU);
+    // TODO: There areimplicit casting problems when shape is one-dimensional (eg.: {6})
+    // It this is the case, this contructor will be casted as "Tensor(const vector<int> &shape, int dev=DEV_CPU);"
 
     // Destructors
 
