@@ -21,7 +21,10 @@
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
 
-PROFILING_ENABLE(MPool2D);
+PROFILING_ENABLE_EXTERN(MPool2D);
+PROFILING_ENABLE_EXTERN(MPool2D_back);
+PROFILING_ENABLE_EXTERN(AvgPool2D);
+PROFILING_ENABLE_EXTERN(AvgPool2D_back);
 
 namespace tensorNN {
 
@@ -35,7 +38,7 @@ namespace tensorNN {
         /////////////////////////////////////////////////////////////////////
         if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D");
 
-	PROFILING_HEADER(MPool2D);
+	      PROFILING_HEADER(MPool2D);
 
         D->O->tsem->lock();
         if (D->I->isCPU()) {
@@ -55,8 +58,7 @@ namespace tensorNN {
 #endif
         D->O->tsem->unlock();
 
-	PROFILING_FOOTER(MPool2D);
-	PROFILING_PRINTF(MPool2D);
+	      PROFILING_FOOTER(MPool2D);
     }
 
     void MPool2D_back(PoolDescriptor *D) {
@@ -67,6 +69,8 @@ namespace tensorNN {
         //// D is a PoolDescriptor
         /////////////////////////////////////////////////////////////////////
         if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D_back");
+
+        PROFILING_HEADER(MPool2D_back);
 
         D->ID->tsem->lock();
         if (D->I->isCPU()) {
@@ -85,6 +89,8 @@ namespace tensorNN {
       }
 #endif
         D->ID->tsem->unlock();
+
+        PROFILING_FOOTER(MPool2D_back);
     }
 
 
@@ -96,6 +102,8 @@ namespace tensorNN {
         //// D is a PoolDescriptor
         /////////////////////////////////////////////////////////////////////
         if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::AvgPool2D");
+
+        PROFILING_HEADER(AvgPool2D);
 
         D->O->tsem->lock();
         if (D->I->isCPU()) {
@@ -114,6 +122,8 @@ namespace tensorNN {
       }
 #endif
         D->O->tsem->unlock();
+
+        PROFILING_FOOTER(AvgPool2D);
     }
 
     void AvgPool2D_back(PoolDescriptor *D) {
@@ -124,6 +134,8 @@ namespace tensorNN {
         //// D is a PoolDescriptor
         /////////////////////////////////////////////////////////////////////
         if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::AvgPool2D_back");
+
+        PROFILING_HEADER(AvgPool2D_back);
 
         D->ID->tsem->lock();
         if (D->I->isCPU()) {
@@ -142,6 +154,8 @@ namespace tensorNN {
       }
 #endif
         D->ID->tsem->unlock();
+
+        PROFILING_FOOTER(AvgPool2D_back);
     }
 
 }

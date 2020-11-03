@@ -8,6 +8,7 @@
 */
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -20,6 +21,9 @@
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
 
+PROFILING_ENABLE_EXTERN(accuracy);
+PROFILING_ENABLE_EXTERN(bin_accuracy);
+
 namespace tensorNN {
 
 
@@ -27,6 +31,8 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::accuracy");
         if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x probs)", "Tensor::Accuracy");
+
+        PROFILING_HEADER(accuracy);
 
         int acc = 0;
 
@@ -46,6 +52,9 @@ namespace tensorNN {
         }
 #endif
         B->tsem->unlock();
+
+        PROFILING_FOOTER(accuracy);
+
         return acc;
 
     }
@@ -58,6 +67,7 @@ namespace tensorNN {
         if (A->shape[1] != 1)
             msg("Accuracy only over 2D Tensor (batch x prob) within shape:{batchx1}", "Tensor::Bin_Accuracy");
 
+        PROFILING_HEADER(bin_accuracy);
 
         int acc = 0;
 
@@ -77,6 +87,9 @@ namespace tensorNN {
         }
 #endif
         B->tsem->unlock();
+
+        PROFILING_FOOTER(bin_accuracy);
+        
         return acc;
 
     }

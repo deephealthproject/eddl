@@ -564,6 +564,26 @@ PROFILING_ENABLE(less_equal);
 PROFILING_ENABLE(equal);
 PROFILING_ENABLE(not_equal);
 PROFILING_ENABLE(equivalent);
+// bn
+PROFILING_ENABLE(permute_channels_last);
+PROFILING_ENABLE(permute_channels_first);
+PROFILING_ENABLE(permute_batch_last);
+PROFILING_ENABLE(permute_batch_first);
+// core_nn
+PROFILING_ENABLE(repeat_nn);
+PROFILING_ENABLE(d_repeat_nn);
+PROFILING_ENABLE(select);
+PROFILING_ENABLE(select_back);
+PROFILING_ENABLE(set_select);
+PROFILING_ENABLE(set_select_back);
+// metrics
+PROFILING_ENABLE(accuracy);
+PROFILING_ENABLE(bin_accuracy);
+// pool
+PROFILING_ENABLE(MPool2D);
+PROFILING_ENABLE(MPool2D_back);
+PROFILING_ENABLE(AvgPool2D);
+PROFILING_ENABLE(AvgPool2D_back);
 
 void __show_profile() {
 
@@ -708,4 +728,25 @@ void __show_profile() {
   PROFILING_PRINTF(equal);
   PROFILING_PRINTF(not_equal);
   PROFILING_PRINTF(equivalent);
+  // bn
+  PROFILING_PRINTF(permute_channels_last);
+  PROFILING_PRINTF(permute_channels_first);
+  PROFILING_PRINTF(permute_batch_last);
+  PROFILING_PRINTF(permute_batch_first);
+  // core_nn
+  PROFILING_PRINTF(repeat_nn);
+  PROFILING_PRINTF(d_repeat_nn);
+  PROFILING_PRINTF(select);
+  PROFILING_PRINTF(select_back);
+  PROFILING_PRINTF(set_select);
+  PROFILING_PRINTF(set_select_back);
+  // metrics
+  PROFILING_PRINTF(accuracy);
+  PROFILING_PRINTF(bin_accuracy);
+  // pool
+  PROFILING_PRINTF(MPool2D);
+  PROFILING_PRINTF(MPool2D_back);
+  PROFILING_PRINTF(AvgPool2D);
+  PROFILING_PRINTF(AvgPool2D_back);
+
 }
