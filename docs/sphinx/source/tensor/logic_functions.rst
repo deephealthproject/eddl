@@ -20,7 +20,9 @@ All
 .. code-block:: c++
 
     Tensor* t1 = new Tensor({true,false,false,false,true,true}, {2, 3});
+    t1->print(2);  // Temp.
     bool condition =  Tensor::all(t1);
+    cout << condition << endl; // Temp.
     //condition = false
     
 
@@ -32,13 +34,12 @@ Any
 .. code-block:: c++
 
     Tensor* t1 = new Tensor({true,false,false,false,true,true}, {2, 3});
-    Tensor* t2 = new Tensor({false,false,false,false,false,false}, {2, 3});
+    t1->print(2);  // Temp.
 
+    
     bool condition =  Tensor::any(t1);
+    cout << condition << endl; // Temp.
     //condition = true
-
-    bool condition2 =  Tensor::any(t2);
-    //condition2 = false
 
 
 Array contents
@@ -53,7 +54,7 @@ Is finite?
 .. code-block:: c++
 
     Tensor* t1 = new Tensor({12, INFINITY, NAN, -INFINITY, 0.0f, +INFINITY}, {2,3});
-    
+    t1->print(2);  // Temp.
     // [
     // [12.00 inf nan]
     // [-inf 0.00 inf]
@@ -61,6 +62,7 @@ Is finite?
 
     Tensor* r1 = nullptr;
     Tensor::isneginf(t1, r1); // static
+    r1->print(2);  // Temp.
     // [
     // [1.00 0.00 0.00]
     // [0.00 1.00 0.00]
@@ -76,7 +78,7 @@ Is inf?
 .. code-block:: c++
 
     Tensor* t1 = new Tensor({12, INFINITY, NAN, -INFINITY, 0.0f, +INFINITY}, {2,3});
-    
+    t1->print(2);  // Temp.
     // [
     // [12.00 inf nan]
     // [-inf 0.00 inf]
@@ -84,6 +86,7 @@ Is inf?
 
     Tensor* r1 = nullptr;
     Tensor::isneginf(t1, r1); // static
+    r1->print(2);  // Temp.
     // [
     // [0.00 1.00 0.00]
     // [1.00 0.00 1.00]
@@ -97,7 +100,7 @@ Is NaN?
 .. code-block:: c++
 
     Tensor* t1 = new Tensor({12, INFINITY, NAN, -INFINITY, 0.0f, +INFINITY}, {2,3});
-    
+    t1->print(2);  // Temp.
     // [
     // [12.00 inf nan]
     // [-inf 0.00 inf]
@@ -105,6 +108,7 @@ Is NaN?
 
     Tensor* r1 = nullptr;
     Tensor::isneginf(t1, r1); // static
+    r1->print(2);  // Temp.
     // [
     // [0.00 0.00 1.00]
     // [0.00 0.00 0.00]
@@ -119,7 +123,7 @@ Is -inf?
 .. code-block:: c++
 
     Tensor* t1 = new Tensor({12, INFINITY, NAN, -INFINITY, 0.0f, +INFINITY}, {2,3});
-    
+    t1->print(2);  // Temp.
     // [
     // [12.00 inf nan]
     // [-inf 0.00 inf]
@@ -127,6 +131,7 @@ Is -inf?
 
     Tensor* r1 = nullptr;
     Tensor::isneginf(t1, r1); // static
+    r1->print(2);  // Temp.
     // [
     // [0.00 0.00 0.00]
     // [1.00 0.00 0.00]
@@ -141,7 +146,7 @@ Is +inf?
 .. code-block:: c++
 
     Tensor* t1 = new Tensor({12, INFINITY, NAN, -INFINITY, 0.0f, +INFINITY}, {2,3});
-    
+    t1->print(2);  // Temp.
     // [
     // [12.00 inf nan]
     // [-inf 0.00 inf]
@@ -149,6 +154,7 @@ Is +inf?
 
     Tensor* r1 = nullptr;
     Tensor::isneginf(t1, r1); // static
+    r1->print(2);  // Temp.
     // [
     // [0.00 1.00 0.00]
     // [0.00 0.00 1.00]
@@ -168,6 +174,7 @@ Logical AND: "A & B"
 .. code-block:: c++
 
     Tensor* t1 = Tensor::full({5,5}, 1.0f);
+    t1->print(2);  // Temp.
     // [
     // [1.00 1.00 0.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -178,6 +185,7 @@ Logical AND: "A & B"
 
 
     Tensor* t2 = Tensor::full({5,5}, 0.0f);
+    t2->print(2);  // Temp.
     // [
     // [0.00 0.00 0.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00 0.00]
@@ -189,6 +197,7 @@ Logical AND: "A & B"
     Tensor* r = nullptr;
 
     Tensor::logical_and(t1, t2, r); // static
+    r->print(2);  // Temp.
     // [
     // [0.00 0.00 0.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00 0.00]
@@ -206,6 +215,7 @@ Logical OR: "A | B"
 .. code-block:: c++
 
     Tensor* t1 = Tensor::full({5,5}, 1.0f);
+    t1->print(2);  // Temp.
     // [
     // [1.00 1.00 0.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -216,6 +226,7 @@ Logical OR: "A | B"
 
 
     Tensor* t2 = Tensor::full({5,5}, 0.0f);
+    t2->print(2);  // Temp.
     // [
     // [0.00 0.00 0.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00 0.00]
@@ -227,6 +238,7 @@ Logical OR: "A | B"
     Tensor* r = nullptr;
 
     Tensor::logical_or(t1, t2, r); // static
+    r->print(2);  // Temp.
     // [
     // [1.00 1.00 0.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -244,6 +256,7 @@ Logical NOT: "~A"
 .. code-block:: c++
 
     Tensor* t1 = Tensor::full({5,5}, 1.0f);
+    t1->print(2);  // Temp.
     // [
     // [1.00 1.00 0.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -255,6 +268,7 @@ Logical NOT: "~A"
     Tensor* r = nullptr;
 
     Tensor::logical_not(t1, r); // static
+    r->print(2);  // Temp.
     // [
     // [0.00 0.00 0.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00 0.00]
@@ -272,6 +286,7 @@ Logical XOR (Exclusive OR): "A ^ B"
 .. code-block:: c++
 
     Tensor* t1 = Tensor::full({5,5}, 1.0f);
+    t1->print(2);  // Temp.
     // [
     // [1.00 1.00 0.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -282,6 +297,7 @@ Logical XOR (Exclusive OR): "A ^ B"
 
 
     Tensor* t2 = Tensor::full({5,5}, 0.0f);
+    t2->print(2);  // Temp.
     // [
     // [0.00 0.00 0.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00 0.00]
@@ -293,6 +309,7 @@ Logical XOR (Exclusive OR): "A ^ B"
     Tensor* r = nullptr;
 
     Tensor::logical_xor(t1, t2, r); // static
+    r->print(2);  // Temp.
     // [
     // [1.00 1.00 0.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -318,6 +335,7 @@ Greater than: "A > B"
 .. code-block:: c++
 
     Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -327,6 +345,7 @@ Greater than: "A > B"
     // ]
 
     t1->greater_(3.0f); // In-place
+    t1->print(2);  // Temp.
     // [
     // [0.00 0.00 0.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -350,6 +369,7 @@ Greater equal: "A >= B"
 
 
     Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -359,6 +379,7 @@ Greater equal: "A >= B"
     // ]
 
     t1->greater_equal_(3.0f); // In-place
+    t1->print(2);  // Temp.
     // [
     // [0.00 0.00 1.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -382,6 +403,7 @@ Less than: "A < B"
 .. code-block:: c++
 
     Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -391,6 +413,7 @@ Less than: "A < B"
     // ]
 
     t1->less_(3.0f); // In-place
+    t1->print(2);  // Temp.
     // [
     // [1.00 1.00 0.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00 0.00]
@@ -436,6 +459,7 @@ Equal: "A == B"
 .. code-block:: c++
 
     Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -445,6 +469,7 @@ Equal: "A == B"
     // ]
 
     t1->equal_(3.0f); // In-place
+    t1->print(2);  // Temp.
     // [
     // [0.00 0.00 1.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00 0.00]
@@ -472,6 +497,7 @@ Not Equal: "A != B"
 
 
     Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -481,6 +507,7 @@ Not Equal: "A != B"
     // ]
 
     t1->not_equal_(3.0f); // In-place
+    t1->print(2);  // Temp.
     // [
     // [1.00 1.00 0.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -507,6 +534,7 @@ All Close?
 .. code-block:: c++
 
     Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -517,6 +545,7 @@ All Close?
 
 
     Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    t2->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -526,6 +555,7 @@ All Close?
     // ]
 
     float result = Tensor::allclose(t1, t2);
+    cout << result << endl;
     // 1.00
     
 
@@ -537,6 +567,7 @@ Is Close?
 .. code-block:: c++
 
     Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -547,6 +578,7 @@ Is Close?
 
 
     Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    t2->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -558,7 +590,8 @@ Is Close?
     Tensor* t3 = new Tensor({5,5});
 
 
-    Tensor::isclose(t1, t2, t3);  
+    Tensor::isclose(t1, t2, t3);
+    t3->print(2);  // Temp.  
     // [
     // [1.00 1.00 1.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -578,6 +611,7 @@ Greater Than: "A > B"
 .. code-block:: c++
 
     Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -588,6 +622,7 @@ Greater Than: "A > B"
 
 
     Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    t2->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -597,6 +632,7 @@ Greater Than: "A > B"
     // ]
 
     Tensor* t3 = t1->greater(t2); // returns new tensor
+    t3->print(2);  // Temp.
     // [
     // [0.00 0.00 0.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00 0.00]
@@ -619,6 +655,7 @@ Greater Equal: "A >= B"
 
 
     Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -629,6 +666,7 @@ Greater Equal: "A >= B"
 
 
     Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    t2->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -638,6 +676,7 @@ Greater Equal: "A >= B"
     // ]
 
     Tensor* t3 = t1->greater_equal(t2); // returns new tensor
+    t3->print(2);  // Temp.
     // [
     // [1.00 1.00 1.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -661,6 +700,7 @@ Less Than: "A < B"
 
     
     Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -671,6 +711,7 @@ Less Than: "A < B"
 
 
     Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    t2->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -680,6 +721,7 @@ Less Than: "A < B"
     // ]
 
     Tensor* t3 = t1->less(t2); // returns new tensor
+    t3->print(2);  // Temp.
     // [
     // [0.00 0.00 0.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00 0.00]
@@ -702,6 +744,7 @@ Less Equal: "A <= B"
 .. code-block:: c++
 
     Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -712,6 +755,7 @@ Less Equal: "A <= B"
 
 
     Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    t2->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -721,6 +765,7 @@ Less Equal: "A <= B"
     // ]
 
     Tensor* t3 = t1->less_equal(t2); // returns new tensor
+    t3->print(2);  // Temp.
     // [
     // [1.00 1.00 1.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -742,6 +787,7 @@ Equal: "A == B"
 .. code-block:: c++
     
     Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -752,6 +798,7 @@ Equal: "A == B"
 
 
     Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    t2->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -761,6 +808,7 @@ Equal: "A == B"
     // ]
 
     Tensor* t3 = t1->equal(t2); // returns new tensor
+    t3->print(2);  // Temp.
     // [
     // [1.00 1.00 1.00 1.00 1.00]
     // [1.00 1.00 1.00 1.00 1.00]
@@ -786,6 +834,7 @@ Not Equal: "A != B"
 
 
     Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    t1->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -796,6 +845,7 @@ Not Equal: "A != B"
 
 
     Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    t2->print(2);  // Temp.
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -805,6 +855,7 @@ Not Equal: "A != B"
     // ]
 
     Tensor* t3 = t1->not_equal(t2); // returns new tensor
+    t3->print(2);  // Temp.
     // [
     // [0.00 0.00 0.00 0.00 0.00]
     // [0.00 0.00 0.00 0.00 0.00]

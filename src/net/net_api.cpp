@@ -186,6 +186,69 @@ void Net::setlr(vector <float> p)
   snets[i]->optimizer->change(p);
 }
 
+vector<vtensor> Net::get_parameters(bool deepcopy){
+    vector<vtensor> params;
+
+    // Collect layer params
+    for(auto &l : this->layers){
+        if(!deepcopy){
+            params.push_back(l->params);
+        }else{
+            // Clone parameters
+            vtensor lp;
+            for(auto &param : l->params){
+                Tensor* new_param = param->clone(); // TODO: Flag toCPU()?
+                lp.push_back(new_param);
+            }
+
+            // Add new params
+            params.push_back(lp);
+        }
+    }
+
+    return params;
+}
+
+void Net::set_parameters(const vector<vtensor>& params){
+    // Check the number of layers
+    if(params.size() != this->layers.size()){
+        msg("AssertionError: The number of layers in params does not match the number of layers in this network ("
+        + std::to_string(params.size())  + "!=" + std::to_string(this->layers.size()) +")",
+        "Net::set_parameters");
+    }
+
+    // Check the number of params per layer
+    for(int i=0; i<this->layers.size(); i++){
+        Layer* l = this->layers[i];  // Alias
+
+        // Check number of params
+        if(params[i].size() != l->params.size()){
+            msg("AssertionError: The number of parameters in layer '" + std::to_string(i) +
+            "'(" + l->name +") does not match the number of parameters in the given vector<Tensor*>. (" +
+            std::to_string(l->params.size()) + "!=" + std::to_string(params[i].size())  +")",
+                "Net::set_parameters");
+        }
+    }
+
+    // Set layer params
+    for(int i=0; i<this->layers.size(); i++){
+
+        // Delete current params
+        for(int j=this->layers[i]->params.size()-1; j>=0; j--){
+            cout << "Deleting params " << j << " from layer " << i << "(" << this->layers[i]->name << ")" << endl;
+            if (this->layers[i]->params[i]!= nullptr){
+                delete this->layers[i]->params[i];
+            }
+        }
+
+        // Empty params
+        this->layers[i]->params.clear();
+
+        // Add new params
+        this->layers[i]->params = params[i];  // Pass reference. Do not copy
+    }
+}
+
 //////////////////////////////////
 // API functions
 
@@ -213,7 +276,8 @@ void Net::forward(vector<Tensor*> in)
 
       // Distribute to snets inputs
       for (int i = 0; i < in.size(); i++)
-      distributeTensor(lin[i]);
+        distributeTensor(lin[i]);
+      
 
     }
 
@@ -760,7 +824,6 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
           msg("Input tensors with different time steps","fit_recurrent");
       }
     }
-
   }
 
   if (tout.size()) {
@@ -778,9 +841,7 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
         if (yt[i]->shape[0]!=outl)
         msg("Output tensors with different time steps","fit_recurrent");
       }
-
     }
-
   }
 
   // prepare data for unroll net
@@ -827,7 +888,6 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
     }
   }
 
-  //cout<<"Tensors unrolled\n";
 }
 
 void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {

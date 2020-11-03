@@ -24,6 +24,8 @@ TEST(TensorTestSuite, tensor_comparison_all){
     ASSERT_TRUE(Tensor::all(t1));
     ASSERT_FALSE(Tensor::all(t2));
 
+    delete t1;
+    delete t2;
 
     // Test GPU
 #ifdef cGPU
@@ -34,7 +36,14 @@ TEST(TensorTestSuite, tensor_comparison_all){
     Tensor* t2_cpu = Tensor::ones({3, 1000, 1000}); t2_cpu->ptr[5] = 0.0f;
     Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
     ASSERT_FALSE(Tensor::all(t2_cpu) || Tensor::all(t2_gpu));
+
+    delete t1_cpu;
+    delete t1_gpu;
+    delete t2_cpu;
+    delete t2_gpu;
+
 #endif
+
 }
 
 TEST(TensorTestSuite, tensor_comparison_any){
@@ -49,6 +58,10 @@ TEST(TensorTestSuite, tensor_comparison_any){
     ASSERT_FALSE(Tensor::any(t2));
     ASSERT_TRUE(Tensor::any(t3));
 
+    delete t1;
+    delete t2;
+    delete t3;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t1_cpu = Tensor::ones({3, 1000, 1000});
@@ -62,6 +75,14 @@ TEST(TensorTestSuite, tensor_comparison_any){
     Tensor* t3_cpu = Tensor::zeros({3, 1000, 1000}); t3_cpu->ptr[5] = 1.0f;
     Tensor* t3_gpu = t3_cpu->clone(); t3_gpu->toGPU();
     ASSERT_TRUE(Tensor::any(t3_cpu) && Tensor::any(t3_gpu));
+
+    delete t1_cpu;
+    delete t1_gpu;
+    delete t2_cpu;
+    delete t2_gpu;
+    delete t3_cpu;
+    delete t3_gpu;
+
 #endif
 }
 
@@ -110,6 +131,10 @@ TEST(TensorTestSuite, tensor_comparison_greaterT){
     Tensor* new_t = t1_A->greater(t1_B);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1_A;
+    delete t1_B;
+    delete new_t;
 
     // Test GPU
     #ifdef cGPU
@@ -123,6 +148,14 @@ TEST(TensorTestSuite, tensor_comparison_greaterT){
         Tensor* new_t_gpu = t_gpu_A->greater(t_gpu_B); new_t_gpu->toCPU();
 
         ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+        delete t_cpu_A;
+        delete t_gpu_A;
+        delete t_cpu_B;
+        delete t_gpu_B;
+        delete new_t_cpu;
+        delete new_t_gpu;
+
     #endif
 }
 
@@ -144,6 +177,14 @@ TEST(TensorTestSuite, tensor_comparison_greater_equalT){
     Tensor* new_t2 = t2_A->greater_equal(t2_B);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t2, 10e-4));
 
+    delete t1_ref;
+    delete t1_A;
+    delete t1_B;
+    delete new_t;
+    delete t2_A;
+    delete t2_B;
+    delete new_t2;
+
 
     // Test GPU
 #ifdef cGPU
@@ -157,6 +198,14 @@ TEST(TensorTestSuite, tensor_comparison_greater_equalT){
         Tensor* new_t_gpu = t_gpu_A->greater_equal(t_gpu_B); new_t_gpu->toCPU();
 
         ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+        delete t_cpu_A;
+        delete t_gpu_A;
+        delete t_cpu_B;
+        delete t_gpu_B;
+        delete new_t_cpu;
+        delete new_t_gpu;
+
 #endif
 }
 
@@ -172,6 +221,10 @@ TEST(TensorTestSuite, tensor_comparison_lessT){
     Tensor* new_t = t1_A->less(t1_B);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1_A;
+    delete t1_B;
+    delete new_t;
 
     // Test GPU
 #ifdef cGPU
@@ -185,6 +238,14 @@ TEST(TensorTestSuite, tensor_comparison_lessT){
         Tensor* new_t_gpu = t_gpu_A->less(t_gpu_B); new_t_gpu->toCPU();
 
         ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+        delete t_cpu_A;
+        delete t_gpu_A;
+        delete t_cpu_B;
+        delete t_gpu_B;
+        delete new_t_cpu;
+        delete new_t_gpu;
+
 #endif
 }
 
@@ -206,6 +267,14 @@ TEST(TensorTestSuite, tensor_comparison_less_equalT){
     Tensor* new_t2 = t2_A->greater_equal(t2_B);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t2, 10e-4));
 
+    delete t1_ref;
+    delete t1_A;
+    delete t1_B;
+    delete new_t;
+    delete t2_A;
+    delete t2_B;
+    delete new_t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
@@ -218,6 +287,14 @@ TEST(TensorTestSuite, tensor_comparison_less_equalT){
         Tensor* new_t_gpu = t_gpu_A->less_equal(t_gpu_B); new_t_gpu->toCPU();
 
         ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+        delete t_cpu_A;
+        delete t_gpu_A;
+        delete t_cpu_B;
+        delete t_gpu_B;
+        delete new_t_cpu;
+        delete new_t_gpu;
+
 #endif
 }
 
@@ -237,6 +314,15 @@ TEST(TensorTestSuite, tensor_comparison_equalT){
     Tensor* new_t2 = t2_A->equal(t2_B);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 
+    delete t1_ref;
+    delete t1_A;
+    delete t1_B;
+    delete new_t;
+    delete t2_ref;
+    delete t2_A;
+    delete t2_B;
+    delete new_t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
@@ -249,6 +335,14 @@ TEST(TensorTestSuite, tensor_comparison_equalT){
         Tensor* new_t_gpu = t_gpu_A->equal(t_gpu_B); new_t_gpu->toCPU();
 
         ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+        delete t_cpu_A;
+        delete t_gpu_A;
+        delete t_cpu_B;
+        delete t_gpu_B;
+        delete new_t_cpu;
+        delete new_t_gpu;
+
 #endif
 }
 
@@ -268,6 +362,15 @@ TEST(TensorTestSuite, tensor_comparison_not_equalT){
     Tensor* new_t2 = t2_A->not_equal(t2_B);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 
+    delete t1_ref;
+    delete t1_A;
+    delete t1_B;
+    delete new_t;
+    delete t2_ref;
+    delete t2_A;
+    delete t2_B;
+    delete new_t2;
+
 
     // Test GPU
 #ifdef cGPU
@@ -281,5 +384,13 @@ TEST(TensorTestSuite, tensor_comparison_not_equalT){
         Tensor* new_t_gpu = t_gpu_A->not_equal(t_gpu_B); new_t_gpu->toCPU();
 
         ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+        delete t_cpu_A;
+        delete t_gpu_A;
+        delete t_cpu_B;
+        delete t_gpu_B;
+        delete new_t_cpu;
+        delete new_t_gpu;
+        
 #endif
 }
