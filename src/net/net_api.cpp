@@ -143,9 +143,6 @@ void *update_t(void *t) {
 }
 /////////////////////////////////////////
 
-
-
-
 /////////////////////////////////////////
 // "a ring to rule them all"
 void Net::run_snets(void *(*F)(void *t))
@@ -1172,12 +1169,5 @@ vtensor Net::predict(vtensor tin) {
   }
 
 }
-
-
-
-
-
-
-
 
 //////

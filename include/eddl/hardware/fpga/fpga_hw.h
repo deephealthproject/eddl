@@ -20,7 +20,7 @@
 
 extern cl::CommandQueue q;
 
-#define FPGA_DEBUG
+//#define FPGA_DEBUG
 
 #include "eddl/hardware/fpga/fpga_enables.h"
 
@@ -49,8 +49,9 @@ extern cl::Kernel kernel_select,      kernel_select_back, kernel_set_select, ker
 extern cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 extern cl::Kernel kernel_select_nn,   kernel_select_back_nn, kernel_set_select_back_nn, kernel_set_select_nn;
 
-// conv kernels (2)
+// conv kernels (3)
 extern cl::Kernel kernel_im2col,      kernel_conv2d;
+extern cl::Kernel kernel_conv2D_K3x3_S1x1_P1x1_BS1;
 
 // create kernels (3)
 extern cl::Kernel kernel_range, kernel_eye, kernel_diag;

@@ -679,13 +679,20 @@ namespace eddl {
       *  @param l  Layer to detach
       *  @return   Detached Layer
     */
-    layer detach(layer l);/**
+    layer detach(layer l);
+    
+    /**
       *  @brief Sets the provided layers as detached, excluding them from the computation of the gradients.
       *
       *  @param l  Layers to detach
       *  @return   Detached Layers
     */
     vlayer detach(vlayer l);
+
+    /**
+      * @brief Shows profile information.
+    */
+    void show_profile();   
 
 
     ///////////////////////////////////////

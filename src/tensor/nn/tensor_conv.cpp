@@ -8,6 +8,7 @@
 */
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -20,9 +21,11 @@
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
 
+PROFILING_ENABLE_EXTERN(Conv2D);
+PROFILING_ENABLE_EXTERN(Conv2D_grad);
+PROFILING_ENABLE_EXTERN(Conv2D_back);
+
 namespace tensorNN{
-
-
 
 void Conv2D(ConvolDescriptor *D) {
     /////////////////////////////////////////////////////////////////////
@@ -32,6 +35,8 @@ void Conv2D(ConvolDescriptor *D) {
     //// D is a ConvolDescriptor
     /////////////////////////////////////////////////////////////////////
     if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
+
+    PROFILING_HEADER(Conv2D);
 
     D->O->tsem->lock();
     if (D->I->isCPU()) {
@@ -50,6 +55,8 @@ void Conv2D(ConvolDescriptor *D) {
     }
 #endif
     D->O->tsem->unlock();
+
+    PROFILING_FOOTER(Conv2D);
 }
 
 void Conv2D_grad(ConvolDescriptor *D) {
@@ -60,6 +67,8 @@ void Conv2D_grad(ConvolDescriptor *D) {
     //// D is a ConvolDescriptor
     /////////////////////////////////////////////////////////////////////
     if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
+
+    PROFILING_HEADER(Conv2D_grad);
 
     D->gK->tsem->lock();
     if (D->I->isCPU()) {
@@ -77,6 +86,8 @@ void Conv2D_grad(ConvolDescriptor *D) {
     }
 #endif
     D->gK->tsem->unlock();
+
+    PROFILING_FOOTER(Conv2D_grad);
 }
 
 void Conv2D_back(ConvolDescriptor *D) {
@@ -87,6 +98,8 @@ void Conv2D_back(ConvolDescriptor *D) {
     //// D is a ConvolDescriptor
     /////////////////////////////////////////////////////////////////////
     if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
+
+    PROFILING_HEADER(Conv2D_back);
 
     D->ID->tsem->lock();
     if (D->I->isCPU()) {
@@ -104,6 +117,8 @@ void Conv2D_back(ConvolDescriptor *D) {
     }
 #endif
     D->ID->tsem->unlock();
+
+    PROFILING_FOOTER(Conv2D_back);
 }
 
 }
