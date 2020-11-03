@@ -8,6 +8,7 @@
 */
 #include "eddl/tensor/tensor.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -21,7 +22,32 @@
 
 using namespace std;
 
+PROFILING_ENABLE_EXTERN(all);
+PROFILING_ENABLE_EXTERN(any);
+PROFILING_ENABLE_EXTERN(isfinite);
+PROFILING_ENABLE_EXTERN(isinf);
+PROFILING_ENABLE_EXTERN(isnan);
+PROFILING_ENABLE_EXTERN(isneginf);
+PROFILING_ENABLE_EXTERN(isposinf);
+PROFILING_ENABLE_EXTERN(logical_and);
+PROFILING_ENABLE_EXTERN(logical_or);
+PROFILING_ENABLE_EXTERN(logical_not);
+PROFILING_ENABLE_EXTERN(logical_xor);
+PROFILING_ENABLE_EXTERN(allclose);
+PROFILING_ENABLE_EXTERN(isclose);
+PROFILING_ENABLE_EXTERN(greater);
+PROFILING_ENABLE_EXTERN(greater_equal);
+PROFILING_ENABLE_EXTERN(less);
+PROFILING_ENABLE_EXTERN(less_equal);
+PROFILING_ENABLE_EXTERN(equal);
+PROFILING_ENABLE_EXTERN(not_equal);
+PROFILING_ENABLE_EXTERN(equivalent);
+
+
 bool Tensor::all(Tensor *A){
+
+    PROFILING_HEADER(all);
+
     bool res = false;
 
     if (A->isCPU()) {
@@ -39,10 +65,15 @@ bool Tensor::all(Tensor *A){
     }
 #endif
 
+    PROFILING_FOOTER(all);
+
     return res;
 }
 
 bool Tensor::any(Tensor *A){
+
+    PROFILING_HEADER(any);
+
     bool res = false;
 
     if (A->isCPU()) {
@@ -60,12 +91,16 @@ bool Tensor::any(Tensor *A){
     }
 #endif
 
+   PROFILING_FOOTER(any);
+
    return res;
 }
 
 // Logic funcions: Logical ops
 void Tensor::isfinite(Tensor *A, Tensor* B){
     checkCompatibility(A, B, "Tensor::isfinite");
+
+    PROFILING_HEADER(isfinite);
 
     if (A->isCPU()) {
         cpu_isfinite(A, B);
@@ -81,10 +116,13 @@ void Tensor::isfinite(Tensor *A, Tensor* B){
          fpga_isfinite(A, B);
         }
 #endif
+    PROFILING_FOOTER(isfinite);
 }
 
 void Tensor::isinf(Tensor *A, Tensor* B){
     checkCompatibility(A, B, "Tensor::isinf");
+
+    PROFILING_HEADER(isinf);
 
     if (A->isCPU()) {
         cpu_isinf(A, B);
@@ -100,10 +138,13 @@ void Tensor::isinf(Tensor *A, Tensor* B){
           fpga_isinf(A, B);
         }
 #endif
+    PROFILING_FOOTER(isinf);
 }
 
 void Tensor::isnan(Tensor *A, Tensor* B){
     checkCompatibility(A, B, "Tensor::isnan");
+
+    PROFILING_HEADER(isnan);
 
     if (A->isCPU()) {
         cpu_isnan(A, B);
@@ -119,10 +160,13 @@ void Tensor::isnan(Tensor *A, Tensor* B){
           fpga_isnan(A, B);
         }
 #endif
+    PROFILING_FOOTER(isnan);
 }
 
 void Tensor::isneginf(Tensor *A, Tensor* B){
     checkCompatibility(A, B, "Tensor::isneginf");
+
+    PROFILING_HEADER(isneginf);
 
     if (A->isCPU()) {
         cpu_isneginf(A, B);
@@ -138,10 +182,13 @@ void Tensor::isneginf(Tensor *A, Tensor* B){
          fpga_isneginf(A, B);
         }
 #endif
+    PROFILING_FOOTER(isneginf);
 }
 
 void Tensor::isposinf(Tensor *A, Tensor* B){
     checkCompatibility(A, B, "Tensor::isposinf");
+
+    PROFILING_HEADER(isposinf);
 
     if (A->isCPU()) {
         cpu_isposinf(A, B);
@@ -157,6 +204,7 @@ void Tensor::isposinf(Tensor *A, Tensor* B){
          fpga_isposinf(A, B);
         }
 #endif
+    PROFILING_FOOTER(isposinf);
 }
 
 
@@ -164,6 +212,8 @@ void Tensor::isposinf(Tensor *A, Tensor* B){
 
 void Tensor::logical_and(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::logical_and");
+
+    PROFILING_HEADER(logical_and);
 
     if (A->isCPU()) {
         cpu_logical_and(A, B, C);
@@ -179,10 +229,13 @@ void Tensor::logical_and(Tensor *A, Tensor *B, Tensor *C){
           fpga_logical_and(A, B, C);
         }
 #endif
+    PROFILING_FOOTER(logical_and);
 }
 
 void Tensor::logical_or(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::logical_or");
+
+    PROFILING_HEADER(logical_or);
 
     if (A->isCPU()) {
         cpu_logical_or(A, B, C);
@@ -198,10 +251,13 @@ void Tensor::logical_or(Tensor *A, Tensor *B, Tensor *C){
           fpga_logical_or(A, B, C);
         }
 #endif
+    PROFILING_FOOTER(logical_or);
 }
 
 void Tensor::logical_not(Tensor *A, Tensor *B){
     checkCompatibility(A, B, "Tensor::logical_not");
+
+    PROFILING_HEADER(logical_not);
 
     if (A->isCPU()) {
         cpu_logical_not(A, B);
@@ -217,10 +273,13 @@ void Tensor::logical_not(Tensor *A, Tensor *B){
           fpga_logical_not(A, B);
         }
 #endif
+    PROFILING_FOOTER(logical_not);
 }
 
 void Tensor::logical_xor(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::logical_xor");
+
+    PROFILING_HEADER(logical_xor);
 
     if (A->isCPU()) {
         cpu_logical_xor(A, B, C);
@@ -236,11 +295,14 @@ void Tensor::logical_xor(Tensor *A, Tensor *B, Tensor *C){
           fpga_logical_xor(A, B, C);
         }
 #endif
+    PROFILING_FOOTER(logical_xor);
 }
 
 
 bool Tensor::allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     checkCompatibility(A, B, "Tensor::allclose");
+
+    PROFILING_HEADER(allclose);
 
     if (A->isCPU()) {
         return cpu_allclose(A, B, rtol, atol, equal_nan);
@@ -256,12 +318,16 @@ bool Tensor::allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_n
           return fpga_allclose(A, B, rtol, atol, equal_nan);
         }
 #endif
+    PROFILING_FOOTER(allclose);
+
     return 0;
 }
 
 
 void Tensor::isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan){
     checkCompatibility(A, B, C, "Tensor::isclose");
+
+    PROFILING_HEADER(isclose);
 
     if (A->isCPU()) {
         cpu_isclose(A, B, C, rtol, atol, equal_nan);
@@ -277,6 +343,7 @@ void Tensor::isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bo
           fpga_isclose(A, B, C, rtol, atol, equal_nan);
         }
 #endif
+    PROFILING_FOOTER(isclose);
 }
 
 void Tensor::greater_(float v){
@@ -291,6 +358,8 @@ Tensor* Tensor::greater(float v){
 
 void Tensor::greater(Tensor *A, Tensor *B, float v){
     checkCompatibility(A, B, "Tensor::greater");
+
+    PROFILING_HEADER(greater);
 
     if (A->isCPU()) {
         cpu_greater(A, B, v);
@@ -307,6 +376,8 @@ void Tensor::greater(Tensor *A, Tensor *B, float v){
             fpga_greater(A, B, v);
           }
 #endif
+
+    PROFILING_FOOTER(greater);
 }
 
 Tensor* Tensor::greater(Tensor *A){
@@ -317,6 +388,8 @@ Tensor* Tensor::greater(Tensor *A){
 
 void Tensor::greater(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::greater");
+
+    PROFILING_HEADER(greater);
 
     if (A->isCPU()) {
         cpu_greater(A, B, C);
@@ -332,6 +405,8 @@ void Tensor::greater(Tensor *A, Tensor *B, Tensor *C){
             fpga_greater(A, B, C);
         }
 #endif
+
+    PROFILING_FOOTER(greater);
 }
 
 
@@ -348,6 +423,8 @@ Tensor* Tensor::greater_equal(float v){
 void Tensor::greater_equal(Tensor *A, Tensor *B, float v){
     checkCompatibility(A, B, "Tensor::greater_equal");
 
+    PROFILING_HEADER(greater_equal);
+
     if (A->isCPU()) {
         cpu_greater_equal(A, B, v);
     }
@@ -363,6 +440,7 @@ void Tensor::greater_equal(Tensor *A, Tensor *B, float v){
             fpga_greater_equal(A, B, v);
           }
 #endif
+    PROFILING_FOOTER(greater_equal);
 }
 
 Tensor* Tensor::greater_equal(Tensor *A){
@@ -373,6 +451,8 @@ Tensor* Tensor::greater_equal(Tensor *A){
 
 void Tensor::greater_equal(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::greater_equal");
+
+    PROFILING_HEADER(greater_equal);
 
     if (A->isCPU()) {
         cpu_greater_equal(A, B, C);
@@ -389,6 +469,8 @@ void Tensor::greater_equal(Tensor *A, Tensor *B, Tensor *C){
         fpga_greater_equal(A, B, C);
         }
 #endif
+
+    PROFILING_FOOTER(greater_equal);
 }
 
 
@@ -405,6 +487,8 @@ Tensor* Tensor::less(float v){
 void Tensor::less(Tensor *A, Tensor *B, float v){
     checkCompatibility(A, B, "Tensor::less");
 
+    PROFILING_HEADER(less);
+
     if (A->isCPU()) {
         cpu_less(A, B, v);
     }
@@ -420,6 +504,7 @@ void Tensor::less(Tensor *A, Tensor *B, float v){
              fpga_less(A, B, v);
         }
 #endif
+    PROFILING_FOOTER(less);
 }
 
 Tensor* Tensor::less(Tensor *A){
@@ -430,6 +515,8 @@ Tensor* Tensor::less(Tensor *A){
 
 void Tensor::less(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::less");
+
+    PROFILING_HEADER(less);
 
     if (A->isCPU()) {
         cpu_less(A, B, C);
@@ -445,6 +532,8 @@ void Tensor::less(Tensor *A, Tensor *B, Tensor *C){
          fpga_less(A, B, C);
         }
 #endif
+
+    PROFILING_FOOTER(less);
 }
 
 
@@ -461,6 +550,8 @@ Tensor* Tensor::less_equal(float v){
 void Tensor::less_equal(Tensor *A, Tensor *B, float v){
     checkCompatibility(A, B, "Tensor::less_equal");
 
+    PROFILING_HEADER(less_equal);
+
     if (A->isCPU()) {
         cpu_less_equal(A, B, v);
     }
@@ -476,6 +567,8 @@ void Tensor::less_equal(Tensor *A, Tensor *B, float v){
             fpga_less_equal(A, B, v);
           }
 #endif
+
+    PROFILING_FOOTER(less_equal);
 }
 
 
@@ -487,6 +580,8 @@ Tensor* Tensor::less_equal(Tensor *A){
 
 void Tensor::less_equal(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::less_equal");
+
+    PROFILING_HEADER(less_equal);
 
     if (A->isCPU()) {
         cpu_less_equal(A, B, C);
@@ -502,6 +597,7 @@ void Tensor::less_equal(Tensor *A, Tensor *B, Tensor *C){
           fpga_less_equal(A, B, C);
         }
 #endif
+    PROFILING_FOOTER(less_equal);
 }
 
 
@@ -518,6 +614,8 @@ Tensor* Tensor::equal(float v){
 void Tensor::equal(Tensor *A, Tensor *B, float v){
     checkCompatibility(A, B, "Tensor::equal");
 
+    PROFILING_HEADER(equal);
+
     if (A->isCPU()) {
         cpu_equal(A, B, v);
     }
@@ -533,6 +631,8 @@ void Tensor::equal(Tensor *A, Tensor *B, float v){
             fpga_equal(A, B, v);
           }
 #endif
+
+    PROFILING_FOOTER(equal);
 }
 
 Tensor* Tensor::equal(Tensor *A){
@@ -543,6 +643,8 @@ Tensor* Tensor::equal(Tensor *A){
 
 void Tensor::equal(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::equal");
+
+    PROFILING_HEADER(equal);
 
     if (A->isCPU()) {
         cpu_equal(A, B, C);
@@ -558,6 +660,8 @@ void Tensor::equal(Tensor *A, Tensor *B, Tensor *C){
          fpga_equal(A, B, C);
         }
 #endif
+
+    PROFILING_FOOTER(equal);
 }
 
 void Tensor::not_equal_(float v){
@@ -572,6 +676,8 @@ Tensor* Tensor::not_equal(float v){
 
 void Tensor::not_equal(Tensor *A, Tensor *B, float v){
     checkCompatibility(A, B, "Tensor::not_equal");
+
+    PROFILING_HEADER(not_equal);
 
     if (A->isCPU()) {
         cpu_not_equal(A, B, v);
@@ -588,6 +694,8 @@ void Tensor::not_equal(Tensor *A, Tensor *B, float v){
             fpga_not_equal(A, B, v);
           }
 #endif
+
+    PROFILING_FOOTER(not_equal);
 }
 
 Tensor* Tensor::not_equal(Tensor *A){
@@ -598,6 +706,8 @@ Tensor* Tensor::not_equal(Tensor *A){
 
 void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::not_equal");
+
+    PROFILING_HEADER(not_equal);
 
     if (A->isCPU()) {
         cpu_not_equal(A, B, C);
@@ -613,6 +723,8 @@ void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
            fpga_not_equal(A, B, C);
         }
 #endif
+
+    PROFILING_FOOTER(not_equal);
 }
 
 int Tensor::eqsize(Tensor *A, Tensor *B){
@@ -639,12 +751,15 @@ int Tensor::sameShape(Tensor *A, Tensor *B) {
 }
 
 int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_nan) {
+
     // Equal device
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::equivalent");
 
     // Equal ndims and shapes
     if (!sameShape(A, B)) return 0;
 
+    PROFILING_HEADER(equivalent);
+    
     // Equal data
     if (A->isCPU() && B->isCPU()) {
 //        return cpu_allclose(A, B, rtol, atol, equal_nan);
@@ -662,6 +777,8 @@ int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_
 //          return fpga_equal2(A, B, epsilon);
         }
 #endif
+
+    PROFILING_FOOTER(equivalent);
 
     return 1;
 }

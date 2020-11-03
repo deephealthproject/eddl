@@ -536,7 +536,34 @@ PROFILING_ENABLE(ThresholdedReLu);
 PROFILING_ENABLE(Conv2D);
 PROFILING_ENABLE(Conv2D_grad);
 PROFILING_ENABLE(Conv2D_back);
-
+// losses
+PROFILING_ENABLE(cent);
+// generator
+PROFILING_ENABLE(fill_rand_uniform);
+PROFILING_ENABLE(fill_rand_signed_uniform);
+PROFILING_ENABLE(fill_rand_normal);
+PROFILING_ENABLE(fill_rand_binary);
+// comparison
+PROFILING_ENABLE(all);
+PROFILING_ENABLE(any);
+PROFILING_ENABLE(isfinite);
+PROFILING_ENABLE(isinf);
+PROFILING_ENABLE(isnan);
+PROFILING_ENABLE(isneginf);
+PROFILING_ENABLE(isposinf);
+PROFILING_ENABLE(logical_and);
+PROFILING_ENABLE(logical_or);
+PROFILING_ENABLE(logical_not);
+PROFILING_ENABLE(logical_xor);
+PROFILING_ENABLE(allclose);
+PROFILING_ENABLE(isclose);
+PROFILING_ENABLE(greater);
+PROFILING_ENABLE(greater_equal);
+PROFILING_ENABLE(less);
+PROFILING_ENABLE(less_equal);
+PROFILING_ENABLE(equal);
+PROFILING_ENABLE(not_equal);
+PROFILING_ENABLE(equivalent);
 
 void __show_profile() {
 
@@ -653,5 +680,32 @@ void __show_profile() {
   PROFILING_PRINTF(Conv2D);
   PROFILING_PRINTF(Conv2D_grad);
   PROFILING_PRINTF(Conv2D_back);
-
+  // losses
+  PROFILING_PRINTF(cent);
+  // generator
+  PROFILING_PRINTF(fill_rand_uniform);
+  PROFILING_PRINTF(fill_rand_signed_uniform);
+  PROFILING_PRINTF(fill_rand_normal);
+  PROFILING_PRINTF(fill_rand_binary);  
+  // comparison
+  PROFILING_PRINTF(all);
+  PROFILING_PRINTF(any);
+  PROFILING_PRINTF(isfinite);
+  PROFILING_PRINTF(isinf);
+  PROFILING_PRINTF(isnan);
+  PROFILING_PRINTF(isneginf);
+  PROFILING_PRINTF(isposinf);
+  PROFILING_PRINTF(logical_and);
+  PROFILING_PRINTF(logical_or);
+  PROFILING_PRINTF(logical_not);
+  PROFILING_PRINTF(logical_xor);
+  PROFILING_PRINTF(allclose);
+  PROFILING_PRINTF(isclose);
+  PROFILING_PRINTF(greater);
+  PROFILING_PRINTF(greater_equal);
+  PROFILING_PRINTF(less);
+  PROFILING_PRINTF(less_equal);
+  PROFILING_PRINTF(equal);
+  PROFILING_PRINTF(not_equal);
+  PROFILING_PRINTF(equivalent);
 }
