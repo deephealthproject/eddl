@@ -52,15 +52,20 @@ int main(int argc, char **argv) {
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
 	      //CS_FPGA({1})
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
     // View model
     summary(net);
+
+
+    // [DEBUG STUFF]
+    vector<vtensor> params = get_parameters(net, true);
+    set_parameters(net, params);
 
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
