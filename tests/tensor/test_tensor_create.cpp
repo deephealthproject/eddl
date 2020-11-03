@@ -20,6 +20,9 @@ TEST(TensorTestSuite, tensor_create_data){
                               4.0f, 5.0f, 6.0f}, {2, 3}, DEV_CPU);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
 
+    delete t1_ref;
+    delete t1;
+
 }
 
 
@@ -39,12 +42,20 @@ TEST(TensorTestSuite, tensor_create_zeros){
     Tensor* t2_ref = new Tensor(t2_shape, d_t2_ref.data(), DEV_CPU);
     Tensor* t2 = Tensor::zeros(t2_shape);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, t2, 10e-0));
+
+    delete t1_ref;
+    delete t1;
+    delete t2_ref;
+    delete t2;
 }
 
 TEST(TensorTestSuite, tensor_create_zeros_like){
     Tensor* t1_ref = Tensor::zeros({2, 3}, DEV_CPU);
     Tensor* t1 = Tensor::zeros_like(t1_ref);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
+
+    delete t1_ref;
+    delete t1;
 }
 
 
@@ -63,12 +74,20 @@ TEST(TensorTestSuite, tensor_create_ones){
     Tensor* t2_ref = new Tensor(t2_shape, d_t2_ref.data(), DEV_CPU);
     Tensor* t2 = Tensor::ones(t2_shape);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, t2, 10e-0));
+
+    delete t1_ref;
+    delete t1;
+    delete t2_ref;
+    delete t2;
 }
 
 TEST(TensorTestSuite, tensor_create_ones_like){
     Tensor* t1_ref = Tensor::ones({2, 3}, DEV_CPU);
     Tensor* t1 = Tensor::ones_like(t1_ref);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
+
+    delete t1_ref;
+    delete t1;
 }
 
 TEST(TensorTestSuite, tensor_create_full){
@@ -80,13 +99,19 @@ TEST(TensorTestSuite, tensor_create_full){
     Tensor* t1 = Tensor::full(t1_shape, 3.141592f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
 
+    delete t1_ref;
+    delete t1;
+
 }
 
 TEST(TensorTestSuite, tensor_create_full_like){
     Tensor* t1_ref = Tensor::full({2, 3}, 15.0f, DEV_CPU);
     Tensor* t1 = Tensor::full_like(t1_ref, 15.0f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
-}
+
+    delete t1_ref;
+    delete t1;
+}    
 
 TEST(TensorTestSuite, tensor_create_arange){
     // Test #1
@@ -102,6 +127,11 @@ TEST(TensorTestSuite, tensor_create_arange){
     Tensor* t2_ref = new Tensor(t2_shape, d_t2_ref.data(), DEV_CPU);
     Tensor* t2 = Tensor::arange(1.0f, 2.5f, 0.5f);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, t2, 10e-0));
+
+    delete t1_ref;
+    delete t1;
+    delete t2_ref;
+    delete t2;
 }
 
 
@@ -119,6 +149,11 @@ TEST(TensorTestSuite, tensor_create_range){
     Tensor* t2_ref = new Tensor(t2_shape, d_t2_ref.data(), DEV_CPU);
     Tensor* t2 = Tensor::range(1.0f, 4.0f, 0.5f);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, t2, 10e-0));
+
+    delete t1_ref;
+    delete t1;
+    delete t2_ref;
+    delete t2;
 }
 
 
@@ -143,6 +178,13 @@ TEST(TensorTestSuite, tensor_create_linspace){
     Tensor* t3_ref = new Tensor(t3_shape, d_t3_ref.data(), DEV_CPU);
     Tensor* t3 = Tensor::linspace(-10.0f, 10.0f, 1);
     ASSERT_TRUE(Tensor::equivalent(t3_ref, t3, 10e-0));
+
+    delete t1_ref;
+    delete t1;
+    delete t2_ref;
+    delete t2;
+    delete t3_ref;
+    delete t3;
 }
 
 
@@ -175,6 +217,15 @@ TEST(TensorTestSuite, tensor_create_logspace){
     Tensor* t4_ref = new Tensor(t4_shape, d_t4_ref.data(), DEV_CPU);
     Tensor* t4 = Tensor::logspace(2, 2, 1, 2);
     ASSERT_TRUE(Tensor::equivalent(t4_ref, t4, 10e-0));
+
+    delete t1_ref;
+    delete t1;
+    delete t2_ref;
+    delete t2;
+    delete t3_ref;
+    delete t3;
+    delete t4_ref;
+    delete t4;
 }
 
 
@@ -192,6 +243,11 @@ TEST(TensorTestSuite, tensor_create_geomspace){
     Tensor* t2_ref = new Tensor(t2_shape, d_t2_ref.data(), DEV_CPU);
     Tensor* t2 = Tensor::geomspace(1.0f, 256.0f, 9);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, t2, 10e-0));
+
+    delete t1_ref;
+    delete t1;
+    delete t2_ref;
+    delete t2;
 }
 
 TEST(TensorTestSuite, tensor_create_eye){
@@ -204,7 +260,7 @@ TEST(TensorTestSuite, tensor_create_eye){
     Tensor* t1 = Tensor::eye(3);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
 
-    // Test #1
+    // Test #2
     vector<int> t2_shape = {3, 3};
     vector<float> d_t2_ref = {0.0f, 1.0f, 0.0f,
                               0.0f, 0.0f, 1.0f,
@@ -212,6 +268,11 @@ TEST(TensorTestSuite, tensor_create_eye){
     Tensor* t2_ref = new Tensor(t2_shape, d_t2_ref.data(), DEV_CPU);
     Tensor* t2 = Tensor::eye(3, 1);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, t2, 10e-0));
+
+    delete t1_ref;
+    delete t1;
+    delete t2_ref;
+    delete t2;
 }
 
 
@@ -240,6 +301,13 @@ TEST(TensorTestSuite, tensor_create_diag){
     Tensor* new_t2 = t2->diag(1);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-0));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t1;
+    delete t2_ref;
+    delete t2;
+    delete new_t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({1000, 1000});
@@ -249,5 +317,11 @@ TEST(TensorTestSuite, tensor_create_diag){
     Tensor* new_t_gpu = t_gpu->diag(0); new_t_gpu->toCPU();
 
     ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+    delete new_t_cpu;
+    delete new_t_gpu;
+    
 #endif
 }

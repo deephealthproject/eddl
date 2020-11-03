@@ -67,6 +67,9 @@ void LActivation::forward(){
     }else if (act == "softmax"){
         tensorNN::Softmax(this->input, this->output);
 
+    }else if (act == "full_softmax"){
+        tensorNN::FullSoftmax(this->input, this->output);
+
     }else if (act == "sigmoid"){
         tensorNN::Sigmoid(this->input, this->output);
 
@@ -121,6 +124,9 @@ void LActivation::backward(){
 
         }else if (act == "softmax"){
             tensorNN::D_Softmax(delta, output, parent[0]->delta);
+
+        }else if (act == "full_softmax"){
+            tensorNN::D_FullSoftmax(delta, output, parent[0]->delta);
 
         }else if (act == "sigmoid"){
             tensorNN::D_Sigmoid(delta, output, parent[0]->delta);

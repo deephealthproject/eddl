@@ -64,6 +64,13 @@ namespace eddl {
         net->setTrainable(lname,val);
     }
 
+    vector<vtensor> get_parameters(model net, bool deepcopy){
+        return net->get_parameters(deepcopy);
+    }
+
+    void set_parameters(model net, const vector<vtensor>& params){
+        net->set_parameters(params);
+    }
 
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
@@ -503,6 +510,11 @@ namespace eddl {
     layer Softmax(layer parent, string name){
         vector<float> params = {};
         return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
+    }
+
+    layer FullSoftmax(layer parent, string name){
+        vector<float> params = {};
+        return new LActivation(parent,"full_softmax", params, name, DEV_CPU, 0);
     }
 
     layer Sigmoid(layer parent, string name){

@@ -145,9 +145,10 @@ Changing array shape
 reshape
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::reshape
+.. doxygenfunction:: Tensor::reshape(const vector<int> &new_shape)
 
 .. code-block:: c++
+
 
     Tensor* t1 = Tensor::zeros({3, 4});
     // [
@@ -156,7 +157,7 @@ reshape
     // [0.00 0.00 0.00 0.00]
     // ]
 
-    Tensor* t2 = Tensor::reshape(t1, {6, 2});
+    t1->reshape_({6, 2});
     // [
     // [0.00 0.00]
     // [0.00 0.00]
@@ -166,11 +167,9 @@ reshape
     // [0.00 0.00]
     // ]
 
-    t1->reshape_({2, 3, 2});
-    // [
-    // [[0.00 0.00] [0.00 0.00] [0.00 0.00]]
-    // [[0.00 0.00] [0.00 0.00] [0.00 0.00]]
-    // ]
+    // Other ways
+    Tensor* t2 = Tensor::reshape(t1, {6, 2}); // returns new tensor
+    t1->reshape(t2, {6,2}) // static
 
 
 flatten
@@ -187,11 +186,14 @@ flatten
    // [0.00 0.00 0.00 0.00]
    // ]
 
-   Tensor *t2 = Tensor::flatten(t1, {6, 2});  // static
+   t1->flatten_();  // In-place
    // [0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00]
 
-   t1->reshape_({2, 3, 2});  // In-place
-   // [0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00]
+   // Other ways
+
+   Tensor *t2 = Tensor::flatten(t1);  // returns new tensor
+   t1->flatten(t2) // static
+   
 
 
 Transpose-like operations
@@ -201,7 +203,7 @@ Transpose-like operations
 permute
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::permute
+.. doxygenfunction:: Tensor::permute(const vector<int> &dims)
 
 .. code-block:: c++
 
@@ -209,12 +211,6 @@ permute
    // [
    // [[1.00 2.00 3.00 4.00]     [5.00 6.00 7.00 8.00]     [9.00 10.00 11.00 12.00]]
    // [[13.00 14.00 15.00 16.00] [17.00 18.00 19.00 20.00] [21.00 22.00 23.00 24.00]]
-   // ]
-
-   Tensor *t2 = Tensor::permute(t1, {0, 2, 1});  // static
-   // [
-   // [[1.00 5.00 9.00]    [2.00 6.00 10.00]   [3.00 7.00 11.00]   [4.00 8.00 12.00]]
-   // [[13.00 17.00 21.00] [14.00 18.00 22.00] [15.00 19.00 23.00] [16.00 20.00 24.00]]
    // ]
 
    t1->permute_({2, 1, 0});  // In-place
@@ -225,11 +221,16 @@ permute
    // [[4.00 16.00] [8.00 20.00] [12.00 24.00]]
    // ]
 
+   // Other ways
+   Tensor *t2 = Tensor::permute(t1, {2, 1, 0});  // returns new tensor
+   t1->permute(t2, {2, 1, 0});  // static
+   
+
 
 moveaxis
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::moveaxis
+.. doxygenfunction:: Tensor::moveaxis(int source, int destination)
 
 .. code-block:: c++
 
@@ -237,22 +238,21 @@ moveaxis
    // ndim:          4
    // shape:         (1, 2, 3, 4)
    // strides:       (24, 12, 4, 1)
-
-   Tensor *t2 = Tensor::moveaxis(t1, 0, 2);  // static
-   // ndim:          4
-   // shape:         (2, 3, 1, 4)
-   // strides:       (12, 4, 4, 1)
 
    t1->moveaxis_(0, 2);  // In-place
    // ndim:          4
    // shape:         (2, 3, 1, 4)
    // strides:       (12, 4, 4, 1)
 
+   // Other ways
+   Tensor *t2 = Tensor::moveaxis(t1, 0, 2);  // returns new tensor
+   t1->moveaxis(t2, 0, 2);  // static
+
 
 swapaxis
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::swapaxis
+.. doxygenfunction:: Tensor::swapaxis(int axis1, int axis2)
 
 .. code-block:: c++
 
@@ -261,15 +261,15 @@ swapaxis
    // shape:         (1, 2, 3, 4)
    // strides:       (24, 12, 4, 1)
 
-   Tensor *t2 = Tensor::swapaxis(t1, 0, 2);  // static
-   // ndim:          4
-   // shape:         (3, 2, 1, 4)
-   // strides:       (8, 4, 4, 1)
-
    t1->swapaxis_(0, 2);  // In-place
    // ndim:          4
    // shape:         (3, 2, 1, 4)
    // strides:       (8, 4, 4, 1)
+
+   // Other ways
+   Tensor *t2 = Tensor::swapaxis(t1, 0, 2);  // returns new tensor
+   t1->swapaxis(t2, 0, 2); // static
+   
 
 
 Changing number of dimensions
@@ -287,15 +287,19 @@ squeeze
    // shape:         (1, 3, 4, 1)
    // strides:       (12, 4, 1, 1)
 
-   Tensor *t2 = Tensor::squeeze(t1);  // static
-   // ndim:          2
+   Tensor* t2 = t1->squeeze();  // returns new tensor
    // shape:         (3, 4)
-   // strides:       (4, 1)
 
-   t1->squeeze_();  // In-place
-   // ndim:          2
-   // shape:         (3, 4)
-   // strides:       (4, 1)
+   Tensor* t3 = t1->squeeze(0);  // returns new tensor
+   // shape:         (3, 4, 1)
+
+   Tensor* t3 = t1->squeeze(3);  // returns new tensor
+   // shape:         (1, 3, 4)
+
+   // Other ways
+   t1->squeeze_(); // In-place
+   Tensor *t2 = Tensor::squeeze(t1);  // static
+
 
 
 unsqueeze
@@ -305,20 +309,20 @@ unsqueeze
 
 .. code-block:: c++
 
-   Tensor* t1 = Tensor::zeros({3, 4});
-   // ndim:          2
-   // shape:         (3, 4)
-   // strides:       (4, 1)
-
-   Tensor *t2 = Tensor::unsqueeze(t1);  // static
+   Tensor* t1 = Tensor::zeros({2, 3, 4});
    // ndim:          3
-   // shape:         (1, 3, 4)
+   // shape:         (2, 3, 4)
    // strides:       (12, 4, 1)
 
+   Tensor* t2 = t1->unsqueeze(); // returns new tensor
+    // shape:         (1, 2, 3, 4)
+
+   Tensor* t3 = t1->unsqueeze(2); // returns new tensor
+    // shape:         (2, 3, 4, 1)
+
+   // Other ways
    t1->unsqueeze_();  // In-place
-   // ndim:          3
-   // shape:         (1, 3, 4)
-   // strides:       (12, 4, 1)
+   Tensor *t2 = Tensor::unsqueeze(t1);  // Static
 
 
 Joining arrays
@@ -367,79 +371,102 @@ Fill constant
 .. code-block:: c++
 
     Tensor* t1 = Tensor::empty({2, 3});
-    Tensor::fill(t1, 5.0f);  // static
-    // [
-    // [5.00 5.00 5.00]
-    // [5.00 5.00 5.00]
-    // ]
 
-    Tensor* t2 = Tensor::ones({2, 3});
     t1->fill_(3.0f);  // In-place
     // [
     // [3.00 3.00 3.00]
     // [3.00 3.00 3.00]
     // ]
+
+    // Other ways
+    Tensor* t2 = t1->fill(3.0f); // returns new tensor
+    Tensor::fill(t1, 3.0f);  // static
+    
+
+    
     
     
 Fill Random Uniform
 ^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::rand_uniform
+.. doxygenfunction:: Tensor::fill_rand_uniform_
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::empty({2, 3});
 
-    t1->rand_uniform(1.0f);  // In-place
+    t1->fill_rand_uniform_(1.0f);  // In-place
     // [
     // [0.10 0.53 0.88]
     // [0.57 0.57 0.89]
     // ]
+
+    // Other ways
+    Tensor* t2 = t1->fill_rand_uniform(1.0f); // returns new tensor
+    Tensor::fill_rand_uniform(t1, 1.0f);  // static
+
+    
 
 
 
 Fill Random Signed Uniform
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::rand_signed_uniform
+.. doxygenfunction:: Tensor::fill_rand_signed_uniform_
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::empty({2, 3});
 
-    t1->rand_signed_uniform(1.0f);  // In-place
+    t1->fill_rand_signed_uniform_(1.0f);  // In-place
     // [
     // [0.22 -0.34 -0.78]
     // [-0.03 0.10 0.90]
     // ]
 
+    // Other ways
+    Tensor* t2 = t1->fill_rand_signed_uniform(1.0f); // returns new tensor
+    Tensor::fill_rand_signed_uniform(t1, 1.0f);  // static
+    
+
 
 Fill Random Normal
 ^^^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::rand_normal
+.. doxygenfunction:: Tensor::fill_rand_normal_
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::empty({2, 3});
 
-    t1->rand_normal(0.0f, 1.0f);  // In-place
+    t1->fill_rand_normal_(0.0f, 1.0f);  // In-place
     // [
     // [-0.57 0.49 -1.09]
     // [0.75 0.37 -0.32]
     // ]
 
+    // Other ways
+    Tensor* t2 = t1->fill_rand_normal(0.0f, 1.0f); // returns new tensor
+    Tensor::fill_rand_normal(t1, 0.0f, 1.0f);  // static
+    
+
 
 Fill Random Binary
 ^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: Tensor::rand_binary
+.. doxygenfunction:: Tensor::fill_rand_binary_
 
 .. code-block:: c++
 
     Tensor* t1 = Tensor::empty({2, 3});
 
-    t1->rand_binary(0.5f);  // In-place
+    t1->fill_rand_binary_(0.5f);  // In-place
     // [
     // [0.00 1.00 0.00]
     // [1.00 1.00 0.00]
     // ]
+
+    // Other ways
+    Tensor* t2 = t1->fill_rand_binary(0.5f); // returns new tensor
+    Tensor::fill_rand_binary(t1, 0.5f);  // static
+
+

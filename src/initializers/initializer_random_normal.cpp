@@ -32,5 +32,5 @@ IRandomNormal::IRandomNormal(float mean, float stdev, int seed) : Initializer("r
 }
 void IRandomNormal::apply(Tensor* params)
 {
-  params->rand_normal(mean,stdev);
+    params->fill_rand_normal_(mean, stdev);
 }

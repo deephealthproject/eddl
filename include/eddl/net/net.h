@@ -166,6 +166,8 @@ public:
     void compute_loss();
     void clamp(float min,float max);
     void setlr(vector <float> p);
+    vector<vtensor> get_parameters(bool deepcopy=false);
+    void set_parameters(const vector<vtensor>& params);
 
 
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);

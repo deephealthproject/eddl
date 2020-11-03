@@ -28,6 +28,10 @@ TEST(TensorTestSuite, tensor_math_sort) {
     new_t = t1->sort(true, true);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+    delete t2_ref;
 
     // Test GPU
 #ifdef cGPU
@@ -44,6 +48,12 @@ TEST(TensorTestSuite, tensor_math_sort) {
     t2_cpu->sort_(true, false);
     t2_gpu->sort_(true, false); t2_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t2_cpu, t2_gpu, 10e-4));
+
+    delete t1_cpu;
+    delete t1_gpu;
+    delete t2_cpu;
+    delete t2_gpu;
+
 #endif
 }
 
@@ -65,6 +75,11 @@ TEST(TensorTestSuite, tensor_math_argsort) {
     new_t = t1->argsort(true, false);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+    delete t2_ref;
+
 
     // Test GPU
 #ifdef cGPU
@@ -82,9 +97,38 @@ TEST(TensorTestSuite, tensor_math_argsort) {
     t2_gpu = t2_gpu->argsort(true, true); t2_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t2_cpu, t2_gpu, 10e-4));
 
+    delete t1_cpu;
+    delete t1_gpu;
+    delete t2_cpu;
+    delete t2_gpu;
+
     // Note: I don't test the unstable sort here, because similar (or equal) float values could be
     // sorted into different positions
 #endif
 }
 
+TEST(TensorTestSuite, tensor_squeeze) {
+    // Original
+    Tensor* t1 = Tensor::empty({1, 2, 3, 1, 4});
 
+    Tensor* t1_all = t1->squeeze();
+    ASSERT_TRUE(t1_all->shape == vector<int>({2, 3, 4}));
+
+    Tensor* t1_dim0 = t1->squeeze(0);
+    ASSERT_TRUE(t1_dim0->shape == vector<int>({2, 3, 1, 4}));
+
+    Tensor* t1_dim3 = t1->squeeze(3);
+    ASSERT_TRUE(t1_dim3->shape == vector<int>({1, 2, 3, 4}));
+}
+
+
+TEST(TensorTestSuite, tensor_unsqueeze) {
+    // Original
+    Tensor* t1 = Tensor::empty({2, 3, 4});
+
+    Tensor* t1_all = t1->unsqueeze();
+    ASSERT_TRUE(t1_all->shape == vector<int>({1, 2, 3, 4}));
+
+    Tensor* t1_dim0 = t1->unsqueeze(2);
+    ASSERT_TRUE(t1_dim0->shape == vector<int>({2, 3, 1, 4}));
+}

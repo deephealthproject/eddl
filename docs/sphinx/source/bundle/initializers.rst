@@ -58,18 +58,6 @@ Example:
 
     layer RandomUniform(layer l, float min=0.0,float max=0.1, float seed=1234);
 
-HeUniform
--------------
-
-.. doxygenfunction:: HeUniform
-
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer HeUniform(layer l,int seed=1234);
-
 
 Constant
 -------------

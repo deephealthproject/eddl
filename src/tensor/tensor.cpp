@@ -147,7 +147,7 @@ void Tensor::deleteData(){
         if (this->isCPU()) {
             // Delete eigen matrix
             if (this->ndim == 2){
-                delete this->ptr2;
+                delete this->ptr2; //double free or corruption (out)
                 delete[] this->ptr;
                 this->ptr2 = nullptr;
                 this->ptr = nullptr;  // Redundant

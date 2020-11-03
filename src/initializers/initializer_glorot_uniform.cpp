@@ -36,14 +36,14 @@ void IGlorotUniform::apply(Tensor* params) {
         int fin=params->shape[0];
         int fout=params->shape[0];
 
-        params->rand_signed_uniform(1.0);
+        params->fill_rand_signed_uniform_(1.0);
 
         float limits=sqrtf(6.0 / (float)(fin+fout));
 
         params->mult_(limits);
       }
     else if (params->ndim == 2) {
-        params->rand_signed_uniform(1.0);
+        params->fill_rand_signed_uniform_(1.0);
         float limits=sqrtf(6.0f / (params->shape[0]+params->shape[1]));
         params->mult_(limits);
       }
@@ -53,7 +53,7 @@ void IGlorotUniform::apply(Tensor* params) {
         int fin=rf*params->shape[1];
         int fout=rf*params->shape[0];
 
-        params->rand_signed_uniform(1.0);
+        params->fill_rand_signed_uniform_(1.0);
 
         float limits=sqrtf(6.0 / (float)(fin+fout));
 
@@ -61,7 +61,7 @@ void IGlorotUniform::apply(Tensor* params) {
 
     }
     else {
-      params->rand_signed_uniform(0.1f);
+        params->fill_rand_signed_uniform_(0.1f);
     }
 
 }

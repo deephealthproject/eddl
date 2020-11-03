@@ -28,6 +28,11 @@ void Tensor::fill_(float v) {
     Tensor::fill(this, v);
 }
 
+Tensor* Tensor::fill(float v){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::fill(t_new, v);
+    return t_new;
+}
 
 void Tensor::fill(Tensor* A, float v){
     if (A->isCPU()) {
@@ -60,6 +65,11 @@ void Tensor::permute_(const vector<int>& dims){
 }
 
 
+Tensor* Tensor::permute(const vector<int>& dims){
+    Tensor* t_new = Tensor::permute(this, dims);
+    return t_new;
+}
+
 Tensor* Tensor::permute(Tensor* A, const vector<int>& dims){
     // Build descriptor
     auto *sd = new PermuteDescriptor(dims, A->device);
@@ -88,6 +98,10 @@ void Tensor::moveaxis_(int source, int destination){
     delete temp;
 }
 
+Tensor* Tensor::moveaxis(int source, int destination){
+    Tensor* t_new = Tensor::moveaxis(this, source, destination);
+    return t_new;
+}
 
 Tensor* Tensor::moveaxis(Tensor* A, int source, int destination){
     // Check values
@@ -126,6 +140,11 @@ void Tensor::swapaxis_(int axis1, int axis2){
     delete temp;
 }
 
+
+Tensor* Tensor::swapaxis(int axis1, int axis2){
+    Tensor* t_new = Tensor::swapaxis(this, axis1, axis2);
+    return t_new;
+}
 
 Tensor* Tensor::swapaxis(Tensor* A, int axis1, int axis2){
     // Check values
@@ -172,6 +191,10 @@ void Tensor::reshape_(const vector<int> &new_shape){
 
 }
 
+Tensor* Tensor::reshape(const vector<int> &new_shape){
+    Tensor *t_new = Tensor::reshape(this, new_shape);
+    return t_new;
+}
 
 Tensor* Tensor::reshape(Tensor *A, const vector<int> &shape){
     Tensor *t_new = A->clone();
@@ -184,6 +207,10 @@ void Tensor::flatten_(){
     this->reshape_({-1});
 }
 
+Tensor* Tensor::flatten(){
+    Tensor *t_new = Tensor::flatten(this);
+    return t_new;
+}
 
 Tensor* Tensor::flatten(Tensor *A){
     Tensor *t_new = A->clone();
@@ -192,35 +219,46 @@ Tensor* Tensor::flatten(Tensor *A){
 };
 
 
-void Tensor::squeeze_(){
+void Tensor::squeeze_(int axis){
     // Remove single dimension entries from the array
     vector<int> new_shape;
-    for(auto &d : this->shape){
-        if(d>1){
-            new_shape.push_back(d);
+    for(int i=0; i<this->shape.size(); i++){
+        int dim = this->shape[i];
+
+        // If dimension is greater than 1
+        if(dim>1 || (i!=axis && axis!=-1)){
+            new_shape.push_back(dim);
         }
     }
     this->reshape_(new_shape);
 }
 
+Tensor* Tensor::squeeze(int axis){
+    Tensor *t_new = Tensor::squeeze(this, axis);
+    return t_new;
+}
 
-Tensor* Tensor::squeeze(Tensor *A){
+Tensor* Tensor::squeeze(Tensor *A, int axis){
     Tensor *t_new = A->clone();
-    t_new->squeeze_();
+    t_new->squeeze_(axis);
     return t_new;
 }
 
 
-void Tensor::unsqueeze_(){
+void Tensor::unsqueeze_(int axis){
     vector<int> new_shape(this->shape);
-    new_shape.insert(new_shape.begin(), 1); // Add one dimension to the beginning
+    new_shape.insert(new_shape.begin()+axis, 1); // Add one dimension to the beginning
     this->reshape_(new_shape);
 }
 
+Tensor* Tensor::unsqueeze(int axis){
+    Tensor *t_new = Tensor::unsqueeze(this, axis);
+    return t_new;
+}
 
-Tensor* Tensor::unsqueeze(Tensor *A){
+Tensor* Tensor::unsqueeze(Tensor *A, int axis){
     Tensor *t_new = A->clone();
-    t_new->unsqueeze_();
+    t_new->unsqueeze_(axis);
     return t_new;
 }
 
