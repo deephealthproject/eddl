@@ -4,9 +4,18 @@
 
 #include <sys/time.h>
 
+#define PROFILING_HEADER(fn) \
+    struct timeval prof_t1; \
+    gettimeofday(&prof_t1, NULL);
+
+
 #define PROFILING_ENABLE(fn) \
     unsigned long long prof_##fn##_time; \
-    unsigned long long prof_##fn##_calls; \
+    unsigned long long prof_##fn##_calls;
+
+#define PROFILING_ENABLE_EXTERN(fn) \
+    extern unsigned long long prof_##fn##_time; \
+    extern unsigned long long prof_##fn##_calls; \
 
 #define PROFILING_HEADER(fn) \
     struct timeval prof_t1; \
@@ -15,7 +24,6 @@
 #define PROFILING_HEADER_EXTERN(fn) \
     extern unsigned long long prof_##fn##_time; \
     extern unsigned long long prof_##fn##_calls; \
-    extern int prof_##fn##_device; \
     struct timeval prof_t1; \
     gettimeofday(&prof_t1, NULL);
 
