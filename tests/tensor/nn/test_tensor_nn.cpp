@@ -15,7 +15,6 @@ TEST(TensorTestSuite, tensor_nn_full_softmax){
     Tensor* t1 = new Tensor({0.0303,  0.2418, -1.9007, -4.7348, -0.7624, -0.5518}, {2, 3}, DEV_CPU);
     Tensor* new_t = Tensor::empty_like(t1);
 
-    // Dim= 0
     Tensor* t1_ref = new Tensor({0.4201, 0.5190, 0.0609, 0.0084, 0.4438, 0.5478}, {2, 3}, DEV_CPU);
     tensorNN::FullSoftmax(t1, new_t);
 
@@ -36,4 +35,26 @@ TEST(TensorTestSuite, tensor_nn_full_softmax){
     delete new_t;
     delete new_delta;
     delete parent_delta;
+
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randn({100, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    // CPU
+    Tensor* new_t_cpu = Tensor::empty_like(t_cpu);
+    tensorNN::FullSoftmax(t_cpu, new_t_cpu);
+
+    // GPU
+    Tensor* new_t_gpu = Tensor::empty_like(t_gpu);
+    tensorNN::FullSoftmax(t_gpu, new_t_gpu); new_t_gpu->toCPU();
+
+    ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+    delete new_t_cpu;
+    delete new_t_gpu;
+#endif
 }
