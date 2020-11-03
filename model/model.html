@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,22 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,15 +34,11 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Coarse training" href="../training/coarse.html" />
@@ -77,6 +82,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -177,6 +183,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -215,7 +222,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Model</li>
     
@@ -240,16 +247,22 @@
 <h1>Model<a class="headerlink" href="#model" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="constructor">
 <h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::Model” with arguments (vlayer in, vlayer out) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5ModelE6vlayer6vlayer">
+<span id="_CPPv3N4eddl5ModelE6vlayer6vlayer"></span><span id="_CPPv2N4eddl5ModelE6vlayer6vlayer"></span><span id="eddl::Model__vlayer.vlayer"></span><span class="target" id="namespaceeddl_1a20d2dc23c5a0e4511914984336b2575c"></span>model <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Model</code><span class="sig-paren">(</span>vlayer <em>in</em>, vlayer <em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ModelE6vlayer6vlayer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Instantiates model, taking two vectors, one of input layers and another of output layers. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Model instance </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector with model input layers, typically Input({…}) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector with the ouputs of the model. Example: {Sigmoid(MyModel())} </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">model</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Model</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Net</span><span class="o">*&gt;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">model</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Model</span><span class="p">(</span><span class="n">vlayer</span><span class="p">,</span> <span class="n">vlayer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -269,16 +282,25 @@ Potential matches:
 </div>
 <div class="section" id="build">
 <h2>Build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::build” with arguments (model net, optimizer o, const vector&lt;string&gt; &amp;lo, const vector&lt;string&gt; &amp;me, CompServ *cs = nullptr, bool init_weights = true) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5buildE5model9optimizerRK6vectorI6stringERK6vectorI6stringEP8CompServb">
+<span id="_CPPv3N4eddl5buildE5model9optimizerRK6vectorI6stringERK6vectorI6stringEP8CompServb"></span><span id="_CPPv2N4eddl5buildE5model9optimizerRK6vectorI6stringERK6vectorI6stringEP8CompServb"></span><span id="eddl::build__model.optimizer.vector:string:CR.vector:string:CR.CompServP.b"></span><span class="target" id="namespaceeddl_1a09666e1cff55e22e0d2f79b50685a5cc"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">build</code><span class="sig-paren">(</span>model <em>net</em>, optimizer <em>o</em>, <em class="property">const</em> vector&lt;string&gt; &amp;<em>lo</em>, <em class="property">const</em> vector&lt;string&gt; &amp;<em>me</em>, CompServ *<em>cs</em> = nullptr, bool <em>init_weights</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5buildE5model9optimizerRK6vectorI6stringERK6vectorI6stringEP8CompServb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Tell the model which optimizer, losses, metrics and computing services use. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">o</span></code>: Optimizer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lo</span></code>: Vector with losses </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">me</span></code>: Vector with metrics </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cs</span></code>: Computing service </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">build</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">CompServ</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">build</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">CompServ</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -600,94 +622,52 @@ softmax4                      |  (10)      =&gt;      (10)
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">toCPU</span><span class="p">(</span><span class="n">net</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::toGPU” with arguments (model net, vector&lt;int&gt; g, int lsb) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5toGPUE5model6vectorIiEi">
+<span id="_CPPv3N4eddl5toGPUE5model6vectorIiEi"></span><span id="_CPPv2N4eddl5toGPUE5model6vectorIiEi"></span><span id="eddl::toGPU__model.vector:i:.i"></span><span class="target" id="namespaceeddl_1a44408c245fdb0f2da8bc54fe392049a0"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">toGPU</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;int&gt; <em>g</em>, int <em>lsb</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5toGPUE5model6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Assign model operations to the GPU. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">g</span></code>: Vector with gpu ids to allocate the model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lsb</span></code>: Number of batches to sync model weights </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mi">1</span><span class="p">},</span><span class="mi">100</span><span class="p">,</span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span> <span class="c1">// In two gpus, syncronize every 100 batches, low_mem setup</span>
 </pre></div>
 </td></tr></table></div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::toGPU” with arguments (model net, vector&lt;int&gt; g, string mem) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::toGPU” with arguments (model net, vector&lt;int&gt; g, int lsb, string mem) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::toGPU” with arguments (model net, vector&lt;int&gt; g) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::toGPU” with arguments (model net, string mem) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::toGPU” with arguments (model net) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5toGPUE5model6vectorIiE6string">
+<span id="_CPPv3N4eddl5toGPUE5model6vectorIiE6string"></span><span id="_CPPv2N4eddl5toGPUE5model6vectorIiE6string"></span><span id="eddl::toGPU__model.vector:i:.string"></span><span class="target" id="namespaceeddl_1aba719d09b0f0583a0002e6b358ec7089"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">toGPU</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;int&gt; <em>g</em>, string <em>mem</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5toGPUE5model6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5toGPUE5model6vectorIiEi6string">
+<span id="_CPPv3N4eddl5toGPUE5model6vectorIiEi6string"></span><span id="_CPPv2N4eddl5toGPUE5model6vectorIiEi6string"></span><span id="eddl::toGPU__model.vector:i:.i.string"></span><span class="target" id="namespaceeddl_1a26d9bf05672b184b480bae3bd8bb92ed"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">toGPU</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;int&gt; <em>g</em>, int <em>lsb</em>, string <em>mem</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5toGPUE5model6vectorIiEi6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5toGPUE5model6vectorIiE">
+<span id="_CPPv3N4eddl5toGPUE5model6vectorIiE"></span><span id="_CPPv2N4eddl5toGPUE5model6vectorIiE"></span><span id="eddl::toGPU__model.vector:i:"></span><span class="target" id="namespaceeddl_1af6bc3729620b46eabf6dbf2df76c6016"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">toGPU</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;int&gt; <em>g</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5toGPUE5model6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5toGPUE5model6string">
+<span id="_CPPv3N4eddl5toGPUE5model6string"></span><span id="_CPPv2N4eddl5toGPUE5model6string"></span><span id="eddl::toGPU__model.string"></span><span class="target" id="namespaceeddl_1a327633a9cd188341898ca69786f54b09"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">toGPU</code><span class="sig-paren">(</span>model <em>net</em>, string <em>mem</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5toGPUE5model6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5toGPUE5model">
+<span id="_CPPv3N4eddl5toGPUE5model"></span><span id="_CPPv2N4eddl5toGPUE5model"></span><span id="eddl::toGPU__model"></span><span class="target" id="namespaceeddl_1aa4596ad9521fbb10de124deb1fdabafd"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">toGPU</code><span class="sig-paren">(</span>model <em>net</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5toGPUE5model" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -711,11 +691,19 @@ Potential matches:
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, EDDL
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -726,7 +714,6 @@ Potential matches:
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,22 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,15 +34,11 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Input/Output Operations" href="input_output.html" />
@@ -77,6 +82,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -180,6 +186,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -218,7 +225,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Indexing &amp; Sorting</li>
     
@@ -274,16 +281,23 @@
 </div>
 <div class="section" id="where">
 <h3>Where<a class="headerlink" href="#where" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::where” with arguments (Tensor *condition, Tensor *A, Tensor *B) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5whereEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor5whereEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor5whereEP6TensorP6TensorP6Tensor"></span><span id="Tensor::where__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a2c3d5b79f0378a1b34176b583b0feb62"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">where</code><span class="sig-paren">(</span>Tensor *<em>condition</em>, Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5whereEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Depending on <code class="docutils literal notranslate"><span class="pre">condition</span></code>, returns a tensor whith elements from <code class="docutils literal notranslate"><span class="pre">A</span></code> or <code class="docutils literal notranslate"><span class="pre">B</span></code>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the same shape with elements from <code class="docutils literal notranslate"><span class="pre">A</span></code> if <code class="docutils literal notranslate"><span class="pre">condition</span></code> holds and from <code class="docutils literal notranslate"><span class="pre">B</span></code> otherwise.. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">condition</span></code>: Tensor with the condition to be accomplished. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">where</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">where</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
@@ -313,17 +327,21 @@ Potential matches:
 </div>
 <div class="section" id="select">
 <h3>Select<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::select” with arguments (const vector&lt;string&gt; &amp;indices) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6selectERK6vectorI6stringE">
+<span id="_CPPv3N6Tensor6selectERK6vectorI6stringE"></span><span id="_CPPv2N6Tensor6selectERK6vectorI6stringE"></span><span id="Tensor::select__vector:string:CR"></span><span class="target" id="class_tensor_1ae1a8017516f3a368261645b0fd9feaee"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;string&gt; &amp;<em>indices</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6selectERK6vectorI6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns an array with the selected indices of the tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;:5&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;:&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;3:6&quot;</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
 <span class="c1">// [</span>
@@ -354,19 +372,22 @@ Potential matches:
 </div>
 <div class="section" id="set-select">
 <h3>Set Select<a class="headerlink" href="#set-select" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “set_select” with arguments (const vector&lt;string&gt; &amp;indices, float value) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor10set_selectERK6vectorI6stringEf">
+<span id="_CPPv3N6Tensor10set_selectERK6vectorI6stringEf"></span><span id="_CPPv2N6Tensor10set_selectERK6vectorI6stringEf"></span><span id="Tensor::set_select__vector:string:CR.float"></span><span class="target" id="class_tensor_1aad2375edffa7747ce482058b10a4284f"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">set_select</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;string&gt; &amp;<em>indices</em>, float <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10set_selectERK6vectorI6stringEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the elements in the array using the selected indices. The indices must be specified as a vector of strings ({“0”, “:5”, “:”, “3:6”}). </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;:5&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;:&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;3:6&quot;</span></code>. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">__global__</span> <span class="n">void</span> <span class="n">set_select</span><span class="p">(</span><span class="nb">float</span> <span class="o">*</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="p">,</span> <span class="n">long</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">tensorNN</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
 <span class="n">t1</span><span class="o">-&gt;</span><span class="n">set_select</span><span class="p">({</span><span class="s">&quot;0&quot;</span><span class="p">,</span> <span class="s">&quot;2&quot;</span><span class="p">},</span> <span class="mf">2.0f</span><span class="p">);</span> <span class="c1">// Set element (0, 2) to &quot;2&quot;</span>
@@ -393,19 +414,22 @@ Potential matches:
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “set_select” with arguments (const vector&lt;string&gt; &amp;indices, Tensor *A) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor10set_selectERK6vectorI6stringEP6Tensor">
+<span id="_CPPv3N6Tensor10set_selectERK6vectorI6stringEP6Tensor"></span><span id="_CPPv2N6Tensor10set_selectERK6vectorI6stringEP6Tensor"></span><span id="Tensor::set_select__vector:string:CR.TensorP"></span><span class="target" id="class_tensor_1ac159a0a2d781d424a636dabb0572d18e"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">set_select</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;string&gt; &amp;<em>indices</em>, Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10set_selectERK6vectorI6stringEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the elements in the array using the selected indices. The indices must be specified as a vector of strings ({“0”, “:5”, “:”, “3:6”}). </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;:5&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;:&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;3:6&quot;</span></code>. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">__global__</span> <span class="n">void</span> <span class="n">set_select</span><span class="p">(</span><span class="nb">float</span> <span class="o">*</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="p">,</span> <span class="n">long</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">tensorNN</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
 <span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
@@ -441,16 +465,22 @@ Potential matches:
 <h2>Sorting<a class="headerlink" href="#sorting" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="sort">
 <h3>sort<a class="headerlink" href="#sort" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::sort” with arguments (bool descending = false, bool stable = true) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4sortEbb">
+<span id="_CPPv3N6Tensor4sortEbb"></span><span id="_CPPv2N6Tensor4sortEbb"></span><span id="Tensor::sort__b.b"></span><span class="target" id="class_tensor_1ace0207c414c51a3709b8a954c15d240e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sort</code><span class="sig-paren">(</span>bool <em>descending</em> = false, bool <em>stable</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4sortEbb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sort a tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the sorted elements. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">descending</span></code>: Wether to sort the tensor descending or not. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stable</span></code>: Wether to use stable sorting or not. Stable sorting keeps the order of equal elements. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sort</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">sort</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">5</span><span class="p">});</span>
 <span class="c1">// [-0.01 0.34 0.10 -0.57 -0.28]</span>
@@ -469,16 +499,22 @@ Potential matches:
 </div>
 <div class="section" id="argsort">
 <h3>argsort<a class="headerlink" href="#argsort" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::argsort” with arguments (bool descending = false, bool stable = true) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7argsortEbb">
+<span id="_CPPv3N6Tensor7argsortEbb"></span><span id="_CPPv2N6Tensor7argsortEbb"></span><span id="Tensor::argsort__b.b"></span><span class="target" id="class_tensor_1aa98b2219462ee0080fb8fc489613f68a"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">argsort</code><span class="sig-paren">(</span>bool <em>descending</em> = false, bool <em>stable</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7argsortEbb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sort the indices of a tensor according to the elements in each position. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the sorted indices. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">descending</span></code>: Wether to sort the tensor descending or not. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stable</span></code>: Wether to use stable sorting or not. Stable sorting keeps the order of equal elements. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">argsort</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">argsort</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">5</span><span class="p">});</span>
 <span class="c1">// [-0.01 0.34 0.10 -0.57 -0.28]</span>
@@ -517,11 +553,19 @@ Potential matches:
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, EDDL
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -532,7 +576,6 @@ Potential matches:
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

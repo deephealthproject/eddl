@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,22 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,15 +34,11 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Logic functions" href="logic_functions.html" /> 
@@ -76,6 +81,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -236,6 +242,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -274,7 +281,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Mathematical functions</li>
     
@@ -303,7 +310,7 @@
 <h3>Abs<a class="headerlink" href="#abs" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3absEv">
-<span id="_CPPv3N6Tensor3absEv"></span><span id="_CPPv2N6Tensor3absEv"></span><span id="Tensor::abs"></span><span class="target" id="class_tensor_1aacd33867db45c2a31fbfe4f5359f0eed"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">abs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3absEv"></span><span id="_CPPv2N6Tensor3absEv"></span><span id="Tensor::abs"></span><span class="target" id="class_tensor_1aacd33867db45c2a31fbfe4f5359f0eed"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">abs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3absEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise abs operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with abs applied over A </p>
@@ -334,7 +341,7 @@
 <h3>Acos<a class="headerlink" href="#acos" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4acosEv">
-<span id="_CPPv3N6Tensor4acosEv"></span><span id="_CPPv2N6Tensor4acosEv"></span><span id="Tensor::acos"></span><span class="target" id="class_tensor_1a9c3be10f917fd74a9623d1c5d6736550"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">acos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4acosEv"></span><span id="_CPPv2N6Tensor4acosEv"></span><span id="Tensor::acos"></span><span class="target" id="class_tensor_1a9c3be10f917fd74a9623d1c5d6736550"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">acos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4acosEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>In-place element-wise acos operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with abs applied over A </p>
@@ -367,20 +374,21 @@
 </div>
 <div class="section" id="add">
 <h3>Add<a class="headerlink" href="#add" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::add” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3addEf">
+<span id="_CPPv3N6Tensor3addEf"></span><span id="_CPPv2N6Tensor3addEf"></span><span id="Tensor::add__float"></span><span class="target" id="class_tensor_1ab77d8487706983c011a06c03da79d21f"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">add</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3addEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise add operation of a tensor and a real value. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the sum </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v.</span></code>: The real number to add </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
 <span class="c1">// [5.00 5.00 5.00]</span>
@@ -403,7 +411,7 @@ Potential matches:
 <h3>Asin<a class="headerlink" href="#asin" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4asinEv">
-<span id="_CPPv3N6Tensor4asinEv"></span><span id="_CPPv2N6Tensor4asinEv"></span><span id="Tensor::asin"></span><span class="target" id="class_tensor_1aed55cb99bd123ebecd1a9da39a14cbe8"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">asin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4asinEv"></span><span id="_CPPv2N6Tensor4asinEv"></span><span id="Tensor::asin"></span><span class="target" id="class_tensor_1aed55cb99bd123ebecd1a9da39a14cbe8"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">asin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4asinEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise asin operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
@@ -434,7 +442,7 @@ Potential matches:
 <h3>Atan<a class="headerlink" href="#atan" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4atanEv">
-<span id="_CPPv3N6Tensor4atanEv"></span><span id="_CPPv2N6Tensor4atanEv"></span><span id="Tensor::atan"></span><span class="target" id="class_tensor_1ac12e4a88bce7806d104f522985d47899"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">atan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4atanEv"></span><span id="_CPPv2N6Tensor4atanEv"></span><span id="Tensor::atan"></span><span class="target" id="class_tensor_1ac12e4a88bce7806d104f522985d47899"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">atan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4atanEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise atan operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
@@ -465,7 +473,7 @@ Potential matches:
 <h3>Ceil<a class="headerlink" href="#ceil" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4ceilEv">
-<span id="_CPPv3N6Tensor4ceilEv"></span><span id="_CPPv2N6Tensor4ceilEv"></span><span id="Tensor::ceil"></span><span class="target" id="class_tensor_1a99a6dd52087e4f83764464a4d4a1dbdf"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ceil</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4ceilEv"></span><span id="_CPPv2N6Tensor4ceilEv"></span><span id="Tensor::ceil"></span><span class="target" id="class_tensor_1a99a6dd52087e4f83764464a4d4a1dbdf"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ceil</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4ceilEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise ceil operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
@@ -494,16 +502,22 @@ Potential matches:
 </div>
 <div class="section" id="clamp">
 <h3>Clamp<a class="headerlink" href="#clamp" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::clamp” with arguments (float min, float max) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5clampEff">
+<span id="_CPPv3N6Tensor5clampEff"></span><span id="_CPPv2N6Tensor5clampEff"></span><span id="Tensor::clamp__float.float"></span><span class="target" id="class_tensor_1ab19b707f682f37e718a2770085fe10fb"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">clamp</code><span class="sig-paren">(</span>float <em>min</em>, float <em>max</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5clampEff" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Clamp all elements in the input tensor to the range [min, max]. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the clamped values in the input tensor. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code>: The lower bound of the clamping range. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max</span></code>: The upper bound of the clamping range. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">clamp</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">clamp</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">-5.0f</span><span class="p">,</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]</span>
 
@@ -518,16 +532,21 @@ Potential matches:
 </div>
 <div class="section" id="clampmax">
 <h3>Clampmax<a class="headerlink" href="#clampmax" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::clampmax” with arguments (float max) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8clampmaxEf">
+<span id="_CPPv3N6Tensor8clampmaxEf"></span><span id="_CPPv2N6Tensor8clampmaxEf"></span><span id="Tensor::clampmax__float"></span><span class="target" id="class_tensor_1acffca3301c030f7db6136f591bcec311"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">clampmax</code><span class="sig-paren">(</span>float <em>max</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8clampmaxEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Clamp all elements in the input tensor to the range [-infty, max]. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the clamped values. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max</span></code>: The upper bound of the clamping range. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">clampmax</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">clampmax</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">-5.0f</span><span class="p">,</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]</span>
 
@@ -542,16 +561,21 @@ Potential matches:
 </div>
 <div class="section" id="clampmin">
 <h3>Clampmin<a class="headerlink" href="#clampmin" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::clampmin” with arguments (float min) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8clampminEf">
+<span id="_CPPv3N6Tensor8clampminEf"></span><span id="_CPPv2N6Tensor8clampminEf"></span><span id="Tensor::clampmin__float"></span><span class="target" id="class_tensor_1a620f068a86c86374c9f8a50859c1abe5"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">clampmin</code><span class="sig-paren">(</span>float <em>min</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8clampminEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Clamp all elements in the input tensor to the range [min, +infty]. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the clamped values. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code>: The lower bound of the clamping range. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">clampmin</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">clampmin</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">-5.0f</span><span class="p">,</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]</span>
 
@@ -568,7 +592,7 @@ Potential matches:
 <h3>Cos<a class="headerlink" href="#cos" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3cosEv">
-<span id="_CPPv3N6Tensor3cosEv"></span><span id="_CPPv2N6Tensor3cosEv"></span><span id="Tensor::cos"></span><span class="target" id="class_tensor_1a74b7a3f586eb9b15295c0091e6424437"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">cos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3cosEv"></span><span id="_CPPv2N6Tensor3cosEv"></span><span id="Tensor::cos"></span><span class="target" id="class_tensor_1a74b7a3f586eb9b15295c0091e6424437"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">cos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3cosEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise cos operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with cos applied. </p>
@@ -599,7 +623,7 @@ Potential matches:
 <h3>Cosh<a class="headerlink" href="#cosh" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4coshEv">
-<span id="_CPPv3N6Tensor4coshEv"></span><span id="_CPPv2N6Tensor4coshEv"></span><span id="Tensor::cosh"></span><span class="target" id="class_tensor_1a5f92cf71dfff4bf3a74e34ddbb506e8f"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">cosh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4coshEv"></span><span id="_CPPv2N6Tensor4coshEv"></span><span id="Tensor::cosh"></span><span class="target" id="class_tensor_1a5f92cf71dfff4bf3a74e34ddbb506e8f"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">cosh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4coshEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise cosh operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with cosh applied. </p>
@@ -628,19 +652,21 @@ Potential matches:
 </div>
 <div class="section" id="div">
 <h3>Div<a class="headerlink" href="#div" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::div” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3divEf">
+<span id="_CPPv3N6Tensor3divEf"></span><span id="_CPPv2N6Tensor3divEf"></span><span id="Tensor::div__float"></span><span class="target" id="class_tensor_1a154c775699ac5a6c91fb08c4521141a8"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">div</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3divEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise division operation of a tensor and a real value. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the division. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: The real number to divide by. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">div</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">div</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">div</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">div</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">div</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
 <span class="c1">// [5.00 5.00 5.00]</span>
@@ -663,7 +689,7 @@ Potential matches:
 <h3>Exp<a class="headerlink" href="#exp" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3expEv">
-<span id="_CPPv3N6Tensor3expEv"></span><span id="_CPPv2N6Tensor3expEv"></span><span id="Tensor::exp"></span><span class="target" id="class_tensor_1afa490aed91bee5494de2db76d0c7b9b5"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">exp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3expEv"></span><span id="_CPPv2N6Tensor3expEv"></span><span id="Tensor::exp"></span><span class="target" id="class_tensor_1afa490aed91bee5494de2db76d0c7b9b5"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">exp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3expEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise exp operation of a tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with the exp operation applied </p>
@@ -688,7 +714,7 @@ Potential matches:
 <h3>Floor<a class="headerlink" href="#floor" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5floorEv">
-<span id="_CPPv3N6Tensor5floorEv"></span><span id="_CPPv2N6Tensor5floorEv"></span><span id="Tensor::floor"></span><span class="target" id="class_tensor_1afd09717153a7c3aa14ec7499271e9bca"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">floor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor5floorEv"></span><span id="_CPPv2N6Tensor5floorEv"></span><span id="Tensor::floor"></span><span class="target" id="class_tensor_1afd09717153a7c3aa14ec7499271e9bca"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">floor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5floorEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise floor operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with the floor operation applied. </p>
@@ -717,16 +743,21 @@ Potential matches:
 </div>
 <div class="section" id="inv">
 <h3>Inv<a class="headerlink" href="#inv" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::inv” with arguments (float v = 1.0f) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3invEf">
+<span id="_CPPv3N6Tensor3invEf"></span><span id="_CPPv2N6Tensor3invEf"></span><span id="Tensor::inv__float"></span><span class="target" id="class_tensor_1a600a4df490566717acaf00b8a1c353fc"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">inv</code><span class="sig-paren">(</span>float <em>v</em> = 1.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3invEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise 1/x operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the result. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: the value multiplying the inverse </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">inv</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">inv</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
 <span class="c1">// [0.58 -0.49 0.04]</span>
@@ -749,7 +780,7 @@ Potential matches:
 <h3>Log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3logEv">
-<span id="_CPPv3N6Tensor3logEv"></span><span id="_CPPv2N6Tensor3logEv"></span><span id="Tensor::log"></span><span class="target" id="class_tensor_1ac87605d663311122372d3e78d96a6177"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3logEv"></span><span id="_CPPv2N6Tensor3logEv"></span><span id="Tensor::log"></span><span class="target" id="class_tensor_1ac87605d663311122372d3e78d96a6177"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3logEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise log operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with the log operation applied </p>
@@ -774,7 +805,7 @@ Potential matches:
 <h3>Log2<a class="headerlink" href="#log2" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4log2Ev">
-<span id="_CPPv3N6Tensor4log2Ev"></span><span id="_CPPv2N6Tensor4log2Ev"></span><span id="Tensor::log2"></span><span class="target" id="class_tensor_1a80b8144ad3a76ce3096cabdf3cf09fba"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">log2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4log2Ev"></span><span id="_CPPv2N6Tensor4log2Ev"></span><span id="Tensor::log2"></span><span class="target" id="class_tensor_1a80b8144ad3a76ce3096cabdf3cf09fba"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">log2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4log2Ev" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise log2 operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with the log2 operation applied. </p>
@@ -799,7 +830,7 @@ Potential matches:
 <h3>Log10<a class="headerlink" href="#log10" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5log10Ev">
-<span id="_CPPv3N6Tensor5log10Ev"></span><span id="_CPPv2N6Tensor5log10Ev"></span><span id="Tensor::log10"></span><span class="target" id="class_tensor_1a516373a212922947426c02210bd38855"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">log10</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor5log10Ev"></span><span id="_CPPv2N6Tensor5log10Ev"></span><span id="Tensor::log10"></span><span class="target" id="class_tensor_1a516373a212922947426c02210bd38855"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">log10</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5log10Ev" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise log10 operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with the log10 operation applied. </p>
@@ -822,16 +853,21 @@ Potential matches:
 </div>
 <div class="section" id="logn">
 <h3>Logn<a class="headerlink" href="#logn" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::logn” with arguments (float n) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4lognEf">
+<span id="_CPPv3N6Tensor4lognEf"></span><span id="_CPPv2N6Tensor4lognEf"></span><span id="Tensor::logn__float"></span><span class="target" id="class_tensor_1a3c7f3be63f896c3bcb60c7dfe858f80e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logn</code><span class="sig-paren">(</span>float <em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4lognEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise logn operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the logn operation applied. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: The base of the logarithm. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">logn</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">logn</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">-1.0f</span><span class="p">,</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [-1.00 0.00 1.00 2.00 3.00 4.00 5.00]</span>
 
@@ -846,19 +882,21 @@ Potential matches:
 </div>
 <div class="section" id="maximum">
 <h3>Maximum<a class="headerlink" href="#maximum" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::maximum” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7maximumEf">
+<span id="_CPPv3N6Tensor7maximumEf"></span><span id="_CPPv2N6Tensor7maximumEf"></span><span id="Tensor::maximum__float"></span><span class="target" id="class_tensor_1ab25d3fcd0a53d00767e72a6d44909219"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">maximum</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7maximumEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Apply a lower bound to the elements in a tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the values lower than v set to v. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Lower bound. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">maximum</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
 <span class="c1">// [-0.63 -0.10 0.01]</span>
@@ -880,19 +918,21 @@ Potential matches:
 </div>
 <div class="section" id="minimum">
 <h3>Minimum<a class="headerlink" href="#minimum" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::minimum” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7minimumEf">
+<span id="_CPPv3N6Tensor7minimumEf"></span><span id="_CPPv2N6Tensor7minimumEf"></span><span id="Tensor::minimum__float"></span><span class="target" id="class_tensor_1a89f66ce7ae7d025b3916fe0751d098a4"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">minimum</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7minimumEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Apply a upper bound to the elements in a tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the values higher than v set to v. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Lower bound. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">minimum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">minimum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">minimum</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">minimum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">minimum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
 <span class="c1">// [-1.30 -1.05 0.49]</span>
@@ -914,16 +954,21 @@ Potential matches:
 </div>
 <div class="section" id="mod">
 <h3>Mod<a class="headerlink" href="#mod" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::mod” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3modEf">
+<span id="_CPPv3N6Tensor3modEf"></span><span id="_CPPv2N6Tensor3modEf"></span><span id="Tensor::mod__float"></span><span class="target" id="class_tensor_1a40365dfeca71ba035c5fddbb61e8df6e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">mod</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3modEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise mod operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the operation applied. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: The mod operator </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">mod</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">mod</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">-5.0f</span><span class="p">,</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]</span>
 
@@ -938,19 +983,21 @@ Potential matches:
 </div>
 <div class="section" id="mult">
 <h3>Mult<a class="headerlink" href="#mult" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::mult” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4multEf">
+<span id="_CPPv3N6Tensor4multEf"></span><span id="_CPPv2N6Tensor4multEf"></span><span id="Tensor::mult__float"></span><span class="target" id="class_tensor_1a59cc42cfa2885212eea66889bbfc7bfd"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">mult</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4multEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Multiplication operation of a tensor by a scalar. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the result </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: The value to multiply by </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">mult</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">mult</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">mult</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">mult</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">mult</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
 <span class="c1">// [5.00 5.00 5.00]</span>
@@ -973,7 +1020,7 @@ Potential matches:
 <h3>Neg<a class="headerlink" href="#neg" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3negEv">
-<span id="_CPPv3N6Tensor3negEv"></span><span id="_CPPv2N6Tensor3negEv"></span><span id="Tensor::neg"></span><span class="target" id="class_tensor_1a1cf1e6563537b369b720cbdb83678c83"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">neg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3negEv"></span><span id="_CPPv2N6Tensor3negEv"></span><span id="Tensor::neg"></span><span class="target" id="class_tensor_1a1cf1e6563537b369b720cbdb83678c83"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">neg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3negEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise change of sign operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
@@ -1002,16 +1049,22 @@ Potential matches:
 </div>
 <div class="section" id="normalize">
 <h3>Normalize<a class="headerlink" href="#normalize" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::normalize” with arguments (float min = 0.0f, float max = 1.0f) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor9normalizeEff">
+<span id="_CPPv3N6Tensor9normalizeEff"></span><span id="_CPPv2N6Tensor9normalizeEff"></span><span id="Tensor::normalize__float.float"></span><span class="target" id="class_tensor_1a4f7b528ab17dd565fff1a1754821b313"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">normalize</code><span class="sig-paren">(</span>float <em>min</em> = 0.0f, float <em>max</em> = 1.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9normalizeEff" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>In-place element-wise normalization of values in a given range. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">min.</span></code>: The lower bound of the new range. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max.</span></code>: The upper bound of the new range. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">normalize</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">normalize</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">-5.0f</span><span class="p">,</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]</span>
 
@@ -1026,16 +1079,21 @@ Potential matches:
 </div>
 <div class="section" id="pow">
 <h3>Pow<a class="headerlink" href="#pow" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::pow” with arguments (float exp) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3powEf">
+<span id="_CPPv3N6Tensor3powEf"></span><span id="_CPPv2N6Tensor3powEf"></span><span id="Tensor::pow__float"></span><span class="target" id="class_tensor_1aa1d0570e6ce2061a0849902a40677b14"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">pow</code><span class="sig-paren">(</span>float <em>exp</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3powEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise power operation with base e. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">exp.</span></code>: The exponent. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="nb">pow</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="nb">pow</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
 <span class="c1">// [5.00 5.00 5.00]</span>
@@ -1056,16 +1114,21 @@ Potential matches:
 </div>
 <div class="section" id="powb">
 <h3>Powb<a class="headerlink" href="#powb" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::powb” with arguments (float base) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4powbEf">
+<span id="_CPPv3N6Tensor4powbEf"></span><span id="_CPPv2N6Tensor4powbEf"></span><span id="Tensor::powb__float"></span><span class="target" id="class_tensor_1a4cfd1ca5f170d1d6a2c28f74a1c223fe"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">powb</code><span class="sig-paren">(</span>float <em>base</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4powbEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise power operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">base</span></code>: The base of the power. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">powb</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">powb</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
 <span class="c1">// [5.00 5.00 5.00]</span>
@@ -1088,7 +1151,7 @@ Potential matches:
 <h3>Reciprocal<a class="headerlink" href="#reciprocal" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor10reciprocalEv">
-<span id="_CPPv3N6Tensor10reciprocalEv"></span><span id="_CPPv2N6Tensor10reciprocalEv"></span><span id="Tensor::reciprocal"></span><span class="target" id="class_tensor_1a498a9246d007eb094c19646a498a8ced"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reciprocal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor10reciprocalEv"></span><span id="_CPPv2N6Tensor10reciprocalEv"></span><span id="Tensor::reciprocal"></span><span class="target" id="class_tensor_1a498a9246d007eb094c19646a498a8ced"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reciprocal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10reciprocalEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise reciprocal operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the result </p>
@@ -1117,16 +1180,21 @@ Potential matches:
 </div>
 <div class="section" id="remainder">
 <h3>Remainder<a class="headerlink" href="#remainder" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::remainder” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor9remainderEf">
+<span id="_CPPv3N6Tensor9remainderEf"></span><span id="_CPPv2N6Tensor9remainderEf"></span><span id="Tensor::remainder__float"></span><span class="target" id="class_tensor_1aa32d8c5adba0150bda6705f319127a75"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">remainder</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9remainderEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise reminder operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with Av </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: The real to divide A by </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">remainder</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">remainder</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">-5.0f</span><span class="p">,</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]</span>
 
@@ -1143,7 +1211,7 @@ Potential matches:
 <h3>Round<a class="headerlink" href="#round" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5roundEv">
-<span id="_CPPv3N6Tensor5roundEv"></span><span id="_CPPv2N6Tensor5roundEv"></span><span id="Tensor::round"></span><span class="target" id="class_tensor_1aee0d5c0bdd403c1c49136fcf7f9f494e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">round</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor5roundEv"></span><span id="_CPPv2N6Tensor5roundEv"></span><span id="Tensor::round"></span><span class="target" id="class_tensor_1aee0d5c0bdd403c1c49136fcf7f9f494e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">round</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5roundEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise round operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with A rounded </p>
@@ -1174,7 +1242,7 @@ Potential matches:
 <h3>Rsqrt<a class="headerlink" href="#rsqrt" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5rsqrtEv">
-<span id="_CPPv3N6Tensor5rsqrtEv"></span><span id="_CPPv2N6Tensor5rsqrtEv"></span><span id="Tensor::rsqrt"></span><span class="target" id="class_tensor_1a616145d5540be9f60392efddf8d6190d"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rsqrt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor5rsqrtEv"></span><span id="_CPPv2N6Tensor5rsqrtEv"></span><span id="Tensor::rsqrt"></span><span class="target" id="class_tensor_1a616145d5540be9f60392efddf8d6190d"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rsqrt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5rsqrtEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise inverse square root operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the result </p>
@@ -1199,7 +1267,7 @@ Potential matches:
 <h3>Sigmoid<a class="headerlink" href="#sigmoid" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor7sigmoidEv">
-<span id="_CPPv3N6Tensor7sigmoidEv"></span><span id="_CPPv2N6Tensor7sigmoidEv"></span><span id="Tensor::sigmoid"></span><span class="target" id="class_tensor_1a1009935f087668983f210061f9a46586"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sigmoid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor7sigmoidEv"></span><span id="_CPPv2N6Tensor7sigmoidEv"></span><span id="Tensor::sigmoid"></span><span class="target" id="class_tensor_1a1009935f087668983f210061f9a46586"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sigmoid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7sigmoidEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise sigmoid operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with sigmoid(A) </p>
@@ -1229,16 +1297,11 @@ Potential matches:
 </div>
 <div class="section" id="sign">
 <h3>Sign<a class="headerlink" href="#sign" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::sign” with arguments (float zero_sign = 0.0f) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sign</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">sign</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4signEf">
+<span id="_CPPv3N6Tensor4signEf"></span><span id="_CPPv2N6Tensor4signEf"></span><span id="Tensor::sign__float"></span><span class="target" id="class_tensor_1a142af13e227c403a4e3b9b3d3915534f"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sign</code><span class="sig-paren">(</span>float <em>zero_sign</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4signEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">linspace</span><span class="p">(</span><span class="mf">-1.0f</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">,</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [-1.00 -0.50 0.00 0.50 1.00]</span>
 
@@ -1256,7 +1319,7 @@ Potential matches:
 <h3>Sin<a class="headerlink" href="#sin" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3sinEv">
-<span id="_CPPv3N6Tensor3sinEv"></span><span id="_CPPv2N6Tensor3sinEv"></span><span id="Tensor::sin"></span><span class="target" id="class_tensor_1a7da582099c9b4ed683a0196bab9e4b6b"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3sinEv"></span><span id="_CPPv2N6Tensor3sinEv"></span><span id="Tensor::sin"></span><span class="target" id="class_tensor_1a7da582099c9b4ed683a0196bab9e4b6b"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3sinEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise sin operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
@@ -1288,7 +1351,7 @@ Potential matches:
 <h3>Sinh<a class="headerlink" href="#sinh" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4sinhEv">
-<span id="_CPPv3N6Tensor4sinhEv"></span><span id="_CPPv2N6Tensor4sinhEv"></span><span id="Tensor::sinh"></span><span class="target" id="class_tensor_1aa7a1b96e06d3a27ba9c16c529712ed8a"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sinh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4sinhEv"></span><span id="_CPPv2N6Tensor4sinhEv"></span><span id="Tensor::sinh"></span><span class="target" id="class_tensor_1aa7a1b96e06d3a27ba9c16c529712ed8a"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sinh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4sinhEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise sinh operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
@@ -1320,7 +1383,7 @@ Potential matches:
 <h3>Sqr<a class="headerlink" href="#sqr" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3sqrEv">
-<span id="_CPPv3N6Tensor3sqrEv"></span><span id="_CPPv2N6Tensor3sqrEv"></span><span id="Tensor::sqr"></span><span class="target" id="class_tensor_1a5b7ea3e7b7709438af459ea6f2fe522e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sqr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3sqrEv"></span><span id="_CPPv2N6Tensor3sqrEv"></span><span id="Tensor::sqr"></span><span class="target" id="class_tensor_1a5b7ea3e7b7709438af459ea6f2fe522e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sqr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3sqrEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise square operation. More efficient than using pow(A, 2). </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the result </p>
@@ -1345,7 +1408,7 @@ Potential matches:
 <h3>Sqrt<a class="headerlink" href="#sqrt" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4sqrtEv">
-<span id="_CPPv3N6Tensor4sqrtEv"></span><span id="_CPPv2N6Tensor4sqrtEv"></span><span id="Tensor::sqrt"></span><span class="target" id="class_tensor_1abb1f1f29cf23101d0cf2635348799f4e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sqrt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4sqrtEv"></span><span id="_CPPv2N6Tensor4sqrtEv"></span><span id="Tensor::sqrt"></span><span class="target" id="class_tensor_1abb1f1f29cf23101d0cf2635348799f4e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sqrt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4sqrtEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise square operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
@@ -1368,19 +1431,21 @@ Potential matches:
 </div>
 <div class="section" id="sub">
 <h3>Sub<a class="headerlink" href="#sub" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::sub” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3subEf">
+<span id="_CPPv3N6Tensor3subEf"></span><span id="_CPPv2N6Tensor3subEf"></span><span id="Tensor::sub__float"></span><span class="target" id="class_tensor_1affb69434783239cbcf394b84814c743e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sub</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3subEf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise substraction operation of a tensor and a scalar. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: The value to substract to the input tensor. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sub</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sub</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sub</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">sub</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">sub</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
 <span class="c1">// [5.00 5.00 5.00]</span>
@@ -1403,7 +1468,7 @@ Potential matches:
 <h3>Tan<a class="headerlink" href="#tan" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3tanEv">
-<span id="_CPPv3N6Tensor3tanEv"></span><span id="_CPPv2N6Tensor3tanEv"></span><span id="Tensor::tan"></span><span class="target" id="class_tensor_1a4c5065084eebc5ce3959fbc8fbc25df0"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">tan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3tanEv"></span><span id="_CPPv2N6Tensor3tanEv"></span><span id="Tensor::tan"></span><span class="target" id="class_tensor_1a4c5065084eebc5ce3959fbc8fbc25df0"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">tan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3tanEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise tan operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
@@ -1435,7 +1500,7 @@ Potential matches:
 <h3>Tanh<a class="headerlink" href="#tanh" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4tanhEv">
-<span id="_CPPv3N6Tensor4tanhEv"></span><span id="_CPPv2N6Tensor4tanhEv"></span><span id="Tensor::tanh"></span><span class="target" id="class_tensor_1a6c1f4fbfedde991265e0ac386de09e64"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">tanh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4tanhEv"></span><span id="_CPPv2N6Tensor4tanhEv"></span><span id="Tensor::tanh"></span><span class="target" id="class_tensor_1a6c1f4fbfedde991265e0ac386de09e64"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">tanh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4tanhEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise tanh operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
@@ -1467,7 +1532,7 @@ Potential matches:
 <h3>Trunc<a class="headerlink" href="#trunc" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5truncEv">
-<span id="_CPPv3N6Tensor5truncEv"></span><span id="_CPPv2N6Tensor5truncEv"></span><span id="Tensor::trunc"></span><span class="target" id="class_tensor_1a913d8a9022aced4c90b293e620e6a0bb"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">trunc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor5truncEv"></span><span id="_CPPv2N6Tensor5truncEv"></span><span id="Tensor::trunc"></span><span class="target" id="class_tensor_1a913d8a9022aced4c90b293e620e6a0bb"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">trunc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5truncEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Element-wise truncate operation. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the result. </p>
@@ -1500,20 +1565,22 @@ Potential matches:
 <h2>Element-wise<a class="headerlink" href="#element-wise" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id1">
 <h3>Add<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::add” with arguments (Tensor *A, Tensor *B) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3addEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor3addEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor3addEP6TensorP6Tensor"></span><span id="Tensor::add__TensorP.TensorP"></span><span class="target" id="class_tensor_1a731b680ae9e2ad4f2f126e42f9c64b6d"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">add</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3addEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise add operation of two tensors. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor C = A + B. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: A tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Another tensor. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
 <span class="c1">// [5.00 5.00 5.00]</span>
@@ -1540,19 +1607,22 @@ Potential matches:
 </div>
 <div class="section" id="id2">
 <h3>Div<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::div” with arguments (Tensor *A, Tensor *B) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3divEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor3divEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor3divEP6TensorP6Tensor"></span><span id="Tensor::div__TensorP.TensorP"></span><span class="target" id="class_tensor_1a9ab9f4187abd140aaceb5b50c6c8e647"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">div</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3divEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise division operation of two tensors. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor C = A / B. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: A tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Another tensor. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">div</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">div</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">div</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">div</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">div</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
 <span class="c1">// [5.00 5.00 5.00]</span>
@@ -1579,19 +1649,22 @@ Potential matches:
 </div>
 <div class="section" id="id3">
 <h3>Maximum<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::maximum” with arguments (Tensor *A, Tensor *B) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7maximumEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor7maximumEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor7maximumEP6TensorP6Tensor"></span><span id="Tensor::maximum__TensorP.TensorP"></span><span class="target" id="class_tensor_1a8abac6fe018c9d1ac948a1f3789cb134"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">maximum</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7maximumEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise selection of the maximum values in the same position in two tensors. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the higher value in the same position between A and B. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">maximum</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">maximum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
 <span class="c1">// [-0.25 -1.21 -0.04]</span>
@@ -1617,19 +1690,22 @@ Potential matches:
 </div>
 <div class="section" id="id4">
 <h3>Minimum<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::minimum” with arguments (Tensor *A, Tensor *B) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7minimumEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor7minimumEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor7minimumEP6TensorP6Tensor"></span><span id="Tensor::minimum__TensorP.TensorP"></span><span class="target" id="class_tensor_1a5f5549013120d747f83ab2bec1d4edd1"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">minimum</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7minimumEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise selection of the minimum values in the same position in two tensors. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the lower value in the same position between A and B. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">minimum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">minimum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">minimum</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">minimum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">minimum</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
 <span class="c1">// [-0.25 -0.75 -0.53]</span>
@@ -1655,19 +1731,22 @@ Potential matches:
 </div>
 <div class="section" id="id5">
 <h3>Mult<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::mult” with arguments (Tensor *A, Tensor *B) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4multEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor4multEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor4multEP6TensorP6Tensor"></span><span id="Tensor::mult__TensorP.TensorP"></span><span class="target" id="class_tensor_1ab5307cc05d05fc20d3d0edc7d084a9e8"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">mult</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4multEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise multiplication operation of two tensors. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor C = A * B. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: A tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Another tensor. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">mult</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">mult</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">mult</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">mult</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">mult</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
 <span class="c1">// [5.00 5.00 5.00]</span>
@@ -1694,19 +1773,22 @@ Potential matches:
 </div>
 <div class="section" id="id6">
 <h3>Sub<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::sub” with arguments (Tensor *A, Tensor *B) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3subEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor3subEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor3subEP6TensorP6Tensor"></span><span id="Tensor::sub__TensorP.TensorP"></span><span class="target" id="class_tensor_1a6bb199eb71093afdb88c5b3b6f2be6a3"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sub</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3subEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Element-wise substraction operation of two tensors. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor C = A - B. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: A tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Another tensor. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sub</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sub</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sub</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">sub</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">sub</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
 <span class="c1">// [5.00 5.00 5.00]</span>
@@ -1738,7 +1820,7 @@ Potential matches:
 <h3>Argmax<a class="headerlink" href="#argmax" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6argmaxEv">
-<span id="_CPPv3N6Tensor6argmaxEv"></span><span id="_CPPv2N6Tensor6argmaxEv"></span><span id="Tensor::argmax"></span><span class="target" id="class_tensor_1a5a26226ad061dee25f9fb4c83ea01a5f"></span>int <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">argmax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor6argmaxEv"></span><span id="_CPPv2N6Tensor6argmaxEv"></span><span id="Tensor::argmax"></span><span class="target" id="class_tensor_1a5a26226ad061dee25f9fb4c83ea01a5f"></span>int <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">argmax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6argmaxEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Obtain the index of the maximum value in the tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The desired index. </p>
@@ -1771,7 +1853,7 @@ Potential matches:
 <h3>Argmin<a class="headerlink" href="#argmin" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6argminEv">
-<span id="_CPPv3N6Tensor6argminEv"></span><span id="_CPPv2N6Tensor6argminEv"></span><span id="Tensor::argmin"></span><span class="target" id="class_tensor_1a486a68332b46ac6e6f1ef7b29e957e8a"></span>int <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">argmin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor6argminEv"></span><span id="_CPPv2N6Tensor6argminEv"></span><span id="Tensor::argmin"></span><span class="target" id="class_tensor_1a486a68332b46ac6e6f1ef7b29e957e8a"></span>int <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">argmin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6argminEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Obtain the index of the minimum value in the tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The desired index. </p>
@@ -1804,7 +1886,7 @@ Potential matches:
 <h3>Max<a class="headerlink" href="#max" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3maxEv">
-<span id="_CPPv3N6Tensor3maxEv"></span><span id="_CPPv2N6Tensor3maxEv"></span><span id="Tensor::max"></span><span class="target" id="class_tensor_1ac0af3a4972181cb8c21885c3268cc706"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">max</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3maxEv"></span><span id="_CPPv2N6Tensor3maxEv"></span><span id="Tensor::max"></span><span class="target" id="class_tensor_1ac0af3a4972181cb8c21885c3268cc706"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">max</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3maxEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Obtain the maximum value in the tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>float. The maximum value in the tensor </p>
@@ -1837,7 +1919,7 @@ Potential matches:
 <h3>Mean<a class="headerlink" href="#mean" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4meanEv">
-<span id="_CPPv3N6Tensor4meanEv"></span><span id="_CPPv2N6Tensor4meanEv"></span><span id="Tensor::mean"></span><span class="target" id="class_tensor_1ac054ce59c2d0f8f9011fb78e268ddca7"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">mean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4meanEv"></span><span id="_CPPv2N6Tensor4meanEv"></span><span id="Tensor::mean"></span><span class="target" id="class_tensor_1ac054ce59c2d0f8f9011fb78e268ddca7"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">mean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4meanEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Obtain the mean of all the values in the tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The mean of all the elements in the tensor. </p>
@@ -1870,7 +1952,7 @@ Potential matches:
 <h3>Median<a class="headerlink" href="#median" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6medianEv">
-<span id="_CPPv3N6Tensor6medianEv"></span><span id="_CPPv2N6Tensor6medianEv"></span><span id="Tensor::median"></span><span class="target" id="class_tensor_1ac4d8186bab0bf9c3218dcca25b977e63"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">median</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor6medianEv"></span><span id="_CPPv2N6Tensor6medianEv"></span><span id="Tensor::median"></span><span class="target" id="class_tensor_1ac4d8186bab0bf9c3218dcca25b977e63"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">median</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6medianEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Obtain the median value of all the elements in the tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>float The median value. </p>
@@ -1907,7 +1989,7 @@ Potential matches:
 <h3>Min<a class="headerlink" href="#min" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3minEv">
-<span id="_CPPv3N6Tensor3minEv"></span><span id="_CPPv2N6Tensor3minEv"></span><span id="Tensor::min"></span><span class="target" id="class_tensor_1a04e2a721465b0a5a2e9e12af93a541a5"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">min</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3minEv"></span><span id="_CPPv2N6Tensor3minEv"></span><span id="Tensor::min"></span><span class="target" id="class_tensor_1a04e2a721465b0a5a2e9e12af93a541a5"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">min</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3minEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Obtain the minimum value in the tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>float. The minimum value in the tensor </p>
@@ -1940,7 +2022,7 @@ Potential matches:
 <h3>Mode<a class="headerlink" href="#mode" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4modeEv">
-<span id="_CPPv3N6Tensor4modeEv"></span><span id="_CPPv2N6Tensor4modeEv"></span><span id="Tensor::mode"></span><span class="target" id="class_tensor_1aa3e7fac6d58ee93026cfa3f635780c7c"></span>int <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4modeEv"></span><span id="_CPPv2N6Tensor4modeEv"></span><span id="Tensor::mode"></span><span class="target" id="class_tensor_1aa3e7fac6d58ee93026cfa3f635780c7c"></span>int <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4modeEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Obtain the mode of all the values in the tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The mode of all the elements in the tensor. </p>
@@ -1976,18 +2058,26 @@ Potential matches:
 </div>
 <div class="section" id="norm">
 <h3>Norm<a class="headerlink" href="#norm" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::norm” with arguments (vector&lt;int&gt; axis, bool keepdims, string ord = “fro”) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4normE6vectorIiEb6string">
+<span id="_CPPv3N6Tensor4normE6vectorIiEb6string"></span><span id="_CPPv2N6Tensor4normE6vectorIiEb6string"></span><span id="Tensor::norm__vector:i:.b.string"></span><span class="target" id="class_tensor_1aa361d02aa896a3219f22f7ad8d8aabb9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">norm</code><span class="sig-paren">(</span>vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em>, string <em>ord</em> = &quot;fro&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4normE6vectorIiEb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Compute the norm of a selected axis of a tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the norms computed over the selected axis. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Vector with the axis selected to compute the norm. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keepdims</span></code>: Whether to keep dimensions of the input vector in the output vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ord</span></code>: The order of the norm. One of:<ul>
+<li><p>”fro”: Frobenius norm </p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">norm</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">norm</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">norm</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">norm</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">ReduceDescriptor2</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">},</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
 <span class="c1">// [</span>
@@ -2012,7 +2102,7 @@ Potential matches:
 <h3>Prod<a class="headerlink" href="#prod" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4prodEv">
-<span id="_CPPv3N6Tensor4prodEv"></span><span id="_CPPv2N6Tensor4prodEv"></span><span id="Tensor::prod"></span><span class="target" id="class_tensor_1aa7fe3ec3debeb361d171d14e31e0d699"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">prod</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor4prodEv"></span><span id="_CPPv2N6Tensor4prodEv"></span><span id="Tensor::prod"></span><span class="target" id="class_tensor_1aa7fe3ec3debeb361d171d14e31e0d699"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">prod</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4prodEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Obtain the product of all the values in the tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The product of all the elements in the tensor. </p>
@@ -2047,18 +2137,21 @@ Potential matches:
 </div>
 <div class="section" id="std">
 <h3>Std<a class="headerlink" href="#std" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::std” with arguments (bool unbiased = true) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6TensorStEb">
+<span id="_CPPv3N6TensorStEb"></span><span id="_CPPv2N6TensorStEb"></span><span id="Tensor::std__b"></span><span class="target" id="class_tensor_1a2826a87908dc1a455d04da4400865604"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">std</code><span class="sig-paren">(</span>bool <em>unbiased</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6TensorStEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Obtain the standard deviation of all the values in the tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The standard deviation of all the elements in the tensor. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">unbiased</span></code>: Whether the standard deviation is computed using the unbiased estimation or not. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">std</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-<span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">std</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-<span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">std</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">std</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">ReduceDescriptor2</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
 <span class="c1">// [0.14 0.29 -0.51]</span>
@@ -2086,7 +2179,7 @@ Potential matches:
 <h3>Sum<a class="headerlink" href="#sum" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3sumEv">
-<span id="_CPPv3N6Tensor3sumEv"></span><span id="_CPPv2N6Tensor3sumEv"></span><span id="Tensor::sum"></span><span class="target" id="class_tensor_1a30b0b0677a2f671e67b811dd21fe0a65"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor3sumEv"></span><span id="_CPPv2N6Tensor3sumEv"></span><span id="Tensor::sum"></span><span class="target" id="class_tensor_1a30b0b0677a2f671e67b811dd21fe0a65"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3sumEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Obtain the sum of all the values in the tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The sum of all the elements in the tensor. </p>
@@ -2123,7 +2216,7 @@ Potential matches:
 <h3>Sum Abs<a class="headerlink" href="#sum-abs" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor7sum_absEv">
-<span id="_CPPv3N6Tensor7sum_absEv"></span><span id="_CPPv2N6Tensor7sum_absEv"></span><span id="Tensor::sum_abs"></span><span class="target" id="class_tensor_1a580491037e7f727ec940e56d2cd1e0ee"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sum_abs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor7sum_absEv"></span><span id="_CPPv2N6Tensor7sum_absEv"></span><span id="Tensor::sum_abs"></span><span class="target" id="class_tensor_1a580491037e7f727ec940e56d2cd1e0ee"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sum_abs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7sum_absEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Obtain the absolute value sum of all the values in the tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The absolute value sum of all the elements in the tensor. </p>
@@ -2158,18 +2251,21 @@ Potential matches:
 </div>
 <div class="section" id="var">
 <h3>Var<a class="headerlink" href="#var" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::var” with arguments (bool unbiased = true) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3varEb">
+<span id="_CPPv3N6Tensor3varEb"></span><span id="_CPPv2N6Tensor3varEb"></span><span id="Tensor::var__b"></span><span class="target" id="class_tensor_1adf857024c4bf980f5b4652ca1ff83c67"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">var</code><span class="sig-paren">(</span>bool <em>unbiased</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3varEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Obtain the variance of all the values in the tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The variance of all the elements in the tensor. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">unbiased</span></code>: Whether the variance is computed using the unbiased estimation or not. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">var</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-<span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">var</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-<span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">var</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">var</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">ReduceDescriptor2</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
 <span class="c1">// [0.23 -1.09 0.09]</span>
@@ -2214,11 +2310,19 @@ Potential matches:
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, EDDL
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -2229,7 +2333,6 @@ Potential matches:
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

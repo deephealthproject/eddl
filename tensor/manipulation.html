@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,22 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,15 +34,11 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Image operations" href="image.html" />
@@ -77,6 +82,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -202,6 +208,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -240,7 +247,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Manipulation</li>
     
@@ -469,16 +476,21 @@
 <h2>Changing array shape<a class="headerlink" href="#changing-array-shape" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="reshape">
 <h3>reshape<a class="headerlink" href="#reshape" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::reshape” with arguments (const vector&lt;int&gt; &amp;new_shape) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7reshapeERK6vectorIiE">
+<span id="_CPPv3N6Tensor7reshapeERK6vectorIiE"></span><span id="_CPPv2N6Tensor7reshapeERK6vectorIiE"></span><span id="Tensor::reshape__vector:i:CR"></span><span class="target" id="class_tensor_1a5deb9b228dfb302175b891052057c713"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reshape</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>new_shape</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7reshapeERK6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set a new shape to a tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">new_shape</span></code>: A vector containing the new shape. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">reshape</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">reshape</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
 <span class="c1">// [</span>
 <span class="c1">// [0.00 0.00 0.00 0.00]</span>
@@ -506,7 +518,7 @@ Potential matches:
 <h3>flatten<a class="headerlink" href="#flatten" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor7flattenEv">
-<span id="_CPPv3N6Tensor7flattenEv"></span><span id="_CPPv2N6Tensor7flattenEv"></span><span id="Tensor::flatten"></span><span class="target" id="class_tensor_1affbe63047e4935119b664e16c4247024"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N6Tensor7flattenEv"></span><span id="_CPPv2N6Tensor7flattenEv"></span><span id="Tensor::flatten"></span><span class="target" id="class_tensor_1affbe63047e4935119b664e16c4247024"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7flattenEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>In-place conversion tensor to a 1D tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
@@ -537,16 +549,21 @@ Potential matches:
 <h2>Transpose-like operations<a class="headerlink" href="#transpose-like-operations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="permute">
 <h3>permute<a class="headerlink" href="#permute" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::permute” with arguments (const vector&lt;int&gt; &amp;dims) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7permuteERK6vectorIiE">
+<span id="_CPPv3N6Tensor7permuteERK6vectorIiE"></span><span id="_CPPv2N6Tensor7permuteERK6vectorIiE"></span><span id="Tensor::permute__vector:i:CR"></span><span class="target" id="class_tensor_1a638da0c035837285f35b2bd7ed3ce1d1"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">permute</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>dims</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7permuteERK6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>In-place permutation of tensor dimensions. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dims</span></code>: A vector containing the new order of the dimensions. </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">permute</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">permute</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">24</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
 <span class="c1">// [</span>
 <span class="c1">// [[1.00 2.00 3.00 4.00]     [5.00 6.00 7.00 8.00]     [9.00 10.00 11.00 12.00]]</span>
@@ -569,16 +586,22 @@ Potential matches:
 </div>
 <div class="section" id="moveaxis">
 <h3>moveaxis<a class="headerlink" href="#moveaxis" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::moveaxis” with arguments (int source, int destination) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8moveaxisEii">
+<span id="_CPPv3N6Tensor8moveaxisEii"></span><span id="_CPPv2N6Tensor8moveaxisEii"></span><span id="Tensor::moveaxis__i.i"></span><span class="target" id="class_tensor_1aaec60da47d543910025623fcbc1dc2a2"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">moveaxis</code><span class="sig-paren">(</span>int <em>source</em>, int <em>destination</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8moveaxisEii" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Move axes of an array to new positions. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">source</span></code>: Original position of the axis to move. These must be unique. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">destination</span></code>: Destination position for the original axis. These must also be unique </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">moveaxis</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
 <span class="c1">// ndim:          4</span>
 <span class="c1">// shape:         (1, 2, 3, 4)</span>
@@ -597,16 +620,24 @@ Potential matches:
 </div>
 <div class="section" id="swapaxis">
 <h3>swapaxis<a class="headerlink" href="#swapaxis" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::swapaxis” with arguments (int axis1, int axis2) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8swapaxisEii">
+<span id="_CPPv3N6Tensor8swapaxisEii"></span><span id="_CPPv2N6Tensor8swapaxisEii"></span><span id="Tensor::swapaxis__i.i"></span><span class="target" id="class_tensor_1a8f0ff1b73d3d6b1be0b148da89d3dedf"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">swapaxis</code><span class="sig-paren">(</span>int <em>axis1</em>, int <em>axis2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8swapaxisEii" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Interchange two axes of an array. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>axis2 Second axis. </p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">axis1</span></code>: First axis. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">destination</span></code>: Destination position for the original axis. These must also be unique </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">swapaxis</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">swapaxis</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
 <span class="c1">// ndim:          4</span>
 <span class="c1">// shape:         (1, 2, 3, 4)</span>
@@ -633,8 +664,8 @@ Potential matches:
 <p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::squeeze” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">squeeze</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">squeeze</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">squeeze</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="nb">int</span> <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">squeeze</span><span class="p">(</span><span class="nb">int</span> <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -665,8 +696,8 @@ Potential matches:
 <p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::unsqueeze” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">unsqueeze</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="nb">int</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">unsqueeze</span><span class="p">(</span><span class="nb">int</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -728,17 +759,20 @@ Potential matches:
 <h2>Value operations<a class="headerlink" href="#value-operations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="fill-constant">
 <h3>Fill constant<a class="headerlink" href="#fill-constant" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::fill” with arguments (Tensor *A, float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4fillEP6Tensorf">
+<span id="_CPPv3N6Tensor4fillEP6Tensorf"></span><span id="_CPPv2N6Tensor4fillEP6Tensorf"></span><span id="Tensor::fill__TensorP.float"></span><span class="target" id="class_tensor_1addb7064e79ae4e711dd54fb9980805b9"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">fill</code><span class="sig-paren">(</span>Tensor *<em>A</em>, float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4fillEP6Tensorf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fill tensor with a value. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: The output tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: the value to fill the tensor with </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">fill</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">fill</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">fill</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
 
 <span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill_</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span>  <span class="c1">// In-place</span>
@@ -894,11 +928,19 @@ Potential matches:
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, EDDL
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -909,7 +951,6 @@ Potential matches:
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

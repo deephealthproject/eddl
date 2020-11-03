@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,22 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,15 +34,11 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Reduction Layers" href="reduction.html" />
@@ -77,6 +82,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -179,6 +185,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -217,7 +224,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Operators</li>
     
@@ -264,47 +271,40 @@
 </div>
 <div class="section" id="subtraction">
 <h2>Subtraction<a class="headerlink" href="#subtraction" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Diff” with arguments (layer l1, layer l2) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl4DiffE5layer5layer">
+<span id="_CPPv3N4eddl4DiffE5layer5layer"></span><span id="_CPPv2N4eddl4DiffE5layer5layer"></span><span id="eddl::Diff__layer.layer"></span><span class="target" id="namespaceeddl_1ad2ad133d1b1282ad4d5e2b84259f9ef5"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Diff</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4DiffE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the difference of two layers. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Difference between l1 and l2 </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: A layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: A layer </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Diff</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Diff</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Diff</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Diff</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">);</span> <span class="c1">// l1 and l2 are layers with the same shape</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Diff” with arguments (layer l1, float k) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Diff</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Diff</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Diff</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl4DiffE5layerf">
+<span id="_CPPv3N4eddl4DiffE5layerf"></span><span id="_CPPv2N4eddl4DiffE5layerf"></span><span id="eddl::Diff__layer.float"></span><span class="target" id="namespaceeddl_1a0bef31942932d7f03cb58ff517be9beb"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Diff</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4DiffE5layerf" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Diff</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Diff” with arguments (float k, layer l1) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Diff</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Diff</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Diff</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl4DiffEf5layer">
+<span id="_CPPv3N4eddl4DiffEf5layer"></span><span id="_CPPv2N4eddl4DiffEf5layer"></span><span id="eddl::Diff__float.layer"></span><span class="target" id="namespaceeddl_1aaa34c371296477a7c77072e8bed08943"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Diff</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4DiffEf5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Diff</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
 </pre></div>
@@ -312,47 +312,40 @@ Potential matches:
 </div>
 <div class="section" id="division">
 <h2>Division<a class="headerlink" href="#division" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Div” with arguments (layer l1, layer l2) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl3DivE5layer5layer">
+<span id="_CPPv3N4eddl3DivE5layer5layer"></span><span id="_CPPv2N4eddl3DivE5layer5layer"></span><span id="eddl::Div__layer.layer"></span><span class="target" id="namespaceeddl_1ad2bf8dd0500aff563e1080b8f7cc17fc"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Div</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3DivE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the element-wise division of two layers. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Element-wise division of l1 and l2 </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: A layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: A layer </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Div</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Div</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Div</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Div</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">);</span> <span class="c1">// l1 and l2 are layers with the same shape</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Div” with arguments (layer l1, float k) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Div</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Div</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Div</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl3DivE5layerf">
+<span id="_CPPv3N4eddl3DivE5layerf"></span><span id="_CPPv2N4eddl3DivE5layerf"></span><span id="eddl::Div__layer.float"></span><span class="target" id="namespaceeddl_1a635ee1d48ff9cc4e6ce4daf3859ac5e3"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Div</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3DivE5layerf" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Div</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Div” with arguments (float k, layer l1) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Div</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Div</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Div</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl3DivEf5layer">
+<span id="_CPPv3N4eddl3DivEf5layer"></span><span id="_CPPv2N4eddl3DivEf5layer"></span><span id="eddl::Div__float.layer"></span><span class="target" id="namespaceeddl_1a60ba50fb85367c102cb75b53a83dcceb"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Div</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3DivEf5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Div</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
 </pre></div>
@@ -448,47 +441,40 @@ Potential matches:
 </div>
 <div class="section" id="multiplication">
 <h2>Multiplication<a class="headerlink" href="#multiplication" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Mult” with arguments (layer l1, layer l2) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl4MultE5layer5layer">
+<span id="_CPPv3N4eddl4MultE5layer5layer"></span><span id="_CPPv2N4eddl4MultE5layer5layer"></span><span id="eddl::Mult__layer.layer"></span><span class="target" id="namespaceeddl_1afef27d27ef57eeb5c8fba883d8053e3a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Mult</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4MultE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the element-wise multiplication of two layers. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Result of the element-wise multiplication of l1 and l2. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: A layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: A layer </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Mult</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Mult</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Mult</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Mult</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">);</span> <span class="c1">// l1 and l2 are layers with the same shape</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Mult” with arguments (layer l1, float k) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Mult</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Mult</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Mult</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl4MultE5layerf">
+<span id="_CPPv3N4eddl4MultE5layerf"></span><span id="_CPPv2N4eddl4MultE5layerf"></span><span id="eddl::Mult__layer.float"></span><span class="target" id="namespaceeddl_1afe11c00acc31fa8c69383d9c8e93edaa"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Mult</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4MultE5layerf" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Mult</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">);</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Mult” with arguments (float k, layer l1) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Mult</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Mult</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Mult</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl4MultEf5layer">
+<span id="_CPPv3N4eddl4MultEf5layer"></span><span id="_CPPv2N4eddl4MultEf5layer"></span><span id="eddl::Mult__float.layer"></span><span class="target" id="namespaceeddl_1a2504bb8e28c324f950c0b6b00026aefb"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Mult</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4MultEf5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Mult</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
 </pre></div>
@@ -496,26 +482,27 @@ Potential matches:
 </div>
 <div class="section" id="power">
 <h2>Power<a class="headerlink" href="#power" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Pow” with arguments (layer l1, layer l2) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl3PowE5layer5layer">
+<span id="_CPPv3N4eddl3PowE5layer5layer"></span><span id="_CPPv2N4eddl3PowE5layer5layer"></span><span id="eddl::Pow__layer.layer"></span><span class="target" id="namespaceeddl_1aedb31d1f0e111e1b208f50dc7776e565"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Pow</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3PowE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the element-wise power of two layers. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Result of the element-wise power of l1 and l2. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: A layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: A layer </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Pow</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Pow</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Pow” with arguments (layer l1, float k) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Pow</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Pow</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl3PowE5layerf">
+<span id="_CPPv3N4eddl3PowE5layerf"></span><span id="_CPPv2N4eddl3PowE5layerf"></span><span id="eddl::Pow__layer.float"></span><span class="target" id="namespaceeddl_1ac7caf7b40e13d7ab29e8808a53ad0fd9"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Pow</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3PowE5layerf" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="sqrt">
 <h2>Sqrt<a class="headerlink" href="#sqrt" title="Permalink to this headline">¶</a></h2>
@@ -541,47 +528,51 @@ Potential matches:
 </div>
 <div class="section" id="addition">
 <h2>Addition<a class="headerlink" href="#addition" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Sum” with arguments (layer l1, layer l2) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl3SumE5layer5layer">
+<span id="_CPPv3N4eddl3SumE5layer5layer"></span><span id="_CPPv2N4eddl3SumE5layer5layer"></span><span id="eddl::Sum__layer.layer"></span><span class="target" id="namespaceeddl_1ac7609101495bd4f639d62c8d370374e2"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sum</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SumE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the sum of two layers. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The result after computing the sum between layers l1 and l2 </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: Layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: Layer </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Sum</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Sum</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Sum</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">);</span> <span class="c1">// l1 and l2 are layers with the same shape</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Sum” with arguments (layer l1, float k) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl3SumE5layerf">
+<span id="_CPPv3N4eddl3SumE5layerf"></span><span id="_CPPv2N4eddl3SumE5layerf"></span><span id="eddl::Sum__layer.float"></span><span class="target" id="namespaceeddl_1abe790c35f3853be91b30adb646139740"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sum</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SumE5layerf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the sum of a float number and a layer. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Parent layer l1 after computing his sum with k </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: Number </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Sum</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Sum</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Sum</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Sum” with arguments (float k, layer l1) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Sum</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Sum</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Sum</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl3SumEf5layer">
+<span id="_CPPv3N4eddl3SumEf5layer"></span><span id="_CPPv2N4eddl3SumEf5layer"></span><span id="eddl::Sum__float.layer"></span><span class="target" id="namespaceeddl_1a53eb47d4d90cc1ea326e58f5939726db"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sum</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SumEf5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
 </pre></div>
@@ -609,11 +600,19 @@ Potential matches:
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, EDDL
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -624,7 +623,6 @@ Potential matches:
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
