@@ -225,17 +225,19 @@ for (int cpi=0; cpi<CPI; cpi++) zero.pixel[cpi] = 0.f;
 //   in: input stream
 //   out: output stream
 //
-static void relu(int H, int W, int O, hls::stream<data_type> &in, hls::stream<data_type> &out) {
+static void relu(int flag_relu, int H, int W, hls::stream<pixel_out_t> &in, hls::stream<pixel_out_t> &out) {
 
 #ifdef DEBUG_VERBOSE
   printf("relu: start\n");
 #endif
-
-  int data_size = W * H * O;
+  pixel_out_t data;
+  int data_size = W * H;
   for (int i=0; i < data_size; i++) {
     #pragma HLS PIPELINE II=1
-    data_type data = in.read();
-    if (data < 0) data = 0.f;
+    data  = in.read();
+    for(int cpo = 0; cpo<CPO; cpo++){
+      if(flag_relu == 1 && data.pixel[cpo] < 0) data.pixel[cpo] = data_type(0.f);
+    }
     out << data;
   }
 
@@ -620,7 +622,7 @@ static void conv(int H, int W, int I_ITER, hls::stream<pixel_in_t> &in, hls::str
 }
 
 
-void k_cn2D_K3x3_S1x1_P1x1_BS1_ap_2(pixel_in_t *ptr_data, int H, int W, int I, data_type *ptr_kernel, data_type *ptr_bias, pixel_out_t *ptr_out, int O, int offset_bias, int offset_kernel, int offset_data_out) {
+void k_cn2D_K3x3_S1x1_P1x1_BS1_ap_2(pixel_in_t *ptr_data, int H, int W, int I, data_type *ptr_kernel, data_type *ptr_bias, pixel_out_t *ptr_out, int O, int offset_bias, int offset_kernel, int offset_data_out, int flag_relu) {
 
   #pragma HLS INTERFACE s_axilite port=W bundle=control
   #pragma HLS INTERFACE s_axilite port=H bundle=control
@@ -633,6 +635,7 @@ void k_cn2D_K3x3_S1x1_P1x1_BS1_ap_2(pixel_in_t *ptr_data, int H, int W, int I, d
   #pragma HLS INTERFACE s_axilite port=offset_bias bundle=control
   #pragma HLS INTERFACE s_axilite port=offset_kernel bundle=control
   #pragma HLS INTERFACE s_axilite port=offset_data_out bundle=control
+  #pragma HLS INTERFACE s_axilite port=flag_relu bundle=control
   #pragma HLS INTERFACE s_axilite port=return bundle=control
 
   // ptr_data struct to be packed as a single element vector (to improve memory read)
@@ -647,20 +650,22 @@ void k_cn2D_K3x3_S1x1_P1x1_BS1_ap_2(pixel_in_t *ptr_data, int H, int W, int I, d
   static hls::stream<frame_t> out_read_kernel;
   static hls::stream<pixel_out_t> out_read_bias;
   static hls::stream<pixel_out_t> out_conv;
+  static hls::stream<pixel_out_t> out_relu;
 
   // stream sizes
   #pragma HLS STREAM variable = out_read_data depth = 32
   #pragma HLS STREAM variable = out_read_kernel depth = 32
   #pragma HLS STREAM variable = out_read_bias depth = 32
   #pragma HLS STREAM variable = out_conv depth = 32
-  // #pragma HLS STREAM variable = out_relu depth = 32
+  #pragma HLS STREAM variable = out_relu depth = 32
 
     #pragma HLS dataflow
     read_data(H, W, I_ITER, ptr_data, out_read_data);
     read_bias(offset_bias, ptr_bias, out_read_bias);
     read_kernel(I_ITER, offset_kernel, ptr_kernel, out_read_kernel);
     conv(H, W, I_ITER, out_read_data, out_read_kernel, out_read_bias, out_conv);
-    write_output(H, W, offset_data_out, ptr_out, out_conv);
+    relu(flag_relu, H, W, out_conv, out_relu);
+    write_output(H, W, offset_data_out, ptr_out, out_relu);
 
 }
 

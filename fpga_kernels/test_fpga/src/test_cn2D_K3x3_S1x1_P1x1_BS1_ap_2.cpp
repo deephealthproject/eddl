@@ -70,6 +70,8 @@ std::string binaryFile;
 #define KW 3
 #define KH 3
 
+#define RELU 1  // 0/1 function relu is activated or not
+
 int W;
 int H;
 int GI;
@@ -99,7 +101,7 @@ void parse_arguments(int argc, char **argv) {
     exit(1);
   }
 
-  binaryFile = argv[1];  
+  binaryFile = argv[1];
   W = atoi(argv[2]);
   H = atoi(argv[3]);
   I = atoi(argv[4]);
@@ -174,14 +176,16 @@ void cpu_conv2d() {
   }
 
   // aplicamos relu
-/*  for (int cout=0; cout<COUT; cout++) {
-    for (int h=0; h<H; h++) {
-      for (int w=0; w<W; w++) {
-        int addr_o = (h * W * COUT) + (w * COUT) + cout;
-        if (out_cpu[addr_o] < 0.f) out_cpu[addr_o] = 0.f;
+  if(RELU){
+    for (int cout=0; cout<O; cout++) {
+      for (int h=0; h<H; h++) {
+        for (int w=0; w<W; w++) {
+          int addr_o = (h * W * O) + (w * O) + cout;
+          if (out_cpu[addr_o] < 0.f) out_cpu[addr_o] = 0.f;
+        }
       }
     }
-  }*/
+  }
 }
 
 void cpu_print_data_in() {
@@ -456,6 +460,7 @@ int main(int argc, char **argv) {
   int offset_bias = 0;  //offset to pointer bias each loop
   int offset_kernel = 0; //offset to pointer kernel each loop
   int offset_data_out = 0; //offset to poiter output data loop
+  int flag_relu = RELU; //0/1 relu function is activated or no
 
   //-----------------------------
   // Copy input data to device global memory
@@ -470,8 +475,8 @@ int main(int argc, char **argv) {
   set_callback(write_events[1], "ooo_queue");
 
   OCL_CHECK(err, err = q.enqueueMigrateMemObjects( {buffer_bias}, 0 /*0 means from host*/, NULL, &write_events[2]));
-  set_callback(write_events[2], "ooo_queue");  
-  
+  set_callback(write_events[2], "ooo_queue");
+
   // timint stats
   unsigned long long prof_time;
   struct timeval prof_t1;
@@ -491,6 +496,8 @@ int main(int argc, char **argv) {
     OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, offset_bias));
     OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, offset_kernel));
     OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, offset_data_out));
+    OCL_CHECK(err, err = kernel_conv2d_2.setArg(arg++, flag_relu));
+
 
     // Update the offset poiter to bias, kernels and output data
     offset_bias = offset_bias + CPO;
