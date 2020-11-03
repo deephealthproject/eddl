@@ -620,6 +620,14 @@ int Tensor::eqsize(Tensor *A, Tensor *B){
 }
 
 
+bool Tensor::sameSize(Tensor *A, Tensor *B) {
+    return A->size == B->size;
+}
+
+bool Tensor::sameDevice(Tensor *A, Tensor *B) {
+    return A->device == B->device;
+}
+
 int Tensor::sameShape(Tensor *A, Tensor *B) {
     if (A->ndim != B->ndim) return 0;
 

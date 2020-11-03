@@ -291,3 +291,49 @@ void gpu_softmax(Tensor *A,Tensor *B){
     gpu_delete_tensor(device,aux);
   }
 }
+
+void gpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable){
+    if(axis==1){
+        gpu_full_softmax_batched(A, B, stable);
+    }else{ msg("Not implemented Error", "gpu_full_softmax"); }
+}
+
+void gpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Get Bacthes and Softmax dimension (classes)
+    int n_batches = A->shape[0];
+    int n_features = A->shape[1];
+
+    // Calculate cuda blocks
+    int blockSize = MAX_TPB;
+    int numBlocks = (n_batches + blockSize - 1) / blockSize; // Same as: ceil(N/threads_block)
+
+    // Calculate derivative of Softmax
+    full_softmax_batched<<<numBlocks, blockSize>>>(A->ptr, B->ptr, stable, n_batches, n_features);
+    check_cuda(cudaDeviceSynchronize(),"gpu_full_softmax");
+}
+
+void gpu_d_full_softmax(Tensor *D, Tensor *I, Tensor *PD, int axis){
+    if(axis==1){
+        gpu_d_full_softmax_batched(D, I, PD);
+    }else{ msg("Not implemented Error", "gpu_d_full_softmax"); }
+}
+
+void gpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD){
+    int device=D->gpu_device;
+    cudaSetDevice(device);
+
+    // Get Bacthes and Softmax dimension (classes)
+    int n_batches = D->shape[0];
+    int n_features = D->shape[1];
+
+    // Calculate cuda blocks
+    int blockSize = MAX_TPB;
+    int numBlocks = (n_batches + blockSize - 1) / blockSize; // Same as: ceil(N/threads_block)
+
+    // Calculate derivative of Softmax
+    full_d_softmax_batched<<<numBlocks, blockSize>>>(D->ptr, I->ptr, PD->ptr, n_batches, n_features);
+    check_cuda(cudaDeviceSynchronize(),"gpu_d_full_softmax");
+}

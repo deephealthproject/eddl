@@ -93,9 +93,9 @@ void cpu_conv2D(ConvolDescriptor *D)
   float *ptrO=D->O->ptr;
   float *ptrI=D->ptrI;
 
+
   // Map memory to Eigen
-  new(&D->matK) Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
-  new(&D->matI) Eigen::Map<Eigen::MatrixXf>(D->ptrI, D->r*D->c,D->kz*D->kr*D->kc);
+  Eigen::Map<Eigen::MatrixXf> matK=Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
 
   #pragma omp parallel for
   for(int b=0;b<D->I->shape[0];b++){
@@ -108,7 +108,7 @@ void cpu_conv2D(ConvolDescriptor *D)
 
     im2col(b,D,ptrI,0);
 
-    matO=matI*D->matK;
+    matO=matI*matK;
   }// batch
 
   //bias
@@ -133,8 +133,9 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
   int osize=D->z*D->r*D->c;
   int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
 
+
   // Map memory to Eigen
-  new(&D->matgK) Eigen::Map<Eigen::MatrixXf>(D->gK->ptr, D->kr * D->kc * D->kz, D->nk);
+  Eigen::Map<Eigen::MatrixXf> matgK=Eigen::Map<Eigen::MatrixXf>(D->gK->ptr, D->kr * D->kc * D->kz, D->nk);
 
   //#pragma omp parallel for
   for(int b=0;b<D->I->shape[0];b++){
@@ -145,7 +146,7 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
     Eigen::Map<Eigen::MatrixXf> matI=Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
     Eigen::Map<Eigen::MatrixXf> matD=Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
 
-    D->matgK+=matI.transpose()*matD;
+    matgK+=matI.transpose()*matD;
   }// batch
 
   //bias
@@ -174,8 +175,7 @@ void cpu_conv2D_back(ConvolDescriptor *D)
   float *ptrI=D->ptrI;
 
   // Map memory to Eigen
-  new(&D->matK) Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
-  new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
+  Eigen::Map<Eigen::MatrixXf> matK=Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
 
   #pragma omp parallel for
   for(int b=0;b<D->I->shape[0];b++){
@@ -186,7 +186,7 @@ void cpu_conv2D_back(ConvolDescriptor *D)
     Eigen::Map<Eigen::MatrixXf> matI=Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
     Eigen::Map<Eigen::MatrixXf> matD=Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
 
-    matI=matD*D->matK.transpose();
+    matI=matD*matK.transpose();
 
     im2col(b,D,ptrI,1);
 

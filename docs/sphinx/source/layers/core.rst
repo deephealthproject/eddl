@@ -10,18 +10,21 @@ Dense
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   layer l = Input({784});
    l = Dense(l, 1024);
-   l = Dense(l, 1024);
-   ...
+   
 
 
 Embedding
 -----------
 
 .. doxygenfunction:: Embedding
+
+Example:
+
+.. code-block:: c++
+
+   l = Embedding(l, 2000, 1, 32);
 
 
 
@@ -33,22 +36,12 @@ Reshape
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Download mnist
-   download_mnist();
-
-   layer l = Input({784});
-
-   // Data augmentation assumes 3D tensors... images:
    l = Reshape(l,{1,28,28});
-   // Data augmentation
-   ...
 
-   // Come back to 1D tensor for fully connected:
+   // Reshape to 1D tensor:
    l = Reshape(l,{-1});
 
-   ...
 
 
 Flatten
@@ -61,22 +54,9 @@ Transforms the input tensor into a 1D-tensor. Alias for ``Reshape(l, {-1})``.
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Download mnist
-   download_mnist();
-
-   layer l = Input({784});
-
-   // Data augmentation assumes 3D tensors... images:
-   l = Reshape(l,{1,28,28});
-   // Data augmentation
-   ...
-
-   // Come back to 1D tensor for fully connected:
    l = Flatten(l);
 
-   ...
 
 
 Input
@@ -87,9 +67,7 @@ Input
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   download_mnist();
    layer in = Input({784});
 
 
@@ -102,9 +80,7 @@ Dropout
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
    l = Dropout(l, 0.3);
 
 
@@ -119,9 +95,7 @@ Selects a subset of the output tensor using indices (similar to Numpy; the batch
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
    l = Select(l, {"-1", "20:100", "50:-10", ":"});
 
 
@@ -137,9 +111,7 @@ Permute the axes of the output tensor (the batch is ignored)
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
    l = Permute(l, {0, 2, 1});
 
 
@@ -153,7 +125,5 @@ Permute the last two axes of the output tensor. Alias for ``Permute(l, {0, 2, 1}
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
    l = Transpose(l);

@@ -32,17 +32,17 @@ IGlorotNormal::IGlorotNormal(int seed) : Initializer("glorot_normal") {
 void IGlorotNormal::apply(Tensor* params)
 {
   if (params->ndim == 1)
-      params->rand_signed_uniform(0.1f);
+      params->fill_rand_signed_uniform_(0.1f);
   else if (params->ndim == 2) {
-      params->rand_normal(0.0f, ::sqrtf(2.0f / (params->shape[0]+params->shape[1])));
+      params->fill_rand_normal_(0.0f, ::sqrtf(2.0f / (params->shape[0] + params->shape[1])));
     }
   else if (params->ndim == 4) {
       int rf=params->shape[2]*params->shape[3];
       int fin=rf*params->shape[1];
       int fout=rf*params->shape[0];
-      params->rand_normal(0.0f, ::sqrtf(2.0f / (float)(fin+fout)));
+      params->fill_rand_normal_(0.0f, ::sqrtf(2.0f / (float) (fin + fout)));
     }
   else {
-      params->rand_signed_uniform(0.1f);
+      params->fill_rand_signed_uniform_(0.1f);
   }
 }

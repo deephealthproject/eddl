@@ -622,4 +622,55 @@ namespace tensorNN {
 
     }
 
+
+
+    // FULL SOFTMAX
+    void FullSoftmax(Tensor *A, Tensor *B) {
+        if (!Tensor::sameDevice(A, B)) msg("Tensors in different devices", "Tensor::FullSoftmax");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::FullSoftmax");
+
+        B->tsem->lock();
+        if (A->isCPU()) {
+            cpu_full_softmax(A, B, 1, true);
+        }
+#ifdef cGPU
+        else if (A->isGPU())
+        {
+            gpu_full_softmax(A, B, 1, true);
+        }
+#endif
+#ifdef cFPGA
+        else {
+                        msg("Not Implemented Error", "FullSoftmax");
+
+    }
+#endif
+
+        B->tsem->unlock();
+    }
+
+    // FULL SOFTMAX DERIVATIVE
+    void D_FullSoftmax(Tensor *D, Tensor *I, Tensor *PD) {
+        if (!Tensor::sameDevice(D, I) || !Tensor::sameDevice(D, PD))
+            msg("Tensors in different devices", "Tensor::D_FullSoftmax");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_FullSoftmax");
+        if (D->ndim != 2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)", "Tensor::D_Softmax");
+
+        if (D->isCPU()) {
+            cpu_d_full_softmax(D, I, PD, 1);
+        }
+#ifdef cGPU
+        else if (D->isGPU())
+        {
+            gpu_d_full_softmax(D, I, PD, 1);
+        }
+#endif
+#ifdef cFPGA
+        else {
+                        msg("Not Implemented Error", "D_FullSoftmax");
+    }
+#endif
+    }
+
+
 }

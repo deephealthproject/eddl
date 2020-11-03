@@ -23,6 +23,10 @@ TEST(TensorTestSuite, tensor_math_unary_abs){
     Tensor* new_t = t1->abs();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
 
     // Test GPU
     #ifdef cGPU
@@ -31,6 +35,10 @@ TEST(TensorTestSuite, tensor_math_unary_abs){
         t_cpu->abs_();
         t_gpu->abs_(); t_gpu->toCPU();
         ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+        delete t_cpu;
+        delete t_gpu;
+
     #endif
 }
 
@@ -48,6 +56,10 @@ TEST(TensorTestSuite, tensor_math_unary_acos){
     Tensor* new_t = t1->acos();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -55,6 +67,10 @@ TEST(TensorTestSuite, tensor_math_unary_acos){
     t_cpu->acos_();
     t_gpu->acos_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -72,6 +88,10 @@ TEST(TensorTestSuite, tensor_math_unary_add){
     Tensor* new_t = t1->add(20.0f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -79,6 +99,10 @@ TEST(TensorTestSuite, tensor_math_unary_add){
     t_cpu->add_(100.0f);
     t_gpu->add_(100.0f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -96,6 +120,10 @@ TEST(TensorTestSuite, tensor_math_unary_addT){
     Tensor* new_t = t1->add(t1);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -103,6 +131,10 @@ TEST(TensorTestSuite, tensor_math_unary_addT){
     t_cpu->add_(t_cpu);
     t_gpu->add_(t_gpu); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -120,6 +152,10 @@ TEST(TensorTestSuite, tensor_math_unary_asin){
     Tensor* new_t = t1->asin();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -127,6 +163,10 @@ TEST(TensorTestSuite, tensor_math_unary_asin){
     t_cpu->asin_();
     t_gpu->asin_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -144,6 +184,10 @@ TEST(TensorTestSuite, tensor_math_unary_atan){
     Tensor* new_t = t1->atan();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -151,6 +195,10 @@ TEST(TensorTestSuite, tensor_math_unary_atan){
     t_cpu->atan_();
     t_gpu->atan_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -168,6 +216,10 @@ TEST(TensorTestSuite, tensor_math_unary_ceil){
     Tensor* new_t = t1->ceil();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -175,6 +227,10 @@ TEST(TensorTestSuite, tensor_math_unary_ceil){
     t_cpu->ceil_();
     t_gpu->ceil_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -192,6 +248,10 @@ TEST(TensorTestSuite, tensor_math_unary_clamp){
     Tensor* new_t = t1->clamp(-0.5f,0.5f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -199,6 +259,10 @@ TEST(TensorTestSuite, tensor_math_unary_clamp){
     t_cpu->clamp_(0.1, 0.3);
     t_gpu->clamp_(0.1, 0.3); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -216,6 +280,10 @@ TEST(TensorTestSuite, tensor_math_unary_clampmax){
     Tensor* new_t = t1->clampmax(2);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -223,6 +291,10 @@ TEST(TensorTestSuite, tensor_math_unary_clampmax){
     t_cpu->clampmax_(0.3f);
     t_gpu->clampmax_(0.3f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -240,6 +312,10 @@ TEST(TensorTestSuite, tensor_math_unary_clampmin){
     Tensor* new_t = t1->clampmin(-2);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -247,6 +323,10 @@ TEST(TensorTestSuite, tensor_math_unary_clampmin){
     t_cpu->clampmin_(0.1f);
     t_gpu->clampmin_(0.1f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -264,6 +344,10 @@ TEST(TensorTestSuite, tensor_math_unary_cos){
     Tensor* new_t = t1->cos();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -271,6 +355,10 @@ TEST(TensorTestSuite, tensor_math_unary_cos){
     t_cpu->cos_();
     t_gpu->cos_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -288,6 +376,10 @@ TEST(TensorTestSuite, tensor_math_unary_cosh){
     Tensor* new_t = t1->cosh();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -295,6 +387,10 @@ TEST(TensorTestSuite, tensor_math_unary_cosh){
     t_cpu->cosh_();
     t_gpu->cosh_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -312,6 +408,11 @@ TEST(TensorTestSuite, tensor_math_unary_div){
     Tensor* new_t = t1->div(0.5);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -319,6 +420,10 @@ TEST(TensorTestSuite, tensor_math_unary_div){
     t_cpu->div_(2.0f);
     t_gpu->div_(2.0f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -336,6 +441,10 @@ TEST(TensorTestSuite, tensor_math_unary_divT){
     Tensor* new_t = t1->div(t1);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -343,6 +452,10 @@ TEST(TensorTestSuite, tensor_math_unary_divT){
     t_cpu->div_(t_cpu);
     t_gpu->div_(t_gpu); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -360,6 +473,10 @@ TEST(TensorTestSuite, tensor_math_unary_exp){
     Tensor* new_t = t1->exp();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -367,6 +484,10 @@ TEST(TensorTestSuite, tensor_math_unary_exp){
     t_cpu->exp_();
     t_gpu->exp_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -384,6 +505,10 @@ TEST(TensorTestSuite, tensor_math_unary_floor){
     Tensor* new_t = t1->floor();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -391,6 +516,10 @@ TEST(TensorTestSuite, tensor_math_unary_floor){
     t_cpu->floor_();
     t_gpu->floor_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -408,6 +537,10 @@ TEST(TensorTestSuite, tensor_math_unary_inv){
     Tensor* new_t = t1->inv(2.0f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -415,6 +548,10 @@ TEST(TensorTestSuite, tensor_math_unary_inv){
     t_cpu->inv_(5.0f);
     t_gpu->inv_(5.0f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -432,6 +569,10 @@ TEST(TensorTestSuite, tensor_math_unary_log){
     Tensor* new_t = t1->log();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -439,6 +580,10 @@ TEST(TensorTestSuite, tensor_math_unary_log){
     t_cpu->log_();
     t_gpu->log_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -456,6 +601,10 @@ TEST(TensorTestSuite, tensor_math_unary_log2){
     Tensor* new_t = t1->log2();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -463,6 +612,10 @@ TEST(TensorTestSuite, tensor_math_unary_log2){
     t_cpu->log2_();
     t_gpu->log2_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -480,6 +633,11 @@ TEST(TensorTestSuite, tensor_math_unary_log10){
     Tensor* new_t = t1->log10();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -487,6 +645,10 @@ TEST(TensorTestSuite, tensor_math_unary_log10){
     t_cpu->log10_();
     t_gpu->log10_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -504,6 +666,10 @@ TEST(TensorTestSuite, tensor_math_unary_logn){
     Tensor* new_t = t1->logn(3);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -511,6 +677,10 @@ TEST(TensorTestSuite, tensor_math_unary_logn){
     t_cpu->logn_(3.0f);
     t_gpu->logn_(3.0f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -540,6 +710,13 @@ TEST(TensorTestSuite, tensor_math_unary_mod){
     Tensor* new_t2 = t2->mod(-1.5f);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+    delete t2_ref;
+    delete t2;
+    delete new_t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -547,6 +724,10 @@ TEST(TensorTestSuite, tensor_math_unary_mod){
     t_cpu->mod_(1.5f);
     t_gpu->mod_(1.5f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -564,6 +745,11 @@ TEST(TensorTestSuite, tensor_math_unary_mult){
     Tensor* new_t = t1->mult(100.0f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -571,6 +757,10 @@ TEST(TensorTestSuite, tensor_math_unary_mult){
     t_cpu->mult_(100.0f);
     t_gpu->mult_(100.0f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -588,6 +778,10 @@ TEST(TensorTestSuite, tensor_math_unary_multT){
     Tensor* new_t = t1->mult(t1);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -595,6 +789,10 @@ TEST(TensorTestSuite, tensor_math_unary_multT){
     t_cpu->mult_(t_cpu);
     t_gpu->mult_(t_gpu); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -612,6 +810,10 @@ TEST(TensorTestSuite, tensor_math_unary_neg){
     Tensor* new_t = t1->neg();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -619,6 +821,10 @@ TEST(TensorTestSuite, tensor_math_unary_neg){
     t_cpu->neg();
     t_gpu->neg(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -636,6 +842,10 @@ TEST(TensorTestSuite, tensor_math_unary_normalize){
     Tensor* new_t = t1->normalize(0.0f,255.0f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -643,6 +853,10 @@ TEST(TensorTestSuite, tensor_math_unary_normalize){
     t_cpu->normalize_();
     t_gpu->normalize_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -660,6 +874,10 @@ TEST(TensorTestSuite, tensor_math_unary_pow){
     Tensor* new_t = t1->pow(2);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -667,6 +885,10 @@ TEST(TensorTestSuite, tensor_math_unary_pow){
     t_cpu->pow_(3.5f);
     t_gpu->pow_(3.5f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -684,6 +906,10 @@ TEST(TensorTestSuite, tensor_math_unary_powb){
     Tensor* new_t = t1->powb(5);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -691,6 +917,10 @@ TEST(TensorTestSuite, tensor_math_unary_powb){
     t_cpu->powb_(4);
     t_gpu->powb_(4); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -708,6 +938,10 @@ TEST(TensorTestSuite, tensor_math_unary_reciprocal){
     Tensor* new_t = t1->reciprocal();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -715,6 +949,10 @@ TEST(TensorTestSuite, tensor_math_unary_reciprocal){
     t_cpu->reciprocal_();
     t_gpu->reciprocal_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -744,6 +982,13 @@ TEST(TensorTestSuite, tensor_math_unary_remainder){
     Tensor* new_t2 = t2->remainder(-1.5f);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+    delete t2_ref;
+    delete t2;
+    delete new_t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -751,6 +996,10 @@ TEST(TensorTestSuite, tensor_math_unary_remainder){
     t_cpu->remainder_(2.3f);
     t_gpu->remainder_(2.3f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -768,6 +1017,10 @@ TEST(TensorTestSuite, tensor_math_unary_round){
     Tensor* new_t = t1->round();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -775,6 +1028,10 @@ TEST(TensorTestSuite, tensor_math_unary_round){
     t_cpu->round();
     t_gpu->round(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -792,6 +1049,10 @@ TEST(TensorTestSuite, tensor_math_unary_rsqrt){
     Tensor* new_t = t1->rsqrt();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -799,6 +1060,10 @@ TEST(TensorTestSuite, tensor_math_unary_rsqrt){
     t_cpu->rsqrt_();
     t_gpu->rsqrt_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -817,6 +1082,10 @@ TEST(TensorTestSuite, tensor_math_unary_sigmoid){
     new_t->sigmoid();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -824,6 +1093,10 @@ TEST(TensorTestSuite, tensor_math_unary_sigmoid){
     t_cpu->sigmoid_();
     t_gpu->sigmoid_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -841,6 +1114,10 @@ TEST(TensorTestSuite, tensor_math_unary_sign){
     Tensor* new_t = t1->sign();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -848,6 +1125,10 @@ TEST(TensorTestSuite, tensor_math_unary_sign){
     t_cpu->sign_();
     t_gpu->sign_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -865,6 +1146,10 @@ TEST(TensorTestSuite, tensor_math_unary_sin){
     Tensor* new_t = t1->sin();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -872,6 +1157,10 @@ TEST(TensorTestSuite, tensor_math_unary_sin){
     t_cpu->sin_();
     t_gpu->sin_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -889,6 +1178,10 @@ TEST(TensorTestSuite, tensor_math_unary_sinh){
     Tensor* new_t = t1->sinh();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -896,6 +1189,10 @@ TEST(TensorTestSuite, tensor_math_unary_sinh){
     t_cpu->sinh_();
     t_gpu->sinh_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -913,6 +1210,11 @@ TEST(TensorTestSuite, tensor_math_unary_sqr){
     Tensor* new_t = t1->sqr();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -920,6 +1222,10 @@ TEST(TensorTestSuite, tensor_math_unary_sqr){
     t_cpu->sqr_();
     t_gpu->sqr_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -937,6 +1243,10 @@ TEST(TensorTestSuite, tensor_math_unary_sqrt){
     Tensor* new_t = t1->sqrt();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -944,6 +1254,10 @@ TEST(TensorTestSuite, tensor_math_unary_sqrt){
     t_cpu->sqrt_();
     t_gpu->sqrt_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -961,6 +1275,10 @@ TEST(TensorTestSuite, tensor_math_unary_sub){
     Tensor* new_t = t1->sub(10);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -968,6 +1286,10 @@ TEST(TensorTestSuite, tensor_math_unary_sub){
     t_cpu->sub_(3.0f);
     t_gpu->sub_(3.0f); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -985,6 +1307,10 @@ TEST(TensorTestSuite, tensor_math_unary_subT){
     Tensor* new_t = t1->sub(t1);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -992,6 +1318,10 @@ TEST(TensorTestSuite, tensor_math_unary_subT){
     t_cpu->sub_(t_cpu);
     t_gpu->sub_(t_gpu); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1009,6 +1339,10 @@ TEST(TensorTestSuite, tensor_math_unary_tan){
     Tensor* new_t = t1->tan();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -1016,6 +1350,10 @@ TEST(TensorTestSuite, tensor_math_unary_tan){
     t_cpu->tan_();
     t_gpu->tan_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1033,6 +1371,10 @@ TEST(TensorTestSuite, tensor_math_unary_tanh){
     Tensor* new_t = t1->tanh();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -1040,6 +1382,10 @@ TEST(TensorTestSuite, tensor_math_unary_tanh){
     t_cpu->tanh_();
     t_gpu->tanh_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1057,6 +1403,10 @@ TEST(TensorTestSuite, tensor_math_unary_trunc){
     Tensor* new_t = t1->trunc();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -1064,6 +1414,10 @@ TEST(TensorTestSuite, tensor_math_unary_trunc){
     t_cpu->trunc_();
     t_gpu->trunc_(); t_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t_cpu, t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1077,6 +1431,10 @@ TEST(TensorTestSuite, tensor_math_maximum){
     Tensor* new_t = Tensor::maximum(t1, 10.0f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -1086,6 +1444,10 @@ TEST(TensorTestSuite, tensor_math_maximum){
     Tensor* new_t_gpu = Tensor::maximum(t_gpu, 0.75f);; new_t_gpu->toCPU();
 
     ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1100,6 +1462,11 @@ TEST(TensorTestSuite, tensor_math_maximumT){
     Tensor* new_t = Tensor::maximum(t1_A, t1_B);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1_A;
+    delete t1_B;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
@@ -1112,6 +1479,14 @@ TEST(TensorTestSuite, tensor_math_maximumT){
     Tensor* new_t_gpu =Tensor::maximum(t_gpu_A, t_gpu_B);; new_t_gpu->toCPU();
 
     ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+    delete t_cpu_A;
+    delete t_gpu_A;
+    delete t_cpu_B;
+    delete t_gpu_B;
+    delete new_t_cpu;
+    delete new_t_gpu;
+
 #endif
 }
 
@@ -1124,6 +1499,10 @@ TEST(TensorTestSuite, tensor_math_minimum){
     Tensor* new_t = Tensor::minimum(t1, 5.0f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -1133,6 +1512,12 @@ TEST(TensorTestSuite, tensor_math_minimum){
     Tensor* new_t_gpu = Tensor::minimum(t_gpu, 0.25f);; new_t_gpu->toCPU();
 
     ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+    delete t_cpu;
+    delete t_gpu;
+    delete new_t_cpu;
+    delete new_t_gpu;
+
 #endif
 }
 
@@ -1146,6 +1531,11 @@ TEST(TensorTestSuite, tensor_math_minimumT){
     Tensor* new_t = Tensor::minimum(t1_A, t1_B);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
+    delete t1_ref;
+    delete t1_A;
+    delete t1_B;
+    delete new_t;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
@@ -1158,6 +1548,14 @@ TEST(TensorTestSuite, tensor_math_minimumT){
     Tensor* new_t_gpu =Tensor::minimum(t_gpu_A, t_gpu_B);; new_t_gpu->toCPU();
 
     ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+
+    delete t_cpu_A;
+    delete t_gpu_A;
+    delete t_cpu_B;
+    delete t_gpu_B;
+    delete new_t_cpu;
+    delete new_t_gpu;
+
 #endif
 }
 
@@ -1180,6 +1578,9 @@ TEST(TensorTestSuite, tensor_math_unary_max){
     float t2_max = t2->max();
     ASSERT_FLOAT_EQ(t2_max, 1.0f);
 
+    delete t1;
+    delete t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -1189,6 +1590,10 @@ TEST(TensorTestSuite, tensor_math_unary_max){
     float t_gpu_max = t_gpu->max(); t_gpu->toCPU();
 
     ASSERT_NEAR(t_cpu_max, t_gpu_max, 10e-4f);
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1210,6 +1615,9 @@ TEST(TensorTestSuite, tensor_math_unary_argmax){
     int t2_argmax = t2->argmax();
     ASSERT_EQ(t2_argmax, 2);
 
+    delete t1;
+    delete t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
@@ -1219,6 +1627,10 @@ TEST(TensorTestSuite, tensor_math_unary_argmax){
     float t_gpu_argmax = t_gpu->argmax(); t_gpu->toCPU();
 
     ASSERT_NEAR(t_cpu_argmax, t_gpu_argmax, 10e-4f);
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1240,6 +1652,9 @@ TEST(TensorTestSuite, tensor_math_unary_min){
     float t2_min = t2->min();
     ASSERT_FLOAT_EQ(t2_min, -1.0f);
 
+    delete t1;
+    delete t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
@@ -1249,6 +1664,10 @@ TEST(TensorTestSuite, tensor_math_unary_min){
     float t_gpu_min = t_gpu->min(); t_gpu->toCPU();
 
     ASSERT_NEAR(t_cpu_min, t_gpu_min, 10e-4f);
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1269,6 +1688,9 @@ TEST(TensorTestSuite, tensor_math_unary_argmin){
     int t2_argmin = t2->argmin();
     ASSERT_EQ(t2_argmin, 0);
 
+    delete t1;
+    delete t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
@@ -1278,6 +1700,10 @@ TEST(TensorTestSuite, tensor_math_unary_argmin){
     float t_gpu_argmin = t_gpu->argmin(); t_gpu->toCPU();
 
     ASSERT_NEAR(t_cpu_argmin, t_gpu_argmin, 10e-4f);
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1290,6 +1716,8 @@ TEST(TensorTestSuite, tensor_math_unary_sum){
     float t_sum = t1->sum();
     ASSERT_NEAR(t_sum, 1.6063f, 10e-4f);
 
+    delete t1;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({1, 100, 100});  // High mismatch CPU/GPU
@@ -1299,6 +1727,10 @@ TEST(TensorTestSuite, tensor_math_unary_sum){
     float t_gpu_sum = t_gpu->sum(); t_gpu->toCPU();
 
     ASSERT_NEAR(t_cpu_sum, t_gpu_sum, 10e-2f);
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1312,6 +1744,8 @@ TEST(TensorTestSuite, tensor_math_unary_abs_sum){
     float t_sum = t1->sum_abs();
     ASSERT_NEAR(t_sum, 3.0621f, 10e-4f);
 
+    delete t1;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({1, 100, 100});  // High mismatch CPU/GPU
@@ -1321,6 +1755,10 @@ TEST(TensorTestSuite, tensor_math_unary_abs_sum){
     float t_gpu_sum = t_gpu->sum_abs(); t_gpu->toCPU();
 
     ASSERT_NEAR(t_cpu_sum, t_gpu_sum, 10e-2f);
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1332,6 +1770,8 @@ TEST(TensorTestSuite, tensor_math_unary_prod){  // Factorial
     float t_prod = t1->prod();
     ASSERT_NEAR(t_prod, 3628800.0f, 10e-4f);
 
+    delete t1;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randn({1, 10}); t_cpu->mult_(10.0f);  // High mismatch CPU/GPU
@@ -1341,6 +1781,10 @@ TEST(TensorTestSuite, tensor_math_unary_prod){  // Factorial
     float t_gpu_prod = t_gpu->prod(); t_gpu->toCPU();
 
     ASSERT_NEAR(t_cpu_prod, t_gpu_prod, 10e-3f);  // Many multiplications lead to either zero o infinity
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1352,6 +1796,8 @@ TEST(TensorTestSuite, tensor_math_unary_mean){
     float t1_mean = t1->mean();
     ASSERT_FLOAT_EQ(t1_mean, 0.3367);
 
+    delete t1;
+
 
     // Test GPU
 #ifdef cGPU
@@ -1362,6 +1808,11 @@ TEST(TensorTestSuite, tensor_math_unary_mean){
     float t_gpu_mean = t_gpu->mean(); t_gpu->toCPU();
 
     ASSERT_NEAR(t_cpu_mean, t_gpu_mean, 10e-4f);
+
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -1379,6 +1830,9 @@ TEST(TensorTestSuite, tensor_math_unary_median){
     float t2_median = t2->median();
     ASSERT_FLOAT_EQ(t2_median, 0.2832);
 
+    delete t1;
+    delete t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t1_cpu = Tensor::randu({10001});
@@ -1392,6 +1846,12 @@ TEST(TensorTestSuite, tensor_math_unary_median){
     float t2_cpu_median = t2_cpu->median();
     float t2_gpu_median = t2_gpu->median(); t2_gpu->toCPU();
     ASSERT_NEAR(t2_cpu_median, t2_gpu_median, 10e-4f);
+
+    delete t1_cpu;
+    delete t1_gpu;
+    delete t2_cpu;
+    delete t2_gpu;
+
 #endif
 }
 
@@ -1403,6 +1863,8 @@ TEST(TensorTestSuite, tensor_math_unary_mode){
     int t1_mode = t1->mode();
     ASSERT_EQ(t1_mode, 3);
 
+    delete t1;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t1_cpu = Tensor::randn({10}); t1_cpu->round_();
@@ -1412,6 +1874,10 @@ TEST(TensorTestSuite, tensor_math_unary_mode){
 //    t1_cpu->print();
 //    t1_gpu->print();
     ASSERT_EQ(t1_cpu_mode, t1_gpu_mode);
+
+    delete t1_cpu;
+    delete t1_gpu;
+
 #endif
 }
 
@@ -1427,6 +1893,8 @@ TEST(TensorTestSuite, tensor_math_unary_std){
     float t2_std = t1->std(false);
     ASSERT_NEAR(t2_std, 1.3763, 10e-4f);
 
+    delete t1;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t1_cpu = Tensor::randn({1000});
@@ -1434,6 +1902,10 @@ TEST(TensorTestSuite, tensor_math_unary_std){
     float t1_cpu_std = t1_cpu->std();
     float t1_gpu_std = t1_gpu->std(); t1_gpu->toCPU();
     ASSERT_NEAR(t1_cpu_std, t1_gpu_std, 10e-4f);
+
+    delete t1_cpu;
+    delete t1_gpu;
+
 #endif
 }
 
@@ -1449,6 +1921,8 @@ TEST(TensorTestSuite, tensor_math_unary_var){
     float t2_var = t1->var(false);
     ASSERT_NEAR(t2_var, 1.8943, 10e-4f);
 
+    delete t1;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t1_cpu = Tensor::randn({1000});
@@ -1456,5 +1930,9 @@ TEST(TensorTestSuite, tensor_math_unary_var){
     float t1_cpu_var = t1_cpu->var();
     float t1_gpu_var = t1_gpu->var(); t1_gpu->toCPU();
     ASSERT_NEAR(t1_cpu_var, t1_gpu_var, 10e-4f);
+
+    delete t1_cpu;
+    delete t1_gpu;
+    
 #endif
 }

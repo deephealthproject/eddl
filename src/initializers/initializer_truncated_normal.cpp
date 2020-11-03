@@ -32,6 +32,6 @@ ITruncateNormal::ITruncateNormal(float mean, float stdev, int seed) : Initialize
 }
 void ITruncateNormal::apply(Tensor* params)
 {
-  params->rand_normal(mean,stdev);
+    params->fill_rand_normal_(mean, stdev);
   params->trunc_();
 }

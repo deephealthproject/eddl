@@ -34,6 +34,9 @@ TEST(TensorTestSuite, tensor_linalg_trace){
     float t2_sum = t2->trace(1);
     ASSERT_TRUE(t2_sum == 8.0f);
 
+    delete t1;
+    delete t2;
+
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu = Tensor::randu({1000, 1000});
@@ -43,6 +46,10 @@ TEST(TensorTestSuite, tensor_linalg_trace){
     float t_gpu_sum = t_gpu->trace(0);
 
     ASSERT_TRUE(abs(t_cpu_sum - t_gpu_sum) < 10e-4);
+
+    delete t_cpu;
+    delete t_gpu;
+
 #endif
 }
 
@@ -58,6 +65,8 @@ TEST(TensorTestSuite, tensor_linalg_norm){
     float t1_norm = t1->norm();
     ASSERT_NEAR(t1_norm, 7.7459f, 10e-4f);
 
+    delete t1;
+
 
     // Test GPU
 #ifdef cGPU
@@ -68,5 +77,9 @@ TEST(TensorTestSuite, tensor_linalg_norm){
     float t_gpu_norm = t_gpu->norm();
 
     ASSERT_NEAR(t_cpu_norm, t_gpu_norm, 10e-2f);
+
+    delete t_cpu;
+    delete t_gpu;
+    
 #endif
 }

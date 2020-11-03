@@ -32,7 +32,11 @@ float LSoftCrossEntropy::value(Tensor *T, Tensor *Y) {
 
     aux1 = new Tensor(T->getShape(), T->device);
     tensorNN::cent(T, Y, aux1);
-    f = aux1->sum()/size;
+    //f = aux1->sum()/size;
+    // corss-entropy use to be used with one-hot vectors
+    // dividing by size of vector gives too small values when
+    // for instance nuber of classes is too large.
+    f = aux1->sum();
 
     delete aux1;
 

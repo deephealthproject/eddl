@@ -147,7 +147,7 @@ void Tensor::deleteData(){
         if (this->isCPU()) {
             // Delete eigen matrix
             if (this->ndim == 2){
-                delete this->ptr2;
+                delete this->ptr2; //double free or corruption (out)
                 delete[] this->ptr;
                 this->ptr2 = nullptr;
                 this->ptr = nullptr;  // Redundant
@@ -286,8 +286,10 @@ void Tensor::toCPU(int dev){
         this->deleteData();
 
         // Assign CPU pointer
+
         this->device = dev;  // Must appear after deleting the data
-        this->updateData(cpu_ptr);
+
+        this->updateData(cpu_ptr,nullptr,false);
     }
 
 
@@ -310,7 +312,7 @@ void Tensor::toGPU(int dev){
 
         this->ptr = gpu_ptr;
         gpu_copy_to_gpu(cpu_ptr, this);
-        delete cpu_ptr;
+        delete []cpu_ptr;
     }
     else if (this->isGPU())
     {
@@ -360,17 +362,22 @@ Tensor* Tensor::clone(){
     return t_new;
 }
 
-void Tensor::reallocate(Tensor* old_t, vector<int> *s){
+void Tensor::reallocate(Tensor* old_t){
+    Tensor::reallocate(old_t, {});
+}
+
+
+void Tensor::reallocate(Tensor* old_t, const vector<int> &shape){
     // Update values
-    if(s != nullptr){
+    if(!shape.empty()){
         updateDevice(old_t->device);
-        updateShape(*s);
+        updateShape(shape);
         updateSize();
         updateStrides();
     }
 
     // Not recommended
-    updateData(old_t->ptr);
+    updateData(old_t->ptr,nullptr,false);
 }
 
 int Tensor::isCPU() { return (device == DEV_CPU); }

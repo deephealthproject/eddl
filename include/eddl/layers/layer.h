@@ -101,7 +101,7 @@ public:
     virtual void copy(Layer *l2);
 
     virtual void resize(int batch);
-    virtual void set_trainable(bool value);
+    virtual void setTrainable(bool value);
 
     virtual void save(std::ofstream &ofs, string format="");
     virtual void load(std::ifstream &ifs, string format="");

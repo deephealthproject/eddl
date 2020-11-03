@@ -189,6 +189,69 @@ void Net::setlr(vector <float> p)
   snets[i]->optimizer->change(p);
 }
 
+vector<vtensor> Net::get_parameters(bool deepcopy){
+    vector<vtensor> params;
+
+    // Collect layer params
+    for(auto &l : this->layers){
+        if(!deepcopy){
+            params.push_back(l->params);
+        }else{
+            // Clone parameters
+            vtensor lp;
+            for(auto &param : l->params){
+                Tensor* new_param = param->clone(); // TODO: Flag toCPU()?
+                lp.push_back(new_param);
+            }
+
+            // Add new params
+            params.push_back(lp);
+        }
+    }
+
+    return params;
+}
+
+void Net::set_parameters(const vector<vtensor>& params){
+    // Check the number of layers
+    if(params.size() != this->layers.size()){
+        msg("AssertionError: The number of layers in params does not match the number of layers in this network ("
+        + std::to_string(params.size())  + "!=" + std::to_string(this->layers.size()) +")",
+        "Net::set_parameters");
+    }
+
+    // Check the number of params per layer
+    for(int i=0; i<this->layers.size(); i++){
+        Layer* l = this->layers[i];  // Alias
+
+        // Check number of params
+        if(params[i].size() != l->params.size()){
+            msg("AssertionError: The number of parameters in layer '" + std::to_string(i) +
+            "'(" + l->name +") does not match the number of parameters in the given vector<Tensor*>. (" +
+            std::to_string(l->params.size()) + "!=" + std::to_string(params[i].size())  +")",
+                "Net::set_parameters");
+        }
+    }
+
+    // Set layer params
+    for(int i=0; i<this->layers.size(); i++){
+
+        // Delete current params
+        for(int j=this->layers[i]->params.size()-1; j>=0; j--){
+            cout << "Deleting params " << j << " from layer " << i << "(" << this->layers[i]->name << ")" << endl;
+            if (this->layers[i]->params[i]!= nullptr){
+                delete this->layers[i]->params[i];
+            }
+        }
+
+        // Empty params
+        this->layers[i]->params.clear();
+
+        // Add new params
+        this->layers[i]->params = params[i];  // Pass reference. Do not copy
+    }
+}
+
 //////////////////////////////////
 // API functions
 
@@ -216,7 +279,8 @@ void Net::forward(vector<Tensor*> in)
 
       // Distribute to snets inputs
       for (int i = 0; i < in.size(); i++)
-      distributeTensor(lin[i]);
+        distributeTensor(lin[i]);
+      
 
     }
 
@@ -355,16 +419,14 @@ void Net::backward_recurrent(vector<Tensor *> target)
   vtensor xtd;
   vtensor yt;
 
-  vtensor tin;
-  vtensor tinr;
   vtensor toutr;
+  vtensor tinr;
+  vtensor tin;
 
   int inl;
   int outl;
 
-  Tensor *Z=Tensor::zeros(target[0]->shape,target[0]->device);
-
-  prepare_recurrent(tin,target,inl,outl,xt,xtd,yt,tinr,toutr,Z);
+  prepare_recurrent(tin,target,inl,outl,xt,xtd,yt,tinr,toutr);
 
   if ((isencoder)&&(isdecoder))
     rnet->backward(toutr);
@@ -373,10 +435,13 @@ void Net::backward_recurrent(vector<Tensor *> target)
   else if (isdecoder)
     rnet->backward(toutr);
 
+  for(i=0;i<xt.size();i++)
+    delete xt[i];
+  xt.clear();
 
-  for(i=0;i<yt.size();i++)
-    delete yt[i];
-  yt.clear();
+  for(i=0;i<xtd.size();i++)
+    delete xtd[i];
+  xtd.clear();
 
 }
 
@@ -770,7 +835,6 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
       for(i=0;i<tout.size();i++)
         xtd.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
 
-
       //prepare output
       for(i=0;i<tout.size();i++)
         yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
@@ -826,6 +890,7 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
           toutr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset),yt[i]->device));
     }
   }
+
 }
 
 void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
@@ -844,7 +909,7 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
 
   prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
-  if (rnet==nullptr) build_rnet(inl,outl);
+  build_rnet(inl,outl);
 
   if ((isencoder)&&(isdecoder))
     rnet->fit(tinr,toutr,batch,epochs);
@@ -954,12 +1019,12 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 
 
 ///////////////////////////////////////////
-void Net::evaluate(vtensor tin, vtensor tout) {
+void Net::evaluate(vtensor tin, vtensor tout,int bs) {
 
   int i, j, k, n;
 
   if (isrecurrent) {
-    evaluate_recurrent(tin,tout);
+    evaluate_recurrent(tin,tout,bs);
   }
   else{
 
@@ -972,8 +1037,6 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     // Check data consistency
     n = tin[0]->shape[0];
 
-
-
     for (i = 1; i < tin.size(); i++)
     if (tin[i]->shape[0] != n)
     msg("different number of samples in input tensor", "Net.evaluate");
@@ -982,6 +1045,7 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     if (tout[i]->shape[0] != n)
     msg("different number of samples in output tensor", "Net.evaluate");
 
+    resize(bs);
 
     printf("Evaluate with batch size %d\n",batch_size);
 
@@ -1011,8 +1075,10 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 }
 
 ///////////////////////////////////////////
-void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
-  int i,j,k;
+void Net::evaluate_recurrent(vtensor tin, vtensor tout, int bs) {
+
+  int i;
+
   // prepare data for unroll net
   vtensor xt;
   vtensor xtd;
@@ -1024,16 +1090,20 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
   int inl;
   int outl;
 
-  Tensor *Z=Tensor::zeros(tout[0]->shape,tout[0]->device);
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
-  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr,Z);
+  build_rnet(inl,outl);
 
+  cout<<"OK"<<endl;
   if ((isencoder)&&(isdecoder))
-    rnet->evaluate(tinr,toutr);
-  else if (isencoder)
-    rnet->evaluate(tinr,tout);
+    rnet->evaluate(tinr,toutr,bs);
+  else if (isencoder){cout<<"OKenc"<<endl;
+    rnet->evaluate(tinr,tout,bs);}
   else if (isdecoder)
-    rnet->evaluate(tin,toutr);
+    rnet->evaluate(tinr,toutr,bs);
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
 
   if (isencoder) {
     for(i=0;i<xt.size();i++)
@@ -1051,8 +1121,6 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
   }
 
 }
-
-
 
 
 

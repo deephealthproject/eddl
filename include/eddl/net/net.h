@@ -106,6 +106,10 @@ public:
     Net *unroll_dec(int inl, int outl);
     void build_rnet(int inl,int outl);
     Layer* getLayer(vlayer in);
+    Layer* getLayer(string l);
+    void removeLayer(string l);
+    void setTrainable(string lanme, bool val);
+
 
     int inNet(Layer *l);
     void walk(Layer *l);
@@ -162,6 +166,8 @@ public:
     void compute_loss();
     void clamp(float min,float max);
     void setlr(vector <float> p);
+    vector<vtensor> get_parameters(bool deepcopy=false);
+    void set_parameters(const vector<vtensor>& params);
 
 
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
@@ -169,8 +175,8 @@ public:
 
     void fit_recurrent(vtensor tin, vtensor tout, int batch_size, int epochs);
     void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
-    void evaluate(vtensor tin, vtensor tout);
-    void evaluate_recurrent(vtensor tin, vtensor tout);
+    void evaluate(vtensor tin, vtensor tout, int bs=100);
+    void evaluate_recurrent(vtensor tin, vtensor tout, int bs);
     vtensor predict_recurrent(vtensor tin);
     vtensor predict(vtensor tin);
 

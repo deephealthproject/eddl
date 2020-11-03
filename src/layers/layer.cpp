@@ -78,6 +78,7 @@ Layer::~Layer(){
             delete acc_gradients[i]; acc_gradients[i] = nullptr;
         }
     }
+
 }
 
 void Layer::initialize() {
@@ -145,7 +146,7 @@ void Layer::resize(int batch){
 
 }
 
-void Layer::set_trainable(bool value){
+void Layer::setTrainable(bool value){
     trainable=value;
 }
 
