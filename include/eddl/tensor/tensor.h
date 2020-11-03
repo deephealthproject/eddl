@@ -1866,40 +1866,49 @@ public:
     static Tensor* flatten(Tensor *A);
 
     /**
-    *   @brief Remove all the dimensions of size 1 from the vector.
+    *   @brief Returns a tensor with all the dimensions of input of size 1 removed.
+     *   @param axis if given, the input will be squeezed only in this dimension. Else (-1), squeezes all
+     *   dimensions of size 1
     */
-    void squeeze_();
+    void squeeze_(int axis=-1);
 
     /**
     *   @brief Remove all the dimensions of size 1 from the vector.
+ *   @param axis if given, the input will be squeezed only in this dimension. Else (-1), squeezes all
+     *   dimensions of size 1
     *   @return A new tensor with the result
     */
-    Tensor* squeeze();
+    Tensor* squeeze(int axis=-1);
 
     /**
     *   @brief Remove all the dimensions of size 1 from the vector.
     *   @param A Output tensor where the squeeze is stored.
+ *   @param axis if given, the input will be squeezed only in this dimension. Else (-1), squeezes all
+     *   dimensions of size 1
     *   @return A new tensor with the result
     */
-    static Tensor* squeeze(Tensor *A);
+    static Tensor* squeeze(Tensor *A, int axis=-1);
 
     /**
-    *   @brief Add a dimension of size 1 at the beginning of the tensor.
+    *   @brief Sets a dimension of size one inserted at the specified position.
+*   @param axis the index at which to insert the singleton dimension. Default: axis=0
     */
-    void unsqueeze_();
+    void unsqueeze_(int axis=0);
 
     /**
-    *   @brief Add a dimension of size 1 at the beginning of the tensor.
+    *   @brief Returns a new tensor with a dimension of size one inserted at the specified position.
+     *   @param axis the index at which to insert the singleton dimension. Default: axis=0
     *   @return A new tensor with the result
     */
-    Tensor* unsqueeze();
+    Tensor* unsqueeze(int axis=0);
 
     /**
-    *   @brief Add a dimension of size 1 at the beginning of the tensor.
+    *   @brief Returns a new tensor with a dimension of size one inserted at the specified position.
     *   @param A Output tensor where the unsqueeze is stored.
+*   @param axis the index at which to insert the singleton dimension. Default: axis=0
     *   @return A new tensor with the result
     */
-    static Tensor* unsqueeze(Tensor *A);
+    static Tensor* unsqueeze(Tensor *A, int axis=0);
 
 
     // ***** Transformations *****************************

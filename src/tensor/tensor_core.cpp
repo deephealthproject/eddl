@@ -219,43 +219,46 @@ Tensor* Tensor::flatten(Tensor *A){
 };
 
 
-void Tensor::squeeze_(){
+void Tensor::squeeze_(int axis){
     // Remove single dimension entries from the array
     vector<int> new_shape;
-    for(auto &d : this->shape){
-        if(d>1){
-            new_shape.push_back(d);
+    for(int i=0; i<this->shape.size(); i++){
+        int dim = this->shape[i];
+
+        // If dimension is greater than 1
+        if(dim>1 || (i!=axis && axis!=-1)){
+            new_shape.push_back(dim);
         }
     }
     this->reshape_(new_shape);
 }
 
-Tensor* Tensor::squeeze(){
-    Tensor *t_new = Tensor::squeeze(this);
+Tensor* Tensor::squeeze(int axis){
+    Tensor *t_new = Tensor::squeeze(this, axis);
     return t_new;
 }
 
-Tensor* Tensor::squeeze(Tensor *A){
+Tensor* Tensor::squeeze(Tensor *A, int axis){
     Tensor *t_new = A->clone();
-    t_new->squeeze_();
+    t_new->squeeze_(axis);
     return t_new;
 }
 
 
-void Tensor::unsqueeze_(){
+void Tensor::unsqueeze_(int axis){
     vector<int> new_shape(this->shape);
-    new_shape.insert(new_shape.begin(), 1); // Add one dimension to the beginning
+    new_shape.insert(new_shape.begin()+axis, 1); // Add one dimension to the beginning
     this->reshape_(new_shape);
 }
 
-Tensor* Tensor::unsqueeze(){
-    Tensor *t_new = Tensor::unsqueeze(this);
+Tensor* Tensor::unsqueeze(int axis){
+    Tensor *t_new = Tensor::unsqueeze(this, axis);
     return t_new;
 }
 
-Tensor* Tensor::unsqueeze(Tensor *A){
+Tensor* Tensor::unsqueeze(Tensor *A, int axis){
     Tensor *t_new = A->clone();
-    t_new->unsqueeze_();
+    t_new->unsqueeze_(axis);
     return t_new;
 }
 
