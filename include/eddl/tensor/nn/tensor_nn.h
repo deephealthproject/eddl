@@ -19,8 +19,8 @@ namespace tensorNN{
     void cent(Tensor *A, Tensor *B, Tensor *C);
 
 // ***** Metrics *****************************
-int accuracy(Tensor *A, Tensor *B);
-int bin_accuracy(Tensor *A, Tensor *B);
+    int accuracy(Tensor *A, Tensor *B);
+    int bin_accuracy(Tensor *A, Tensor *B);
 
 
 // ***** Activations *****************************
@@ -64,8 +64,8 @@ int bin_accuracy(Tensor *A, Tensor *B);
     void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
 // Full Softmax
-void FullSoftmax(Tensor *A, Tensor *B);
-void D_FullSoftmax(Tensor *D, Tensor *I, Tensor *PD);
+    void FullSoftmax(Tensor *A, Tensor *B);
+    void D_FullSoftmax(Tensor *D, Tensor *I, Tensor *PD);
 
 // Tanh
     void Tanh(Tensor *A, Tensor *B);
