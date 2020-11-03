@@ -169,7 +169,7 @@ reshape
 
     // Other ways
     Tensor* t2 = Tensor::reshape(t1, {6, 2}); // returns new tensor
-    t1->reshape(t2, {6,2}) //source   
+    t1->reshape(t2, {6,2}) // static
 
 
 flatten
@@ -192,7 +192,7 @@ flatten
    // Other ways
 
    Tensor *t2 = Tensor::flatten(t1);  // returns new tensor
-   t1->flatten(t2) //source
+   t1->flatten(t2) // static
    
 
 
@@ -223,7 +223,7 @@ permute
 
    // Other ways
    Tensor *t2 = Tensor::permute(t1, {2, 1, 0});  // returns new tensor
-   t1->permute(t2, {2, 1, 0});  //source
+   t1->permute(t2, {2, 1, 0});  // static
    
 
 
@@ -246,7 +246,7 @@ moveaxis
 
    // Other ways
    Tensor *t2 = Tensor::moveaxis(t1, 0, 2);  // returns new tensor
-   t1->moveaxis(t2, 0, 2);  //source
+   t1->moveaxis(t2, 0, 2);  // static
 
 
 swapaxis
@@ -268,7 +268,7 @@ swapaxis
 
    // Other ways
    Tensor *t2 = Tensor::swapaxis(t1, 0, 2);  // returns new tensor
-   t1->swapaxis(t2, 0, 2); //source
+   t1->swapaxis(t2, 0, 2); // static
    
 
 
@@ -287,16 +287,19 @@ squeeze
    // shape:         (1, 3, 4, 1)
    // strides:       (12, 4, 1, 1)
 
-   t1->squeeze_();  // In-place
-   // ndim:          2
+   Tensor* t2 = t1->squeeze();  // returns new tensor
    // shape:         (3, 4)
-   // strides:       (4, 1)
+
+   Tensor* t3 = t1->squeeze(0);  // returns new tensor
+   // shape:         (3, 4, 1)
+
+   Tensor* t3 = t1->squeeze(3);  // returns new tensor
+   // shape:         (1, 3, 4)
 
    // Other ways
-   Tensor *t2 = Tensor::squeeze(t1);  // returns new tensor
-   t1->squeeze(t2); //source
+   t1->squeeze_(); // In-place
+   Tensor *t2 = Tensor::squeeze(t1);  // static
 
-   
 
 
 unsqueeze
@@ -306,19 +309,21 @@ unsqueeze
 
 .. code-block:: c++
 
-   Tensor* t1 = Tensor::zeros({3, 4});
-   // ndim:          2
-   // shape:         (3, 4)
-   // strides:       (4, 1)
-
-   t1->unsqueeze_();  // In-place
+   Tensor* t1 = Tensor::zeros({2, 3, 4});
    // ndim:          3
-   // shape:         (1, 3, 4)
+   // shape:         (2, 3, 4)
    // strides:       (12, 4, 1)
 
+   Tensor* t2 = t1->unsqueeze(); // returns new tensor
+    // shape:         (1, 2, 3, 4)
+
+   Tensor* t3 = t1->unsqueeze(2); // returns new tensor
+    // shape:         (2, 3, 4, 1)
+
    // Other ways
-   Tensor *t2 = Tensor::unsqueeze(t1);  // returns new tensor
-   t1->unsqueeze(t2); // source
+   t1->unsqueeze_();  // In-place
+   Tensor *t2 = Tensor::unsqueeze(t1);  // Static
+
 
 Joining arrays
 ---------------
@@ -375,7 +380,7 @@ Fill constant
 
     // Other ways
     Tensor* t2 = t1->fill(3.0f); // returns new tensor
-    Tensor::fill(t1, 3.0f);  // source
+    Tensor::fill(t1, 3.0f);  // static
     
 
     
@@ -398,7 +403,7 @@ Fill Random Uniform
 
     // Other ways
     Tensor* t2 = t1->fill_rand_uniform(1.0f); // returns new tensor
-    Tensor::fill_rand_uniform_(t1, 1.0f);  // source
+    Tensor::fill_rand_uniform(t1, 1.0f);  // static
 
     
 
@@ -421,7 +426,7 @@ Fill Random Signed Uniform
 
     // Other ways
     Tensor* t2 = t1->fill_rand_signed_uniform(1.0f); // returns new tensor
-    Tensor::fill_rand_signed_uniform(t1, 1.0f);  // source
+    Tensor::fill_rand_signed_uniform(t1, 1.0f);  // static
     
 
 
@@ -442,7 +447,7 @@ Fill Random Normal
 
     // Other ways
     Tensor* t2 = t1->fill_rand_normal(0.0f, 1.0f); // returns new tensor
-    Tensor::fill_rand_normal_(t1, 0.0f, 1.0f);  // source
+    Tensor::fill_rand_normal(t1, 0.0f, 1.0f);  // static
     
 
 
@@ -462,6 +467,6 @@ Fill Random Binary
 
     // Other ways
     Tensor* t2 = t1->fill_rand_binary(0.5f); // returns new tensor
-    Tensor::fill_rand_binary(t1, 0.5f);  // source
+    Tensor::fill_rand_binary(t1, 0.5f);  // static
 
 
