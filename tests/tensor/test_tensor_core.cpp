@@ -107,4 +107,28 @@ TEST(TensorTestSuite, tensor_math_argsort) {
 #endif
 }
 
+TEST(TensorTestSuite, tensor_squeeze) {
+    // Original
+    Tensor* t1 = Tensor::empty({1, 2, 3, 1, 4});
 
+    Tensor* t1_all = t1->squeeze();
+    ASSERT_TRUE(t1_all->shape == vector<int>({2, 3, 4}));
+
+    Tensor* t1_dim0 = t1->squeeze(0);
+    ASSERT_TRUE(t1_dim0->shape == vector<int>({2, 3, 1, 4}));
+
+    Tensor* t1_dim3 = t1->squeeze(3);
+    ASSERT_TRUE(t1_dim3->shape == vector<int>({1, 2, 3, 4}));
+}
+
+
+TEST(TensorTestSuite, tensor_unsqueeze) {
+    // Original
+    Tensor* t1 = Tensor::empty({2, 3, 4});
+
+    Tensor* t1_all = t1->unsqueeze();
+    ASSERT_TRUE(t1_all->shape == vector<int>({1, 2, 3, 4}));
+
+    Tensor* t1_dim0 = t1->unsqueeze(2);
+    ASSERT_TRUE(t1_dim0->shape == vector<int>({2, 3, 1, 4}));
+}
