@@ -64,6 +64,13 @@ namespace eddl {
         net->setTrainable(lname,val);
     }
 
+    vector<vtensor> get_parameters(model net, bool deepcopy){
+        return net->get_parameters(deepcopy);
+    }
+
+    void set_parameters(model net, const vector<vtensor>& params){
+        net->set_parameters(params);
+    }
 
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
