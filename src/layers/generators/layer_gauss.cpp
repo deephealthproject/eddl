@@ -34,7 +34,7 @@ LGauss::LGauss(float mean, float stdev, vector<int> size, string name, int dev, 
 }
 
 void LGauss::forward(){
-    output->rand_normal(mean, stdev);
+    output->fill_rand_normal_(mean, stdev);
 }
 
 void LGauss::backward(){

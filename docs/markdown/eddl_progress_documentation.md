@@ -14,11 +14,10 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Using the Conda package      | ❌️ | ✔️ |          |
-| Using the Debian package     | ❌️ | ✔️ | note: not yet available|
-| Using the Homebrew package   | ❌️ | ✔️ |          |
+| Using the Conda package      | ✔ | ✔️ |          |
+| Using the Homebrew package   | ✔️ | ✔️ |          |
 | From source with cmake       | ✔️ | ✔️ |          |
-| Including EDDL in your project | ❌️ | ✔️ |          |
+| Including EDDL in your project | ✔️ | ✔️ |          |
 
 ## Build and configuration
 
@@ -59,23 +58,23 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| First example |   ❌️  |      ✔️       | maybe needs a more detailed explanation |
+| First example |   ✔️   |      ✔️       |          |
 | Building with cmake | ✔️ |     ✔️      | check use of English |
 
 ## Intermediate models
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Trainig a simple MLP | ❌️|   ✔️       |          |
-| Training a CNN | ❌️   |     ✔️        |          |
+| Trainig a simple MLP | ✔️ |   ✔️       |          |
+| Training a CNN | ✔️   |      ✔️        |          |
 
 
 ## Advanced models
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Training a ResNet50 |❌️ |   ✔️        |          |
-| Training a U-Net | ❌️ |      ✔️       |          |
+| Training a ResNet50 | ✔️ |   ✔️        |          |
+| Training a U-Net | ✔️  |      ✔️       |          |
 
 
 # Videotutorials
@@ -103,9 +102,12 @@
 | Dense   |     ✔️       |      ✔️       |          |
 | Embedding |   ✔️       |      ✔️       |          |
 | Reshape |     ✔️       |      ✔️       |          |
-| Transpose |   ✔️       |      ✔️       |          |
+| Flatten |     ✔️       |      ✔️       |          |
 | Input   |     ✔️       |      ✔️       |          |
 | Droput  |     ✔️       |      ✔️       |          |
+| Select  |     ✔️       |      ✔️       |          |
+| Permute |     ✔️       |      ✔️       |          |
+| Transpose  |  ✔️       |      ✔️       |          |
 
 ## Activations
 
@@ -133,11 +135,12 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
+| RandomAffine  | ✔️     |      ❌️      | note: not implemented yet |
 | RandomCrop |    ✔️     |      ✔️       |          |
 | RandomCropScale | ✔️   |      ✔️       |          |
 | RandomCutout |    ✔️   |      ✔️       |          |
 | RandomFlip |      ✔️   |      ✔️       |          |
-| RandomGrayscale | ✔️   |      ✔️       | note: not yet implemented |
+| RandomGrayscale | ✔️   |      ❌️      | note: not yet implemented |
 | RandomHorizontalFlip | ✔️ |   ✔️       |          |
 | RandomRotation |  ✔️   |      ✔️       |          |
 | RandomScale |     ✔️   |      ✔️       |          |
@@ -153,30 +156,31 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Affine  |      ✔️      |      ✔️       | note: not yet implemented |
+| Affine  |      ✔️      |      ❌️      | note: not yet implemented |
 | Crop    |      ✔️      |      ✔️       |          |
 | CenteredCrop | ✔️      |      ✔️       |          |
-| ColorJitter |  ✔️      |      ✔️       | note: not yet implemented |
+| ColorJitter |  ✔️      |      ❌️      | note: not yet implemented |
 | CropScale |    ✔️      |      ✔️       |          |
 | Cutout  |      ✔️      |      ✔️       |          |
 | Flip    |      ✔️      |      ✔️       |          |
-| Grayscale |    ✔️      |      ✔️       | note: not yet implemented |
+| Grayscale |    ✔️      |      ❌️      | note: not yet implemented |
 | HorizontalFlip | ✔️    |      ✔️       |          |
-| Pad     |      ✔️      |      ✔️       | note: not yet implemented |
+| Pad     |      ✔️      |      ❌️      | note: not yet implemented |
 | Rotate  |      ✔️      |      ✔️       |          |
 | Scale   |      ✔️      |      ✔️       |          |
-| Shift   |      ✔️      |      ✔️       |          |
+| Shift   |      ✔️      |      ❌️      |          |
 | VerticalFlip | ✔️      |      ✔️       |          |
-| Normalize |    ✔️      |      ✔️       | note: not yet implemented |
+| Normalize |    ✔️      |      ❌️      | note: not yet implemented |
 
 
 ## Convolutions
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
+| Conv1D  |     ✔️       |      ✔️       |          |
 | Conv2D  |     ✔️       |      ✔️       |          |
 | 2D Upsampling | ✔️     |      ✔️       | note about future versions |
-| Convolutional Transpose | ✔️ |  ✔️     |          |
+| Convolutional Transpose | ✔️ |  ❌️    | note: not implemented yet  |
 
 
 ## Noise Layers
@@ -190,18 +194,19 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
+| MaxPooling1D |  ✔️     |      ✔️       |          |
 | MaxPooling |    ✔️     |      ✔️       |          |
 | GlobalMaxPooling | ✔️  |      ✔️       |          |
-| AveragePooling |   ✔️  |      ✔️       | note: not yet implemented |
-| GlobalAveragePooling | ✔️ |   ✔️       | note: not yet implemented |
+| AveragePooling |   ✔️  |      ❌️      |          |
+| GlobalAveragePooling | ✔️ |   ✔️       |          |
 
 
 ## Normalization
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| BatchNormalization |✔️ |      ✔️       |          |
-| LayerNormalization |✔️ |      ✔️       |          |
+| BatchNormalization |✔️ |      ✔️       | two versions |
+| LayerNormalization |✔️ |      ✔️       | two versions |
 | GroupNormalization |✔️ |      ✔️       |          |
 
 
@@ -223,7 +228,7 @@
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | Gaussian Generator |❌️|      ✔️       | needs comments in the .h |
-| Uniform Generator | ❌️|      ✔️       | needs comments in the .h |
+| Uniform Generator | ❌️|      ❌️      | needs comments in the .h |
 
 
 ## Operators
@@ -238,18 +243,16 @@
 | Logarithm base 2 |  ✔️ |      ✔️       |          |
 | Logarithm base 10 | ✔️ |      ✔️       |          |
 | Multiplication |    ✔️ |      ✔️       | three versions <br/> not every version has its explanation in the .h |
-| Power   |       ✔️     |      ✔       | two versions <br/> not every version has its explanation in the .h |
+| Power   |       ✔️     |      ❌️      | two versions <br/> not every version has its explanation in the .h |
 | Sqrt    |       ✔️     |      ✔️       |          |
 | Addition |      ✔️     |      ✔️       | three versions (sum) <br/> not every version has its explanation in the .h |
-| Select  |       ✔️     |      ✔️       |          |
-| Permute |       ✔️     |      ✔️       |          |
 
 ## Reduction Layers 
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | ReduceMean |   ❌️     |      ✔️       | needs comments in the .h |
-| ReduceVar |    ❌️     |      ✔️       | needs comments in the .h |
+| ReduceVar |    ❌️     |      ❌️      | needs comments in the .h |
 | ReduceSum |    ❌️     |      ✔️       | needs comments in the .h |
 | ReduceMax |    ❌️     |      ✔️       | needs comments in the .h |
 | ReduceMin |    ❌️     |      ✔️       | needs comments in the .h |
@@ -259,9 +262,9 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| RNN     |      ✔️      |      ✔️       | note: not yet implemented |
+| RNN     |      ✔️      |      ❌️      |          |
 | GRU     |      ❌️     |      ✔️       | note: not yet implemented <br/>write comments in the .h |
-| LSTM    |      ✔️      |      ✔️       | note: not yet implemented |
+| LSTM    |      ✔️      |      ❌️      |          |
 
 
 # Model
@@ -278,7 +281,8 @@
 | Save    |      ✔️      |      ✔️       |          |
 | Learning rate (on the fly) |✔️ | ✔️    |          |
 | Logging |      ✔️      |      ✔️       |          |
-| Move to device | ❌️   |      ✔️       | two different instructions <br/> needs comments in the .h |
+| toCPU   |      ✔️      |      ✔️       |          |
+| toGPU   |      ❌️     |      ❌️      | many versions |
 
 
 
@@ -294,25 +298,25 @@
 ## Fine-grained training
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| random_indices | ❌️   |       ✔️      | needs comments in the .h |
-| next_batch |     ❌️   |       ✔️      | needs comments in the .h |
-| train_batch |    ❌️   |       ✔️      | two different instructions <br/> needs comments in the .h |
-| eval_batch |     ❌️   |       ✔️      | two different instructions <br/>  needs comments in the .h |
-| set_mode |        ✔️   |       ✔️      |          |
+| random_indices |  ✔️   |       ✔️      |          |
+| next_batch |      ✔️   |       ✔️      |          |
+| train_batch |     ✔️   |       ✔️      | two different instructions |
+| eval_batch |      ✔️   |       ✔️      | two different instructions |
+| set_mode |        ✔️   |       ❌️     |          |
 | reset_loss |      ✔️   |       ✔️      |          |
-| forward |        ❌️   |       ✔️      | 4 different instructions <br/>  needs comments in the .h |
+| forward |         ✔️   |       ❌️     | 4 different instructions |
 | zeroGrads |       ✔️   |       ✔️      |          |
-| backward |        ✔️   |       ✔️      |          |
-| update  |        ❌️   |       ✔️      | needs comments in the .h |
+| backward |        ✔️   |       ❌️     | 3 different instructions |
+| update  |         ✔️   |       ✔️      |          |
 | print_loss |      ✔️   |       ✔️      |          |
 | clamp   |         ✔️   |       ✔️      |          |
-| compute_loss |   ❌️   |       ✔️      | needs comments in the .h |
-| compute_metric | ❌️   |       ✔️      | needs comments in the .h |
-| getLoss |         ✔️   |       ✔️      |          |
-| newloss |         ✔️   |       ✔️      |          |
-| getMetric |       ✔️   |       ✔️      |          |
-| newmetric |      ❌️   |       ✔️      | 2 different instructions <br/> needs comments in the .h |
-| detach  |        ❌️   |       ✔️      | 2 diferent instructions <br/> needs comments in the .h |
+| compute_loss |    ✔️   |       ✔️      |          |
+| compute_metric |  ✔️   |       ❌️     |          |
+| getLoss |         ✔️   |       ❌️     |          |
+| newloss |         ✔️   |       ✔️      | 2 different instructions |
+| getMetric |       ✔️   |       ❌️     |          |
+| newmetric |       ✔️   |       ❌️     | 2 different instructions |
+| detach  |         ✔️   |       ❌️     | 2 different instructions |
 
 
 # Test & score
@@ -349,33 +353,33 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| L1      |      ✔️      |       ✔️      |          | 
-| L2      |      ✔️      |       ✔️      |          |
-| L1L2    |      ✔️      |       ✔️      |          |
+| L1      |      ✔️      |       ❌️     |          | 
+| L2      |      ✔️      |       ❌️     |          |
+| L1L2    |      ✔️      |       ❌️     |          |
 
 
 ## Initializers
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| GlorotNormal |    ✔️   |       ✔️      |          |
-| GlorotUniform |   ✔️   |       ✔️      |          |
-| RandomNormal |    ✔️   |       ✔️      |          |
-| RandomUniform |   ✔️   |       ✔️      |          |
-| Constant |        ✔️   |       ✔️      |          |
+| GlorotNormal |    ✔️   |       ❌️     |          |
+| GlorotUniform |   ✔️   |       ❌️     |          |
+| RandomNormal |    ✔️   |       ❌️     |          |
+| RandomUniform |   ✔️   |       ❌️     |          |
+| Constant |        ✔️   |       ❌️     |          |
 
 
 ## Optimizers
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Adadelta |     ✔️      |       ✔️      |          |
-| Adam    |      ✔️      |       ✔️      |          |
-| Adagrad |      ✔️      |       ✔️      |          |
-| Adamax  |      ✔️      |       ✔️      |          |
-| Nadam   |      ✔️      |       ✔️      |          |
-| RMSProp |      ✔️      |       ✔️      |          |
-| SGD (Stochastic Gradient Descent) |✔️| ✔️ |          |
+| Adadelta |     ✔️      |       ❌️     |          |
+| Adam    |      ✔️      |       ❌️     |          |
+| Adagrad |      ✔️      |       ❌️     |          |
+| Adamax  |      ✔️      |       ❌️     |          |
+| Nadam   |      ✔️      |       ❌️     |          |
+| RMSProp |      ✔️      |       ❌️     |          |
+| SGD (Stochastic Gradient Descent) |✔️| ❌️|          |
 
 
 # Computing services
@@ -383,9 +387,9 @@
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | CPU     |      ✔️      |       ✔️      | check use of English |
-| GPU     |      ✔️      |       ✔️      | check use of English |
-| FPGA    |      ✔️      |       ✔️      | note: not yet implemented |
-| COMPSS  |      ✔️      |       ✔️      | note: not yet implemented |
+| GPU     |      ✔️      |       ✔️      | many examples - maybe improve leaving just the one with the most params and marking them as optional? |
+| FPGA    |      ❌️     |       ❌️     | note: not yet implemented |
+| COMPSS  |      ✔️      |       ❌️     | note: not yet implemented |
 
 
 # Datasets
@@ -401,7 +405,7 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| DRIVE   |      ✔️      |       ✔️      |          |
+| DRIVE   |      ✔️      |       ❌️     |          |
 
 
 # Micellaneous ❌️
@@ -418,7 +422,7 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Tensor  |     ❌️      |       ✔️      | needs comments in the .h |
+| Tensor  |     ✔️      |       ✔️      | needs comments in the .h |
 
 ### Ones and zeros
 
@@ -435,7 +439,7 @@ empty ❌
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | clone   |      ✔️     |       ✔️      |  |
-| reallocate |   ❌️     |       ✔️      | needs comments in the .h |
+| reallocate |   ✔️     |       ✔️      |  |
 | copy    |      ✔️     |       ✔️      |  |
 
 
@@ -453,8 +457,8 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| randu   |      ❌️     |       ✔️      | needs comments in the .h |
-| randn   |      ❌️     |       ✔️      | needs comments in the .h |
+| randu   |      ✔️     |       ✔️      |  |
+| randn   |      ✔️     |       ✔️      |  |
 
 ### Build matrices
 
@@ -471,7 +475,7 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Tensor  |      ❌️     |       ✔️      | needs comments in the .h |
+| Tensor  |      ✔️     |       ✔️      |  |
 
 ### Changing array shape
 
@@ -484,22 +488,22 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| permute |      ❌️     |       ✔️      | needs comments in the .h |
-| moveaxis |     ❌️     |       ✔️      | needs comments in the .h |
-| swapaxis |     ❌️     |       ✔️      | needs comments in the .h |
+| permute |      ✔️     |       ✔️      |  |
+| moveaxis |     ✔️     |       ✔️      |  |
+| swapaxis |     ✔️     |       ✔️      |  |
 
 ### Changing number of dimensions
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| squeeze |      ❌️     |       ✔️      | needs comments in the .h |
-| unsqueeze |    ❌️     |       ✔️      | needs comments in the .h |
+| squeeze |      ✔️     |       ✔️      |  |
+| unsqueeze |    ✔️     |       ✔️      |  |
 
 ### Joining arrays
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| concat  |      ❌️     |       ✔️      | needs comments in the .h |
+| concat  |      ✔️     |       ✔️      |  |
 
 ### Rearranging elements and transformations
 
@@ -539,7 +543,7 @@ empty ❌
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | select  |      ✔️      |       ✔️      |  |
-| set_select |  ❌️      |       ✔️      | needs comments in the .h <br/> Confusing explanation |
+| set_select |  ✔️      |       ✔️      |  |
 
 
 ## Input/Output Operations
@@ -648,11 +652,11 @@ empty ❌
 | logn    |      ✔️     |       ✔️      |  |
 | mod     |      ✔️     |       ✔️      |  |
 | mult    |      ✔️     |       ✔️      |  |
-| normalize    |      ❌️     |       ✔️      | needs comments in the .h <br/> two instructions |
+| normalize    |      ✔️     |       ✔️      |  |
 | neg     |      ✔️     |       ✔️      |  |
-| pow     |      ❌️     |       ✔️      | needs comments in the .h |
-| powb    |      ❌️     |       ✔️      | needs comments in the .h |
-| reciprocal |   ❌️     |       ✔️      | needs comments in the .h |
+| pow     |      ✔️     |       ✔️      |  |
+| powb    |      ✔️     |       ✔️      |  |
+| reciprocal |   ✔️     |       ✔️      |  |
 | remainder |    ✔️     |       ✔️      |  |
 | round   |      ✔️     |       ✔️      |  |
 | rsqrt   |      ✔️     |       ✔️      |  |
@@ -660,7 +664,7 @@ empty ❌
 | sign    |      ✔️     |       ✔️      |  |
 | sin     |      ✔️     |       ✔️      |  |
 | sinh    |      ✔️     |       ✔️      |  |
-| sqr     |      ❌️     |       ✔️      | needs comments in the .h |
+| sqr     |      ✔️     |       ✔️      |  |
 | sqrt    |      ✔️     |       ✔️      |  |
 | sub     |      ✔️     |       ✔️      |  |
 | sum     |      ✔️     |       ✔️      |  |

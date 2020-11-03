@@ -51,7 +51,7 @@ Example:
 train_batch
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::train_batch(model, vector<Tensor*>, vector<Tensor*>, vector<int>)
+.. doxygenfunction:: eddl::train_batch(model net, vector<Tensor*> in, vector<Tensor*> out, vector<int> indices)
 
 Example:
 
@@ -69,7 +69,7 @@ Example:
     }
 
 
-.. doxygenfunction:: eddl::train_batch(model, vector<Tensor*>, vector<Tensor*>)
+.. doxygenfunction:: eddl::train_batch(model net, vector<Tensor*> in, vector<Tensor*> out)
 
 Example:
 
@@ -94,7 +94,7 @@ Example:
 eval_batch
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::eval_batch(model, vector<Tensor*>, vector<Tensor*>, vector<int>)
+.. doxygenfunction:: eddl::eval_batch(model net, vector<Tensor*> in, vector<Tensor*> out, vector<int> indices)
 
 Example:
 
@@ -109,7 +109,7 @@ Example:
     }
 
 
-.. doxygenfunction:: eddl::eval_batch(model, vector<Tensor*>, vector<Tensor*>)
+.. doxygenfunction:: eddl::eval_batch(model net, vector<Tensor*> in, vector<Tensor*> out)
 
         
 
@@ -136,9 +136,9 @@ Example:
 forward
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::forward(model, vector<Layer*>)
+.. doxygenfunction:: eddl::forward(model m, vector<Layer*> in)
 
-.. doxygenfunction:: eddl::forward(model, vector<Tensor*>)
+.. doxygenfunction:: eddl::forward(model m, vector<Tensor*> in)
 
 Example:
 
@@ -146,9 +146,9 @@ Example:
 
    forward(net, {xbatch});
 
-.. doxygenfunction:: eddl::forward(model)
+.. doxygenfunction:: eddl::forward(model m)
 
-.. doxygenfunction:: eddl::forward(model, int)
+.. doxygenfunction:: eddl::forward(model m, int b)
 
 
 
@@ -167,15 +167,15 @@ Example:
 backward
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::backward(model, vector<Tensor*>)
+.. doxygenfunction:: eddl::backward(model m, vector<Tensor*> target)
 
 .. code-block:: c++
     
     backward(net, {ybatch});
           
-.. doxygenfunction:: eddl::backward(model)
+.. doxygenfunction:: eddl::backward(model net)
 
-.. doxygenfunction:: eddl::backward(loss)
+.. doxygenfunction:: eddl::backward(loss l)
 
 
 update
@@ -252,10 +252,10 @@ getLoss
 newloss
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::newloss(const std::function<Layer*Layer*>&, Layer*, string)
+.. doxygenfunction:: eddl::newloss(const std::function<Layer*(Layer*)> &f, Layer *in, string name)
 
 
-.. doxygenfunction:: eddl::newloss(const std::function<Layer*vector<Layer*>>&, vector<Layer*>, string)
+.. doxygenfunction:: eddl::newloss(const std::function<Layer*(vector<Layer*>)> &f, vector<Layer*> in, string name)
 
 Example:
 
@@ -280,17 +280,17 @@ getMetric
 newmetric
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::newmetric(const std::function<Layer*Layer*>&, Layer*, string)
+.. doxygenfunction:: eddl::newmetric(const std::function<Layer*(Layer*)> &f, Layer *in, string name)
 
-.. doxygenfunction:: eddl::newmetric(const std::function<Layer*vector<Layer*>>&, vector<Layer*>, string)
+.. doxygenfunction:: eddl::newmetric(const std::function<Layer*(vector<Layer*>)> &f, vector<Layer*> in, string name)
 
    
         
 detach
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::detach(layer)
+.. doxygenfunction:: eddl::detach(layer l)
 
-.. doxygenfunction:: eddl::detach(vlayer)
+.. doxygenfunction:: eddl::detach(vlayer l)
 
 

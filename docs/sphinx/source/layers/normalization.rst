@@ -4,36 +4,30 @@ Normalization
 BatchNormalization
 ------------------
 
-.. doxygenfunction:: eddl::BatchNormalization(layer, bool, float, float, string)
+.. doxygenfunction:: BatchNormalization(layer parent, bool affine, float momentum, float epsilon, string name)
 
-.. doxygenfunction:: eddl::BatchNormalization(layer, float, float, bool, string)
+.. doxygenfunction:: BatchNormalization(layer parent, float momentum = 0.99f, float epsilon = 0.001f, bool affine = true, string name = "")
 
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   l=Dense(l, 1024);
-   l=BatchNormalization(l);
-   ...
+   l = BatchNormalization(l);
+   
 
 
 LayerNormalization
 ------------------
 
-.. doxygenfunction:: eddl::LayerNormalization(layer, bool, float, string)
-.. doxygenfunction:: eddl::LayerNormalization(layer, float, bool, string)
+.. doxygenfunction:: LayerNormalization(layer parent, bool affine, float epsilon, string name)
+.. doxygenfunction:: LayerNormalization(layer parent, float epsilon = 0.00001f, bool affine = true, string name = "")
 
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   l=Dense(l, 1024);
-   l=LayerNormalization(l);
-   ...
+   l = LayerNormalization(l);
+   
 
 
 GroupNormalization
@@ -44,10 +38,7 @@ GroupNormalization
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   l=Dense(l, 1024);
-   l=GroupNormalization(l, 8);
-   ...
+   l = GroupNormalization(l, 8);
+   
 

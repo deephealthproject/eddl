@@ -93,8 +93,6 @@ void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new
         for(int Bi=0; Bi<B->shape[2];Bi++) {
             for(int Bj=0; Bj<B->shape[3];Bj++) {
 
-                // Interpolate indices
-                if(mode == WrappingMode::Nearest) { // Nearest
                     int Ai = ((Bi + offsets[0]) * A->shape[2]) / new_shape[0];
                     int Aj = ((Bj + offsets[1]) * A->shape[3]) / new_shape[1];
 
@@ -103,12 +101,16 @@ void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new
                         int A_pos = b * A->stride[0] + c * A->stride[1] + Ai * A->stride[2] + Aj * A->stride[3];
                         B->ptr[B_pos] = A->ptr[A_pos];
                     } else {
-                        B->ptr[B_pos] = constant;  // Equivalent a constant
-                    }
-                }else{
-                    msg("Mode (" + to_string(mode) + ") not implemented", "Tensor::cpu_single_scale");
-                }
 
+                        if(mode == WrappingMode::Constant){  // Constant
+                            B->ptr[B_pos] = constant;
+                        }else if(mode == WrappingMode::Original){  // Original
+                            B->ptr[B_pos] = A->ptr[B_pos];
+                        }else{
+                            msg("Mode (" + to_string(mode) + ") not implemented", "Tensor::cpu_single_scale");
+                        }
+
+                    }
             }
         }
     }
@@ -172,18 +174,14 @@ void cpu_single_crop_scale(int b, Tensor* A, Tensor* B, vector<int> coords_from,
         for(int Bi=0; Bi<B->shape[2]; Bi++) {
             for(int Bj=0; Bj<B->shape[3]; Bj++) {
 
-                if(mode == WrappingMode::Nearest){ // Nearest
-                    // Interpolate indices
-                    int Ai = (Bi * A_hc) / B->shape[2] + coords_from[0];
-                    int Aj = (Bj * A_wc) / B->shape[3] + coords_from[1];
+                // Interpolate indices
+                int Ai = (Bi * A_hc) / B->shape[2] + coords_from[0];
+                int Aj = (Bj * A_wc) / B->shape[3] + coords_from[1];
 
-                    int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
+                int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
+                int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
 
-                    B->ptr[B_pos] = A->ptr[A_pos];
-                }else{
-                    msg("Mode (" + to_string(mode) + ") not implemented", "Tensor::cpu_single_crop_scale");
-                }
+                B->ptr[B_pos] = A->ptr[A_pos];
             }
         }
     }

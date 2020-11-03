@@ -36,7 +36,6 @@ int main(int argc, char **argv) {
 	string path("trained_model.onnx");
 	Net* net = import_net_from_onnx_file(path, DEV_CPU);
 
-	std::cout << "Output size list = " << net->lout.size() << endl;
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer

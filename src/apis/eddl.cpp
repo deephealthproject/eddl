@@ -15,6 +15,7 @@
 #include <stdexcept>
 
 #include "eddl/apis/eddl.h"
+#include "eddl/utils.h"
 
 
 using namespace std;
@@ -48,6 +49,22 @@ namespace eddl {
     {
       return net->getLayer(in);
     }
+
+    layer getLayer(model net, string lname)
+    {
+      return net->getLayer(lname);
+    }
+
+    void removeLayer(model net, string lname)
+    {
+      net->removeLayer(lname);
+    }
+
+    void setTrainable(model net, string lname, bool val)
+    {
+        net->setTrainable(lname,val);
+    }
+
 
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
@@ -257,8 +274,8 @@ namespace eddl {
     void fit(model net, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs){
         net->fit(in, out, batch, epochs);
     }
-    void evaluate(model net, const vector<Tensor *> &in, const vector<Tensor *> &out){
-        net->evaluate(in, out);
+    void evaluate(model net, const vector<Tensor *> &in, const vector<Tensor *> &out,int bs){
+        net->evaluate(in, out, bs);
     }
     vector<Tensor *>  predict(model m, const vector<Tensor *> &in)
     {
@@ -277,6 +294,11 @@ namespace eddl {
     }
     void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices){
         net->train_batch(in, out, indices,1);
+    }
+
+    void show_profile() {
+        printf("profile:\n");
+        __show_profile();
     }
 
     void next_batch(vector<Tensor *> in,vector<Tensor *> out)
@@ -561,18 +583,9 @@ namespace eddl {
     layer Conv1D(layer parent, int filters, vector<int> kernel_size,
                vector<int> strides, string padding,  bool use_bias,
                int groups, vector<int> dilation_rate,string name){
-
-        vector<int> shape=parent->output->getShape();
-        shape.push_back(1);
-        LReshape *l=new LReshape(parent, shape, "", DEV_CPU, 0);
-
         kernel_size.push_back(1);
         strides.push_back(1);
-        LConv *lc=new LConv(l, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
-
-        vector<int> shape2=lc->output->getShape();
-        shape2.pop_back();
-        return new LReshape(lc,shape2, "", DEV_CPU, 0);
+        return new LConv1D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
 
@@ -1042,10 +1055,6 @@ namespace eddl {
     //////////////////////////////
     // Layers Methods
     //////////////////////////////
-    void set_trainable(layer l, bool val)
-    {
-        l->set_trainable(val);
-    }
 
     vlayer getOut(model net)
     {
@@ -1266,7 +1275,7 @@ namespace eddl {
     void download_flickr(){
       download_dataset("flickr","bin",{"452pyxe9x5jpnwb","24c2d5bm6pug8gg"});
     }
-    
+
     void download_drive(){
       download_dataset("drive","npy",{"sbd8eu32adcf5oi","qp0j8oiqzf6tc1a"});
     }

@@ -51,7 +51,6 @@ namespace tensorNN {
         B->tsem->unlock();
 
 	PROFILING_FOOTER(ReLu);
-	PROFILING_PRINTF(ReLu);
     }
 
 // RELU Derivative, always increment over parent delta
