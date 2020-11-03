@@ -39,12 +39,13 @@ int main(int argc, char **argv) {
     l = LeakyReLu(Dense(l, 1024));
     l = LeakyReLu(Dense(l, 1024));
 
-    layer out = Softmax(Dense(l, num_classes));
+    layer out = FullSoftmax(Dense(l, num_classes));
     model net = Model({in}, {out});
     net->verbosity_level = 0;
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
+
 
     // Build model
     build(net,
@@ -53,7 +54,7 @@ int main(int argc, char **argv) {
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-//          CS_CPU()
+          //CS_CPU()
 	      //CS_FPGA({1})
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup

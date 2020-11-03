@@ -55,7 +55,7 @@ int main(int argc, char **argv){
 
   l=Activation(Dense(l,128),"relu");
 
-  layer out=Activation(Dense(l,num_classes),"softmax");
+  layer out=Activation(Dense(l,num_classes),"full_softmax");
 
   // net define input and output layers list
   model net=Model({in},{out});
@@ -66,8 +66,8 @@ int main(int argc, char **argv){
     adam(0.001), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-	  //CS_GPU({1}) // one GPU
-    CS_CPU()
+	  CS_GPU({1}) // one GPU
+    //CS_CPU()
     //CS_FPGA({1}, 100)
   );
 
