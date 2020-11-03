@@ -262,7 +262,7 @@ void cpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable){
     int n_batches = A->shape[0];
     int n_features = A->shape[1];
 
-//    #pragma omp parallel for
+    #pragma omp parallel for
     for(int bi=0; bi<n_batches; bi++){
         // Contiguous data
         int start = bi*n_features;
@@ -304,7 +304,7 @@ void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD) {
     int n_batches = D->shape[0];
     int n_features = D->shape[1];
 
-//    #pragma omp parallel for
+    #pragma omp parallel for
     for(int bi=0; bi<n_batches; bi++){
         // Contiguous data
         int start = bi*n_features;
