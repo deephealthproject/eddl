@@ -160,20 +160,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -255,11 +250,16 @@ environment by running the following commands <strong>from the source directory<
 conda activate eddl
 </pre></div>
 </div>
+<p>You can also update your environment with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env update -f environment.yml
+</pre></div>
+</div>
 <p>If you decide to manually install these dependencies in your system (make sure they are at standard paths):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">cmake</span><span class="o">&gt;=</span><span class="mf">3.9</span><span class="o">.</span><span class="mi">2</span>
 <span class="o">-</span> <span class="n">eigen</span><span class="o">&gt;=</span><span class="mf">3.3</span><span class="o">.</span><span class="mi">7</span>
-<span class="o">-</span> <span class="n">zlib</span><span class="o">=</span><span class="mf">1.2</span><span class="o">.*</span>
-<span class="o">-</span> <span class="n">protobuf</span><span class="o">=</span><span class="mf">3.11</span><span class="o">.*</span>
+<span class="o">-</span> <span class="n">protobuf</span>
+<span class="o">-</span> <span class="n">libprotobuf</span>  <span class="c1"># We need to avoid problems with paths (idk why)</span>
+<span class="o">-</span> <span class="n">zlib</span>
 <span class="o">-</span> <span class="n">cudatoolkit</span>
 <span class="o">-</span> <span class="n">gtest</span>
 <span class="o">-</span> <span class="n">graphviz</span>  <span class="c1"># Build &amp; Run</span>
@@ -267,12 +267,11 @@ conda activate eddl
 <span class="o">-</span> <span class="n">doxygen</span>  <span class="c1"># Docs</span>
 <span class="o">-</span> <span class="n">python</span>
 <span class="o">-</span> <span class="n">pip</span>
-
 <span class="o">-</span> <span class="n">pip</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">sphinx</span><span class="o">==</span><span class="mf">3.0</span><span class="o">.</span><span class="mi">3</span>
-    <span class="o">-</span> <span class="n">sphinx_rtd_theme</span><span class="o">==</span><span class="mf">0.4</span><span class="o">.</span><span class="mi">3</span>
-    <span class="o">-</span> <span class="n">sphinx</span><span class="o">-</span><span class="n">tabs</span><span class="o">==</span><span class="mf">1.1</span><span class="o">.</span><span class="mi">13</span>
-    <span class="o">-</span> <span class="n">breathe</span><span class="o">==</span><span class="mf">4.16</span><span class="o">.</span><span class="mi">0</span>
+<span class="o">-</span> <span class="n">sphinx</span><span class="o">==</span><span class="mf">3.2</span><span class="o">.</span><span class="mi">1</span>
+<span class="o">-</span> <span class="n">sphinx_rtd_theme</span><span class="o">==</span><span class="mf">0.5</span><span class="o">.</span><span class="mi">0</span>
+<span class="o">-</span> <span class="n">sphinx</span><span class="o">-</span><span class="n">tabs</span><span class="o">==</span><span class="mf">1.3</span><span class="o">.</span><span class="mi">0</span>
+<span class="o">-</span> <span class="n">breathe</span><span class="o">==</span><span class="mf">4.22</span><span class="o">.</span><span class="mi">1</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -343,6 +342,10 @@ troubleshoot the compilation process (see: :doc:<code class="docutils literal no
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/dir
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If using conda, get the path by activating the environment, and typing <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">$CONDA_PREFIX</span></code></p>
+</div>
 <ul class="simple">
 <li><p><strong>Installation paths:</strong> To change the installation paths, use the following cmake option:</p></li>
 </ul>
@@ -351,12 +354,13 @@ troubleshoot the compilation process (see: :doc:<code class="docutils literal no
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Defaults to <code class="docutils literal notranslate"><span class="pre">/usr/local</span></code> on UNIX and <code class="docutils literal notranslate"><span class="pre">c:/Program</span> <span class="pre">Files</span></code> on Windows.</p>
+<p>Defaults to <code class="docutils literal notranslate"><span class="pre">/usr/local</span></code> on UNIX and <code class="docutils literal notranslate"><span class="pre">c:/Program</span> <span class="pre">Files</span></code> on Windows.
+If using conda, get the path by activating the environment, and typing <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">$CONDA_PREFIX</span></code></p>
 </div>
 <ul class="simple">
 <li><p><strong>C++ compiler:</strong> If you have problems with the default g++ compiler, try setting <code class="docutils literal notranslate"><span class="pre">EIGEN3_INCLUDE_DIR</span></code>, such as:</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CXX_COMPILER<span class="o">=</span>/path/to/c++compiler
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CXX_COMPILER<span class="o">=</span>/path/to/c++compiler  <span class="c1"># /usr/bin/g++-8</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -366,7 +370,17 @@ troubleshoot the compilation process (see: :doc:<code class="docutils literal no
 <ul class="simple">
 <li><p><strong>CUDA compiler:</strong> If cmake have problems finding your cuda compiler, try setting <code class="docutils literal notranslate"><span class="pre">CMAKE_CUDA_COMPILER</span></code>, such as:</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CUDA_COMPILER<span class="o">=</span>/path/to/cuda compiler
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CUDA_COMPILER<span class="o">=</span>/path/to/cuda compiler  <span class="c1">#/usr/bin/nvcc</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can also create a symbolic link: (unix) <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">ln</span> <span class="pre">-s</span> <span class="pre">usr/local/cuda-{VERSION}</span> <span class="pre">/usr/local/cuda</span></code></p>
+</div>
+<ul class="simple">
+<li><p><strong>CUDA host compiler:</strong> If cmake have problems finding your cuda host compiler, try setting <code class="docutils literal notranslate"><span class="pre">CMAKE_CUDA_COMPILER</span></code>, such as:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CUDA_HOST_COMPILER<span class="o">=</span>/path/to/cuda compiler  <span class="c1"># /usr/bin/g++-8</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -376,13 +390,13 @@ troubleshoot the compilation process (see: :doc:<code class="docutils literal no
 <ul class="simple">
 <li><p><strong>CUDA Toolkit:</strong> If CMake is unable to find CUDA automatically, try setting <code class="docutils literal notranslate"><span class="pre">CUDA_TOOLKIT_ROOT_DIR</span></code>, such as:</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCUDA_TOOLKIT_ROOT_DIR<span class="o">=</span>/path/to/cuda
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCUDA_TOOLKIT_ROOT_DIR<span class="o">=</span>/path/to/cuda   <span class="c1"># /usr/local/cuda-11.1</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p><strong>Eigen3:</strong> At the core of many numerical operations, we use <a class="reference external" href="http://eigen.tuxfamily.org/index.php?title=Main_Page">Eigen3</a>. If CMake is unable to find Eigen3 automatically, try setting <code class="docutils literal notranslate"><span class="pre">Eigen3_DIR</span></code>, such as:</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DEigen3_DIR<span class="o">=</span>/path/to/eigen
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DEigen3_DIR<span class="o">=</span>/path/to/eigen  <span class="c1"># /usr/lib/cmake/eigen3</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -495,7 +509,7 @@ this flag in advance.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

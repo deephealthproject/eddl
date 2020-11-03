@@ -90,11 +90,20 @@
 <li class="toctree-l1"><a class="reference internal" href="build-options.html">Build and configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">FAQ</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#is-there-a-python-version">Is there a Python version?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#can-i-contribute">Can I contribute?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#can-i-control-the-memory-consumption">Can I control the memory consumption?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#is-it-faster-than-pytorch-tensorflow-etc">Is it faster than PyTorch/TensorFlow/etc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#is-it-more-memory-efficient-than-pytorch-tensorflow-etc">Is it more memory-efficient than PyTorch/TensorFlow/etc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python-library">Python library</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#is-there-a-python-version">Is there a Python version?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#is-the-pyeddl-develop-by-the-same-team">Is the PyEDDL develop by the same team</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#contributions">Contributions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-contribute">Can I contribute?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance">Performance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#is-it-faster-than-pytorch-tensorflow-etc">Is it faster than PyTorch/TensorFlow/etc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#is-it-more-memory-efficient-than-pytorch-tensorflow-etc">Is it more memory-efficient than PyTorch/TensorFlow/etc</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -158,20 +167,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -239,33 +243,37 @@
             
   <div class="section" id="faq">
 <h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="python-library">
+<h2>Python library<a class="headerlink" href="#python-library" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="is-there-a-python-version">
-<h2>Is there a Python version?<a class="headerlink" href="#is-there-a-python-version" title="Permalink to this headline">¶</a></h2>
+<h3>Is there a Python version?<a class="headerlink" href="#is-there-a-python-version" title="Permalink to this headline">¶</a></h3>
 <p>Yes, the <a class="reference external" href="https://github.com/deephealthproject/pyeddl">PyEDDL</a> is the EDDL version for the Python lovers</p>
 </div>
+<div class="section" id="is-the-pyeddl-develop-by-the-same-team">
+<h3>Is the PyEDDL develop by the same team<a class="headerlink" href="#is-the-pyeddl-develop-by-the-same-team" title="Permalink to this headline">¶</a></h3>
+<p>Sort of. We all are part of the DeepHealth project, and although each team is specialized
+in developing and supporting different libraries, we all contribute to the other projects so that all the DeepHealth
+ecosystem can work smoothly.</p>
+</div>
+</div>
+<div class="section" id="contributions">
+<h2>Contributions<a class="headerlink" href="#contributions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="can-i-contribute">
-<h2>Can I contribute?<a class="headerlink" href="#can-i-contribute" title="Permalink to this headline">¶</a></h2>
+<h3>Can I contribute?<a class="headerlink" href="#can-i-contribute" title="Permalink to this headline">¶</a></h3>
 <p>Yes, but first open a new issue to explain and discuss your contribution.</p>
 </div>
-<div class="section" id="can-i-control-the-memory-consumption">
-<h2>Can I control the memory consumption?<a class="headerlink" href="#can-i-control-the-memory-consumption" title="Permalink to this headline">¶</a></h2>
-<p>Yes, we offer several memory levels to control the memory-speed trade-off. These levels are:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">full_mem</span></code> (default): No memory bound (highest speed at the expense of the memory requirements)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mid_mem</span></code>: Slight memory optimization (good trade-off memory-speed)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">low_mem</span></code>: Optimized for hardware with restricted memory capabilities.</p></li>
-</ul>
 </div>
+<div class="section" id="performance">
+<h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="is-it-faster-than-pytorch-tensorflow-etc">
-<h2>Is it faster than PyTorch/TensorFlow/etc<a class="headerlink" href="#is-it-faster-than-pytorch-tensorflow-etc" title="Permalink to this headline">¶</a></h2>
-<p>Depends… Generally, there are many nuances so that a high-performance can be achieved (see benchmark section) and many of
-those nuances are strongly tied to the classical memory-speed trade-off. To sum up, matrix multiplications on the CPU
-are a 300% faster than their TensorFlow counterpart. Convolution times on GPU (no cuDNN) are slightly faster than on the
-EDDL than PyTorch (210ms vs. 246ms), and using cuDNN  will get the cuDNN performance.</p>
+<h3>Is it faster than PyTorch/TensorFlow/etc<a class="headerlink" href="#is-it-faster-than-pytorch-tensorflow-etc" title="Permalink to this headline">¶</a></h3>
+<p>Check our benchmakrs: <a class="reference external" href="https://github.com/jofuelo/eddl_benchmark">EDDL benchmarks</a></p>
 </div>
 <div class="section" id="is-it-more-memory-efficient-than-pytorch-tensorflow-etc">
-<h2>Is it more memory-efficient than PyTorch/TensorFlow/etc<a class="headerlink" href="#is-it-more-memory-efficient-than-pytorch-tensorflow-etc" title="Permalink to this headline">¶</a></h2>
-<p>Depends on your memory setting (see the “Can I control the memory consumption?” answer).</p>
+<h3>Is it more memory-efficient than PyTorch/TensorFlow/etc<a class="headerlink" href="#is-it-more-memory-efficient-than-pytorch-tensorflow-etc" title="Permalink to this headline">¶</a></h3>
+<p>Depends on your memory setting, see the “Can I control the memory consumption?” answer.
+Also, you can take a look at our benchmakrs: <a class="reference external" href="https://github.com/jofuelo/eddl_benchmark">EDDL benchmarks</a></p>
+</div>
 </div>
 </div>
 
@@ -289,7 +297,7 @@ EDDL than PyTorch (210ms vs. 246ms), and using cuDNN  will get the cuDNN perform
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

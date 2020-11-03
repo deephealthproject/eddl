@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Masked array operations" href="mask_ops.html" />
+    <link rel="next" title="Mathematical functions" href="math.html" />
     <link rel="prev" title="Linear algebra" href="linear_algebra.html" /> 
 </head>
 
@@ -151,53 +151,56 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Logic functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#truth-value-testing">Truth value testing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#all">all</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#any">any</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#all">All</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#any">Any</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#array-contents">Array contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#isfinite">isfinite</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#isinf">isinf</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#isnan">isnan</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#isneginf">isneginf</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#isposinf">isposinf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#is-finite">Is finite?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#is-inf">Is inf?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#is-nan">Is NaN?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Is -inf?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Is +inf?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#logical-operations">Logical operations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#logical-and">logical_and</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#logical-or">logical_or</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#logical-not">logical_not</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#logical-xor">logical_xor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logical-and-a-b">Logical AND: “A &amp; B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logical-or-a-b">Logical OR: “A | B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logical-not-a">Logical NOT: “~A”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logical-xor-exclusive-or-a-b">Logical XOR (Exclusive OR): “A ^ B”</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#comparison">Comparison</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#allclose">allclose</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#isclose">isclose</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#greater">greater</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#greater-equal">greater_equal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#less">less</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#less-equal">less_equal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#equal">equal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#not-equal">not_equal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unary-operations">Unary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#greater-than-a-b">Greater than: “A &gt; B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#greater-equal-a-b">Greater equal: “A &gt;= B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#less-than-a-b">Less than: “A &lt; B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#less-equal-a-b">Less equal: “A &lt;= B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#equal-a-b">Equal: “A == B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#not-equal-a-b">Not Equal: “A != B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#binary-operations">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#all-close">All Close?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#is-close">Is Close?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Greater Than: “A &gt; B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Greater Equal: “A &gt;= B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Less Than: “A &lt; B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Less Equal: “A &lt;= B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Equal: “A == B”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Not Equal: “A != B”</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
 </ul>
 
@@ -273,7 +276,7 @@
 <div class="section" id="truth-value-testing">
 <h2>Truth value testing<a class="headerlink" href="#truth-value-testing" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="all">
-<h3>all<a class="headerlink" href="#all" title="Permalink to this headline">¶</a></h3>
+<h3>All<a class="headerlink" href="#all" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3allEP6Tensor">
 <span id="_CPPv3N6Tensor3allEP6Tensor"></span><span id="_CPPv2N6Tensor3allEP6Tensor"></span><span id="Tensor::all__TensorP"></span><span class="target" id="class_tensor_1a80c4bbcc0bd7fbdeb3d0276b71ab894b"></span>bool <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">all</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3allEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -289,14 +292,16 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
 <span class="kt">bool</span> <span class="n">condition</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">all</span><span class="p">(</span><span class="n">t1</span><span class="p">);</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">condition</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> <span class="c1">// Temp.</span>
 <span class="c1">//condition = false</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="any">
-<h3>any<a class="headerlink" href="#any" title="Permalink to this headline">¶</a></h3>
+<h3>Any<a class="headerlink" href="#any" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3anyEP6Tensor">
 <span id="_CPPv3N6Tensor3anyEP6Tensor"></span><span id="_CPPv2N6Tensor3anyEP6Tensor"></span><span id="Tensor::any__TensorP"></span><span class="target" id="class_tensor_1a7dd780b41414fa0bc5459643f9ea3dcf"></span>bool <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">any</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3anyEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -312,22 +317,21 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+
 
 <span class="kt">bool</span> <span class="n">condition</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">any</span><span class="p">(</span><span class="n">t1</span><span class="p">);</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">condition</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> <span class="c1">// Temp.</span>
 <span class="c1">//condition = true</span>
-
-<span class="kt">bool</span> <span class="n">condition2</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">any</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
-<span class="c1">//condition2 = false</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="array-contents">
 <h2>Array contents<a class="headerlink" href="#array-contents" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="isfinite">
-<h3>isfinite<a class="headerlink" href="#isfinite" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="is-finite">
+<h3>Is finite?<a class="headerlink" href="#is-finite" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8isfiniteEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor8isfiniteEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor8isfiniteEP6TensorP6Tensor"></span><span id="Tensor::isfinite__TensorP.TensorP"></span><span class="target" id="class_tensor_1ae83806cda88bb32a5125c526c60111fd"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isfinite</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8isfiniteEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -344,21 +348,25 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="n">NAN</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span><span class="p">;</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">12</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="n">NAN</span><span class="p">,</span> <span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="o">+</span><span class="n">INFINITY</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [12.00 inf nan]</span>
+<span class="c1">// [-inf 0.00 inf]</span>
+<span class="c1">// ]</span>
 
-<span class="n">Tensor</span><span class="o">::</span><span class="n">isfinite</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span>
-<span class="c1">// r1 =&gt; [false, true, true, true]</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">isfinite</span><span class="p">(</span><span class="n">t2</span><span class="p">,</span> <span class="n">r2</span><span class="p">);</span>
-<span class="c1">// r2 =&gt; [true, true, true, true]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isneginf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span> <span class="c1">// static</span>
+<span class="n">r1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 0.00 0.00]</span>
+<span class="c1">// [0.00 1.00 0.00]</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="isinf">
-<h3>isinf<a class="headerlink" href="#isinf" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="is-inf">
+<h3>Is inf?<a class="headerlink" href="#is-inf" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5isinfEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor5isinfEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor5isinfEP6TensorP6Tensor"></span><span id="Tensor::isinf__TensorP.TensorP"></span><span class="target" id="class_tensor_1a4fec63172d2867f7c2a45b720d457355"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isinf</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5isinfEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -375,17 +383,25 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">12</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="n">NAN</span><span class="p">,</span> <span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="o">+</span><span class="n">INFINITY</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [12.00 inf nan]</span>
+<span class="c1">// [-inf 0.00 inf]</span>
+<span class="c1">// ]</span>
 
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">isinf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span>
-<span class="c1">// r1 =&gt; [true, false, false, false]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isneginf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span> <span class="c1">// static</span>
+<span class="n">r1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 1.00 0.00]</span>
+<span class="c1">// [1.00 0.00 1.00]</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="isnan">
-<h3>isnan<a class="headerlink" href="#isnan" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="is-nan">
+<h3>Is NaN?<a class="headerlink" href="#is-nan" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5isnanEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor5isnanEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor5isnanEP6TensorP6Tensor"></span><span id="Tensor::isnan__TensorP.TensorP"></span><span class="target" id="class_tensor_1a730b4e06fa675726b2ca559341035b1a"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isnan</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5isnanEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -402,17 +418,25 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="n">NAN</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">12</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="n">NAN</span><span class="p">,</span> <span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="o">+</span><span class="n">INFINITY</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [12.00 inf nan]</span>
+<span class="c1">// [-inf 0.00 inf]</span>
+<span class="c1">// ]</span>
 
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">isnan</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span>
-<span class="c1">// r1 =&gt; [true, false, false, false]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isneginf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span> <span class="c1">// static</span>
+<span class="n">r1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 1.00]</span>
+<span class="c1">// [0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="isneginf">
-<h3>isneginf<a class="headerlink" href="#isneginf" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h3>Is -inf?<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8isneginfEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor8isneginfEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor8isneginfEP6TensorP6Tensor"></span><span id="Tensor::isneginf__TensorP.TensorP"></span><span class="target" id="class_tensor_1a59765f2717524be72208d6c95aafc2c3"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isneginf</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8isneginfEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -429,17 +453,25 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">12</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="n">NAN</span><span class="p">,</span> <span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="o">+</span><span class="n">INFINITY</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [12.00 inf nan]</span>
+<span class="c1">// [-inf 0.00 inf]</span>
+<span class="c1">// ]</span>
 
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">isneginf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span>
-<span class="c1">// r1 =&gt; [true, false, false, false]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isneginf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span> <span class="c1">// static</span>
+<span class="n">r1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00]</span>
+<span class="c1">// [1.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="isposinf">
-<h3>isposinf<a class="headerlink" href="#isposinf" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>Is +inf?<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8isposinfEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor8isposinfEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor8isposinfEP6TensorP6Tensor"></span><span id="Tensor::isposinf__TensorP.TensorP"></span><span class="target" id="class_tensor_1aafadfd9a38f839d460aab52490ca8f23"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isposinf</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8isposinfEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -456,20 +488,28 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">12</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="n">NAN</span><span class="p">,</span> <span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="o">+</span><span class="n">INFINITY</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [12.00 inf nan]</span>
+<span class="c1">// [-inf 0.00 inf]</span>
+<span class="c1">// ]</span>
 
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">isposinf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span>
-<span class="c1">// r1 =&gt; [false, true, false, false]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r1</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isneginf</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">);</span> <span class="c1">// static</span>
+<span class="n">r1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 1.00 0.00]</span>
+<span class="c1">// [0.00 0.00 1.00]</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="logical-operations">
 <h2>Logical operations<a class="headerlink" href="#logical-operations" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="logical-and">
-<h3>logical_and<a class="headerlink" href="#logical-and" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="logical-and-a-b">
+<h3>Logical AND: “A &amp; B”<a class="headerlink" href="#logical-and-a-b" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor11logical_andEP6TensorP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor11logical_andEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor11logical_andEP6TensorP6TensorP6Tensor"></span><span id="Tensor::logical_and__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a516274c7a7ed8de29bd31138f3c9f58b"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_and</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11logical_andEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -487,17 +527,43 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">1.0f</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 0.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
 
-<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_and</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
-<span class="c1">// r =&gt; [false, false, true, false, false, false]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">0.0f</span><span class="p">);</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_and</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span> <span class="c1">// static</span>
+<span class="n">r</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="logical-or">
-<h3>logical_or<a class="headerlink" href="#logical-or" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="logical-or-a-b">
+<h3>Logical OR: “A | B”<a class="headerlink" href="#logical-or-a-b" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor10logical_orEP6TensorP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor10logical_orEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor10logical_orEP6TensorP6TensorP6Tensor"></span><span id="Tensor::logical_or__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a9595621f13aaf4796b1337257928520a"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_or</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10logical_orEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -515,17 +581,43 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">1.0f</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 0.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
 
-<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_or</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false, true, false, true, true]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">0.0f</span><span class="p">);</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_or</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span> <span class="c1">// static</span>
+<span class="n">r</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 0.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="logical-not">
-<h3>logical_not<a class="headerlink" href="#logical-not" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="logical-not-a">
+<h3>Logical NOT: “~A”<a class="headerlink" href="#logical-not-a" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor11logical_notEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor11logical_notEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor11logical_notEP6TensorP6Tensor"></span><span id="Tensor::logical_not__TensorP.TensorP"></span><span class="target" id="class_tensor_1ab0cbec0cc33cf0f1f450b220946f9498"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_not</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11logical_notEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -542,16 +634,32 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">1.0f</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 0.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
 
-<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_and</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
-<span class="c1">// r =&gt; [false, true, false, true, false, false]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_not</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span> <span class="c1">// static</span>
+<span class="n">r</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="logical-xor">
-<h3>logical_xor<a class="headerlink" href="#logical-xor" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="logical-xor-exclusive-or-a-b">
+<h3>Logical XOR (Exclusive OR): “A ^ B”<a class="headerlink" href="#logical-xor-exclusive-or-a-b" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor11logical_xorEP6TensorP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor11logical_xorEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor11logical_xorEP6TensorP6TensorP6Tensor"></span><span id="Tensor::logical_xor__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a5fda943ffe5d0544e43ec799f78bca39"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_xor</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11logical_xorEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -569,20 +677,280 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">1.0f</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 0.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
 
-<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_xor</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false, false, false, true, true]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">0.0f</span><span class="p">);</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">::</span><span class="n">logical_xor</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span> <span class="c1">// static</span>
+<span class="n">r</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 0.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="comparison">
 <h2>Comparison<a class="headerlink" href="#comparison" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="allclose">
-<h3>allclose<a class="headerlink" href="#allclose" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="unary-operations">
+<h3>Unary Operations<a class="headerlink" href="#unary-operations" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="greater-than-a-b">
+<h3>Greater than: “A &gt; B”<a class="headerlink" href="#greater-than-a-b" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">,</span> <span class="mf">25.0f</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// In-place</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">greater</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="greater-equal-a-b">
+<h3>Greater equal: “A &gt;= B”<a class="headerlink" href="#greater-equal-a-b" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater_equal” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">,</span> <span class="mf">25.0f</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_equal_</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// In-place</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_equal</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="less-than-a-b">
+<h3>Less than: “A &lt; B”<a class="headerlink" href="#less-than-a-b" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">,</span> <span class="mf">25.0f</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// In-place</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">less_</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="less-equal-a-b">
+<h3>Less equal: “A &lt;= B”<a class="headerlink" href="#less-equal-a-b" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less_equal” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">-2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">t3</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="equal-a-b">
+<h3>Equal: “A == B”<a class="headerlink" href="#equal-a-b" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::equal” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">,</span> <span class="mf">25.0f</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">equal_</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// In-place</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 1.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">equal</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="not-equal-a-b">
+<h3>Not Equal: “A != B”<a class="headerlink" href="#not-equal-a-b" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::not_equal” with arguments (float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">,</span> <span class="mf">25.0f</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">not_equal_</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// In-place</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 0.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">not_equal</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="binary-operations">
+<h3>Binary Operations<a class="headerlink" href="#binary-operations" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="all-close">
+<h3>All Close?<a class="headerlink" href="#all-close" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8allcloseEP6TensorP6Tensorffb">
 <span id="_CPPv3N6Tensor8allcloseEP6TensorP6Tensorffb"></span><span id="_CPPv2N6Tensor8allcloseEP6TensorP6Tensorffb"></span><span id="Tensor::allclose__TensorP.TensorP.float.float.b"></span><span class="target" id="class_tensor_1a1501f8bfba737420f7d8d1d50b76d86e"></span>bool <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">allclose</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>rtol</em> = 1e-05, float <em>atol</em> = 1e-08, bool <em>equal_nan</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8allcloseEP6TensorP6Tensorffb" title="Permalink to this definition">¶</a><br /></dt>
@@ -602,35 +970,35 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
-<span class="kt">bool</span> <span class="n">close</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">allclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
-<span class="c1">// close = false</span>
 
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t2</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-09</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-
-<span class="kt">bool</span> <span class="n">close</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">allclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
-<span class="c1">// close = true</span>
-
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-
-<span class="kt">bool</span> <span class="n">close</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">allclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
-<span class="c1">// close = false</span>
-
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-
-<span class="kt">bool</span> <span class="n">close</span> <span class="o">=</span>  <span class="n">Tensor</span><span class="o">::</span><span class="n">allclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
-<span class="c1">// close = true</span>
+<span class="kt">float</span> <span class="n">result</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">allclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">);</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="c1">// 1.00</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="isclose">
-<h3>isclose<a class="headerlink" href="#isclose" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="is-close">
+<h3>Is Close?<a class="headerlink" href="#is-close" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb">
 <span id="_CPPv3N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb"></span><span id="_CPPv2N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb"></span><span id="Tensor::isclose__TensorP.TensorP.TensorP.float.float.b"></span><span class="target" id="class_tensor_1adb3078270a1649ba3158bdf6cabe7440"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isclose</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em>, float <em>rtol</em> = 1e-05, float <em>atol</em> = 1e-08, bool <em>equal_nan</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb" title="Permalink to this definition">¶</a><br /></dt>
@@ -651,662 +1019,339 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
-<span class="n">Tensor</span><span class="o">::</span><span class="n">isclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t2</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">});</span>
 
 
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-09</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">isclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, true]</span>
-
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">isclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false]</span>
-
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">NAN</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">isclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, true]</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isclose</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">);</span>
+<span class="n">t3</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="greater">
-<h3>greater<a class="headerlink" href="#greater" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor8greater_Ef">
-<span id="_CPPv3N6Tensor8greater_Ef"></span><span id="_CPPv2N6Tensor8greater_Ef"></span><span id="Tensor::greater___float"></span><span class="target" id="class_tensor_1a6249bae46ff1dff800af8d879dc6a710"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8greater_Ef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Return the truth value of the input elements &gt; <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="section" id="id3">
+<h3>Greater Than: “A &gt; B”<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater” with arguments (Tensor *A) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor7greaterEf">
-<span id="_CPPv3N6Tensor7greaterEf"></span><span id="_CPPv2N6Tensor7greaterEf"></span><span id="Tensor::greater__float"></span><span class="target" id="class_tensor_1aee5bb77ce44d319b124921a30157af80"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements &gt; <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor7greaterEP6TensorP6Tensorf">
-<span id="_CPPv3N6Tensor7greaterEP6TensorP6Tensorf"></span><span id="_CPPv2N6Tensor7greaterEP6TensorP6Tensorf"></span><span id="Tensor::greater__TensorP.TensorP.float"></span><span class="target" id="class_tensor_1aaabe89ea0646f6587f725f239360d9f7"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements &gt; <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor7greaterEP6Tensor">
-<span id="_CPPv3N6Tensor7greaterEP6Tensor"></span><span id="_CPPv2N6Tensor7greaterEP6Tensor"></span><span id="Tensor::greater__TensorP"></span><span class="target" id="class_tensor_1a919ad0cc441b34f935d9da0aecb5a79b"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">this</span> <span class="pre">&gt;</span> <span class="pre">A</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor7greaterEP6TensorP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor7greaterEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor7greaterEP6TensorP6TensorP6Tensor"></span><span id="Tensor::greater__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a84e24e58bafbfc13519d88b307504764"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&gt;</span> <span class="pre">B</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater</span><span class="p">(</span><span class="mf">900.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false]</span>
-
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">greater</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">900.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false]</span>
-
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">900.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
-<span class="c1">// r2 =&gt; [true, true]</span>
-
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">greater</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, true]</span>
-
-
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_</span><span class="p">(</span><span class="mf">900.0</span><span class="p">);</span>
-<span class="c1">// t1 =&gt; [true, false]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="greater-equal">
-<h3>greater_equal<a class="headerlink" href="#greater-equal" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor14greater_equal_Ef">
-<span id="_CPPv3N6Tensor14greater_equal_Ef"></span><span id="_CPPv2N6Tensor14greater_equal_Ef"></span><span id="Tensor::greater_equal___float"></span><span class="target" id="class_tensor_1a745ce614040b59025d624150fbf31fe6"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater_equal_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor14greater_equal_Ef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Return the truth value of the input elements &gt;= <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor13greater_equalEf">
-<span id="_CPPv3N6Tensor13greater_equalEf"></span><span id="_CPPv2N6Tensor13greater_equalEf"></span><span id="Tensor::greater_equal__float"></span><span class="target" id="class_tensor_1a961d3db5ba4bf85dbfad2c4ed9956653"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater_equal</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements &gt;= <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor13greater_equalEP6TensorP6Tensorf">
-<span id="_CPPv3N6Tensor13greater_equalEP6TensorP6Tensorf"></span><span id="_CPPv2N6Tensor13greater_equalEP6TensorP6Tensorf"></span><span id="Tensor::greater_equal__TensorP.TensorP.float"></span><span class="target" id="class_tensor_1affb6765eb39e4d2391fc0efc5580d57e"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements &gt;= <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor13greater_equalEP6Tensor">
-<span id="_CPPv3N6Tensor13greater_equalEP6Tensor"></span><span id="_CPPv2N6Tensor13greater_equalEP6Tensor"></span><span id="Tensor::greater_equal__TensorP"></span><span class="target" id="class_tensor_1ae4fcf4b0d5b4b7d3868379b50da77470"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">this</span> <span class="pre">&gt;=</span> <span class="pre">A</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor13greater_equalEP6TensorP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor13greater_equalEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor13greater_equalEP6TensorP6TensorP6Tensor"></span><span id="Tensor::greater_equal__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a13e196e6eaabfcd14f5cef5950dc7924"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&gt;=</span> <span class="pre">B</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_equal</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false]</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
 
-<span class="n">Tensor</span><span class="o">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t2</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-08</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
-<span class="c1">// r2 =&gt; [true, true]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">t3</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
 
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, true]</span>
-
-
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_equal_</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// t1 =&gt; [true, false]</span>
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">greaterl</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">);</span> <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="less">
-<h3>less<a class="headerlink" href="#less" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5less_Ef">
-<span id="_CPPv3N6Tensor5less_Ef"></span><span id="_CPPv2N6Tensor5less_Ef"></span><span id="Tensor::less___float"></span><span class="target" id="class_tensor_1a7cc0030c584bd08e460538a704b7fcc0"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5less_Ef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Return the truth value of the input elements &lt; <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="section" id="id4">
+<h3>Greater Equal: “A &gt;= B”<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::greater_equal” with arguments (Tensor *A) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4lessEf">
-<span id="_CPPv3N6Tensor4lessEf"></span><span id="_CPPv2N6Tensor4lessEf"></span><span id="Tensor::less__float"></span><span class="target" id="class_tensor_1a1fb4ec0e0b969b00188e4a428dc23aa9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements &lt; <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4lessEP6TensorP6Tensorf">
-<span id="_CPPv3N6Tensor4lessEP6TensorP6Tensorf"></span><span id="_CPPv2N6Tensor4lessEP6TensorP6Tensorf"></span><span id="Tensor::less__TensorP.TensorP.float"></span><span class="target" id="class_tensor_1aeccb0fae3f98d803bf3057aa8b20fd30"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements &lt; <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4lessEP6Tensor">
-<span id="_CPPv3N6Tensor4lessEP6Tensor"></span><span id="_CPPv2N6Tensor4lessEP6Tensor"></span><span id="Tensor::less__TensorP"></span><span class="target" id="class_tensor_1a552e5f4e8ae2758c77cda9418cc4157e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">this</span> <span class="pre">&lt;</span> <span class="pre">A</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4lessEP6TensorP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor4lessEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor4lessEP6TensorP6TensorP6Tensor"></span><span id="Tensor::less__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1ae247af925e05e2ef6646cd34e5db35c6"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&lt;</span> <span class="pre">B</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less</span><span class="p">(</span><span class="mf">20000.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, true]</span>
-
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">less</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">20000.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, true]</span>
-
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">20000.0</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
-<span class="c1">// r2 =&gt; [true, true]</span>
-
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">less</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, true]</span>
-
-
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_</span><span class="p">(</span><span class="mf">20000.0</span><span class="p">);</span>
-<span class="c1">// t1 =&gt; [true, true]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="less-equal">
-<h3>less_equal<a class="headerlink" href="#less-equal" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor11less_equal_Ef">
-<span id="_CPPv3N6Tensor11less_equal_Ef"></span><span id="_CPPv2N6Tensor11less_equal_Ef"></span><span id="Tensor::less_equal___float"></span><span class="target" id="class_tensor_1adef2087499850e0b13821305306a1011"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less_equal_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11less_equal_Ef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Return the truth value of the input elements &lt;= <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor10less_equalEf">
-<span id="_CPPv3N6Tensor10less_equalEf"></span><span id="_CPPv2N6Tensor10less_equalEf"></span><span id="Tensor::less_equal__float"></span><span class="target" id="class_tensor_1a005c618fb59c33e25a84b2c3ad003acd"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less_equal</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements &lt;= <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor10less_equalEP6TensorP6Tensorf">
-<span id="_CPPv3N6Tensor10less_equalEP6TensorP6Tensorf"></span><span id="_CPPv2N6Tensor10less_equalEP6TensorP6Tensorf"></span><span id="Tensor::less_equal__TensorP.TensorP.float"></span><span class="target" id="class_tensor_1a025e2e8e32e9ce015407a2fd0195c462"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements &lt;= <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor10less_equalEP6Tensor">
-<span id="_CPPv3N6Tensor10less_equalEP6Tensor"></span><span id="_CPPv2N6Tensor10less_equalEP6Tensor"></span><span id="Tensor::less_equal__TensorP"></span><span class="target" id="class_tensor_1ae463b928da7c9ca31e2500f381f5d6a6"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">this</span> <span class="pre">&lt;=</span> <span class="pre">A</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor10less_equalEP6TensorP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor10less_equalEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor10less_equalEP6TensorP6TensorP6Tensor"></span><span id="Tensor::less_equal__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1aa55c8a8fb1a6a6615bcbd64d16a12135"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&lt;=</span> <span class="pre">B</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_equal</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, true]</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
 
-<span class="n">Tensor</span><span class="o">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, true]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t2</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
-<span class="c1">// r2 =&gt; [true, true]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">t3</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
 
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, true]</span>
-
-
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_equal_</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// t1 =&gt; [true, true]</span>
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">);</span> <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="equal">
-<h3>equal<a class="headerlink" href="#equal" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor6equal_Ef">
-<span id="_CPPv3N6Tensor6equal_Ef"></span><span id="_CPPv2N6Tensor6equal_Ef"></span><span id="Tensor::equal___float"></span><span class="target" id="class_tensor_1a252f7ab0f5d10d221aa57c84f5d567a8"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">equal_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6equal_Ef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Return the truth value of the input elements == <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="section" id="id5">
+<h3>Less Than: “A &lt; B”<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less” with arguments (Tensor *A) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5equalEf">
-<span id="_CPPv3N6Tensor5equalEf"></span><span id="_CPPv2N6Tensor5equalEf"></span><span id="Tensor::equal__float"></span><span class="target" id="class_tensor_1a9da367b3945c913fc9fcffcc4c386301"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">equal</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements == <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5equalEP6TensorP6Tensorf">
-<span id="_CPPv3N6Tensor5equalEP6TensorP6Tensorf"></span><span id="_CPPv2N6Tensor5equalEP6TensorP6Tensorf"></span><span id="Tensor::equal__TensorP.TensorP.float"></span><span class="target" id="class_tensor_1a511a73a2d8e5d6d07e5392a19866f9e7"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements == <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5equalEP6Tensor">
-<span id="_CPPv3N6Tensor5equalEP6Tensor"></span><span id="_CPPv2N6Tensor5equalEP6Tensor"></span><span id="Tensor::equal__TensorP"></span><span class="target" id="class_tensor_1a09df944eecea0d2f8c5fffa5051538ac"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">equal</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">this</span> <span class="pre">==</span> <span class="pre">A</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5equalEP6TensorP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor5equalEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor5equalEP6TensorP6TensorP6Tensor"></span><span id="Tensor::equal__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1aa6f9e6f46640611e9ee6bea688ca4eee"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">==</span> <span class="pre">B</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">equal</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false]</span>
-
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false]</span>
-
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
-<span class="c1">// r2 =&gt; [true, false]</span>
-
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
-<span class="c1">// r =&gt; [true, false]</span>
-
-
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">equal_</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// t1 =&gt; [true, false]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="not-equal">
-<h3>not_equal<a class="headerlink" href="#not-equal" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor10not_equal_Ef">
-<span id="_CPPv3N6Tensor10not_equal_Ef"></span><span id="_CPPv2N6Tensor10not_equal_Ef"></span><span id="Tensor::not_equal___float"></span><span class="target" id="class_tensor_1a1a57075c99d3cba11cdcdcad85388e6b"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">not_equal_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10not_equal_Ef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Return the truth value of the input elements != <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. Inplace operation. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
+
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t2</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">t3</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">less</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>Less Equal: “A &lt;= B”<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::less_equal” with arguments (Tensor *A) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor9not_equalEf">
-<span id="_CPPv3N6Tensor9not_equalEf"></span><span id="_CPPv2N6Tensor9not_equalEf"></span><span id="Tensor::not_equal__float"></span><span class="target" id="class_tensor_1abbae19a7774f0b26d8dddef53c7da7a1"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">not_equal</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements != <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t2</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">less_equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">t3</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">less_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id7">
+<h3>Equal: “A == B”<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::equal” with arguments (Tensor *A) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor9not_equalEP6TensorP6Tensorf">
-<span id="_CPPv3N6Tensor9not_equalEP6TensorP6Tensorf"></span><span id="_CPPv2N6Tensor9not_equalEP6TensorP6Tensorf"></span><span id="Tensor::not_equal__TensorP.TensorP.float"></span><span class="target" id="class_tensor_1a2c9b15a326a37ef3ec2820d2765c5236"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">not_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of the input elements != <code class="docutils literal notranslate"><span class="pre">v</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value to make the comparison with. </p></li>
-</ul>
-</dd>
-</dl>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t2</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">t3</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h3>Not Equal: “A != B”<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::not_equal” with arguments (Tensor *A) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor9not_equalEP6Tensor">
-<span id="_CPPv3N6Tensor9not_equalEP6Tensor"></span><span id="_CPPv2N6Tensor9not_equalEP6Tensor"></span><span id="Tensor::not_equal__TensorP"></span><span class="target" id="class_tensor_1a102e7c439d21441d4bc7489a82b9c16d"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">not_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">this</span> <span class="pre">!=</span> <span class="pre">A</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the true values. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor9not_equalEP6TensorP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor9not_equalEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor9not_equalEP6TensorP6TensorP6Tensor"></span><span id="Tensor::not_equal__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a29b81e36b827c32b0df02ddcb691f648"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">not_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">!=</span> <span class="pre">B</span></code> element-wise. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-07</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r</span><span class="p">;</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">not_equal</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [false, true]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
 
-<span class="n">Tensor</span><span class="o">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// r =&gt; [false, true]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="n">t2</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 2.00 3.00 4.00 5.00]</span>
+<span class="c1">// [6.00 7.00 8.00 9.00 10.00]</span>
+<span class="c1">// [11.00 12.00 13.00 14.00 15.00]</span>
+<span class="c1">// [16.00 17.00 18.00 19.00 20.00]</span>
+<span class="c1">// [21.00 22.00 23.00 24.00 25.00]</span>
+<span class="c1">// ]</span>
 
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mf">10000.0</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">r2</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">not_equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
-<span class="c1">// r2 =&gt; [false, true]</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">not_equal</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">t3</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>  <span class="c1">// Temp.</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
 
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
-<span class="c1">// r =&gt; [false, true]</span>
-
-
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">not_equal_</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">);</span>
-<span class="c1">// t1 =&gt; [false, true]</span>
+<span class="c1">// Other Ways</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">not_equal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">);</span> <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
@@ -1321,7 +1366,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mask_ops.html" class="btn btn-neutral float-right" title="Masked array operations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="math.html" class="btn btn-neutral float-right" title="Mathematical functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="linear_algebra.html" class="btn btn-neutral float-left" title="Linear algebra" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -1333,7 +1378,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

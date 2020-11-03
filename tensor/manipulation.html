@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Binary operations" href="binary.html" />
+    <link rel="next" title="Image operations" href="image.html" />
     <link rel="prev" title="Creation Routines" href="create.html" /> 
 </head>
 
@@ -151,10 +151,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="create.html">Creation Routines</a></li>
@@ -163,7 +159,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#move-to-cpu">Move to CPU</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#move-to-gpu">Move to GPU</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#check-tensor-device">Check tensor device</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#check-compatibility">Check compatibility</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#get-information-from-tensor">Get information from tensor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#print-tensor-contents">Print tensor contents</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dimension-check">Dimension check</a></li>
@@ -172,7 +167,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#changing-array-shape">Changing array shape</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reshape">reshape</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#flatten">flatten</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#resize">resize</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#transpose-like-operations">Transpose-like operations</a><ul>
@@ -187,42 +181,21 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#joining-arrays">Joining arrays</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#rearranging-elements-and-transformations">Rearranging elements and transformations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#shift">shift</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rotate">rotate</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#scale">scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#flip">flip</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#crop">crop</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#crop-scale">crop_scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cutout">cutout</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#tensor-data-augmentation">Tensor Data Augmentation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#shift-random">shift_random</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rotate-random">rotate_random</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#scale-random">scale_random</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#flip-random">flip_random</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#crop-random">crop_random</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#crop-scale-random">crop_scale_random</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cutout-random">cutout_random</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="#value-operations">Value operations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#fill">fill</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rand-uniform">rand_uniform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rand-signed-uniform">rand_signed_uniform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rand-normal">rand_normal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rand-binary">rand_binary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fill-constant">Fill constant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fill-random-uniform">Fill Random Uniform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fill-random-signed-uniform">Fill Random Signed Uniform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fill-random-normal">Fill Random Normal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fill-random-binary">Fill Random Binary</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
 </ul>
 
@@ -290,11 +263,6 @@
             
   <div class="section" id="manipulation">
 <h1>Manipulation<a class="headerlink" href="#manipulation" title="Permalink to this headline">¶</a></h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Section in progress</p>
-<p>Read this: <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md">https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md</a></p>
-</div>
 <div class="section" id="devices-and-information">
 <h2>Devices and information<a class="headerlink" href="#devices-and-information" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="move-to-cpu">
@@ -305,9 +273,8 @@
 <dd><p>Clone a tensor to the CPU. </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">logspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">DEV_GPU</span><span class="p">);</span> <span class="c1">//tensor1 is in GPU</span>
-<span class="n">Tensor</span><span class="o">::</span><span class="n">toCPU</span><span class="p">(</span><span class="n">tensor1</span><span class="p">);</span>
-<span class="c1">// tensor1 is now in CPU</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="n">DEV_GPU</span><span class="p">);</span> <span class="c1">// Tensor created in the GPU</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">toCPU</span><span class="p">();</span> <span class="c1">// Tensor transferred to CPU</span>
 </pre></div>
 </div>
 </div>
@@ -319,9 +286,8 @@
 <dd><p>Clone a tensor to the GPU. </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">logspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">//tensor1 is in CPU</span>
-<span class="n">Tensor</span><span class="o">::</span><span class="n">toGPU</span><span class="p">(</span><span class="n">tensor1</span><span class="p">);</span>
-<span class="c1">// tensor1 is now in GPU</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Tensor created in the CPU</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">toGPU</span><span class="p">();</span> <span class="c1">// Tensor transferred to GPU</span>
 </pre></div>
 </div>
 </div>
@@ -338,6 +304,10 @@
 </p>
 </dd></dl>
 
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="n">DEV_GPU</span><span class="p">);</span> <span class="c1">// Tensor created in the GPU</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">isCPU</span><span class="p">();</span> <span class="c1">// returns 0</span>
+</pre></div>
+</div>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5isGPUEv">
 <span id="_CPPv3N6Tensor5isGPUEv"></span><span id="_CPPv2N6Tensor5isGPUEv"></span><span id="Tensor::isGPU"></span><span class="target" id="class_tensor_1ab7eb0d856cddf0e72e09f8463ffbb960"></span>int <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isGPU</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5isGPUEv" title="Permalink to this definition">¶</a><br /></dt>
@@ -349,6 +319,10 @@
 </p>
 </dd></dl>
 
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="n">DEV_GPU</span><span class="p">);</span> <span class="c1">// Tensor created in the GPU</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">isGPU</span><span class="p">();</span> <span class="c1">// returns 1</span>
+</pre></div>
+</div>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6isFPGAEv">
 <span id="_CPPv3N6Tensor6isFPGAEv"></span><span id="_CPPv2N6Tensor6isFPGAEv"></span><span id="Tensor::isFPGA"></span><span class="target" id="class_tensor_1ae0fb2c263dac006b368c89b995b52831"></span>int <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isFPGA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6isFPGAEv" title="Permalink to this definition">¶</a><br /></dt>
@@ -360,6 +334,10 @@
 </p>
 </dd></dl>
 
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="n">DEV_GPU</span><span class="p">);</span> <span class="c1">// Tensor created in the GPU</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">isFPGA</span><span class="p">();</span> <span class="c1">// returns 0</span>
+</pre></div>
+</div>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor13getDeviceNameEv">
 <span id="_CPPv3N6Tensor13getDeviceNameEv"></span><span id="_CPPv2N6Tensor13getDeviceNameEv"></span><span id="Tensor::getDeviceName"></span><span class="target" id="class_tensor_1a686b3557359d28e7f52983cf291e3b63"></span>string <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getDeviceName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor13getDeviceNameEv" title="Permalink to this definition">¶</a><br /></dt>
@@ -371,49 +349,8 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">logspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">DEV_GPU</span><span class="p">);</span> <span class="c1">//tensor1 is in GPU</span>
-<span class="n">tensor1</span><span class="o">-&gt;</span><span class="n">isCPU</span><span class="p">();</span> <span class="c1">// returns 0</span>
-<span class="n">tensor1</span><span class="o">-&gt;</span><span class="n">isGPU</span><span class="p">();</span> <span class="c1">// returns 1</span>
-<span class="n">tensor1</span><span class="o">-&gt;</span><span class="n">isFPGA</span><span class="p">();</span> <span class="c1">// returns 0</span>
-<span class="n">tensor1</span><span class="o">-&gt;</span><span class="n">getDeviceName</span><span class="p">();</span> <span class="c1">// returns GPU</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="check-compatibility">
-<h3>Check compatibility<a class="headerlink" href="#check-compatibility" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv418checkCompatibilityP6TensorP6TensorRK6string">
-<span id="_CPPv318checkCompatibilityP6TensorP6TensorRK6string"></span><span id="_CPPv218checkCompatibilityP6TensorP6TensorRK6string"></span><span id="checkCompatibility__TensorP.TensorP.stringCR"></span><span class="target" id="tensor_8h_1a4e3ad1ec6c3e63283585641691ae4b9b"></span>void <code class="sig-name descname">checkCompatibility</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, <em class="property">const</em> string &amp;<em>title</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Check if two tensors are compatible, it is, they are in the same device and have the same shape. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code>: A string identifier to append to the output. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv418checkCompatibilityP6TensorP6TensorP6TensorRK6string">
-<span id="_CPPv318checkCompatibilityP6TensorP6TensorP6TensorRK6string"></span><span id="_CPPv218checkCompatibilityP6TensorP6TensorP6TensorRK6string"></span><span id="checkCompatibility__TensorP.TensorP.TensorP.stringCR"></span><span class="target" id="tensor_8h_1a8009cbad293c83d1f231ad28522573a1"></span>void <code class="sig-name descname">checkCompatibility</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em>, <em class="property">const</em> string &amp;<em>title</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Check if three tensors are compatible, it is, they are in the same device and have the same shape. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code>: A string identifier to append to the output. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">checkCompatibility</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">title</span><span class="p">);</span>
-<span class="kt">void</span> <span class="nf">checkCompatibility</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">title</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="n">DEV_GPU</span><span class="p">);</span> <span class="c1">// Tensor created in the GPU</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">getDeviceName</span><span class="p">();</span> <span class="c1">// returns &quot;GPU&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -430,8 +367,21 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">logspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">DEV_GPU</span><span class="p">);</span> <span class="c1">//tensor1 is in GPU</span>
-<span class="n">tensor1</span><span class="o">-&gt;</span><span class="n">info</span><span class="p">();</span> <span class="c1">// prints on standard output the information of tensor1</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">info</span><span class="p">();</span>
+<span class="c1">// -------------------------------</span>
+<span class="c1">// class:         Tensor</span>
+<span class="c1">// ndim:          2</span>
+<span class="c1">// shape:         (2, 3)</span>
+<span class="c1">// strides:       (3, 1)</span>
+<span class="c1">// itemsize:      6</span>
+<span class="c1">// contiguous:    1</span>
+<span class="c1">// order:         C</span>
+<span class="c1">// data pointer:  0x7f827a6060d8</span>
+<span class="c1">// is shared:     0</span>
+<span class="c1">// type:          float (4 bytes)</span>
+<span class="c1">// device:        CPU (code = 0)</span>
+<span class="c1">// -------------------------------</span>
 </pre></div>
 </div>
 </div>
@@ -454,32 +404,32 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
-<span class="n">t</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">();</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">();</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.135579 -0.208483 0.537894]</span>
+<span class="c1">// [0.666481 0.242867 -1.957334]</span>
+<span class="c1">// [-1.447633 1.231033 0.670430]</span>
+<span class="c1">// ]</span>
 
-    <span class="p">[</span>
-    <span class="p">[</span><span class="mf">-1.106357</span> <span class="mf">0.176572</span> <span class="mf">-0.148911</span><span class="p">]</span>
-    <span class="p">[</span><span class="mf">0.989854</span> <span class="mf">-1.420635</span> <span class="mf">-0.334201</span><span class="p">]</span>
-    <span class="p">[</span><span class="mf">-0.647039</span> <span class="mf">0.876878</span> <span class="mf">-0.305620</span><span class="p">]</span>
-    <span class="p">]</span>
-</pre></div>
-</div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
-<span class="n">t</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>  <span class="c1">// No decimals</span>
+<span class="c1">// [</span>
+<span class="c1">// [0 -0 1]</span>
+<span class="c1">// [1 0 -2]</span>
+<span class="c1">// [-1 1 1]</span>
+<span class="c1">// ]</span>
 
-    <span class="p">[</span>
-    <span class="p">[</span><span class="mf">-1.1</span> <span class="mf">0.2</span> <span class="mf">-0.1</span><span class="p">]</span>
-    <span class="p">[</span><span class="mf">1.0</span> <span class="mf">-1.4</span> <span class="mf">-0.3</span><span class="p">]</span>
-    <span class="p">[</span><span class="mf">-0.6</span> <span class="mf">0.9</span> <span class="mf">-0.3</span><span class="p">]</span>
-    <span class="p">]</span>
-</pre></div>
-</div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
-<span class="n">t</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>   <span class="c1">// 3 decimals</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.136 -0.208 0.538]</span>
+<span class="c1">// [0.666 0.243 -1.957]</span>
+<span class="c1">// [-1.448 1.231 0.670]</span>
+<span class="c1">// ]</span>
 
-    <span class="p">[</span>
-    <span class="mi">-1</span> <span class="mi">0</span> <span class="mi">-0</span> <span class="mi">1</span> <span class="mi">-1</span> <span class="mi">-0</span> <span class="mi">-1</span> <span class="mi">1</span> <span class="mi">-0</span>
-    <span class="p">]</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>   <span class="c1">// 3 decimals, presented in row major</span>
+<span class="c1">// [</span>
+<span class="c1">// 0.136 -0.208 0.538 0.666 0.243 -1.957 -1.448 1.231 0.670</span>
+<span class="c1">// ]</span>
 </pre></div>
 </div>
 </div>
@@ -500,21 +450,17 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Creates 3x3 tensor filled with 10s</span>
-<span class="c1">//tensor1 =&gt; [10,10,10</span>
-<span class="c1">//            10,10,10</span>
-<span class="c1">//            10,10,10]</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isSquared</span><span class="p">(</span><span class="n">t1</span><span class="p">);</span>
+<span class="c1">// true</span>
 
-<span class="kt">bool</span> <span class="n">sq</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">isSquared</span><span class="p">(</span><span class="n">tensor1</span><span class="p">);</span> <span class="c1">//sq = true</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isSquared</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
+<span class="c1">// true</span>
 
-<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v2</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">}</span> <span class="c1">// Desired shape</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Creates 3x2 tensor filled with 10s</span>
-<span class="c1">//tensor1 =&gt; [10,10</span>
-<span class="c1">//            10,10</span>
-<span class="c1">//            10,10]</span>
-
-<span class="kt">bool</span> <span class="n">sq2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">isSquared</span><span class="p">(</span><span class="n">tensor2</span><span class="p">);</span> <span class="c1">//sq = false</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">isSquared</span><span class="p">(</span><span class="n">t3</span><span class="p">);</span>
+<span class="c1">// false</span>
 </pre></div>
 </div>
 </div>
@@ -523,87 +469,66 @@
 <h2>Changing array shape<a class="headerlink" href="#changing-array-shape" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="reshape">
 <h3>reshape<a class="headerlink" href="#reshape" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor8reshape_ERK6vectorIiE">
-<span id="_CPPv3N6Tensor8reshape_ERK6vectorIiE"></span><span id="_CPPv2N6Tensor8reshape_ERK6vectorIiE"></span><span id="Tensor::reshape___vector:i:CR"></span><span class="target" id="class_tensor_1a77b037ee0ce7ed11a705ce3b278d0018"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reshape_</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>new_shape</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8reshape_ERK6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Set a new shape to a tensor inplace. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">new_shape</span></code>: A vector containing the new shape. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::reshape” with arguments (const vector&lt;int&gt; &amp;new_shape) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">reshape</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">reshape</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
 
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor7reshapeEP6TensorRK6vectorIiE">
-<span id="_CPPv3N6Tensor7reshapeEP6TensorRK6vectorIiE"></span><span id="_CPPv2N6Tensor7reshapeEP6TensorRK6vectorIiE"></span><span id="Tensor::reshape__TensorP.vector:i:CR"></span><span class="target" id="class_tensor_1ab2ad68ea536ab3ca6fb3921ff126f111"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reshape</code><span class="sig-paren">(</span>Tensor *<em>A</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7reshapeEP6TensorRK6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Set a new shape to a tensor. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: The output vector where te reshape is stored. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dims</span></code>: A vector containing the new shape. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00]</span>
+<span class="c1">// [0.00 0.00]</span>
+<span class="c1">// [0.00 0.00]</span>
+<span class="c1">// [0.00 0.00]</span>
+<span class="c1">// [0.00 0.00]</span>
+<span class="c1">// [0.00 0.00]</span>
+<span class="c1">// ]</span>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">{</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Initial shape</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Creates 1D tensor filled with 10s</span>
-<span class="c1">//tensor1 =&gt; [10,10,10]</span>
-
-<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v2</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor2</span> <span class="o">=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">tensor1</span><span class="p">,</span> <span class="n">v2</span><span class="p">);</span> <span class="c1">//tensor2 has dimensions 1x3</span>
-
-<span class="n">tensor1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">(</span><span class="n">v2</span><span class="p">);</span> <span class="c1">//Now tensor1 has dimensions 1x3</span>
+<span class="c1">// Other ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">reshape</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="p">{</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span> <span class="c1">// returns new tensor</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape</span><span class="p">(</span><span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">6</span><span class="p">,</span><span class="mi">2</span><span class="p">})</span> <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="flatten">
 <h3>flatten<a class="headerlink" href="#flatten" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor8flatten_Ev">
-<span id="_CPPv3N6Tensor8flatten_Ev"></span><span id="_CPPv2N6Tensor8flatten_Ev"></span><span id="Tensor::flatten_"></span><span class="target" id="class_tensor_1a5ceb6d6836d3be067839e628e8cc7fd2"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">flatten_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8flatten_Ev" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Inplace conversion tensor to a 1D tensor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor7flattenEP6Tensor">
-<span id="_CPPv3N6Tensor7flattenEP6Tensor"></span><span id="_CPPv2N6Tensor7flattenEP6Tensor"></span><span id="Tensor::flatten__TensorP"></span><span class="target" id="class_tensor_1a1a4ae3d472ef8447e80a6fb0d079b3f0"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7flattenEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Conversion tensor to a 1D tensor. </p>
+<dt id="_CPPv4N6Tensor7flattenEv">
+<span id="_CPPv3N6Tensor7flattenEv"></span><span id="_CPPv2N6Tensor7flattenEv"></span><span id="Tensor::flatten"></span><span class="target" id="class_tensor_1affbe63047e4935119b664e16c4247024"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>In-place conversion tensor to a 1D tensor. </p>
 <p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Output tensor where the flatten is stored. </p></li>
-</ul>
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
 </dd>
 </dl>
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v1</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">}</span> <span class="c1">// Desired shape</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span> <span class="c1">// Creates 1x3 tensor filled with 10s</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">tensor2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">flatten</span><span class="p">(</span><span class="n">tensor1</span><span class="p">);</span> <span class="c1">//tensor2 is 1D with 3 components</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
 
-<span class="n">tensor1</span><span class="o">-&gt;</span><span class="n">flatten_</span><span class="p">();</span> <span class="c1">//tensor1 is now 1D with 3 components</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="resize">
-<h3>resize<a class="headerlink" href="#resize" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor6resizeEiPfPvb">
-<span id="_CPPv3N6Tensor6resizeEiPfPvb"></span><span id="_CPPv2N6Tensor6resizeEiPfPvb"></span><span id="Tensor::resize__i.floatP.voidP.b"></span><span class="target" id="class_tensor_1a84e72adf0ae44d9de82753389e52562d"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">resize</code><span class="sig-paren">(</span>int <em>b</em>, float *<em>fptr</em> = nullptr, void *<em>fptr2</em> = nullptr, bool <em>delete_data</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6resizeEiPfPvb" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Resizes a tensor ({2, 2, 2} =&gt; {10, 2, 2}). </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p></p>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">flatten_</span><span class="p">();</span>  <span class="c1">// In-place</span>
+<span class="c1">// [0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00]</span>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">resize</span><span class="p">(</span><span class="kt">int</span> <span class="n">b</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">fptr</span><span class="o">=</span><span class="k">nullptr</span><span class="p">);</span>
+<span class="c1">// Other ways</span>
+
+<span class="n">Tensor</span> <span class="o">*</span><span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">flatten</span><span class="p">(</span><span class="n">t1</span><span class="p">);</span>  <span class="c1">// returns new tensor</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">flatten</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span> <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
@@ -612,57 +537,89 @@
 <h2>Transpose-like operations<a class="headerlink" href="#transpose-like-operations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="permute">
 <h3>permute<a class="headerlink" href="#permute" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor8permute_ERK6vectorIiE">
-<span id="_CPPv3N6Tensor8permute_ERK6vectorIiE"></span><span id="_CPPv2N6Tensor8permute_ERK6vectorIiE"></span><span id="Tensor::permute___vector:i:CR"></span><span class="target" id="class_tensor_1a9adac173ad17422d75526aaedfab9268"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">permute_</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>dims</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8permute_ERK6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Inplace permutation of tensor dimensions. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">dims</span></code>: A vector containing the new order of the dimensions. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::permute” with arguments (const vector&lt;int&gt; &amp;dims) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">permute</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">permute</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">24</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="c1">// [</span>
+<span class="c1">// [[1.00 2.00 3.00 4.00]     [5.00 6.00 7.00 8.00]     [9.00 10.00 11.00 12.00]]</span>
+<span class="c1">// [[13.00 14.00 15.00 16.00] [17.00 18.00 19.00 20.00] [21.00 22.00 23.00 24.00]]</span>
+<span class="c1">// ]</span>
 
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor7permuteEP6TensorRK6vectorIiE">
-<span id="_CPPv3N6Tensor7permuteEP6TensorRK6vectorIiE"></span><span id="_CPPv2N6Tensor7permuteEP6TensorRK6vectorIiE"></span><span id="Tensor::permute__TensorP.vector:i:CR"></span><span class="target" id="class_tensor_1a0c817b2e5d1f4c0d35bafbdc28bf86a6"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">permute</code><span class="sig-paren">(</span>Tensor *<em>A</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dims</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7permuteEP6TensorRK6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Permutation of tensor dimensions. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: The output vector where te permutation is stored. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dims</span></code>: A vector containing the new order of the dimensions. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">permute_</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">});</span>  <span class="c1">// In-place</span>
+<span class="c1">// [</span>
+<span class="c1">// [[1.00 13.00] [5.00 17.00] [9.00 21.00]]</span>
+<span class="c1">// [[2.00 14.00] [6.00 18.00] [10.00 22.00]]</span>
+<span class="c1">// [[3.00 15.00] [7.00 19.00] [11.00 23.00]]</span>
+<span class="c1">// [[4.00 16.00] [8.00 20.00] [12.00 24.00]]</span>
+<span class="c1">// ]</span>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">permute_</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span> <span class="n">dims</span><span class="p">);</span>
-<span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">permute</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span> <span class="n">dims</span><span class="p">);</span>
+<span class="c1">// Other ways</span>
+<span class="n">Tensor</span> <span class="o">*</span><span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">permute</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">});</span>  <span class="c1">// returns new tensor</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">permute</span><span class="p">(</span><span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">});</span>  <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="moveaxis">
 <h3>moveaxis<a class="headerlink" href="#moveaxis" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor8moveaxisEP6Tensorii">
-<span id="_CPPv3N6Tensor8moveaxisEP6Tensorii"></span><span id="_CPPv2N6Tensor8moveaxisEP6Tensorii"></span><span id="Tensor::moveaxis__TensorP.i.i"></span><span class="target" id="class_tensor_1ae18c27f753b10550b25702da15bce6b1"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">moveaxis</code><span class="sig-paren">(</span>Tensor *<em>A</em>, int <em>source</em>, int <em>destination</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8moveaxisEP6Tensorii" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::moveaxis” with arguments (int source, int destination) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">moveaxis</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="c1">// ndim:          4</span>
+<span class="c1">// shape:         (1, 2, 3, 4)</span>
+<span class="c1">// strides:       (24, 12, 4, 1)</span>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">moveaxis</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span><span class="p">,</span> <span class="kt">int</span> <span class="n">source</span><span class="p">,</span> <span class="kt">int</span> <span class="n">destination</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">moveaxis_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>  <span class="c1">// In-place</span>
+<span class="c1">// ndim:          4</span>
+<span class="c1">// shape:         (2, 3, 1, 4)</span>
+<span class="c1">// strides:       (12, 4, 4, 1)</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">Tensor</span> <span class="o">*</span><span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>  <span class="c1">// returns new tensor</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">t2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>  <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="swapaxis">
 <h3>swapaxis<a class="headerlink" href="#swapaxis" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor8swapaxisEP6Tensorii">
-<span id="_CPPv3N6Tensor8swapaxisEP6Tensorii"></span><span id="_CPPv2N6Tensor8swapaxisEP6Tensorii"></span><span id="Tensor::swapaxis__TensorP.i.i"></span><span class="target" id="class_tensor_1aa3486dc62828f3bc8681b86ac361ffa4"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">swapaxis</code><span class="sig-paren">(</span>Tensor *<em>A</em>, int <em>axis1</em>, int <em>axis2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8swapaxisEP6Tensorii" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::swapaxis” with arguments (int axis1, int axis2) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">swapaxis</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">swapaxis</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="c1">// ndim:          4</span>
+<span class="c1">// shape:         (1, 2, 3, 4)</span>
+<span class="c1">// strides:       (24, 12, 4, 1)</span>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">swapaxis</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span><span class="p">,</span> <span class="kt">int</span> <span class="n">axis1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">axis2</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">swapaxis_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>  <span class="c1">// In-place</span>
+<span class="c1">// ndim:          4</span>
+<span class="c1">// shape:         (3, 2, 1, 4)</span>
+<span class="c1">// strides:       (8, 4, 4, 1)</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">Tensor</span> <span class="o">*</span><span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">swapaxis</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>  <span class="c1">// returns new tensor</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">swapaxis</span><span class="p">(</span><span class="n">t2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
@@ -671,53 +628,62 @@
 <h2>Changing number of dimensions<a class="headerlink" href="#changing-number-of-dimensions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="squeeze">
 <h3>squeeze<a class="headerlink" href="#squeeze" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor8squeeze_Ev">
-<span id="_CPPv3N6Tensor8squeeze_Ev"></span><span id="_CPPv2N6Tensor8squeeze_Ev"></span><span id="Tensor::squeeze_"></span><span class="target" id="class_tensor_1a403f51d992b422d1591b1937ca54eb48"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">squeeze_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8squeeze_Ev" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Remove all the dimensions of size 1 from the vector. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor7squeezeEP6Tensor">
-<span id="_CPPv3N6Tensor7squeezeEP6Tensor"></span><span id="_CPPv2N6Tensor7squeezeEP6Tensor"></span><span id="Tensor::squeeze__TensorP"></span><span class="target" id="class_tensor_1a35ea5711e39aa7fd986e454e73525475"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">squeeze</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7squeezeEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Remove all the dimensions of size 1 from the vector. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Output tensor where the squeeze is stored. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::squeeze” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">squeeze</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">squeeze</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">});</span>
+<span class="c1">// ndim:          4</span>
+<span class="c1">// shape:         (1, 3, 4, 1)</span>
+<span class="c1">// strides:       (12, 4, 1, 1)</span>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">squeeze_</span><span class="p">();</span>
-<span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">squeeze</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">squeeze</span><span class="p">();</span>  <span class="c1">// returns new tensor</span>
+<span class="c1">// shape:         (3, 4)</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>  <span class="c1">// returns new tensor</span>
+<span class="c1">// shape:         (3, 4, 1)</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>  <span class="c1">// returns new tensor</span>
+<span class="c1">// shape:         (1, 3, 4)</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">squeeze_</span><span class="p">();</span> <span class="c1">// In-place</span>
+<span class="n">Tensor</span> <span class="o">*</span><span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">squeeze</span><span class="p">(</span><span class="n">t1</span><span class="p">);</span>  <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="unsqueeze">
 <h3>unsqueeze<a class="headerlink" href="#unsqueeze" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor10unsqueeze_Ev">
-<span id="_CPPv3N6Tensor10unsqueeze_Ev"></span><span id="_CPPv2N6Tensor10unsqueeze_Ev"></span><span id="Tensor::unsqueeze_"></span><span class="target" id="class_tensor_1ac2013e75b6b0c11a1cdf48538d33c8eb"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">unsqueeze_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10unsqueeze_Ev" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Add a dimension of size 1 at the beginning of the tensor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor9unsqueezeEP6Tensor">
-<span id="_CPPv3N6Tensor9unsqueezeEP6Tensor"></span><span id="_CPPv2N6Tensor9unsqueezeEP6Tensor"></span><span id="Tensor::unsqueeze__TensorP"></span><span class="target" id="class_tensor_1a03a51fd3cacf67cf26878c523c72f3d5"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">unsqueeze</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9unsqueezeEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Add a dimension of size 1 at the beginning of the tensor. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Output tensor where the unsqueeze is stored. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::unsqueeze” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">unsqueeze</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="c1">// ndim:          3</span>
+<span class="c1">// shape:         (2, 3, 4)</span>
+<span class="c1">// strides:       (12, 4, 1)</span>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">unsqueeze_</span><span class="p">();</span>
-<span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">unsqueeze</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">unsqueeze</span><span class="p">();</span> <span class="c1">// returns new tensor</span>
+ <span class="c1">// shape:         (1, 2, 3, 4)</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+ <span class="c1">// shape:         (2, 3, 4, 1)</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">unsqueeze_</span><span class="p">();</span>  <span class="c1">// In-place</span>
+<span class="n">Tensor</span> <span class="o">*</span><span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">t1</span><span class="p">);</span>  <span class="c1">// Static</span>
 </pre></div>
 </div>
 </div>
@@ -730,533 +696,69 @@
 <dd></dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t5</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">);</span> <span class="n">t5</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t6</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">10</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">);</span> <span class="n">t6</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t7</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">101</span><span class="p">,</span> <span class="mi">100</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">);</span> <span class="n">t7</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t8</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">concat</span><span class="p">({</span><span class="n">t5</span><span class="p">,</span> <span class="n">t6</span><span class="p">,</span> <span class="n">t7</span><span class="p">},</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// concat of t5, t6 and t7</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span> <span class="mi">2</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span> <span class="mi">5</span><span class="p">);</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">concat</span><span class="p">({</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">});</span>
+<span class="c1">// ndim:          3</span>
+<span class="c1">// shape:         (4, 2, 2)</span>
+<span class="c1">// strides:       (4, 2, 1)</span>
+
+<span class="c1">// [</span>
+<span class="c1">// [[2.00 2.00] [2.00 2.00]]</span>
+<span class="c1">// [[2.00 2.00] [2.00 2.00]]</span>
+<span class="c1">// [[5.00 5.00] [5.00 5.00]]</span>
+<span class="c1">// [[5.00 5.00] [5.00 5.00]]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span> <span class="o">*</span><span class="n">t4</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">concat</span><span class="p">({</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">},</span> <span class="mi">2</span><span class="p">);</span>
+
+<span class="c1">// ndim:          3</span>
+<span class="c1">// shape:         (2, 2, 4)</span>
+<span class="c1">// strides:       (8, 4, 1)</span>
+<span class="c1">//</span>
+<span class="c1">// [</span>
+<span class="c1">// [[2.00 2.00 5.00 5.00] [2.00 2.00 5.00 5.00]]</span>
+<span class="c1">// [[2.00 2.00 5.00 5.00] [2.00 2.00 5.00 5.00]]</span>
+<span class="c1">// ]</span>
 </pre></div>
-</td></tr></table></div>
-</div>
-<div class="section" id="rearranging-elements-and-transformations">
-<h2>Rearranging elements and transformations<a class="headerlink" href="#rearranging-elements-and-transformations" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="shift">
-<h3>shift<a class="headerlink" href="#shift" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5shiftEP6TensorP6Tensor6vectorIiE12WrappingModef">
-<span id="_CPPv3N6Tensor5shiftEP6TensorP6Tensor6vectorIiE12WrappingModef"></span><span id="_CPPv2N6Tensor5shiftEP6TensorP6Tensor6vectorIiE12WrappingModef"></span><span id="Tensor::shift__TensorP.TensorP.vector:i:.WrappingMode.float"></span><span class="target" id="class_tensor_1a2adac448d4edd00197176c197032278e"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">shift</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>shift</em>, WrappingMode <em>mode</em> = WrappingMode::Constant, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5shiftEP6TensorP6Tensor6vectorIiE12WrappingModef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Shift the tensor. The array is shifted using spline interpolation. Points outside the boundaries of the input are filled according to the given mode. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">shift</span></code>: vector of shifts along the axes. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Must be one of the following:<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code>: Input extended by the value in <code class="docutils literal notranslate"><span class="pre">cval</span></code> (v v v v | a b c d | v v v v)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Reflect</span></code>: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Nearest</span></code>: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Mirror</span></code>: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Wrap</span></code>: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Original</span></code>: Input extended by placing the original image in the background. </p></li>
-</ul>
-</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill past edges of input if mode is <code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code> </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">shift</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">},</span> <span class="n">WrappingMode</span><span class="o">::</span><span class="n">Constant</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">);</span> <span class="c1">// Shifts t1 50 pixels in y and 100 in x.</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="rotate">
-<h3>rotate<a class="headerlink" href="#rotate" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor6rotateEP6TensorP6Tensorf6vectorIiE12WrappingModef">
-<span id="_CPPv3N6Tensor6rotateEP6TensorP6Tensorf6vectorIiE12WrappingModef"></span><span id="_CPPv2N6Tensor6rotateEP6TensorP6Tensorf6vectorIiE12WrappingModef"></span><span id="Tensor::rotate__TensorP.TensorP.float.vector:i:.WrappingMode.float"></span><span class="target" id="class_tensor_1a10e1dba7185f1a6e9657a2bb30abea7c"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rotate</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>angle</em>, vector&lt;int&gt; <em>offset_center</em> = {0, 0}, WrappingMode <em>mode</em> = WrappingMode::Constant, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6rotateEP6TensorP6Tensorf6vectorIiE12WrappingModef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Rotate the tensor. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">angle</span></code>: The rotation angle in degrees. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Must be one of the following:<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code>: Input extended by the value in <code class="docutils literal notranslate"><span class="pre">cval</span></code> (v v v v | a b c d | v v v v)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Reflect</span></code>: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Nearest</span></code>: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Mirror</span></code>: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Wrap</span></code>: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Original</span></code>: Input extended by placing the original image in the background. </p></li>
-</ul>
-</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill past edges of input if mode is <code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code> </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t2</span><span class="o">-&gt;</span><span class="n">clone</span><span class="p">();</span>
-<span class="n">Tensor</span><span class="o">::</span><span class="n">rotate</span><span class="p">(</span><span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">,</span> <span class="mf">60.0f</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span> <span class="n">WrappingMode</span><span class="o">::</span><span class="n">Original</span><span class="p">);</span> <span class="c1">//Rotates t2 60 degrees</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="scale">
-<h3>scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5scaleEP6TensorP6Tensor6vectorIiE12WrappingModef">
-<span id="_CPPv3N6Tensor5scaleEP6TensorP6Tensor6vectorIiE12WrappingModef"></span><span id="_CPPv2N6Tensor5scaleEP6TensorP6Tensor6vectorIiE12WrappingModef"></span><span id="Tensor::scale__TensorP.TensorP.vector:i:.WrappingMode.float"></span><span class="target" id="class_tensor_1a27ee1882274e9650e1e4cc00d79779bb"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">scale</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>new_shape</em>, WrappingMode <em>mode</em> = WrappingMode::Nearest, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5scaleEP6TensorP6Tensor6vectorIiE12WrappingModef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Scale the tensor. The array is scaled using spline interpolation. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">new_shape</span></code>: Vector with the target size. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Must be one of the following:<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code>: Input extended by the value in <code class="docutils literal notranslate"><span class="pre">cval</span></code> (v v v v | a b c d | v v v v)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Reflect</span></code>: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Nearest</span></code>: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Mirror</span></code>: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Wrap</span></code>: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Original</span></code>: Input extended by placing the original image in the background. </p></li>
-</ul>
-</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill past edges of input if mode is <code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code> </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">});</span>
-<span class="n">Tensor</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">});</span> <span class="c1">//Scale the image to 100x100 px</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="flip">
-<h3>flip<a class="headerlink" href="#flip" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4flipEP6TensorP6Tensori">
-<span id="_CPPv3N6Tensor4flipEP6TensorP6Tensori"></span><span id="_CPPv2N6Tensor4flipEP6TensorP6Tensori"></span><span id="Tensor::flip__TensorP.TensorP.i"></span><span class="target" id="class_tensor_1a9a43eea3e3ddf37bf4f05bed0dac030c"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">flip</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, int <em>axis</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4flipEP6TensorP6Tensori" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Flip the tensor. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: The axis used to flip the tensor. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">flip</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// Flip along vertical axis</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="crop">
-<h3>crop<a class="headerlink" href="#crop" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4cropEP6TensorP6Tensor6vectorIiE6vectorIiEf">
-<span id="_CPPv3N6Tensor4cropEP6TensorP6Tensor6vectorIiE6vectorIiEf"></span><span id="_CPPv2N6Tensor4cropEP6TensorP6Tensor6vectorIiE6vectorIiEf"></span><span id="Tensor::crop__TensorP.TensorP.vector:i:.vector:i:.float"></span><span class="target" id="class_tensor_1a95bb71839203da603cd7c969f1032686"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">crop</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>coords_from</em>, vector&lt;int&gt; <em>coords_to</em>, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4cropEP6TensorP6Tensor6vectorIiE6vectorIiEf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Crop the tensor. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">coords_from</span></code>: Coordinates of the initial point of the crop. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">coords_to</span></code>: Coordinates of the final point of the crop. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill past edges. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">crop</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">},</span> <span class="p">{</span><span class="mi">200</span><span class="p">,</span> <span class="mi">450</span><span class="p">});</span> <span class="c1">//Crop the rectangle formed by {0,250} and {200,450}</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="crop-scale">
-<h3>crop_scale<a class="headerlink" href="#crop-scale" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor10crop_scaleEP6TensorP6Tensor6vectorIiE6vectorIiE12WrappingModef">
-<span id="_CPPv3N6Tensor10crop_scaleEP6TensorP6Tensor6vectorIiE6vectorIiE12WrappingModef"></span><span id="_CPPv2N6Tensor10crop_scaleEP6TensorP6Tensor6vectorIiE6vectorIiE12WrappingModef"></span><span id="Tensor::crop_scale__TensorP.TensorP.vector:i:.vector:i:.WrappingMode.float"></span><span class="target" id="class_tensor_1ac4efcba241f74a487ad64e889a060cde"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">crop_scale</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>coords_from</em>, vector&lt;int&gt; <em>coords_to</em>, WrappingMode <em>mode</em> = WrappingMode::Nearest, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10crop_scaleEP6TensorP6Tensor6vectorIiE6vectorIiE12WrappingModef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Crop and scale the tensor. The array is scaled using spline interpolation. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">coords_from</span></code>: Coordinates of the initial point of the crop. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">coords_to</span></code>: Coordinates of the final point of the crop. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Must be one of the following:<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code>: Input extended by the value in <code class="docutils literal notranslate"><span class="pre">cval</span></code> (v v v v | a b c d | v v v v)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Reflect</span></code>: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Nearest</span></code>: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Mirror</span></code>: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Wrap</span></code>: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Original</span></code>: Input extended by placing the original image in the background. </p></li>
-</ul>
-</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill past edges of input if mode is <code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code> </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">crop_scale</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">},</span> <span class="p">{</span><span class="mi">200</span><span class="p">,</span> <span class="mi">450</span><span class="p">});</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="cutout">
-<h3>cutout<a class="headerlink" href="#cutout" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor6cutoutEP6TensorP6Tensor6vectorIiE6vectorIiEf">
-<span id="_CPPv3N6Tensor6cutoutEP6TensorP6Tensor6vectorIiE6vectorIiEf"></span><span id="_CPPv2N6Tensor6cutoutEP6TensorP6Tensor6vectorIiE6vectorIiEf"></span><span id="Tensor::cutout__TensorP.TensorP.vector:i:.vector:i:.float"></span><span class="target" id="class_tensor_1a315a661f515833e924fd89184c695534"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">cutout</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>coords_from</em>, vector&lt;int&gt; <em>coords_to</em>, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6cutoutEP6TensorP6Tensor6vectorIiE6vectorIiEf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Set to a constant value a region of the tensor. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">coords_from</span></code>: Coordinates of the initial point of the crop. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">coords_to</span></code>: Coordinates of the final point of the crop. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill the crop region with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">cutout</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">},</span> <span class="p">{</span><span class="mi">100</span><span class="p">,</span> <span class="mi">400</span><span class="p">});</span><span class="c1">//Fill with zeros the rectangle formed by {50,100} and {100,400}</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="tensor-data-augmentation">
-<h2>Tensor Data Augmentation<a class="headerlink" href="#tensor-data-augmentation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="shift-random">
-<h3>shift_random<a class="headerlink" href="#shift-random" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor12shift_randomEP6TensorP6Tensor6vectorIfE6vectorIfE12WrappingModef">
-<span id="_CPPv3N6Tensor12shift_randomEP6TensorP6Tensor6vectorIfE6vectorIfE12WrappingModef"></span><span id="_CPPv2N6Tensor12shift_randomEP6TensorP6Tensor6vectorIfE6vectorIfE12WrappingModef"></span><span id="Tensor::shift_random__TensorP.TensorP.vector:float:.vector:float:.WrappingMode.float"></span><span class="target" id="class_tensor_1a8e4a32b831d7c4b89a757f5b8a5fcadb"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">shift_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;float&gt; <em>factor_x</em>, vector&lt;float&gt; <em>factor_y</em>, WrappingMode <em>mode</em> = WrappingMode::Constant, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor12shift_randomEP6TensorP6Tensor6vectorIfE6vectorIfE12WrappingModef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Shift the tensor with a random shift value taken from a specified range. The array is shifted using spline interpolation. Points outside the boundaries of the input are filled according to the given mode. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">factor_x</span></code>: vector with the lower and upper values for shift in axis x. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">factor_y</span></code>: vector with the lower and upper values for shift in axis y. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Must be one of the following:<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code>: Input extended by the value in <code class="docutils literal notranslate"><span class="pre">cval</span></code> (v v v v | a b c d | v v v v)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Reflect</span></code>: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Nearest</span></code>: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Mirror</span></code>: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Wrap</span></code>: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Original</span></code>: Input extended by placing the original image in the background. </p></li>
-</ul>
-</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill past edges of input if mode is <code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code> </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">shift_random</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">},</span> <span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="mi">100</span><span class="p">});</span> <span class="c1">//Shifts t1 with a random shift value in y between 0 and 50 and in x between 10 and 100.</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="rotate-random">
-<h3>rotate_random<a class="headerlink" href="#rotate-random" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor13rotate_randomEP6TensorP6Tensor6vectorIfE6vectorIiE12WrappingModef">
-<span id="_CPPv3N6Tensor13rotate_randomEP6TensorP6Tensor6vectorIfE6vectorIiE12WrappingModef"></span><span id="_CPPv2N6Tensor13rotate_randomEP6TensorP6Tensor6vectorIfE6vectorIiE12WrappingModef"></span><span id="Tensor::rotate_random__TensorP.TensorP.vector:float:.vector:i:.WrappingMode.float"></span><span class="target" id="class_tensor_1ab3ab5d005ed12a06dc620f11c5fb08f4"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rotate_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;float&gt; <em>factor</em>, vector&lt;int&gt; <em>offset_center</em> = {0, 0}, WrappingMode <em>mode</em> = WrappingMode::Constant, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor13rotate_randomEP6TensorP6Tensor6vectorIfE6vectorIiE12WrappingModef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Rotate the tensor with a random angle in a specified range. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">factor</span></code>: The rotation angle range in degrees. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">offset_center</span></code>: The center where to perform the rotation </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Must be one of the following:<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code>: Input extended by the value in <code class="docutils literal notranslate"><span class="pre">cval</span></code> (v v v v | a b c d | v v v v)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Reflect</span></code>: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Nearest</span></code>: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Mirror</span></code>: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Wrap</span></code>: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Original</span></code>: Input extended by placing the original image in the background. </p></li>
-</ul>
-</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill past edges of input if mode is <code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code> </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="n">rotate_random</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">30</span><span class="p">,</span><span class="mi">60</span><span class="p">});</span> <span class="c1">//Rotate t1 with a random rotation factor between 30 and 60 degrees</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="scale-random">
-<h3>scale_random<a class="headerlink" href="#scale-random" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor12scale_randomEP6TensorP6Tensor6vectorIfE12WrappingModef">
-<span id="_CPPv3N6Tensor12scale_randomEP6TensorP6Tensor6vectorIfE12WrappingModef"></span><span id="_CPPv2N6Tensor12scale_randomEP6TensorP6Tensor6vectorIfE12WrappingModef"></span><span id="Tensor::scale_random__TensorP.TensorP.vector:float:.WrappingMode.float"></span><span class="target" id="class_tensor_1a16947307793d03efbc081f1ebc08281b"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">scale_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;float&gt; <em>factor</em>, WrappingMode <em>mode</em> = WrappingMode::Nearest, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor12scale_randomEP6TensorP6Tensor6vectorIfE12WrappingModef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Scale the tensor wit a random factor in a specified range. The array is scaled using spline interpolation. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">factor</span></code>: Vector with minimum and maximum scale factors. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Must be one of the following:<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code>: Input extended by the value in <code class="docutils literal notranslate"><span class="pre">cval</span></code> (v v v v | a b c d | v v v v)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Reflect</span></code>: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Nearest</span></code>: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Mirror</span></code>: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Wrap</span></code>: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Original</span></code>: Input extended by placing the original image in the background. </p></li>
-</ul>
-</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill past edges of input if mode is <code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code> </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">scale_random</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">});</span> <span class="c1">//Scale t1 with a random scale factor between 10 and 20</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="flip-random">
-<h3>flip_random<a class="headerlink" href="#flip-random" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor11flip_randomEP6TensorP6Tensori">
-<span id="_CPPv3N6Tensor11flip_randomEP6TensorP6Tensori"></span><span id="_CPPv2N6Tensor11flip_randomEP6TensorP6Tensori"></span><span id="Tensor::flip_random__TensorP.TensorP.i"></span><span class="target" id="class_tensor_1a7c9d95c3128ebfaacda04448562fe24d"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">flip_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, int <em>axis</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11flip_randomEP6TensorP6Tensori" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Flip the tensor with some probability. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: The axis used to flip the tensor. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">flip_random</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">//Flip t1 on vertical axis randomly</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="crop-random">
-<h3>crop_random<a class="headerlink" href="#crop-random" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor11crop_randomEP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor11crop_randomEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor11crop_randomEP6TensorP6Tensor"></span><span id="Tensor::crop_random__TensorP.TensorP"></span><span class="target" id="class_tensor_1a2495e8b397ed2afb8b5fe581d880ed61"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">crop_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11crop_randomEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Crop randomly the tensor. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">crop_random</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">);</span> <span class="c1">//Obtain a random crop from t1</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="crop-scale-random">
-<h3>crop_scale_random<a class="headerlink" href="#crop-scale-random" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor17crop_scale_randomEP6TensorP6Tensor6vectorIfE12WrappingModef">
-<span id="_CPPv3N6Tensor17crop_scale_randomEP6TensorP6Tensor6vectorIfE12WrappingModef"></span><span id="_CPPv2N6Tensor17crop_scale_randomEP6TensorP6Tensor6vectorIfE12WrappingModef"></span><span id="Tensor::crop_scale_random__TensorP.TensorP.vector:float:.WrappingMode.float"></span><span class="target" id="class_tensor_1ade341c23a8f28fef5c42c16ef1be2154"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">crop_scale_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;float&gt; <em>factor</em>, WrappingMode <em>mode</em> = WrappingMode::Nearest, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor17crop_scale_randomEP6TensorP6Tensor6vectorIfE12WrappingModef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Crop randomly and scale the tensor with a random factor in a specified range. The array is scaled using spline interpolation. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">factor</span></code>: Vector with minimum and maximum scale factors. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Must be one of the following:<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code>: Input extended by the value in <code class="docutils literal notranslate"><span class="pre">cval</span></code> (v v v v | a b c d | v v v v)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Reflect</span></code>: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Nearest</span></code>: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Mirror</span></code>: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Wrap</span></code>: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Original</span></code>: Input extended by placing the original image in the background. </p></li>
-</ul>
-</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill past edges of input if mode is <code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code> </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">crop_scale_random</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">});</span> <span class="c1">//Obtain a random crop from t1 and scale it randomly with a factor between 10 and 20</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="cutout-random">
-<h3>cutout_random<a class="headerlink" href="#cutout-random" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor13cutout_randomEP6TensorP6Tensor6vectorIfE6vectorIfEf">
-<span id="_CPPv3N6Tensor13cutout_randomEP6TensorP6Tensor6vectorIfE6vectorIfEf"></span><span id="_CPPv2N6Tensor13cutout_randomEP6TensorP6Tensor6vectorIfE6vectorIfEf"></span><span id="Tensor::cutout_random__TensorP.TensorP.vector:float:.vector:float:.float"></span><span class="target" id="class_tensor_1a6ca1d1cce94c1df9b4636ef828df1b85"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">cutout_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;float&gt; <em>factor_x</em>, vector&lt;float&gt; <em>factor_y</em>, float <em>cval</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor13cutout_randomEP6TensorP6Tensor6vectorIfE6vectorIfEf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Set to a constant value a region of the tensor. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">factor_x</span></code>: vector with the lower and upper values for cut in axis x. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">factor_y</span></code>: vector with the lower and upper values for cut in axis y. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: Value to fill the crop region with. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">string</span> <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span>  <span class="c1">// Some image</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">);</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">cutout_random</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="p">{</span><span class="mi">50</span><span class="p">,</span><span class="mi">60</span><span class="p">},</span> <span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="mi">100</span><span class="p">});</span><span class="c1">//Set to 0 pixels in a rectangle defined by a random height between 50 and 60 and a random width between 10 and 100</span>
-</pre></div>
-</div>
 </div>
 </div>
 <div class="section" id="value-operations">
 <h2>Value operations<a class="headerlink" href="#value-operations" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="fill">
-<h3>fill<a class="headerlink" href="#fill" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5fill_Ef">
-<span id="_CPPv3N6Tensor5fill_Ef"></span><span id="_CPPv2N6Tensor5fill_Ef"></span><span id="Tensor::fill___float"></span><span class="target" id="class_tensor_1a5077f2d17ade28177cf81acd63fc3efd"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">fill_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5fill_Ef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Fill tensor with a value. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: the value to fill the tensor with </p></li>
-</ul>
-</dd>
-</dl>
+<div class="section" id="fill-constant">
+<h3>Fill constant<a class="headerlink" href="#fill-constant" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::fill” with arguments (Tensor *A, float v) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4fillEP6Tensorf">
-<span id="_CPPv3N6Tensor4fillEP6Tensorf"></span><span id="_CPPv2N6Tensor4fillEP6Tensorf"></span><span id="Tensor::fill__TensorP.float"></span><span class="target" id="class_tensor_1addb7064e79ae4e711dd54fb9980805b9"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">fill</code><span class="sig-paren">(</span>Tensor *<em>A</em>, float <em>v</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Fill tensor with a value. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: The output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: the value to fill the tensor with </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4fillEP6TensoriiP6Tensoriii">
-<span id="_CPPv3N6Tensor4fillEP6TensoriiP6Tensoriii"></span><span id="_CPPv2N6Tensor4fillEP6TensoriiP6Tensoriii"></span><span id="Tensor::fill__TensorP.i.i.TensorP.i.i.i"></span><span class="target" id="class_tensor_1a7df6f58b9035ba1ab3dbc8aaa771fdfd"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">fill</code><span class="sig-paren">(</span>Tensor *<em>A</em>, int <em>aini</em>, int <em>aend</em>, Tensor *<em>B</em>, int <em>bini</em>, int <em>bend</em>, int <em>inc</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Fill tensor with values from another tensor. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: The tensor to take values from. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">aini</span></code>: Initial position of A. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">aend</span></code>: Final position of A. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: The tensor to fill </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bini</span></code>: Initial position of B </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bend</span></code>: Final position of B </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">inc</span></code>: step to go from one position to the following one </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">});</span>
-<span class="c1">// t1 =&gt; [1,1,1]</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">);</span>
-<span class="c1">// t1 =&gt; [50,50,50]</span>
-
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">3</span><span class="p">})</span>
-<span class="c1">// t2 =&gt; [0,0,0]</span>
-
-<span class="n">Tensor</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-<span class="c1">// t2 =&gt; [0,50,50]</span>
-
-
-<span class="n">t2</span><span class="o">-&gt;</span><span class="n">fill_</span><span class="p">(</span><span class="mf">3.0</span><span class="p">);</span>
-<span class="c1">// t2 =&gt; [3,3,3]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">fill</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">fill</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">fill</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="rand-uniform">
-<h3>rand_uniform<a class="headerlink" href="#rand-uniform" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill_</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span>  <span class="c1">// In-place</span>
+<span class="c1">// [</span>
+<span class="c1">// [3.00 3.00 3.00]</span>
+<span class="c1">// [3.00 3.00 3.00]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill</span><span class="p">(</span><span class="mf">3.0f</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="mf">3.0f</span><span class="p">);</span>  <span class="c1">// static</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fill-random-uniform">
+<h3>Fill Random Uniform<a class="headerlink" href="#fill-random-uniform" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor12rand_uniformEf">
-<span id="_CPPv3N6Tensor12rand_uniformEf"></span><span id="_CPPv2N6Tensor12rand_uniformEf"></span><span id="Tensor::rand_uniform__float"></span><span class="target" id="class_tensor_1ae85b0222212a85f3eba345cf771729c8"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rand_uniform</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor12rand_uniformEf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Generates uniformly distributed random samples inplace. </p>
+<dt id="_CPPv4N6Tensor18fill_rand_uniform_Ef">
+<span id="_CPPv3N6Tensor18fill_rand_uniform_Ef"></span><span id="_CPPv2N6Tensor18fill_rand_uniform_Ef"></span><span id="Tensor::fill_rand_uniform___float"></span><span class="target" id="class_tensor_1a1e57d40171260252bc18df577b23503b"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">fill_rand_uniform_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor18fill_rand_uniform_Ef" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fills a tensor in-place, with values randomly sampled from a uniform distribution. </p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Scale factor of the values generated by the uniform distribution. </p></li>
@@ -1266,17 +768,26 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">});</span>
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">rand_uniform</span><span class="p">(</span><span class="mf">1.0</span><span class="p">);</span><span class="c1">//Fills t1 with samples from a uniform distribution.</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill_rand_uniform_</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">);</span>  <span class="c1">// In-place</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.10 0.53 0.88]</span>
+<span class="c1">// [0.57 0.57 0.89]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill_rand_uniform</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">fill_rand_uniform</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">);</span>  <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="rand-signed-uniform">
-<h3>rand_signed_uniform<a class="headerlink" href="#rand-signed-uniform" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="fill-random-signed-uniform">
+<h3>Fill Random Signed Uniform<a class="headerlink" href="#fill-random-signed-uniform" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor19rand_signed_uniformEf">
-<span id="_CPPv3N6Tensor19rand_signed_uniformEf"></span><span id="_CPPv2N6Tensor19rand_signed_uniformEf"></span><span id="Tensor::rand_signed_uniform__float"></span><span class="target" id="class_tensor_1ae626a62adb7e04fe4c1bfcc3b2bc9ba4"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rand_signed_uniform</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor19rand_signed_uniformEf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Generates signed uniformly distributed random samples inplace. </p>
+<dt id="_CPPv4N6Tensor25fill_rand_signed_uniform_Ef">
+<span id="_CPPv3N6Tensor25fill_rand_signed_uniform_Ef"></span><span id="_CPPv2N6Tensor25fill_rand_signed_uniform_Ef"></span><span id="Tensor::fill_rand_signed_uniform___float"></span><span class="target" id="class_tensor_1aae3ded412e33ed06768ea67e98d455a4"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">fill_rand_signed_uniform_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor25fill_rand_signed_uniform_Ef" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fills a tensor in-place, with values randomly sampled from a signed uniform distribution. </p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Scale factor of the values generated by the signed uniform distribution. </p></li>
@@ -1286,50 +797,77 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">});</span>
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">rand_signed_uniform</span><span class="p">(</span><span class="kt">float</span> <span class="n">v</span><span class="p">);</span><span class="c1">//Fills t1 with samples from a signed uniform distribution.</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill_rand_signed_uniform_</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">);</span>  <span class="c1">// In-place</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.22 -0.34 -0.78]</span>
+<span class="c1">// [-0.03 0.10 0.90]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill_rand_signed_uniform</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">fill_rand_signed_uniform</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">);</span>  <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="rand-normal">
-<h3>rand_normal<a class="headerlink" href="#rand-normal" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="fill-random-normal">
+<h3>Fill Random Normal<a class="headerlink" href="#fill-random-normal" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor11rand_normalEffb">
-<span id="_CPPv3N6Tensor11rand_normalEffb"></span><span id="_CPPv2N6Tensor11rand_normalEffb"></span><span id="Tensor::rand_normal__float.float.b"></span><span class="target" id="class_tensor_1a7a3c879fcedceb01b40bed4beca99713"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rand_normal</code><span class="sig-paren">(</span>float <em>m</em>, float <em>s</em>, bool <em>fast_math</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11rand_normalEffb" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Generates normal distributed random samples inplace. </p>
+<dt id="_CPPv4N6Tensor17fill_rand_normal_Effb">
+<span id="_CPPv3N6Tensor17fill_rand_normal_Effb"></span><span id="_CPPv2N6Tensor17fill_rand_normal_Effb"></span><span id="Tensor::fill_rand_normal___float.float.b"></span><span class="target" id="class_tensor_1a2afde1e818d27842817e92c796eff855"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">fill_rand_normal_</code><span class="sig-paren">(</span>float <em>m</em>, float <em>s</em>, bool <em>fast_math</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor17fill_rand_normal_Effb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fills a tensor in-place, with values randomly sampled from a normal distribution. </p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Mean of the normal distribution. </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">s</span></code>: Standard deviation of the normal distribution. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fast_math</span></code>: Wether to use or not the fast math mode. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fast_math</span></code>: Whether to use or not the fast math mode. </p></li>
 </ul>
 </dd>
 </dl>
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">});</span>
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">rand_normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">//Fills t1 with samples from a normal distribution with mean 0 and std 1.</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill_rand_normal_</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">);</span>  <span class="c1">// In-place</span>
+<span class="c1">// [</span>
+<span class="c1">// [-0.57 0.49 -1.09]</span>
+<span class="c1">// [0.75 0.37 -0.32]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill_rand_normal</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">fill_rand_normal</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">);</span>  <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="rand-binary">
-<h3>rand_binary<a class="headerlink" href="#rand-binary" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="fill-random-binary">
+<h3>Fill Random Binary<a class="headerlink" href="#fill-random-binary" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor11rand_binaryEf">
-<span id="_CPPv3N6Tensor11rand_binaryEf"></span><span id="_CPPv2N6Tensor11rand_binaryEf"></span><span id="Tensor::rand_binary__float"></span><span class="target" id="class_tensor_1a26a7aa8b04eb4bf51a7cceb4f8d87ed0"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rand_binary</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11rand_binaryEf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Generates binary distributed random samples inplace. </p>
+<dt id="_CPPv4N6Tensor17fill_rand_binary_Ef">
+<span id="_CPPv3N6Tensor17fill_rand_binary_Ef"></span><span id="_CPPv2N6Tensor17fill_rand_binary_Ef"></span><span id="Tensor::fill_rand_binary___float"></span><span class="target" id="class_tensor_1aa717cb5d23fca9d6816ef840797fb4ce"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">fill_rand_binary_</code><span class="sig-paren">(</span>float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor17fill_rand_binary_Ef" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fills a tensor in-place, with values randomly sampled from a binary distribution. </p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Scale factor of the values generated by the binary distribution. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Binarization threshold. 1 if rnd() &gt;= t, 0 otherwise </p></li>
 </ul>
 </dd>
 </dl>
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">});</span>
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">rand_binary</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="c1">//Fills t1 with samples from a binary distribution</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill_rand_binary_</span><span class="p">(</span><span class="mf">0.5f</span><span class="p">);</span>  <span class="c1">// In-place</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 1.00 0.00]</span>
+<span class="c1">// [1.00 1.00 0.00]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">fill_rand_binary</span><span class="p">(</span><span class="mf">0.5f</span><span class="p">);</span> <span class="c1">// returns new tensor</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">fill_rand_binary</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="mf">0.5f</span><span class="p">);</span>  <span class="c1">// static</span>
 </pre></div>
 </div>
 </div>
@@ -1344,7 +882,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="binary.html" class="btn btn-neutral float-right" title="Binary operations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="image.html" class="btn btn-neutral float-right" title="Image operations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="create.html" class="btn btn-neutral float-left" title="Creation Routines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -1356,7 +894,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

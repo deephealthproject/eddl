@@ -1,1412 +1,1453 @@
 Mathematical functions
 ========================
 
-.. note::
+Point-wise
+-----------
 
-    Section in progress
-
-    Read this: https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md
-
-
-Unary Operations
-------------------
-
-abs
+Abs
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::abs_
-.. doxygenfunction:: Tensor::abs
+.. doxygenfunction:: Tensor::abs()
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-1, -2, 3}, {3}, DEV_CPU);
-    
-    Tensor* r1 = t1->abs();
-    // r1 => [1, 2, 3]
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [0.31 0.08 1.59]
+    // [-0.77 -0.46 -0.39]
+    // ]
 
-    t1->abs_();
-    // t1 => [1, 2, 3]
-    
-acos
+    t1->abs_();  // In-place
+    // [
+    // [0.31 0.08 1.59]
+    // [0.77 0.46 0.39]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->abs(); // returns a new tensor
+    Tensor::abs(t1, t2); // static
+
+
+Acos
 ^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::acos_
 .. doxygenfunction:: Tensor::acos()
-.. doxygenfunction:: Tensor::acos(Tensor*, Tensor*)
 
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.3348, -0.5889,  0.2005, -0.1584}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [0.42 -0.80 0.27]
+    // [0.42 -0.80 0.27]
+    // ]
+
+    t1->acos_(); // In-place
+    // [
+    // [1.13 2.51 1.29]
+    // [1.12 0.78 1.77]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->acos(); // returns a new tensor
+    Tensor::acos(t1, t2); // static
     
-    r1 = t1->acos();
-    // r1 => [1.2294,  2.2004,  1.3690,  1.7298]
-
-    Tensor::acos(t1, r2);
-    // r2 => [1.2294,  2.2004,  1.3690,  1.7298]
-
-    t1->acos_();
-    // t1 => [1.2294,  2.2004,  1.3690,  1.7298]
-
     
-add
+Add
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::add_(float)
-.. doxygenfunction:: Tensor::add(float)
-.. doxygenfunction:: Tensor::add_(Tensor*)
-.. doxygenfunction:: Tensor::add(Tensor*)
-.. doxygenfunction:: Tensor::add(Tensor*, Tensor*, float)
-.. doxygenfunction:: Tensor::add(float, Tensor*, float, Tensor*, Tensor*, int)
-
+.. doxygenfunction:: Tensor::add(float v)
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
-    Tensor* r3;
-    Tensor* r4;
-    
-    Tensor* r1 = t1->add(20.0);
-    // r1 => [30, 40, 50, 10]
-    
-    Tensor* r2 = t1->add(t2);  // this = this .+ A
-    // r2 => [11, 22, 33, -6]
 
-    Tensor::add(t1, r3, 20.0); // B = A + v
-    // r3 => [30, 40, 50, 10]
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
 
-    Tensor::add(1, t1, 2, t2, r4, 1); // C = a*A+b*B
-    // r4 => [12, 24, 36, -2]
+    t1->add_(2.0f); // In-place
+    // [
+    // [7.00 7.00 7.00]
+    // [7.00 7.00 7.00]
+    // ]
 
-    
-    t2->add_(t1);  // this = this .+ A
-    // t2 => [11, 22, 33, -6]
-
-    t1->add_(20);
-    // t1 => [30, 40, 50, 10]
-
-    
+    // Other ways
+    Tensor* t2 = t1->add(2.0f); // returns new tensor
+    Tensor::add(t1, t2, 2.0f); // static
 
 
-asin
+Asin
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::asin_
 .. doxygenfunction:: Tensor::asin()
-.. doxygenfunction:: Tensor::asin(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-0.5962,  1.4985, -0.4396,  1.4525}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-0.99 0.24 0.39]
+    // [-0.01 1.64 0.01]
+    // ]
+
+    t1->asin_(); // In-place
+    // [
+    // [-1.54 0.24 0.40]
+    // [-0.01 nan 0.01]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->asin(); // returns a new tensor
+    Tensor::asin(t1, t2); // static
+
     
-    r1 = t1->asin();
-    // r1 => [-0.6387,     nan, -0.4552,     nan]
-
-    Tensor::asin(t1, r2);
-    // r2 => [-0.6387,     nan, -0.4552,     nan]
-
-    t1->asin_();
-    // t1 => [-0.6387,     nan, -0.4552,     nan]
-
-    
-atan
+Atan
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::atan_()
 .. doxygenfunction:: Tensor::atan()
-.. doxygenfunction:: Tensor::atan(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.2341, 0.2539, -0.6256, -0.6448}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->atan();
-    // r1 => [0.2299, 0.2487, -0.5591, -0.5727]
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-0.82 -0.04 0.29]
+    // [-0.80 -0.03 0.51]
+    // ]
 
-    Tensor::atan(t1, r2);
-    // r2 => [0.2299, 0.2487, -0.5591, -0.5727]
+    t1->atan_(); // In-place
+    // [
+    // [-0.68 -0.04 0.29]
+    // [-0.67 -0.03 0.47]
+    // ]
 
-    t1->atan_();
-    // t1 => [0.2299, 0.2487, -0.5591, -0.5727]
+    // Other ways
+    Tensor* t2 = t1->atan(); // returns a new tensor
+    Tensor::atan(t1, t2); // static
 
 
-    
-ceil
+Ceil
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::ceil_()
 .. doxygenfunction:: Tensor::ceil()
-.. doxygenfunction:: Tensor::ceil(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-0.6341, -1.4208, -1.0900,  0.5826}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->ceil();
-    // r1 => [0, -1, -1, 1]
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-0.15 0.63 -0.76]
+    // [0.18 -0.12 0.18]
+    // ]
 
-    Tensor::ceil(t1, r2);
-    // r2 => [0, -1, -1, 1]
+    t1->ceil_(); // In-place
+    // [
+    // [-0.00 1.00 -0.00]
+    // [1.00 -0.00 1.00]
+    // ]
 
-    t1->ceil_();
-    // t1 => [0, -1, -1, 1]
+    // Other ways
+    Tensor* t2 = t1->ceil(); // returns a new tensor
+    Tensor::ceil(t1, t2); // static
 
 
-clamp
+Clamp
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clamp_(float, float)
-.. doxygenfunction:: Tensor::clamp(float, float)
-.. doxygenfunction:: Tensor::clamp(Tensor*, Tensor*, float, float)
+.. doxygenfunction:: Tensor::clamp(float min, float max)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-1.7120,  0.1734, -0.0478, -0.0922}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->clamp(-0.5, 0.5);
-    // r1 => [-0.5000,  0.1734, -0.0478, -0.0922]
+    Tensor* t1 = Tensor::range(-5.0f, 5.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor::clamp(t1, r2, -0.5, 0.5);
-    // r2 => [-0.5000,  0.1734, -0.0478, -0.0922]
+    t1->clamp_(-2.0f, 3.0f); // In-place
+    // [-2.00 -2.00 -2.00 -2.00 -1.00 0.00 1.00 2.00 3.00 3.00 3.00]
 
-    t1->clamp_(-0.5, 0.5);
-    // t1 => [-0.5000,  0.1734, -0.0478, -0.0922]
+    // Other ways
+    Tensor* t2 = t1->clamp(-2.0f, 3.0f); // returns a new tensor
+    Tensor::clamp(t1, t2, -2.0f, 3.0f); // static
 
 
-
-
-    
-clampmax
+Clampmax
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clampmax_(float)
-.. doxygenfunction:: Tensor::clampmax(float)
-.. doxygenfunction:: Tensor::clampmax(Tensor*, Tensor*, float)
+.. doxygenfunction:: Tensor::clampmax(float max)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.7753, -0.4702, -0.4599,  1.1899}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->clampmax(0.5);
-    // r1 => [0.5000, -0.4702, -0.4599,  0.5000]
+    Tensor* t1 = Tensor::range(-5.0f, 5.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor::clampmax(t1, r2, 0.5);
-    // r2 => [0.5000, -0.4702, -0.4599,  0.5000]
+    t1->clampmax_(3.0f); // In-place
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 3.00 3.00]
 
-    t1->clampmax_(0.5);
-    // t1 => [0.5000, -0.4702, -0.4599,  0.5000]
+    // Other ways
+    Tensor* t2 = t1->clampmax(3.0f); // returns a new tensor
+    Tensor::clampmax(t1, t2, 3.0f); // static
    
 
     
-clampmin
+Clampmin
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clampmin_(float)
-.. doxygenfunction:: Tensor::clampmin(float)
-.. doxygenfunction:: Tensor::clampmin(Tensor*, Tensor*, float)
+
+.. doxygenfunction:: Tensor::clampmin(float min)
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor({-0.0299, -2.3184,  2.1593, -0.8883}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->clampmin(0.5);
-    // r1 => [0.5000,  0.5000,  2.1593,  0.5000]
 
-    Tensor::clampmin(t1, r2, 0.5);
-    // r2 => [0.5000,  0.5000,  2.1593,  0.5000]
+     Tensor* t1 = Tensor::range(-5.0f, 5.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    t1->clampmin_(0.5);
-    // t1 => [0.5000,  0.5000,  2.1593,  0.5000]
+    t1->clampmin_(3.0f); // In-place
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 3.00 3.00]
+
+    // Other ways
+    Tensor* t2 = t1->clampmin(3.0f); // returns a new tensor
+    Tensor::clampmin(t1, t2, 3.0f); // static
 
     
-cos
+Cos
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::cos_()
 .. doxygenfunction:: Tensor::cos()
-.. doxygenfunction:: Tensor::cos(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({1.4309,  1.2706, -0.8562,  0.9796}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-0.58 0.45 -1.14]
+    // [-0.24 -1.15 -1.33]
+    // ]
+
+    t1->cos_(); // In-place
+    // [
+    // [0.83 0.90 0.41]
+    // [0.97 0.41 0.23]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->cos(); // returns a new tensor
+    Tensor::cos(t1, t2); // static
+
     
-    r1 = t1->cos();
-    // r1 => [0.1395,  0.2957,  0.6553,  0.5574]
-
-    Tensor::cos(t1, r2);
-    // r2 => [0.1395,  0.2957,  0.6553,  0.5574]
-
-    t1->cos_();
-    // t1 => [0.1395,  0.2957,  0.6553,  0.5574]
-
-    
-cosh
+Cosh
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::cosh_()
 .. doxygenfunction:: Tensor::cosh()
-.. doxygenfunction:: Tensor::cosh(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.1632,  1.1835, -0.6979, -0.7325}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->cosh();
-    // r1 => [1.0133,  1.7860,  1.2536,  1.2805]
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-1.52 -0.52 0.31]
+    // [0.85 1.06 0.26]
+    // ]
 
-    Tensor::cosh(t1, r2);
-    // r2 => [1.0133,  1.7860,  1.2536,  1.2805]
+    t1->cosh_(); // In-place
+    // [
+    // [2.40 1.14 1.05]
+    // [1.39 1.62 1.04]
+    // ]
 
-    t1->cosh_();
-    // t1 => [1.0133,  1.7860,  1.2536,  1.2805]
+    // Other ways
+    Tensor* t2 = t1->cosh(); // returns a new tensor
+    Tensor::cosh(t1, t2); // static
   
     
-div
+Div
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::div_(float)
-.. doxygenfunction:: Tensor::div(float)
-.. doxygenfunction:: Tensor::div_(Tensor*)
-.. doxygenfunction:: Tensor::div(Tensor*)
-.. doxygenfunction:: Tensor::div(Tensor*, Tensor*, float)
-
-
-.. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
-    Tensor* r3;
-    Tensor* r4;
-    
-    Tensor* r1 = t1->div(10.0);
-    // r1 => [1, 2, 3, -1]
-    
-    Tensor* r2 = t1->div(t2);  // this = this ./ A
-    // r2 => [10, 10, 10, -1]
-
-    Tensor::div(t1, r3, 10.0); // B = A / v
-    // r3 => [1, 2, 3, -1]
-    
-    t2->div_(t1);  // this = this ./ A
-    // t2 => [0.1, 0.1, 0.1, -1]
-
-    t1->div_(20);
-    // t1 => [1, 2, 3, -1]
-    
-
-el_div
-^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::el_div
+.. doxygenfunction:: Tensor::div(float v)
 
 .. code-block:: c++
 
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
 
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10, 10, 20, 30, -10}, {2,4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
-    Tensor* r3;
+    t1->div_(2.0f); // In-place
+    // [
+    // [2.50 2.50 2.50]
+    // [2.50 2.50 2.50]
+    // ]
 
-    Tensor::el_div(t1, t2, r3, 1);
-    // r3 => [10, 10, 10, -1
-    //        10, 10, 10, -1]
+    // Other ways
+    Tensor* t2 = t1->div(2.0f); // returns new tensor
+    Tensor::div(t1, t2, 2.0f); // static
+    
 
 
-el_mult
+Exp
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::el_mult
-
-.. code-block:: c++
-
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10, 10, 20, 30, -10}, {2,4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
-    Tensor* r3;
-
-    Tensor::el_mult(t1, t2, r3, 1);
-    // r3 => [10, 40, 90, -100
-    //        10, 40, 90, -100]
-
-exp
-^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::exp_()
 .. doxygenfunction:: Tensor::exp()
-.. doxygenfunction:: Tensor::exp(Tensor*, Tensor*)
 
 .. code-block:: c++
 
+    Tensor* t1 = Tensor::range({-5.0f, 5.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor* t1 = new Tensor::Tensor({0, 0.69314}, {2}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->exp();
-    // r1 => [1, 2]
+    t1->exp_(); // In-place
+    // [0.01 0.02 0.05 0.14 0.37 1.00 2.72 7.39 20.09 54.60 148.41]
 
-    Tensor::exp(t1, r2);
-    // r2 => [1, 2]
-
-    t1->exp_();
-    // t1 => [1, 2]
+    // Other ways
+    Tensor* t2 = t1->exp(); // returns new tensor
+    Tensor::exp(t1, t2); // static
 
 
-floor
+Floor
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::floor_()
 .. doxygenfunction:: Tensor::floor()
-.. doxygenfunction:: Tensor::floor(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-0.8166,  1.5308, -0.2530, -0.2091}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->floor();
-    // r1 => [-1,  1, -1, -1]
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [0.47 1.39 0.94]
+    // [0.98 1.16 0.40]
+    // ]
 
-    Tensor::floor(t1, r2);
-    // r2 => [-1,  1, -1, -1]
+    t1->floor_(); // In-place
+    // [
+    // [0.00 1.00 0.00]
+    // [0.00 1.00 0.00]
+    // ]
 
-    t1->floor_();
-    // t1 => [-1,  1, -1, -1]
+    // Other ways
+    Tensor* t2 = t1->floor(); // returns new tensor
+    Tensor::floor(t1, t2); // static
 
 
-inv
+Inv
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::inv_(float)
-.. doxygenfunction:: Tensor::inv(float)
-.. doxygenfunction:: Tensor::inv(Tensor*, Tensor*, float)
+.. doxygenfunction:: Tensor::inv(float v = 1.0f)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->floor(1);
-    // r1 => [1,  0.5, 0.33, 0.25]
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [0.58 -0.49 0.04]
+    // [-1.25 -1.33 0.23]
+    // ]
 
-    Tensor::floor(t1, r2, 2);
-    // r2 => [2,  1, 0.66, 0.5]
+    t1->inv_(); // In-place
+    // [
+    // [1.72 -2.04 25.16]
+    // [-0.80 -0.75 4.34]
+    // ]
 
-    t1->floor_(1);
-    // t1 => [1,  0.5, 0.33, 0.25]
+    // Other ways
+    Tensor* t2 = t1->inv(); // returns new tensor
+    Tensor::inv(t1, t2); // static
 
 
-inc
+Log
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::inc
-
-.. code-block:: c++
-
-    static void inc(Tensor*A, Tensor*B);
-    
-log
-^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::log_()
 .. doxygenfunction:: Tensor::log()
-.. doxygenfunction:: Tensor::log(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->log();
-    // r1 => [0,  0.693147, 1.098612, 1.386294]
+    Tensor* t1 = Tensor::range(-1.0f, 5.0f);
+    // [-1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor::log(t1, r2);
-    // r2 => [0,  0.693147, 1.098612, 1.386294]
+    t1->log_(); // In-place
+    // [-nan -inf 0.00 0.69 1.10 1.39 1.61]
 
-    t1->log_();
-    // t1 => [0,  0.693147, 1.098612, 1.386294]
+    // Other ways
+    Tensor* t2 = t1->log(); // returns new tensor
+    Tensor::log(t1, t2); // static
 
     
-log2
+Log2
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::log2_()
 .. doxygenfunction:: Tensor::log2()
-.. doxygenfunction:: Tensor::log2(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({ 0.8419, 0.8003, 0.9971, 0.5287, 0.0490}, {5}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->log2();
-    // r1 => [-0.2483, -0.3213, -0.0042, -0.9196, -4.3504]
+    Tensor* t1 = Tensor::range(-1.0f, 5.0f);
+    // [-1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor::log2(t1, r2);
-    // r2 => [-0.2483, -0.3213, -0.0042, -0.9196, -4.3504]
+    t1->log2_(); // In-place
+    // [-nan -inf 0.00 1.00 1.58 2.00 2.32]
 
-    t1->log2_();
-    // t1 => [-0.2483, -0.3213, -0.0042, -0.9196, -4.3504]
+    // Other ways
+    Tensor* t2 = t1->log2(); // returns new tensor
+    Tensor::log2(t1, t2); // static
   
     
-log10
+Log10
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::log10_()
 .. doxygenfunction:: Tensor::log10()
-.. doxygenfunction:: Tensor::log10(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.5224, 0.9354, 0.7257, 0.1301, 0.2251}, {5}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->log10();
-    // r1 => [-0.2820, -0.0290, -0.1392, -0.8857, -0.6476]
+    Tensor* t1 = Tensor::range(-1.0f, 5.0f);
+    // [-1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor::log10(t1, r2);
-    // r2 => [-0.2820, -0.0290, -0.1392, -0.8857, -0.6476]
+    t1->log10_(); // In-place
+    // [nan -inf 0.00 0.30 0.48 0.60 0.70]
 
-    t1->log10_();
-    // t1 => [-0.2820, -0.0290, -0.1392, -0.8857, -0.6476]
+    // Other ways
+    Tensor* t2 = t1->log10(); // returns new tensor
+    Tensor::log10(t1, t2); // static
     
     
-logn
+Logn
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::logn_(float)
-.. doxygenfunction:: Tensor::logn(float)
-.. doxygenfunction:: Tensor::logn(Tensor*, Tensor*, float)
+.. doxygenfunction:: Tensor::logn(float n)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.5224, 0.9354, 0.7257, 0.1301, 0.2251}, {5}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->logn(10.0);
-    // r1 => [-0.2820, -0.0290, -0.1392, -0.8857, -0.6476]
+    Tensor* t1 = Tensor::range(-1.0f, 5.0f);
+    // [-1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor::log10(t1, r2, 10);
-    // r2 => [-0.2820, -0.0290, -0.1392, -0.8857, -0.6476]
+    t1->logn_(5.0f); // In-place
+    // [-nan -inf 0.00 0.43 0.68 0.86 1.00]
 
-    t1->logn_(10);
-    // t1 => [-0.2820, -0.0290, -0.1392, -0.8857, -0.6476]
+    // Other ways
+    Tensor* t2 = t1->logn(5.0f); // returns new tensor
+    Tensor::logn(t1, t2, 5.0f); // static
 
-    
-mod
-^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::mod_(float)
-.. doxygenfunction:: Tensor::mod(float)
-.. doxygenfunction:: Tensor::mod(Tensor*, Tensor*, float)
+Maximum
+^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::maximum(float v)
 
 .. code-block:: c++
 
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.63 -0.10 0.01]
+    // [-1.47 -0.84 0.54]
+    // ]
 
-    Tensor* t1 = new Tensor::Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->mod(10.0);
-    // r1 => [2, 3, 4, 5, 6]
 
-    Tensor::log10(t1, r2, 10);
-    // r2 => [2, 3, 4, 5, 6]
+    Tensor* t2 = t1->maximum(0.3f);  // returns a new tensor
+    // [
+    // [0.30 0.30 0.30]
+    // [0.30 0.30 0.54]
+    // ]
 
-    t1->logn_(10);
-    // t1 => [2, 3, 4, 5, 6]
-    
-mult
+    // Other ways
+    Tensor::maximum(t1, 0.3f) // source
+    Tensor::maximum(t1, t2, 0.3f); // static
+
+
+
+Minimum
+^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::minimum(float v)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-1.30 -1.05 0.49]
+    // [0.03 0.09 0.28]
+    // ]
+
+
+    Tensor* t2 = t1->minimum(0.3f);  // returns a new tensor
+    // [
+    // [-1.30 -1.05 0.30]
+    // [0.03 0.09 0.28]
+    // ]
+
+    // Other ways
+    Tensor::minimum(t1, 0.3f) // source
+    Tensor::minimum(t1, t2, 0.3f); // static
+
+
+Mod
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::mult_(float)
-.. doxygenfunction:: Tensor::mult(float)
-.. doxygenfunction:: Tensor::mult_(Tensor*)
-.. doxygenfunction:: Tensor::mult(Tensor*)
-.. doxygenfunction:: Tensor::mult(Tensor*, Tensor*, float)
+.. doxygenfunction:: Tensor::mod(float v)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::range(-5.0f, 5.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
+
+    t1->mod_(2.0f); // In-place
+    // [-1.00 -0.00 -1.00 -0.00 -1.00 0.00 1.00 0.00 1.00 0.00 1.00]
+
+    // Other ways
+    Tensor* t2 = t1->mod(2.0f); // returns new tensor
+    Tensor::mod(t1, t2, 2.0f); // static
+
+    
+Mult
+^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::mult(float v)
 
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
-    Tensor* r3;
-    Tensor* r4;
-    
-    Tensor* r1 = t1->mult(10.0);
-    // r1 => [100, 200, 300, -100]
-    
-    Tensor* r2 = t1->mult(t2);  // this = this .* A
-    // r2 => [10, 40, 90, -100]
 
-    Tensor::mult(t1, r3, 10.0); // B = A * v
-    // r3 => [100, 200, 300, -100]
-    
-    t2->mult_(t1);  // this = this .* A
-    // t2 => [10, 40, 90, -100]
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
 
-    t1->mult_(10);
-    // t1 => [1, 2, 3, -1]
+    t1->mult_(2.0); // In-place
+    // [
+    // [10.00 10.00 10.00]
+    // [10.00 10.00 10.00]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->mult(2.0f); // returns new tensor
+    Tensor::mult(t1, t2, 2.0f); // static
     
-neg
+Neg
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::neg_()
 .. doxygenfunction:: Tensor::neg()
-.. doxygenfunction:: Tensor::neg(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    t1->neg_(); // In-place
+    // [
+    // [-5.00 -5.00 -5.00]
+    // [-5.00 -5.00 -5.00]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->neg(); // returns new tensor
+    Tensor::neg(t1, t2); // static
+
+
+Normalize
+^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::normalize(float min = 0.0f, float max = 1.0f)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::range(-5.0f, 5.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
+
+    t1->normalize_(0.0f, 1.0f); // In-place
+    // [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00]
+
+    // Other ways
+    Tensor* t2 = t1->normalize(0.0f, 1.0f); // returns new tensor
+    Tensor::normalize(t1, t2, 0.0f, 1.0f); // static
     
-    r1 = t1->neg();
-    // r1 => [-12, -13, -14, -15, -16]
-
-    Tensor::neg(t1, r2);
-    // r2 => [-12, -13, -14, -15, -16]
-
-    t1->neg_();
-    // t1 => [-12, -13, -14, -15, -16]
-
-normalize
+Pow
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::normalize_(float, float)
-.. doxygenfunction:: Tensor::normalize(float, float)
-.. doxygenfunction:: Tensor::normalize(Tensor*, Tensor*, float, float)
+.. doxygenfunction:: Tensor::pow(float exp)
 
 .. code-block:: c++
 
-    void normalize_(float min=0.0f, float max=1.0f);
-    Tensor* normalize(float min=0.0f, float max=1.0f);
-    static void normalize(Tensor*A, Tensor*B, float min=0.0f, float max=1.0f);
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    t1->pow_(2.0f); // In-place
+    // [
+    // [25.00 25.00 25.00]
+    // [25.00 25.00 25.00]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->pow(2.0f); // returns new tensor
+    Tensor::pow(t1, t2, 2.0f); // static
+
+
+Powb
+^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::powb(float base)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    t1->powb_(2.0f); // In-place
+    // [
+    // [32.00 32.00 32.00]
+    // [32.00 32.00 32.00]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->powb(2.0f); // returns new tensor
+    Tensor::powb(t1, t2, 2.0f); // static
     
-pow
+Reciprocal
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::pow_(float)
-.. doxygenfunction:: Tensor::pow(float)
-.. doxygenfunction:: Tensor::pow(Tensor*, Tensor*, float)
-
-.. code-block:: c++
-
-    void pow_(float exp);
-    Tensor* pow(float exp);
-    static void pow(Tensor*A, Tensor*B, float min=0.0f, float exp);
-
-
-powb
-^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::powb_(float)
-.. doxygenfunction:: Tensor::powb(float)
-.. doxygenfunction:: Tensor::powb(Tensor*, Tensor*, float)
-
-.. code-block:: c++
-
-    void powb_(float exp);
-    Tensor* powb(float exp);
-    static void powb(Tensor*A, Tensor*B, float min=0.0f, float exp);
-    
-reciprocal
-^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::reciprocal_()
 .. doxygenfunction:: Tensor::reciprocal()
-.. doxygenfunction:: Tensor::reciprocal(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    void reciprocal_();
-    Tensor* reciprocal();
-    static void reciprocal(Tensor*A, Tensor*B);
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    t1->reciprocal_(2.0f); // In-place
+    // [
+    // [0.20 0.20 0.20]
+    // [0.20 0.20 0.20]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->reciprocal(); // returns new tensor
+    Tensor::reciprocal(t1, t2); // static
     
-remainder
+Remainder
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::remainder_(float)
-.. doxygenfunction:: Tensor::remainder(float)
-.. doxygenfunction:: Tensor::remainder(Tensor*, Tensor*, float)
+.. doxygenfunction:: Tensor::remainder(float v)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({12, 13, 14, 15, 16}, {5}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->remainder(10.0);
-    // r1 => [2, 3, 4, 5, 6]
+    Tensor* t1 = Tensor::range(-5.0f, 5.0f);
+    // [-5.00 -4.00 -3.00 -2.00 -1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor::remainder(t1, r2, 10);
-    // r2 => [2, 3, 4, 5, 6]
+    t1->remainder_(2.0f); // In-place
+    // [-1.00 -0.00 -1.00 -0.00 -1.00 0.00 1.00 0.00 1.00 0.00 1.00]
 
-    t1->remainder_(10);
-    // t1 => [2, 3, 4, 5, 6]
+    // Other ways
+    Tensor* t2 = t1->remainder(2.0f); // returns new tensor
+    Tensor::remainder(t1, t2, 2.0f); // static
     
     
-round
+Round
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::round_()
 .. doxygenfunction:: Tensor::round()
-.. doxygenfunction:: Tensor::round(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({2.3, 5.5, 6.1, 7.9, 10.0}, {5}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->round();
-    // r1 => [2, 6, 6, 8, 10]
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [1.14 -0.32 0.40]
+    // [0.21 -0.38 0.01]
+    // ]
 
-    Tensor::round(t1, r2);
-    // r2 => [2, 6, 6, 8, 10]
+    t1->round_(); // In-place
+    // [
+    // [1.00 -0.00 0.00]
+    // [0.00 -0.00 0.00]
+    // ]
 
-    t1->round_();
-    // t1 => [2, 6, 6, 8, 10]
+    // Other ways
+    Tensor* t2 = t1->round(); // returns new tensor
+    Tensor::round(t1, t2); // static
     
-rsqrt
+Rsqrt
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::rsqrt_()
 .. doxygenfunction:: Tensor::rsqrt()
-.. doxygenfunction:: Tensor::rsqrt(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-0.0370,  0.2970,  1.5420, -0.9105}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->rsqrt();
-    // r1 => [nan,  1.8351,  0.8053,   nan]
+    Tensor* t1 = Tensor::range(-1.0f, 5.0f);
+    // [-1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor::rsqrt(t1, r2);
-    // r2 => [nan,  1.8351,  0.8053,   nan]
+    t1->rsqrt_(); // In-place
+    // [-nan inf 1.00 0.71 0.58 0.50 0.45]
 
-    t1->rsqrt_();
-    // t1 => [nan,  1.8351,  0.8053,   nan]
-sigmoid
+    // Other ways
+    Tensor* t2 = t1->rsqrt(); // returns new tensor
+    Tensor::rsqrt(t1, t2); // static
+
+Sigmoid
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sigmoid_()
 .. doxygenfunction:: Tensor::sigmoid()
-.. doxygenfunction:: Tensor::sigmoid(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.9213,  1.0887, -0.8858, -1.7683}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->sigmoid();
-    // r1 => [0.7153,  0.7481,  0.2920,  0.1458]
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [0.11 0.87 0.18]
+    // [2.13 -0.13 0.12]
+    // ]
 
-    Tensor::sigmoid(t1, r2);
-    // r2 => [0.7153,  0.7481,  0.2920,  0.1458]
 
-    t1->sigmoid_();
-    // t1 => [0.7153,  0.7481,  0.2920,  0.1458]
+    t1->sigmoid_();  // In-place
+    // [
+    // [0.53 0.70 0.54]
+    // [0.89 0.47 0.53]
+    // ]
+
+    // Other ways 
+    Tensor* t2 = t1->sigmoid(); // returns a new tensor
+    Tensor::sigmoid(t1, t2); // static
     
-sign
+    
+Sign
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sign(float)
+.. doxygenfunction:: Tensor::sign(float zero_sign = 0.0f)
 
-.. doxygenfunction:: Tensor::sign(Tensor*, Tensor*, float)
 
-.. code-block:: c++  
+.. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.7, -1.2, 0., 2.3}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->sign(5);
-    // r1 => [1, -1,  5,  1]
+    Tensor* t1 = Tensor::linspace(-1.0f, 1.0f, 5.0f);
+    // [-1.00 -0.50 0.00 0.50 1.00]
 
-    Tensor::sign(t1, r2, 5);
-    // r2 => [1, -1,  5,  1]
 
-    t1->sign_();
-    // t1 => [1, -1,  5,  1]
+    t1->sign_(5.0f);  // In-place
+    // [-1.00 -1.00 5.00 1.00 1.00]
+
+    // Other ways
+    Tensor* t2 = t1->sign(5.0f); // returns a new tensor
+    Tensor::sign(t1, t2, 5.0f); // static
     
 
-sin
+Sin
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sin_()
 .. doxygenfunction:: Tensor::sin()
-.. doxygenfunction:: Tensor::sin(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    c
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [0.11 0.87 0.18]
+    // [2.13 -0.13 0.12]
+    // ]
+
+
+    t1->sin_();  // In-place
+    // [
+    // [0.53 0.70 0.54]
+    // [0.89 0.47 0.53]
+    // ]
+
+    // Other ways 
+    Tensor* t2 = t1->sin(); // returns a new tensor
+    Tensor::sin(t1, t2); // static
+
     
-sinh
+Sinh
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sinh_()
 .. doxygenfunction:: Tensor::sinh()
-.. doxygenfunction:: Tensor::sinh(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.5380, -0.8632, -0.1265,  0.9399}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->sinh();
-    // r1 => [0.5644, -0.9744, -0.1268,  1.0845]
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.35 -0.14 0.08]
+    // [0.64 0.46 1.49]
+    // ]
 
-    Tensor::sinh(t1, r2);
-    // r2 => [0.5644, -0.9744, -0.1268,  1.0845]
 
-    t1->sinh_();
-    // t1 => [0.5644, -0.9744, -0.1268,  1.0845]
+    t1->sinh_();  // In-place
+    // [
+    // [-0.36 -0.15 0.08]
+    // [0.69 0.48 2.10]
+    // ]
+
+    // Other ways 
+    Tensor* t2 = t1->sinh(); // returns a new tensor
+    Tensor::sinh(t1, t2); // static
     
-sqr
+Sqr
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sqr_()
 .. doxygenfunction:: Tensor::sqr()
-.. doxygenfunction:: Tensor::sqr(Tensor*, Tensor*)
 
 .. code-block:: c++
-
-    void sqr_();
-    Tensor* sqr();
-    static void sqr(Tensor*A, Tensor*B);
     
-sqrt
+
+    Tensor* t1 = Tensor::range(-1.0f, 5.0f);
+    // [-1.00 0.00 1.00 2.00 3.00 4.00 5.00]
+
+    t1->sqr_(); // In-place
+    // [1.00 0.00 1.00 4.00 9.00 16.00 25.00]
+
+    // Other ways
+    Tensor* t2 = t1->sqr(); // returns new tensor
+    Tensor::sqr(t1, t2); // static
+    
+Sqrt
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sqrt_()
 .. doxygenfunction:: Tensor::sqrt()
-.. doxygenfunction:: Tensor::sqrt(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-2.0755,  1.0226,  0.0831,  0.4806}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->sqrt();
-    // r1 => [nan,  1.0112,  0.2883,  0.6933]
+    Tensor* t1 = Tensor::range(-1.0f, 5.0f);
+    // [-1.00 0.00 1.00 2.00 3.00 4.00 5.00]
 
-    Tensor::sqrt(t1, r2);
-    // r2 => [nan,  1.0112,  0.2883,  0.6933]
+    t1->sqrt_(); // In-place
+    // [-nan 0.00 1.00 1.41 1.73 2.00 2.24]
 
-    t1->sqrt_();
-    // t1 => [nan,  1.0112,  0.2883,  0.6933]
+    // Other ways
+    Tensor* t2 = t1->sqrt(); // returns new tensor
+    Tensor::sqrt(t1, t2); // static
     
-sub
+Sub
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sub_(float)
-.. doxygenfunction:: Tensor::sub(float)
-.. doxygenfunction:: Tensor::sub_(Tensor*)
-.. doxygenfunction:: Tensor::sub(Tensor*)
-.. doxygenfunction:: Tensor::sub(Tensor*, Tensor*, float)
-
+.. doxygenfunction:: Tensor::sub(float v)
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor({10, 20, 30, -10}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({1, 2, 3, 10}, {4}, DEV_CPU);
-    Tensor* r3;
-    Tensor* r4;
-    
-    Tensor* r1 = t1->sub(10.0);
-    // r1 => [0, 10, 20, -20]
-    
-    Tensor* r2 = t1->sub(t2);  // this = this .- A
-    // r2 => [9, 18, 27, -20]
 
-    Tensor::sub(t1, r3, 10.0); // B = A - v
-    // r3 => [0, 10, 20, -20]
-    
-    t2->sub_(t1);  // this = this .- A
-    // t2 => [-9, -18, -27, 0]
 
-    t1->sub_(10);
-    // t1 => 0, 10, 20, -20]
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    t1->sub_(2.0f); // In-place
+    // [
+    // [3.00 3.00 3.00]
+    // [3.00 3.00 3.00]
+    // ]
+
+    // Other ways
+    Tensor* t2 = t1->sub(2.0f); // returns new tensor
+    Tensor::sub(t1, t2, 2.0f); // static
     
 
     
-tan
+Tan
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::tan_()
 .. doxygenfunction:: Tensor::tan()
-.. doxygenfunction:: Tensor::tan(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({-1.2027, -1.7687,  0.4412, -1.3856}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->tan();
-    // r1 => [-2.5930,  4.9859,  0.4722, -5.3366]
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [0.20 0.97 1.08]
+    // [0.12 1.06 -0.67]
+    // ]
 
-    Tensor::tan(t1, r2);
-    // r2 => [-2.5930,  4.9859,  0.4722, -5.3366]
 
-    t1->tan_();
-    // t1 => [-2.5930,  4.9859,  0.4722, -5.3366]
+    t1->tan_();  // In-place
+    // [
+    // [0.20 1.45 1.85]
+    // [0.12 1.78 -0.80]
+    // ]
+
+    // Other ways 
+    Tensor* t2 = t1->tan(); // returns a new tensor
+    Tensor::tan(t1, t2); // static
     
-tanh
+Tanh
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::tanh_()
 .. doxygenfunction:: Tensor::tanh()
-.. doxygenfunction:: Tensor::tanh(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({0.8986, -0.7279,  1.1745,  0.261}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->tanh();
-    // r1 => [0.7156, -0.6218,  0.8257,  0.2553]
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-2.07 -0.41 -0.83]
+    // [0.12 0.45 0.90]
+    // ]
 
-    Tensor::tanh(t1, r2);
-    // r2 => [0.7156, -0.6218,  0.8257,  0.2553]
 
-    t1->tanh_();
-    // t1 => [0.7156, -0.6218,  0.8257,  0.2553]
+    t1->tanh_();  // In-place
+    // [
+    // [-0.97 -0.39 -0.68]
+    // [0.12 0.42 0.72]
+    // ]
+
+    // Other ways 
+    Tensor* t2 = t1->tanh(); // returns a new tensor
+    Tensor::tanh(t1, t2); // static
     
-trunc
+Trunc
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::trunc_()
 .. doxygenfunction:: Tensor::trunc()
-.. doxygenfunction:: Tensor::trunc(Tensor*, Tensor*)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({3.4742,  0.5466, -0.8008, -0.9079}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-    
-    r1 = t1->trunc();
-    // r1 => [3,  0, -0, -0]
-
-    Tensor::trunc(t1, r2);
-    // r2 => [3,  0, -0, -0]
-
-    t1->trunc_();
-    // t1 => [3,  0, -0, -0]
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [0.40 -0.95 0.49]
+    // [1.13 -0.08 -0.32]
+    // ]
 
 
-Binary Operations
--------------------
+    t1->trunc_();  // In-place
+    // [
+    // [0.00 -0.00 0.00]
+    // [1.00 -0.00 -0.00]
+    // ]
 
-add
+    // Other ways 
+    Tensor* t2 = t1->trunc(); // returns a new tensor
+    Tensor::trunc(t1, t2); // static
+
+
+Element-wise
+-------------
+
+Add
+^^^^^
+.. doxygenfunction:: Tensor::add(Tensor *A, Tensor *B)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    Tensor* t2 = Tensor::full({2, 3}, 2.0f);
+    // [
+    // [2.00 2.00 2.00]
+    // [2.00 2.00 2.00]
+    // ]
+
+    t1->add_(t2);  // In-place
+    // [
+    // [7.00 7.00 7.00]
+    // [7.00 7.00 7.00]
+    // ]
+
+    // Other ways
+    Tensor* t3 = t1->add(t2);  // returns new tensor
+    Tensor::add(t1, t2, t3) //source
+
+
+Div
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::add(Tensor*, Tensor*)
-.. doxygenfunction:: Tensor::add(Tensor*, Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::div(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
-    Tensor* t1 = new Tensor::Tensor({1, 2, 3, 4}, {4}, DEV_CPU);
-    Tensor* t2 = new Tensor::Tensor({2, 3, 4, 5}, {4}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
 
-    r1 = Tensor::add(t1, t2); //(new)r1 = t1 + t2
-    // r1 => [3, 5, 7, 9] 
+    Tensor* t2 = Tensor::full({2, 3}, 2.0f);
+    // [
+    // [2.00 2.00 2.00]
+    // [2.00 2.00 2.00]
+    // ]
 
-    Tensor::add(t1, t2, r2); // C = A + B
-    // r2 => [3, 5, 7, 9] 
+    t1->div_(t2);  // In-place
+    // [
+    // [2.50 2.50 2.50]
+    // [2.50 2.50 2.50]
+    // ]
+
+    // Other ways
+    Tensor* t3 = t1->div(t2);  // returns new tensor
+    Tensor::add(t1, t2, t3) //source
 
 
-div
+Maximum
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: Tensor::maximum(Tensor *A, Tensor *B)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.25 -1.21 -0.04]
+    // [-0.74 0.12 -0.59]
+    // ]
+
+    Tensor* t2 = Tensor::randn({2,3});
+    // [
+    // [0.05 -1.72 -0.50]
+    // [0.17 -0.00 0.11]
+    // ]
+
+    Tensor* t3 = Tensor::maximum(t1, t2);  // returns a new tensor
+    // [
+    // [0.05 -1.21 -0.04]
+    // [0.17 0.12 0.11]
+    // ]
+
+    // Other ways
+    Tensor::maximum(t1, t2, t3); // static
+
+
+Minimum
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: Tensor::minimum(Tensor *A, Tensor *B)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2,3});
+    // [
+    // [-0.25 -0.75 -0.53]
+    // [0.29 0.88 1.98]
+    // ]
+
+    Tensor* t2 = Tensor::randn({2,3});
+    // [
+    // [-1.37 0.95 -0.59]
+    // [-1.26 1.16 -0.21]
+    // ]
+
+    Tensor* t3 = Tensor::minimum(t1, t2);  // returns a new tensor
+    // [
+    // [-1.37 -0.75 -0.59]
+    // [-1.26 0.88 -0.21]
+    // ]
+
+    // Other ways
+    Tensor::minimum(t1, t2, t3); // static
+
+Mult
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::div(Tensor*, Tensor*)
-.. doxygenfunction:: Tensor::div(Tensor*, Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::mult(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::eye(3, 3, DEV_CPU);
-    // matrix1 => [1 3 3
-    //             3 1 3
-    //             3 3 1]
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
 
-    Tensor* t2 = new Tensor::Tensor(2, 2, 2}, {3}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
+    Tensor* t2 = Tensor::full({2, 3}, 2.0f);
+    // [
+    // [2.00 2.00 2.00]
+    // [2.00 2.00 2.00]
+    // ]
 
-    r1 = Tensor::div(t1, t2); //(new)r1 = t1 / t2
-    // r1 => [0.5, 1.5, 1.5
-              1.5, 0.5, 1.5
-              1.5, 1.5, 0.5] 
+    t1->mult_(t2);  // In-place
+    // [
+    // [10.00 10.00 10.00]
+    // [10.00 10.00 10.00]
+    // ]
 
-    Tensor::add(t1, t2, r2); // C = A / B
-    // r2 => [0.5, 1.5, 1.5
-              1.5, 0.5, 1.5
-              1.5, 1.5, 0.5] 
+    // Other ways
+    Tensor* t3 = t1->mult(t2);  // returns new tensor
+    Tensor::mult(t1, t2, t3) //source
 
-mult
+Sub
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::mult(Tensor*, Tensor*)
-.. doxygenfunction:: Tensor::mult(Tensor*, Tensor*, Tensor*)
+.. doxygenfunction:: Tensor::sub(Tensor *A, Tensor *B)
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::eye(3, 3, DEV_CPU);
-    // matrix1 => [1 3 3
-    //             3 1 3
-    //             3 3 1]
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
 
-    Tensor* t2 = new Tensor::Tensor(2, 2, 2}, {3}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
+    Tensor* t2 = Tensor::full({2, 3}, 2.0f);
+    // [
+    // [2.00 2.00 2.00]
+    // [2.00 2.00 2.00]
+    // ]
 
-    r1 = Tensor::mult(t1, t2); //(new)r1 = t1 * t2
-    // r1 => [2, 6, 6
-              6, 2, 6
-              6, 6, 2] 
+    t1->sub_(t2);  // In-place
+    // [
+    // [3.00 3.00 3.00]
+    // [3.00 3.00 3.00]
+    // ]
 
-    Tensor::mult(t1, t2, r2); // C = A * B
-    // r2 => [2, 6, 6
-              6, 2, 6
-              6, 6, 2] 
+    // Other ways
+    Tensor* t3 = t1->sub(t2);  // returns new tensor
+    Tensor::sub(t1, t2, t3) //source
 
-sub
-^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sub(Tensor*, Tensor*)
-.. doxygenfunction:: Tensor::sub(Tensor*, Tensor*, Tensor*)
-
-.. code-block:: c++
-
-    Tensor* t1 = Tensor::eye(3, 3, DEV_CPU);
-    // matrix1 => [1 3 3
-    //             3 1 3
-    //             3 3 1]
-
-    Tensor* t2 = new Tensor::Tensor(2, 2, 2}, {3}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-
-    r1 = Tensor::sub(t1, t2); //(new)r1 = t1 - t2
-    // r1 => [-1, 1, 1
-              1, -1, 1
-              1, 1, -1] 
-
-    Tensor::sub(t1, t2, r2); // C = A - B
-    // r2 => [-1, 1, 1
-              1, -1, 1
-              1, 1, -1]
 Reductions
 ------------------
 
-Apply lower bound
-^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::maximum(float)
-.. doxygenfunction:: Tensor::maximum(Tensor*, float)
-.. doxygenfunction:: Tensor::maximum(Tensor*, Tensor*, float)
-
-.. code-block:: c++
-   
-    Tensor* maximum(float v);
-    static Tensor* maximum(Tensor* A, float v);
-    static void maximum(Tensor* A, Tensor* B, float v);
-
-
-Obtain maximum values
-^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: Tensor::maximum(Tensor*, Tensor*)
-.. doxygenfunction:: Tensor::maximum(Tensor*, Tensor*, Tensor*)
-
-.. code-block:: c++
-   
-    static Tensor* maximum(Tensor* A, Tensor* B);
-    static void maximum(Tensor* A, Tensor* B, Tensor* C);
-
-
-Apply upper bound
-^^^^^^^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::minimum(float)
-.. doxygenfunction:: Tensor::minimum(Tensor*, float)
-.. doxygenfunction:: Tensor::minimum(Tensor*, Tensor*, float)
-
-.. code-block:: c++
-   
-    Tensor* minimum(float v);
-    static Tensor* minimum(Tensor* A, float v);
-    static void minimum(Tensor* A, Tensor* B, float v);
-
-
-Obtain minumum values
-^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: Tensor::minimum(Tensor*, Tensor*)
-.. doxygenfunction:: Tensor::minimum(Tensor*, Tensor*, Tensor*)
-
-.. code-block:: c++
-   
-    static Tensor* minimum(Tensor* A, Tensor* B);
-    static void minimum(Tensor* A, Tensor* B, Tensor* C);
-
-
-median
-^^^^^^^^
-.. doxygenfunction:: Tensor::median()
-.. doxygenfunction:: Tensor::median(Tensor*)
-
-
-.. code-block:: c++
-   
-
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
-    Tensor* r1;
-    Tensor* r2;
-
-    float median1 = t1->median();
-    // median1 = 3
-
-    float median2 = Tensor::median(t1);
-    // median2 = 3
-
-    Tensor* median(vector<int> axis, bool keepdims);
-    static void median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
-
-
-max
-^^^^^^^^
-.. doxygenfunction:: Tensor::max()
-.. doxygenfunction:: Tensor::max(Tensor*)
-.. doxygenfunction:: Tensor::max(vector<int>, bool)
-
-
-.. code-block:: c++
-
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
-    Tensor* r1;
-
-    float max1 = t1->max();
-    // max1 = 5
-
-    float max2 = Tensor::max(t1);
-    // max2 = 5
-    
-   
-    Tensor* matrix1 = Tensor::eye(3, 3, DEV_CPU);
-    // matrix1 => [1 3 3
-    //             3 1 3
-    //             3 3 1]
-    Tensor* max(vector<int> axis, bool keepdims);
-
-
-argmax
+Argmax
 ^^^^^^^^
 .. doxygenfunction:: Tensor::argmax()
-.. doxygenfunction:: Tensor::argmax(Tensor*)
-.. doxygenfunction:: Tensor::argmax(vector<int>, bool)
 
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
-    Tensor* r1;
 
-    float argmax1 = t1->argmax();
-    // argmax1 = 2
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [2.13 -0.14 -0.15]
+    // [1.53 0.96 0.31]
+    // ]
 
-    float argmax2 = Tensor::argmax(t1);
-    // argmax2 = 2
-    
+    // Global (reduce on all axis)
+    int n1 = t1->argmax();
+    // 0
 
-    Tensor* argmax(vector<int> axis, bool keepdims);
+    // Reduced on axis 0
+    Tensor* t2 = t1->argmax({0}, false); // keepdims==false
+    // [0 1 1]
 
+    // Other ways
+    int n2 = Tensor::argmax(t1); // static (returns int)
+    Tensor* t3 = t1->argmax({0}, true); // axis (returns tensor)
 
-min
-^^^^^^^^
-.. doxygenfunction:: Tensor::min()
-.. doxygenfunction:: Tensor::min(Tensor*)
-.. doxygenfunction:: Tensor::min(vector<int>, bool)
-
-
-.. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
-    Tensor* r1;
-
-    float min1 = t1->min();
-    // min1 = 1
-
-    float min2 = Tensor::min(t1);
-    // min2 = 1
 
     
-    Tensor* min(vector<int> axis, bool keepdims);
-
-    
-argmin
+Argmin
 ^^^^^^^^
 .. doxygenfunction:: Tensor::argmin()
-.. doxygenfunction:: Tensor::argmin(Tensor*)
-.. doxygenfunction:: Tensor::argmin(vector<int>, bool)
 
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
 
-    float argmin1 = t1->argmin();
-    // argmin1 = 4
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-0.34 -0.13 -0.41]
+    // [-1.09 -0.08 -1.85]
+    // ]
 
-    float argmin2 = Tensor::argmin(t1);
-    // argmin2 = 4
+    // Global (reduce on all axis)
+    int n1 = t1->argmin();
+    // 5
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->argmin({0}, false); // keepdims==false
+    t2->print(2);
+
+    // Other ways
+    int n2 = Tensor::argmin(t1); // static (returns int)
+    Tensor* t3 = t1->argmin({0}, true); // axis (returns tensor)
 
 
-    Tensor* argmin(vector<int> axis, bool keepdims);
 
-
-sum
+Max
 ^^^^^^^^
-.. doxygenfunction:: Tensor::sum()
-.. doxygenfunction:: Tensor::sum(Tensor*)
-.. doxygenfunction:: Tensor::sum(vector<int>, bool)
+.. doxygenfunction:: Tensor::max()
 
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
 
-    float sum1 = t1->sum();
-    // sum1 = 15
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-0.79 -0.54 0.28]
+    // [1.12 0.38 -1.25]
+    // ]
 
-    float sum2 = Tensor::sum(t1);
-    // sum2 = 15
+    // Global (reduce on all axis)
+    float n1 = t1->max();
+    // 1.12
 
-    Tensor* sum(vector<int> axis, bool keepdims);
+    // Reduced on axis 0
+    Tensor* t2 = t1->max({0}, false); // keepdims==false
+    // [1.12 0.38 0.28]
 
-
-sum_abs
-^^^^^^^^
-.. doxygenfunction:: Tensor::sum_abs()
-.. doxygenfunction:: Tensor::sum_abs(Tensor*)
-.. doxygenfunction:: Tensor::sum_abs(vector<int>, bool)
-
-
-.. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor(-2, -3, -5, -4, -1}, {5}, DEV_CPU);
-
-    float sum1 = t1->sum_abs();
-    // sum1 = 15
-
-    float sum2 = Tensor::sum_abs(t1);
-    // sum2 = 15
+    // Other ways
+    float n2 = Tensor::max(t1); // static (returns float)
+    Tensor* t3 = t1->max({0}, true); // axis (returns tensor)
 
 
-
-    Tensor* sum_abs(vector<int> axis, bool keepdims);
-
-
-prod
-^^^^^^^^
-.. doxygenfunction:: Tensor::prod()
-.. doxygenfunction:: Tensor::prod(Tensor*)
-.. doxygenfunction:: Tensor::prod(vector<int>, bool)
-
-
-.. code-block:: c++
-   
-
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
-
-    float prod1 = t1->prod();
-    // prod1 = 120
-
-    float prod2 = Tensor::prod(t1);
-    // prod2 = 120
-
-    
-    Tensor* prod(vector<int> axis, bool keepdims);
-
-
-mean
+Mean
 ^^^^^^^^
 .. doxygenfunction:: Tensor::mean()
-.. doxygenfunction:: Tensor::mean(Tensor*)
-.. doxygenfunction:: Tensor::mean(vector<int>, bool)
 
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor(2, 3, 5, 4, 1}, {5}, DEV_CPU);
 
-    float mean1 = t1->mean();
-    // mean1 = 3
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-0.01 0.40 -0.07]
+    // [1.14 0.13 -0.49]
+    // ]
 
-    float mean2 = Tensor::mean(t1);
-    // mean2 = 3
+    // Global (reduce on all axis)
+    float n1 = t1->mean();
+    // 0.18
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->mean({0}, false); // keepdims==false
+    // [0.57 0.26 -0.28]
+
+    // Other ways
+    float n2 = Tensor::mean(t1); // static (returns float)
+    Tensor* t3 = t1->mean({0}, true); // axis (returns tensor)
 
 
-    Tensor* mean(vector<int> axis, bool keepdims);
-
-
-std
+Median
 ^^^^^^^^
-.. doxygenfunction:: Tensor::std(bool)
-.. doxygenfunction:: Tensor::std(Tensor*, bool)
-.. doxygenfunction:: Tensor::std(vector<int>, bool, bool)
+.. doxygenfunction:: Tensor::median()
 
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor({-0.8166, -1.3802, -0.3560}, {3}, DEV_CPU);
 
-    float std1 = t1->std();
-    // std1 = 0.5130
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [0.24 -0.86 0.36]
+    // [0.18 -0.93 -1.07]
+    // ]
 
-    float std2 = Tensor::std(t1);
-    // std2 = 0.5130
+    // Global (reduce on all axis)
+    float n1 = t1->median();
+    // -0.34
 
-    
-    Tensor* std(vector<int> axis, bool keepdims, bool unbiased=true);
+    // Reduced on axis 0
+    Tensor* t2 = t1->median({0}, false); // keepdims==false
+    // [0.21 -0.90 -0.35]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->median({1}, false); // keepdims==false
+    // [0.24 -0.93]
+
+    // Other ways
+    float n2 = Tensor::mean(t1); // static (returns float)
+    Tensor* t4 = t1->median({0}, true); // axis (returns tensor)
 
 
-var
+Min
 ^^^^^^^^
-.. doxygenfunction:: Tensor::var(bool)
-.. doxygenfunction:: Tensor::var(Tensor*, bool)
-.. doxygenfunction:: Tensor::var(vector<int>, bool, bool)
+.. doxygenfunction:: Tensor::min()
 
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor({-0.3425, -1.2636, -0.4864}, {3}, DEV_CPU);
 
-    float var1 = t1->var();
-    // var1 = 0.2455
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [-1.11 -0.00 0.34]
+    // [-0.16 0.13 -0.39]
+    // ]
 
-    float var2 = Tensor::var(t1);
-    // var2 = 0.2455
+    // Global (reduce on all axis)
+    float n1 = t1->min();
+    // -1.11
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->min({0}, false); // keepdims==false
+    // [-1.11 -0.00 -0.39]
+
+    // Other ways
+    float n2 = Tensor::min(t1); // static (returns float)
+    Tensor* t3 = t1->min({0}, true); // axis (returns tensor)
 
 
-    Tensor* var(vector<int> axis, bool keepdims, bool unbiased=true);
-
-
-mode
+Mode
 ^^^^^^^^
 .. doxygenfunction:: Tensor::mode()
-.. doxygenfunction:: Tensor::mode(Tensor*)
-.. doxygenfunction:: Tensor::mode(vector<int>, bool)
 
 
 .. code-block:: c++
-   
-    Tensor* t1 = new Tensor::Tensor({2, 2, 1, 5 ,3}, {5}, DEV_CPU);
 
-    float mode1 = t1->mode();
-    // mode1 = 2
+    Tensor* t1 = new Tensor({1, 1, 1, 3, 2, 3, 3, 2, 3}, {3, 3});
+    // [
+    // [1.00 1.00 1.00]
+    // [3.00 2.00 3.00]
+    // [3.00 2.00 3.00]
+    // ]
 
-    float mode2 = Tensor::mode(t1);
-    // mode2 = 2
+    // Global (reduce on all axis)
+    float n1 = t1->mode();
+    // 3
 
+    // Reduced on axis 0
+    Tensor* t2 = t1->mode({0}, false); // keepdims==false
+    // [3.00 2.00 3.00]
 
-    Tensor* mode(vector<int> axis, bool keepdims);
+    // Reduced on axis 1
+    Tensor* t3 = t1->mode({1}, false); // keepdims==false
+    // [1.00 3.00 3.00]
 
-
-Matrix Operations
---------------------
-
-sum
-^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::sum2D_rowwise
-
-.. doxygenfunction:: Tensor::sum2D_colwise
-
-.. code-block:: c++
-
-    Tensor* matrix1 = Tensor::eye(3, 3, DEV_CPU);
-    // matrix1 => [1 3 3
-    //             3 1 3
-    //             3 3 1]
-
-    Tensor* matrix2 = Tensor::identity(3, DEV_CPU);
-    // matrix2 => [1 0 0
-    //             0 1 0
-    //             0 0 1]
-
-    Tensor* r1;
-    Tensor* r2;
-
-    Tensor::sum2D_rowwise(matrix1, matrix2, r1);
-    // r1 => [2 3 3
-    //        3 2 3
-    //        3 3 2]
-
-    Tensor::sum2D_colwise(matrix1, matrix2, r2);
-    // r2 => [2 3 3
-    //        3 2 3
-    //        3 3 2]
+    // Other ways
+    float n2 = Tensor::mode(t1); // static (returns float)
+    Tensor* t4 = t1->mode({0}, true); // axis (returns tensor)
 
 
+Norm
+^^^^^^^^^^^^^
 
-mult
-^^^^^^^^^^^^
+.. doxygenfunction:: Tensor::norm(vector<int> axis, bool keepdims, string ord = "fro")
 
-.. doxygenfunction:: Tensor::mult2D
+Example:
 
 .. code-block:: c++
 
-    Tensor* matrix1 = Tensor::eye(3, 3, DEV_CPU);
-    // matrix1 => [1 3 3
-    //             3 1 3
-    //             3 3 1]
+   Tensor* t1 = new Tensor({1,2,3,4,5,6}, {3, 2});
+   // [
+   // [1.00 2.00 3.00]
+   // [4.00 5.00 6.00]
+   // ]
 
-    Tensor* matrix2 = Tensor::identity(3, DEV_CPU);
-    // matrix2 => [1 0 0
-    //             0 1 0
-    //             0 0 1]
+   // Global (reduce on all axis)
+   float n1 = t1->norm();
+   // 9.53939
 
-    Tensor* matrix3 = Tensor::identity(3, DEV_CPU);
-    // matrix2 => [1 0 0
-    //             0 1 0
-    //             0 0 1]
+   // Reduced on axis 0
+   Tensor* t2 = t1->norm({0}, false); // keepdims==false
+   // [4.12 5.39 6.71]
+
+   // Other ways
+   Tensor::norm(t1, "fro");
 
 
-    Tensor::mult2D(matrix1, 0 matrix2, 1, matrix3, 1);
-    // matrix3 => [2 0 0
-    //             0 2 0
-    //             0 0 2]
+Prod
+^^^^^^^^
+.. doxygenfunction:: Tensor::prod()
 
-   
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    // Global (reduce on all axis)
+    float n1 = t1->prod();
+    // 15625
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->prod({0}, false); // keepdims==false
+    // [25.00 25.00 25.00]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->prod({1}, false); // keepdims==false
+    // [125.00 125.00]
+
+    // Other ways
+    float n2 = Tensor::prod(t1); // static (returns float)
+    Tensor* t4 = t1->prod({0}, true); // axis (returns tensor)
+
+
+Std
+^^^^^^^^
+.. doxygenfunction:: Tensor::std(bool unbiased = true)
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [0.14 0.29 -0.51]
+    // [0.15 -0.82 0.21]
+    // ]
+
+    // Global (reduce on all axis)
+    float n1 = t1->std();
+    // 0.45
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->std({0},  false, true); // keepdims==false, unbiased=true
+    // [0.01 0.79 0.50]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->std({1}, false, true); // keepdims==false, unbiased=true
+    // [0.42 0.58]
+
+    // Other ways
+    float n2 = Tensor::std(t1); // static (returns float)
+
+Sum
+^^^^^^^^
+.. doxygenfunction:: Tensor::sum()
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::full({2, 3}, 5.0f);
+    // [
+    // [5.00 5.00 5.00]
+    // [5.00 5.00 5.00]
+    // ]
+
+    // Global (reduce on all axis)
+    float n1 = t1->sum();
+    // 30
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->sum({0}, false); // keepdims==false
+    // [10.00 10.00 10.00]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->sum({1}, false); // keepdims==false
+    // [15.00 15.00]
+
+    // Other ways
+    float n2 = Tensor::sum(t1); // static (returns float)
+    Tensor* t4 = t1->sum({0}, true); // axis (returns tensor)
+
+
+Sum Abs
+^^^^^^^^
+.. doxygenfunction:: Tensor::sum_abs()
+
+
+.. code-block:: c++
+
+    Tensor* t1 = new Tensor({-5, 5, 5, -5, -5, 5}, {2, 3});
+    // [
+    // [-5.00 5.00 5.00]
+    // [-5.00 -5.00 5.00]
+    // ]
+
+    // Global (reduce on all axis)
+    float n1 = t1->sum_abs();
+    // 30
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->sum_abs({0}, false); // keepdims==false
+    // [10.00 10.00 10.00]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->sum_abs({1}, false); // keepdims==false
+    // [15.00 15.00]
+
+    // Other ways
+    float n2 = Tensor::sum_abs(t1); // static (returns float)
+    Tensor* t4 = t1->sum_abs({0}, true); // axis (returns tensor)
+
+
+Var
+^^^^^^^^
+.. doxygenfunction:: Tensor::var(bool unbiased = true)
+
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::randn({2, 3});
+    // [
+    // [0.23 -1.09 0.09]
+    // [0.09 1.68 -0.06]
+    // ]
+
+    // Global (reduce on all axis)
+    float n1 = t1->var();
+    // 0.78
+
+    // Reduced on axis 0
+    Tensor* t2 = t1->var({0},  false, true); // keepdims==false, unbiased=true
+    // [0.01 3.84 0.01]
+
+    // Reduced on axis 1
+    Tensor* t3 = t1->var({1}, false, true); // keepdims==false, unbiased=true
+    // [0.52 0.93]
+
+    // Other ways
+    float n2 = Tensor::var(t1); // static (returns int)
+

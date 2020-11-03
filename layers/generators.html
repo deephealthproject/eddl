@@ -155,20 +155,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -245,9 +240,9 @@
 
 <p>Generates a gaussian noise output (typically used for GANs)</p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">gin</span> <span class="o">=</span> <span class="n">GaussGenerator</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">gin</span> <span class="o">=</span> <span class="n">GaussGenerator</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="uniform-generator">
 <h2>Uniform Generator<a class="headerlink" href="#uniform-generator" title="Permalink to this headline">¶</a></h2>
@@ -280,7 +275,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

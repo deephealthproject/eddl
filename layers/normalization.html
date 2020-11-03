@@ -156,20 +156,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -239,83 +234,57 @@
 <h1>Normalization<a class="headerlink" href="#normalization" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="batchnormalization">
 <h2>BatchNormalization<a class="headerlink" href="#batchnormalization" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl18BatchNormalizationE5layerbff6string">
-<span id="_CPPv3N4eddl18BatchNormalizationE5layerbff6string"></span><span id="_CPPv2N4eddl18BatchNormalizationE5layerbff6string"></span><span id="eddl::BatchNormalization__layer.b.float.float.string"></span><span class="target" id="namespaceeddl_1ade25fe07fb192d255665290a966a6efe"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">BatchNormalization</code><span class="sig-paren">(</span>layer <em>parent</em>, bool <em>affine</em>, float <em>momentum</em>, float <em>epsilon</em>, string <em>name</em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl18BatchNormalizationE5layerffb6string">
-<span id="_CPPv3N4eddl18BatchNormalizationE5layerffb6string"></span><span id="_CPPv2N4eddl18BatchNormalizationE5layerffb6string"></span><span id="eddl::BatchNormalization__layer.float.float.b.string"></span><span class="target" id="namespaceeddl_1a5f3cd85a7fd9d14f6e9e5f01bade5d40"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">BatchNormalization</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>momentum</em> = 0.99f, float <em>epsilon</em> = 0.001f, bool <em>affine</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><br /></dt>
-<dd><p>Batch normalization layer. </p>
-<p>Normalize the activations of the previous layer at each batch, i.e. applies a transformation that maintains the mean activation close to 0 and the activation standard deviation close to 1.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1502.03167">https://arxiv.org/abs/1502.03167</a></p>
-</dd>
-<dt><strong>Return</strong></dt><dd><p>Parent layer after the normalization </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">momentum</span></code>: Momentum for the moving mean and the moving variance </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Small float added to variance to avoid dividing by zero </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: A boolean value that when set to True, this module has learnable affine parameters </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “BatchNormalization” with arguments (layer parent, bool affine, float momentum, float epsilon, string name) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
-<span class="n">l</span><span class="o">=</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
-<span class="p">...</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “BatchNormalization” with arguments (layer parent, float momentum = 0.99f, float epsilon = 0.001f, bool affine = true, string name = “”) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">BatchNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="layernormalization">
 <h2>LayerNormalization<a class="headerlink" href="#layernormalization" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl18LayerNormalizationE5layerbf6string">
-<span id="_CPPv3N4eddl18LayerNormalizationE5layerbf6string"></span><span id="_CPPv2N4eddl18LayerNormalizationE5layerbf6string"></span><span id="eddl::LayerNormalization__layer.b.float.string"></span><span class="target" id="namespaceeddl_1ae75da628304564ba2e5495db6b868a9f"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LayerNormalization</code><span class="sig-paren">(</span>layer <em>parent</em>, bool <em>affine</em>, float <em>epsilon</em>, string <em>name</em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl18LayerNormalizationE5layerfb6string">
-<span id="_CPPv3N4eddl18LayerNormalizationE5layerfb6string"></span><span id="_CPPv2N4eddl18LayerNormalizationE5layerfb6string"></span><span id="eddl::LayerNormalization__layer.float.b.string"></span><span class="target" id="namespaceeddl_1a602ada2bbfb60e2c6833432bffbdc784"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LayerNormalization</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>epsilon</em> = 0.00001f, bool <em>affine</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><br /></dt>
-<dd><p>Layer normalization layer. </p>
-<p>Applies Layer Normalization over a input.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1607.06450">https://arxiv.org/abs/1607.06450</a></p>
-</dd>
-<dt><strong>Return</strong></dt><dd><p>Parent layer after the normalization </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">momentum</span></code>: Momentum for the moving mean and the moving variance </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Value added to the denominator for numerical stability </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: A boolean value that when set to True, this module has learnable affine parameters </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “LayerNormalization” with arguments (layer parent, bool affine, float epsilon, string name) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
-<span class="n">l</span><span class="o">=</span><span class="n">LayerNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
-<span class="p">...</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">LayerNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">LayerNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “LayerNormalization” with arguments (layer parent, float epsilon = 0.00001f, bool affine = true, string name = “”) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">LayerNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">LayerNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">LayerNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="groupnormalization">
 <h2>GroupNormalization<a class="headerlink" href="#groupnormalization" title="Permalink to this headline">¶</a></h2>
@@ -343,15 +312,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
-<span class="n">l</span><span class="o">=</span><span class="n">GroupNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">GroupNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 </div>
 
@@ -375,7 +338,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

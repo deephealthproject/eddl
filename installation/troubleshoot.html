@@ -89,12 +89,32 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="build-options.html">Build and configuration</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshoot</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#segmentation-fault-core-dumped">Segmentation fault (core dumped)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#protobuf-problems">Protobuf problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#openmp">OpenMP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#macos-undefined-symbols-for-architecture-x86-64">(MacOS) Undefined symbols for architecture x86_64</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#import-export-numpy-files">Import/Export Numpy files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#my-model-doesn-t-fit-on-the-gpu-but-on-x-deep-learning-framework-does">My model doesn’t fit on the GPU but on X deep-learning framework does</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compilation">Compilation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#running-an-example">Running an example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openmp">OpenMP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#undefined-symbols-for-architecture-x86-64">Undefined symbols for architecture x86_64</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#memory">Memory</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#memory-optimization">Memory optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#protobuf">Protobuf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#missing-includes">Missing includes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#missing-lib">Missing lib</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#no-matching-function">No matching function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#old-version-of-protoc">Old version of protoc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#onnx-functions">ONNX functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cuda">CUDA</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#unsupported-gnu-version">Unsupported GNU version</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ides">IDEs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clion">CLion</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
@@ -159,20 +179,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -240,16 +255,146 @@
             
   <div class="section" id="troubleshoot">
 <h1>Troubleshoot<a class="headerlink" href="#troubleshoot" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="segmentation-fault-core-dumped">
-<h2>Segmentation fault (core dumped)<a class="headerlink" href="#segmentation-fault-core-dumped" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><strong>CPU:</strong> This is probably because your processor does not support AVX instructions.</p></li>
-<li><p><strong>GPU:</strong> Make sure you are using the computing service: <cite>CS_GPU</cite>.</p></li>
-</ul>
+<div class="section" id="compilation">
+<h2>Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="running-an-example">
+<h3>Running an example<a class="headerlink" href="#running-an-example" title="Permalink to this headline">¶</a></h3>
+<p>If you get an error like: <code class="docutils literal notranslate"><span class="pre">Segmentation</span> <span class="pre">fault</span> <span class="pre">(core</span> <span class="pre">dumped)</span></code> run running an example, this could be because you
+haven’t changed the computing service used in the example. (e.g: It uses de GPU and you don’t have one)</p>
+<p>Also, if it is using CPU and the library has been compile for CPU, it could be because your processor does not
+support AVX instructions.</p>
 </div>
-<div class="section" id="protobuf-problems">
-<h2>Protobuf problems<a class="headerlink" href="#protobuf-problems" title="Permalink to this headline">¶</a></h2>
-<p>If the ONNX function don’t work, it might be due to protobuf. So please, check:</p>
+<div class="section" id="openmp">
+<h3>OpenMP<a class="headerlink" href="#openmp" title="Permalink to this headline">¶</a></h3>
+<p>We have noticed several problems with default c++ compiler in Mac OS. If this is your case, we recommend you to use
+the <cite>clang</cite> compiler. To do so, you can execute the following commands (or append them to <code class="docutils literal notranslate"><span class="pre">.zprofile</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang
+<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang++
+<span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/llvm/lib&quot;</span>
+<span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
+</pre></div>
+</div>
+<p>If this doesn’t fix your problem, try updating CMake.
+As a last resort, you can always disable OpenMP and use the EDDL, by making use of the cmake flag <code class="docutils literal notranslate"><span class="pre">-D</span> <span class="pre">BUILD_OPENMP=OFF</span></code></p>
+</div>
+<div class="section" id="undefined-symbols-for-architecture-x86-64">
+<h3>Undefined symbols for architecture x86_64<a class="headerlink" href="#undefined-symbols-for-architecture-x86-64" title="Permalink to this headline">¶</a></h3>
+<p>This error might be due to the CMake cache or a conflict between compilers.</p>
+<p>First, try to delete the <code class="docutils literal notranslate"><span class="pre">build/</span></code> folder and run <code class="docutils literal notranslate"><span class="pre">cmake</span></code> again. If this doesn’t work, try to force a specific
+compiler either with the flag: <code class="docutils literal notranslate"><span class="pre">-DCMAKE_CXX_COMPILER</span></code> or by exporting these variables to your environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># In MacOS we recommend CLang</span>
+
+<span class="c1"># Set env variables</span>
+<span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang
+<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang++
+<span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/llvm/lib&quot;</span>
+<span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="memory">
+<h2>Memory<a class="headerlink" href="#memory" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="memory-optimization">
+<h3>Memory optimization<a class="headerlink" href="#memory-optimization" title="Permalink to this headline">¶</a></h3>
+<p>You can change the memory consumption through three different levels of memory optimization:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">full_mem</span></code> (default): No memory bound (highest speed at the expense of the memory requirements)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mid_mem</span></code>: Slight memory optimization (good trade-off memory-speed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">low_mem</span></code>: Optimized for hardware with restricted memory capabilities.</p></li>
+</ul>
+<p>Take into account that these levels respond to the typical memory-speed trade-off</p>
+</div>
+</div>
+<div class="section" id="protobuf">
+<h2>Protobuf<a class="headerlink" href="#protobuf" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="missing-includes">
+<h3>Missing includes<a class="headerlink" href="#missing-includes" title="Permalink to this headline">¶</a></h3>
+<p>If you gent an error like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.../eddl/src/serialization/onnx/onnx.pb.h:10:10: fatal error: google/protobuf/port_def.inc: No such file or directory
+<span class="c1">#include &lt;google/protobuf/port_def.inc&gt;</span>
+</pre></div>
+</div>
+<p>First, make sure if you have protobuf installed and cmake is detecting the paths correctly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-- Protobuf include: /usr/include
+-- Protobuf libraries: /usr/lib/x86_64-linux-gnu/libprotobuf.so-lpthread
+-- Protobuf compiler: /usr/bin/protoc
+</pre></div>
+</div>
+<p>If using conda, first check if you have activated the environment: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">eddl</span></code>.
+Then, if the error persists, check if the paths of protobuf outputed by CMake have been mixed up with the paths from
+the system (in case protobuf is also installed in the system) like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-- Protobuf dir:
+-- Protobuf include: /usr/include
+-- Protobuf libraries: /usr/lib/x86_64-linux-gnu/libprotobuf.so-lpthread
+-- Protobuf compiler: /home/salvacarrion/anaconda3/envs/eddl/bin/protoc
+</pre></div>
+</div>
+<p>You can try to fix it by forcing cmake to look into the conda env using the flags: <code class="docutils literal notranslate"><span class="pre">-DCMAKE_PREFIX_PATH=$CONDA_PREFIX</span> <span class="pre">-DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX</span></code> (We recommend to delete the <code class="docutils literal notranslate"><span class="pre">build/</span></code> folder to avoid cache problems)</p>
+<p>If the error persists, use the flag <cite>-D BUILD_SUPERBUILD=ON</cite> to download all dependencies and link them automatically to the EDDL.</p>
+</div>
+<div class="section" id="missing-lib">
+<h3>Missing lib<a class="headerlink" href="#missing-lib" title="Permalink to this headline">¶</a></h3>
+<p>If you get an error like this…</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="o">[</span><span class="m">2</span><span class="o">]</span>: *** No rule to make target <span class="s1">&#39;cmake/third_party/protobuf/lib/libprotobuf.a&#39;</span>, needed by <span class="s1">&#39;lib64/libeddl.so&#39;</span>.  Stop.
+</pre></div>
+</div>
+<p>…it is because when using <code class="docutils literal notranslate"><span class="pre">-DBUILD_SUPERBUILD=ON</span></code>, all critical dependencies are downloaded and compiled locally. These
+compiled libraries can be found in <code class="docutils literal notranslate"><span class="pre">eddl/build/cmake/third_party/</span></code>. The problem with the protobuf static library is
+that in some systems, it can be found either on <code class="docutils literal notranslate"><span class="pre">protobuf/lib/</span></code> or <code class="docutils literal notranslate"><span class="pre">protobuf/lib64/</span></code>.</p>
+<p>Because the EDDL looks into <code class="docutils literal notranslate"><span class="pre">lib/</span></code> (by default), when the protobuf library appears in <code class="docutils literal notranslate"><span class="pre">lib64/</span></code> we cannot find it.
+To fix this, create a symbolic link from <code class="docutils literal notranslate"><span class="pre">lib64/</span></code> to <code class="docutils literal notranslate"><span class="pre">lib/</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Inside: eddl/build/cmake/third_party/protobuf/</span>
+ln -s lib64 lib
+</pre></div>
+</div>
+</div>
+<div class="section" id="no-matching-function">
+<h3>No matching function<a class="headerlink" href="#no-matching-function" title="Permalink to this headline">¶</a></h3>
+<p>See question below (<code class="docutils literal notranslate"><span class="pre">Old</span> <span class="pre">version</span> <span class="pre">of</span> <span class="pre">protoc</span></code>).</p>
+</div>
+<div class="section" id="old-version-of-protoc">
+<h3>Old version of protoc<a class="headerlink" href="#old-version-of-protoc" title="Permalink to this headline">¶</a></h3>
+<p>This is because your version of protobuf is not compatible with the ONNX files we provide (<code class="docutils literal notranslate"><span class="pre">onnx.pb.h/cc</span></code> and
+<code class="docutils literal notranslate"><span class="pre">onnx.proto</span></code>). We know our that the current version of the EDDL v0.7 (at the moment of writing this) works with
+protobuf 3.11, to to install it, you can either use the conda environment (recommended):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install dependencies</span>
+conda env create -f environment.yml
+conda activate eddl
+</pre></div>
+</div>
+<p>…or install protobuf manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Variables</span>
+<span class="nv">PROTOBUF_VERSION</span><span class="o">=</span><span class="m">3</span>.11.4
+
+<span class="c1"># Install requirements</span>
+sudo apt-get install -y wget
+sudo apt-get install -y autoconf automake libtool curl make g++ unzip
+
+<span class="c1"># Download source</span>
+wget https://github.com/protocolbuffers/protobuf/releases/download/v<span class="nv">$PROTOBUF_VERSION</span>/protobuf-cpp-<span class="nv">$PROTOBUF_VERSION</span>.tar.gz
+tar -xf protobuf-cpp-<span class="nv">$PROTOBUF_VERSION</span>.tar.gz
+
+<span class="c1"># Build and install</span>
+<span class="nb">cd</span> protobuf-<span class="nv">$PROTOBUF_VERSION</span>
+./configure
+make -j<span class="k">$(</span>nproc<span class="k">)</span>
+make install  <span class="c1"># you may need sudo</span>
+ldconfig
+</pre></div>
+</div>
+<p>If everything is correct, cmake should output something like this, and compile without problems.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span> <span class="n">Use</span> <span class="n">Protobuf</span><span class="p">:</span> <span class="n">ON</span>
+<span class="o">--</span> <span class="n">Protobuf</span> <span class="nb">dir</span><span class="p">:</span>
+<span class="o">--</span> <span class="n">Protobuf</span> <span class="n">include</span><span class="p">:</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">include</span>
+<span class="o">--</span> <span class="n">Protobuf</span> <span class="n">libraries</span><span class="p">:</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libprotobuf</span><span class="o">.</span><span class="n">so</span><span class="o">-</span><span class="n">lpthread</span>
+<span class="o">--</span> <span class="n">Protobuf</span> <span class="n">compiler</span><span class="p">:</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">protoc</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="onnx-functions">
+<h3>ONNX functions<a class="headerlink" href="#onnx-functions" title="Permalink to this headline">¶</a></h3>
+<p>If the ONNX functions don’t work, it might be due to a problem with protobuf so:</p>
 <ol class="arabic">
 <li><p>Make sure you have <code class="docutils literal notranslate"><span class="pre">protobuf</span></code> and <code class="docutils literal notranslate"><span class="pre">libprotobuf</span></code> installed in standard paths</p></li>
 <li><p>If you are building the EDDL from source:</p>
@@ -267,48 +412,54 @@
 <p>Additionally, we recommend to make use of the anaconda environment (see <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a> section for more details).</p>
 </div>
 </div>
-<div class="section" id="openmp">
-<h2>OpenMP<a class="headerlink" href="#openmp" title="Permalink to this headline">¶</a></h2>
-<p>If you are using MacOS, we have noticed several problems with default c++ compiler. If one of those problems relate
-to <code class="docutils literal notranslate"><span class="pre">OpenMP</span></code>, we recommend you to use the <cite>clang</cite> compiler. To do so, you can execute the following commands
-(or append them to <code class="docutils literal notranslate"><span class="pre">.zprofile</span></code>):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang
-<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang++
-<span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/llvm/lib&quot;</span>
-<span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
+</div>
+<div class="section" id="cuda">
+<h2>CUDA<a class="headerlink" href="#cuda" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="unsupported-gnu-version">
+<h3>Unsupported GNU version<a class="headerlink" href="#unsupported-gnu-version" title="Permalink to this headline">¶</a></h3>
+<p>If you gent an error like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/usr/include/crt/host_config.h:138:2: error: <span class="c1">#error -- unsupported GNU version! gcc versions later than 8 are not supported!</span>
+<span class="m">138</span> <span class="p">|</span> <span class="c1">#error -- unsupported GNU version! gcc versions later than 8 are not supported!</span>
 </pre></div>
 </div>
-<p>If this doesn’t fix your problem, try updating CMake.
-As a last resort, you can always disable OpenMP and use the EDDL, by making use of the cmake flag <code class="docutils literal notranslate"><span class="pre">-D</span> <span class="pre">BUILD_OPENMP=OFF</span></code></p>
+<p>This is because NVIDIA does not support all GNU compilers. Each new version of CUDA support a different range of GNU compilers.
+The solution is simply to use a GNU C++ compiler with a version lower or equal to 8.x; you can do this by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>// Exporting these aliases to .bashrc
+<span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>gcc-8
+<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>g++-8
+
+// Or creating a symbolic link to the CUDA GCC
+sudo ln -s /usr/bin/gcc-8 /usr/local/cuda/bin/gcc
+sudo ln -s /usr/bin/g++-8 /usr/local/cuda/bin/g++
+</pre></div>
 </div>
-<div class="section" id="macos-undefined-symbols-for-architecture-x86-64">
-<h2>(MacOS) Undefined symbols for architecture x86_64<a class="headerlink" href="#macos-undefined-symbols-for-architecture-x86-64" title="Permalink to this headline">¶</a></h2>
-<p>This error might be due to a conflict with the default compilers. A simple workaround is to force the use <code class="docutils literal notranslate"><span class="pre">CClang</span></code>
-(for instance) for C and C++, and then install the EDDL again:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set env variables</span>
-<span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang
-<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang++
-<span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/llvm/lib&quot;</span>
-<span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
+<p>Anyway, it is convenient to check which is the maximum GCC version that your CUDA supports.</p>
+<p>If the problem persists, reinstall CUDA from the <a class="reference external" href="https://developer.nvidia.com/cuda-downloads">official site</a></p>
+</div>
+</div>
+<div class="section" id="ides">
+<h2>IDEs<a class="headerlink" href="#ides" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="clion">
+<h3>CLion<a class="headerlink" href="#clion" title="Permalink to this headline">¶</a></h3>
+<p>I usually have to set additional flags in order to make CLion able to run the EDDL smoothly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_TARGET<span class="o">=</span>GPU
+-DCMAKE_C_COMPILER<span class="o">=</span>/usr/bin/gcc-8
+-DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-8
+-DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/bin/nvcc
+-DCMAKE_CUDA_HOST_COMPILER<span class="o">=</span>/usr/bin/g++-8
+-DCUDA_TOOLKIT_ROOT_DIR<span class="o">=</span>/usr/local/cuda-11.1
+</pre></div>
+</div>
+<p>If you want to run it using the conda environment, add:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dir
+-DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/dir
+
+<span class="c1"># Note:</span>
+To get the path, activate the environment a type:
+<span class="nb">echo</span> <span class="nv">$CONDA_PREFIX</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="import-export-numpy-files">
-<h2>Import/Export Numpy files<a class="headerlink" href="#import-export-numpy-files" title="Permalink to this headline">¶</a></h2>
-<p>(Theoretical) Numpy files include a version numbering for the format (independent of the Numpy version).
-So if a file it’s written using a future format (&gt;= 3.0) that is not backward compatible with the previous importers
-and we haven’t updated our importer, we won’t be able to import the numpy file properly.</p>
-<p>If this is your case, please, create a new issue on <a class="reference external" href="https://github.com/deephealthproject/eddl/issues">github issue</a> and temporally save your numpy file using and older version format (use Numpy).</p>
-</div>
-<div class="section" id="my-model-doesn-t-fit-on-the-gpu-but-on-x-deep-learning-framework-does">
-<h2>My model doesn’t fit on the GPU but on X deep-learning framework does<a class="headerlink" href="#my-model-doesn-t-fit-on-the-gpu-but-on-x-deep-learning-framework-does" title="Permalink to this headline">¶</a></h2>
-<p>You can change the memory consumption through these memory levels:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">full_mem</span></code> (default): No memory bound (highest speed at the expense of the memory requirements)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mid_mem</span></code>: Slight memory optimization (good trade-off memory-speed)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">low_mem</span></code>: Optimized for hardware with restricted memory capabilities.</p></li>
-</ul>
-<p>Take into account that these levels respond to the classical memory-speed trade-off</p>
 </div>
 </div>
 
@@ -332,7 +483,7 @@ and we haven’t updated our importer, we won’t be able to import the numpy fi
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

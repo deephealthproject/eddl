@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Input/Output Operations" href="input_output.html" />
-    <link rel="prev" title="Binary operations" href="binary.html" /> 
+    <link rel="prev" title="Image operations" href="image.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -151,21 +151,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image.html">Image operations</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Indexing &amp; Sorting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#indexing">Indexing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#nonzero">nonzero</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#where">where</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#select">select</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#deselect">deselect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nonzero">Nonzero</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#where">Where</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#select">Select</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#set-select">Set Select</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sorting">Sorting</a><ul>
@@ -178,7 +174,6 @@
 <li class="toctree-l1"><a class="reference internal" href="input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
 </ul>
 
@@ -246,15 +241,10 @@
             
   <div class="section" id="indexing-sorting">
 <h1>Indexing &amp; Sorting<a class="headerlink" href="#indexing-sorting" title="Permalink to this headline">¶</a></h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Section in progress</p>
-<p>Read this: <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md">https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md</a></p>
-</div>
 <div class="section" id="indexing">
 <h2>Indexing<a class="headerlink" href="#indexing" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="nonzero">
-<h3>nonzero<a class="headerlink" href="#nonzero" title="Permalink to this headline">¶</a></h3>
+<h3>Nonzero<a class="headerlink" href="#nonzero" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor7nonzeroEb">
 <span id="_CPPv3N6Tensor7nonzeroEb"></span><span id="_CPPv2N6Tensor7nonzeroEb"></span><span id="Tensor::nonzero__b"></span><span class="target" id="class_tensor_1a5b2d66fd0dd74af085a9f7dd9fb8588d"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">nonzero</code><span class="sig-paren">(</span>bool <em>sort_indices</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7nonzeroEb" title="Permalink to this definition">¶</a><br /></dt>
@@ -263,7 +253,7 @@
 <dt><strong>Return</strong></dt><dd><p>A tensor containing the indices of the nonzero elements. </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">sort_indices</span></code>: Whether to sort the indices or not.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sort_indices</span></code>: Whether to sort the indices or not. (default: not sorted)</p></li>
 </ul>
 </dd>
 </dl>
@@ -271,210 +261,238 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">nonzero</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span> <span class="c1">//Return, sorted, the indices whose values are not zero</span>
- <span class="c1">// indices =&gt; [1,2,4]</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 10.00 20.00]</span>
+<span class="c1">// [0.00 50.00 0.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">nonzero</span><span class="p">();</span>
+<span class="c1">// [1 2 4]</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="where">
-<h3>where<a class="headerlink" href="#where" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5whereEP6TensorP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor5whereEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor5whereEP6TensorP6TensorP6Tensor"></span><span id="Tensor::where__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a2c3d5b79f0378a1b34176b583b0feb62"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">where</code><span class="sig-paren">(</span>Tensor *<em>condition</em>, Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Depending on <code class="docutils literal notranslate"><span class="pre">condition</span></code>, returns a tensor whith elements from <code class="docutils literal notranslate"><span class="pre">A</span></code> or <code class="docutils literal notranslate"><span class="pre">B</span></code>. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the same shape with elements from <code class="docutils literal notranslate"><span class="pre">A</span></code> if <code class="docutils literal notranslate"><span class="pre">condition</span></code> holds and from <code class="docutils literal notranslate"><span class="pre">B</span></code> otherwise.. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">condition</span></code>: Tensor with the condition to be accomplished. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
-</ul>
-</dd>
-</dl>
+<h3>Where<a class="headerlink" href="#where" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::where” with arguments (Tensor *condition, Tensor *A, Tensor *B) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5whereEP6TensorP6TensorP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor5whereEP6TensorP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor5whereEP6TensorP6TensorP6TensorP6Tensor"></span><span id="Tensor::where__TensorP.TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a12dc78e7c65150c0c378a29855132937"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">where</code><span class="sig-paren">(</span>Tensor *<em>condition</em>, Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Depending on <code class="docutils literal notranslate"><span class="pre">condition</span></code>, returns a tensor whith elements from <code class="docutils literal notranslate"><span class="pre">A</span></code> or <code class="docutils literal notranslate"><span class="pre">B</span></code>. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">condition</span></code>: Tensor with the condition to be accomplished. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: A tensor with elements from <code class="docutils literal notranslate"><span class="pre">A</span></code> if <code class="docutils literal notranslate"><span class="pre">condition</span></code> holds and from <code class="docutils literal notranslate"><span class="pre">B</span></code> otherwise.. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">where</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">condition</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">);</span>  <span class="c1">// where(x &gt; 0, x[random], y[ones])</span>
- <span class="k">static</span> <span class="kt">void</span> <span class="n">where</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">condition</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">C</span><span class="p">);</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">where</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">where</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="c1">// [</span>
+<span class="c1">// [-0.44 -0.22 0.12]</span>
+<span class="c1">// [1.37 0.50 -0.72]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.00]</span>
+<span class="c1">// [0.00 0.00 0.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">condition</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">greater</span><span class="p">(</span><span class="n">t2</span><span class="p">);</span>
+<span class="c1">// [</span>
+<span class="c1">// [0 0 1]</span>
+<span class="c1">// [1 1 0]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">);</span>
+<span class="c1">// [</span>
+<span class="c1">// [0.00 0.00 0.12]</span>
+<span class="c1">// [1.37 0.50 0.00]</span>
+<span class="c1">// ]</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="select">
-<h3>select<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor6selectEP6TensorP6Tensor6vectorIiEiib">
-<span id="_CPPv3N6Tensor6selectEP6TensorP6Tensor6vectorIiEiib"></span><span id="_CPPv2N6Tensor6selectEP6TensorP6Tensor6vectorIiEiib"></span><span id="Tensor::select__TensorP.TensorP.vector:i:.i.i.b"></span><span class="target" id="class_tensor_1ab71d456427862b26439895a42c4ba28c"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">select</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>sind</em>, int <em>ini</em>, int <em>end</em>, bool <em>mask_zeros</em> = false<span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="k">static</span> <span class="kt">void</span> <span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">sind</span><span class="p">,</span> <span class="kt">int</span> <span class="n">ini</span><span class="p">,</span> <span class="kt">int</span> <span class="n">end</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">mask_zeros</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>
+<h3>Select<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::select” with arguments (const vector&lt;string&gt; &amp;indices) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
 </div>
-<div class="section" id="deselect">
-<h3>deselect<a class="headerlink" href="#deselect" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor8deselectEP6TensorP6Tensor6vectorIiEiiib">
-<span id="_CPPv3N6Tensor8deselectEP6TensorP6Tensor6vectorIiEiiib"></span><span id="_CPPv2N6Tensor8deselectEP6TensorP6Tensor6vectorIiEiiib"></span><span id="Tensor::deselect__TensorP.TensorP.vector:i:.i.i.i.b"></span><span class="target" id="class_tensor_1a7f5661da98d6c48b01f3e81917daeb2c"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">deselect</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>sind</em>, int <em>ini</em>, int <em>end</em>, int <em>inc</em> = 0, bool <em>mask_zeros</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8deselectEP6TensorP6Tensor6vectorIiEiiib" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+</div>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="k">static</span> <span class="kt">void</span> <span class="n">deselect</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">sind</span><span class="p">,</span> <span class="kt">int</span> <span class="n">ini</span><span class="p">,</span> <span class="kt">int</span> <span class="n">end</span><span class="p">,</span><span class="kt">int</span> <span class="n">inc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">mask_zeros</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="c1">// [</span>
+<span class="c1">// [2.30 -1.13 -0.61 0.04]</span>
+<span class="c1">// [-0.95 0.96 -0.32 -0.61]</span>
+<span class="c1">// [0.29 -0.14 -0.42 -0.04]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">select</span><span class="p">({</span><span class="s">&quot;0&quot;</span><span class="p">,</span> <span class="s">&quot;2&quot;</span><span class="p">});</span>  <span class="c1">// Number at (0, 2)</span>
+<span class="c1">// [</span>
+<span class="c1">// [-0.61]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">select</span><span class="p">({</span><span class="s">&quot;:&quot;</span><span class="p">,</span> <span class="s">&quot;2&quot;</span><span class="p">});</span> <span class="c1">// 3rd column</span>
+<span class="c1">// [</span>
+<span class="c1">// [-0.61]</span>
+<span class="c1">// [-0.32]</span>
+<span class="c1">// [-0.42]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t4</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">select</span><span class="p">({</span><span class="s">&quot;0:2&quot;</span><span class="p">,</span> <span class="s">&quot;-2:&quot;</span><span class="p">});</span> <span class="c1">// 3rd and 4th column from 1st and 2nd row</span>
+<span class="c1">// [</span>
+<span class="c1">// [-0.61 0.04]</span>
+<span class="c1">// [-0.32 -0.61]</span>
+<span class="c1">// ]</span>
 </pre></div>
-</td></tr></table></div>
+</div>
+</div>
+<div class="section" id="set-select">
+<h3>Set Select<a class="headerlink" href="#set-select" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “set_select” with arguments (const vector&lt;string&gt; &amp;indices, float value) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">__global__</span> <span class="n">void</span> <span class="n">set_select</span><span class="p">(</span><span class="nb">float</span> <span class="o">*</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="p">,</span> <span class="n">long</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">tensorNN</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">set_select</span><span class="p">({</span><span class="s">&quot;0&quot;</span><span class="p">,</span> <span class="s">&quot;2&quot;</span><span class="p">},</span> <span class="mf">2.0f</span><span class="p">);</span> <span class="c1">// Set element (0, 2) to &quot;2&quot;</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 2.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="n">t2</span><span class="o">-&gt;</span><span class="n">set_select</span><span class="p">({</span><span class="s">&quot;:&quot;</span><span class="p">,</span> <span class="s">&quot;2&quot;</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>  <span class="c1">// Set 2nd column to &quot;5&quot;</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 5.00 1.00]</span>
+<span class="c1">// [1.00 1.00 5.00 1.00]</span>
+<span class="c1">// [1.00 1.00 5.00 1.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="n">t3</span><span class="o">-&gt;</span><span class="n">set_select</span><span class="p">({</span><span class="s">&quot;0:2&quot;</span><span class="p">,</span> <span class="s">&quot;-2:&quot;</span><span class="p">},</span> <span class="mf">7.0f</span><span class="p">);</span>  <span class="c1">// Set 3rd and 4th column from 1st and 2nd row to &quot;7&quot;</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 7.00 7.00]</span>
+<span class="c1">// [1.00 1.00 7.00 7.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “set_select” with arguments (const vector&lt;string&gt; &amp;indices, Tensor *A) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">__global__</span> <span class="n">void</span> <span class="n">set_select</span><span class="p">(</span><span class="nb">float</span> <span class="o">*</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="p">,</span> <span class="n">long</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">tensorNN</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">set_select</span><span class="p">({</span><span class="s">&quot;0&quot;</span><span class="p">,</span> <span class="s">&quot;2&quot;</span><span class="p">},</span> <span class="n">t2</span><span class="p">);</span> <span class="c1">// Set element (0, 2) to &quot;5&quot;</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 5.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t4</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
+<span class="n">t3</span><span class="o">-&gt;</span><span class="n">set_select</span><span class="p">({</span><span class="s">&quot;:&quot;</span><span class="p">,</span> <span class="s">&quot;2&quot;</span><span class="p">},</span> <span class="n">t4</span><span class="p">);</span>  <span class="c1">// Set 2nd column to &quot;5&quot;</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 5.00 1.00]</span>
+<span class="c1">// [1.00 1.00 5.00 1.00]</span>
+<span class="c1">// [1.00 1.00 5.00 1.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t5</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t6</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span> <span class="mf">5.0f</span><span class="p">);</span>
+<span class="n">t5</span><span class="o">-&gt;</span><span class="n">set_select</span><span class="p">({</span><span class="s">&quot;0:2&quot;</span><span class="p">,</span> <span class="s">&quot;-2:&quot;</span><span class="p">},</span> <span class="n">t6</span><span class="p">);</span>  <span class="c1">// Set 3rd and 4th column from 1st and 2nd row to &quot;5&quot;</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 5.00 5.00]</span>
+<span class="c1">// [1.00 1.00 5.00 5.00]</span>
+<span class="c1">// [1.00 1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="sorting">
 <h2>Sorting<a class="headerlink" href="#sorting" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="sort">
 <h3>sort<a class="headerlink" href="#sort" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5sort_Ebb">
-<span id="_CPPv3N6Tensor5sort_Ebb"></span><span id="_CPPv2N6Tensor5sort_Ebb"></span><span id="Tensor::sort___b.b"></span><span class="target" id="class_tensor_1a50d0d429523cf9858e6ad5444a0d5d71"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sort_</code><span class="sig-paren">(</span>bool <em>descending</em> = false, bool <em>stable</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5sort_Ebb" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Sort a tensor inplace. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">descending</span></code>: Wether to sort the tensor descending or not. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stable</span></code>: Wether to use stable sorting or not. Stable sorting keeps the order of equal elements. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::sort” with arguments (bool descending = false, bool stable = true) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4sortEbb">
-<span id="_CPPv3N6Tensor4sortEbb"></span><span id="_CPPv2N6Tensor4sortEbb"></span><span id="Tensor::sort__b.b"></span><span class="target" id="class_tensor_1ace0207c414c51a3709b8a954c15d240e"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sort</code><span class="sig-paren">(</span>bool <em>descending</em> = false, bool <em>stable</em> = true<span class="sig-paren">)</span><br /></dt>
-<dd><p>Sort a tensor. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the sorted elements. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">descending</span></code>: Wether to sort the tensor descending or not. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stable</span></code>: Wether to use stable sorting or not. Stable sorting keeps the order of equal elements. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4sortEP6TensorP6Tensorbb">
-<span id="_CPPv3N6Tensor4sortEP6TensorP6Tensorbb"></span><span id="_CPPv2N6Tensor4sortEP6TensorP6Tensorbb"></span><span id="Tensor::sort__TensorP.TensorP.b.b"></span><span class="target" id="class_tensor_1ab059c537cd037c3f2e188bcc97cc7b70"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sort</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, bool <em>descending</em> = false, bool <em>stable</em> = true<span class="sig-paren">)</span><br /></dt>
-<dd><p>Sort a tensor. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">descending</span></code>: Wether to sort the tensor descending or not. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stable</span></code>: Wether to use stable sorting or not. Stable sorting keeps the order of equal elements. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mi">100</span><span class="p">,</span><span class="mi">90</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">sorted1</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">sort</span><span class="p">();</span> <span class="c1">//Sort ascending</span>
- <span class="c1">// sorted1 =&gt; [0,1,3,50,90,100]</span>
-
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">sorted2</span><span class="p">;</span>
- <span class="n">Tensor</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">sorted2</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span> <span class="c1">// Sort descending</span>
- <span class="c1">// sorted2 =&gt; [100,90,50,3,1,0]</span>
-
- <span class="n">t1</span><span class="o">-&gt;</span><span class="n">sort_</span><span class="p">();</span><span class="c1">//Sort ascending inplace</span>
- <span class="c1">// t1 =&gt; [0,1,3,50,90,100]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">sort</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">sort</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">5</span><span class="p">});</span>
+<span class="c1">// [-0.01 0.34 0.10 -0.57 -0.28]</span>
+
+ <span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">sort</span><span class="p">();</span>  <span class="c1">// Ascending</span>
+<span class="c1">// [-0.57 -0.28 -0.01 0.10 0.34]</span>
+
+ <span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">sort</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>  <span class="c1">// Descending==True</span>
+<span class="c1">// [0.34 0.10 -0.01 -0.28 -0.57]</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">sort_</span><span class="p">();</span>  <span class="c1">// In-place</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="argsort">
 <h3>argsort<a class="headerlink" href="#argsort" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor7argsortEbb">
-<span id="_CPPv3N6Tensor7argsortEbb"></span><span id="_CPPv2N6Tensor7argsortEbb"></span><span id="Tensor::argsort__b.b"></span><span class="target" id="class_tensor_1aa98b2219462ee0080fb8fc489613f68a"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">argsort</code><span class="sig-paren">(</span>bool <em>descending</em> = false, bool <em>stable</em> = true<span class="sig-paren">)</span><br /></dt>
-<dd><p>Sort the indices of a tensor according to the elements in each position. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the sorted indices. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">descending</span></code>: Wether to sort the tensor descending or not. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stable</span></code>: Wether to use stable sorting or not. Stable sorting keeps the order of equal elements. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::argsort” with arguments (bool descending = false, bool stable = true) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor7argsortEP6TensorP6Tensorbb">
-<span id="_CPPv3N6Tensor7argsortEP6TensorP6Tensorbb"></span><span id="_CPPv2N6Tensor7argsortEP6TensorP6Tensorbb"></span><span id="Tensor::argsort__TensorP.TensorP.b.b"></span><span class="target" id="class_tensor_1ae5ac8ae63244be39612184be1b626c77"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">argsort</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, bool <em>descending</em> = false, bool <em>stable</em> = true<span class="sig-paren">)</span><br /></dt>
-<dd><p>Sort the indices of a tensor according to the elements in each position. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the sorted indices. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Output tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">descending</span></code>: Wether to sort the tensor descending or not. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stable</span></code>: Wether to use stable sorting or not. Stable sorting keeps the order of equal elements. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mi">100</span><span class="p">,</span><span class="mi">90</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
-
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">sorted_indices</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">argsort</span><span class="p">();</span> <span class="c1">//Sort indices ascending</span>
- <span class="c1">// sorted_indices =&gt; [2,5,4,3,1,0]</span>
-
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">sorted_indices2</span><span class="p">;</span>
- <span class="n">Tensor</span><span class="o">::</span><span class="n">argsort</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">sorted_indices2</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span> <span class="c1">//Sort indices descending</span>
- <span class="c1">// sorted_indices =&gt; [0,1,3,4,5,2]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">argsort</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">argsort</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">5</span><span class="p">});</span>
+<span class="c1">// [-0.01 0.34 0.10 -0.57 -0.28]</span>
+
+ <span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">argsort</span><span class="p">();</span>  <span class="c1">// Ascending</span>
+<span class="c1">// [3 4 0 2 1]</span>
+
+ <span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">argsort</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>  <span class="c1">// Descending==True</span>
+<span class="c1">// [1 2 0 4 3]</span>
+
+<span class="c1">// Other ways</span>
+<span class="n">Tensor</span><span class="o">::</span><span class="n">argsort</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">);</span> <span class="c1">// static</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -490,7 +508,7 @@
         <a href="input_output.html" class="btn btn-neutral float-right" title="Input/Output Operations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="binary.html" class="btn btn-neutral float-left" title="Binary operations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="image.html" class="btn btn-neutral float-left" title="Image operations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -499,7 +517,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

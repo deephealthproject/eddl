@@ -172,20 +172,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -322,24 +317,16 @@
 </div>
 <div class="section" id="train-batch">
 <h2>train_batch<a class="headerlink" href="#train-batch" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE">
-<span id="_CPPv3N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="_CPPv2N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="eddl::train_batch__model.vector:TensorP:.vector:TensorP:.vector:i:"></span><span class="target" id="namespaceeddl_1a07a43f13a4616095bd0529a6efb880e5"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">train_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor*&gt; <em>in</em>, vector&lt;Tensor*&gt; <em>out</em>, vector&lt;int&gt; <em>indices</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Train the model using the samples of the input vector that are on the selected indices vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Net to train </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of samples </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector of labels or expected output </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of indices of the samples to train </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::train_batch” with arguments (model net, vector&lt;Tensor*&gt; in, vector&lt;Tensor*&gt; out, vector&lt;int&gt; indices) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">train_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">train_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">tshape</span> <span class="n">s</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">-&gt;</span><span class="n">getShape</span><span class="p">();</span>
 <span class="kt">int</span> <span class="n">num_batches</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">batch_size</span><span class="p">;</span>
@@ -353,23 +340,16 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE">
-<span id="_CPPv3N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::train_batch__model.vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1af8b8b8ab0c3dec392319df582d6264dc"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">train_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor*&gt; <em>in</em>, vector&lt;Tensor*&gt; <em>out</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Train the model using the samples of the input vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Net to train </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of samples </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector of labels or expected output </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::train_batch” with arguments (model net, vector&lt;Tensor*&gt; in, vector&lt;Tensor*&gt; out) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">train_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">train_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">xbatch</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">784</span><span class="p">});</span>
 <span class="n">Tensor</span><span class="o">*</span> <span class="n">ybatch</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">10</span><span class="p">})</span>
@@ -389,24 +369,16 @@
 </div>
 <div class="section" id="eval-batch">
 <h2>eval_batch<a class="headerlink" href="#eval-batch" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE">
-<span id="_CPPv3N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="_CPPv2N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="eddl::eval_batch__model.vector:TensorP:.vector:TensorP:.vector:i:"></span><span class="target" id="namespaceeddl_1a178a2363a2008a631d287395c3603d17"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">eval_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor*&gt; <em>in</em>, vector&lt;Tensor*&gt; <em>out</em>, vector&lt;int&gt; <em>indices</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Evaluate the model using the samples of the input vector that are on the selected indices vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Net to evaluate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of samples </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector of labels or expected output </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of indices of the samples to evaluate </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::eval_batch” with arguments (model net, vector&lt;Tensor*&gt; in, vector&lt;Tensor*&gt; out, vector&lt;int&gt; indices) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">eval_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">eval_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">num_batches</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>  <span class="p">{</span>
     <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">indices</span><span class="p">(</span><span class="n">batch_size</span><span class="p">);</span>
@@ -417,23 +389,16 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE">
-<span id="_CPPv3N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::eval_batch__model.vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1af1c6aa4e60d0b1788a92056ce36f4c14"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">eval_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor*&gt; <em>in</em>, vector&lt;Tensor*&gt; <em>out</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Evaluate the model using the samples of the input vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Net to evaluate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of samples </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector of labels or expected output </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::eval_batch” with arguments (model net, vector&lt;Tensor*&gt; in, vector&lt;Tensor*&gt; out) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">eval_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">eval_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="set-mode">
 <h2>set_mode<a class="headerlink" href="#set-mode" title="Permalink to this headline">¶</a></h2>
@@ -478,73 +443,58 @@
 </div>
 <div class="section" id="forward">
 <h2>forward<a class="headerlink" href="#forward" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7forwardE5model6vectorIP5LayerE">
-<span id="_CPPv3N4eddl7forwardE5model6vectorIP5LayerE"></span><span id="_CPPv2N4eddl7forwardE5model6vectorIP5LayerE"></span><span id="eddl::forward__model.vector:LayerP:"></span><span class="target" id="namespaceeddl_1a3f899b918bb8d7fe9f6106e26fb7ec68"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>m</em>, vector&lt;Layer*&gt; <em>in</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Computes the gradient of the model through the forward graph using the layers in the provided vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of Layer pointers </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::forward” with arguments (model m, vector&lt;Layer*&gt; in) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7forwardE5model6vectorIP6TensorE">
-<span id="_CPPv3N4eddl7forwardE5model6vectorIP6TensorE"></span><span id="_CPPv2N4eddl7forwardE5model6vectorIP6TensorE"></span><span id="eddl::forward__model.vector:TensorP:"></span><span class="target" id="namespaceeddl_1af1abb92c8c91048165b16ff87bd79574"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>m</em>, vector&lt;Tensor*&gt; <em>in</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Computes the gradient of the model through the forward graph using the tensors in the provided vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of Tensor pointers </p></li>
-</ul>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::forward” with arguments (model m, vector&lt;Tensor*&gt; in) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">forward</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">xbatch</span><span class="p">});</span>
 </pre></div>
 </div>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7forwardE5model">
-<span id="_CPPv3N4eddl7forwardE5model"></span><span id="_CPPv2N4eddl7forwardE5model"></span><span id="eddl::forward__model"></span><span class="target" id="namespaceeddl_1af7baefaa6c899a70ca533c1daa64bd5c"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Computes the gradient of the model through the forward graph. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::forward” with arguments (model m) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7forwardE5modeli">
-<span id="_CPPv3N4eddl7forwardE5modeli"></span><span id="_CPPv2N4eddl7forwardE5modeli"></span><span id="eddl::forward__model.i"></span><span class="target" id="namespaceeddl_1a9946d015753d049bbea7f3cda77fda2c"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>m</em>, int <em>b</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Computes the gradient of the model through the forward graph and resizes the batch size of the model to <code class="docutils literal notranslate"><span class="pre">b</span></code>. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code>: New batch size </p></li>
-</ul>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::forward” with arguments (model m, int b) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="zerograds">
 <h2>zeroGrads<a class="headerlink" href="#zerograds" title="Permalink to this headline">¶</a></h2>
@@ -570,55 +520,42 @@
 </div>
 <div class="section" id="backward">
 <h2>backward<a class="headerlink" href="#backward" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl8backwardE5model6vectorIP6TensorE">
-<span id="_CPPv3N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="_CPPv2N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="eddl::backward__model.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a9deaeecde0f468cff06ca6d12fc98d11"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>model <em>m</em>, vector&lt;Tensor*&gt; <em>target</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Computes the gradient by passing its argument (1x1 unit tensor by default) through the backward graph. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">target</span></code>: Targets </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::backward” with arguments (model m, vector&lt;Tensor*&gt; target) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">backward</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">ybatch</span><span class="p">});</span>
 </pre></div>
 </div>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl8backwardE5model">
-<span id="_CPPv3N4eddl8backwardE5model"></span><span id="_CPPv2N4eddl8backwardE5model"></span><span id="eddl::backward__model"></span><span class="target" id="namespaceeddl_1ac821a1edd54a2d188847071c769d524c"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>model <em>net</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Computes the gradient of the model through the backward graph. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::backward” with arguments (model net) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl8backwardE4loss">
-<span id="_CPPv3N4eddl8backwardE4loss"></span><span id="_CPPv2N4eddl8backwardE4loss"></span><span id="eddl::backward__loss"></span><span class="target" id="namespaceeddl_1a5ada83693011dff18ecb06a1c9071f27"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>loss <em>l</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Computes the gradient of the model associated to the given loss object through the backward graph. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Loss </p></li>
-</ul>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::backward” with arguments (loss l) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="update">
 <h2>update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
@@ -758,40 +695,26 @@
 </div>
 <div class="section" id="newloss">
 <h2>newloss<a class="headerlink" href="#newloss" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string">
-<span id="_CPPv3N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span id="_CPPv2N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span class="target" id="namespaceeddl_1ae42cdc505dc6c016468d06d432037d93"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newloss</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer*<span class="sig-paren">(</span>Layer*<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, Layer *<em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><br /></dt>
-<dd><p>Create new Loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Created Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Loss function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Loss input </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Loss name </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::newloss” with arguments (const std::function&lt;Layer*(Layer*)&gt; &amp;f, Layer *in, string name) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string">
-<span id="_CPPv3N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span id="_CPPv2N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span class="target" id="namespaceeddl_1ac6184b5984b223be1c3a5ad5dfe23ab1"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newloss</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer*<span class="sig-paren">(</span>vector&lt;Layer*&gt;<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, vector&lt;Layer*&gt; <em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><br /></dt>
-<dd><p>Create new Loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Created Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Loss function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Loss input </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Loss name </p></li>
-</ul>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newloss</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">Layer</span><span class="o">*&gt;&amp;</span><span class="p">,</span> <span class="n">Layer</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newloss</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;&gt;&amp;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::newloss” with arguments (const std::function&lt;Layer*(vector&lt;Layer*&gt;)&gt; &amp;f, vector&lt;Layer*&gt; in, string name) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newloss</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">Layer</span><span class="o">*&gt;&amp;</span><span class="p">,</span> <span class="n">Layer</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newloss</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;&gt;&amp;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="nf">mse_loss</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="n">in</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">layer</span> <span class="n">diff</span> <span class="o">=</span> <span class="n">Diff</span><span class="p">(</span><span class="n">in</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
@@ -822,73 +745,49 @@
 </div>
 <div class="section" id="newmetric">
 <h2>newmetric<a class="headerlink" href="#newmetric" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string">
-<span id="_CPPv3N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span id="_CPPv2N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span class="target" id="namespaceeddl_1acd1e679e6595979d5b1f95ce0f134041"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newmetric</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer*<span class="sig-paren">(</span>Layer*<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, Layer *<em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><br /></dt>
-<dd><p>Create new Loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Created Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Loss function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Loss input </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Loss name </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::newmetric” with arguments (const std::function&lt;Layer*(Layer*)&gt; &amp;f, Layer *in, string name) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string">
-<span id="_CPPv3N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span id="_CPPv2N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span class="target" id="namespaceeddl_1a0820cb924c0bdb0949729920b16a9909"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newmetric</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer*<span class="sig-paren">(</span>vector&lt;Layer*&gt;<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, vector&lt;Layer*&gt; <em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><br /></dt>
-<dd><p>Create new Loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Created Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Loss function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Loss input </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Loss name </p></li>
-</ul>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newmetric</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">Layer</span><span class="o">*&gt;&amp;</span><span class="p">,</span> <span class="n">Layer</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newmetric</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;&gt;&amp;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::newmetric” with arguments (const std::function&lt;Layer*(vector&lt;Layer*&gt;)&gt; &amp;f, vector&lt;Layer*&gt; in, string name) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newmetric</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">Layer</span><span class="o">*&gt;&amp;</span><span class="p">,</span> <span class="n">Layer</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newmetric</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;&gt;&amp;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="detach">
 <h2>detach<a class="headerlink" href="#detach" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl6detachE5layer">
-<span id="_CPPv3N4eddl6detachE5layer"></span><span id="_CPPv2N4eddl6detachE5layer"></span><span id="eddl::detach__layer"></span><span class="target" id="namespaceeddl_1a33604ce94f505bca73c109a628b01280"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">detach</code><span class="sig-paren">(</span>layer <em>l</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Sets a layer as detached, excluding it from the computation of the gradients. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Detached Layer </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Layer to detach </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::detach” with arguments (layer l) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl6detachE6vlayer">
-<span id="_CPPv3N4eddl6detachE6vlayer"></span><span id="_CPPv2N4eddl6detachE6vlayer"></span><span id="eddl::detach__vlayer"></span><span class="target" id="namespaceeddl_1a9e8aa3afa5301bab5c1f490fb051e162"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">detach</code><span class="sig-paren">(</span>vlayer <em>l</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Sets the provided layers as detached, excluding them from the computation of the gradients. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Detached Layers </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Layers to detach </p></li>
-</ul>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">detach</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">detach</span><span class="p">(</span><span class="n">vlayer</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::detach” with arguments (vlayer l) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">detach</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">detach</span><span class="p">(</span><span class="n">vlayer</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -912,7 +811,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

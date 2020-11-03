@@ -154,20 +154,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -238,8 +233,8 @@
 <div class="section" id="evaluate-model">
 <h2>Evaluate model<a class="headerlink" href="#evaluate-model" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE">
-<span id="_CPPv3N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE"></span><span id="_CPPv2N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE"></span><span id="eddl::evaluate__model.vector:TensorP:CR.vector:TensorP:CR"></span><span class="target" id="namespaceeddl_1a66e45f3302765619424737649dae3c31"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span>model <em>m</em>, <em class="property">const</em> vector&lt;Tensor*&gt; &amp;<em>in</em>, <em class="property">const</em> vector&lt;Tensor*&gt; &amp;<em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorEi">
+<span id="_CPPv3N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorEi"></span><span id="_CPPv2N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorEi"></span><span id="eddl::evaluate__model.vector:TensorP:CR.vector:TensorP:CR.i"></span><span class="target" id="namespaceeddl_1a80a09dfc39e20731f6b5ae0ed24e8b77"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span>model <em>m</em>, <em class="property">const</em> vector&lt;Tensor*&gt; &amp;<em>in</em>, <em class="property">const</em> vector&lt;Tensor*&gt; &amp;<em>out</em>, int <em>bs</em> = 100<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorEi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the loss value &amp; metrics values for the model in test mode. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>(void) Evaluates the model </p>
@@ -248,6 +243,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model to train </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Input data (features) </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Output data (labels) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bs</span></code>: Batch size (size [100]) </p></li>
 </ul>
 </dd>
 </dl>
@@ -281,7 +277,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

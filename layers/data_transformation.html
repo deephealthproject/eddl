@@ -168,20 +168,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -310,21 +305,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data transformation</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Crop</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">},{</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">});</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Crop</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">},{</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="centeredcrop">
 <h2>CenteredCrop<a class="headerlink" href="#centeredcrop" title="Permalink to this headline">¶</a></h2>
@@ -348,21 +331,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data transformation</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">CenteredCrop</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">});</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">CenteredCrop</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="colorjitter">
 <h2>ColorJitter<a class="headerlink" href="#colorjitter" title="Permalink to this headline">¶</a></h2>
@@ -396,7 +367,7 @@
 <h2>CropScale<a class="headerlink" href="#cropscale" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string">
-<span id="_CPPv3N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string"></span><span id="_CPPv2N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string"></span><span id="eddl::CropScale__layer.vector:i:.vector:i:.string.float.string"></span><span class="target" id="namespaceeddl_1a7bb77d179022be558caf6c817c133f71"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CropScale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>from_coords</em>, vector&lt;int&gt; <em>to_coords</em>, string <em>da_mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string"></span><span id="_CPPv2N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string"></span><span id="eddl::CropScale__layer.vector:i:.vector:i:.string.float.string"></span><span class="target" id="namespaceeddl_1a87af431d56de54de68c29215bc5a2b0b"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CropScale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>from_coords</em>, vector&lt;int&gt; <em>to_coords</em>, string <em>da_mode</em> = &quot;constant&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Crop the given image at <code class="docutils literal notranslate"><span class="pre">[(top,</span> <span class="pre">left),</span> <span class="pre">(bottom,</span> <span class="pre">right)]</span></code> and scale it to the parent size. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Output of crop scale transformation </p>
@@ -415,21 +386,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data transformation</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">CropScale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">},{</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">});</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">CropScale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">},{</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="cutout">
 <h2>Cutout<a class="headerlink" href="#cutout" title="Permalink to this headline">¶</a></h2>
@@ -453,21 +412,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data transformation</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Cutout</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">});</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Cutout</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="flip">
 <h2>Flip<a class="headerlink" href="#flip" title="Permalink to this headline">¶</a></h2>
@@ -489,21 +436,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data transformation</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Flip</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Flip</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="grayscale">
 <h2>Grayscale<a class="headerlink" href="#grayscale" title="Permalink to this headline">¶</a></h2>
@@ -548,21 +483,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data transformation</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">HorizontalFlip</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">HorizontalFlip</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="pad">
 <h2>Pad<a class="headerlink" href="#pad" title="Permalink to this headline">¶</a></h2>
@@ -612,27 +535,15 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data transformation</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Rotate</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">);</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Rotate</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="scale">
 <h2>Scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5ScaleE5layer6vectorIiEb6stringf6string">
-<span id="_CPPv3N4eddl5ScaleE5layer6vectorIiEb6stringf6string"></span><span id="_CPPv2N4eddl5ScaleE5layer6vectorIiEb6stringf6string"></span><span id="eddl::Scale__layer.vector:i:.b.string.float.string"></span><span class="target" id="namespaceeddl_1abbda2cad36a66cf8e2b8726fff3aa07a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Scale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>new_shape</em>, bool <em>reshape</em> = true, string <em>da_mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ScaleE5layer6vectorIiEb6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N4eddl5ScaleE5layer6vectorIiEb6stringf6string"></span><span id="_CPPv2N4eddl5ScaleE5layer6vectorIiEb6stringf6string"></span><span id="eddl::Scale__layer.vector:i:.b.string.float.string"></span><span class="target" id="namespaceeddl_1abcd68f88956aa441dc61f78970483416"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Scale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>new_shape</em>, bool <em>reshape</em> = true, string <em>da_mode</em> = &quot;constant&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ScaleE5layer6vectorIiEb6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Resize the input image to the given size. <code class="docutils literal notranslate"><span class="pre">[height,</span> <span class="pre">width]</span></code>. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Output of scale transformation </p>
@@ -650,21 +561,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data transformation</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">35</span><span class="p">,</span><span class="mi">35</span><span class="p">},</span> <span class="nb">false</span><span class="p">);</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">35</span><span class="p">,</span><span class="mi">35</span><span class="p">},</span> <span class="nb">false</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="shift">
 <h2>Shift<a class="headerlink" href="#shift" title="Permalink to this headline">¶</a></h2>
@@ -706,21 +605,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data transformation</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">VerticalFlip</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">VerticalFlip</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="normalize">
 <h2>Normalize<a class="headerlink" href="#normalize" title="Permalink to this headline">¶</a></h2>
@@ -768,7 +655,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

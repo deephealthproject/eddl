@@ -165,20 +165,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -268,11 +263,9 @@
 
 <p>The Softmax activation function is: <code class="docutils literal notranslate"><span class="pre">softmax(x)</span> <span class="pre">=</span> <span class="pre">exp(x)</span> <span class="pre">/</span> <span class="pre">reduce_sum(exp(x))</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Softmax</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Softmax</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="sigmoid">
 <h2>Sigmoid<a class="headerlink" href="#sigmoid" title="Permalink to this headline">¶</a></h2>
@@ -296,11 +289,9 @@
 
 <p>The Sigmoid activation function is: <code class="docutils literal notranslate"><span class="pre">sigmoid(x)</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">+</span> <span class="pre">exp(-x))</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Sigmoid</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Sigmoid</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="relu">
 <h2>ReLu<a class="headerlink" href="#relu" title="Permalink to this headline">¶</a></h2>
@@ -328,11 +319,9 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">else:</span> <span class="pre">relu(x)</span> <span class="pre">=</span> <span class="pre">0</span></code></p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="thresholded-relu">
 <h2>Thresholded ReLu<a class="headerlink" href="#thresholded-relu" title="Permalink to this headline">¶</a></h2>
@@ -359,11 +348,9 @@
 <li><p>else: <code class="docutils literal notranslate"><span class="pre">thresholded_relu(x)</span> <span class="pre">=</span> <span class="pre">0</span></code></p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">ThresholdedReLu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ThresholdedReLu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="leaky-relu">
 <h2>Leaky ReLu<a class="headerlink" href="#leaky-relu" title="Permalink to this headline">¶</a></h2>
@@ -392,11 +379,9 @@
 <li><p>else: <code class="docutils literal notranslate"><span class="pre">leaky_relu(x)</span> <span class="pre">=</span> <span class="pre">alpha</span> <span class="pre">*</span> <span class="pre">x</span></code></p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">LeakyReLu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">LeakyReLu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="elu">
 <h2>ELu<a class="headerlink" href="#elu" title="Permalink to this headline">¶</a></h2>
@@ -423,11 +408,9 @@
 <li><p>else: <code class="docutils literal notranslate"><span class="pre">elu(x)</span> <span class="pre">=</span> <span class="pre">alpha</span> <span class="pre">*</span>&#160; <span class="pre">(exp(x)</span> <span class="pre">-</span> <span class="pre">1)</span></code></p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">Elu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Elu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="selu">
 <h2>SeLu<a class="headerlink" href="#selu" title="Permalink to this headline">¶</a></h2>
@@ -454,11 +437,9 @@
 </ul>
 <p>where <code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">1.6732632423543772848170429916717</span></code> and <code class="docutils literal notranslate"><span class="pre">scale</span> <span class="pre">=</span> <span class="pre">1.0507009873554804934193349852946</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">Selu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Selu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="exponential">
 <h2>Exponential<a class="headerlink" href="#exponential" title="Permalink to this headline">¶</a></h2>
@@ -480,11 +461,9 @@
 
 <p>The Exponential activation function is: <code class="docutils literal notranslate"><span class="pre">exp(x)</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">Exponential</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Exponential</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="softplus">
 <h2>Softplus<a class="headerlink" href="#softplus" title="Permalink to this headline">¶</a></h2>
@@ -506,11 +485,9 @@
 
 <p>The Softplus activation function is: <code class="docutils literal notranslate"><span class="pre">softplus(x)</span> <span class="pre">=</span> <span class="pre">log(1</span> <span class="pre">+</span> <span class="pre">exp(x))</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">Softplus</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Softplus</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="softsign">
 <h2>Softsign<a class="headerlink" href="#softsign" title="Permalink to this headline">¶</a></h2>
@@ -532,11 +509,9 @@
 
 <p>The Softsign activation function is: <code class="docutils literal notranslate"><span class="pre">softsign(x)</span> <span class="pre">=</span> <span class="pre">x</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">+</span> <span class="pre">abs(x))</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">Softsign</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Softsign</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="linear">
 <h2>Linear<a class="headerlink" href="#linear" title="Permalink to this headline">¶</a></h2>
@@ -559,11 +534,9 @@
 
 <p>The Linear activation function is: <code class="docutils literal notranslate"><span class="pre">linear(x)</span> <span class="pre">=</span> <span class="pre">alpha</span> <span class="pre">*</span> <span class="pre">x</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="tanh">
 <h2>Tanh<a class="headerlink" href="#tanh" title="Permalink to this headline">¶</a></h2>
@@ -587,11 +560,9 @@
 
 <p>The Tanh activation function is: <code class="docutils literal notranslate"><span class="pre">tanh(x)</span> <span class="pre">=</span> <span class="pre">sinh(x)/cosh(x)</span> <span class="pre">=</span> <span class="pre">((exp(x)</span> <span class="pre">-</span> <span class="pre">exp(-x))/(exp(x)</span> <span class="pre">+</span> <span class="pre">exp(-x)))</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">Tanh</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Tanh</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 </div>
 
@@ -615,7 +586,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

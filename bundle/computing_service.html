@@ -151,20 +151,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -263,39 +258,54 @@ the code will be executed.</p>
 </div>
 <div class="section" id="gpu">
 <h1>GPU<a class="headerlink" href="#gpu" title="Permalink to this headline">¶</a></h1>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl6CS_GPUEK6vectorIiEi6string">
-<span id="_CPPv3N4eddl6CS_GPUEK6vectorIiEi6string"></span><span id="_CPPv2N4eddl6CS_GPUEK6vectorIiEi6string"></span><span id="eddl::CS_GPU__vector:i:C.i.string"></span><span class="target" id="namespaceeddl_1aa4abe024ac9d9a02db4f4cc897611c04"></span>compserv <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CS_GPU</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; <em>g</em>, int <em>lsb</em>, string <em>mem</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Executes the code in the GPU. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The computer service itself. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">g</span></code>: Vector of bools to set which GPUs will be used (1=on, 0=off) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lsb</span></code>: (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different GPUs </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: Indicates the memory consumption of the model. One of “full_mem” (default), “mid_mem” or “low_mem”. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::CS_GPU” with arguments (const vector&lt;int&gt; g) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl6CS_GPUEK6vectorIiE6string">
-<span id="_CPPv3N4eddl6CS_GPUEK6vectorIiE6string"></span><span id="_CPPv2N4eddl6CS_GPUEK6vectorIiE6string"></span><span id="eddl::CS_GPU__vector:i:C.string"></span><span class="target" id="namespaceeddl_1aae95d5b3310c483842c3a8eb91417574"></span>compserv <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CS_GPU</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; <em>g</em>, string <em>mem</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Executes the code in the GPU. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The computer service itself. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">g</span></code>: Vector of bools to set which GPUs will be used (1=on, 0=off) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: Indicates the memory consumption of the model. One of “full_mem” (default), “mid_mem” or “low_mem”. </p></li>
-</ul>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::CS_GPU” with arguments (const vector&lt;int&gt; g, int lsb) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::CS_GPU” with arguments (const vector&lt;int&gt; g, int lsb, string mem) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::CS_GPU” with arguments (const vector&lt;int&gt; g, string mem) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">compserv</span> <span class="n">eddl</span><span class="p">::</span><span class="n">CS_GPU</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">build</span><span class="p">(</span><span class="n">imported_net</span><span class="p">,</span>
       <span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span>            <span class="c1">// Optimizer</span>
@@ -357,7 +367,7 @@ the code will be executed.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

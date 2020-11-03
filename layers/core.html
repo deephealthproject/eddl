@@ -162,20 +162,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -264,15 +259,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="embedding">
 <h2>Embedding<a class="headerlink" href="#embedding" title="Permalink to this headline">¶</a></h2>
@@ -295,6 +284,10 @@
 </p>
 </dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="reshape">
 <h2>Reshape<a class="headerlink" href="#reshape" title="Permalink to this headline">¶</a></h2>
@@ -316,35 +309,12 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Download mnist</span>
-<span class="n">download_mnist</span><span class="p">();</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
 
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-
-<span class="c1">// Data augmentation assumes 3D tensors... images:</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data augmentation</span>
-<span class="p">...</span>
-
-<span class="c1">// Come back to 1D tensor for fully connected:</span>
+<span class="c1">// Reshape to 1D tensor:</span>
 <span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">-1</span><span class="p">});</span>
-
-<span class="p">...</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="flatten">
 <h2>Flatten<a class="headerlink" href="#flatten" title="Permalink to this headline">¶</a></h2>
@@ -366,35 +336,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Download mnist</span>
-<span class="n">download_mnist</span><span class="p">();</span>
-
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-
-<span class="c1">// Data augmentation assumes 3D tensors... images:</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
-<span class="c1">// Data augmentation</span>
-<span class="p">...</span>
-
-<span class="c1">// Come back to 1D tensor for fully connected:</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Flatten</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
-
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Flatten</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="input">
 <h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
@@ -415,11 +359,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">download_mnist</span><span class="p">();</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="dropout">
 <h2>Dropout<a class="headerlink" href="#dropout" title="Permalink to this headline">¶</a></h2>
@@ -443,11 +385,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="select">
 <h2>Select<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h2>
@@ -470,11 +410,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;-1&quot;</span><span class="p">,</span> <span class="s">&quot;20:100&quot;</span><span class="p">,</span> <span class="s">&quot;50:-10&quot;</span><span class="p">,</span> <span class="s">&quot;:&quot;</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;-1&quot;</span><span class="p">,</span> <span class="s">&quot;20:100&quot;</span><span class="p">,</span> <span class="s">&quot;50:-10&quot;</span><span class="p">,</span> <span class="s">&quot;:&quot;</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="permute">
 <h2>Permute<a class="headerlink" href="#permute" title="Permalink to this headline">¶</a></h2>
@@ -497,11 +435,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Permute</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Permute</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="transpose">
 <h2>Transpose<a class="headerlink" href="#transpose" title="Permalink to this headline">¶</a></h2>
@@ -523,11 +459,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Transpose</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Transpose</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 </div>
 
@@ -551,7 +485,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

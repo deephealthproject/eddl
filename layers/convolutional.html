@@ -157,20 +157,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
@@ -264,37 +259,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="c1">// Define network</span>
-<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-
-<span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">});</span> <span class="c1">//image as a 1D signal with depth=1</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool1D</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">4</span><span class="p">},{</span><span class="mi">4</span><span class="p">});</span>  <span class="c1">//MaxPool 4 stride 4</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool1D</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">4</span><span class="p">},{</span><span class="mi">4</span><span class="p">});</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool1D</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">64</span><span class="p">,{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">4</span><span class="p">},{</span><span class="mi">4</span><span class="p">});</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool1D</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">64</span><span class="p">,{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">4</span><span class="p">},{</span><span class="mi">4</span><span class="p">});</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">-1</span><span class="p">});</span>
-
-<span class="n">layer</span> <span class="n">out</span> <span class="o">=</span> <span class="n">Activation</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">),</span> <span class="s">&quot;softmax&quot;</span><span class="p">);</span>
-<span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
-<span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="conv2d">
 <h2>Conv2D<a class="headerlink" href="#conv2d" title="Permalink to this headline">¶</a></h2>
@@ -322,41 +289,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
- <span class="c1">// Define network</span>
- <span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
- <span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-
- <span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span> <span class="s">&quot;same&quot;</span><span class="p">);</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span> <span class="s">&quot;none&quot;</span><span class="p">);</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">-1</span><span class="p">});</span>
-
- <span class="n">layer</span> <span class="n">out</span> <span class="o">=</span> <span class="n">Activation</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">),</span> <span class="s">&quot;softmax&quot;</span><span class="p">);</span>
- <span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
- <span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="d-upsampling">
 <h2>2D Upsampling<a class="headerlink" href="#d-upsampling" title="Permalink to this headline">¶</a></h2>
@@ -384,25 +319,9 @@
 <p>In future versions this function will call <code class="docutils literal notranslate"><span class="pre">scale</span></code> instead of <code class="docutils literal notranslate"><span class="pre">repeat</span></code></p>
 </div>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
- <span class="c1">// Define network</span>
- <span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
- <span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
-
- <span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">128</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">})),{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">});</span>
- <span class="n">l</span> <span class="o">=</span> <span class="n">UpSampling</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
- <span class="p">...</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">UpSampling</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="convolutional-transpose">
 <h2>Convolutional Transpose<a class="headerlink" href="#convolutional-transpose" title="Permalink to this headline">¶</a></h2>
@@ -458,7 +377,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>

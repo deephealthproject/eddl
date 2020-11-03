@@ -151,28 +151,22 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Miscellaneous</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image.html">Image operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing &amp; Sorting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input_output.html">Input/Output Operations</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Linear algebra</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#matrix-and-vector-operations">Matrix and vector operations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#interpolate">interpolate</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#trace">trace</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#norm">norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interpolate">Interpolate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#trace">Trace</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mask_ops.html">Masked array operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
 </ul>
 
@@ -240,214 +234,68 @@
             
   <div class="section" id="linear-algebra">
 <h1>Linear algebra<a class="headerlink" href="#linear-algebra" title="Permalink to this headline">¶</a></h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Section in progress</p>
-<p>Read this: <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md">https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md</a></p>
-</div>
 <div class="section" id="matrix-and-vector-operations">
 <h2>Matrix and vector operations<a class="headerlink" href="#matrix-and-vector-operations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="interpolate">
-<h3>interpolate<a class="headerlink" href="#interpolate" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor11interpolateEfP6TensorfP6Tensor">
-<span id="_CPPv3N6Tensor11interpolateEfP6TensorfP6Tensor"></span><span id="_CPPv2N6Tensor11interpolateEfP6TensorfP6Tensor"></span><span id="Tensor::interpolate__float.TensorP.float.TensorP"></span><span class="target" id="class_tensor_1a551e53a799ea8e89cf388e2e92324863"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span>float <em>factor1</em>, Tensor *<em>A</em>, float <em>factor2</em>, Tensor *<em>B</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Element-wise weighted sum (interpolation) operation of two tensors. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A new tensor C = factor1*A + factor2*B. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">factor1</span></code>: The weight for first member. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: A tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">factor2</span></code>: The weight for second member. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Another tensor. </p></li>
-</ul>
-</dd>
-</dl>
+<h3>Interpolate<a class="headerlink" href="#interpolate" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::interpolate” with arguments (float factor1, Tensor *A, float factor2, Tensor *B) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor11interpolateEfP6TensorfP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor11interpolateEfP6TensorfP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor11interpolateEfP6TensorfP6TensorP6Tensor"></span><span id="Tensor::interpolate__float.TensorP.float.TensorP.TensorP"></span><span class="target" id="class_tensor_1a0e64acb8446940ffc0d19ef84b97e020"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span>float <em>factor1</em>, Tensor *<em>A</em>, float <em>factor2</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Element-wise weighted sum (interpolation) operation of two tensors. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">factor1</span></code>: The weight for first member. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: A tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">factor2</span></code>: The weight for second member. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Another tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Output tensor. C = factor1*A + factor2*B. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span><span class="p">;</span>
-
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">result</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">interpolate</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">t2</span><span class="p">);</span> <span class="c1">// (new)result = f1*A + f2*B</span>
- <span class="c1">// result =&gt; [0.5, 1.6, 2.7, 3.8, 4.9, 6]</span>
-
- <span class="n">Tensor</span><span class="o">::</span><span class="n">interpolate</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">);</span>  <span class="c1">// t3 = f1*A + f2*B</span>
- <span class="c1">// t3 =&gt; [0.5, 1.6, 2.7, 3.8, 4.9, 6]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">interpolate</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">interpolate</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">1.0f</span><span class="p">);</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 1.00 1.00]</span>
+<span class="c1">// [1.00 1.00 1.00]</span>
+<span class="c1">// ]</span>
+
+<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">10.0f</span><span class="p">);</span>
+<span class="c1">// [</span>
+<span class="c1">// [10.00 10.00 10.00]</span>
+<span class="c1">// [10.00 10.00 10.00]</span>
+<span class="c1">// ]</span>
+
+ <span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">interpolate</span><span class="p">(</span><span class="mf">2.5f</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="mf">0.5f</span><span class="p">,</span> <span class="n">t2</span><span class="p">);</span>  <span class="c1">// a*t1 + b*t2</span>
+<span class="c1">// [</span>
+<span class="c1">// [7.50 7.50 7.50]</span>
+<span class="c1">// [7.50 7.50 7.50]</span>
+<span class="c1">// ]</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="trace">
-<h3>trace<a class="headerlink" href="#trace" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5traceEi">
-<span id="_CPPv3N6Tensor5traceEi"></span><span id="_CPPv2N6Tensor5traceEi"></span><span id="Tensor::trace__i"></span><span class="target" id="class_tensor_1adf7dca55a2e403bf6b639d7fd96b54d0"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">trace</code><span class="sig-paren">(</span>int <em>k</em> = 0<span class="sig-paren">)</span><br /></dt>
-<dd><p>Sum all the elements in a matrix diagonal. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The sum of all the elements in the selected diagonal. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: Offset. Used to select the diagonal to be summed. </p></li>
-</ul>
-</dd>
-</dl>
+<h3>Trace<a class="headerlink" href="#trace" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::trace” with arguments (int k = 0) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor5traceEP6Tensori">
-<span id="_CPPv3N6Tensor5traceEP6Tensori"></span><span id="_CPPv2N6Tensor5traceEP6Tensori"></span><span id="Tensor::trace__TensorP.i"></span><span class="target" id="class_tensor_1a60ca4abf8cd97b46509290e722d972fa"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">trace</code><span class="sig-paren">(</span>Tensor *<em>A</em>, int <em>k</em> = 0<span class="sig-paren">)</span><br /></dt>
-<dd><p>Sum all the elements in a matrix diagonal. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The sum of all the elements in the selected diagonal. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: Offset. Used to select the diagonal to be summed. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">matrix1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
- <span class="c1">// matrix1 =&gt; [1 3 3</span>
- <span class="c1">//             3 1 3</span>
- <span class="c1">//             3 3 1]</span>
-
- <span class="kt">float</span> <span class="n">tr</span> <span class="o">=</span>  <span class="n">matrix1</span><span class="o">-&gt;</span><span class="n">trace</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="c1">// tr = 3</span>
- <span class="kt">float</span> <span class="n">tr2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">trace</span><span class="p">(</span><span class="n">matrix1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// tr2 = 3</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">trace</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="nb">float</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">trace</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
 </div>
-<div class="section" id="norm">
-<h3>norm<a class="headerlink" href="#norm" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4normE6string">
-<span id="_CPPv3N6Tensor4normE6string"></span><span id="_CPPv2N6Tensor4normE6string"></span><span id="Tensor::norm__string"></span><span class="target" id="class_tensor_1a85bed7fa15576ca6a56ac7a14b322c21"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">norm</code><span class="sig-paren">(</span>string <em>ord</em> = &quot;fro&quot;<span class="sig-paren">)</span><br /></dt>
-<dd><p>Compute the norm of a 1-D or 2-D tensor. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The norm of the tensor. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ord</span></code>: The order of the norm. One of:<ul>
-<li><p>”fro”: Frobenius norm </p></li>
-</ul>
-</p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4normEP6Tensor6string">
-<span id="_CPPv3N6Tensor4normEP6Tensor6string"></span><span id="_CPPv2N6Tensor4normEP6Tensor6string"></span><span id="Tensor::norm__TensorP.string"></span><span class="target" id="class_tensor_1aa150b9cfc84c6ed8a5bc148525b70110"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">norm</code><span class="sig-paren">(</span>Tensor *<em>A</em>, string <em>ord</em> = &quot;fro&quot;<span class="sig-paren">)</span><br /></dt>
-<dd><p>Compute the norm of a 1-D or 2-D tensor. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The sum of all the elements in the selected diagonal. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ord</span></code>: The order of the norm. One of:<ul>
-<li><p>”fro”: Frobenius norm </p></li>
-</ul>
-</p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor4normE6vectorIiEb6string">
-<span id="_CPPv3N6Tensor4normE6vectorIiEb6string"></span><span id="_CPPv2N6Tensor4normE6vectorIiEb6string"></span><span id="Tensor::norm__vector:i:.b.string"></span><span class="target" id="class_tensor_1aa361d02aa896a3219f22f7ad8d8aabb9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">norm</code><span class="sig-paren">(</span>vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em>, string <em>ord</em> = &quot;fro&quot;<span class="sig-paren">)</span><br /></dt>
-<dd><p>Compute the norm of a selected axis of a tensor. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the norms computed over the selected axis. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Vector with the axis selected to compute the norm. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">keepdims</span></code>: Whether to keep dimensions of the input vector in the output vector. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ord</span></code>: The order of the norm. One of:<ul>
-<li><p>”fro”: Frobenius norm </p></li>
-</ul>
-</p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
+</div>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">matrix1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
- <span class="c1">// matrix1 =&gt; [1 3 3</span>
- <span class="c1">//             3 1 3</span>
- <span class="c1">//             3 3 1]</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="c1">// [</span>
+<span class="c1">// [1.00 3.00 5.00]</span>
+<span class="c1">// [4.00 1.00 3.00]</span>
+<span class="c1">// [5.00 4.00 1.00]</span>
+<span class="c1">// ]</span>
 
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">Tensor</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">},</span> <span class="p">{</span><span class="mi">6</span><span class="p">},</span> <span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="kt">float</span> <span class="n">tr0</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">trace</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="c1">// 3</span>
 
-
- <span class="kt">float</span> <span class="n">m_norm</span> <span class="o">=</span> <span class="n">matrix1</span><span class="o">-&gt;</span><span class="n">norm</span><span class="p">();</span> <span class="c1">//Frobenius norm of matrix1</span>
- <span class="c1">// m_norm =&gt; 7.5498</span>
-
- <span class="kt">float</span> <span class="n">t_norm</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">norm</span><span class="p">(</span><span class="n">t1</span><span class="p">);</span> <span class="c1">//Frobenius norm of t1</span>
- <span class="c1">// t_norm =&gt; 9.5394</span>
-
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">m_norm2</span> <span class="o">=</span> <span class="n">matrix1</span><span class="o">-&gt;</span><span class="n">norm</span><span class="p">({</span><span class="mi">0</span><span class="p">},</span> <span class="nb">false</span><span class="p">);</span><span class="c1">//Frobenius norm over rows in matrix1</span>
- <span class="c1">// m_norm2 =&gt; [4.3589, 4.3589, 4.3589]</span>
+<span class="kt">float</span> <span class="n">tr1</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">trace</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="c1">// 6</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 </div>
 </div>
@@ -472,7 +320,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, eddl
+        &copy; Copyright 2020, EDDL
 
     </p>
   </div>
