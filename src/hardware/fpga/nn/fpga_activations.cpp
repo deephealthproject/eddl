@@ -17,6 +17,9 @@
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"  // for cpu emulation purposes
 
+// prueba
+extern cl::Context      context;
+
 // -----------------------------------------------------------------
 // relu
 //
@@ -35,13 +38,29 @@ void fpga_relu(Tensor *A, Tensor *B){
   cl_int err;
   cl::Event event;
 
+  // prueba
+/*  cl::Buffer b1;
+  cl::Buffer b2;
+  printf("1\n");
+  OCL_CHECK(err,b1 = cl::Buffer(context,CL_MEM_READ_WRITE, A->size*sizeof(float), NULL, &err));
+  printf("2\n");
+  OCL_CHECK(err,b2 = cl::Buffer(context,CL_MEM_READ_WRITE, B->size*sizeof(float), NULL, &err));
+  printf("3\n");
+  OCL_CHECK(err, err = kernel_relu.setArg(0, b1));
+  printf("4\n");
+  OCL_CHECK(err, err = kernel_relu.setArg(1, b2));
+  printf("5\n");
+  OCL_CHECK(err, err = kernel_relu.setArg(2, A->size));*/
+
   OCL_CHECK(err, err = kernel_relu.setArg(0, *(A->fpga_ptr)));
   OCL_CHECK(err, err = kernel_relu.setArg(1, *(B->fpga_ptr)));
   OCL_CHECK(err, err = kernel_relu.setArg(2, A->size));
 
   OCL_CHECK(err, err = q.enqueueTask(kernel_relu, NULL, &event));
+
   //  event.wait();
   q.finish();
+
 #endif
   _profile_fpga_tensor(B);
   _profile_fpga(_FPGA_RELU, 1);

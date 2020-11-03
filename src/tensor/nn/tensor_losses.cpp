@@ -8,6 +8,7 @@
 */
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -20,6 +21,8 @@
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
 
+PROFILING_ENABLE_EXTERN(cent);
+
 namespace tensorNN {
 
 
@@ -27,6 +30,8 @@ namespace tensorNN {
     void cent(Tensor *A, Tensor *B, Tensor *C) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::cross-entropy");
         if ((!Tensor::sameShape(A, B)) || (!Tensor::sameShape(A, C))) msg("Incompatible dims", "Tensor::cross-entropy");
+
+        PROFILING_HEADER(cent);
 
         C->tsem->lock();
         if (A->isCPU()) {
@@ -45,6 +50,8 @@ namespace tensorNN {
       }
 #endif
         C->tsem->unlock();
+
+        PROFILING_FOOTER(cent);
     }
 
 }

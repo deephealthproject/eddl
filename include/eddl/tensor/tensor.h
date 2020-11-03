@@ -126,7 +126,7 @@ public:
     *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
     *  @return a tensor
     */
-    Tensor(const vector<int> &shape, float *fptr, int dev);
+    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=0);
 
     /**
     *  @brief Construct an uninitialized tensor
