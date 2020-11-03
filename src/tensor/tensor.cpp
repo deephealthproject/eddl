@@ -310,7 +310,7 @@ void Tensor::toGPU(int dev){
 
         this->ptr = gpu_ptr;
         gpu_copy_to_gpu(cpu_ptr, this);
-        delete cpu_ptr;
+        delete[] cpu_ptr;
     }
     else if (this->isGPU())
     {
