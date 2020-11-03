@@ -1,6 +1,8 @@
 name: build-windows
 
 on: [push, pull_request]
+  branches-ignore:
+    - gh-pages
 
 jobs:
   build:
