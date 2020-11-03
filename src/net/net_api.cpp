@@ -763,7 +763,6 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
           msg("Input tensors with different time steps","fit_recurrent");
       }
     }
-
   }
 
   if (tout.size()) {
@@ -781,9 +780,7 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
         if (yt[i]->shape[0]!=outl)
         msg("Output tensors with different time steps","fit_recurrent");
       }
-
     }
-
   }
 
   // prepare data for unroll net
@@ -830,7 +827,6 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
     }
   }
 
-  //cout<<"Tensors unrolled\n";
 }
 
 void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
