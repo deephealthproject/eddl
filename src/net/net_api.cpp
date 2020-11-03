@@ -279,7 +279,8 @@ void Net::forward(vector<Tensor*> in)
 
       // Distribute to snets inputs
       for (int i = 0; i < in.size(); i++)
-      distributeTensor(lin[i]);
+        distributeTensor(lin[i]);
+      
 
     }
 

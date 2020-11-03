@@ -286,8 +286,10 @@ void Tensor::toCPU(int dev){
         this->deleteData();
 
         // Assign CPU pointer
+
         this->device = dev;  // Must appear after deleting the data
-        this->updateData(cpu_ptr);
+
+        this->updateData(cpu_ptr,nullptr,false);
     }
 
 
@@ -310,7 +312,7 @@ void Tensor::toGPU(int dev){
 
         this->ptr = gpu_ptr;
         gpu_copy_to_gpu(cpu_ptr, this);
-        delete cpu_ptr;
+        delete []cpu_ptr;
     }
     else if (this->isGPU())
     {
@@ -375,7 +377,7 @@ void Tensor::reallocate(Tensor* old_t, const vector<int> &shape){
     }
 
     // Not recommended
-    updateData(old_t->ptr);
+    updateData(old_t->ptr,nullptr,false);
 }
 
 int Tensor::isCPU() { return (device == DEV_CPU); }

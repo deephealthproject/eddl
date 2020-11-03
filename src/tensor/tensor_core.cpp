@@ -739,13 +739,17 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
 
         delete Ac;
     }else if ((A->isCPU()) && (B->isGPU())) {
+
         Tensor *Bc=B->clone();
         Bc->toCPU();
+
+        cout<<".....";
         cpu_select(A, Bc, sind, ini, end,mask_zeros);
 
         Tensor::copy(Bc,B);
 
         delete Bc;
+
     }
     else if ((A->isFPGA()) && (B->isCPU())) {
         Tensor *Ac=A->clone();

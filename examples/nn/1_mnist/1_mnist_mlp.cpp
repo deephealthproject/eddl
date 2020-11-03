@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
+    int epochs = 100;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -57,16 +57,13 @@ int main(int argc, char **argv) {
           CS_CPU()
 	      //CS_FPGA({1})
     );
-    //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
+    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
     // View model
     summary(net);
 
 
     // [DEBUG STUFF]
-    vector<vtensor> params = get_parameters(net, true);
-    set_parameters(net, params);
-
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
     Tensor* y_train = Tensor::load("mnist_trY.bin");
