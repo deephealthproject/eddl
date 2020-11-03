@@ -501,7 +501,11 @@ PROFILING_ENABLE(flip_random);
 PROFILING_ENABLE(crop_random);
 PROFILING_ENABLE(crop_scale_random);
 PROFILING_ENABLE(cutout_random);
-
+// reduction
+PROFILING_ENABLE(reduce);
+PROFILING_ENABLE(reduce_op);
+PROFILING_ENABLE(reduction);
+PROFILING_ENABLE(reduction_back);
 
 void __show_profile() {
 
@@ -583,5 +587,10 @@ void __show_profile() {
   PROFILING_PRINTF(crop_random);
   PROFILING_PRINTF(crop_scale_random);
   PROFILING_PRINTF(cutout_random);
+  //reduction
+  PROFILING_PRINTF(reduce);
+  PROFILING_PRINTF(reduce_op);
+  PROFILING_PRINTF(reduction);
+  PROFILING_PRINTF(reduction_back);
 
 }
