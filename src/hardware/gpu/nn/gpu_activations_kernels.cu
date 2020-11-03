@@ -261,3 +261,64 @@ __global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, lon
     }
 
 }
+
+__global__ void full_softmax_batched(float *A, float *B, bool stable, unsigned int n_batches, unsigned int n_features){
+    long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Batch index
+
+    if (thread_id_x < n_batches){
+        unsigned int batch_i = thread_id_x; // Alias
+
+        // Contiguous data
+        unsigned int start = batch_i*n_features;
+        unsigned int end = start+n_features;
+
+        // Numerical stability (opt.)
+        // stable => first value, no stable => 0.0f
+        float max_value = 0.0f;
+        if(stable){
+            for(unsigned int j=start; j<end; j++){
+                if (A[j] > max_value) { max_value = A[j]; }
+            }
+        }
+
+        // Numerator
+        float denominator = 0.0f;
+        for(unsigned int j=start; j<end; j++){
+            float value = expf(A[j] - max_value);
+            B[j] = value;
+            denominator += value;
+        }
+
+        // Softmax
+        for(unsigned int j=start; j<end; j++){
+            B[j] /= denominator;
+        }
+    }
+}
+
+__global__ void full_d_softmax_batched(float *D, float *I, float *PD, unsigned int n_batches, unsigned int n_features){
+    long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Batch index
+
+    if (thread_id_x < n_batches){
+        unsigned int batch_i = thread_id_x; // Alias
+        float* SM = I; // Alias (softmax)
+
+        // Contiguous data
+        unsigned int start = batch_i*n_features;
+
+        // 1) Compute Jacobbian matrix: DS=[ NxN ]  // DjSi
+        // 2) Compute delta: D * DS = (1,n)x(n,n)=(1,n)
+        // 2.1) Dot product: D0*DS0,0 + D1*DS0,1 + D2*DS0,2 + ...
+        for(unsigned int i=0; i<n_features; i++){  // Rows
+            for(unsigned int j=0; j<n_features; j++){  // Cols
+
+                // Derivative
+                float DjSi = SM[i] * ((float)(i==j) - SM[j]);
+
+                // Dot product: Dj=D*DS[:, j]
+                // "i" trick. Technically, PD is (1, n) but I can consider it as (n, 1) without reshaping it
+                D[start+j] += PD[start+i] * DjSi;
+            }
+        }
+    }
+}

@@ -636,8 +636,7 @@ namespace tensorNN {
 #ifdef cGPU
         else if (A->isGPU())
         {
-            msg("Not Implemented Error", "FullSoftmax");
-
+            gpu_full_softmax(A, B, 1, true);
         }
 #endif
 #ifdef cFPGA
@@ -663,7 +662,7 @@ namespace tensorNN {
 #ifdef cGPU
         else if (D->isGPU())
         {
-            msg("Not Implemented Error", "D_FullSoftmax");
+            gpu_d_full_softmax(D, I, PD, 1);
         }
 #endif
 #ifdef cFPGA
