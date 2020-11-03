@@ -316,7 +316,7 @@ void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD) {
             for(int j=0; j<n_features; j++){  // Cols
 
                 // Derivative
-                float DjSi = SM->ptr[i] * ((float)(i==j) - SM->ptr[j]);
+                float DjSi = SM->ptr[start+i] * ((float)(i==j) - SM->ptr[start+j]);
 
                 // Dot product: Dj=D*DS[:, j]
                 // "i" trick. Technically, PD is (1, n) but I can consider it as (n, 1) without reshaping it

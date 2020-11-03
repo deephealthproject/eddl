@@ -313,7 +313,7 @@ __global__ void full_d_softmax_batched(float *D, float *I, float *PD, unsigned i
             for(unsigned int j=0; j<n_features; j++){  // Cols
 
                 // Derivative
-                float DjSi = SM[i] * ((float)(i==j) - SM[j]);
+                float DjSi = SM[start+i] * ((float)(i==j) - SM[start+j]);
 
                 // Dot product: Dj=D*DS[:, j]
                 // "i" trick. Technically, PD is (1, n) but I can consider it as (n, 1) without reshaping it
