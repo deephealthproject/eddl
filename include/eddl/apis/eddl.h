@@ -70,7 +70,7 @@ namespace eddl {
     void removeLayer(Net *net, string l);
     void setTrainable(model net, string lanme, bool val);
 
-    vector<vtensor> get_parameters(model net, bool deepcopy=false);
+    vector<vtensor> get_parameters(model net, bool deepcopy=false, bool tocpu=false);
     void set_parameters(model net, const vector<vtensor>& params);
 
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);

@@ -166,7 +166,7 @@ public:
     void compute_loss();
     void clamp(float min,float max);
     void setlr(vector <float> p);
-    vector<vtensor> get_parameters(bool deepcopy=false);
+    vector<vtensor> get_parameters(bool deepcopy=false, bool tocpu=false);
     void set_parameters(const vector<vtensor>& params);
 
 
