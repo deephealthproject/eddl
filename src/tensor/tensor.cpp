@@ -484,7 +484,10 @@ void Tensor::print(int precision, bool raw) {
     buffer << std::fixed;
     buffer << std::setprecision(precision);
 
+    int lines = 0;
+    int max_lines = 100000;
     for (int i = 0; i < aux->size; ++i) {
+        if(i % this->stride[0]==0){lines++;}
 
         if(raw){
             // Print number
@@ -522,6 +525,13 @@ void Tensor::print(int precision, bool raw) {
                     else if (closed == 3) { buffer << "\n\n"; }
                     else if (closed > 3) { buffer << "\n\n\n"; }
                 }
+            }
+
+            // Stop
+            if(lines >= max_lines){
+                cout << "Maximum tensor length exceeded." << endl;
+                cout << "Printing only first " << max_lines << " rows:" << endl;
+                break;
             }
 
         }
