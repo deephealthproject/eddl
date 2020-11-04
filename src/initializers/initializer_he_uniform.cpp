@@ -32,10 +32,10 @@ IHeUniform::IHeUniform(int seed) : Initializer("He_uniform") {
 void IHeUniform::apply(Tensor* params) {
 
     if (params->ndim == 1)
-        //params->rand_signed_uniform(0.1f);
+        //params->fill_rand_signed_uniform_(0.1f);
         params->fill_(0.0f);
     else if (params->ndim == 2) {
-        params->rand_signed_uniform(1.0);
+        params->fill_rand_signed_uniform_(1.0);
         float limits=sqrtf(6.0f / params->shape[0]);
         params->mult_(limits);
       }
@@ -43,8 +43,8 @@ void IHeUniform::apply(Tensor* params) {
 
         int rf=params->shape[2]*params->shape[3];
         int fin=rf*params->shape[1];
-        
-        params->rand_signed_uniform(1.0);
+
+        params->fill_rand_signed_uniform_(1.0);
 
         float limits=sqrtf(6.0 / (float)(fin));
 
@@ -52,7 +52,7 @@ void IHeUniform::apply(Tensor* params) {
 
     }
     else {
-      params->rand_signed_uniform(0.1f);
+        params->fill_rand_signed_uniform_(0.1f);
     }
 
 }

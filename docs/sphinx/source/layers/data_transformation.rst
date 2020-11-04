@@ -34,15 +34,10 @@ Crop
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Define network
-   layer in = Input({784});
-   layer l = in;  // Aux var
-   l=Reshape(l,{1,28,28});
-   // Data transformation
    l = Crop(l, {4,4},{24,24});
-   ...
+   
+
 
 CenteredCrop
 ---------------
@@ -52,15 +47,11 @@ CenteredCrop
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Define network
-   layer in = Input({784});
-   layer l = in;  // Aux var
-   l=Reshape(l,{1,28,28});
-   // Data transformation
    l = CenteredCrop(l, {24,24});
-   ...
+   
+
+
 
 ColorJitter
 ---------------
@@ -83,15 +74,11 @@ CropScale
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Define network
-   layer in = Input({784});
-   layer l = in;  // Aux var
-   l=Reshape(l,{1,28,28});
-   // Data transformation
    l = CropScale(l, {8,8},{20,20});
-   ...
+   
+
+
 
 Cutout
 -------
@@ -101,15 +88,10 @@ Cutout
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Define network
-   layer in = Input({784});
-   layer l = in;  // Aux var
-   l=Reshape(l,{1,28,28});
-   // Data transformation
    l = Cutout(l, {0,0},{5,5});
-   ...
+   
+
 
 
 Flip
@@ -120,15 +102,10 @@ Flip
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Define network
-   layer in = Input({784});
-   layer l = in;  // Aux var
-   l=Reshape(l,{1,28,28});
-   // Data transformation
    l = Flip(l, 1);
-   ...
+   
+
 
 
 Grayscale
@@ -153,15 +130,10 @@ HorizontalFlip
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Define network
-   layer in = Input({784});
-   layer l = in;  // Aux var
-   l=Reshape(l,{1,28,28});
-   // Data transformation
    l = HorizontalFlip(l);
-   ...
+   
+
 
 
 Pad
@@ -186,15 +158,9 @@ Rotate
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Define network
-   layer in = Input({784});
-   layer l = in;  // Aux var
-   l=Reshape(l,{1,28,28});
-   // Data transformation
    l = Rotate(l, 30.0);
-   ...
+   
 
 
 Scale
@@ -205,15 +171,10 @@ Scale
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Define network
-   layer in = Input({784});
-   layer l = in;  // Aux var
-   l=Reshape(l,{1,28,28});
-   // Data transformation
    l = Scale(l, {35,35}, false);
-   ...
+   
+
 
 Shift
 -----------
@@ -230,15 +191,8 @@ VerticalFlip
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   // Define network
-   layer in = Input({784});
-   layer l = in;  // Aux var
-   l=Reshape(l,{1,28,28});
-   // Data transformation
    l = VerticalFlip(l);
-   ...
 
 Normalize
 ---------

@@ -11,12 +11,9 @@ BatchNormalization
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   l=Dense(l, 1024);
-   l=BatchNormalization(l);
-   ...
+   l = BatchNormalization(l);
+   
 
 
 LayerNormalization
@@ -28,12 +25,9 @@ LayerNormalization
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   l=Dense(l, 1024);
-   l=LayerNormalization(l);
-   ...
+   l = LayerNormalization(l);
+   
 
 
 GroupNormalization
@@ -44,10 +38,7 @@ GroupNormalization
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-   ...
-   l=Dense(l, 1024);
-   l=GroupNormalization(l, 8);
-   ...
+   l = GroupNormalization(l, 8);
+   
 

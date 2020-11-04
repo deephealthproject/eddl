@@ -126,7 +126,7 @@ public:
     *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
     *  @return a tensor
     */
-    Tensor(const vector<int> &shape, float *fptr, int dev);
+    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=0);
 
     /**
     *  @brief Construct an uninitialized tensor
@@ -146,6 +146,8 @@ public:
     *  @return a tensor
     */
     Tensor(const vector<float>& data, const vector<int> &shape, int dev=DEV_CPU);
+    // TODO: There areimplicit casting problems when shape is one-dimensional (eg.: {6})
+    // It this is the case, this contructor will be casted as "Tensor(const vector<int> &shape, int dev=DEV_CPU);"
 
     // Destructors
 
@@ -176,6 +178,12 @@ public:
       *  @brief Clone a tensor to the GFPGA.
     */
     void toFPGA(int dev=DEV_FPGA);
+
+    /**
+      *  @brief Clone a tensor to a specific device.
+    */
+    void toDevice(int dev);
+
     /**
       *  @brief Check if the tensor is in CPU.
       *
@@ -217,7 +225,14 @@ public:
       *
       *  @return    string
     */
-    string getDeviceName();
+    string getDeviceName() const;
+
+    /**
+      *  @brief Returns the device name given a device number
+      *
+      *  @return    string
+    */
+    int getDeviceID(int dev) const;
 
     // Core
     vector<int> getShape();
@@ -1185,12 +1200,12 @@ public:
     */
     Tensor* inv(float v=1.0f);
 
-     /**
-    *   @brief Element-wise 1/x operation
-    *   @param A The input tensor.
-    *   @param B The output tensor.
-    *   @param v the value multiplying the inverse.
-    */
+    /**
+   *   @brief Element-wise 1/x operation
+   *   @param A The input tensor.
+   *   @param B The output tensor.
+   *   @param v the value multiplying the inverse.
+   */
     static void inv(Tensor *A, Tensor *B, float v=1.0f);
 
     /**
@@ -1765,6 +1780,13 @@ public:
 
     /**
     *   @brief Fill tensor with a value
+    *   @param v the value to fill the tensor with
+    *   @return A new tensor with the result
+    */
+    Tensor* fill(float v);
+
+    /**
+    *   @brief Fill tensor with a value
     *   @param A The output tensor.
     *   @param v the value to fill the tensor with
     */
@@ -1777,17 +1799,44 @@ public:
     void permute_(const vector<int>& dims);
 
     /**
+    *   @brief In-place permutation of tensor dimensions
+    *   @param dims A vector containing the new order of the dimensions.
+    *   @return A new tensor with the result
+    */
+    Tensor* permute(const vector<int>& dims);
+
+    /**
     *   @brief Permutation of tensor dimensions
     *   @param A The output vector where te permutation is stored.
     *   @param dims A vector containing the new order of the dimensions.
+    *   @return A new tensor with the result
     */
     static Tensor* permute(Tensor* A, const vector<int>& dims);
 
 
     void moveaxis_(int source, int destination);
+
+    /**
+    *   @brief Move axes of an array to new positions.
+    *   @param source Original position of the axis to move. These must be unique.
+    *   @param destination Destination position for the original axis. These must also be unique
+    *   @return A new tensor with the result
+    */
+    Tensor* moveaxis(int source, int destination);
+
     static Tensor* moveaxis(Tensor* A, int source, int destination);
 
     void swapaxis_(int axis1, int axis2);
+
+    /**
+    *   @brief Interchange two axes of an array.
+    *   @param axis1 First axis.
+    *   @param destination Destination position for the original axis. These must also be unique
+    *   @return axis2 Second axis.
+    *   @return A new tensor with the result
+    */
+    Tensor* swapaxis(int axis1, int axis2);
+
     static Tensor* swapaxis(Tensor* A, int axis1, int axis2);
 
     /**
@@ -1798,8 +1847,16 @@ public:
 
     /**
     *   @brief Set a new shape to a tensor.
+    *   @param new_shape A vector containing the new shape.
+    *   @return A new tensor with the result
+    */
+    Tensor* reshape(const vector<int> &new_shape);
+
+    /**
+    *   @brief Set a new shape to a tensor.
     *   @param A The output vector where te reshape is stored.
     *   @param dims A vector containing the new shape.
+    *   @return A new tensor with the result
     */
     static Tensor* reshape(Tensor *A, const vector<int> &shape);
 
@@ -1809,32 +1866,62 @@ public:
     void flatten_();
 
     /**
+    *   @brief In-place conversion tensor to a 1D tensor.
+    *   @return A new tensor with the result
+    */
+    Tensor* flatten();
+
+    /**
     *   @brief Conversion tensor to a 1D tensor.
     *   @param A Output tensor where the flatten is stored.
+    *   @return A new tensor with the result
     */
     static Tensor* flatten(Tensor *A);
 
     /**
-    *   @brief Remove all the dimensions of size 1 from the vector.
+    *   @brief Returns a tensor with all the dimensions of input of size 1 removed.
+     *   @param axis if given, the input will be squeezed only in this dimension. Else (-1), squeezes all
+     *   dimensions of size 1
     */
-    void squeeze_();
+    void squeeze_(int axis=-1);
+
+    /**
+    *   @brief Remove all the dimensions of size 1 from the vector.
+ *   @param axis if given, the input will be squeezed only in this dimension. Else (-1), squeezes all
+     *   dimensions of size 1
+    *   @return A new tensor with the result
+    */
+    Tensor* squeeze(int axis=-1);
 
     /**
     *   @brief Remove all the dimensions of size 1 from the vector.
     *   @param A Output tensor where the squeeze is stored.
+ *   @param axis if given, the input will be squeezed only in this dimension. Else (-1), squeezes all
+     *   dimensions of size 1
+    *   @return A new tensor with the result
     */
-    static Tensor* squeeze(Tensor *A);
+    static Tensor* squeeze(Tensor *A, int axis=-1);
 
     /**
-    *   @brief Add a dimension of size 1 at the beginning of the tensor.
+    *   @brief Sets a dimension of size one inserted at the specified position.
+*   @param axis the index at which to insert the singleton dimension. Default: axis=0
     */
-    void unsqueeze_();
+    void unsqueeze_(int axis=0);
 
     /**
-    *   @brief Add a dimension of size 1 at the beginning of the tensor.
+    *   @brief Returns a new tensor with a dimension of size one inserted at the specified position.
+     *   @param axis the index at which to insert the singleton dimension. Default: axis=0
+    *   @return A new tensor with the result
+    */
+    Tensor* unsqueeze(int axis=0);
+
+    /**
+    *   @brief Returns a new tensor with a dimension of size one inserted at the specified position.
     *   @param A Output tensor where the unsqueeze is stored.
+*   @param axis the index at which to insert the singleton dimension. Default: axis=0
+    *   @return A new tensor with the result
     */
-    static Tensor* unsqueeze(Tensor *A);
+    static Tensor* unsqueeze(Tensor *A, int axis=0);
 
 
     // ***** Transformations *****************************
@@ -1869,18 +1956,18 @@ public:
     */
     static void shift(Tensor *A,Tensor *B, vector<int> shift, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
 
-        /**
-    *   @brief Rotate the tensor. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
-    *   @param angle The rotation angle in degrees.
-    *   @param mode Must be one of the following:
-    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
-    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
-    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
-    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
-    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
-    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
-    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
-    */
+    /**
+*   @brief Rotate the tensor. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
+*   @param angle The rotation angle in degrees.
+*   @param mode Must be one of the following:
+*        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+*        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+*        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+*        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+*        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+*        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+*   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+*/
     Tensor* rotate(float angle, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
 
     /**
@@ -2551,12 +2638,12 @@ public:
     */
     void less_equal_(float v);
 
-     /**
-      *  @brief Return the truth value of the input elements <= ``v`` element-wise.
-      *
-      *  @param v   Value to make the comparison with.
-      *  @return    A tensor with the true values.
-    */
+    /**
+     *  @brief Return the truth value of the input elements <= ``v`` element-wise.
+     *
+     *  @param v   Value to make the comparison with.
+     *  @return    A tensor with the true values.
+   */
     Tensor* less_equal(float v);
 
     /**
@@ -2613,12 +2700,12 @@ public:
     */
     static void equal(Tensor *A, Tensor *B, float v);
 
-     /**
-      *  @brief Return the truth value of ``this == A`` element-wise.
-      *
-      *  @param A   Input tensor.
-      *  @return    A tensor with the true values.
-    */
+    /**
+     *  @brief Return the truth value of ``this == A`` element-wise.
+     *
+     *  @param A   Input tensor.
+     *  @return    A tensor with the true values.
+   */
     Tensor* equal(Tensor *A);
 
     /**
@@ -2804,40 +2891,75 @@ public:
     // ***********************************************************
     // ***********************************************************
 
-    // Generators (In-place) *************************************
-    // TODO: Rethink names + static
-    void rand_bernoulli(); // Todo
-    void rand_multinomial(); // Todo
+    // ***** Value operators *****************************
+
 
     /**
-      *  @brief Generates uniformly distributed random samples in-place.
+      *  @brief Fills a tensor in-place, with values randomly sampled from a uniform distribution
       *
       *  @param v  Scale factor of the values generated by the uniform distribution.
     */
-    void rand_uniform(float v);
+    void fill_rand_uniform_(float v);
 
     /**
-      *  @brief Generates signed uniformly distributed random samples in-place.
+      *  @brief Fills a tensor in-place, with values randomly sampled from a uniform distribution
+      *
+      *  @param v  Scale factor of the values generated by the uniform distribution.
+      *   @return A new tensor with the result
+    */
+    Tensor* fill_rand_uniform(float v);
+
+    /**
+      *  @brief Fills a tensor in-place, with values randomly sampled from a signed uniform distribution
       *
       *  @param v  Scale factor of the values generated by the signed uniform distribution.
     */
-    void rand_signed_uniform(float v);
+    void fill_rand_signed_uniform_(float v);
 
     /**
-      *  @brief Generates normal distributed random samples in-place.
+      *  @brief Fills a tensor in-place, with values randomly sampled from a signed uniform distribution
+      *
+      *  @param v  Scale factor of the values generated by the signed uniform distribution.
+      *   @return A new tensor with the result
+    */
+    Tensor* fill_rand_signed_uniform(float v);
+
+    /**
+      *  @brief Fills a tensor in-place, with values randomly sampled from a normal distribution
       *
       *  @param m  Mean of the normal distribution.
       *  @param s  Standard deviation of the normal distribution.
-      *  @param fast_math  Wether to use or not the fast math mode.
+      *  @param fast_math  Whether to use or not the fast math mode.
     */
-    void rand_normal(float m, float s, bool fast_math=true);
+    void fill_rand_normal_(float m, float s, bool fast_math=true);
 
     /**
-      *  @brief Generates binary distributed random samples in-place.
+      *  @brief Fills a tensor in-place, with values randomly sampled from a normal distribution
+      *
+      *  @param m  Mean of the normal distribution.
+      *  @param s  Standard deviation of the normal distribution.
+      *  @param fast_math  Whether to use or not the fast math mode.
+      *   @return A new tensor with the result
+    */
+    Tensor* fill_rand_normal(float m, float s, bool fast_math=true);
+
+    /**
+      *  @brief Fills a tensor in-place, with values randomly sampled from a binary distribution
       *
       *  @param v Binarization threshold. 1 if rnd() >= t, 0 otherwise
     */
-    void rand_binary(float v);
+    void fill_rand_binary_(float v);
+
+    /**
+      *  @brief Fills a tensor in-place, with values randomly sampled from a binary distribution
+      *
+      *  @param v Binarization threshold. 1 if rnd() >= t, 0 otherwise
+      *   @return A new tensor with the result
+    */
+    Tensor* fill_rand_binary(float v);
+
+//    void fill_rand_bernoulli_(); // Todo
+//    void fill_rand_multinomial_(); // Todo
 
     // ***** Overload operators *****************************
     // Tensor and Tensor (Element wise)
@@ -2895,9 +3017,9 @@ public:
     *   @param bend Final position of B
     *   @param inc step to go from one position to the following one
     */
-    static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
-    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false);
-    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
+    static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);  // TODO DEPRECATED
+    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false); // TODO DEPRECATED
+    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false); // TODO DEPRECATED
     static void tile(Tensor *A, Tensor *B);
 
     // TODO: REFACTOR!!! ************************

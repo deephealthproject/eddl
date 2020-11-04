@@ -81,6 +81,8 @@ using namespace std;
 	void build_dropout_node( LDropout *layer, onnx::GraphProto *graph );
 
 	void build_upsample_node( LUpSampling *layer, onnx::GraphProto *graph );
+
+    void build_lstm_node( LLSTM *layer, onnx::GraphProto *graph );
 #endif
 
 #ifdef cPROTO
@@ -332,6 +334,10 @@ using namespace std;
 	    else if ( LDropout *t = dynamic_cast<LDropout*>( layer ) ) 
 		{
 	    	build_dropout_node( (LDropout*)(LinLayer*)layer, graph );
+	    } 
+	    else if ( LLSTM *t = dynamic_cast<LLSTM*>( layer ) ) 
+		{
+	    	build_lstm_node( (LLSTM*)(MLayer*)layer, graph );
 	    } 
 		else 
 		{
@@ -655,19 +661,6 @@ using namespace std;
 	}
 
 	void build_reshape_node( LReshape *layer, onnx::GraphProto *graph ) {
-		// Add an empty node to the graph
-		onnx::NodeProto* node = graph->add_node();
-		node->set_op_type( "Reshape" );
-		node->set_name( layer->name );
-		// Set the inputs names of the node from the parents of the layer
-		for ( Layer* parentl : layer->parent ) {
-			node->add_input( parentl->name );
-		}
-		// Set the input with the target shape of the op
-		node->add_input( layer->name + "_target_shape" );
-		// Set the name of the output of the node to link with other nodes
-		node->add_output( layer->name );
-
 		// Constant node input to the reshape node: shape
 		onnx::NodeProto* shape_const_node = graph->add_node();
 		shape_const_node->add_output( layer->name + "_target_shape" );
@@ -683,6 +676,19 @@ using namespace std;
 		for ( int i : layer->ls ) {
 			target_shape_tensor->add_int64_data( i );
 		}
+
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Reshape" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the input with the target shape of the op
+		node->add_input( layer->name + "_target_shape" );
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
 	}
 
 	void build_permute_node( LPermute *layer, onnx::GraphProto *graph ) {
@@ -1135,6 +1141,113 @@ using namespace std;
 			scales->add_float_data( layer->size[i] );
 		}
 	}
+
+    void build_lstm_node( LLSTM *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "LSTM" );
+		node->set_name( layer->name );
+		// Set the inputs of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		node->add_input( layer->name + "_W" );
+		node->add_input( layer->name + "_R" );
+		node->add_input( layer->name + "_B" );
+		//node->add_input( layer->name + "_sequence_lens" );
+		//node->add_input( layer->name + "_initial_h" );
+		//node->add_input( layer->name + "_initial_c" );
+
+		// Attr activation alpha (for LSTM activation functions)
+        // Not used in EDDL
+		//onnx::AttributeProto* activation_alpha_attr = node->add_attribute();
+		//activation_alpha_attr->set_name( "activation_alpha" );  
+		//activation_alpha_attr->set_type( onnx::AttributeProto::FLOATS );
+
+		// Attr activation beta
+        // Not used in EDDL
+		//onnx::AttributeProto* activation_beta_attr = node->add_attribute();
+		//activation_beta_attr->set_name( "activation_beta" );  // Not used in EDDL
+		//activation_beta_attr->set_type( onnx::AttributeProto::FLOATS );
+
+		// Attr activations
+		onnx::AttributeProto* activations_attr = node->add_attribute();
+		activations_attr->set_name( "activations" );
+		activations_attr->set_type( onnx::AttributeProto::STRINGS );
+	    activations_attr->add_strings( "Sigmoid" );  // For gates i, f, o
+	    activations_attr->add_strings( "Tanh" );     // For gate c
+	    activations_attr->add_strings( "Tanh" );     // For gate h
+
+		// Attr clip (cell clip threshold, [-threshold, +threshold])
+        // Not used in EDDL
+		//onnx::AttributeProto* hidden_size_attr = node->add_attribute();
+		//hidden_size_attr->set_name( "clip" );
+		//hidden_size_attr->set_type( onnx::AttributeProto::FLOAT );
+        //hidden_size_attr->set_i( /*?*/ ); 
+        
+		// Attr direction
+		onnx::AttributeProto* direction_attr = node->add_attribute();
+		direction_attr->set_name( "direction" );
+		direction_attr->set_type( onnx::AttributeProto::STRING );
+        direction_attr->set_s( "forward" );  // Current implementation of LSTM
+
+		// Attr hidden size
+		onnx::AttributeProto* hidden_size_attr = node->add_attribute();
+		hidden_size_attr->set_name( "hidden_size" );
+		hidden_size_attr->set_type( onnx::AttributeProto::INT );
+        hidden_size_attr->set_i( layer->units );
+
+		// Attr input forget
+		onnx::AttributeProto* input_forget_attr = node->add_attribute();
+		input_forget_attr->set_name( "input_forget" );
+		input_forget_attr->set_type( onnx::AttributeProto::INT );
+        input_forget_attr->set_i( 0 );  // To not couple the input and forget gates
+
+		// W input (weights for all the layers W[iofc])
+		onnx::TensorProto* w = graph->add_initializer();
+		w->set_name( layer->name + "_W" );
+		w->set_data_type( onnx::TensorProto::FLOAT );	
+		vector<int> w_dims {1, 4*layer->units, layer->input->shape[1]}; // shape[0] = 1 beacuse is only forward
+        w->mutable_dims()->Add( w_dims.begin(), w_dims.end() ); // Set the shape of the weights
+        w->mutable_float_data()->Add( layer->Wix->ptr, layer->Wix->ptr + layer->Wix->size ); // i weights
+        w->mutable_float_data()->Add( layer->Wox->ptr, layer->Wox->ptr + layer->Wox->size ); // o weights
+        w->mutable_float_data()->Add( layer->Wfx->ptr, layer->Wfx->ptr + layer->Wfx->size ); // f weights
+        w->mutable_float_data()->Add( layer->Wcx->ptr, layer->Wcx->ptr + layer->Wcx->size ); // c weights
+
+		// R input (recurrent weights for all the layers W[iofc])
+		onnx::TensorProto* r = graph->add_initializer();
+		r->set_name( layer->name + "_R" );
+		r->set_data_type( onnx::TensorProto::FLOAT );	
+		vector<int> r_dims {1, 4*layer->units, layer->units}; // shape[0] = 1 beacuse is only forward
+        r->mutable_dims()->Add( r_dims.begin(), r_dims.end() ); // Set the shape of the weights
+        r->mutable_float_data()->Add( layer->Wih->ptr, layer->Wih->ptr + layer->Wih->size ); // i recurrent weights
+        r->mutable_float_data()->Add( layer->Woh->ptr, layer->Woh->ptr + layer->Woh->size ); // o recurrent weights
+        r->mutable_float_data()->Add( layer->Wfh->ptr, layer->Wfh->ptr + layer->Wfh->size ); // f recurrent weights
+        r->mutable_float_data()->Add( layer->Wch->ptr, layer->Wch->ptr + layer->Wch->size ); // c recurrent weights
+
+		// B input (biases for all the layers)
+		onnx::TensorProto* b = graph->add_initializer();
+		b->set_name( layer->name + "_B" );
+		b->set_data_type( onnx::TensorProto::FLOAT );	
+		vector<int> b_dims {2, 8*layer->units}; // shape[0] = 2 for weights in two directions
+        b->mutable_dims()->Add( b_dims.begin(), b_dims.end() ); // Set the shape of the weights
+        b->mutable_float_data()->Add( layer->inbias->ptr, layer->inbias->ptr + layer->inbias->size ); // i bias
+        b->mutable_float_data()->Add( layer->onbias->ptr, layer->onbias->ptr + layer->onbias->size ); // o bias
+        b->mutable_float_data()->Add( layer->fnbias->ptr, layer->fnbias->ptr + layer->fnbias->size ); // f bias
+        b->mutable_float_data()->Add( layer->cnbias->ptr, layer->cnbias->ptr + layer->cnbias->size ); // c bias
+
+        // Set recurrent forward biases to 0 (only one bias used, not one for x and another for h)
+		for( int i = 0; i < 4*layer->units; ++i )
+			b->add_float_data(0);
+
+        // Set backward biases to 0 (bidirectional LSTM not implemented)
+		for( int i = 0; i < 8*layer->units; ++i )
+			b->add_float_data(0);
+
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+    }
+
 	// End: Node builders
 	//----------------------------------------------------------------------------------------
 

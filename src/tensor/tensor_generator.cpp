@@ -9,6 +9,7 @@
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -22,7 +23,15 @@
 
 using namespace std;
 
-void Tensor::rand_uniform(float v) {
+PROFILING_ENABLE_EXTERN(fill_rand_uniform);
+PROFILING_ENABLE_EXTERN(fill_rand_signed_uniform);
+PROFILING_ENABLE_EXTERN(fill_rand_normal);
+PROFILING_ENABLE_EXTERN(fill_rand_binary);
+
+void Tensor::fill_rand_uniform_(float v) {
+
+    PROFILING_HEADER(fill_rand_uniform);
+
     if (isCPU()) {
         cpu_rand_uniform(this, v);
     }
@@ -38,10 +47,20 @@ void Tensor::rand_uniform(float v) {
     }
 #endif
 
+    PROFILING_FOOTER(fill_rand_uniform);
+
 }
 
+Tensor* Tensor::fill_rand_uniform(float v){
+    Tensor* t_new = Tensor::empty_like(this);
+    t_new->fill_rand_uniform_(v);
+    return t_new;
+}
 
-void Tensor::rand_signed_uniform(float v) {
+void Tensor::fill_rand_signed_uniform_(float v) {
+
+    PROFILING_HEADER(fill_rand_signed_uniform);
+
     if (isCPU()) {
         cpu_rand_signed_uniform(this, v);
     }
@@ -57,30 +76,19 @@ void Tensor::rand_signed_uniform(float v) {
     }
 #endif
 
-
+    PROFILING_FOOTER(fill_rand_signed_uniform);
 }
 
-
-void Tensor::rand_binary(float v) {
-    if (isCPU()) {
-        cpu_rand_binary(this, v);
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        gpu_rand_binary(this,v);
-      }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_rand_binary(this, v);
-    }
-#endif
-
+Tensor* Tensor::fill_rand_signed_uniform(float v){
+    Tensor* t_new = Tensor::empty_like(this);
+    t_new->fill_rand_signed_uniform_(v);
+    return t_new;
 }
 
+void Tensor::fill_rand_normal_(float m, float s, bool fast_math) {
 
-void Tensor::rand_normal(float m, float s, bool fast_math) {
+    PROFILING_HEADER(fill_rand_normal);
+
     if (isCPU()) {
         cpu_rand_normal(this, m, s, fast_math);
     }
@@ -96,4 +104,39 @@ void Tensor::rand_normal(float m, float s, bool fast_math) {
     }
 #endif
 
+    PROFILING_FOOTER(fill_rand_normal);
+}
+
+Tensor* Tensor::fill_rand_normal(float m, float s, bool fast_math) {
+    Tensor* t_new = Tensor::empty_like(this);
+    t_new->fill_rand_normal_(m, s, fast_math);
+    return t_new;
+}
+
+void Tensor::fill_rand_binary_(float v) {
+
+    PROFILING_HEADER(fill_rand_binary);
+
+    if (isCPU()) {
+        cpu_rand_binary(this, v);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_rand_binary(this,v);
+      }
+#endif
+#ifdef cFPGA
+    else {
+        fpga_rand_binary(this, v);
+    }
+#endif
+
+    PROFILING_FOOTER(fill_rand_binary);
+}
+
+Tensor* Tensor::fill_rand_binary(float v) {
+    Tensor* t_new = Tensor::empty_like(this);
+    t_new->fill_rand_binary_(v);
+    return t_new;
 }

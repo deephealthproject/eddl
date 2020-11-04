@@ -265,7 +265,7 @@ void distributeTensor(Layer *l,string tname, int p)
     int end = start + sl->output->shape[0];
 
     if (tname=="output")
-    Tensor::select(l->output, sl->output, sind, start, end);
+      Tensor::select(l->output, sl->output, sind, start, end);
     else if (tname=="delta") {
       sl->mem_delta();
       Tensor::select(l->delta, sl->delta, sind, start, end);

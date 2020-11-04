@@ -15,6 +15,7 @@
 #include <stdexcept>
 
 #include "eddl/apis/eddl.h"
+#include "eddl/utils.h"
 
 
 using namespace std;
@@ -64,6 +65,13 @@ namespace eddl {
         net->setTrainable(lname,val);
     }
 
+    vector<vtensor> get_parameters(model net, bool deepcopy, bool tocpu){
+        return net->get_parameters(deepcopy, tocpu);
+    }
+
+    void set_parameters(model net, const vector<vtensor>& params){
+        net->set_parameters(params);
+    }
 
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
@@ -295,6 +303,11 @@ namespace eddl {
         net->train_batch(in, out, indices,1);
     }
 
+    void show_profile() {
+        printf("profile:\n");
+        __show_profile();
+    }
+
     void next_batch(vector<Tensor *> in,vector<Tensor *> out)
     {
         int i,n;
@@ -419,6 +432,8 @@ namespace eddl {
     Loss* getLoss(string type){
         if (type == "mse" || type == "mean_squared_error"){
             return new LMeanSquaredError();
+        } else if (type == "full_cross_entropy"){
+            return new LFullCrossEntropy();
         } else if (type == "cross_entropy"){
             return new LCrossEntropy();
         } else if (type == "soft_cross_entropy"){
@@ -503,6 +518,11 @@ namespace eddl {
     layer Softmax(layer parent, string name){
         vector<float> params = {};
         return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
+    }
+
+    layer FullSoftmax(layer parent, string name){
+        vector<float> params = {};
+        return new LActivation(parent,"full_softmax", params, name, DEV_CPU, 0);
     }
 
     layer Sigmoid(layer parent, string name){

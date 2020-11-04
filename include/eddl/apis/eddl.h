@@ -70,6 +70,8 @@ namespace eddl {
     void removeLayer(Net *net, string l);
     void setTrainable(model net, string lanme, bool val);
 
+    vector<vtensor> get_parameters(model net, bool deepcopy=false, bool tocpu=false);
+    void set_parameters(model net, const vector<vtensor>& params);
 
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
 
@@ -677,13 +679,20 @@ namespace eddl {
       *  @param l  Layer to detach
       *  @return   Detached Layer
     */
-    layer detach(layer l);/**
+    layer detach(layer l);
+    
+    /**
       *  @brief Sets the provided layers as detached, excluding them from the computation of the gradients.
       *
       *  @param l  Layers to detach
       *  @return   Detached Layers
     */
     vlayer detach(vlayer l);
+
+    /**
+      * @brief Shows profile information.
+    */
+    void show_profile();   
 
 
     ///////////////////////////////////////
@@ -717,6 +726,17 @@ namespace eddl {
       *  @return     Output of Softmax transformation
     */
     layer Softmax(layer parent, string name="");
+
+    /**
+      *  @brief Applies a Jacobian Softmax activation function to the given layer.
+      *
+      *  @see   https://en.wikipedia.org/wiki/Softmax_function
+      *
+      *  @param parent  Parent layer
+      *  @param name  Name of the layer
+      *  @return     Output of Softmax transformation
+    */
+    layer FullSoftmax(layer parent, string name="");
 
     /**
       *  @brief Applies a Sigmoid activation function to the given layer.

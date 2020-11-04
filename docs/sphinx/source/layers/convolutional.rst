@@ -10,23 +10,8 @@ Conv1D
 Example:
 
 .. code-block:: c++
-    :linenos:
-
-    ...
-    // Define network
-    layer in = Input({784});
-    layer l = in;  // Aux var
-
-    l = Reshape(l,{1,784}); //image as a 1D signal with depth=1
-    l = MaxPool1D(ReLu(Conv1D(l,16, {3},{1})),{4},{4});  //MaxPool 4 stride 4
-    l = MaxPool1D(ReLu(Conv1D(l,32, {3},{1})),{4},{4});
-    l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
-    l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
-    l = Reshape(l,{-1});
-
-    layer out = Activation(Dense(l, num_classes), "softmax");
-    model net = Model({in}, {out});
-    ...
+    
+    l = Conv1D(l,16, {3},{1});
 
 
 Conv2D
@@ -37,25 +22,9 @@ Conv2D
 Example:
 
 .. code-block:: c++
-   :linenos:
-    
-    ...
-    // Define network
-    layer in = Input({784});
-    layer l = in;  // Aux var
 
-    l = Reshape(l,{1,28,28});
     l = Conv(l,32, {3,3},{1,1});
-    l = ReLu(l);
-    l = MaxPool(l,{3,3}, {1,1}, "same");
-    l = Conv(l,64, {3,3},{1,1});
-    l = ReLu(l);
-    l = MaxPool(l,{2,2}, {2,2}, "none");
-    l = Reshape(l,{-1});
-
-    layer out = Activation(Dense(l, num_classes), "softmax");
-    model net = Model({in}, {out});
-    ...
+    
     
 
 2D Upsampling 
@@ -70,18 +39,9 @@ Example:
 Example:
 
 .. code-block:: c++
-   :linenos:
-    
-    ...
-    // Define network
-    layer in = Input({784});
-    layer l = in;  // Aux var
 
-    l = Reshape(l,{1,28,28});
-    l = MaxPool(ReLu(Conv(l,128,{3,3},{2,2})),{2,2});
     l = UpSampling(l, {2, 2});
-    ...
-
+    
 
 Convolutional Transpose
 ------------------------

@@ -54,12 +54,20 @@ void cpu_d_tanh(Tensor *D, Tensor *I, Tensor *PD);
 void cpu_softmax(Tensor *A, Tensor *B);
 void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD);
 
+void cpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable);
+void cpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable);  // Aux. temp.
+void cpu_d_full_softmax(Tensor *D, Tensor *I, Tensor *PD, int axis);
+void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD);  // Aux. temp.
+
 void cpu_linear(Tensor *A, Tensor *B, float param);
 void cpu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param);
 
 // Losses
 void cpu_cent(Tensor *A, Tensor *B, Tensor *C);
 void cpu_bin_cent(Tensor *A, Tensor *B, Tensor *C);
+
+float cpu_full_cross_entropy(Tensor* y_true, Tensor* y_pred);
+void cpu_d_full_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
 
 // Metrics
 int cpu_accuracy(Tensor *A, Tensor *B);

@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
+    int epochs = 100;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -46,17 +46,18 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
+
     // Build model
     build(net,
-          rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          sgd(0.001), // Optimizer
+          {"cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-//          CS_CPU()
+          //CS_CPU()
 	      //CS_FPGA({1})
     );
-    //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
+//    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
     // View model
     summary(net);

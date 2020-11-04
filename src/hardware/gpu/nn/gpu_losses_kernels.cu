@@ -29,3 +29,36 @@ __global__ void cent(float* a, float* b, float* c, long int size)
    if (a[thread_id_x]!=1.0) c[thread_id_x]-=(1.0-a[thread_id_x])*logf(1.0-b[thread_id_x]+0.00001);
   }
 }
+
+
+
+__global__ void gpu_full_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int n_batches, unsigned int n_features){
+    long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Batch index
+
+    if (thread_id_x < n_batches){
+        float eps =10e-8;
+        unsigned int batch_i = thread_id_x; // Alias
+
+        // Contiguous data
+        unsigned int start = batch_i*n_features;
+        unsigned int end = start+n_features;
+
+        // Compute cross-entropy
+        float bi_sum = 0.0f;
+        for (unsigned int i = start; i<end; i++) {
+            bi_sum += y_true[i] * logf(y_pred[i]+eps);
+        }
+
+        // Store partial sums (later will be reduced)
+        sum_array[thread_id_x] = -bi_sum;
+    }
+}
+
+__global__ void gpu_d_full_cross_entropy(float* y_true, float* y_pred, float* delta, long int size){
+    long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Index
+
+    if (thread_id_x < size){
+        float eps =10e-8;
+        delta[thread_id_x] = -y_true[thread_id_x] * (1.0f/ (y_pred[thread_id_x]+eps) );
+    }
+}

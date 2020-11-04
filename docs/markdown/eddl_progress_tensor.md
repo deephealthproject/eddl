@@ -58,10 +58,7 @@ Numpy-like operations over a raw-tensor object
 | ------------- | ---- | ---- | -------- |
 | randu        | ✔️    | ✔️     | 	Return a uniform random matrix with given shape.   |
 | randn        | ✔️    | ✔️    | 	Return a normal random matrix with data from the "standard normal" distribution.     |
-| rand_uniform        | ✔️    | ✔️    |     |
-| rand_signed_uniform        | ✔️    | ✔️    |     |
-| rand_normal        | ✔️    | ✔️    |     |
-| rand_binary        | ✔️    | ✔️    |     |
+
 
 
 ### Building matrices
@@ -97,6 +94,17 @@ Numpy-like operations over a raw-tensor object
 | ------------- | ---- | ---- | -------- |
 | squeeze      | ✔️    | ✔️    |  Remove single-dimensional entries from the shape of an array. `[3, 4, 1, 7] => [3,4,7]`     |
 | unsqueeze      | ✔️    | ✔️    |  Expand the shape of an array.  `[3, 4, 7] => [1, 3, 4, 7]`      |
+
+
+### Value operations
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- | ---- | ---- | -------- |
+| fill        | ✔️    | ✔️    |  Fills a tensor in-place, with a constant value   |
+| fill_rand_uniform        | ✔️    | ✔️    |  Fills a tensor in-place, with values randomly sampled from a uniform distribution   |
+| fill_rand_signed_uniform        | ✔️    | ✔️    | Fills a tensor in-place, with values randomly sampled from a signed uniform distribution    |
+| fill_rand_normal        | ✔️    | ✔️    |  Fills a tensor in-place, with values randomly sampled from a normal distribution   |
+| fill_rand_binary        | ✔️    | ✔️    | Fills a tensor in-place, with values randomly sampled from a binary distribution    |
 
 
 ### Joining arrays

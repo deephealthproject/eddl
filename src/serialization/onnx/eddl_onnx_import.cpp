@@ -5,6 +5,7 @@
 #include "eddl/layers/conv/layer_conv.h"
 #include "eddl/layers/normalization/layer_normalization.h"
 #include "eddl/layers/pool/layer_pool.h"
+#include "eddl/layers/recurrent/layer_recurrent.h"
 #include <map>
 #include <set>
 #include <algorithm>
@@ -74,8 +75,8 @@ using namespace std;
 		MAT_MUL,            // implemented
 		MAX,				// implemented
 		MIN,                // implemented
-		SUB,                 // implemented
-		CONSTANT            // Not a layer, but needed for detecting this type of node
+		SUB,                // implemented
+		LSTM                // not implemented yet
 		
 
 
@@ -178,7 +179,7 @@ using namespace std;
 		map_layers["MatMul"] = ONNX_LAYERS::MAT_MUL;
 		map_layers["Max"] = ONNX_LAYERS::MAX;
 		map_layers["Min"] = ONNX_LAYERS::MIN;
-		map_layers["Constant"] = ONNX_LAYERS::CONSTANT;
+		map_layers["LSTM"] = ONNX_LAYERS::LSTM;
 
 		return map_layers;
 	}
@@ -196,12 +197,10 @@ using namespace std;
 		}
 
 		size_t num_elements = raw_size / sizeof(T);
-		printf("Converting tensor values\n");
 		const void* src_ptr = static_cast<const void*>(onnx_tensor.raw_data().data());
 		field.resize(num_elements, 0);
 		void* target_ptr = static_cast<void*>(field.data());
 		memcpy(target_ptr, src_ptr, raw_size);
-		printf("Tensor values converted succesfully\n");
 		return true;
 	}
 
@@ -676,6 +675,7 @@ using namespace std;
 						string auto_pad_option = "";
 						bool auto_pad = false;
 						vector<float> *bias;
+                        bool conv1d = false;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
@@ -701,15 +701,21 @@ using namespace std;
 								for( int h = 0; h<attribute.ints_size(); h++){
 									kernel_shape.push_back(attribute.ints(h));
 								}
+								if(attribute.ints_size() == 1){ // If is conv1D, we make the equivalent in conv2D
+									conv1d = true;
+								}
 							}
 							else if (!attr_name.compare("pads")) { //
-								for(int h = 0; h < 4; h++){
+								for(int h = 0; h < attribute.ints_size(); h++){
 									pads.push_back(attribute.ints(h));
 								}
 							}
 							else if (!attr_name.compare("strides")) { //
 								for(int h = 0; h < attribute.ints_size(); h++){
 									strides.push_back(attribute.ints(h));
+								}
+								if(attribute.ints_size() == 1){ // If is conv1D, we make the equivalent in conv2D
+									conv1d = true;
 								}
 							}
 						}
@@ -730,7 +736,17 @@ using namespace std;
 						vector<float>* weights = &(map_init_values[weights_name]);
 						vector<int> dims = map_init_dims[weights_name];
 
+						if(parent_shape.size() == 3){
+							conv1d = true;
+						}
 
+						if(conv1d){
+							strides.push_back(1);
+							kernel_shape.push_back(1);
+                            dims.push_back(1);
+                            pads.push_back(0);
+                            pads.push_back(0);
+						}
 
 						filters = dims[0];
 						string name = node->name();
@@ -741,7 +757,8 @@ using namespace std;
 						}
 						else convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, node->input_size() > 2, mem);
 
-						actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
+						if(conv1d) actual_layer = new LConv1D(parent, convol_descriptor, name, dev, mem);
+                        else actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
 
 						if(node->input_size() > 2){
 							string bias_name = node->input(2);
@@ -758,7 +775,6 @@ using namespace std;
 						delete weights_tensor;
 						break;
 					}
-
 				case ONNX_LAYERS::DENSE:
 					{
 						int ndim;
@@ -818,17 +834,9 @@ using namespace std;
 						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
 
 						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
-						if(transB){
-							vector<int> reverse_dims;
-							for(int h = dims.size()-1; h >= 0; h--){
-								reverse_dims.push_back(dims[h]);
-							}
-							Tensor* weights_tensor_T = new Tensor(reverse_dims, dev);
-							Tensor::transpose(weights_tensor, weights_tensor_T, {1,0});
-							Tensor::copy(weights_tensor_T, dense->W );
-							delete weights_tensor_T;
-						}
-						else Tensor::copy(weights_tensor, dense->W );
+						if(transB)
+                            weights_tensor->permute_({1, 0});
+						Tensor::copy(weights_tensor, dense->W);
 						delete weights_tensor;
 						if(use_bias){
 							bias_name = node->input(2);
@@ -1455,6 +1463,200 @@ using namespace std;
 
 						actual_layer = new LMaxPool(parent, {h,w},{1,1}, "none", "gpool", dev, mem);
 					}
+                case ONNX_LAYERS::LSTM:
+					{
+						vector<float> activation_alpha; //Values for configuring some activations with extra parameters
+						vector<float> activation_beta;  //Values for configuring some activations with extra parameters
+						vector<string> activations;     //Activation functions in order for each gate
+						float clip = -1;                //Value for clipping
+						string direction = "";          //Forward, backward or reverse (Forward by default)
+						int hidden_size = -1;           //Number of neurons in the hidden layer
+						int input_forget = 0;			//If 1, couple the input and forget gates
+
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("activation_alpha")) { //Not used yet in eddl but implemented
+								for( int h = 0; h<attribute.floats_size(); h++){
+									activation_alpha.push_back(attribute.floats(h));
+								}
+							}
+							else if (!attr_name.compare("activation_beta")) { //Not used yet in eddl but implemented
+								for( int h = 0; h<attribute.floats_size(); h++){
+									activation_beta.push_back(attribute.floats(h));
+								}
+							}
+							else if (!attr_name.compare("activations")) { //Not used yet in eddl but implemented. We default to Sigmoid, Sigmoid, Sigmoid, TanH
+								for( int h = 0; h<attribute.strings_size(); h++){
+									activations.push_back(attribute.strings(h));
+								}
+							}
+							else if (!attr_name.compare("clip")) { //Not used yet in eddl but implemented
+								clip = attribute.f();
+							}
+							else if (!attr_name.compare("direction")) { //Not used yet in eddl but implemented. We default to forward
+								direction = attribute.s();
+							}
+							else if (!attr_name.compare("hidden_size")) { //
+								hidden_size = attribute.i();
+							}
+							else if (!attr_name.compare("input_forget")) { //Not used yet in eddl but we read it
+								input_forget = attribute.i();
+							}
+						}
+
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
+						
+						if(hidden_size < 0){
+							cerr << "Model contains a LSTM without the number of neurons" << endl;
+						}
+
+						string weights_gates = node->input(1); //Get weights and dims
+						vector<float>* weights_g = &(map_init_values[weights_gates]);
+						vector<int> dims_g = map_init_dims[weights_gates];
+                        int input_size = dims_g[2];
+
+						vector<int> dims_input_lstm = {dims_g[2], dims_g[1]/4};
+
+						vector<float>* weights_input_g = new vector<float>;
+						vector<float>* weights_output_g = new vector<float>;
+						vector<float>* weights_forget_g = new vector<float>;
+						vector<float>* weights_cell_g = new vector<float>;
+                        int w_size = input_size * hidden_size;
+						weights_input_g->assign( weights_g->begin() + w_size * 0  , weights_g->begin() + w_size * 1);
+						weights_output_g->assign(weights_g->begin() + w_size * 1  , weights_g->begin() + w_size * 2);
+						weights_forget_g->assign(weights_g->begin() + w_size * 2  , weights_g->begin() + w_size * 3);
+						weights_cell_g->assign(  weights_g->begin() + w_size * 3  , weights_g->begin() + w_size * 4);
+
+						string recurrence_weights_gates = node->input(2); //Get weights and dims
+						vector<float>* recurrence_weights_g = &(map_init_values[recurrence_weights_gates]);
+						vector<int> recurrence_dims_g = map_init_dims[recurrence_weights_gates];
+
+						vector<int> dims_recurrent_lstm = {recurrence_dims_g[2], recurrence_dims_g[2]};
+
+						vector<float>* recurrence_weights_input_g = new vector<float>;
+						vector<float>* recurrence_weights_output_g = new vector<float>;
+						vector<float>* recurrence_weights_forget_g = new vector<float>;
+						vector<float>* recurrence_weights_cell_g = new vector<float>;
+                        w_size = hidden_size * hidden_size;
+						recurrence_weights_input_g->assign( recurrence_weights_g->begin() + w_size * 0  , recurrence_weights_g->begin() + w_size * 1);
+						recurrence_weights_output_g->assign(recurrence_weights_g->begin() + w_size * 1  , recurrence_weights_g->begin() + w_size * 2);
+						recurrence_weights_forget_g->assign(recurrence_weights_g->begin() + w_size * 2  , recurrence_weights_g->begin() + w_size * 3);
+						recurrence_weights_cell_g->assign(  recurrence_weights_g->begin() + w_size * 3  , recurrence_weights_g->begin() + w_size * 4);
+
+						LLSTM* lstm = new LLSTM({parent}, hidden_size, 0, 0, name, dev, mem);
+
+						Tensor* weights_input_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_input_g), dev);
+						Tensor::copy(weights_input_tensor, lstm->Wix );
+						delete weights_input_tensor;
+						delete weights_input_g;
+
+						Tensor* weights_output_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_output_g), dev);
+						Tensor::copy(weights_output_tensor, lstm->Wox );
+						delete weights_output_tensor;
+						delete weights_output_g;
+
+						Tensor* weights_forget_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_forget_g), dev);
+						Tensor::copy(weights_forget_tensor, lstm->Wfx );
+						delete weights_forget_tensor;
+						delete weights_forget_g;
+
+						Tensor* weights_cell_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_cell_g), dev);
+						Tensor::copy(weights_forget_tensor, lstm->Wcx );
+						delete weights_cell_tensor;
+						delete weights_cell_g;
+
+						Tensor* recurrence_weights_input_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_input_g), dev);
+						Tensor::copy(recurrence_weights_input_tensor, lstm->Wih );
+						delete recurrence_weights_input_tensor;
+						delete recurrence_weights_input_g;
+
+						Tensor* recurrence_weights_output_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_output_g), dev);
+						Tensor::copy(recurrence_weights_output_tensor, lstm->Woh );
+						delete recurrence_weights_output_tensor;
+						delete recurrence_weights_output_g;
+
+						Tensor* recurrence_weights_forget_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_forget_g), dev);
+						Tensor::copy(recurrence_weights_forget_tensor, lstm->Wfh );
+						delete recurrence_weights_forget_tensor;
+						delete recurrence_weights_forget_g;
+
+						Tensor* recurrence_weights_cell_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_cell_g), dev);
+						Tensor::copy(recurrence_weights_cell_tensor, lstm->Wch );
+						delete recurrence_weights_cell_tensor;
+						delete recurrence_weights_cell_g;
+
+						string biases_name = node->input(3); //Get weights and dims
+						vector<float>* biases = &(map_init_values[biases_name]);
+						vector<int> biases_dims = map_init_dims[biases_name];
+						vector<int> bias_dims = {hidden_size};
+
+						vector<float>* bias_input = new vector<float>;
+						vector<float>* bias_output = new vector<float>;
+						vector<float>* bias_forget = new vector<float>;
+						vector<float>* bias_cell = new vector<float>;
+
+						vector<float>* bias_recurrence_input = new vector<float>;
+						vector<float>* bias_recurrence_output = new vector<float>;
+						vector<float>* bias_recurrence_forget = new vector<float>;
+						vector<float>* bias_recurrence_cell = new vector<float>;
+
+						bias_input->assign(  biases->begin() + hidden_size * 0  , biases->begin() + hidden_size * 1);
+						bias_output->assign( biases->begin() + hidden_size * 1  , biases->begin() + hidden_size * 2);
+						bias_forget->assign( biases->begin() + hidden_size * 2  , biases->begin() + hidden_size * 3);
+						bias_cell->assign(   biases->begin() + hidden_size * 3  , biases->begin() + hidden_size * 4);
+
+						bias_recurrence_input->assign(  biases->begin() + hidden_size * 4  , biases->begin() + hidden_size * 5);
+						bias_recurrence_output->assign( biases->begin() + hidden_size * 5  , biases->begin() + hidden_size * 6);
+						bias_recurrence_forget->assign( biases->begin() + hidden_size * 6  , biases->begin() + hidden_size * 7);
+						bias_recurrence_cell->assign(   biases->begin() + hidden_size * 7  , biases->begin() + hidden_size * 8);
+
+						Tensor* bias_input_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_input), dev);
+						Tensor::copy(bias_input_tensor, lstm->inbias );
+						delete bias_input_tensor;
+						delete bias_input;
+
+						Tensor* bias_output_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_output), dev);
+						Tensor::copy(bias_output_tensor, lstm->onbias );
+						delete bias_output_tensor;
+						delete bias_output;
+
+						Tensor* bias_forget_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_forget), dev);
+						Tensor::copy(bias_forget_tensor, lstm->fnbias );
+						delete bias_forget_tensor;
+						delete bias_forget;
+
+						Tensor* bias_cell_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_cell), dev);
+						Tensor::copy(bias_cell_tensor, lstm->cnbias );
+						delete bias_cell_tensor;
+						delete bias_cell;
+
+						/* In eddl we don't have bias for the recurrent weights
+						Tensor* bias_recurrence_input_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_input), dev);
+						Tensor::copy(bias_recurrence_input_tensor, lstm-> );
+						delete bias_recurrence_input_tensor;
+						delete bias_recurrence_input;
+
+						Tensor* bias_recurrence_output_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_output), dev);
+						Tensor::copy(bias_recurrence_output_tensor, lstm-> );
+						delete bias_recurrence_output_tensor;
+						delete bias_recurrence_output;
+
+						Tensor* bias_recurrence_forget_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_forget), dev);
+						Tensor::copy(bias_recurrence_forget_tensor, lstm-> );
+						delete bias_recurrence_forget_tensor;
+						delete bias_recurrence_forget;
+
+						Tensor* bias_recurrence_cell_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_cell), dev);
+						Tensor::copy(bias_recurrence_cell_tensor, lstm-> );
+						delete bias_recurrence_cell_tensor;
+						delete bias_recurrence_cell;
+						*/
+
+						actual_layer = lstm;
+					}
 					break;
 
 				default:
@@ -1486,7 +1688,16 @@ using namespace std;
 		return new Net(input_layers, output_layers);
 	}
 
-	void set_weights(Net* net, onnx::ModelProto model){
+	//Sets the weights of a input Net to the ones stored in the onnx net inside the pointer
+	void set_weights_from_onnx_pointer(Net* net, void *ptr_model, size_t model_size )
+	{
+		onnx::ModelProto model;
+		{
+			if(!model.ParseFromArray(ptr_model,model_size)){
+				cerr << "Failed to parse model." << endl;
+			}
+			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
+		}
 
 		map<string, vector<Tensor*> > tensors = get_tensors_from_onnx(model);
 		LConv* conv;
@@ -1523,22 +1734,6 @@ using namespace std;
 				delete delete_tensors[i];
 			}
 		}
-
-	}
-
-	//Sets the weights of a input Net to the ones stored in the onnx net inside the pointer
-	void set_weights_from_onnx_pointer(Net* net, void *ptr_model, size_t model_size )
-	{
-		onnx::ModelProto model;
-		{
-			if(!model.ParseFromArray(ptr_model,model_size)){
-				cerr << "Failed to parse model." << endl;
-			}
-			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
-		}
-
-		set_weights(net, model);
-
 	}
 
 	//Sets the weights of a input Net to the ones stored in the onnx net inside the c++ string
@@ -1550,16 +1745,108 @@ using namespace std;
 			}
 			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
 		}
-		set_weights(net, model);
-
-    }
-
-	void apply_grads(Net* net, onnx::ModelProto model){
 
 		map<string, vector<Tensor*> > tensors = get_tensors_from_onnx(model);
 		LConv* conv;
 		LDense* dense;
-		LBatchNorm* bn;
+		for(Layer* l : net->layers){
+			if(!tensors.count(l->name)){
+				//cout << "Layer with name " << l->name << " is not trainable " << endl;
+				continue;
+			}
+			vector<Tensor*> layer_tensors = tensors[l->name];
+			if((conv = dynamic_cast<LConv*>(l) )){
+				if(layer_tensors.size() > 1)
+					conv->update_weights(layer_tensors[0], layer_tensors[1]);
+				else{
+					cerr << "EDDL has not implemented convolutional without bias " << endl;
+					//conv.update_weights(layer_tensors[0]);
+				}
+
+			}
+			else if((dense = dynamic_cast<LDense*>( l ) )){
+				if(layer_tensors.size() > 1)
+					dense->update_weights(layer_tensors[0], layer_tensors[1]);
+				else
+					dense->update_weights(layer_tensors[0]);
+			}
+			else cerr << "not implemented layer type" << endl;
+		}
+		//erase the map we used to free the memory
+		map<string, vector<Tensor*> >::iterator it;
+		vector<Tensor*> delete_tensors;
+		for( it = tensors.begin(); it !=tensors.end(); ++it){
+			delete_tensors=it->second;
+			for(int i = 0; i < delete_tensors.size(); ++i){
+				delete delete_tensors[i];
+			}
+		}
+    }
+
+	//Accumulates the gradients stored in the pointer to the input net
+    void apply_grads_from_onnx_pointer( Net* net, void * ptr_onnx, size_t count )
+	{
+		onnx::ModelProto model;
+		{
+			if(!model.ParseFromArray(ptr_onnx,count)){
+				cerr << "Failed to parse model." << endl;
+			}
+			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
+		}
+
+		map<string, vector<Tensor*> > tensors = get_tensors_from_onnx(model);
+		LConv* conv;
+		LDense* dense;
+		for(Layer* l : net->layers){
+			if(!tensors.count(l->name)) {
+				//std::cerr << "EDDL doesn't find the layer in the imported net by ONNX: " << l->name << std::endl;
+				continue;
+			}
+			vector<Tensor*> layer_tensors = tensors[l->name];
+			if((conv = dynamic_cast<LConv*>(l) )){
+				if(layer_tensors.size() > 1) {
+					conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
+				} else{
+					cerr << "EDDL has not implemented convolutional without bias " << endl;
+					//conv.update_weights(layer_tensors[0]);
+				}
+
+			}
+			else if((dense = dynamic_cast<LDense*>( l ) )){
+				if(layer_tensors.size() > 1){
+					dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
+				}
+				else
+				{
+					dense->accumulate_accumulated_gradients(layer_tensors[0]);
+				}
+			}
+			else cerr << "not implemented layer type" << endl;
+		}
+		//erase the map we used to free the memory
+		map<string, vector<Tensor*> >::iterator it;
+		vector<Tensor*> delete_tensors;
+		for( it = tensors.begin(); it !=tensors.end(); ++it){
+			delete_tensors=it->second;
+			for(int i = 0; i < delete_tensors.size(); ++i){
+				delete delete_tensors[i];
+			}
+		}
+	}
+
+	//Accumulates the gradients stored in the c++ string to the input net
+    void apply_grads_from_onnx(Net* net, std::string* model_string){
+		onnx::ModelProto model;
+		{
+			if(!model.ParseFromString(*model_string)){
+				cerr << "Failed to parse model." << endl;
+			}
+			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
+		}
+
+		map<string, vector<Tensor*> > tensors = get_tensors_from_onnx(model);
+		LConv* conv;
+		LDense* dense;
 		for(Layer* l : net->layers){
 			if(!tensors.count(l->name)) continue;
 			vector<Tensor*> layer_tensors = tensors[l->name];
@@ -1577,8 +1864,6 @@ using namespace std;
 					dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
 				else
 					dense->accumulate_accumulated_gradients(layer_tensors[0]);
-			}else if((bn = dynamic_cast<LBatchNorm*>( l ) )){
-				bn->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
 			}
 			else cerr << "not implemented layer type" << endl;
 		}
@@ -1591,35 +1876,7 @@ using namespace std;
 				delete delete_tensors[i];
 			}
 		}
-        
-        //Distribute the new weights with applyed grads
-        net->distribute_weights();
 
-	}
-	//Accumulates the gradients stored in the pointer to the input net
-    void apply_grads_from_onnx_pointer( Net* net, void * ptr_onnx, size_t count ) {
-		onnx::ModelProto model;
-		{
-			if(!model.ParseFromArray(ptr_onnx,count)){
-				cerr << "Failed to parse model." << endl;
-			}
-			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
-		}
-		apply_grads(net, model);
-
-	}
-
-	//Accumulates the gradients stored in the c++ string to the input net
-    void apply_grads_from_onnx(Net* net, std::string* model_string){
-		onnx::ModelProto model;
-		{
-			if(!model.ParseFromString(*model_string)){
-				cerr << "Failed to parse model." << endl;
-			}
-			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
-		}
-
-		apply_grads(net, model);
     }
 
 
@@ -1695,27 +1952,6 @@ using namespace std;
 
 						break;
 					}
-				case ONNX_LAYERS::BATCHNORM:
-					{
-
-						vector<Tensor*> batchnorm_tensors;
-
-						string weights_name = node.input(1); //Get weights and dims
-						vector<float>* weights = &(map_init_values[weights_name]);
-						vector<int> dims = map_init_dims[weights_name];
-
-						batchnorm_tensors.push_back(new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev));
-
-						string bias_name = node.input(2);
-						vector<float>* bias = &(map_init_values[bias_name]);
-						vector<int> bias_dims = map_init_dims[bias_name];
-						batchnorm_tensors.push_back(new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev));
-
-						tensors[name] = batchnorm_tensors;
-
-						break;
-					}
-
 
 				default:
 					//cout << "The layer with type " << layer_type_name << " has no trainable parameters " << endl;

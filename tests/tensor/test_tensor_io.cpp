@@ -193,6 +193,9 @@ TEST(TensorTestSuite, tensor_io_jpg)
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
     ASSERT_TRUE(Tensor::equivalent(t_ref, t_load, 10e-0));
+
+    delete t_ref;
+    delete t_load;
 }
 
 TEST(TensorTestSuite, tensor_io_png)
@@ -214,6 +217,9 @@ TEST(TensorTestSuite, tensor_io_png)
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
     ASSERT_TRUE(Tensor::equivalent(t_ref, t_load, 10e-0));
+
+    delete t_ref;
+    delete t_load;
 }
 
 
@@ -236,6 +242,9 @@ TEST(TensorTestSuite, tensor_io_bmp)
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
     ASSERT_TRUE(Tensor::equivalent(t_ref, t_load, 10e-0));
+
+    delete t_ref;
+    delete t_load;
 }
 
 
@@ -336,4 +345,7 @@ TEST(TensorTestSuite, tensor_io_bin)
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
     ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
+
+    delete t_iris;
+    delete t_load;
 }

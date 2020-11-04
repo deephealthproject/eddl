@@ -33,7 +33,7 @@ Performance
 ---------------
 
 Is it faster than PyTorch/TensorFlow/etc
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Check our benchmakrs: `EDDL benchmarks`_
 
