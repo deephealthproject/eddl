@@ -46,7 +46,7 @@ TEST(NetTestSuite, losses_full_cross_entropy){
 #ifdef cGPU
     // Test: Loss value
     // Generate default predictions
-    int rows = 10;
+    int rows = 1000;
     Tensor* t_cpu_y_pred = Tensor::randu({rows, rows}); // Default values between 0 and 1
     t_cpu_y_pred->clamp_(0.0f, 1.0f); // Clamp between 0.0 a 1 (just in case)
     Tensor* t_gpu_y_pred = t_cpu_y_pred->clone(); t_gpu_y_pred->toGPU();
