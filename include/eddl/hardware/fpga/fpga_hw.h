@@ -92,6 +92,9 @@ extern cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
+void set_callback(cl::Event event, const char *queue_name);
+void event_cb(cl_event event1, cl_int cmd_status, void *data);
+
 void fpga_init();
 cl::Buffer *fpga_create_tensor(int device, int size);
 void fpga_delete_tensor(int device, cl::Buffer *ptr, int fpga_tensor_id_p, int size);

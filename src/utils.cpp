@@ -584,6 +584,9 @@ PROFILING_ENABLE(MPool2D);
 PROFILING_ENABLE(MPool2D_back);
 PROFILING_ENABLE(AvgPool2D);
 PROFILING_ENABLE(AvgPool2D_back);
+// fpga-specific
+PROFILING_ENABLE(fpga_reshape_input_data_convol);
+PROFILING_ENABLE(fpga_reshape_kernel_data_convol);
 
 void __show_profile() {
 
@@ -748,5 +751,9 @@ void __show_profile() {
   PROFILING_PRINTF(MPool2D_back);
   PROFILING_PRINTF(AvgPool2D);
   PROFILING_PRINTF(AvgPool2D_back);
+  // fpga-specific
+  PROFILING_PRINTF(fpga_reshape_input_data_convol);
+  PROFILING_PRINTF(fpga_reshape_kernel_data_convol);
+
 
 }
