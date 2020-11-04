@@ -42,5 +42,43 @@ TEST(NetTestSuite, losses_full_cross_entropy){
     delete t1_delta;
     delete t1_delta_ref;
 
+    // Test GPU
+#ifdef cGPU
+    // Test: Loss value
+    // Generate default predictions
+    int rows = 10;
+    Tensor* t_cpu_y_pred = Tensor::randu({rows, rows}); // Default values between 0 and 1
+    t_cpu_y_pred->clamp_(0.0f, 1.0f); // Clamp between 0.0 a 1 (just in case)
+    Tensor* t_gpu_y_pred = t_cpu_y_pred->clone(); t_gpu_y_pred->toGPU();
+
+    // Generate one-hots
+    Tensor* t_cpu_y_true = Tensor::eye(rows);
+    Tensor* t_gpu_y_true = t_cpu_y_true->clone(); t_gpu_y_true->toGPU();
+
+    // Compute loss
+    float cpu_loss = loss.value(t_cpu_y_true, t_cpu_y_pred);
+    float gpu_loss = loss.value(t_gpu_y_true, t_gpu_y_pred);
+    ASSERT_NEAR(cpu_loss-gpu_loss, 0.0f, 10e-4f);
+
+    // Test: Deltas
+    // Generate matrices
+    Tensor* t_cpu_delta = Tensor::zeros_like(t_cpu_y_pred);
+    Tensor* t_gpu_delta = t_cpu_delta->clone(); t_gpu_delta->toGPU();
+
+    // Compute deltas
+    loss.delta(t_cpu_y_true, t_cpu_y_pred, t_cpu_delta);
+    loss.delta(t_gpu_y_true, t_gpu_y_pred, t_gpu_delta);
+
+    t_gpu_delta->toCPU();  // Send to CPU
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-4));
+
+    // Deletes
+    delete t_cpu_y_pred;
+    delete t_gpu_y_pred;
+    delete t_cpu_y_true;
+    delete t_gpu_y_true;
+    delete t_cpu_delta;
+    delete t_gpu_delta;
+#endif
 }
 
