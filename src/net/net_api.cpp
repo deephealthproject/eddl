@@ -236,7 +236,9 @@ void Net::set_parameters(const vector<vtensor>& params){
 
         // Copy current params
         for(int j=0; j<this->layers[i]->params.size(); j++){
-            Tensor::copy(params[i][j], this->layers[i]->params[j]);
+            Tensor* new_param = params[i][j];
+            new_param->toDevice(this->dev);  // Send to the same device as the net
+            Tensor::copy(new_param, this->layers[i]->params[j]);
         }
 
     }

@@ -178,6 +178,12 @@ public:
       *  @brief Clone a tensor to the GFPGA.
     */
     void toFPGA(int dev=DEV_FPGA);
+
+    /**
+      *  @brief Clone a tensor to a specific device.
+    */
+    void toDevice(int dev);
+
     /**
       *  @brief Check if the tensor is in CPU.
       *
@@ -219,7 +225,14 @@ public:
       *
       *  @return    string
     */
-    string getDeviceName();
+    string getDeviceName() const;
+
+    /**
+      *  @brief Returns the device name given a device number
+      *
+      *  @return    string
+    */
+    int getDeviceID(int dev) const;
 
     // Core
     vector<int> getShape();

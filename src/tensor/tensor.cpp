@@ -389,6 +389,20 @@ void Tensor::toFPGA(int dev){
 #endif
 }
 
+void Tensor::toDevice(int dev){
+    int dev_id = Tensor::getDeviceID(dev);
+
+    // Select device
+    if(dev_id == 0){  // CPU
+        this->toCPU(dev);
+    }else if(dev_id == 1){  // GPU
+        this->toGPU(dev);
+    }else if(dev_id == 2) {  // FPGA
+        this->toFPGA(dev);
+    }else{
+        throw std::runtime_error("Not compiled for FPGA");
+    }
+}
 
 Tensor* Tensor::clone(){
     auto* t_new = new Tensor(this->shape, this->device);
@@ -527,13 +541,20 @@ void Tensor::print(int precision, bool raw) {
     }
 }
 
-string Tensor::getDeviceName(){
-    if ((this->device >= DEV_CPU) && (this->device < DEV_GPU)) { return "CPU"; }
-    else if ((device >= DEV_GPU) && (this->device < DEV_FPGA)) { return "GPU"; }
-    else if (this->device >= DEV_FPGA) { return "FPGA"; }
+string Tensor::getDeviceName() const{
+    int dev_id = Tensor::getDeviceID(this->device);
+    if (dev_id == 0) { return "CPU"; }
+    else if (dev_id == 1) { return "GPU"; }
+    else if (dev_id == 2) { return "FPGA"; }
     return "unknown";
 }
 
+int Tensor::getDeviceID(int dev) const{
+    if ((dev >= DEV_CPU) && (dev < DEV_GPU)) { return 0; }
+    else if ((device >= DEV_GPU) && (dev < DEV_FPGA)) { return 1; }
+    else if (dev >= DEV_FPGA) { return 2; }
+    return -1;
+}
 
 bool Tensor::isSquared(Tensor *A){
     int last_dim = A->shape[0];
