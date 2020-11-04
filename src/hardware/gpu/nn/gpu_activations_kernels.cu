@@ -308,16 +308,14 @@ __global__ void full_d_softmax_batched(float *D, float *I, float *PD, unsigned i
 
         // 1) Compute Jacobbian matrix: DS=[ NxN ]  // DjSi
         // 2) Compute delta: D * DS = (1,n)x(n,n)=(1,n)
-        // 2.1) Dot product: D0*DS0,0 + D1*DS0,1 + D2*DS0,2 + ...
-        for(unsigned int i=0; i<n_features; i++){  // Rows
-            for(unsigned int j=0; j<n_features; j++){  // Cols
+        // 2.1) Dot product: PD[i] = Dj*DjSi = D0*D0Di + D1*D1Di + ... Dn*DnSi
+        for(int i=0; i<n_features; i++){  // Rows
+            for(int j=0; j<n_features; j++){  // Cols
 
                 // Derivative
-                float DjSi = SM[start+i] * ((float)(i==j) - SM[start+j]);
+                float DjSi = SM[start+i] * (float)(i==j) - SM[start+j]*SM[start+i];
+                PD[start+i] += D[start+j] * DjSi;
 
-                // Dot product: Dj=D*DS[:, j]
-                // "i" trick. Technically, PD is (1, n) but I can consider it as (n, 1) without reshaping it
-                D[start+j] += PD[start+i] * DjSi;
             }
         }
     }
