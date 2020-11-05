@@ -67,7 +67,7 @@ int main(int argc, char **argv){
   l=Reshape(l,{-1});
   l=ReLu(Dense(l,512));
 
-  layer out=Softmax(Dense(l,num_classes));
+  layer out=FullSoftmax(Dense(l,num_classes));
 
   // net define input and output layers list
   model net=Model({in},{out});
@@ -76,7 +76,7 @@ int main(int argc, char **argv){
   // Build model
   build(net,
       sgd(0.001, 0.9), // Optimizer
-    {"soft_cross_entropy"}, // Losses
+    {"categorical_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     CS_GPU({1}) // one GPU
     //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches

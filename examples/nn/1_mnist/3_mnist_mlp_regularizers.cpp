@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     l = ReLu(L1(Dense(l, 1024),0.0001));
     l = ReLu(L1L2(Dense(l, 1024),0.00001,0.0001));
 
-    layer out = Activation(Dense(l, num_classes), "softmax");
+    layer out = FullSoftmax(Dense(l, num_classes));
     model net = Model({in}, {out});
     net->verbosity_level = 0;
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           sgd(0.01, 0.9), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
