@@ -55,21 +55,21 @@ namespace tensorNN {
     }
 
 
-    float FullCrossEntropy(Tensor* y_true, Tensor* y_pred){
+    float categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
         if (!Tensor::sameDevice(y_true, y_pred)) {
-            msg("Tensors in different devices", "TensorNN::FullCrossEntropy");
+            msg("Tensors in different devices", "TensorNN::categorical_cross_entropy");
         }
         if (!Tensor::sameShape(y_true, y_pred)) {
-            msg("Incompatible dims", "TensorNN::FullCrossEntropy");
+            msg("Incompatible dims", "TensorNN::categorical_cross_entropy");
         }
 
         if (y_true->isCPU()) {
-            return cpu_full_cross_entropy(y_true, y_pred);
+            return cpu_categorical_cross_entropy(y_true, y_pred);
         }
 #ifdef cGPU
         else if (y_true->isGPU())
         {
-            return gpu_full_cross_entropy(y_true, y_pred);
+            return gpu_categorical_cross_entropy(y_true, y_pred);
         }
 #endif
 #ifdef cFPGA
@@ -79,21 +79,21 @@ namespace tensorNN {
 #endif
     }
 
-    void D_FullCrossEntropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
+    void d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
         if (!Tensor::sameDevice(y_true, y_pred) || !Tensor::sameDevice(y_true, delta)) {
-            msg("Tensors in different devices", "TensorNN::D_FullCrossEntropy");
+            msg("Tensors in different devices", "TensorNN::d_categorical_cross_entropy");
         }
         if (!Tensor::sameShape(y_true, y_pred) || !Tensor::sameShape(y_true, delta)) {
-            msg("Incompatible dims", "TensorNN::D_FullCrossEntropy");
+            msg("Incompatible dims", "TensorNN::d_categorical_cross_entropy");
         }
 
         if (y_true->isCPU()) {
-            cpu_d_full_cross_entropy(y_true, y_pred, delta);
+            cpu_d_categorical_cross_entropy(y_true, y_pred, delta);
         }
 #ifdef cGPU
         else if (y_true->isGPU())
         {
-            gpu_d_full_cross_entropy(y_true, y_pred, delta);
+            gpu_d_categorical_cross_entropy(y_true, y_pred, delta);
         }
 #endif
 #ifdef cFPGA

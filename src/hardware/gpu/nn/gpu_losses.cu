@@ -46,7 +46,7 @@ void gpu_cent(Tensor *A,Tensor *B,Tensor *C){
   check_cuda(cudaDeviceSynchronize(),"gpu_cent");
 }
 
-float gpu_full_cross_entropy(Tensor* y_true, Tensor* y_pred){
+float gpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
     int device=y_true->gpu_device;
     cudaSetDevice(device);
 
@@ -63,8 +63,8 @@ float gpu_full_cross_entropy(Tensor* y_true, Tensor* y_pred){
     check_cuda(cudaDeviceSynchronize(), "create");
 
     // Calculate derivative of Softmax
-    gpu_full_cross_entropy<<<numBlocks, blockSize>>>(y_true->ptr, y_pred->ptr, sum_array, n_batches, n_features);
-    check_cuda(cudaDeviceSynchronize(),"gpu_full_cross_entropy");
+    gpu_categorical_cross_entropy<<<numBlocks, blockSize>>>(y_true->ptr, y_pred->ptr, sum_array, n_batches, n_features);
+    check_cuda(cudaDeviceSynchronize(),"gpu_categorical_cross_entropy");
 
     // Reduce sum and compute mean
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
@@ -77,12 +77,12 @@ float gpu_full_cross_entropy(Tensor* y_true, Tensor* y_pred){
     return mean_ce;
 }
 
-void gpu_d_full_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
+void gpu_d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
     int device=y_true->gpu_device;
     cudaSetDevice(device);
 
     setDims(y_true);
 
-    gpu_d_full_cross_entropy<<<dimGrid,dimBlock>>>(y_true->ptr, y_pred->ptr, delta->ptr, y_true->size);
-    check_cuda(cudaDeviceSynchronize(), "gpu_d_full_cross_entropy");
+    gpu_d_categorical_cross_entropy<<<dimGrid, dimBlock>>>(y_true->ptr, y_pred->ptr, delta->ptr, y_true->size);
+    check_cuda(cudaDeviceSynchronize(), "gpu_d_categorical_cross_entropy");
 }

@@ -18,8 +18,8 @@ namespace tensorNN{
 // ***** Losses *****************************
     void cent(Tensor *A, Tensor *B, Tensor *C);
 
-    float FullCrossEntropy(Tensor* y_true, Tensor* y_pred);
-    void D_FullCrossEntropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
+    float categorical_cross_entropy(Tensor* y_true, Tensor* y_pred);
+    void d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
 
 
 // ***** Metrics *****************************

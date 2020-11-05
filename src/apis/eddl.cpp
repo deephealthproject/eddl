@@ -432,8 +432,8 @@ namespace eddl {
     Loss* getLoss(string type){
         if (type == "mse" || type == "mean_squared_error"){
             return new LMeanSquaredError();
-        } else if (type == "full_cross_entropy"){
-            return new LFullCrossEntropy();
+        } else if (type == "categorical_cross_entropy"){
+            return new LCategoricalCrossEntropy();
         } else if (type == "cross_entropy"){
             return new LCrossEntropy();
         } else if (type == "soft_cross_entropy"){

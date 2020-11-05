@@ -15,9 +15,9 @@
 using namespace eddl;
 
 
-TEST(NetTestSuite, losses_full_cross_entropy){
+TEST(NetTestSuite, losses_categorical_cross_entropy){
 
-    auto loss = LFullCrossEntropy();
+    auto loss = LCategoricalCrossEntropy();
 
     Tensor* t1_y_pred = new Tensor({0.7, 0.2, 0.1,
                                           0.3, 0.5, 0.2}, {2, 3});

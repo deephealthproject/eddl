@@ -66,8 +66,8 @@ void cpu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param);
 void cpu_cent(Tensor *A, Tensor *B, Tensor *C);
 void cpu_bin_cent(Tensor *A, Tensor *B, Tensor *C);
 
-float cpu_full_cross_entropy(Tensor* y_true, Tensor* y_pred);
-void cpu_d_full_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
+float cpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred);
+void cpu_d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
 
 // Metrics
 int cpu_accuracy(Tensor *A, Tensor *B);

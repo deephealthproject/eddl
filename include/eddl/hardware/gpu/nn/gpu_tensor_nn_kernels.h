@@ -63,8 +63,8 @@ __global__ void d_linear(float *d,float *i,float *pd,float param, long int size)
 // GPU: Losses
 __global__ void cent(float* a, float* b, float* c, long int size);
 
-__global__ void gpu_full_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int n_batches, unsigned int n_features);
-__global__ void gpu_d_full_cross_entropy(float* y_true, float* y_pred, float* delta, long int size);
+__global__ void gpu_categorical_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int n_batches, unsigned int n_features);
+__global__ void gpu_d_categorical_cross_entropy(float* y_true, float* y_pred, float* delta, long int size);
 
 // GPU: Metrics
 __global__ void accuracy(float* T, float* N,float* acc,long int cols, long int total_ops, int* MC_err);

@@ -100,9 +100,9 @@ public:
     Loss* clone() override;
 };
 
-class LFullCrossEntropy : public Loss {
+class LCategoricalCrossEntropy : public Loss {
 public:
-    LFullCrossEntropy();
+    LCategoricalCrossEntropy();
 
     void delta(Tensor *T, Tensor *Y, Tensor *D) override;
     float value(Tensor *T, Tensor *Y) override;

@@ -26,7 +26,7 @@ void cpu_cent(Tensor *A, Tensor *B, Tensor *C){
     _profile(_CPU_CENT, 1);
 }
 
-float cpu_full_cross_entropy(Tensor* y_true, Tensor* y_pred){
+float cpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
     float sum = 0.0f;
     float eps = 10e-8;
 
@@ -47,7 +47,7 @@ float cpu_full_cross_entropy(Tensor* y_true, Tensor* y_pred){
     return mean_ce;
 }
 
-void cpu_d_full_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
+void cpu_d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
     float eps = 10e-8;
 
     #pragma omp parallel for

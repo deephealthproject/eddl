@@ -32,7 +32,7 @@ __global__ void cent(float* a, float* b, float* c, long int size)
 
 
 
-__global__ void gpu_full_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int n_batches, unsigned int n_features){
+__global__ void gpu_categorical_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int n_batches, unsigned int n_features){
     long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Batch index
 
     if (thread_id_x < n_batches){
@@ -54,7 +54,7 @@ __global__ void gpu_full_cross_entropy(float* y_true, float* y_pred, float* sum_
     }
 }
 
-__global__ void gpu_d_full_cross_entropy(float* y_true, float* y_pred, float* delta, long int size){
+__global__ void gpu_d_categorical_cross_entropy(float* y_true, float* y_pred, float* delta, long int size){
     long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Index
 
     if (thread_id_x < size){
