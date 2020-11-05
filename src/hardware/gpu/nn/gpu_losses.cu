@@ -69,7 +69,7 @@ float gpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
     // Reduce sum and compute mean
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
     float sum_ce = thrust::reduce(dev_ptr, dev_ptr + n_batches);
-    float mean_ce = sum_ce/(float)n_batches;  // Mean
+    float mean_ce = -sum_ce/(float)n_batches;  // Mean
 
     // Delete tmp array
     check_cuda(cudaFree(sum_array), "create temp array");
@@ -85,4 +85,46 @@ void gpu_d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* del
 
     gpu_d_categorical_cross_entropy<<<dimGrid, dimBlock>>>(y_true->ptr, y_pred->ptr, delta->ptr, y_true->size);
     check_cuda(cudaDeviceSynchronize(), "gpu_d_categorical_cross_entropy");
+}
+
+
+
+float gpu_binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
+    int device=y_true->gpu_device;
+    cudaSetDevice(device);
+
+    // Get Bacthes and Softmax dimension (classes)
+    int n_batches = y_true->shape[0];
+
+    // Calculate cuda blocks
+    int blockSize = MAX_TPB;
+    int numBlocks = (n_batches + blockSize - 1) / blockSize; // Same as: ceil(N/threads_block)
+
+    float *sum_array;
+    check_cuda(cudaMalloc((void**)&(sum_array), n_batches*sizeof(float)),"create temp array");
+    check_cuda(cudaDeviceSynchronize(), "create");
+
+    // Calculate derivative of Softmax
+    gpu_binary_cross_entropy<<<numBlocks, blockSize>>>(y_true->ptr, y_pred->ptr, sum_array, y_true->size);
+    check_cuda(cudaDeviceSynchronize(),"gpu_binary_cross_entropy");
+
+    // Reduce sum and compute mean
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
+    float sum_ce = thrust::reduce(dev_ptr, dev_ptr + n_batches);
+    float mean_ce = -sum_ce/(float)n_batches;  // Mean
+
+    // Delete tmp array
+    check_cuda(cudaFree(sum_array), "create temp array");
+
+    return mean_ce;
+}
+
+void gpu_d_binary_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
+    int device=y_true->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(y_true);
+
+    gpu_d_binary_cross_entropy<<<dimGrid, dimBlock>>>(y_true->ptr, y_pred->ptr, delta->ptr, y_true->size);
+    check_cuda(cudaDeviceSynchronize(), "gpu_d_binary_cross_entropy");
 }

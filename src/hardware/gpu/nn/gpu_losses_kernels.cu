@@ -50,7 +50,7 @@ __global__ void gpu_categorical_cross_entropy(float* y_true, float* y_pred, floa
         }
 
         // Store partial sums (later will be reduced)
-        sum_array[thread_id_x] = -bi_sum;
+        sum_array[thread_id_x] = bi_sum;
     }
 }
 
@@ -62,3 +62,25 @@ __global__ void gpu_d_categorical_cross_entropy(float* y_true, float* y_pred, fl
         delta[thread_id_x] = -y_true[thread_id_x] * (1.0f/ (y_pred[thread_id_x]+eps) );
     }
 }
+
+__global__ void gpu_binary_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int size){
+    long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Index
+
+    if (thread_id_x < size){
+        float eps =10e-8;
+
+        // Store sums (later will be reduced)
+        sum_array[thread_id_x] = y_true[thread_id_x] * logf(y_pred[thread_id_x]+eps) + (1.0-y_true[thread_id_x]) * logf(1.0f-y_pred[thread_id_x]+eps);
+    }
+
+}
+
+__global__ void gpu_d_binary_cross_entropy(float* y_true, float* y_pred, float* delta, long int size){
+    long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Index
+
+    if (thread_id_x < size){
+        float eps =10e-8;
+        delta[thread_id_x] = -( y_true[thread_id_x] * 1.0f/(y_pred[thread_id_x]+eps) + (1.0-y_true[thread_id_x]) * 1.0f/(1.0f-y_pred[thread_id_x]+eps) * -1.0f );
+    }
+}
+

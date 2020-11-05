@@ -38,7 +38,6 @@ __global__ void d_softplus(float *d,float *i,float *pd,long int size);
 __global__ void softsign(float *a,float *b,long int size);
 __global__ void d_softsign(float *d,float *i,float *pd,long int size);
 
-
 __global__ void sigmoid(float *a,float *b,long int size);
 __global__ void d_sigmoid(float *d,float *i,float *pd,long int size);
 
@@ -60,15 +59,21 @@ __global__ void full_d_softmax_batched(float *d,float *i,float *pd, unsigned int
 __global__ void linear(float *a,float *b,float param, long int size);
 __global__ void d_linear(float *d,float *i,float *pd,float param, long int size);
 
+
 // GPU: Losses
 __global__ void cent(float* a, float* b, float* c, long int size);
 
 __global__ void gpu_categorical_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int n_batches, unsigned int n_features);
 __global__ void gpu_d_categorical_cross_entropy(float* y_true, float* y_pred, float* delta, long int size);
 
+__global__ void gpu_binary_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int size);
+__global__ void gpu_d_binary_cross_entropy(float* y_true, float* y_pred, float* delta, long int size);
+
+
 // GPU: Metrics
 __global__ void accuracy(float* T, float* N,float* acc,long int cols, long int total_ops, int* MC_err);
 __global__ void bin_accuracy(float* T, float* N, int size, int* acc);
+
 
 // GPU: Conv
 __global__ void gpu_traspose_batch_depth(float *Bptr, float *ptr, int b,int z,int r, int c);
@@ -76,6 +81,7 @@ __global__ void gpu_addbias_k(float *O, int b, int r,int c,int nk,float *bias, i
 __global__ void gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *bias, int offset);
 __global__ void gpu_im2col_k(float* I, float *ptrI, int b,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int padrt,int padrb,int padcl,int padcr,int col2im);
 __global__ void gpu_im2col_k_low(float* I, int b, float *ptrI, int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int padrt,int padrb,int padcl,int padcr,int col2im);
+
 
 // GPU: Pool
 // MaxPool
