@@ -109,6 +109,16 @@ public:
     Loss* clone() override;
 };
 
+class LBinaryCrossEntropy : public Loss {
+public:
+    LBinaryCrossEntropy();
+
+    void delta(Tensor *T, Tensor *Y, Tensor *D) override;
+    float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
+};
+
+
 class LSoftCrossEntropy : public Loss {
 public:
     LSoftCrossEntropy();
