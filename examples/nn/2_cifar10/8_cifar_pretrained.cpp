@@ -48,7 +48,7 @@ int main(int argc, char **argv){
   model net=Model({net_onnx,net_adap});
 
   build(net,
-        sgd(0.01), // Optimizer
+        sgd(0.001), // Optimizer
         {"categorical_cross_entropy"}, // Losses
         {"accuracy"}, // Metrics
         CS_GPU({1}) // one GPU

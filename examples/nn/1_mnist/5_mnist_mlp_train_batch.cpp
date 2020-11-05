@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          sgd(0.01, 0.9), // Optimizer
+          sgd(0.001, 0.9), // Optimizer
           {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU

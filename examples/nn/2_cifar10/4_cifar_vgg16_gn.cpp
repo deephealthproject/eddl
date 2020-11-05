@@ -67,7 +67,7 @@ int main(int argc, char **argv){
 
   // Build model
   build(net,
-    sgd(0.01, 0.9), // Optimizer
+    adam(0.001), // Optimizer
     {"categorical_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     CS_GPU({1}) // one GPU
