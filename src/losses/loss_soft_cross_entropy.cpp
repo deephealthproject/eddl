@@ -17,7 +17,9 @@
 using namespace std;
 
 
-LSoftCrossEntropy::LSoftCrossEntropy() : Loss("soft_cross_entropy"){}
+LSoftCrossEntropy::LSoftCrossEntropy() : Loss("soft_cross_entropy"){
+    cout << "[WARNING] The LSoftCrossEntropy is deprecated in favor of LCategoricalCrossEntropy";
+}
 
 
 void LSoftCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
