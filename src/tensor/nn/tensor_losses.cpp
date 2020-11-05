@@ -74,7 +74,7 @@ namespace tensorNN {
 #endif
 #ifdef cFPGA
         else {
-        return fpga_full_cross_entropy(y_true, y_pred);
+        return fpga_categorical_cross_entropy(y_true, y_pred);
     }
 #endif
     }
@@ -98,9 +98,58 @@ namespace tensorNN {
 #endif
 #ifdef cFPGA
         else {
-        fpga_d_full_cross_entropy(y_true, y_pred, delta);
+        fpga_d_categorical_cross_entropy(y_true, y_pred, delta);
     }
 #endif
     }
 
-}
+    float binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
+        if (!Tensor::sameDevice(y_true, y_pred)) {
+            msg("Tensors in different devices", "TensorNN::binary_cross_entropy");
+        }
+        if (!Tensor::sameShape(y_true, y_pred)) {
+            msg("Incompatible dims", "TensorNN::binary_cross_entropy");
+        }
+
+        if (y_true->isCPU()) {
+            return cpu_binary_cross_entropy(y_true, y_pred);
+        }
+#ifdef cGPU
+        else if (y_true->isGPU())
+        {
+            return gpu_binary_cross_entropy(y_true, y_pred);
+        }
+#endif
+#ifdef cFPGA
+        else {
+        return fpga_full_cross_entropy(y_true, y_pred);
+    }
+#endif
+    }
+
+    void d_binary_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
+        if (!Tensor::sameDevice(y_true, y_pred) || !Tensor::sameDevice(y_true, delta)) {
+            msg("Tensors in different devices", "TensorNN::d_binary_cross_entropy");
+        }
+        if (!Tensor::sameShape(y_true, y_pred) || !Tensor::sameShape(y_true, delta)) {
+            msg("Incompatible dims", "TensorNN::d_binary_cross_entropy");
+        }
+
+        if (y_true->isCPU()) {
+            cpu_d_binary_cross_entropy(y_true, y_pred, delta);
+        }
+#ifdef cGPU
+        else if (y_true->isGPU())
+        {
+            gpu_d_binary_cross_entropy(y_true, y_pred, delta);
+        }
+#endif
+#ifdef cFPGA
+        else {
+        fpga_d_binary_cross_entropy(y_true, y_pred, delta);
+    }
+#endif
+    }
+
+
+}  // namespace

@@ -21,6 +21,8 @@ namespace tensorNN{
     float categorical_cross_entropy(Tensor* y_true, Tensor* y_pred);
     void d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
 
+    float binary_cross_entropy(Tensor* y_true, Tensor* y_pred);
+    void d_binary_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
 
 // ***** Metrics *****************************
     int accuracy(Tensor *A, Tensor *B);
