@@ -516,6 +516,7 @@ namespace eddl {
     }
 
     layer Softmax(layer parent, string name){
+        cout << "[WARNING] The Softmax is deprecated in favor of LCategoricalCrossEntropy";
         vector<float> params = {};
         return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
     }
