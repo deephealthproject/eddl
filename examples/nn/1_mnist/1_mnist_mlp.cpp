@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 100;
+    int epochs = 10;
     int batch_size = 100;
     int num_classes = 10;
 

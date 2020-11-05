@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     l = MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2}, {2,2}, "none");
     l = Reshape(l,{-1});
 
-    layer out = Activation(Dense(l, num_classes), "softmax");
+    layer out = FullSoftmax(Dense(l, num_classes));
     model net = Model({in}, {out});
     net->verbosity_level = 0;
 
@@ -52,8 +52,8 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          rmsprop(0.001), // Optimizer
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches

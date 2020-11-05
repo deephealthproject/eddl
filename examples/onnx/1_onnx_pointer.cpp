@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     l = ReLu(Dense(l, 1024));
     l = ReLu(Dense(l, 1024));
 
-    layer out = Activation(Dense(l, num_classes), "softmax");
+    layer out = FullSoftmax(Dense(l, num_classes));
     model net = Model({in}, {out});
 
     // dot from graphviz should be installed:
@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           CS_CPU(4), // CPU with maximum threads availables
@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
 
     l = ReLu(Dense(l, 1024));
 
-    out = Activation(Dense(l, num_classes), "softmax");
+    out = FullSoftmax(Dense(l, num_classes));
     model net2 = Model({in}, {out});
 
 	*/
@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
     // Build model
     build(imported_net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           CS_CPU(4), // CPU with maximum threads availables
@@ -247,7 +247,7 @@ int main(int argc, char **argv) {
     // Build model
     build(imported_net2,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           CS_CPU(), // CPU with maximum threads availables

@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
     l = LeakyReLu(Dense(l, 32));
 
-    layer out = Softmax(Dense(l, num_classes));
+    layer out = FullSoftmax(Dense(l, num_classes));
     model net = Model({in}, {out});
 
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           rmsprop(0.001), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches

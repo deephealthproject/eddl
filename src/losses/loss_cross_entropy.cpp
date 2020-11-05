@@ -19,7 +19,9 @@
 using namespace std;
 
 
-LCrossEntropy::LCrossEntropy() : Loss("cross_entropy"){}
+LCrossEntropy::LCrossEntropy() : Loss("cross_entropy"){
+    cout << "[WARNING] The LCrossEntropy is deprecated in favor of LCategoricalCrossEntropy";
+}
 
 void LCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
     float eps=0.000001;

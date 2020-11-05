@@ -85,7 +85,7 @@ layer UNetWithPadding(layer x)
 int main(int argc, char **argv){
 
     // Download Dataset
-    //download_drive();
+    download_drive();
 
     // Settings
     int epochs = 100000;
