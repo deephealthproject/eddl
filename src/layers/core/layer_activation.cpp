@@ -26,6 +26,9 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
     this->params = params;
 
     input = parent->output;
+#ifdef DEBUG_FPGA
+    printf("creating output for RELU\n");
+#endif
     output = new Tensor(input->shape, dev);
     delta_bp = 0;
 
@@ -64,7 +67,7 @@ void LActivation::forward(){
     }else if (act == "softsign"){
         tensorNN::Softsign(this->input, this->output);
 
-    }else if (act == "softmax"){
+    }else if (act == "softmax"){  // TODO: Deprecated
         tensorNN::Softmax(this->input, this->output);
 
     }else if (act == "full_softmax"){
@@ -122,7 +125,7 @@ void LActivation::backward(){
         }else if (act == "softsign"){
             tensorNN::D_softsign(delta, output, parent[0]->delta);
 
-        }else if (act == "softmax"){
+        }else if (act == "softmax"){  // TODO: Deprecaated
             tensorNN::D_Softmax(delta, output, parent[0]->delta);
 
         }else if (act == "full_softmax"){

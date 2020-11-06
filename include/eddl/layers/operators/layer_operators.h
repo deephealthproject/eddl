@@ -239,7 +239,7 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
-/// Sum Layer
+/// Add Layer
 class LSum : public OperatorLayer {
 public:
     static int total_layers;

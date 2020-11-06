@@ -45,13 +45,13 @@ int main(int argc, char **argv) {
     l = MaxPool(ReLu(Conv(l,256,{3,3},{2,2})),{2,2});
     l = Reshape(l,{-1});
 
-    layer out = Activation(Dense(l, num_classes), "softmax");
+    layer out = FullSoftmax(Dense(l, num_classes));
     model net = Model({in}, {out});
 
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           CS_CPU(4), // CPU with maximum threads availables

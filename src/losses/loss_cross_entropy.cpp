@@ -19,7 +19,9 @@
 using namespace std;
 
 
-LCrossEntropy::LCrossEntropy() : Loss("cross_entropy"){}
+LCrossEntropy::LCrossEntropy() : Loss("cross_entropy"){
+    show_deprecated_warning("cross_entropy", "binary_cross_entropy");
+}
 
 void LCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
     float eps=0.000001;
@@ -47,7 +49,6 @@ void LCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
 
     Tensor::add(-1, aux1, 1, aux2, D, 0);
     D->div_(D->shape[0]);
-
     delete aux1;
     delete aux2;
     delete one;

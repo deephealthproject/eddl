@@ -48,14 +48,14 @@ int main(int argc, char **argv) {
 											 
 	 l=Activation(Dense(l,128),"relu");
 													 
-	 layer out=Activation(Dense(l,num_classes),"softmax");
+	 layer out=FullSoftmax(Dense(l,num_classes));
 															 
 	 // Net define input and output layers list
 	 model net=Model({in},{out});// Build model
 
     build(net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
 		  CS_GPU({1}, "low_mem"), // one GPU
           //CS_CPU(), // CPU with maximum threads availables

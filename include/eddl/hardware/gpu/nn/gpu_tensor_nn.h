@@ -67,6 +67,12 @@ void gpu_d_linear(Tensor *D,Tensor *I,Tensor *PD,float param);
 // Losses
 void gpu_cent(Tensor *A,Tensor *B,Tensor *C);
 
+float gpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred);
+void gpu_d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
+
+float gpu_binary_cross_entropy(Tensor* y_true, Tensor* y_pred);
+void gpu_d_binary_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
+
 // Metrics
 void gpu_accuracy(Tensor *A,Tensor *B,int *acc);
 void gpu_bin_accuracy(Tensor *A,Tensor *B,int *acc);

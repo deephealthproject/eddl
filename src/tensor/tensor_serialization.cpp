@@ -55,11 +55,11 @@ Tensor* Tensor::load(const string& filename, string format){
 }
 
 
-Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
+Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
 
     // Choose format
     if (format=="bin") {
-        return Tensor::load_from_bin(ifs);
+        return Tensor::load_from_bin(ifs, 0, -1);
     } else if(format=="onnx"){
         return Tensor::load_from_onnx(ifs);
     } else if(format=="csv" || format=="tsv" || format=="txt"){
@@ -76,7 +76,7 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
     return nullptr; // To silent warnings
 }
 
-Tensor* Tensor::load_from_bin(std::ifstream &ifs){
+Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
     int r_ndim;
 
     // Load number of dimensions
@@ -90,15 +90,39 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs){
     int r_size = 1;
     for(int i=0; i<r_ndim; i++){ r_size *= r_shape[i]; }
 
+    // Compute stride
+    vector<int> tmp_stride = shape2stride(r_shape);
+
+    // Compute offsets and positions to read
+    int start_offset = start_row * tmp_stride[0];
+    int n_read;
+
+    if(end_row<0){
+        n_read = r_size;
+    }else{
+        // Compute bytes to read
+        int n_rows = end_row - start_row;
+        n_read = n_rows * tmp_stride[0];
+
+        // Set new shape
+        r_shape[0] = n_rows;
+
+        // Set cursor's position
+        ifs.seekg(start_offset*sizeof(float), std::ifstream::cur);
+    }
+
     // Load content (row-major)
     auto *r_ptr = new float[r_size];
-    ifs.read(reinterpret_cast<char*>(r_ptr), r_size * sizeof(float));
+    ifs.read(reinterpret_cast<char*>(r_ptr), n_read * sizeof(float));
 
     // Return new tensor
     auto *t1 = new Tensor(r_shape, r_ptr, DEV_CPU);
 //    t1->info();
     return t1;
 }
+
+
+
 
 Tensor* Tensor::load_from_onnx(std::ifstream &ifs){
     msg("Not implemented", "Tensor::load_from_onnx");
@@ -214,6 +238,30 @@ Tensor* Tensor::load_from_ptr(void * src) {
     memcpy(data, aux_ptr, total_size * sizeof(float));
 
     return new Tensor(shape, data, DEV_CPU);
+}
+
+
+Tensor* Tensor::load_partial(const string& filename, int start_row, int end_row) {
+    // Infer format from filename
+    string format = get_extension(filename);
+
+    // Check if file exists (open file stream)
+    std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary);
+    if (!ifs.good()){
+        msg("File not found. Check the file name and try again.", "Tensor::load_partial");
+    }
+
+    // Load tensor
+    Tensor* t;
+    if(format=="bin"){
+        t = Tensor::load_from_bin(ifs, start_row, end_row);
+    }else{
+        msg("Format not implemented: *.'" + format + "'", "Tensor::load");
+    }
+
+    // Close file stream and return tensor
+    ifs.close();
+    return t;
 }
 
 // ********* SAVE FUNCTIONS *********

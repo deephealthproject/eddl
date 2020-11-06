@@ -65,7 +65,7 @@ typedef vector<int> tshape;
 class Tensor {
 private:
     // Load methods
-    static Tensor* load_from_bin(std::ifstream &ifs);
+    static Tensor* load_from_bin(std::ifstream &ifs, int start_row, int end_row);
     static Tensor* load_from_onnx(std::ifstream &ifs);
     static Tensor* load_from_img(const string &filename, const string &format);
 //    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);  // Deprecated
@@ -126,7 +126,7 @@ public:
     *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
     *  @return a tensor
     */
-    Tensor(const vector<int> &shape, float *fptr, int dev);
+    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=0);
 
     /**
     *  @brief Construct an uninitialized tensor
@@ -178,6 +178,12 @@ public:
       *  @brief Clone a tensor to the GFPGA.
     */
     void toFPGA(int dev=DEV_FPGA);
+
+    /**
+      *  @brief Clone a tensor to a specific device.
+    */
+    void toDevice(int dev);
+
     /**
       *  @brief Check if the tensor is in CPU.
       *
@@ -219,7 +225,14 @@ public:
       *
       *  @return    string
     */
-    string getDeviceName();
+    string getDeviceName() const;
+
+    /**
+      *  @brief Returns the device name given a device number
+      *
+      *  @return    string
+    */
+    int getDeviceID(int dev) const;
 
     // Core
     vector<int> getShape();
@@ -242,7 +255,7 @@ public:
       *  @param format    File format. Accepted formats are: bin, onnx, csv, tsv, txt.
       *  @return    Tensor
     */
-    static Tensor* loadfs(std::ifstream &ifs, string format="");
+    static Tensor* loadfs(std::ifstream &ifs, const string& format="");
 
     /**
       *  @brief Load tensor from file.
@@ -256,15 +269,15 @@ public:
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
 
-    /**
-      *  @brief Load data from a text file
-      *
-      *  @param filename  Name of the file to load the tensor from.
-      *  @param delimiter    Character used to separate the columns of the file.
-      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
-      *  @return    Tensor
-    */
-    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
+//    /**
+//      *  @brief Load data from a text file
+//      *
+//      *  @param filename  Name of the file to load the tensor from.
+//      *  @param delimiter    Character used to separate the columns of the file.
+//      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
+//      *  @return    Tensor
+//    */
+//    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
     /**
       *  @brief Load tensor from a void pointer.
@@ -273,6 +286,16 @@ public:
       *  @return    Tensor
     */
     static Tensor* load_from_ptr(void * src);
+
+        /**
+      *  @brief Load a binary file from the row i to row j
+      *
+      *  @param filename  Name of the file to load the tensor from.
+      *  @param start_row  Index for the initial row (starts from 0)
+      *  @param end_row  Index for the last row (ends at n-1)
+      *  @return    Tensor
+    */
+    static Tensor* load_partial(const string& filename, int start_row=0, int end_row=-1);
 
     /**
       *  @brief Save tensor to a filestream.
@@ -305,7 +328,7 @@ public:
       *  @param header      Header rows.
       *  @return    void
     */
-    void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
+    void save2txt(const string& filename, char delimiter=',', const vector<string> &header={});
 
     /**
       *  @brief Save tensor to a void pointer.
@@ -2354,6 +2377,20 @@ public:
 
     // Logic funcions: Truth value testing *****************************
 
+    bool all();
+    bool any();
+    Tensor* isfinite();
+    Tensor* isinf();
+    Tensor* isnan();
+    Tensor* isneginf();
+    Tensor* isposinf();
+    Tensor* logical_not();
+    Tensor* logical_and(Tensor *A);
+    Tensor* logical_or(Tensor *A);
+    Tensor* logical_xor(Tensor *A);
+    bool allclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
+    Tensor* isclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
+
     /**
       *  @brief Test whether all elements evaluate to True.
       *
@@ -2803,6 +2840,7 @@ public:
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, vector<Tensor*> t, unsigned int axis);
 
+    static Tensor* stack(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.
@@ -3191,6 +3229,7 @@ Tensor* Tensor::load(const string& filename, string format){
     ifs.close();
     return t;
 }
+
 
 /**
     *   @brief Check if two tensors are compatible, it is, they are in the same device and have the same shape.

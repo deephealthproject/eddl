@@ -166,6 +166,9 @@ int main(int argc, char **argv) {
   #ifdef K_ENABLED_CONV2D
   strcpy(szKernels[num_kernels++], "conv2d");
   #endif
+  #ifdef K_ENABLED_CONV2D_K3X3_S1X1_P1X1_BS1
+  strcpy(szKernels[num_kernels++], "conv2D_K3x3_S1x1_P1x1_BS1");
+  #endif
 
 
   // Core

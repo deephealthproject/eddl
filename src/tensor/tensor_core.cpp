@@ -596,6 +596,54 @@ void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
 #endif
 }
 
+Tensor* Tensor::stack(const vector<Tensor*> A, unsigned int axis, Tensor* output){
+    // Check number of vectors to concat
+    if(A.size()<2){
+        msg("Stack requires a minimum of two tensors", "Tensor::stack");
+    }
+
+    // Create fake tensors with dimension expanded
+    vector<Tensor*> tmp_tensors;
+    for(int i=0; i<A.size(); i++) {
+        // Create fake tensor (ptr reference)
+        Tensor* tmp = new Tensor(A[i]->shape, A[i]->ptr, A[i]->device);
+
+        // Expand dimension
+        tmp->unsqueeze_(axis);
+
+        // Add tmp tensor to buffer
+        tmp_tensors.push_back(tmp);
+    }
+
+    vector<int> new_shape = tmp_tensors[0]->shape;
+    new_shape[axis] = tmp_tensors.size();
+
+    // Create new tensor
+    if(output==nullptr){
+        output = new Tensor(new_shape, A[0]->device);
+    }else{
+        // Check dimensions
+        if(output->shape!=new_shape){
+            msg("The dimension of the output tensor is incorrect", "Tensor::stack");
+        }else if(output->device != A[0]->device){
+            msg("The output tensor and the input ones must be on the same device", "Tensor::stack");
+        }
+    }
+
+    // Concat tensors in the expanded axis
+    Tensor::concat(tmp_tensors, axis, output);
+
+    // Delete fake tensors
+    for(int i=0; i<A.size(); i++) {
+        tmp_tensors[i]->ptr = nullptr; // Dereference tensor
+        delete tmp_tensors[i]; tmp_tensors[i] = nullptr;
+    }
+    tmp_tensors.clear();
+
+
+    return output;
+}
+
 
 Tensor* Tensor::select(const vector<string>& indices){
     // Build descriptor

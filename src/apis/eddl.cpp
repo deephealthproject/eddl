@@ -15,6 +15,7 @@
 #include <stdexcept>
 
 #include "eddl/apis/eddl.h"
+#include "eddl/utils.h"
 
 
 using namespace std;
@@ -64,8 +65,8 @@ namespace eddl {
         net->setTrainable(lname,val);
     }
 
-    vector<vtensor> get_parameters(model net, bool deepcopy){
-        return net->get_parameters(deepcopy);
+    vector<vtensor> get_parameters(model net, bool deepcopy, bool tocpu){
+        return net->get_parameters(deepcopy, tocpu);
     }
 
     void set_parameters(model net, const vector<vtensor>& params){
@@ -302,6 +303,11 @@ namespace eddl {
         net->train_batch(in, out, indices,1);
     }
 
+    void show_profile() {
+        printf("profile:\n");
+        __show_profile();
+    }
+
     void next_batch(vector<Tensor *> in,vector<Tensor *> out)
     {
         int i,n;
@@ -426,6 +432,10 @@ namespace eddl {
     Loss* getLoss(string type){
         if (type == "mse" || type == "mean_squared_error"){
             return new LMeanSquaredError();
+        } else if (type == "categorical_cross_entropy"){
+            return new LCategoricalCrossEntropy();
+        } else if (type == "binary_cross_entropy"){
+            return new LBinaryCrossEntropy();
         } else if (type == "cross_entropy"){
             return new LCrossEntropy();
         } else if (type == "soft_cross_entropy"){
@@ -508,6 +518,7 @@ namespace eddl {
     }
 
     layer Softmax(layer parent, string name){
+        show_deprecated_warning("Softmax", "FullSoftmax");
         vector<float> params = {};
         return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
     }
@@ -594,6 +605,11 @@ namespace eddl {
         return new LConv1D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
+    layer PointwiseConv(layer parent, int filters,
+               const vector<int> &strides, bool use_bias,
+               int groups, const vector<int> &dilation_rate,string name){
+        return new LConv(parent, filters, {1, 1}, strides, "none", groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
 
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
@@ -812,24 +828,39 @@ namespace eddl {
     }
 
 
-
-
     //  Operator Layers
     layer Abs(layer l){
         return new LAbs(l, "", DEV_CPU, 0);
     }
 
+
+    layer Sub(layer l1, layer l2){
+        return new LDiff(l1, l2, "", DEV_CPU, 0);
+    }
+
+    layer Sub(layer l1, float k){
+        return new LDiff(l1, k, "", DEV_CPU, 0);
+    }
+
+    layer Sub(float k,layer l1){
+        return new LDiff(k, l1, "", DEV_CPU, 0);
+    }
+
     layer Diff(layer l1, layer l2){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(l1, l2, "", DEV_CPU, 0);
     }
 
     layer Diff(layer l1, float k){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(l1, k, "", DEV_CPU, 0);
     }
 
     layer Diff(float k,layer l1){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(k, l1, "", DEV_CPU, 0);
     }
+
     layer Div(layer l1, layer l2){
         return new LDiv(l1, l2, "", DEV_CPU, 0);
     }
@@ -881,15 +912,30 @@ namespace eddl {
         return new LSqrt(l, "", DEV_CPU, 0);
     }
 
+    layer Add(layer l1, layer l2){
+        return new LSum(l1, l2, "", DEV_CPU, 0);
+    }
+
+    layer Add(layer l1, float k){
+        return new LSum(l1, k, "", DEV_CPU, 0);
+    }
+
+    layer Add(float k,layer l1){
+        return new LSum(l1, k, "", DEV_CPU, 0);
+    }
+
     layer Sum(layer l1, layer l2){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, l2, "", DEV_CPU, 0);
     }
 
     layer Sum(layer l1, float k){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, k, "", DEV_CPU, 0);
     }
 
     layer Sum(float k,layer l1){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, k, "", DEV_CPU, 0);
     }
 

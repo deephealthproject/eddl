@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
     ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
     layer l = Decoder(LSTM(ldec,512,true),flatten,"concat");
 
-    layer out = Softmax(Dense(l, outvs));
+    layer out = FullSoftmax(Dense(l, outvs));
 
     model net = Model({in}, {out});
 
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           opt, // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches

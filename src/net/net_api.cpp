@@ -143,9 +143,6 @@ void *update_t(void *t) {
 }
 /////////////////////////////////////////
 
-
-
-
 /////////////////////////////////////////
 // "a ring to rule them all"
 void Net::run_snets(void *(*F)(void *t))
@@ -189,27 +186,28 @@ void Net::setlr(vector <float> p)
   snets[i]->optimizer->change(p);
 }
 
-vector<vtensor> Net::get_parameters(bool deepcopy){
-    vector<vtensor> params;
+vector<vtensor> Net::get_parameters(bool deepcopy, bool tocpu){
+    vector<vtensor> net_params;
 
     // Collect layer params
     for(auto &l : this->layers){
         if(!deepcopy){
-            params.push_back(l->params);
+            net_params.push_back(l->params);
         }else{
             // Clone parameters
             vtensor lp;
             for(auto &param : l->params){
-                Tensor* new_param = param->clone(); // TODO: Flag toCPU()?
-                lp.push_back(new_param);
+                Tensor* new_param = param->clone();
+                if(tocpu) { new_param->toCPU(); }  // Send to CPU
+                lp.push_back(new_param);  // Add to layer vector of params
             }
 
             // Add new params
-            params.push_back(lp);
+            net_params.push_back(lp);
         }
     }
 
-    return params;
+    return net_params;
 }
 
 void Net::set_parameters(const vector<vtensor>& params){
@@ -236,19 +234,13 @@ void Net::set_parameters(const vector<vtensor>& params){
     // Set layer params
     for(int i=0; i<this->layers.size(); i++){
 
-        // Delete current params
-        for(int j=this->layers[i]->params.size()-1; j>=0; j--){
-            cout << "Deleting params " << j << " from layer " << i << "(" << this->layers[i]->name << ")" << endl;
-            if (this->layers[i]->params[i]!= nullptr){
-                delete this->layers[i]->params[i];
-            }
+        // Copy current params
+        for(int j=0; j<this->layers[i]->params.size(); j++){
+            Tensor* new_param = params[i][j];
+            new_param->toDevice(this->dev);  // Send to the same device as the net
+            Tensor::copy(new_param, this->layers[i]->params[j]);
         }
 
-        // Empty params
-        this->layers[i]->params.clear();
-
-        // Add new params
-        this->layers[i]->params = params[i];  // Pass reference. Do not copy
     }
 }
 
@@ -1172,12 +1164,5 @@ vtensor Net::predict(vtensor tin) {
   }
 
 }
-
-
-
-
-
-
-
 
 //////
