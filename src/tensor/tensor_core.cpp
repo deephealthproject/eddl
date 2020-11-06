@@ -599,9 +599,8 @@ void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
 Tensor* Tensor::stack(const vector<Tensor*> A, unsigned int axis, Tensor* output){
     // Check number of vectors to concat
     if(A.size()<2){
-        msg("Concat requires a minimum of two tensors", "Tensor::stack");
+        msg("Stack requires a minimum of two tensors", "Tensor::stack");
     }
-
 
     // Create fake tensors with dimension expanded
     vector<Tensor*> tmp_tensors;
