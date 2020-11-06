@@ -162,11 +162,6 @@ Numpy-like operations over a raw-tensor object
 | cutout_random      | 🟢️    | 🟢️    |  	   |
 
 
-
-## Binary operations
-
-Not yet...
-
 ## Indexing routines
 
 ### Generating index arrays
