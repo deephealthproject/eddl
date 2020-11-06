@@ -2840,6 +2840,7 @@ public:
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, vector<Tensor*> t, unsigned int axis);
 
+    static Tensor* stack(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.
