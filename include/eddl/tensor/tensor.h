@@ -2379,7 +2379,11 @@ public:
 
     bool all();
     bool any();
-
+    Tensor* isfinite();
+    Tensor* isinf();
+    Tensor* isnan();
+    Tensor* isneginf();
+    Tensor* isposinf();
 
     /**
       *  @brief Test whether all elements evaluate to True.

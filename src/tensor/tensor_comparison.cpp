@@ -50,6 +50,31 @@ bool Tensor::all(){
 bool Tensor::any(){
     return Tensor::any(this);
 }
+Tensor* Tensor::isfinite(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isfinite(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::isinf(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isinf(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::isnan(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isnan(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::isneginf(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isneginf(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::isposinf(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isposinf(this, t_new);
+    return t_new;
+}
 
 
 bool Tensor::all(Tensor *A){
