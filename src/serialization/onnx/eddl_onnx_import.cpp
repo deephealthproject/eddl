@@ -494,13 +494,13 @@ using namespace std;
 		log_string("Ir_version = " + to_string(ir_version), log_level, LOG_LEVEL::INFO);
 		//cout << "Ir_version = " << ir_version << endl;
 		for(int i = 0; i < model.opset_import_size() ; i++){
-			log_string("Operator domain  = " + to_string(model.opset_import(i).domain()), log_level, LOG_LEVEL::INFO);
+			log_string("Operator domain  = " + model.opset_import(i).domain(), log_level, LOG_LEVEL::INFO);
 			log_string("Operator version  = " + to_string(model.opset_import(i).version()), log_level, LOG_LEVEL::INFO);
 			//cout << "Operator domain  = " << model.opset_import(i).domain() << endl;
 			//cout << "Operator version = " << model.opset_import(i).version() << endl;
 		}
 		log_string("Producer_name: " + model.producer_name() , log_level, LOG_LEVEL::INFO);
-		log_string("Producer_version: " + to_string(model.producer_version()) , log_level, LOG_LEVEL::INFO);
+		log_string("Producer_version: " + model.producer_version() , log_level, LOG_LEVEL::INFO);
 		log_string("Domain: " + model.domain() , log_level, LOG_LEVEL::INFO);
 		log_string("Model_version: " + to_string(model.model_version()) , log_level, LOG_LEVEL::INFO);
 		//cout << "Producer_name: " << model.producer_name() << endl;
@@ -1719,7 +1719,7 @@ using namespace std;
 		for( int i = 0; i < output_names.size(); i++ ) {
 			output_layers.push_back(output_node_map[output_names[i]]);
 		}
-		log_string("Finished importing net from ONNX" + layer_type_name , log_level, LOG_LEVEL::DEBUG);
+		log_string("Finished importing net from ONNX" , log_level, LOG_LEVEL::DEBUG);
 		//cout << "Net imported from ONNX succesfully" << endl;
 		return new Net(input_layers, output_layers);
 	}
