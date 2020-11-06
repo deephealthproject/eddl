@@ -2384,6 +2384,10 @@ public:
     Tensor* isnan();
     Tensor* isneginf();
     Tensor* isposinf();
+    Tensor* logical_not();
+    Tensor* logical_and(Tensor *A);
+    Tensor* logical_or(Tensor *A);
+    Tensor* logical_xor(Tensor *A);
 
     /**
       *  @brief Test whether all elements evaluate to True.

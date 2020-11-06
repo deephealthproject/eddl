@@ -75,6 +75,26 @@ Tensor* Tensor::isposinf(){
     Tensor::isposinf(this, t_new);
     return t_new;
 }
+Tensor* Tensor::logical_not(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::logical_not(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::logical_and(Tensor *A){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::logical_and(this, A, t_new);
+    return t_new;
+}
+Tensor* Tensor::logical_or(Tensor *A){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::logical_or(this, A, t_new);
+    return t_new;
+}
+Tensor* Tensor::logical_xor(Tensor *A){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::logical_xor(this, A, t_new);
+    return t_new;
+}
 
 
 bool Tensor::all(Tensor *A){
