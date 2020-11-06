@@ -605,6 +605,11 @@ namespace eddl {
         return new LConv1D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
+    layer PointwiseConv(layer parent, int filters,
+               const vector<int> &strides, bool use_bias,
+               int groups, const vector<int> &dilation_rate,string name){
+        return new LConv(parent, filters, {1, 1}, strides, "none", groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
 
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
