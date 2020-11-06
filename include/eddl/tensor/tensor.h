@@ -2388,6 +2388,8 @@ public:
     Tensor* logical_and(Tensor *A);
     Tensor* logical_or(Tensor *A);
     Tensor* logical_xor(Tensor *A);
+    bool allclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
+    Tensor* isclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
 
     /**
       *  @brief Test whether all elements evaluate to True.

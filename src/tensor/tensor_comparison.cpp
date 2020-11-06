@@ -95,7 +95,14 @@ Tensor* Tensor::logical_xor(Tensor *A){
     Tensor::logical_xor(this, A, t_new);
     return t_new;
 }
-
+bool Tensor::allclose(Tensor *A, float rtol, float atol, bool equal_nan){
+    return Tensor::allclose(this, A, rtol, atol, equal_nan);
+}
+Tensor* Tensor::isclose(Tensor *A, float rtol, float atol, bool equal_nan){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isclose(this, A, t_new, rtol, atol, equal_nan);
+    return t_new;
+}
 
 bool Tensor::all(Tensor *A){
 
