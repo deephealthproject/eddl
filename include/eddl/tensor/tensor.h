@@ -65,7 +65,7 @@ typedef vector<int> tshape;
 class Tensor {
 private:
     // Load methods
-    static Tensor* load_from_bin(std::ifstream &ifs);
+    static Tensor* load_from_bin(std::ifstream &ifs, int start_row, int end_row);
     static Tensor* load_from_onnx(std::ifstream &ifs);
     static Tensor* load_from_img(const string &filename, const string &format);
 //    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);  // Deprecated
@@ -255,7 +255,7 @@ public:
       *  @param format    File format. Accepted formats are: bin, onnx, csv, tsv, txt.
       *  @return    Tensor
     */
-    static Tensor* loadfs(std::ifstream &ifs, string format="");
+    static Tensor* loadfs(std::ifstream &ifs, const string& format="");
 
     /**
       *  @brief Load tensor from file.
@@ -269,15 +269,15 @@ public:
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
 
-    /**
-      *  @brief Load data from a text file
-      *
-      *  @param filename  Name of the file to load the tensor from.
-      *  @param delimiter    Character used to separate the columns of the file.
-      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
-      *  @return    Tensor
-    */
-    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
+//    /**
+//      *  @brief Load data from a text file
+//      *
+//      *  @param filename  Name of the file to load the tensor from.
+//      *  @param delimiter    Character used to separate the columns of the file.
+//      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
+//      *  @return    Tensor
+//    */
+//    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
     /**
       *  @brief Load tensor from a void pointer.
@@ -286,6 +286,16 @@ public:
       *  @return    Tensor
     */
     static Tensor* load_from_ptr(void * src);
+
+        /**
+      *  @brief Load a binary file from the row i to row j
+      *
+      *  @param filename  Name of the file to load the tensor from.
+      *  @param start_row  Index for the initial row (starts from 0)
+      *  @param end_row  Index for the last row (ends at n-1)
+      *  @return    Tensor
+    */
+    static Tensor* load_partial(const string& filename, int start_row=0, int end_row=-1);
 
     /**
       *  @brief Save tensor to a filestream.
@@ -318,7 +328,7 @@ public:
       *  @param header      Header rows.
       *  @return    void
     */
-    void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
+    void save2txt(const string& filename, char delimiter=',', const vector<string> &header={});
 
     /**
       *  @brief Save tensor to a void pointer.
@@ -3204,6 +3214,7 @@ Tensor* Tensor::load(const string& filename, string format){
     ifs.close();
     return t;
 }
+
 
 /**
     *   @brief Check if two tensors are compatible, it is, they are in the same device and have the same shape.

@@ -32,14 +32,16 @@ using namespace eddl;
 int main(int argc, char **argv) {
     cout << "Tests for development. Ignore." << endl;
 
-    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_();  // 4D tensor needed
+    Tensor* t1 = Tensor::load("mnist_trY.bin");
+    Tensor* t2 = t1->select({"2:5"});
+    t2->print(2);
 
-    // Cutout
-    Tensor* t2 = t1->cutout({50, 250}, {250, 400});
-    t2->save("lena_cutout.jpg");
 
-    // Other ways
-    Tensor::cutout(t1, t2, {50, 250}, {250, 400});  // Static
+    Tensor* t3 = Tensor::load_partial("mnist_trY.bin", 2, 5);
+
+    cout << Tensor::equivalent(t2, t3) << endl;
+    t3->print(2);
+
 
     cout << "Done!" << endl;
 
