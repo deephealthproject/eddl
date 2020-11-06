@@ -1420,7 +1420,6 @@ namespace eddl {
       *  @see   https://arxiv.org/abs/1607.06450
       *
       *  @param parent  Parent layer
-      *  @param momentum  Momentum for the moving mean and the moving variance
       *  @param epsilon  Value added to the denominator for numerical stability
       *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
       *  @param name  A name for the operation
@@ -1439,7 +1438,6 @@ namespace eddl {
       *
       *  @param parent  Parent layer
       *  @param groups  Number of groups in which the channels will be divided
-      *  @param momentum  Momentum for the moving mean and the moving variance
       *  @param epsilon  Value added to the denominator for numerical stability
       *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
       *  @param name  A name for the operation

@@ -81,7 +81,21 @@ using namespace std;
 
 
 	};
+	
+	enum LOG_LEVEL{
+		TRACE = 0,
+		DEBUG = 1,
+		INFO = 2,
+		WARN = 3,
+		ERROR = 4,
+		NO_LOGS = 5
+	};
 
+	void log_string(string log, int actual_log_level, int string_log_level){
+		if(actual_log_level <= string_log_level){
+			cout << log << endl;
+		}
+	}
 
 	int verbose=0;
 	//Gets the initializers from the onnx layer graph
@@ -141,7 +155,8 @@ using namespace std;
 
 
 	//Creates a map where the key is the onnx name for the layer type and the value is the constant value in the enumeration for onnx layer type.
-	map<string, ONNX_LAYERS> create_enum_map(){
+	map<string, ONNX_LAYERS> create_enum_map()
+	{
 		map<string, ONNX_LAYERS> map_layers;
 		map_layers["BatchNormalization"] = ONNX_LAYERS::BATCHNORM;
 		map_layers["Conv"] = ONNX_LAYERS::CONV;
@@ -187,7 +202,8 @@ using namespace std;
 
 	//Converts a raw onnx value tensor and writes it to a vector of that value type.
 	template <class T>
-	bool TryConvertingTensorRawValues( const onnx::TensorProto& onnx_tensor, vector<T> &field) {
+	bool TryConvertingTensorRawValues( const onnx::TensorProto& onnx_tensor, vector<T> &field) 
+	{
 		if (!onnx_tensor.has_raw_data()) {
 			return false;
 		}
@@ -464,23 +480,33 @@ using namespace std;
 	Net* build_net_onnx(onnx::ModelProto model, int mem){
 
 		long long int ir_version = model.ir_version();
+		int log_level = LOG_LEVEL::INFO;
 		// We have to check if the imported net has the
 		// version we created this importer for.
 		if(ir_version != 0x00000006) {
-			cerr << "Ir_version < 6" << endl;
-			cerr << "Warning: Version is inferior to the one supported. ONNX module will try to load it anyway" << endl;
+			log_string("Ir_version < 6" , log_level, LOG_LEVEL::WARN);
+			log_string("Warning: Version is inferior to the one supported. ONNX module will try to load it anyway"  , log_level, LOG_LEVEL::WARN);
+			//cerr << "Ir_version < 6" << endl;
+			//cerr << "Warning: Version is inferior to the one supported. ONNX module will try to load it anyway" << endl;
 		}
 
 		// We omit the OperatorSetIdProto, since it doesn't do anything for EDDL
-		cout << "Ir_version = " << ir_version << endl;
+		log_string("Ir_version = " + to_string(ir_version), log_level, LOG_LEVEL::INFO);
+		//cout << "Ir_version = " << ir_version << endl;
 		for(int i = 0; i < model.opset_import_size() ; i++){
-			cout << "Operator domain  = " << model.opset_import(i).domain() << endl;
-			cout << "Operator version = " << model.opset_import(i).version() << endl;
+			log_string("Operator domain  = " + to_string(model.opset_import(i).domain()), log_level, LOG_LEVEL::INFO);
+			log_string("Operator version  = " + to_string(model.opset_import(i).version()), log_level, LOG_LEVEL::INFO);
+			//cout << "Operator domain  = " << model.opset_import(i).domain() << endl;
+			//cout << "Operator version = " << model.opset_import(i).version() << endl;
 		}
-		cout << "Producer_name: " << model.producer_name() << endl;
-		cout << "Producer_version: " << model.producer_version() << endl;
-		cout << "Domain: " << model.domain() << endl;
-		cout << "Model_version: " << model.model_version() << endl;
+		log_string("Producer_name: " + model.producer_name() , log_level, LOG_LEVEL::INFO);
+		log_string("Producer_version: " + to_string(model.producer_version()) , log_level, LOG_LEVEL::INFO);
+		log_string("Domain: " + model.domain() , log_level, LOG_LEVEL::INFO);
+		log_string("Model_version: " + to_string(model.model_version()) , log_level, LOG_LEVEL::INFO);
+		//cout << "Producer_name: " << model.producer_name() << endl;
+		//cout << "Producer_version: " << model.producer_version() << endl;
+		//cout << "Domain: " << model.domain() << endl;
+		//cout << "Model_version: " << model.model_version() << endl;
 		int counter = 0;
 		onnx::GraphProto graph = model.graph(); //Get the graph of the model.
 		//Model needs input in the constructor, so we start with that.
@@ -552,9 +578,11 @@ using namespace std;
 					continue;
 				}
 				avaliable = false;
+				//log_string("Node " + node->name() + " is not avaliable yet"  , log_level, LOG_LEVEL::DEBUG);
 				break;
 			}
 			if(avaliable){
+				log_string("Node " + node->name() + " is avaliable, since only has initializers and constant nodes as parameters"  , log_level, LOG_LEVEL::DEBUG);
 				//cout << "Node " << node->name() << " is avaliable" << endl;
 				if(node->op_type() == "Constant" ) continue;
 				nodeQueue.push(node);
@@ -568,6 +596,8 @@ using namespace std;
 			onnx::NodeProto* node= nodeQueue.front();
 			//6.1: Check all inputs are avaliable
 			bool avaliable = true;
+			log_string("Next node: " + node->name(), log_level, LOG_LEVEL::DEBUG);
+
 			for(int i = 0; i < node->input_size(); i++){
 				string input = node->input(i);
 				if(map_init_values.count(input)){
@@ -580,11 +610,13 @@ using namespace std;
 					continue;
 				}
 				avaliable = false;
+				log_string("Node " + node->name() + " is not avaliable yet"  , log_level, LOG_LEVEL::DEBUG);
 				break;
 			}
 			string output_name = node->output(0);
 			if(output_node_map.count(output_name)){
 				nodeQueue.pop();
+				log_string("Node " + node->name() + " was already created"  , log_level, LOG_LEVEL::DEBUG);
 				continue; //This means this node was already created
 			}
 
@@ -602,6 +634,7 @@ using namespace std;
 			// a map <String-Enumeration> for creating a switch, where
 			// we call the constructor of that layer
 			string layer_type_name = node->op_type();
+			log_string("Node " + node->name() + " has operation type = " + layer_type_name  , log_level, LOG_LEVEL::DEBUG);
 			ONNX_LAYERS layer_type = map_layers[layer_type_name];
 			string name = node->name();
 			int dev = DEV_CPU;//TODO: Check what device to use
@@ -773,8 +806,8 @@ using namespace std;
 						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
 						Tensor::copy(weights_tensor, convol_descriptor->K);
 						delete weights_tensor;
-						break;
 					}
+					break;
 				case ONNX_LAYERS::DENSE:
 					{
 						int ndim;
@@ -1043,8 +1076,8 @@ using namespace std;
 
 						string name = node->name();
 						actual_layer = new LPermute(parent, dims, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::RELU:
 					{
 						string parent_name = node->input(0);
@@ -1053,8 +1086,8 @@ using namespace std;
 						string name = node->name();
 						vector<float> param; 
 						actual_layer = new LActivation(parent, "relu", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SIGMOID:
 					{
 						string parent_name = node->input(0);
@@ -1063,8 +1096,8 @@ using namespace std;
 						string name = node->name();
 						vector<float> param; 
 						actual_layer = new LActivation(parent, "sigmoid", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::HARD_SIGMOID:
 					{
 						string parent_name = node->input(0);
@@ -1073,8 +1106,8 @@ using namespace std;
 						string name = node->name();
 						vector<float> param; 
 						actual_layer = new LActivation(parent, "hard_sigmoid", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::TANH:
 					{
 						string parent_name = node->input(0);
@@ -1083,8 +1116,8 @@ using namespace std;
 						string name = node->name();
 						vector<float> param; 
 						actual_layer = new LActivation(parent, "tanh", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::EXPONENTIAL:
 					{
 						string parent_name = node->input(0);
@@ -1093,8 +1126,8 @@ using namespace std;
 						string name = node->name();
 						vector<float> param; 
 						actual_layer = new LActivation(parent, "exp", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::LINEAR:
 					{
 						float alpha;
@@ -1110,8 +1143,8 @@ using namespace std;
 						vector<float> param; 
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "linear", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::LEAKY_RELU:
 					{
 						float alpha;
@@ -1127,8 +1160,8 @@ using namespace std;
 						vector<float> param; 
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "leaky_relu", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::THRESHOLDED_RELU:
 					{
 						float alpha;
@@ -1144,8 +1177,8 @@ using namespace std;
 						vector<float> param; 
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "thresholded_relu", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::ELU:
 					{
 						float alpha;
@@ -1161,8 +1194,8 @@ using namespace std;
 						vector<float> param; 
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "elu", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SELU:
 					{
 						float alpha = 1.0;
@@ -1181,8 +1214,8 @@ using namespace std;
 						param.push_back(alpha);
 						param.push_back(gamma);
 						actual_layer = new LActivation(parent, "selu", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SOFTSIGN:
 					{
 						string parent_name = node->input(0);
@@ -1191,8 +1224,8 @@ using namespace std;
 						string name = node->name();
 						vector<float> param; 
 						actual_layer = new LActivation(parent, "softsign", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SOFTPLUS:
 					{
 						string parent_name = node->input(0);
@@ -1201,8 +1234,8 @@ using namespace std;
 						string name = node->name();
 						vector<float> param; 
 						actual_layer = new LActivation(parent, "softplus", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SOFTMAX:
 					{
 						string parent_name = node->input(0);
@@ -1221,9 +1254,9 @@ using namespace std;
 						string name = node->name();
 						vector<float> param; 
 						actual_layer = new LActivation(parent, "softmax", param, name, dev, mem);
-						break;
 
 					}
+					break;
 				case ONNX_LAYERS::CONCAT:
 					{
 						int axis = 1;
@@ -1244,8 +1277,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LConcat(parents, axis, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::ADD:
 					{
 						vector<Layer *> parents;
@@ -1306,8 +1339,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LAdd(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SUB:
 					{
 						vector<Layer *> parents;
@@ -1319,8 +1352,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LSubtract(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::AVERAGE:
 					{
 						vector<Layer *> parents;
@@ -1332,8 +1365,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LAverage(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::MAT_MUL:
 					{
 						vector<Layer *> parents;
@@ -1370,8 +1403,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LMatMul(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::MAX:
 					{
 						vector<Layer *> parents;
@@ -1383,8 +1416,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LMaximum(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::MIN:
 					{
 						vector<Layer *> parents;
@@ -1396,8 +1429,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LMinimum(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::MAXPOOL:
 					{
 						int filters;
@@ -1463,6 +1496,7 @@ using namespace std;
 
 						actual_layer = new LMaxPool(parent, {h,w},{1,1}, "none", "gpool", dev, mem);
 					}
+					break;
                 case ONNX_LAYERS::LSTM:
 					{
 						vector<float> activation_alpha; //Values for configuring some activations with extra parameters
@@ -1660,7 +1694,8 @@ using namespace std;
 					break;
 
 				default:
-					cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type_name <<  endl;
+					log_string("FATAL: LAYER NOT RECOGNIZED WITH TYPE " + layer_type_name , log_level, LOG_LEVEL::DEBUG);
+					//cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type_name <<  endl;
 					nodeQueue.pop();
 					continue;
 					break;
@@ -1684,7 +1719,8 @@ using namespace std;
 		for( int i = 0; i < output_names.size(); i++ ) {
 			output_layers.push_back(output_node_map[output_names[i]]);
 		}
-		cout << "Net imported from ONNX succesfully" << endl;
+		log_string("Finished importing net from ONNX" + layer_type_name , log_level, LOG_LEVEL::DEBUG);
+		//cout << "Net imported from ONNX succesfully" << endl;
 		return new Net(input_layers, output_layers);
 	}
 
@@ -1737,7 +1773,8 @@ using namespace std;
 	}
 
 	//Sets the weights of a input Net to the ones stored in the onnx net inside the c++ string
-	void set_weights_from_onnx(Net* net, std::string* model_string){
+	void set_weights_from_onnx(Net* net, std::string* model_string)
+	{
 		onnx::ModelProto model;
 		{
 			if(!model.ParseFromString(*model_string)){
@@ -1835,7 +1872,8 @@ using namespace std;
 	}
 
 	//Accumulates the gradients stored in the c++ string to the input net
-    void apply_grads_from_onnx(Net* net, std::string* model_string){
+    void apply_grads_from_onnx(Net* net, std::string* model_string)
+	{
 		onnx::ModelProto model;
 		{
 			if(!model.ParseFromString(*model_string)){
@@ -1881,7 +1919,8 @@ using namespace std;
 
 
 	//Returns a map containing the name of the layer as key and a tensor with the values of the model as value
-	map<string, vector<Tensor*> > get_tensors_from_onnx(onnx::ModelProto model){
+	map<string, vector<Tensor*> > get_tensors_from_onnx(onnx::ModelProto model)
+	{
 
 		map<string, vector<Tensor*> > tensors;
 
