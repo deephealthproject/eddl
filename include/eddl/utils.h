@@ -61,4 +61,6 @@ WrappingMode getWrappingMode(string mode);
 
 void __show_profile();
 
+void show_deprecated_warning(const string& deprecated_name, const string& new_name="", const string& type="function", const string& version="future");
+
 #endif //EDDL_UTILS_H

@@ -1466,8 +1466,13 @@ namespace eddl {
       *
       *  @param l1  A layer
       *  @param l2  A layer
-      *  @return     Difference between l1 and l2
+      *  @return Difference between l1 and l2
     */
+    layer Sub(layer l1, layer l2);
+    layer Sub(layer l1, float k);
+    layer Sub(float k, layer l1);
+
+    // Deprecate aliases
     layer Diff(layer l1, layer l2);
     layer Diff(layer l1, float k);
     layer Diff(float k, layer l1);
@@ -1552,7 +1557,7 @@ namespace eddl {
       *  @param l2  Layer
       *  @return     The result after computing the sum between layers l1 and l2
     */
-    layer Sum(layer l1, layer l2);
+    layer Add(layer l1, layer l2);
 
     /**
       *  @brief Layer that computes the sum of a float number and a layer.
@@ -1561,6 +1566,11 @@ namespace eddl {
       *  @param k  Number
       *  @return     Parent layer l1 after computing his sum with k
     */
+    layer Add(layer l1, float k);
+    layer Add(float k, layer l1);
+
+    // Deprecated
+    layer Sum(layer l1, layer l2);
     layer Sum(layer l1, float k);
     layer Sum(float k, layer l1);
 

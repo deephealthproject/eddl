@@ -18,7 +18,7 @@ using namespace std;
 
 
 LSoftCrossEntropy::LSoftCrossEntropy() : Loss("soft_cross_entropy"){
-    cout << "[WARNING] The LSoftCrossEntropy is deprecated in favor of LCategoricalCrossEntropy";
+    show_deprecated_warning("categorical_cross_entropy", "categorical_cross_entropy");
 }
 
 

@@ -518,7 +518,7 @@ namespace eddl {
     }
 
     layer Softmax(layer parent, string name){
-        cout << "[WARNING] The Softmax is deprecated in favor of LCategoricalCrossEntropy";
+        show_deprecated_warning("Softmax", "FullSoftmax");
         vector<float> params = {};
         return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
     }
@@ -823,24 +823,39 @@ namespace eddl {
     }
 
 
-
-
     //  Operator Layers
     layer Abs(layer l){
         return new LAbs(l, "", DEV_CPU, 0);
     }
 
+
+    layer Sub(layer l1, layer l2){
+        return new LDiff(l1, l2, "", DEV_CPU, 0);
+    }
+
+    layer Sub(layer l1, float k){
+        return new LDiff(l1, k, "", DEV_CPU, 0);
+    }
+
+    layer Sub(float k,layer l1){
+        return new LDiff(k, l1, "", DEV_CPU, 0);
+    }
+
     layer Diff(layer l1, layer l2){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(l1, l2, "", DEV_CPU, 0);
     }
 
     layer Diff(layer l1, float k){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(l1, k, "", DEV_CPU, 0);
     }
 
     layer Diff(float k,layer l1){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(k, l1, "", DEV_CPU, 0);
     }
+
     layer Div(layer l1, layer l2){
         return new LDiv(l1, l2, "", DEV_CPU, 0);
     }
@@ -892,15 +907,30 @@ namespace eddl {
         return new LSqrt(l, "", DEV_CPU, 0);
     }
 
+    layer Add(layer l1, layer l2){
+        return new LSum(l1, l2, "", DEV_CPU, 0);
+    }
+
+    layer Add(layer l1, float k){
+        return new LSum(l1, k, "", DEV_CPU, 0);
+    }
+
+    layer Add(float k,layer l1){
+        return new LSum(l1, k, "", DEV_CPU, 0);
+    }
+
     layer Sum(layer l1, layer l2){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, l2, "", DEV_CPU, 0);
     }
 
     layer Sum(layer l1, float k){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, k, "", DEV_CPU, 0);
     }
 
     layer Sum(float k,layer l1){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, k, "", DEV_CPU, 0);
     }
 
