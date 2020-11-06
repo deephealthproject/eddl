@@ -2377,6 +2377,10 @@ public:
 
     // Logic funcions: Truth value testing *****************************
 
+    bool all();
+    bool any();
+
+
     /**
       *  @brief Test whether all elements evaluate to True.
       *

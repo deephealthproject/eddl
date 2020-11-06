@@ -44,6 +44,14 @@ PROFILING_ENABLE_EXTERN(not_equal);
 PROFILING_ENABLE_EXTERN(equivalent);
 
 
+bool Tensor::all(){
+    return Tensor::all(this);
+}
+bool Tensor::any(){
+    return Tensor::any(this);
+}
+
+
 bool Tensor::all(Tensor *A){
 
     PROFILING_HEADER(all);
@@ -297,6 +305,7 @@ void Tensor::logical_xor(Tensor *A, Tensor *B, Tensor *C){
 #endif
     PROFILING_FOOTER(logical_xor);
 }
+
 
 
 bool Tensor::allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
