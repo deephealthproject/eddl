@@ -106,11 +106,14 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
 
         // Set new shape
         r_shape[0] = n_rows;
+
+        // Set cursor's position
+        ifs.seekg(start_offset*sizeof(float), std::ifstream::cur);
     }
 
     // Load content (row-major)
     auto *r_ptr = new float[r_size];
-    ifs.read(reinterpret_cast<char*>(r_ptr+start_offset), n_read * sizeof(float));
+    ifs.read(reinterpret_cast<char*>(r_ptr), n_read * sizeof(float));
 
     // Return new tensor
     auto *t1 = new Tensor(r_shape, r_ptr, DEV_CPU);
