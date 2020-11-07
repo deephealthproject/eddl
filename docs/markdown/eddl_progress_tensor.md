@@ -162,11 +162,6 @@ Numpy-like operations over a raw-tensor object
 | cutout_random      | 🟢️    | 🟢️    |  	   |
 
 
-
-## Binary operations
-
-Not yet...
-
 ## Indexing routines
 
 ### Generating index arrays
@@ -195,13 +190,13 @@ Not yet...
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| load          | 🟢️   | -   | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy (removed): npy, npz<br />Text (removed): csv, tsv, txt,...<br />Other: onnx, bin |
+| load          | 🟢️   | -   | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Other: bin |
 
 ### Output
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| save          | 🟢️   | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy (removed): npy, npz<br />Text: csv, tsv, txt,...<br />Other: bin                                    |
+| save          | 🟢️   | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Text: csv, tsv, txt,...<br />Other: bin                                    |
 | save2txt      | 🟢️   | -    |                                                              |
 
 

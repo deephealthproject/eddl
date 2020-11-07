@@ -3,42 +3,76 @@ Losses
 
 .. doxygenfunction:: eddl::getLoss
 
+
 Mean Squared Error
 ------------------
 
-
-Aliases: ``mse`` and ``categorical_accuracy``.
+Aliases: ``mse`` and ``mean_squared_error``.
 
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    Loss* getLoss("mse");
+   my_loss = getLoss("mse");
+   // or
+   my_loss = getLoss("mean_squared_error");
+
+
+Categorical Cross-Entropy
+--------------------------
+
+Alias: ``categorical_cross_entropy``.
+
+Example:
+
+.. code-block:: c++
+
+   my_loss = getLoss("categorical_cross_entropy");
+
+
+Binary Cross-Entropy
+--------------------------
+
+Alias: ``binary_cross_entropy``.
+
+Example:
+
+.. code-block:: c++
+
+   my_loss = getLoss("binary_cross_entropy");
 
 
 Cross-Entropy
 --------------------
 
-Aliases: ``cross_entropy``.
+Alias: ``cross_entropy``.
 
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    Loss* getLoss("cross_entropy");
+   my_loss = getLoss("cross_entropy");
 
 
 Soft Cross-Entropy
 -------------------
 
-Aliases: ``soft_cross_entropy``.
+Alias: ``soft_cross_entropy``.
 
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
+   my_loss = getLoss("soft_cross_entropy");
 
-    Loss* getLoss("soft_cross_entropy");
 
+Dice
+-------------------
+
+Alias: ``dice``.
+
+Example:
+
+.. code-block:: c++
+   
+   my_loss = getLoss("dice");
