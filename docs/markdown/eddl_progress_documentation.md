@@ -179,6 +179,7 @@
 | :------ | :---------: | :----------: | :------- |
 | Conv1D  |     ✔️       |      ✔️       |          |
 | Conv2D  |     ✔️       |      ✔️       |          |
+| Pointwise |   ✔️       |      ❌️      |          |
 | 2D Upsampling | ✔️     |      ✔️       | note about future versions |
 | Convolutional Transpose | ✔️ |  ❌️    | note: not implemented yet  |
 
@@ -335,8 +336,11 @@
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | Mean Squared Error |❌️|      ✔️       |          |
+| CategoricalCrossEntropy |❌️| ✔️       |          |
+| BinaryCrossEntropy |❌️|      ✔️       |          |
 | Cross-Entropy |     ❌️|      ✔️       |          |
 | Soft Cross-Entropy |❌️|      ✔️       |          |
+| Dice               |❌️|      ✔️       |          |
 
 
 ## Metrics
