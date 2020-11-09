@@ -76,7 +76,10 @@ using namespace std;
 		MAX,				// implemented
 		MIN,                // implemented
 		SUB,                // implemented
-		LSTM                // not implemented yet
+		LSTM,               // implemented
+		IDENTITY            // implemented
+
+
 		
 
 
@@ -195,6 +198,8 @@ using namespace std;
 		map_layers["Max"] = ONNX_LAYERS::MAX;
 		map_layers["Min"] = ONNX_LAYERS::MIN;
 		map_layers["LSTM"] = ONNX_LAYERS::LSTM;
+		map_layers["Identity"] = ONNX_LAYERS::IDENTITY;
+		
 
 		return map_layers;
 	}
@@ -1707,8 +1712,17 @@ using namespace std;
 					}
 					break;
 
+				case ONNX_LAYERS::IDENTITY:
+					{
+						log_string("Identity layer detected" , log_level, LOG_LEVEL::DEBUG);
+						string parent_name;
+						parent_name = node->input(0);
+						actual_layer = output_node_map[parent_name];
+					}
+					break;
+
 				default:
-					log_string("FATAL: LAYER NOT RECOGNIZED WITH TYPE " + layer_type_name , log_level, LOG_LEVEL::DEBUG);
+					log_string("FATAL: LAYER NOT RECOGNIZED WITH TYPE " + layer_type_name , log_level, LOG_LEVEL::ERROR);
 					//cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type_name <<  endl;
 					nodeQueue.pop();
 					continue;
