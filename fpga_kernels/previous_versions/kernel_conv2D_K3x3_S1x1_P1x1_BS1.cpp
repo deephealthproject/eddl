@@ -74,8 +74,8 @@ extern "C" {
 // Fixed parameters (optimized at compilation/synthesis time)
 #define KW       3  // kernel width
 #define KH       3  // kernel height
-#define CPI      4  // channels per input port
-#define CPO      4  // channels per output port
+#define CPI      8  // channels per input port
+#define CPO      8  // channels per output port
 
 // Maximum width and width*height
 #define WMAX 256
@@ -94,6 +94,11 @@ struct pixel_out_t {          // pixel out
 // frames struct (KWxKH)
 struct frame_t {
   pixel_in_t pixel[9];
+};
+
+#define BLOCK_SIZE 8
+struct block_t {
+  data_type pixel[BLOCK_SIZE];
 };
 
 // ---------------------------------------------------------------------------------------
@@ -180,37 +185,82 @@ static void read_kernel(int I_ITER, int offset_kernel, data_type *k_ptr, hls::st
 
 }
 
-// --------------------------------------------------------------------------------------
-// read_data: Reading data from memory and sending it through the output stream
-// Arguments:
-//   H      : Height of the input channel
-//   W      : Width of the input channel
-//   I_ITER : Number of input iterations (I / CPI)
-//   ptr    : Pointer to input data (in)
-//   out    : data output stream (out)
-//
-static void read_data(int H, int W, int I_ITER, pixel_in_t *ptr, hls::stream<pixel_in_t> &out) {
+static void read_data_channel(int H, int W, block_t *ptr, int offset, hls::stream<block_t> &out) {
+  read_data_channel_loop:
+  for (int r=0; r<H*W/BLOCK_SIZE; r++) {
+    #pragma HLS PIPELINE II=1
+    block_t data;
+    data = ptr[r+offset];
+    out << data;
+  }
+}
 
-  #ifdef DEBUG_VERBOSE
-  printf("read_data: start\n");
-  #endif
-
-  read_loop_data_load_i:
-  for (int r=0; r<H*W*I_ITER; r++) {
+static void join(int H, int W, hls::stream<block_t> &in0, hls::stream<block_t> &in1, hls::stream<block_t> &in2, hls::stream<block_t> &in3, 
+                               hls::stream<block_t> &in4, hls::stream<block_t> &in5, hls::stream<block_t> &in6, hls::stream<block_t> &in7, 
+                               hls::stream<pixel_in_t> &out) {
+  join_loop:
+  for (int r=0; r<H*W; r++) {
     #pragma HLS PIPELINE II=1
     pixel_in_t data;
-    data = ptr[r];
-    #ifdef DEBUG_VERBOSE
-    printf("read data:\n");
-    for(int cpi = 0;cpi<CPI;cpi++) printf(" %f ", float(data.pixel[cpi]));
-    printf("\n");
-    #endif
-    out  << data;
+    block_t b0 = in0.read();
+    block_t b1 = in1.read();
+    block_t b2 = in2.read();
+    block_t b3 = in3.read();
+    block_t b4 = in4.read();
+    block_t b5 = in5.read();
+    block_t b6 = in6.read();
+    block_t b7 = in7.read();
+    for (int b=0; b<BLOCK_SIZE; b++) {
+      data.pixel[0] = b0.pixel[b];
+      data.pixel[1] = b1.pixel[b];
+      data.pixel[2] = b2.pixel[b];
+      data.pixel[3] = b3.pixel[b];
+      data.pixel[4] = b4.pixel[b];
+      data.pixel[5] = b5.pixel[b];
+      data.pixel[6] = b6.pixel[b];
+      data.pixel[7] = b7.pixel[b];
+      out << data;
+    }
   }
+}
 
-  #ifdef DEBUG_VERBOSE
-  printf("read_data: end\n");
-  #endif
+static void split(int H, int W, hls::stream<pixel_out_t> &in, hls::stream<block_t> &out0, hls::stream<block_t> &out1, hls::stream<block_t> &out2, hls::stream<block_t> &out3,
+                                                              hls::stream<block_t> &out4, hls::stream<block_t> &out5, hls::stream<block_t> &out6, hls::stream<block_t> &out7) {
+  split_loop:
+  for (int r=0; r<H*W; r++) {
+    #pragma HLS PIPELINE II=1
+    pixel_out_t data;
+    block_t b0, b1, b2, b3, b4, b5, b6, b7;
+    for (int b=0; b<BLOCK_SIZE; b++) {
+      data = in.read();
+      b0.pixel[b] = data.pixel[0];
+      b1.pixel[b] = data.pixel[1];
+      b2.pixel[b] = data.pixel[2];
+      b3.pixel[b] = data.pixel[3];
+      b4.pixel[b] = data.pixel[4];
+      b5.pixel[b] = data.pixel[5];
+      b6.pixel[b] = data.pixel[6];
+      b7.pixel[b] = data.pixel[7];
+    }
+    out0 << b0;
+    out1 << b1;
+    out2 << b2;
+    out3 << b3;
+    out4 << b4;
+    out5 << b5;
+    out6 << b6;
+    out7 << b7;
+  } 
+}
+
+static void write_data_channel(int H, int W, block_t *ptr, int offset, hls::stream<block_t> &in) {
+  write_data_channel_loop:
+  for (int r=0; r<H*W/BLOCK_SIZE; r++) {
+    #pragma HLS PIPELINE II=1
+    block_t data;
+    data = in.read();
+    ptr[r+offset] = data;
+  }
 }
 
 // ---------------------------------------------------------------------------------------
@@ -264,39 +314,6 @@ static void padding(int H, int W, int I_ITER, hls::stream<pixel_in_t> &in, hls::
   printf("padding: end\n");
   #endif
 }
-
-// --------------------------------------------------------------------------------
-// write_output: Writes data comming from one stream into memory
-//
-// Arguments:
-//   H      : Height of a channel
-//   W      : Width of a channel
-//   ptr    : memory address pointer
-//   offset : Offset within the buffer 
-//   in     : input stream
-//
-static void write_output(int H, int W, int offset_data_out, pixel_out_t *ptr, hls::stream<pixel_out_t> &in) {
-
-  #ifdef DEBUG_VERBOSE
-  printf("write_output: start\n");
-  #endif
-
-  write_output_data_size_loop:
-  for (int i=0; i<H*W; i++) {
-    pixel_out_t p = in.read();
-    ptr[i + offset_data_out] = p;
-    #ifdef DEBUG_VERBOSE
-    printf("i = %d \n",  i);
-    for (int cpo=0; cpo<CPO; cpo++) printf("ptr--p.pixel[%d] = %6.2f \n", cpo, float(p.pixel[cpo]));
-    #endif
-  }
-
-  #ifdef DEBUG_VERBOSE
-  printf("write_output: end\n");
-  #endif
-}
-
-
 
 // ---------------------------------------------------------------------------------------------------
 // cvt: reads an input stream with an image of format (H, W, CPI) and writes an output stream
@@ -626,16 +643,35 @@ static void conv(int H, int W, int I_ITER, hls::stream<pixel_in_t> &in, hls::str
 //   offset_kernel  : Offset within kernel buffer
 //   offset_data_out: Offset within data out buffer
 //
-void k_conv2D_K3x3_S1x1_P1x1_BS1(pixel_in_t *ptr_data, int H, int W, int I, data_type *ptr_kernel, data_type *ptr_bias, pixel_out_t *ptr_out, int O, int offset_bias, int offset_kernel, int offset_data_out) {
+void k_conv2D_K3x3_S1x1_P1x1_BS1(block_t *ptr_data0, block_t *ptr_data1, block_t *ptr_data2, block_t *ptr_data3, 
+                                 block_t *ptr_data4, block_t *ptr_data5, block_t *ptr_data6, block_t *ptr_data7, 
+                                 int H, int W, int I, data_type *ptr_kernel, data_type *ptr_bias, 
+                                 block_t *ptr_out0, block_t *ptr_out1, block_t *ptr_out2, block_t *ptr_out3, 
+                                 block_t *ptr_out4, block_t *ptr_out5, block_t *ptr_out6, block_t *ptr_out7, 
+                                 int O, int offset_bias, int offset_kernel, int offset_data_out) {
 
   #pragma HLS INTERFACE s_axilite port=W bundle=control
   #pragma HLS INTERFACE s_axilite port=H bundle=control
   #pragma HLS INTERFACE s_axilite port=I bundle=control
   #pragma HLS INTERFACE s_axilite port=O bundle=control
-  #pragma HLS INTERFACE m_axi port=ptr_data offset=slave bundle=gmem  max_read_burst_length=256 max_write_burst_length=256
-  #pragma HLS INTERFACE m_axi port=ptr_kernel offset=slave bundle=gmem1 max_read_burst_length=256 max_write_burst_length=256
-  #pragma HLS INTERFACE m_axi port=ptr_bias offset=slave bundle=gmem2   max_read_burst_length=256 max_write_burst_length=256
-  #pragma HLS INTERFACE m_axi port=ptr_out  offset=slave bundle=gmem   max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_data0 offset=slave bundle=gmem   max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_data1 offset=slave bundle=gmem1  max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_data2 offset=slave bundle=gmem2  max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_data3 offset=slave bundle=gmem3  max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_data4 offset=slave bundle=gmem4   max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_data5 offset=slave bundle=gmem5  max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_data6 offset=slave bundle=gmem6  max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_data7 offset=slave bundle=gmem7  max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_kernel offset=slave bundle=gmem8 max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_bias offset=slave bundle=gmem9   max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_out0  offset=slave bundle=gmem   max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_out1  offset=slave bundle=gmem1  max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_out2  offset=slave bundle=gmem2   max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_out3  offset=slave bundle=gmem3  max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_out4  offset=slave bundle=gmem4   max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_out5  offset=slave bundle=gmem5  max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_out6  offset=slave bundle=gmem6   max_read_burst_length=256 max_write_burst_length=256
+  #pragma HLS INTERFACE m_axi port=ptr_out7  offset=slave bundle=gmem7  max_read_burst_length=256 max_write_burst_length=256
   #pragma HLS INTERFACE s_axilite port=offset_bias bundle=control
   #pragma HLS INTERFACE s_axilite port=offset_kernel bundle=control
   #pragma HLS INTERFACE s_axilite port=offset_data_out bundle=control
@@ -643,8 +679,22 @@ void k_conv2D_K3x3_S1x1_P1x1_BS1(pixel_in_t *ptr_data, int H, int W, int I, data
 
   // ptr_data struct to be packed as a single element vector (to improve memory read)
   // the compiler will do full structure access (all elements of structure)
-  #pragma HLS data_pack variable = ptr_data
-  #pragma HLS data_pack variable = ptr_out
+  #pragma HLS data_pack variable = ptr_data0
+  #pragma HLS data_pack variable = ptr_data1
+  #pragma HLS data_pack variable = ptr_data2
+  #pragma HLS data_pack variable = ptr_data3
+  #pragma HLS data_pack variable = ptr_data4
+  #pragma HLS data_pack variable = ptr_data5
+  #pragma HLS data_pack variable = ptr_data6
+  #pragma HLS data_pack variable = ptr_data7
+  #pragma HLS data_pack variable = ptr_out0
+  #pragma HLS data_pack variable = ptr_out1
+  #pragma HLS data_pack variable = ptr_out2
+  #pragma HLS data_pack variable = ptr_out3
+  #pragma HLS data_pack variable = ptr_out4
+  #pragma HLS data_pack variable = ptr_out5
+  #pragma HLS data_pack variable = ptr_out6
+  #pragma HLS data_pack variable = ptr_out7
 
   int I_ITER = I/CPI;
 
@@ -654,19 +704,75 @@ void k_conv2D_K3x3_S1x1_P1x1_BS1(pixel_in_t *ptr_data, int H, int W, int I, data
   static hls::stream<pixel_out_t> out_read_bias;
   static hls::stream<pixel_out_t> out_conv;
 
+  static hls::stream<block_t> out_read_channel_0;
+  static hls::stream<block_t> out_read_channel_1;
+  static hls::stream<block_t> out_read_channel_2;
+  static hls::stream<block_t> out_read_channel_3;
+  static hls::stream<block_t> out_read_channel_4;
+  static hls::stream<block_t> out_read_channel_5;
+  static hls::stream<block_t> out_read_channel_6;
+  static hls::stream<block_t> out_read_channel_7;
+
+  static hls::stream<block_t> out_write_channel_0;
+  static hls::stream<block_t> out_write_channel_1;
+  static hls::stream<block_t> out_write_channel_2;
+  static hls::stream<block_t> out_write_channel_3;
+  static hls::stream<block_t> out_write_channel_4;
+  static hls::stream<block_t> out_write_channel_5;
+  static hls::stream<block_t> out_write_channel_6;
+  static hls::stream<block_t> out_write_channel_7;
+
   // stream sizes
-  #pragma HLS STREAM variable = out_read_data depth = 32
-  #pragma HLS STREAM variable = out_read_kernel depth = 32
-  #pragma HLS STREAM variable = out_read_bias depth = 32
-  #pragma HLS STREAM variable = out_conv depth = 32
-  // #pragma HLS STREAM variable = out_relu depth = 32
+  #pragma HLS STREAM variable = out_read_data depth = 256
+  #pragma HLS STREAM variable = out_read_kernel depth = 256
+  #pragma HLS STREAM variable = out_read_bias depth = 256
+  #pragma HLS STREAM variable = out_conv depth = 256
+
+  int offset_read_data_channel_0 = 0;
+  int offset_read_data_channel_1 = W * H;
+  int offset_read_data_channel_2 = 2 * (W * H);
+  int offset_read_data_channel_3 = 3 * (W * H);
+  int offset_read_data_channel_4 = 4 * (W * H);
+  int offset_read_data_channel_5 = 5 * (W * H);
+  int offset_read_data_channel_6 = 6 * (W * H);
+  int offset_read_data_channel_7 = 7 * (W * H);
+
+  int offset_write_data_channel_0 = 0;
+  int offset_write_data_channel_1 = W * H;
+  int offset_write_data_channel_2 = 2 * (W * H);
+  int offset_write_data_channel_3 = 3 * (W * H);
+  int offset_write_data_channel_4 = 4 * (W * H);
+  int offset_write_data_channel_5 = 5 * (W * H);
+  int offset_write_data_channel_6 = 6 * (W * H);
+  int offset_write_data_channel_7 = 7 * (W * H);
 
   #pragma HLS dataflow
-  read_data(H, W, I_ITER, ptr_data, out_read_data);
+  read_data_channel(H, W, ptr_data0, offset_read_data_channel_0, out_read_channel_0);
+  read_data_channel(H, W, ptr_data1, offset_read_data_channel_1, out_read_channel_1);
+  read_data_channel(H, W, ptr_data2, offset_read_data_channel_2, out_read_channel_2);
+  read_data_channel(H, W, ptr_data3, offset_read_data_channel_3, out_read_channel_3);
+  read_data_channel(H, W, ptr_data4, offset_read_data_channel_4, out_read_channel_4);
+  read_data_channel(H, W, ptr_data5, offset_read_data_channel_5, out_read_channel_5);
+  read_data_channel(H, W, ptr_data6, offset_read_data_channel_6, out_read_channel_6);
+  read_data_channel(H, W, ptr_data7, offset_read_data_channel_7, out_read_channel_7);
+
+  join(H, W, out_read_channel_0, out_read_channel_1, out_read_channel_2, out_read_channel_3, out_read_channel_4, out_read_channel_5, out_read_channel_6, out_read_channel_7, out_read_data);
+
   read_bias(offset_bias, ptr_bias, out_read_bias);
   read_kernel(I_ITER, offset_kernel, ptr_kernel, out_read_kernel);
+
   conv(H, W, I_ITER, out_read_data, out_read_kernel, out_read_bias, out_conv);
-  write_output(H, W, offset_data_out, ptr_out, out_conv);
+
+  split(H, W, out_conv, out_write_channel_0, out_write_channel_1, out_write_channel_2, out_write_channel_3, out_write_channel_4, out_write_channel_5, out_write_channel_6, out_write_channel_7);
+
+  write_data_channel(H, W, ptr_out0, offset_write_data_channel_0, out_write_channel_0);
+  write_data_channel(H, W, ptr_out1, offset_write_data_channel_1, out_write_channel_1);
+  write_data_channel(H, W, ptr_out2, offset_write_data_channel_2, out_write_channel_2);
+  write_data_channel(H, W, ptr_out3, offset_write_data_channel_3, out_write_channel_3);
+  write_data_channel(H, W, ptr_out4, offset_write_data_channel_4, out_write_channel_4);
+  write_data_channel(H, W, ptr_out5, offset_write_data_channel_5, out_write_channel_5);
+  write_data_channel(H, W, ptr_out6, offset_write_data_channel_6, out_write_channel_6);
+  write_data_channel(H, W, ptr_out7, offset_write_data_channel_7, out_write_channel_7);
 }
 
 } // end extern "C"

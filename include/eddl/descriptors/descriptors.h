@@ -110,6 +110,7 @@ public:
     // FPGA implementation
     cl::Buffer *fpga_ptrI;
     long int fpga_sizeI;
+    int kernel_in_fpga_format;   // tells whether the kernels have been adapted to the expected format 
 #endif
 
     ConvolDescriptor();

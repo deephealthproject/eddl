@@ -2,7 +2,7 @@
 // implemented on the FPGA
 
 //Activations
-//#define K_ENABLED_RELU
+#define K_ENABLED_RELU
 //#define K_ENABLED_D_RELU
 //#define K_ENABLED_THRESHOLDED_RELU
 //#define K_ENABLED_D_TRHESHOLDED_RELU

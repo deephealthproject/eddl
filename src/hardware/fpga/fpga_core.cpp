@@ -719,7 +719,7 @@ void fpga_init(){ // initialize only once
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_CONV2D_K3X3_S1X1_P1X1_BS1
-    OCL_CHECK(err, kernel_conv2D_K3x3_S1x1_P1x1_BS1 = cl::Kernel(program, "k_conv2D_K3x3_S1x1_P1x1_BS1", &err));
+    OCL_CHECK(err, kernel_conv2D_K3x3_S1x1_P1x1_BS1 = cl::Kernel(program, "k_conv2D_8x8", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
 
     // prueba
@@ -728,10 +728,10 @@ void fpga_init(){ // initialize only once
     cl::Buffer K;
     cl::Buffer B;
     cl::Buffer O;
-    int Ich = 4;
+    int Ich = 8;
     int W = 256;
     int H = 256;
-    int Och = 4;
+    int Och = 8;
     int arg = 0;
 
     OCL_CHECK(err,I = cl::Buffer(context,CL_MEM_READ_WRITE, Ich * W * H * sizeof(float), NULL, &err));
@@ -740,17 +740,36 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err,O = cl::Buffer(context,CL_MEM_READ_WRITE, Och * W * H * sizeof(float), NULL, &err));
 
     OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
+
     OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, H));
     OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, W));
     OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, Ich));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, Och));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, 1));  // I_ITER
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, 1));  // O_ITER
+
     OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, K));
     OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, B));
+    
     OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, Och));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
+    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
 
     OCL_CHECK(err, err = q.enqueueTask(kernel_conv2D_K3x3_S1x1_P1x1_BS1, NULL, &event1));
     printf("conv kernel lanzado en init\n");
-    //  event.wait();
+    // event.wait();
     q.finish();
 
     #endif

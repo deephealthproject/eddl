@@ -28,8 +28,13 @@ extern "C" {
 // Fixed parameters (optimized at compilation/synthesis time)
 #define KW       3  // kernel width
 #define KH       3  // kernel height
-#define CPI      2  // channels per input port
-#define CPO      2  // channels per output port
+#define CPI      4  // channels per input port
+#define CPO      4  // channels per output port
+
+#define W 256
+#define H 256
+#define I_ITER 1
+#define O_ITER 1
 
 #define WMAX 256
 #define WHMAX 256*256
@@ -60,7 +65,7 @@ struct frame_t {
 //   b_ptr                : pointer to bias
 //   b_out               :  output streams
 //
-static void read_bias(int O_ITER, data_type *b_ptr, hls::stream<pixel_out_t> &b_out){
+static void read_bias(int OO_ITER, data_type *b_ptr, hls::stream<pixel_out_t> &b_out){
 
 #ifdef DEBUG_VERBOSE
   printf("read_bias: start\n");
@@ -69,7 +74,7 @@ static void read_bias(int O_ITER, data_type *b_ptr, hls::stream<pixel_out_t> &b_
   #pragma HLS ARRAY_PARTITION variable=bias dim=0
 
   // we read the bias
-  int size = O_ITER * CPO;
+  int size = OO_ITER * CPO;
   int cpo = 0;
   for (int i=0; i<size; i++) {
     data_type v = b_ptr[i];
@@ -86,19 +91,6 @@ static void read_bias(int O_ITER, data_type *b_ptr, hls::stream<pixel_out_t> &b_
     }
   }
 	
-  
-
-  /*for (int o_iter = 0; o_iter < O_ITER; o_iter++){
-    // printf("o_iter = %d \n ", o_iter);
-    //Sending bias to add in pack of CPO bias
-    read_loop_bias_load:
-      for (int b=0; b<CPO; b++) {
-        #pragma HLS PIPELINE II=1
-        data_type v = b_ptr[b+CPO*o_iter];
-        bias.pixel[b] = v;
-      }
-      b_out << bias;
-    }*/
 #ifdef DEBUG_VERBOSE
   printf("read_bias: end\n");
 #endif
@@ -111,7 +103,7 @@ static void read_bias(int O_ITER, data_type *b_ptr, hls::stream<pixel_out_t> &b_
 //   k_ptr                : pointer to kernels
 //   k_out               :  output stream
 //
-static void read_kernel(int O_ITER, int I_ITER, data_type *k_ptr, hls::stream<frame_t> &k_out){
+static void read_kernel(int OO_ITER, int II_ITER, data_type *k_ptr, hls::stream<frame_t> &k_out){
 
 #ifdef DEBUG_VERBOSE
   printf("read_kernel: start\n");
@@ -123,7 +115,7 @@ static void read_kernel(int O_ITER, int I_ITER, data_type *k_ptr, hls::stream<fr
   int cpo = 0;
   int p = 0;
 
-  int size = KW * KH * O_ITER * CPO * I_ITER * CPI;
+  int size = KW * KH * OO_ITER * CPO * II_ITER * CPI;
   read_kernel_loop:
   for (int i=0; i<size; i++) {
     frame_k.pixel[p].pixel[cpo] = k_ptr[i];
@@ -146,49 +138,6 @@ static void read_kernel(int O_ITER, int I_ITER, data_type *k_ptr, hls::stream<fr
     }
   }
 
-
-  /*frame_t frame_k;
-  #pragma HLS ARRAY_PARTITION variable=frame_k dim=0
-  //Sending kernels to mul in pack of CPI*CPO kernels
-  int kernel_size_cpo = CPO*KH*KW; //kernels size each i_iter
-  int i_offset = I_ITER * CPI * CPO * KH * KW; //addr_k offset for each i_iter
-  int cpo = 0; //index for kernel size
-  int kx = 0; //index for channels
-
-  read_input_o_iter_loop:
-  for (int o_iter = 0; o_iter < O_ITER; o_iter++){
-    read_input_i_iter_loop:
-    for (int i_iter = 0; i_iter < I_ITER; i_iter++){
-
-      read_loop_kernel_load_ext:
-      for(int i = 0; i < CPI; i++){
-        // printf("i = %d -- kernel_size_cpo = %d \n", i, kernel_size_cpo);
-        read_loop_kernel_load_int:
-        for (int j = 0; j < kernel_size_cpo; j++) {
-          int addr_k = j + i*kernel_size_cpo*I_ITER + i_iter*i_offset + o_iter*kernel_size_cpo;
-          data_type v = k_ptr[addr_k];
-          frame_k.pixel[kx].pixel[cpo] = v;
-
-          #ifdef DEBUG_VERBOSE
-          printf("[%d]:", addr_k);
-          printf("%6.4f ", v);
-          #endif
-
-          kx = kx + 1;
-          if (kx == 9) {
-            // printf("\n");
-            kx = 0;
-            cpo = cpo + 1;
-            if (cpo == CPO) {
-              cpo = 0;
-              k_out << frame_k;
-            }
-          }
-        }
-      }
-    } //i_iter
-  } //o_iter*/
-
 #ifdef DEBUG_VERBOSE
   printf("read_kernel: end\n");
 #endif
@@ -201,17 +150,17 @@ static void read_kernel(int O_ITER, int I_ITER, data_type *k_ptr, hls::stream<fr
 //   ptr  : Pointer to input data (in)
 //   out  : data output stream (out)
 //
-static void read_data(int H, int W, int I_ITER, int O_ITER, pixel_in_t *ptr, hls::stream<pixel_in_t> &out) {
+static void read_data(int HH, int WW, int II_ITER, int OO_ITER, pixel_in_t *ptr, hls::stream<pixel_in_t> &out) {
 
 #ifdef DEBUG_VERBOSE
   printf("read_data: start\n");
 #endif
 
   read_input_o_iter_loop:
-  for (int o_iter = 0; o_iter < O_ITER; o_iter++){
+  for (int o_iter = 0; o_iter < OO_ITER; o_iter++){
     //Sending data to padding  in pack of CPI channels
     read_loop_data_load_i:
-      for (int r=0; r<H*W*I_ITER; r++) {
+      for (int r=0; r < HH * WW * II_ITER; r++) {
 	#pragma HLS PIPELINE II=1
 	pixel_in_t data;
 	data = ptr[r];
@@ -236,7 +185,7 @@ static void read_data(int H, int W, int I_ITER, int O_ITER, pixel_in_t *ptr, hls
 //   in                : input stream
 //   out               : vector of output streams
 //
-static void padding(int H, int W, int ITER, hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out) {
+static void padding(int HH, int WW, int ITER, hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out) {
 
 #ifdef DEBUG_VERBOSE
   printf("padding: start\n");
@@ -255,11 +204,11 @@ for (int cpi=0; cpi<CPI; cpi++) zero.pixel[cpi] = 0.f;
   padding_iter_loop:
   for(int iter = 0; iter < ITER; iter++){
 
-    for(int h = 0; h < H + 2; h++){
-      #pragma HLS_PIPELINE II=1
-      for(int w = 0; w < W + 2; w++){
-        #pragma HLS_PIPELINE II=1
-        if (h==0 || h == H+1 || w == 0 || w == W+1) {
+    for(int h = 0; h < HH + 2; h++){
+      #pragma HLS PIPELINE II=1
+      for(int w = 0; w < WW + 2; w++){
+        #pragma HLS PIPELINE II=1
+        if (h==0 || h == HH+1 || w == 0 || w == WW+1) {
           data = zero;
         }
         else {
@@ -287,19 +236,19 @@ for (int cpi=0; cpi<CPI; cpi++) zero.pixel[cpi] = 0.f;
 //   in: input stream
 //   out: output stream
 //
-static void relu(int H, int W, int O, hls::stream<data_type> &in, hls::stream<data_type> &out) {
+static void relu(/*int H, int W, int O,*/ hls::stream<data_type> &in, hls::stream<data_type> &out) {
 
 #ifdef DEBUG_VERBOSE
   printf("relu: start\n");
 #endif
 
-  int data_size = W * H * O;
+/*  int data_size = W * H * O;
   for (int i=0; i < data_size; i++) {
     #pragma HLS PIPELINE II=1
     data_type data = in.read();
     if (data < 0) data = 0.f;
     out << data;
-  }
+  }*/
 
 #ifdef DEBUG_VERBOSE
   printf("relu: end\n");
@@ -318,7 +267,7 @@ static void relu(int H, int W, int O, hls::stream<data_type> &in, hls::stream<da
 //   ptr: memory address pointer
 //   in: input stream
 //
-static void write_output(int H, int W, int O_ITER, pixel_out_t *ptr, hls::stream<pixel_out_t> &in) {
+static void write_output(int HH, int WW, int OO_ITER, pixel_out_t *ptr, hls::stream<pixel_out_t> &in) {
 
 #ifdef DEBUG_VERBOSE
   printf("write_output: start\n");
@@ -326,7 +275,7 @@ static void write_output(int H, int W, int O_ITER, pixel_out_t *ptr, hls::stream
 
 
     write_output_data_size_loop:
-    for (int i=0; i<H*W*O_ITER; i++) {
+    for (int i=0; i < HH * WW * OO_ITER; i++) {
       pixel_out_t p = in.read();
       ptr[i] = p;
       #ifdef DEBUG_VERBOSE
@@ -353,18 +302,7 @@ static void write_output(int H, int W, int O_ITER, pixel_out_t *ptr, hls::stream
 //   in  : input stream
 //   out : output stream
 //   id  : function id (for debugging)
-static void cvt(int H, int W, int I_ITER, int O_ITER, hls::stream<pixel_in_t> &in, hls::stream<frame_t> &out, int id) {
-
-#ifdef DEBUG_VERBOSE
-  printf("cvt_%d: start\n", id);
-#endif
-
-cvt_o_iter_loop:
-for (int o_iter = 0; o_iter < O_ITER; o_iter++){
-  cvt_i_iter_loop:
-  for(int i_iter = 0; i_iter < I_ITER; i_iter++){
-
-  // Now we process the input data and convert the data into frames
+static void cvt(int HH, int WW, int II_ITER, int OO_ITER, hls::stream<pixel_in_t> &in, hls::stream<frame_t> &out, int id) {
 
   // buffers (keep three rows)
   pixel_in_t buffer0[WMAX+2];
@@ -378,63 +316,91 @@ for (int o_iter = 0; o_iter < O_ITER; o_iter++){
   frame_t frame;
   DO_PRAGMA(HLS ARRAY_PARTITION variable=frame)
 
-  // We loop for every incoming pixel
-  cvt_loop_1:
-  for (int pin_row=0; pin_row < H+2; pin_row++) {
-    cvt_loop_2:
-    for (int pin_col=0; pin_col < W+2; pin_col++) {
+#ifdef DEBUG_VERBOSE
+  printf("cvt_%d: start\n", id);
+#endif
+
+  unsigned long iters = II_ITER * OO_ITER * (WW + 2) * (HH + 2);
+  int pin_row = 0;
+  int pin_col = 0;
+
+  unsigned long cnt = 0;
+  unsigned long cnt_send = ((WW + 2) * 2) + 2;
+
+cvt_o_iter_loop:
+  for (unsigned long iter = 0; iter < iters; iter++) { 
+   #pragma HLS PIPELINE II=1
+
+//  // We loop for every incoming pixel
+//  cvt_loop_1:
+//  for (int pin_row=0; pin_row < (HH + 2); pin_row++) {
+//    #pragma HLS PIPELINE II=1	  
+//    cvt_loop_2:
+//    for (int pin_col=0; pin_col < (WW + 2); pin_col++) {
+//      #pragma HLS PIPELINE II=1
       // get the pixel
       pixel_in_t pixel;
       pixel = in.read();
       // row buffer write (in which buffer row we write the pixel)
-      int row0_buffer_write = (pin_row % 3) == 0;
-      int row1_buffer_write = (pin_row % 3) == 1;
+//      int row0_buffer_write = (pin_row % 3) == 0;
+//      int row1_buffer_write = (pin_row % 3) == 1;
       // first row buffer
-      int row0 = (pin_row <= 2) | ((pin_row % 3) == 2);
-      int row1 = !row0 & ((pin_row % 3) == 0);
+//      int row0 = (pin_row <= 2) | ((pin_row % 3) == 2);
+//      int row1 = !row0 & ((pin_row % 3) == 0);
       // we write the pixel into the buffer
-      if (row0_buffer_write) buffer0[pin_col] = pixel; else if (row1_buffer_write) buffer1[pin_col] = pixel; else buffer2[pin_col] = pixel;
+//      if (row0_buffer_write) buffer0[pin_col] = pixel; else if (row1_buffer_write) buffer1[pin_col] = pixel; else buffer2[pin_col] = pixel;
       // build the frame
-      pixel_in_t p0, p1, p2, p3, p4, p5, p6, p7, p8;
-      int shift_frame = (pin_row>1) & (pin_col > 2);
-      int send_frame = (pin_row>1) & (pin_col > 1);
-      pixel_in_t pixel_b0, pixel_b1, pixel_b2;
-      pixel_b0 = buffer0[pin_col];
-      pixel_b1 = buffer1[pin_col];
-      pixel_b2 = buffer2[pin_col];
+//      pixel_in_t p0, p1, p2, p3, p4, p5, p6, p7, p8;
+//      int shift_frame = (pin_row>1) & (pin_col > 2);
+      int send_frame = (cnt > cnt_send); //(pin_row>1) && (pin_col > 1);
+//      pixel_in_t pixel_b0, pixel_b1, pixel_b2;
+//      pixel_b0 = buffer0[pin_col];
+//      pixel_b1 = buffer1[pin_col];
+//      pixel_b2 = buffer2[pin_col];
       // p0, p1, p2
-      if (shift_frame) {p0 = p1;} else if (pin_col==0) {if (row0) p0 = pixel_b0; else if (row1) p0 = pixel_b1; else p0 = pixel_b2;}
-      if (shift_frame) {p1 = p2;} else if (pin_col==1) {if (row0) p1 = pixel_b0; else if (row1) p1 = pixel_b1; else p1 = pixel_b2;}
-      if (row0) p2 = pixel_b0; else if (row1) p2 = pixel_b1; else p2 = pixel_b2;
+//      if (shift_frame) {p0 = p1;} else if (pin_col==0) {if (row0) p0 = pixel_b0; else if (row1) p0 = pixel_b1; else p0 = pixel_b2;}
+//      if (shift_frame) {p1 = p2;} else if (pin_col==1) {if (row0) p1 = pixel_b0; else if (row1) p1 = pixel_b1; else p1 = pixel_b2;}
+//      if (row0) p2 = pixel_b0; else if (row1) p2 = pixel_b1; else p2 = pixel_b2;
       // p3, p4, p5
-      if (shift_frame) {p3 = p4;} else if (pin_col==0) {if (row0) p3 = pixel_b1; else if (row1) p3 = pixel_b2; else p3 = pixel_b0;}
-      if (shift_frame) {p4 = p5;} else if (pin_col==1) {if (row0) p4 = pixel_b1; else if (row1) p4 = pixel_b2; else p4 = pixel_b0;}
-      if (row0) p5 = pixel_b1; else if (row1) p5 = pixel_b2; else p5 = pixel_b0;
+//      if (shift_frame) {p3 = p4;} else if (pin_col==0) {if (row0) p3 = pixel_b1; else if (row1) p3 = pixel_b2; else p3 = pixel_b0;}
+//      if (shift_frame) {p4 = p5;} else if (pin_col==1) {if (row0) p4 = pixel_b1; else if (row1) p4 = pixel_b2; else p4 = pixel_b0;}
+//      if (row0) p5 = pixel_b1; else if (row1) p5 = pixel_b2; else p5 = pixel_b0;
       // p6, p7, p8
-      if (shift_frame) {p6 = p7;} else if (pin_col==0) {if (row0) p6 = pixel_b2; else if (row1) p6 = pixel_b0; else p6 = pixel_b1;}
-      if (shift_frame) {p7 = p8;} else if (pin_col==1) {if (row0) p7 = pixel_b2; else if (row1) p7 = pixel_b0; else p7 = pixel_b1;}
-      if (row0) p8 = pixel_b2; else if (row1) p8 = pixel_b0; else p8 = pixel_b1;
+//      if (shift_frame) {p6 = p7;} else if (pin_col==0) {if (row0) p6 = pixel_b2; else if (row1) p6 = pixel_b0; else p6 = pixel_b1;}
+//      if (shift_frame) {p7 = p8;} else if (pin_col==1) {if (row0) p7 = pixel_b2; else if (row1) p7 = pixel_b0; else p7 = pixel_b1;}
+//      if (row0) p8 = pixel_b2; else if (row1) p8 = pixel_b0; else p8 = pixel_b1;
 
       if (send_frame) {
-        frame.pixel[0] = p0; frame.pixel[1] = p1; frame.pixel[2] = p2;
-        frame.pixel[3] = p3; frame.pixel[4] = p4; frame.pixel[5] = p5;
-        frame.pixel[6] = p6; frame.pixel[7] = p7; frame.pixel[8] = p8;
+//        frame.pixel[0] = p0; frame.pixel[1] = p1; frame.pixel[2] = p2;
+//        frame.pixel[3] = p3; frame.pixel[4] = p4; frame.pixel[5] = p5;
+//        frame.pixel[6] = p6; frame.pixel[7] = p7; frame.pixel[8] = p8;
         out << frame;
-      #ifdef DEBUG_VERBOSE
-      printf("cvt_%d: frame sent:\n", id);
-      for (int cpi=0; cpi<CPI; cpi++) {
-        printf("  cpi %d:\n", cpi);
-        printf("    %6.4f %6.4f %6.4f\n", float(frame.pixel[0].pixel[cpi]), float(frame.pixel[1].pixel[cpi]), float(frame.pixel[2].pixel[cpi]));
-        printf("    %6.4f %6.4f %6.4f\n", float(frame.pixel[3].pixel[cpi]), float(frame.pixel[4].pixel[cpi]), float(frame.pixel[5].pixel[cpi]));
-        printf("    %6.4f %6.4f %6.4f\n", float(frame.pixel[6].pixel[cpi]), float(frame.pixel[7].pixel[cpi]), float(frame.pixel[8].pixel[cpi]));
+        #ifdef DEBUG_VERBOSE
+        printf("cvt_%d: frame sent:\n", id);
+        for (int cpi=0; cpi<CPI; cpi++) {
+          printf("  cpi %d:\n", cpi);
+          printf("    %6.4f %6.4f %6.4f\n", float(frame.pixel[0].pixel[cpi]), float(frame.pixel[1].pixel[cpi]), float(frame.pixel[2].pixel[cpi]));
+          printf("    %6.4f %6.4f %6.4f\n", float(frame.pixel[3].pixel[cpi]), float(frame.pixel[4].pixel[cpi]), float(frame.pixel[5].pixel[cpi]));
+          printf("    %6.4f %6.4f %6.4f\n", float(frame.pixel[6].pixel[cpi]), float(frame.pixel[7].pixel[cpi]), float(frame.pixel[8].pixel[cpi]));
+        }
+        #endif
       }
-      #endif
-     }
-    }
-  }
 
-} //i_iter
-} //o_iter
+      pin_col = pin_col + 1;
+      cnt = cnt + 1;
+      if (pin_col == (WW + 2)) {
+	pin_col = 0;
+	pin_row = pin_row + 1;
+	if (pin_row == (HH + 2)) {
+	  pin_row = 0;
+	  cnt = 0;
+        }
+      }
+//     }
+//    }
+
+//} //i_iter
+} //iter
 
 
 #ifdef DEBUG_VERBOSE
@@ -451,7 +417,7 @@ for (int o_iter = 0; o_iter < O_ITER; o_iter++){
 //   out: output stream
 //   id: function id (for debugging only)
 //
-static void mul(int H, int W, int I_ITER, int O_ITER, hls::stream<frame_t> &in, hls::stream<frame_t> &k_in, hls::stream<pixel_out_t> &out, int id) {
+static void mul(int HH, int WW, int II_ITER, int OO_ITER, hls::stream<frame_t> &in, hls::stream<frame_t> &k_in, hls::stream<pixel_out_t> &out, int id) {
 
 #ifdef DEBUG_VERBOSE
   printf("mul_%d: start\n", id);
@@ -472,7 +438,7 @@ static void mul(int H, int W, int I_ITER, int O_ITER, hls::stream<frame_t> &in, 
       loop_mul_kernels_load_cpo:
       for (int cpo=0; cpo<CPO; cpo++) {
         #pragma HLS PIPELINE II=1
-        kernel[cpo] = k_in.read();
+       kernel[cpo] = k_in.read();
       }
 
 #ifdef DEBUG_VERBOSE
@@ -567,7 +533,7 @@ static void mul(int H, int W, int I_ITER, int O_ITER, hls::stream<frame_t> &in, 
 //   b_in: input stream bias
 //   out: output stream
 //
-static void add(int H, int W, int I_ITER, int O_ITER, hls::stream<pixel_out_t> &in, hls::stream<pixel_out_t> &b_in, hls::stream<pixel_out_t> &out) {
+static void add(int HH, int WW, int II_ITER, int OO_ITER, hls::stream<pixel_out_t> &in, hls::stream<pixel_out_t> &b_in, hls::stream<pixel_out_t> &out) {
 
 #ifdef DEBUG_VERBOSE
   printf("add: start\n");
@@ -576,7 +542,7 @@ static void add(int H, int W, int I_ITER, int O_ITER, hls::stream<pixel_out_t> &
   data_type bias[CPO];
 
   //number of iterations by CPI || CPO channels
-  int num_iterations = W * H;
+  int num_iterations =  W * H;
 
   //Buffer for all data and CPO channels
   data_type buff_o_channels[CPO][WHMAX];
@@ -586,14 +552,6 @@ static void add(int H, int W, int I_ITER, int O_ITER, hls::stream<pixel_out_t> &
   add_o_iter_loop:
   for (int o_iter = 0; o_iter<O_ITER; o_iter++){
 
-    //We receive bias in packs of CPO
-    // add_load_bias_loop:
-    // for (int b=0; b<CPO; b++) {
-    //   #pragma HLS PIPELINE II=1
-    //   pixel_out_t p_out;
-    //   p_out = b_in.read();
-    //   bias[b] = p_out.pixel[0];
-    // }
     //We receive bias in packs of CPO
     pixel_out_t p_out;
     p_out = b_in.read();
@@ -613,14 +571,6 @@ static void add(int H, int W, int I_ITER, int O_ITER, hls::stream<pixel_out_t> &
     #ifdef DEBUG_VERBOSE
     printf("add: bias received\n");
     #endif
-
-    //It is necessary to reset the buffer each o_iter
-    // add_init_buff_o_channels_loop:
-    // for(int cpo = 0; cpo<CPO; cpo++){
-    //   for(int it = 0; it<num_iterations; it++){
-    //     buff_o_channels[cpo][it] = bias[cpo];
-    //   }
-    // }
 
       #ifdef DEBUG_VERBOSE
       printf("o_iter = %d \n", o_iter);
@@ -658,11 +608,11 @@ static void add(int H, int W, int I_ITER, int O_ITER, hls::stream<pixel_out_t> &
             }
             buff_o_channels[cpo][it] = data.pixel[cpo] + data_in.pixel[cpo];
 
-            if(i_iter ==(I_ITER-1)){
+            if(i_iter == (I_ITER-1)){
               data_out.pixel[cpo] = buff_o_channels[cpo][it];
             }
           }
-          if(i_iter ==(I_ITER-1)){
+          if(i_iter == (I_ITER-1)){
             out << data_out;
           }
         }
@@ -694,28 +644,28 @@ static void add(int H, int W, int I_ITER, int O_ITER, hls::stream<pixel_out_t> &
 // Arguments:
 //   in: input stream
 //   out: output stream
-static void conv(int H, int W, int I, int O, int I_ITER, int O_ITER, hls::stream<pixel_in_t> &in, hls::stream<frame_t> &k_in, hls::stream<pixel_out_t> &b_in, hls::stream<pixel_out_t> &out) {
+static void conv(int HH, int WW, int II, int OO, int II_ITER, int OO_ITER, hls::stream<pixel_in_t> &in, hls::stream<frame_t> &k_in, hls::stream<pixel_out_t> &b_in, hls::stream<pixel_out_t> &out) {
 
   // streams
   static hls::stream<pixel_in_t>  str_pad_cvt;  // padding->cvt
   static hls::stream<frame_t>     str_cvt_mul;  // cvt->mul
   static hls::stream<pixel_out_t> str_mul_add;  // mul->add
 
-  int ITER = O_ITER*I_ITER;
+  int ITER = OO_ITER*II_ITER;
   // topology
   #pragma HLS dataflow
-  padding(H, W, ITER, in, str_pad_cvt);          // padding
-  cvt(H, W, I_ITER, O_ITER, str_pad_cvt, str_cvt_mul, 0);  // cvt
-  mul(H, W, I_ITER, O_ITER, str_cvt_mul, k_in, str_mul_add, 0);  // mul
-  add(H, W, I_ITER, O_ITER, str_mul_add, b_in, out);             // add
+  padding(HH, WW, ITER, in, str_pad_cvt);          // padding
+  cvt(HH, WW, II_ITER, OO_ITER, str_pad_cvt, str_cvt_mul, 0);  // cvt
+  mul(HH, WW, II_ITER, OO_ITER, str_cvt_mul, k_in, str_mul_add, 0);  // mul
+  add(HH, WW, II_ITER, OO_ITER, str_mul_add, b_in, out);             // add
 }
 
-void k_conv2D_K3x3_S1x1_P1x1_BS1_ap(pixel_in_t *ptr_data, int H, int W, int I, data_type *ptr_kernel, data_type *ptr_bias, pixel_out_t *ptr_out, int O) {
+void k_conv2D_K3x3_S1x1_P1x1_BS1_ap(pixel_in_t *ptr_data, int HH, int WW, int II, data_type *ptr_kernel, data_type *ptr_bias, pixel_out_t *ptr_out, int OO) {
 
-  #pragma HLS INTERFACE s_axilite port=W bundle=control
-  #pragma HLS INTERFACE s_axilite port=H bundle=control
-  #pragma HLS INTERFACE s_axilite port=I bundle=control
-  #pragma HLS INTERFACE s_axilite port=O bundle=control
+  #pragma HLS INTERFACE s_axilite port=WW bundle=control
+  #pragma HLS INTERFACE s_axilite port=HH bundle=control
+  #pragma HLS INTERFACE s_axilite port=II bundle=control
+  #pragma HLS INTERFACE s_axilite port=OO bundle=control
   #pragma HLS INTERFACE m_axi port=ptr_data offset=slave bundle=gmem  max_read_burst_length=256 max_write_burst_length=256
   #pragma HLS INTERFACE m_axi port=ptr_kernel offset=slave bundle=gmem1 max_read_burst_length=256 max_write_burst_length=256
   #pragma HLS INTERFACE m_axi port=ptr_bias offset=slave bundle=gmem2   max_read_burst_length=256 max_write_burst_length=256
@@ -727,8 +677,8 @@ void k_conv2D_K3x3_S1x1_P1x1_BS1_ap(pixel_in_t *ptr_data, int H, int W, int I, d
   #pragma HLS data_pack variable = ptr_data
   #pragma HLS data_pack variable = ptr_out
 
-  int I_ITER = I/CPI;
-  int O_ITER = O/CPO;
+  int II_ITER = II / CPI; //II/CPI;
+  int OO_ITER = OO / CPO; //OO/CPO;
 
   // input and output streams
   static hls::stream<pixel_in_t> out_read_data;
@@ -737,18 +687,18 @@ void k_conv2D_K3x3_S1x1_P1x1_BS1_ap(pixel_in_t *ptr_data, int H, int W, int I, d
   static hls::stream<pixel_out_t> out_conv;
 
   // stream sizes
-  #pragma HLS STREAM variable = out_read_data depth = 32
-  #pragma HLS STREAM variable = out_read_kernel depth = 32
-  #pragma HLS STREAM variable = out_read_bias depth = 32
-  #pragma HLS STREAM variable = out_conv depth = 32
+  #pragma HLS STREAM variable = out_read_data depth = 10240
+  #pragma HLS STREAM variable = out_read_kernel depth = 1024
+  #pragma HLS STREAM variable = out_read_bias depth = 1024
+  #pragma HLS STREAM variable = out_conv depth = 1024
   // #pragma HLS STREAM variable = out_relu depth = 32
 
   #pragma HLS dataflow
-  read_data(H, W, I_ITER, O_ITER, ptr_data, out_read_data);
-  read_bias(O_ITER, ptr_bias, out_read_bias);
-  read_kernel(O_ITER, I_ITER, ptr_kernel, out_read_kernel);
-  conv(H, W, I, O, I_ITER, O_ITER, out_read_data, out_read_kernel, out_read_bias, out_conv);
-  write_output(H, W, O_ITER, ptr_out, out_conv);
+  read_data(HH, WW, II_ITER, OO_ITER, ptr_data, out_read_data);
+  read_bias(OO_ITER, ptr_bias, out_read_bias);
+  read_kernel(OO_ITER, II_ITER, ptr_kernel, out_read_kernel);
+  conv(HH, WW, II, OO, II_ITER, OO_ITER, out_read_data, out_read_kernel, out_read_bias, out_conv);
+  write_output(HH, WW, OO_ITER, ptr_out, out_conv);
 }
 
 } // end extern "C"
