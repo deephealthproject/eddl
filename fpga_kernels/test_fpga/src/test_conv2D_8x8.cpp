@@ -1,10 +1,25 @@
+// --------------------------------------------------------------------------------------------------------------
+// FPGA kernels for EDDL Library - European Distributed Deep Learning Library.
+// Version: 0.6
+// copyright (c) 2020, Universidad Politécnica de Valencia (UPV), GAP research group
+// Date: November 2020
+// Authors: GAP Research Group (UPV)
+//     José Flich Cardo
+//     Jorge García Martínez
+//     Izan Catalán Gallarch
+//     Carles Hernández Luz
 //
-// test_conv2D.
+// contact: jflich@disca.upv.es
+// All rights reserved
+
+
+//
+// test_conv2D_8x8. Test for the conv2D_8x8 kernel
 //
 // Constants:
 //
-//  - CPI
-//  - CPO
+//  - CPI = 8
+//  - CPO = 8
 //  - KW = 3
 //  - KH = 3
 //  - PW = 1
@@ -21,11 +36,14 @@
 //
 //  Data formats:
 //
-//  - kernel   : O x I x KH x KW
+//  - kernel   : GO x GI x CPO x CPI x KH x KW
 //  - bias     : O
 //  - data_in  : I x H x W
 //  - data_out : O x H x W
 //
+//  GO = ceil(O / CPO), GI = ceil(I / CPI)
+//
+// The kernel must have at least 8 I channels and 8 O channels, filled with zeroes if needed
 
 #include <cstdio>      /* printf, scanf, NULL */
 #include <cstdlib>     /* malloc, free, rand */
@@ -72,24 +90,6 @@ int O_kernel;    // and 8 output channels
 int GI;
 int GO;
 
-int enable_read0;
-int enable_read1;
-int enable_read2;
-int enable_read3;
-int enable_read4;
-int enable_read5;
-int enable_read6;
-int enable_read7;
-
-int enable_write0;
-int enable_write1;
-int enable_write2;
-int enable_write3;
-int enable_write4;
-int enable_write5;
-int enable_write6;
-int enable_write7;
-
 // buffers
 data_type *data_in; //[  I * W * H        ]  __attribute__ ((__aligned__(16)));
 data_type *kernel;  //[  O * I * KW * KH  ]  __attribute__ ((__aligned__(16)));
@@ -117,35 +117,15 @@ void parse_arguments(int argc, char **argv) {
   I = atoi(argv[4]);
   O = atoi(argv[5]);
   if (I < CPI) {
-    enable_read0 = (I >= 1);
-    enable_read1 = (I >= 2);
-    enable_read2 = (I >= 3);
-    enable_read3 = (I >= 4);
-    enable_read4 = (I >= 5);
-    enable_read5 = (I >= 6);
-    enable_read6 = (I >= 7);
-    enable_read7 = (I >= 8);
     I_kernel = CPI;
   } else {
-    enable_read0 = 1; enable_read1 = 1; enable_read2 = 1; enable_read3 = 1;
-    enable_read4 = 1; enable_read5 = 1; enable_read6 = 1; enable_read7 = 1;
     I_kernel = I;
     if ((I % CPI) != 0) {printf("Error, I must me multiple of %d or lower than %d\n", CPI, CPI); exit(1);}
   }
 
   if (O < CPO) {
-    enable_write0 = (O >= 1);
-    enable_write1 = (O >= 2);
-    enable_write2 = (O >= 3);
-    enable_write3 = (O >= 4);
-    enable_write4 = (O >= 5);
-    enable_write5 = (O >= 6);
-    enable_write6 = (O >= 7);
-    enable_write7 = (O >= 8);
     O_kernel = CPO;
   } else {
-    enable_write0 = 1; enable_write1 = 1; enable_write2 = 1; enable_write3 = 1;
-    enable_write4 = 1; enable_write5 = 1; enable_write6 = 1; enable_write7 = 1;
     O_kernel = O;
     if ((O % CPO) != 0) {printf("Error, O must be multiple of %d or lower than %d\n", CPO, CPO); exit(1);}
   }
@@ -561,11 +541,11 @@ int main(int argc, char **argv) {
 
   std::cout << "computing conv in CPU..." << std::endl;
 
-//  cpu_print_data_in();
-//  cpu_print_kernels();
-//  cpu_print_bias();
+  //cpu_print_data_in();
+  //cpu_print_kernels();
+  //cpu_print_bias();
   cpu_conv2d();
-  cpu_print_out();
+  //cpu_print_out();
 
   check_result();
 

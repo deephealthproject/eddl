@@ -85,7 +85,7 @@
 #include <hls_stream.h>
 
 // Enable this define to get information (sw_emu)
-#define DEBUG_VERBOSE
+//#define DEBUG_VERBOSE
 
 extern "C" {
 
@@ -946,7 +946,7 @@ void k_conv2D_8x8
     int offset_write_data_channel_7 = (channel_offset * 7) + ((o_iter << 3) * channel_offset);
 
     int offset_bias = o_iter << 3;
-    int offset_kernel = (o_iter << 3) * I * 9 * CPO;
+    int offset_kernel = o_iter * (I < 8 ? 8 : I) * 9 * CPO;
 
     read_data_channel(H, W, I_ITER, ptr_data0, offset_read_data_channel_0, out_read_channel_0, enable_read0, 0);
     read_data_channel(H, W, I_ITER, ptr_data1, offset_read_data_channel_1, out_read_channel_1, enable_read1, 1);
