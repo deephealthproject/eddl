@@ -188,23 +188,23 @@ static void read_kernel(int I_ITER, int offset_kernel, data_type *k_ptr, hls::st
   // we read all the kernels and send them through the stream
   frame_t frame_k;
   #pragma HLS ARRAY_PARTITION variable=frame_k dim=0
-  int cpo = 0;
+  int cpi = 0;
   int p = 0;
 
   int size = KW * KH * CPO * I_ITER * CPI;
   read_kernel_loop:
   for (int i=0; i<size; i++) {
-    frame_k.pixel[p].pixel[cpo] = k_ptr[i+ offset_kernel];
+    frame_k.pixel[p].pixel[cpi] = k_ptr[i+ offset_kernel];
     p = p + 1;
     if (p == 9) {
       p = 0;
-      cpo = cpo+1;
-      if (cpo == CPO) {
-        cpo = 0;
+      cpi = cpi+1;
+      if (cpi == CPI) {
+        cpi = 0;
 	      k_out << frame_k;
         #ifdef DEBUG_VERBOSE
 	      printf("kernel read:\n");
-	      for (int c=0; c<CPO; c++) {
+	      for (int c=0; c<CPI; c++) {
           printf("channel %d: ", c);
 	        for (int p=0; p<9; p++) printf(" %f ", float(frame_k.pixel[p].pixel[c]));
 	        printf("\n");
@@ -428,7 +428,41 @@ static void write_data_channel(int H, int W, block_t *ptr, int offset, hls::stre
   printf("write_data_channel_%d ends\n", id);
   #endif
 }
+// -------------------------------------------------------------------------------
+// relu: module of ReLu function
+//
+// Arguments:
+//   enable_relu: : Flag to enable ReLu function
+//   H            : Height of the input channel
+//   W            : Width of the input channel
+//   in           : input data stream
+//   out          : output data stream
+//
+// This module builds ReLu function by instantiatig streams and
+// building the dataflow model with the corresponding modules
+//
+static void relu(int enable_relu, int H, int W, hls::stream<pixel_out_t> &in, hls::stream<pixel_out_t> &out) {
 
+#ifdef DEBUG_VERBOSE
+  printf("relu: start\n");
+#endif
+
+  pixel_out_t data;
+  int data_size = W * H;
+  for (int i=0; i < data_size; i++) {
+    #pragma HLS PIPELINE II=1
+    data  = in.read();
+    for(int cpo = 0; cpo<CPO; cpo++){
+      #pragma HLS UNROLL
+      if(enable_relu & (data.pixel[cpo] < 0)) data.pixel[cpo] = data_type(0.f);
+    }
+      out << data;
+    }
+
+#ifdef DEBUG_VERBOSE
+  printf("relu: end\n");
+#endif
+}
 // ---------------------------------------------------------------------------------------
 // padding. Adds padding to the input and forwards it through the output
 //
@@ -817,11 +851,11 @@ static void conv(int H, int W, int I_ITER, hls::stream<pixel_in_t> &in, hls::str
 //
 void k_conv2D_8x8
                                 (
-		                             block_t *ptr_data0, block_t *ptr_data1, block_t *ptr_data2, block_t *ptr_data3, 
+		                             block_t *ptr_data0, block_t *ptr_data1, block_t *ptr_data2, block_t *ptr_data3,
                                  block_t *ptr_data4, block_t *ptr_data5, block_t *ptr_data6, block_t *ptr_data7,
-                                 int H, int W, int I, int O, int I_ITER, int O_ITER,
-                                 data_type *ptr_kernel, data_type *ptr_bias, 
-                                 block_t *ptr_out0, block_t *ptr_out1, block_t *ptr_out2, block_t *ptr_out3, 
+                                 int H, int W, int I, int O, int I_ITER, int O_ITER, int enable_relu,
+                                 data_type *ptr_kernel, data_type *ptr_bias,
+                                 block_t *ptr_out0, block_t *ptr_out1, block_t *ptr_out2, block_t *ptr_out3,
                                  block_t *ptr_out4, block_t *ptr_out5, block_t *ptr_out6, block_t *ptr_out7
 				) {
 
@@ -831,6 +865,7 @@ void k_conv2D_8x8
   #pragma HLS INTERFACE s_axilite port=O bundle=control
   #pragma HLS INTERFACE s_axilite port=I_ITER bundle=control
   #pragma HLS INTERFACE s_axilite port=O_ITER bundle=control
+  #pragma HLS INTERFACE s_axilite port=enable_relu bundle=control
   #pragma HLS INTERFACE m_axi port=ptr_data0 offset=slave bundle=gmem   max_read_burst_length=256 max_write_burst_length=256
   #pragma HLS INTERFACE m_axi port=ptr_data1 offset=slave bundle=gmem1  max_read_burst_length=256 max_write_burst_length=256
   #pragma HLS INTERFACE m_axi port=ptr_data2 offset=slave bundle=gmem2  max_read_burst_length=256 max_write_burst_length=256
@@ -905,6 +940,8 @@ void k_conv2D_8x8
     static hls::stream<frame_t> out_read_kernel;
     static hls::stream<pixel_out_t> out_read_bias;
     static hls::stream<pixel_out_t> out_conv;
+    //ReLu stream
+    static hls::stream<pixel_out_t> out_relu;
 
     static hls::stream<block_t> out_read_channel_0;
     static hls::stream<block_t> out_read_channel_1;
@@ -960,7 +997,8 @@ void k_conv2D_8x8
     read_bias(offset_bias, ptr_bias, out_read_bias);
     read_kernel(I_ITER, offset_kernel, ptr_kernel, out_read_kernel);
     conv(H, W, I_ITER, out_read_data, out_read_kernel, out_read_bias, out_conv);
-    split(H, W, out_conv, out_write_channel_0, out_write_channel_1, out_write_channel_2, out_write_channel_3, out_write_channel_4, out_write_channel_5, out_write_channel_6, out_write_channel_7);
+    relu(enable_relu, H, W, out_conv, out_relu);
+    split(H, W, out_relu, out_write_channel_0, out_write_channel_1, out_write_channel_2, out_write_channel_3, out_write_channel_4, out_write_channel_5, out_write_channel_6, out_write_channel_7);
     write_data_channel(H, W, ptr_out0, offset_write_data_channel_0, out_write_channel_0, enable_write0, 0);
     write_data_channel(H, W, ptr_out1, offset_write_data_channel_1, out_write_channel_1, enable_write1, 1);
     write_data_channel(H, W, ptr_out2, offset_write_data_channel_2, out_write_channel_2, enable_write2, 2);

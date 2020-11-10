@@ -81,6 +81,8 @@ std::string binaryFile;
 #define KW 3
 #define KH 3
 
+#define RELU 0  // Flag for ReLu activation. Active at high level
+
 int W;
 int H;
 int I;
@@ -188,6 +190,18 @@ void cpu_conv2d() {
         int addr_o = (cout * W * H) + (h * W) + w;
 	      // bias operation
         out_cpu[addr_o] += bias[cout];
+      }
+    }
+  }
+
+  //añadimos relu
+  if(RELU){
+    for (int cout=0; cout<O; cout++) {
+      for (int h=0; h<H; h++) {
+        for (int w=0; w<W; w++) {
+          int addr_o = (h * W * O) + (w * O) + cout;
+          if (out_cpu[addr_o] < 0.f) out_cpu[addr_o] = 0.f;
+        }
       }
     }
   }
@@ -477,6 +491,7 @@ int main(int argc, char **argv) {
 
   int O_ITER = (O + (CPO-1)) / CPO;
   int I_ITER = (I + (CPI-1)) / CPI;
+  int enable_relu = RELU;
 
   // set kernel arguments
   int arg = 0;
@@ -494,6 +509,7 @@ int main(int argc, char **argv) {
   OCL_CHECK(err, err = kernel_conv2d.setArg(arg++, O));
   OCL_CHECK(err, err = kernel_conv2d.setArg(arg++, I_ITER));
   OCL_CHECK(err, err = kernel_conv2d.setArg(arg++, O_ITER));
+  OCL_CHECK(err, err = kernel_conv2d.setArg(arg++, enable_relu));
   OCL_CHECK(err, err = kernel_conv2d.setArg(arg++, buffer_k));
   OCL_CHECK(err, err = kernel_conv2d.setArg(arg++, buffer_bias));
   OCL_CHECK(err, err = kernel_conv2d.setArg(arg++, buffer_b));
