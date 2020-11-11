@@ -747,6 +747,8 @@ using namespace std;
 								for(int h = 0; h < attribute.ints_size(); h++){
 									pads.push_back(attribute.ints(h));
 								}
+                                if(attribute.ints_size() == 4)
+                                    swap(pads[1], pads[2]);
 							}
 							else if (!attr_name.compare("strides")) { //
 								for(int h = 0; h < attribute.ints_size(); h++){
