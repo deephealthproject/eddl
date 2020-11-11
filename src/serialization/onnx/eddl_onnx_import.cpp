@@ -76,7 +76,10 @@ using namespace std;
 		MAX,				// implemented
 		MIN,                // implemented
 		SUB,                // implemented
-		LSTM                // not implemented yet
+		LSTM,               // implemented
+		IDENTITY            // implemented
+
+
 		
 
 
@@ -195,6 +198,8 @@ using namespace std;
 		map_layers["Max"] = ONNX_LAYERS::MAX;
 		map_layers["Min"] = ONNX_LAYERS::MIN;
 		map_layers["LSTM"] = ONNX_LAYERS::LSTM;
+		map_layers["Identity"] = ONNX_LAYERS::IDENTITY;
+		
 
 		return map_layers;
 	}
@@ -1441,6 +1446,7 @@ using namespace std;
 						int ceil_mode = 0;
 						vector<int> dilations;
 						int storage_order = 0;
+                        bool pool1d = false;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
@@ -1459,10 +1465,12 @@ using namespace std;
 								for( int h = 0; h<attribute.ints_size(); h++){
 									kernel_shape.push_back(attribute.ints(h));
 								}
+                                if (attribute.ints_size() == 1)
+                                    pool1d = true;
 							}
 							else if (!attr_name.compare("pads")) {
                                 explicit_padding = true;
-                                for(int h = 0; h < 4; h++){
+                                for(int h = 0; h < attribute.ints_size(); h++){
                                     pads[h] = attribute.ints(h);
                                 }
 							}
@@ -1473,6 +1481,8 @@ using namespace std;
 								for(int h = 0; h < attribute.ints_size(); h++){
 									strides.push_back(attribute.ints(h));
 								}
+                                if (attribute.ints_size() == 1)
+                                    pool1d = true;
 							}
 						}
 
@@ -1482,7 +1492,16 @@ using namespace std;
 
 						string name = node->name();
 
-						actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+                        if (parent_shape.size() == 3)
+                            pool1d = true;
+
+                        if (pool1d) {
+                            strides.push_back(1);
+                            kernel_shape.push_back(1);
+						    actual_layer = new LMaxPool1D(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+                        } else {
+						    actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+                        }
 					}
 						break;
 				case ONNX_LAYERS::GLOBMAXPOOL:
@@ -1693,8 +1712,17 @@ using namespace std;
 					}
 					break;
 
+				case ONNX_LAYERS::IDENTITY:
+					{
+						log_string("Identity layer detected" , log_level, LOG_LEVEL::DEBUG);
+						string parent_name;
+						parent_name = node->input(0);
+						actual_layer = output_node_map[parent_name];
+					}
+					break;
+
 				default:
-					log_string("FATAL: LAYER NOT RECOGNIZED WITH TYPE " + layer_type_name , log_level, LOG_LEVEL::DEBUG);
+					log_string("FATAL: LAYER NOT RECOGNIZED WITH TYPE " + layer_type_name , log_level, LOG_LEVEL::ERROR);
 					//cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type_name <<  endl;
 					nodeQueue.pop();
 					continue;

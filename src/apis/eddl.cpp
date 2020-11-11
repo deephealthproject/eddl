@@ -998,18 +998,9 @@ namespace eddl {
         return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
     layer MaxPool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
-
-        vector<int> shape=parent->output->getShape();
-        shape.push_back(1);
-        LReshape *l=new LReshape(parent, shape, "", DEV_CPU, 0);
-
         pool_size.push_back(1);
         strides.push_back(1);
-        LMaxPool *lp=new LMaxPool(l, pool_size, strides, padding, name, DEV_CPU, 0);
-
-        vector<int> shape2=lp->output->getShape();
-        shape2.pop_back();
-        return new LReshape(lp,shape2, "", DEV_CPU, 0);
+        return new LMaxPool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
 
     layer GlobalMaxPool(layer parent, string name){
