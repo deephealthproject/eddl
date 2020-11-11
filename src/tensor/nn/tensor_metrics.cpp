@@ -36,7 +36,7 @@ namespace tensorNN {
 
         int acc = 0;
 
-        B->tsem->lock();
+
 
         if (A->isCPU()) {
             acc = cpu_accuracy(A, B);
@@ -51,7 +51,7 @@ namespace tensorNN {
             acc = fpga_accuracy(A, B);
         }
 #endif
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(accuracy);
 
@@ -71,7 +71,7 @@ namespace tensorNN {
 
         int acc = 0;
 
-        B->tsem->lock();
+
 
         if (A->isCPU()) {
             acc = cpu_bin_accuracy(A, B);
@@ -86,7 +86,7 @@ namespace tensorNN {
             acc = fpga_bin_accuracy(A, B);
         }
 #endif
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(bin_accuracy);
         

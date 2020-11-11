@@ -92,7 +92,6 @@ public:
 
     // Aux variables
     int gpu_device;
-    mutex *tsem = nullptr;  // Multithreading. Tensor semaphore
 
 #ifdef cFPGA
     // fpga-related information

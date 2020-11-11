@@ -230,14 +230,14 @@ void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
 
 
 void cpu_inc(Tensor *A, Tensor *B) {
-    B->tsem->lock();
+
 
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++){
         B->ptr[i] += A->ptr[i];
     }
 
-    B->tsem->unlock();
+
 }
 
 void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
