@@ -204,6 +204,17 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
     Enabled by default
 
+- **Use HPC:** To enable/disabled HPC flags, use the setting ``BUILD_HPC``, such as:
+
+.. code:: bash
+
+    -DBUILD_HPC=ON
+
+.. note::
+
+    Enabled by default.
+    This enables flags such as: ``-march=native -mtune=native -Ofast -msse -mfpmath=sse -ffast-math -ftree-vectorize``,
+    that might cause some units tests to fail due to numerical errors (minor deviations from the value asserted)
 
 - **Use protobuf:** Protobuf allows you to use the ONNX import/export functions, to use them, use the setting ``BUILD_PROTOBUF``, such as:
 
@@ -224,7 +235,8 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
 .. note::
 
-    Enabled by default
+    Enabled by default.
+    The flag ``BUILD_HCP`` needs to be disabled. If not, some tests might not pass due to numerical errors.
 
 
 - **Use local gtest:** Uses the local copy of the gtest repository as fail-safe. Ignored if using superbuild.
