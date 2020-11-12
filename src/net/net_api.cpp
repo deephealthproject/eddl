@@ -699,21 +699,6 @@ vector<float> Net::get_metrics(){
                 metrics_values.push_back( tmp_total_metrics[k] / (float)(length*inferenced_samples));
             }
 
-            // No idea what this is *****************************
-//            if ((flog_tr!=nullptr)&&(trmode)) {
-//                if (metrics.size()>=(k+1)) {
-//                    if (metrics[k]->name!="none")
-//                        metrics_values.push_back(tmp_total_metrics[k] / inferenced_samples);
-//                }
-//
-//            }
-//
-//            if ((flog_ts!=nullptr)&&(!trmode)) {
-//                if (metrics.size()>=(k+1)) {
-//                    if (metrics[k]->name!="none")
-//                        metrics_values.push_back( tmp_total_metrics[k] / inferenced_samples);
-//                }
-//            }
         }
     }
 
