@@ -732,16 +732,8 @@ namespace eddl {
     */
     layer Activation(layer parent, string activation, vector<float> params={}, string name="");
 
-    /**
-      *  @brief Applies a Softmax activation function to the given layer.
-      *
-      *  @see   https://en.wikipedia.org/wiki/Softmax_function
-      *
-      *  @param parent  Parent layer
-      *  @param name  Name of the layer
-      *  @return     Output of Softmax transformation
-    */
-    layer Softmax(layer parent, string name="");
+
+    layer SoftmaxDeprecated(layer parent, string name="");
 
     /**
       *  @brief Applies a Jacobian Softmax activation function to the given layer.
@@ -752,7 +744,7 @@ namespace eddl {
       *  @param name  Name of the layer
       *  @return     Output of Softmax transformation
     */
-    layer FullSoftmax(layer parent, string name="");
+    layer Softmax(layer parent, string name= "");
 
     /**
       *  @brief Applies a Sigmoid activation function to the given layer.

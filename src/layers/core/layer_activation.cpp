@@ -67,10 +67,10 @@ void LActivation::forward(){
     }else if (act == "softsign"){
         tensorNN::Softsign(this->input, this->output);
 
-    }else if (act == "softmax"){  // TODO: Deprecated
+    }else if (act == "softmax_deprecated"){  // TODO: Deprecated
         tensorNN::Softmax(this->input, this->output);
 
-    }else if (act == "full_softmax"){
+    }else if (act == "softmax"){
         tensorNN::FullSoftmax(this->input, this->output);
 
     }else if (act == "sigmoid"){
@@ -125,10 +125,10 @@ void LActivation::backward(){
         }else if (act == "softsign"){
             tensorNN::D_softsign(delta, output, parent[0]->delta);
 
-        }else if (act == "softmax"){  // TODO: Deprecaated
+        }else if (act == "softmax_deprecated"){  // TODO: Deprecaated
             tensorNN::D_Softmax(delta, output, parent[0]->delta);
 
-        }else if (act == "full_softmax"){
+        }else if (act == "softmax"){
             tensorNN::D_FullSoftmax(delta, output, parent[0]->delta);
 
         }else if (act == "sigmoid"){

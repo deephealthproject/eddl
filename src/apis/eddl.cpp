@@ -524,15 +524,15 @@ namespace eddl {
         return new LActivation(parent, activation, params, name, DEV_CPU, 0);
     }
 
-    layer Softmax(layer parent, string name){
-        show_deprecated_warning("Softmax", "FullSoftmax");
+    layer SoftmaxDeprecated(layer parent, string name){
+        show_deprecated_warning("SoftmaxDeprecated", "Softmax");
         vector<float> params = {};
-        return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
+        return new LActivation(parent,"softmax_deprecated", params, name, DEV_CPU, 0);
     }
 
-    layer FullSoftmax(layer parent, string name){
+    layer Softmax(layer parent, string name){
         vector<float> params = {};
-        return new LActivation(parent,"full_softmax", params, name, DEV_CPU, 0);
+        return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
     }
 
     layer Sigmoid(layer parent, string name){
