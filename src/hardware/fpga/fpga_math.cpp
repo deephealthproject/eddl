@@ -944,7 +944,7 @@ void fpga_cpuemu_inc(Tensor *A, Tensor *B) {
 
 void fpga_inc(Tensor *A, Tensor *B) {
   _profile_fpga(_FPGA_INC, 0);
-  B->tsem->lock();               // why locks?
+                 // why locks?
 #ifndef K_ENABLED_INC
   fpga_cpuemu_inc(A, B);
 #else
@@ -958,7 +958,7 @@ void fpga_inc(Tensor *A, Tensor *B) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_inc, NULL, &event));
   q.finish();
 #endif
-  B->tsem->unlock();
+
   _profile_fpga(_FPGA_INC, 1);
 }
 

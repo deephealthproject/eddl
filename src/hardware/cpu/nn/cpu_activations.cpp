@@ -241,13 +241,13 @@ void cpu_softmax(Tensor *A, Tensor *B) {
 
 void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
     _profile(_CPU_D_SOFTMAX, 0);
-    PD->tsem->lock();
+
 
 #pragma omp parallel for
     for (int i = 0; i < D->size; i++)
         PD->ptr[i] += D->ptr[i] * (I->ptr[i] * (1.0 - I->ptr[i]));
 
-    PD->tsem->unlock();
+
     _profile(_CPU_D_SOFTMAX, 1);
 }
 
