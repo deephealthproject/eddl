@@ -55,7 +55,7 @@ int main(int argc, char **argv){
 
     l=Activation(BatchNormalization(Dense(l,128)),"relu");
 
-    layer out=FullSoftmax(BatchNormalization(Dense(l,num_classes)));
+    layer out= Softmax(BatchNormalization(Dense(l, num_classes)));
 
     // net define input and output layers list
     model net=Model({in},{out});

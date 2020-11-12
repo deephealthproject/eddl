@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
     ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
     l = Decoder(LSTM(ldec,512,true),l,"concat");
 
-    layer out = FullSoftmax(Dense(l, outvs));
+    layer out = Softmax(Dense(l, outvs));
 
     model net = Model({in}, {out});
 

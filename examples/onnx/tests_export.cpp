@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     l = MaxPool(ReLu(Conv(l,256,{3,3},{2,2})),{2,2});
     l = Reshape(l,{-1});
 
-    layer out = FullSoftmax(Dense(l, num_classes));
+    layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
 
     // Build model

@@ -40,7 +40,7 @@ int main(int argc, char **argv){
   // create a new graph to adapt the output for CIFAR
   layer in=Input({512});
   layer l=Dense(in,10);
-  l=FullSoftmax(l);
+  l= Softmax(l);
 
   model net_adap=Model({in},{l});
 

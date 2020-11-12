@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
     l = LeakyReLu(Dense(l, 32));
 
-    layer out = FullSoftmax(Dense(l, num_classes));
+    layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
 
 

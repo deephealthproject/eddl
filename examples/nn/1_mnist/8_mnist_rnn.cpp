@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     l = L2(LSTM(l, 128),0.001);
     l = LeakyReLu(Dense(l, 32));
 
-    layer out = FullSoftmax(Dense(l, num_classes));
+    layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
     net->verbosity_level = 0;
 
