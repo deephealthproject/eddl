@@ -33,7 +33,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(cent);
 
-        C->tsem->lock();
+
         if (A->isCPU()) {
             cpu_cent(A, B, C);
         }
@@ -49,7 +49,7 @@ namespace tensorNN {
          fpga_cent(A,B,C);
       }
 #endif
-        C->tsem->unlock();
+
 
         PROFILING_FOOTER(cent);
     }

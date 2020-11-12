@@ -156,7 +156,23 @@ Epoch 1
 Process finished with exit code 139 (interrupted by signal 11: SIGSEGV)
 ```
 
+##### v0.8 improvements
 
+
+| HPC | Softmax | Loss      | Time  | Comments      |
+|-----|---------|-----------|-------|---------------|
+| OFF | Old     | (old) CE  | 0.043 | Epoch1: 0.247 |
+| OFF | Old     | (new) CE  | 0.041 | Epoch1: 0.099 |
+| OFF | Old     | (old) SCE | 0.040 | Epoch1: 0.347 |
+| OFF | Old     | (new) SCE | 0.037 | Epoch1: 0.901 |
+| OFF | New     | (new) CE  | 0.037 | Epoch1: 0.900 |
+| OFF | New     | (new) SCE | 0.036 | Epoch1: 0.903 |
+| ON  | New     | (new) SCE | 0.024 | Epoch1: 0.901 |
+
+> Desktop - Ubuntu 18.04 - AMD Ryzen 7 2700X Eight-Core Processor - 4.3Ghz (16 cores) - 16GB RAM - GeForce GTX 1070 (8GB)
+> MNIST MLP (`1_mnist_mlp.cpp`)
+
+  
 ### CIFAR10 CONV (`1_cifar_conv.cpp`)
 
 #### GPU

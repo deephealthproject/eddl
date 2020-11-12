@@ -54,7 +54,7 @@ namespace tensorNN {
 
 	    PROFILING_HEADER(ReLu);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_relu(A, B);
         }
@@ -70,7 +70,7 @@ namespace tensorNN {
         }
 #endif
 
-        B->tsem->unlock();
+
 
 	PROFILING_FOOTER(ReLu);
     }
@@ -84,7 +84,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_ReLu);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_relu(D, I, PD);
         }
@@ -100,7 +100,7 @@ namespace tensorNN {
         fpga_d_relu(D,I,PD);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_ReLu);
     }
@@ -112,7 +112,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(ThresholdedReLu);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_thresholded_relu(A, B, param);
         }
@@ -128,7 +128,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(ThresholdedReLu);
     }
@@ -141,7 +141,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_ThresholdedReLu);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_thresholded_relu(D, I, PD, param);
         }
@@ -157,7 +157,7 @@ namespace tensorNN {
         fpga_d_thresholded_relu(D, I, PD, param);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_ThresholdedReLu);
     }
@@ -169,7 +169,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(LeakyReLu);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_leaky_relu(A, B, param);
         }
@@ -185,7 +185,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(LeakyReLu);
     }
@@ -198,7 +198,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_LeakyReLu);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_leaky_relu(D, I, PD, param);
         }
@@ -214,7 +214,7 @@ namespace tensorNN {
         fpga_d_leaky_relu(D,I,PD,param);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_LeakyReLu);
     }
@@ -227,7 +227,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(ELu);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_elu(A, B, param);
         }
@@ -243,7 +243,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(ELu);
     }
@@ -255,7 +255,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_ELu);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_elu(D, I, PD, param);
         }
@@ -271,7 +271,7 @@ namespace tensorNN {
         fpga_d_elu(D, I, PD, param);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_ELu);
     }
@@ -284,7 +284,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(Softplus);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_softplus(A, B);
         }
@@ -300,7 +300,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(Softplus);
     }
@@ -313,7 +313,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_softplus);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_softplus(D, I, PD);
         }
@@ -329,7 +329,7 @@ namespace tensorNN {
         fpga_d_softplus(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_softplus);
     }
@@ -342,7 +342,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(Softsign);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_softsign(A, B);
         }
@@ -358,7 +358,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(Softsign);
     }
@@ -371,7 +371,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_softsign);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_softsign(D, I, PD);
         }
@@ -387,7 +387,7 @@ namespace tensorNN {
         fpga_d_softsign(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_softsign);
     }
@@ -399,7 +399,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(Linear);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_linear(A, B, param);
         }
@@ -415,7 +415,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(Linear);
     }
@@ -428,7 +428,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_Linear);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_linear(D, I, PD, param);
         }
@@ -444,7 +444,7 @@ namespace tensorNN {
         fpga_d_linear(D, I, PD, param);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_Linear);
 
@@ -457,7 +457,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(Sigmoid);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_sigmoid(A, B);
         }
@@ -473,7 +473,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(Sigmoid);
     }
@@ -486,7 +486,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_Sigmoid);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_sigmoid(D, I, PD);
         }
@@ -502,7 +502,7 @@ namespace tensorNN {
         fpga_d_sigmoid(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_Sigmoid);
     }
@@ -514,7 +514,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(HardSigmoid);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_hard_sigmoid(A, B);
         }
@@ -530,7 +530,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(HardSigmoid);
     }
@@ -543,7 +543,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_HardSigmoid);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_hard_sigmoid(D, I, PD);
         }
@@ -559,7 +559,7 @@ namespace tensorNN {
         fpga_d_hard_sigmoid(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_HardSigmoid);
     }
@@ -571,7 +571,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(Exp);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_exp(A, B);
         }
@@ -588,7 +588,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(Exp);
     }
@@ -600,7 +600,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_Exp);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_exp(D, I, PD);
         }
@@ -615,7 +615,7 @@ namespace tensorNN {
         fpga_d_exp(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_Exp);
     }
@@ -627,7 +627,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(Tanh);
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_tanh(A, B);
         }
@@ -643,7 +643,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(Tanh);
     }
@@ -656,7 +656,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(D_Tanh);
 
-        PD->tsem->lock();
+
         if (D->isCPU()) {
             cpu_d_tanh(D, I, PD);
         }
@@ -672,7 +672,7 @@ namespace tensorNN {
         fpga_d_tanh(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
 
         PROFILING_FOOTER(D_Tanh);
     }
@@ -686,7 +686,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(Softmax);
 
-        B->tsem->lock();
+
 
         if (A->isCPU()) {
             cpu_softmax(A, B);
@@ -703,7 +703,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
 
         PROFILING_FOOTER(Softmax);
     }
@@ -752,7 +752,7 @@ namespace tensorNN {
         if (!Tensor::sameDevice(A, B)) msg("Tensors in different devices", "Tensor::FullSoftmax");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::FullSoftmax");
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_full_softmax(A, B, 1, true);
         }
@@ -769,7 +769,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
     }
 
     // FULL SOFTMAX DERIVATIVE

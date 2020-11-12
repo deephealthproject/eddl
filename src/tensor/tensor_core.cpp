@@ -301,7 +301,7 @@ Tensor* Tensor::unsqueeze(Tensor *A, int axis){
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // TODO: Deprecated.
     // Transpose
-    B->tsem->lock();
+
     if (A->size != B->size)
         msg("Tensors with different size", "Tensor::transpose");
 
@@ -327,7 +327,7 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
         fpga_transpose(A, N);
     }
 #endif
-    B->tsem->unlock();
+
 
     if (A == B) delete N;
 
@@ -344,7 +344,7 @@ void Tensor::copy(Tensor *A, Tensor *B) {
         msg("Tensors with different size", "Tensor::copy");
     }
 
-    B->tsem->lock();
+
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_copy(A, B);
     }
@@ -378,7 +378,7 @@ void Tensor::copy(Tensor *A, Tensor *B) {
         fprintf(stderr, "(%d %d)\n", A->device, B->device);
         msg("unsupported copy between devices", "Tensor::copy");
     }
-    B->tsem->unlock();
+
 }
 
 
@@ -389,7 +389,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
     if (A->ndim != B->ndim)
         msg("Tensors with different shape", "Tensor::fill");
 
-    B->tsem->lock();
+
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_fill(A, aini, aend, B, bini, bend, inc);
     }
@@ -402,7 +402,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
         fprintf(stderr, "(%d %d)\n", A->device, B->device);
         msg("unsupported copy between devices", "Tensor::copy");
     }
-    B->tsem->unlock();
+
 }
 
 void Tensor::sort_(bool descending, bool stable){
@@ -775,7 +775,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
     }
 
 
-    //B->tsem->lock();
+
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_select(A, B, sind, ini, end,mask_zeros);
     }
@@ -832,7 +832,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
     else {
         msg("unsuppoted select", "Tensor::select");
     }
-    //B->tsem->unlock();
+
 }
 void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc, bool mask_zeros) {
     ///////////////////////////////////////
@@ -845,7 +845,7 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
         msg("Incompatible shape", "Tensor::select");
     }
 
-    //B->tsem->lock();
+
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_deselect(A, B, sind, ini, end, inc,mask_zeros);
     }
@@ -898,7 +898,7 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
     else {
         msg("unsuppoted select", "Tensor::select");
     }
-    //B->tsem->unlock();
+
 }
 
 void Tensor::tile(Tensor *A, Tensor *B)

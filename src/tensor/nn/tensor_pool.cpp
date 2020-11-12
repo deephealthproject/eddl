@@ -40,7 +40,7 @@ namespace tensorNN {
 
 	      PROFILING_HEADER(MPool2D);
 
-        D->O->tsem->lock();
+
         if (D->I->isCPU()) {
             cpu_mpool2D(D);
         }
@@ -56,7 +56,7 @@ namespace tensorNN {
         fpga_mpool2D(D);
       }
 #endif
-        D->O->tsem->unlock();
+
 
 	      PROFILING_FOOTER(MPool2D);
     }
@@ -72,7 +72,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(MPool2D_back);
 
-        D->ID->tsem->lock();
+
         if (D->I->isCPU()) {
             cpu_mpool2D_back(D);
         }
@@ -88,7 +88,7 @@ namespace tensorNN {
         fpga_mpool2D_back(D);
       }
 #endif
-        D->ID->tsem->unlock();
+
 
         PROFILING_FOOTER(MPool2D_back);
     }
@@ -105,7 +105,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(AvgPool2D);
 
-        D->O->tsem->lock();
+
         if (D->I->isCPU()) {
             cpu_avgpool2D(D);
         }
@@ -121,7 +121,7 @@ namespace tensorNN {
         fpga_avgpool2D(D);
       }
 #endif
-        D->O->tsem->unlock();
+
 
         PROFILING_FOOTER(AvgPool2D);
     }
@@ -137,7 +137,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(AvgPool2D_back);
 
-        D->ID->tsem->lock();
+
         if (D->I->isCPU()) {
             cpu_avgpool2D_back(D);
         }
@@ -153,7 +153,7 @@ namespace tensorNN {
         fpga_avgpool2D_back(D);
       }
 #endif
-        D->ID->tsem->unlock();
+
 
         PROFILING_FOOTER(AvgPool2D_back);
     }

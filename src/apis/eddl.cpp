@@ -430,21 +430,19 @@ namespace eddl {
     }
 
     Loss* getLoss(string type){
-        if (type == "mse" || type == "mean_squared_error"){
+        if (type == "mean_squared_error" || type == "mse"){
             return new LMeanSquaredError();
-        } else if (type == "categorical_cross_entropy"){
+        } else if (type == "categorical_cross_entropy" || type == "cross_entropy"  || type=="ce" || type=="cce"){
             return new LCategoricalCrossEntropy();
-        } else if (type == "binary_cross_entropy"){
+        } else if (type == "binary_cross_entropy" || type=="bce"){
             return new LBinaryCrossEntropy();
-        } else if (type == "cross_entropy"){
-            return new LCrossEntropy();
         } else if (type == "soft_cross_entropy"){
             return new LSoftCrossEntropy();
-        }
-        else if (type == "dice"){
+        } else if (type == "deprecated_cross_entropy"){
+            return new LCrossEntropy();
+        } else if (type == "dice"){
             return new LDice();
-        }
-        else if (type == "none"){
+        } else if (type == "none"){
             return new Loss("none");
         }
         return nullptr;
