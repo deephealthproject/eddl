@@ -26,7 +26,7 @@ std::vector<int> vf2vi(const std::vector<float>& vf)
 #endif
 
 #if defined(cPROTO)
-	Net* build_net_onnx(onnx::ModelProto model, int mem);
+	Net* build_net_onnx(onnx::ModelProto model, int mem, int log_level);
 #endif
 
 #if defined(cPROTO)
@@ -85,14 +85,6 @@ using namespace std;
 
 	};
 	
-	enum LOG_LEVEL{
-		TRACE = 0,
-		DEBUG = 1,
-		INFO = 2,
-		WARN = 3,
-		ERROR = 4,
-		NO_LOGS = 5
-	};
 
 	void log_string(string log, int actual_log_level, int string_log_level){
 		if(actual_log_level <= string_log_level){
@@ -427,7 +419,7 @@ using namespace std;
 
 
 	//Imports a net stored in a onnx file
-	Net* import_net_from_onnx_file(std::string path, int mem) {
+	Net* import_net_from_onnx_file(std::string path, int mem, int log_level) {
         // Check if the path exists
 	    if(!pathExists(path)){
             msg("The specified path does not exist: " + path, "ONNX::ImportNet");
@@ -446,7 +438,7 @@ using namespace std;
 				//return;
 			}
 		}
-		return build_net_onnx(model, mem);
+		return build_net_onnx(model, mem, log_level);
 	}
 
 	//Imports a net from a pointer passed as argument
@@ -461,7 +453,7 @@ using namespace std;
 			}
 			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
 		}
-		return build_net_onnx(model, mem);
+		return build_net_onnx(model, mem, LOG_LEVEL::INFO);
 	}
 
 	//Imports a net from a c++ string passed as argument.
@@ -476,16 +468,15 @@ using namespace std;
 			}
 			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
 		}
-		return build_net_onnx(model, mem);
+		return build_net_onnx(model, mem, LOG_LEVEL::INFO);
 	}
 
 
 
 	//Builds a eddl Net from an instance of the onnx container for model
-	Net* build_net_onnx(onnx::ModelProto model, int mem){
+	Net* build_net_onnx(onnx::ModelProto model, int mem, int log_level){
 
 		long long int ir_version = model.ir_version();
-		int log_level = LOG_LEVEL::INFO;
 		// We have to check if the imported net has the
 		// version we created this importer for.
 		if(ir_version != 0x00000006) {
