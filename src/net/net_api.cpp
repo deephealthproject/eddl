@@ -15,10 +15,11 @@
 #include <string>
 #include <chrono>
 #include <stdexcept>
-#include "eddl/net/net.h"
-#include "eddl/utils.h"
-#include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
+#include "eddl/net/net.h"
+#include "eddl/random.h"
+#include "eddl/system_info.h"
+#include "eddl/utils.h"
 
 
 #ifdef cFPGA
@@ -150,9 +151,13 @@ void Net::run_snets(void *(*F)(void *t))
   int rc;
   struct tdata td[100];
 
-  int comp=snets.size();
+  int comp = snets.size();
 
+#ifdef EDDL_WINDOWS
+  #pragma omp parallel for
+#else
   #pragma omp taskloop num_tasks(comp)
+#endif
   for (int i = 0; i < comp; i++) {
     // Thread params
     td[i].net = snets[i];

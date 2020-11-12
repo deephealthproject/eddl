@@ -9,6 +9,7 @@
 
 
 #include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/system_info.h"
 #include <limits>
 
 // CPU: Logic functions: Truth value testing
@@ -24,7 +25,9 @@ bool cpu_all(Tensor *A){
             {
                 res = false;
             }
+#if defined(EDDL_LINUX) || defined(EDDL_UNIX) || defined(EDDL_APPLE)
             #pragma omp cancel for
+#endif
         }
     }
     _profile(_CPU_ALL, 1);
@@ -44,8 +47,9 @@ bool cpu_any(Tensor *A){
             {
                 res = true;
             }
+#if defined(EDDL_LINUX) || defined(EDDL_UNIX) || defined(EDDL_APPLE)
             #pragma omp cancel for
-
+#endif
         }
     }
     _profile(_CPU_ANY, 1);
@@ -155,7 +159,9 @@ bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
                 if(first_idx < 0) { first_idx=i; }
 
             }
+#if defined(EDDL_LINUX) || defined(EDDL_UNIX) || defined(EDDL_APPLE)
             #pragma omp cancel for
+#endif
         }
     }
     _profile(_CPU_ALLCLOSE, 1);
