@@ -31,23 +31,20 @@ using namespace eddl;
 
 int main(int argc, char **argv) {
     cout << "Tests for development. Ignore." << endl;
-    Tensor* t1 = new Tensor({1, 2, 3}, {3}, DEV_CPU);
-    Tensor* t2 = new Tensor({1, 2, 4}, {3}, DEV_CPU);
-    Tensor* t3 = Tensor::stack({t1, t2}, 1);
-    t3->print(2);
-    int asd = 3;
 
+    Tensor* t1 = new Tensor({12, INFINITY, NAN, -INFINITY, 0.0f, +INFINITY}, {2,3});
+// [
+// [12.00 inf nan]
+// [-inf 0.00 inf]
+// ]
 
+    Tensor* r1 = t1->isfinite(); // returns new tensor
 
-//    Tensor* t1 = Tensor::load("mnist_trY.bin");
-//    Tensor* t2 = t1->select({"2:5"});
-//    t2->print(2);
-//
-//
-//    Tensor* t3 = Tensor::load_partial("mnist_trY.bin", 2, 5);
-//
-//    cout << Tensor::equivalent(t2, t3) << endl;
-//    t3->print(2);
+    r1->print(2);  // Temp.
+// [
+// [1.00 0.00 0.00]
+// [0.00 1.00 0.00]
+// ]
 
 
     cout << "Done!" << endl;
