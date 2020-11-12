@@ -445,7 +445,7 @@ namespace eddl {
             return new LCategoricalCrossEntropy();
         } else if (type == "binary_cross_entropy" || type=="bce"){
             return new LBinaryCrossEntropy();
-        } else if (type == "soft_cross_entropy"){
+        } else if (type == "soft_cross_entropy" || type == "softmax_cross_entropy" || type == "sce"){
             return new LSoftCrossEntropy();
         } else if (type == "deprecated_cross_entropy"){
             return new LCrossEntropy();
