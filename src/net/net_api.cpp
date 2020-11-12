@@ -587,10 +587,10 @@ void Net::print_loss(int b)
 
       fprintf(stdout, "%s ( ", name.c_str());
       if (losses.size()>=(k+1)) {
-        fprintf(stdout, "loss[%s]=%1.3f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
+        fprintf(stdout, "loss1[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
       }
       if (metrics.size()>=(k+1)) {
-        fprintf(stdout, "metric[%s]=%1.3f ", metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
+        fprintf(stdout, "metric1[%s]=%1.4f ", metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
       }
 
       fprintf(stdout, ") -- ");
@@ -599,11 +599,11 @@ void Net::print_loss(int b)
       if ((flog_tr!=nullptr)&&(trmode)) {
         fprintf(flog_tr, "%s ", name.c_str());
         if (losses.size()>=(k+1)) {
-          fprintf(flog_tr, "loss[%s]=%1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+          fprintf(flog_tr, "loss2[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
         }
         if (metrics.size()>=(k+1)) {
           if (metrics[k]->name!="none")
-          fprintf(flog_tr, "metric[%s]=%1.3f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+          fprintf(flog_tr, "metric2[%s]=%1.4f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
         }
 
         fprintf(flog_tr, " -- ");
@@ -613,11 +613,11 @@ void Net::print_loss(int b)
       if ((flog_ts!=nullptr)&&(!trmode)) {
         fprintf(flog_ts, "%s ", name.c_str());
         if (losses.size()>=(k+1)) {
-          fprintf(flog_ts, "loss[%s]=%1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+          fprintf(flog_ts, "loss3[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
         }
         if (metrics.size()>=(k+1)) {
           if (metrics[k]->name!="none")
-          fprintf(flog_ts, "metric[%s]=%1.3f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+          fprintf(flog_ts, "metric3[%s]=%1.4f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
         }
 
         fprintf(flog_ts, " -- ");
@@ -775,14 +775,14 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
         high_resolution_clock::time_point e2 = high_resolution_clock::now();
         duration<double> epoch_time_span = e2 - e1;
-        fprintf(stdout, "%1.3f secs/batch\r", epoch_time_span.count()/(j+1));
+        fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count()/(j+1));
         fflush(stdout);
 
 
       }
       high_resolution_clock::time_point e2 = high_resolution_clock::now();
       duration<double> epoch_time_span = e2 - e1;
-      fprintf(stdout, "\n%1.3f secs/epoch\n", epoch_time_span.count());
+      fprintf(stdout, "\n%1.4f secs/epoch\n", epoch_time_span.count());
     }
     fflush(stdout);
   }
