@@ -643,6 +643,71 @@ void Net::print_loss(int b)
   }
 }
 
+vector<float> Net::get_losses(){
+    // NOTE: I have no idea how the internals of the metrics/loss values work,
+    // so I did a sort of copy and paste from print_loss fuction with minor workarounds
+    vector<float> loss_values;
+
+    if (this->isrecurrent) {
+        if (this->rnet!=nullptr) { this->rnet->get_losses(); } // Dangerous A.F.
+    } else {
+        int p = 0;
+
+        // Copy total_loss / fiterr (I don't know how it works but i don't like it...)
+        vector<float> tmp_total_error(total_loss);
+        vector<float> tmp_fiterr(fiterr);
+
+        int length=decsize;
+        for (int k = 0; k < lout.size(); k+=decsize) {
+
+            // Do stuff
+            for(int l=0;l<length;l++,p+=2) {
+                tmp_total_error[k] += tmp_fiterr[p];  // loss
+                tmp_fiterr[p] = tmp_fiterr[p + 1] = 0.0;
+            }
+
+            // Compute average loss
+            if (losses.size()>=(k+1)) {
+                loss_values.push_back(tmp_total_error[k] /  (float)(length*inferenced_samples));
+            }
+        }
+    }
+
+    return loss_values;
+}
+
+vector<float> Net::get_metrics(){
+    // NOTE: I have no idea how the internals of the metrics/loss values work,
+    // so I did a sort of copy and paste from print_loss fuction with minor workarounds
+    vector<float> metrics_values;
+
+    if (this->isrecurrent) {
+        if (this->rnet!=nullptr) { this->rnet->get_metrics(); } // Dangerous A.F.
+    } else {
+        int p = 0;
+
+        // Copy total_loss / fiterr (I don't know how it works but i don't like it...)
+        vector<float> tmp_total_metrics(total_metric);
+        vector<float> tmp_fiterr(fiterr);
+
+        int length=decsize;
+        for (int k = 0; k < lout.size(); k+=decsize) {
+
+            for(int l=0;l<length;l++,p+=2) {
+                tmp_total_metrics[k] += tmp_fiterr[p + 1];  // metric
+                tmp_fiterr[p] = tmp_fiterr[p + 1] = 0.0;
+            }
+
+            if (metrics.size()>=(k+1)) {
+                metrics_values.push_back( tmp_total_metrics[k] / (float)(length*inferenced_samples));
+            }
+
+        }
+    }
+
+    return metrics_values;
+}
+
 void Net::reset_grads()
 {
   if (isrecurrent)
