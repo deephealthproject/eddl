@@ -1,13 +1,14 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/profiling.h"
 
 #ifdef cFPGA
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
@@ -19,15 +20,41 @@
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
 #endif
 
-namespace tensorNN {
+PROFILING_ENABLE_EXTERN(ReLu);
+PROFILING_ENABLE_EXTERN(D_ReLu);
+PROFILING_ENABLE_EXTERN(ThresholdedReLu);
+PROFILING_ENABLE_EXTERN(LeakyReLu);
+PROFILING_ENABLE_EXTERN(D_ThresholdedReLu);
+PROFILING_ENABLE_EXTERN(D_LeakyReLu);
+PROFILING_ENABLE_EXTERN(ELu);
+PROFILING_ENABLE_EXTERN(D_ELu);
+PROFILING_ENABLE_EXTERN(Sigmoid);
+PROFILING_ENABLE_EXTERN(D_Sigmoid);
+PROFILING_ENABLE_EXTERN(HardSigmoid);
+PROFILING_ENABLE_EXTERN(D_HardSigmoid);
+PROFILING_ENABLE_EXTERN(Tanh);
+PROFILING_ENABLE_EXTERN(D_Tanh);
+PROFILING_ENABLE_EXTERN(Softmax);
+PROFILING_ENABLE_EXTERN(D_Softmax);
+PROFILING_ENABLE_EXTERN(Exp);
+PROFILING_ENABLE_EXTERN(D_Exp);
+PROFILING_ENABLE_EXTERN(Linear);
+PROFILING_ENABLE_EXTERN(D_Linear);
+PROFILING_ENABLE_EXTERN(Softsign);
+PROFILING_ENABLE_EXTERN(D_softsign);
+PROFILING_ENABLE_EXTERN(Softplus);
+PROFILING_ENABLE_EXTERN(D_softplus);
 
+namespace tensorNN {
 
 // ReLU
     void ReLu(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::ReLu");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::ReLu");
 
-        B->tsem->lock();
+	    PROFILING_HEADER(ReLu);
+
+
         if (A->isCPU()) {
             cpu_relu(A, B);
         }
@@ -43,7 +70,9 @@ namespace tensorNN {
         }
 #endif
 
-        B->tsem->unlock();
+
+
+	PROFILING_FOOTER(ReLu);
     }
 
 // RELU Derivative, always increment over parent delta
@@ -53,7 +82,9 @@ namespace tensorNN {
         }
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_ReLu);
+
+
         if (D->isCPU()) {
             cpu_d_relu(D, I, PD);
         }
@@ -69,7 +100,9 @@ namespace tensorNN {
         fpga_d_relu(D,I,PD);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_ReLu);
     }
 
 // ThresholdedReLu
@@ -77,7 +110,9 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::ThresholdedReLu");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::ThresholdedReLu");
 
-        B->tsem->lock();
+        PROFILING_HEADER(ThresholdedReLu);
+
+
         if (A->isCPU()) {
             cpu_thresholded_relu(A, B, param);
         }
@@ -93,7 +128,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(ThresholdedReLu);
     }
 
 // ThresholdedReLu Derivative
@@ -102,7 +139,9 @@ namespace tensorNN {
             msg("Tensors in different devices", "Tensor::D_ThresholdedReLu");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_ThresholdedReLu");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_ThresholdedReLu);
+
+
         if (D->isCPU()) {
             cpu_d_thresholded_relu(D, I, PD, param);
         }
@@ -118,7 +157,9 @@ namespace tensorNN {
         fpga_d_thresholded_relu(D, I, PD, param);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_ThresholdedReLu);
     }
 
 // LeakyReLU
@@ -126,7 +167,9 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::LeakyReLu");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::LeakyReLu");
 
-        B->tsem->lock();
+        PROFILING_HEADER(LeakyReLu);
+
+
         if (A->isCPU()) {
             cpu_leaky_relu(A, B, param);
         }
@@ -142,7 +185,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(LeakyReLu);
     }
 
 // RELU Derivative, always increment over parent delta
@@ -151,7 +196,9 @@ namespace tensorNN {
             msg("Tensors in different devices", "Tensor::D_ReLu");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_LeakyReLu);
+
+
         if (D->isCPU()) {
             cpu_d_leaky_relu(D, I, PD, param);
         }
@@ -167,7 +214,9 @@ namespace tensorNN {
         fpga_d_leaky_relu(D,I,PD,param);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_LeakyReLu);
     }
 
 
@@ -176,7 +225,9 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::ELu");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::ELu");
 
-        B->tsem->lock();
+        PROFILING_HEADER(ELu);
+
+
         if (A->isCPU()) {
             cpu_elu(A, B, param);
         }
@@ -192,7 +243,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(ELu);
     }
 
 // ELU Derivative
@@ -200,7 +253,9 @@ namespace tensorNN {
         if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_ELu");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_ELu");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_ELu);
+
+
         if (D->isCPU()) {
             cpu_d_elu(D, I, PD, param);
         }
@@ -216,7 +271,9 @@ namespace tensorNN {
         fpga_d_elu(D, I, PD, param);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_ELu);
     }
 
 
@@ -225,7 +282,9 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softplus");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Softplus");
 
-        B->tsem->lock();
+        PROFILING_HEADER(Softplus);
+
+
         if (A->isCPU()) {
             cpu_softplus(A, B);
         }
@@ -241,7 +300,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(Softplus);
     }
 
 // Softplus Derivative
@@ -250,7 +311,9 @@ namespace tensorNN {
             msg("Tensors in different devices", "Tensor::D_softplus");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_softplus");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_softplus);
+
+
         if (D->isCPU()) {
             cpu_d_softplus(D, I, PD);
         }
@@ -266,7 +329,9 @@ namespace tensorNN {
         fpga_d_softplus(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_softplus);
     }
 
 
@@ -275,7 +340,9 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softsign");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Softsign");
 
-        B->tsem->lock();
+        PROFILING_HEADER(Softsign);
+
+
         if (A->isCPU()) {
             cpu_softsign(A, B);
         }
@@ -291,7 +358,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(Softsign);
     }
 
 // Softsign Derivative
@@ -300,7 +369,9 @@ namespace tensorNN {
             msg("Tensors in different devices", "Tensor::D_softsign");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_softsign");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_softsign);
+
+
         if (D->isCPU()) {
             cpu_d_softsign(D, I, PD);
         }
@@ -316,7 +387,9 @@ namespace tensorNN {
         fpga_d_softsign(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_softsign);
     }
 
 // Linear
@@ -324,7 +397,9 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Linear");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Linear");
 
-        B->tsem->lock();
+        PROFILING_HEADER(Linear);
+
+
         if (A->isCPU()) {
             cpu_linear(A, B, param);
         }
@@ -340,7 +415,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(Linear);
     }
 
 // Linear Derivative
@@ -349,7 +426,9 @@ namespace tensorNN {
             msg("Tensors in different devices", "Tensor::D_Linear");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_Linear");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_Linear);
+
+
         if (D->isCPU()) {
             cpu_d_linear(D, I, PD, param);
         }
@@ -365,7 +444,10 @@ namespace tensorNN {
         fpga_d_linear(D, I, PD, param);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_Linear);
+
     }
 
 // Sigmoid
@@ -373,7 +455,9 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Sigmoid");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Sigmoid");
 
-        B->tsem->lock();
+        PROFILING_HEADER(Sigmoid);
+
+
         if (A->isCPU()) {
             cpu_sigmoid(A, B);
         }
@@ -389,7 +473,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(Sigmoid);
     }
 
 // Sigmoid Derivative, always increment over parent delta
@@ -398,7 +484,9 @@ namespace tensorNN {
             msg("Tensors in different devices", "Tensor::D_Sigmoid");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_Sigmoid");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_Sigmoid);
+
+
         if (D->isCPU()) {
             cpu_d_sigmoid(D, I, PD);
         }
@@ -414,7 +502,9 @@ namespace tensorNN {
         fpga_d_sigmoid(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_Sigmoid);
     }
 
 // Hard Sigmoid
@@ -422,7 +512,9 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::HardSigmoid");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::HardSigmoid");
 
-        B->tsem->lock();
+        PROFILING_HEADER(HardSigmoid);
+
+
         if (A->isCPU()) {
             cpu_hard_sigmoid(A, B);
         }
@@ -438,7 +530,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(HardSigmoid);
     }
 
 // Hard Sigmoid Derivative
@@ -447,7 +541,9 @@ namespace tensorNN {
             msg("Tensors in different devices", "Tensor::D_HardSigmoid");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_HardSigmoid");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_HardSigmoid);
+
+
         if (D->isCPU()) {
             cpu_d_hard_sigmoid(D, I, PD);
         }
@@ -463,7 +559,9 @@ namespace tensorNN {
         fpga_d_hard_sigmoid(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_HardSigmoid);
     }
 
 // Exponential
@@ -471,7 +569,9 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Exp");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Exp");
 
-        B->tsem->lock();
+        PROFILING_HEADER(Exp);
+
+
         if (A->isCPU()) {
             cpu_exp(A, B);
         }
@@ -488,7 +588,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(Exp);
     }
 
 // Exponential Derivative
@@ -496,7 +598,9 @@ namespace tensorNN {
         if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_Exp");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_Exp");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_Exp);
+
+
         if (D->isCPU()) {
             cpu_d_exp(D, I, PD);
         }
@@ -511,7 +615,9 @@ namespace tensorNN {
         fpga_d_exp(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_Exp);
     }
 
 // Tanh
@@ -519,7 +625,9 @@ namespace tensorNN {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Tanh");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Tanh");
 
-        B->tsem->lock();
+        PROFILING_HEADER(Tanh);
+
+
         if (A->isCPU()) {
             cpu_tanh(A, B);
         }
@@ -535,7 +643,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(Tanh);
     }
 
 // Tanh Derivative
@@ -544,7 +654,9 @@ namespace tensorNN {
             msg("Tensors in different devices", "Tensor::D_Tanh");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_Tanh");
 
-        PD->tsem->lock();
+        PROFILING_HEADER(D_Tanh);
+
+
         if (D->isCPU()) {
             cpu_d_tanh(D, I, PD);
         }
@@ -560,7 +672,9 @@ namespace tensorNN {
         fpga_d_tanh(D, I, PD);
     }
 #endif
-        PD->tsem->unlock();
+
+
+        PROFILING_FOOTER(D_Tanh);
     }
 
 
@@ -570,7 +684,9 @@ namespace tensorNN {
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Softmax");
         if (A->ndim != 2) msg("Softmax only over 2D Tensor (batch x logits)", "Tensor::Softmax");
 
-        B->tsem->lock();
+        PROFILING_HEADER(Softmax);
+
+
 
         if (A->isCPU()) {
             cpu_softmax(A, B);
@@ -587,7 +703,9 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
+
+        PROFILING_FOOTER(Softmax);
     }
 
 // SOFTMAX DERIVATIVE
@@ -596,6 +714,8 @@ namespace tensorNN {
             msg("Tensors in different devices", "Tensor::D_Softmax");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_Softmax");
         if (D->ndim != 2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)", "Tensor::D_Softmax");
+
+        PROFILING_HEADER(D_Softmax);
 
         if (D->isCPU()) {
             cpu_d_softmax(D, I, PD);
@@ -620,7 +740,10 @@ namespace tensorNN {
     }
 #endif
 
+    PROFILING_FOOTER(D_Softmax);
+
     }
+
 
 
 
@@ -629,7 +752,7 @@ namespace tensorNN {
         if (!Tensor::sameDevice(A, B)) msg("Tensors in different devices", "Tensor::FullSoftmax");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::FullSoftmax");
 
-        B->tsem->lock();
+
         if (A->isCPU()) {
             cpu_full_softmax(A, B, 1, true);
         }
@@ -646,7 +769,7 @@ namespace tensorNN {
     }
 #endif
 
-        B->tsem->unlock();
+
     }
 
     // FULL SOFTMAX DERIVATIVE
@@ -674,3 +797,4 @@ namespace tensorNN {
 
 
 }
+

@@ -1,13 +1,14 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -20,9 +21,11 @@
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
 
+PROFILING_ENABLE_EXTERN(Conv2D);
+PROFILING_ENABLE_EXTERN(Conv2D_grad);
+PROFILING_ENABLE_EXTERN(Conv2D_back);
+
 namespace tensorNN{
-
-
 
 void Conv2D(ConvolDescriptor *D) {
     /////////////////////////////////////////////////////////////////////
@@ -33,7 +36,9 @@ void Conv2D(ConvolDescriptor *D) {
     /////////////////////////////////////////////////////////////////////
     if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
 
-    D->O->tsem->lock();
+    PROFILING_HEADER(Conv2D);
+
+
     if (D->I->isCPU()) {
         cpu_conv2D(D);
     }
@@ -49,7 +54,9 @@ void Conv2D(ConvolDescriptor *D) {
         fpga_conv2D(D);
     }
 #endif
-    D->O->tsem->unlock();
+
+
+    PROFILING_FOOTER(Conv2D);
 }
 
 void Conv2D_grad(ConvolDescriptor *D) {
@@ -61,7 +68,9 @@ void Conv2D_grad(ConvolDescriptor *D) {
     /////////////////////////////////////////////////////////////////////
     if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
 
-    D->gK->tsem->lock();
+    PROFILING_HEADER(Conv2D_grad);
+
+
     if (D->I->isCPU()) {
         cpu_conv2D_grad(D);
     }
@@ -76,7 +85,9 @@ void Conv2D_grad(ConvolDescriptor *D) {
         fpga_conv2D_grad(D);
     }
 #endif
-    D->gK->tsem->unlock();
+
+
+    PROFILING_FOOTER(Conv2D_grad);
 }
 
 void Conv2D_back(ConvolDescriptor *D) {
@@ -88,7 +99,9 @@ void Conv2D_back(ConvolDescriptor *D) {
     /////////////////////////////////////////////////////////////////////
     if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
 
-    D->ID->tsem->lock();
+    PROFILING_HEADER(Conv2D_back);
+
+
     if (D->I->isCPU()) {
         cpu_conv2D_back(D);
     }
@@ -103,7 +116,9 @@ void Conv2D_back(ConvolDescriptor *D) {
         fpga_conv2D_back(D);
     }
 #endif
-    D->ID->tsem->unlock();
+
+
+    PROFILING_FOOTER(Conv2D_back);
 }
 
 }

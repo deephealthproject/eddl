@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -11,6 +11,7 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/profiling.h"
 
 
 #ifdef cGPU
@@ -102,6 +103,8 @@ void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
      }
   }
 
+  PROFILING_HEADER_EXTERN(reduce);
+
   if (map==nullptr)
     map=get_reduction_map(A,axis);
 
@@ -118,6 +121,8 @@ void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
     fpga_reduce(A,B,mode,map);
   }
   #endif
+
+  PROFILING_FOOTER(reduce);
 }
 
 void reduce_mean(Tensor *A, Tensor *B,vector<int> axis,int* map)
@@ -140,6 +145,9 @@ void reduce_min(Tensor *A, Tensor *B,vector<int> axis,int* map)
 
 void reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
 {
+
+  PROFILING_HEADER_EXTERN(reduce);
+
   if (A->isCPU()) {
       cpu_reduce(A,B,mode,MD);
     }
@@ -153,6 +161,8 @@ void reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
       fpga_reduce(A,B,mode,MD);
   }
   #endif
+
+  PROFILING_FOOTER(reduce);
 }
 
 
@@ -179,7 +189,7 @@ void reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
 {
   int i,j;
 
-
+  PROFILING_HEADER_EXTERN(reduce_op);
 
   if (B->ndim!=A->ndim-axis.size())
     msg("dims don't match in reduction","reduce");
@@ -209,6 +219,8 @@ void reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
       fpga_reduce_op(A,B,op,map);
   }
   #endif
+
+  PROFILING_FOOTER(reduce_op);
 }
 
 void reduce_sum(Tensor *A, Tensor *B,vector<int> axis,int* map)
@@ -230,6 +242,9 @@ void reduce_div(Tensor *A, Tensor *B,vector<int> axis,int* map)
 
  void reduce_op(Tensor *A, Tensor *B,string op, MapReduceDescriptor *MD)
 {
+
+  PROFILING_HEADER_EXTERN(reduce_op);
+
   if (A->isCPU()) {
     cpu_reduce_op(A,B,op,MD);
   }
@@ -244,7 +259,9 @@ void reduce_div(Tensor *A, Tensor *B,vector<int> axis,int* map)
   }
   #endif
 
+  PROFILING_FOOTER(reduce_op);
 }
+
  void reduce_sum(Tensor *A, Tensor *B,MapReduceDescriptor *MD)
 {
   reduce_op(A,B,"sum",MD);
@@ -264,6 +281,8 @@ void reduce_div(Tensor *A, Tensor *B,vector<int> axis,int* map)
 ////////////
 void reduction(ReduceDescriptor *RD){
 
+    PROFILING_HEADER_EXTERN(reduction);
+
     if (RD->I->isCPU()) {
       cpu_reduction(RD);
     }
@@ -278,11 +297,15 @@ void reduction(ReduceDescriptor *RD){
         fpga_reduction(RD);
         }
     #endif
+
+    PROFILING_FOOTER(reduction);
 }
 
 
 void reduction_back(ReduceDescriptor *RD)
 {
+
+  PROFILING_HEADER_EXTERN(reduction_back);
 
   if (RD->I->isCPU()) {
     cpu_reduction_back(RD);
@@ -298,4 +321,6 @@ void reduction_back(ReduceDescriptor *RD)
       fpga_reduction_back(RD);
       }
   #endif
+
+  PROFILING_FOOTER(reduction_back);
 }

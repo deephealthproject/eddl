@@ -1,14 +1,15 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -22,7 +23,15 @@
 
 using namespace std;
 
+PROFILING_ENABLE_EXTERN(fill_rand_uniform);
+PROFILING_ENABLE_EXTERN(fill_rand_signed_uniform);
+PROFILING_ENABLE_EXTERN(fill_rand_normal);
+PROFILING_ENABLE_EXTERN(fill_rand_binary);
+
 void Tensor::fill_rand_uniform_(float v) {
+
+    PROFILING_HEADER(fill_rand_uniform);
+
     if (isCPU()) {
         cpu_rand_uniform(this, v);
     }
@@ -38,6 +47,8 @@ void Tensor::fill_rand_uniform_(float v) {
     }
 #endif
 
+    PROFILING_FOOTER(fill_rand_uniform);
+
 }
 
 Tensor* Tensor::fill_rand_uniform(float v){
@@ -47,6 +58,9 @@ Tensor* Tensor::fill_rand_uniform(float v){
 }
 
 void Tensor::fill_rand_signed_uniform_(float v) {
+
+    PROFILING_HEADER(fill_rand_signed_uniform);
+
     if (isCPU()) {
         cpu_rand_signed_uniform(this, v);
     }
@@ -62,6 +76,7 @@ void Tensor::fill_rand_signed_uniform_(float v) {
     }
 #endif
 
+    PROFILING_FOOTER(fill_rand_signed_uniform);
 }
 
 Tensor* Tensor::fill_rand_signed_uniform(float v){
@@ -71,6 +86,9 @@ Tensor* Tensor::fill_rand_signed_uniform(float v){
 }
 
 void Tensor::fill_rand_normal_(float m, float s, bool fast_math) {
+
+    PROFILING_HEADER(fill_rand_normal);
+
     if (isCPU()) {
         cpu_rand_normal(this, m, s, fast_math);
     }
@@ -86,6 +104,7 @@ void Tensor::fill_rand_normal_(float m, float s, bool fast_math) {
     }
 #endif
 
+    PROFILING_FOOTER(fill_rand_normal);
 }
 
 Tensor* Tensor::fill_rand_normal(float m, float s, bool fast_math) {
@@ -95,6 +114,9 @@ Tensor* Tensor::fill_rand_normal(float m, float s, bool fast_math) {
 }
 
 void Tensor::fill_rand_binary_(float v) {
+
+    PROFILING_HEADER(fill_rand_binary);
+
     if (isCPU()) {
         cpu_rand_binary(this, v);
     }
@@ -110,6 +132,7 @@ void Tensor::fill_rand_binary_(float v) {
     }
 #endif
 
+    PROFILING_FOOTER(fill_rand_binary);
 }
 
 Tensor* Tensor::fill_rand_binary(float v) {

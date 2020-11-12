@@ -46,6 +46,9 @@ AveragePooling
 
 .. doxygenfunction:: AveragePool
 
+.. code-block:: c++
+
+    l = AveragePool(l);
 
 
 GlobalAveragePooling

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -71,6 +71,10 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
     ///////
 
     // sharing the pointers to data
+#ifdef cFPGA
+    printf("creating new tensor output for reshape (at constructor)\n");
+#endif
+
     output = new Tensor(ls, parent->output);
 
     parent->addchild(this);
@@ -85,6 +89,7 @@ LReshape::~LReshape(){
 void LReshape::resize(int batch){
     ls[0]=batch;
 #ifdef cFPGA
+    printf("voy a hacer resize!!!! batch %d shape[0] %d tensor_id %d, tensor_id parent %d fpga_ptr %p\n", batch, output->shape[0], output->fpga_tensor_id, parent[0]->output->fpga_tensor_id, parent[0]->output->fpga_ptr);
     output->resize(batch, parent[0]->output->ptr, parent[0]->output->fpga_ptr, false);
 #else
     output->resize(batch, parent[0]->output->ptr, nullptr, false);
@@ -98,6 +103,9 @@ void LReshape::mem_delta() {
         parent[0]->mem_delta();
 
         // Problem: Delta is always created, regardless of the low_mem
+#ifdef cFPGA
+	printf("creating new delta tensor for reshape at mem_delta\n");
+#endif
         delta = new Tensor(ls, parent[0]->delta);
 
         if(this->verbosity_level >= 2){
@@ -111,6 +119,9 @@ void LReshape::free_delta() {
     if(this->delta != nullptr) {
         // Do not delete its delta directly (It's pointer points to parent's delta)
         delta->ptr = nullptr;
+#ifdef cFPGA
+        delta->fpga_ptr = nullptr;
+#endif
         delete delta;
         delta = nullptr;
 

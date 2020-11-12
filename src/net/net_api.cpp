@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -15,10 +15,11 @@
 #include <string>
 #include <chrono>
 #include <stdexcept>
-#include "eddl/net/net.h"
-#include "eddl/utils.h"
-#include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
+#include "eddl/net/net.h"
+#include "eddl/random.h"
+#include "eddl/system_info.h"
+#include "eddl/utils.h"
 
 
 #ifdef cFPGA
@@ -35,7 +36,6 @@ using namespace std::chrono;
 struct tdata {
   Net *net;
 };
-
 
 /////////////////////////////////////////
 void *train_batch_t(void *t) {
@@ -143,9 +143,6 @@ void *update_t(void *t) {
 }
 /////////////////////////////////////////
 
-
-
-
 /////////////////////////////////////////
 // "a ring to rule them all"
 void Net::run_snets(void *(*F)(void *t))
@@ -154,9 +151,13 @@ void Net::run_snets(void *(*F)(void *t))
   int rc;
   struct tdata td[100];
 
-  int comp=snets.size();
+  int comp = snets.size();
 
+#ifdef EDDL_WINDOWS
+  #pragma omp parallel for
+#else
   #pragma omp taskloop num_tasks(comp)
+#endif
   for (int i = 0; i < comp; i++) {
     // Thread params
     td[i].net = snets[i];
@@ -189,27 +190,28 @@ void Net::setlr(vector <float> p)
   snets[i]->optimizer->change(p);
 }
 
-vector<vtensor> Net::get_parameters(bool deepcopy){
-    vector<vtensor> params;
+vector<vtensor> Net::get_parameters(bool deepcopy, bool tocpu){
+    vector<vtensor> net_params;
 
     // Collect layer params
     for(auto &l : this->layers){
         if(!deepcopy){
-            params.push_back(l->params);
+            net_params.push_back(l->params);
         }else{
             // Clone parameters
             vtensor lp;
             for(auto &param : l->params){
-                Tensor* new_param = param->clone(); // TODO: Flag toCPU()?
-                lp.push_back(new_param);
+                Tensor* new_param = param->clone();
+                if(tocpu) { new_param->toCPU(); }  // Send to CPU
+                lp.push_back(new_param);  // Add to layer vector of params
             }
 
             // Add new params
-            params.push_back(lp);
+            net_params.push_back(lp);
         }
     }
 
-    return params;
+    return net_params;
 }
 
 void Net::set_parameters(const vector<vtensor>& params){
@@ -236,19 +238,13 @@ void Net::set_parameters(const vector<vtensor>& params){
     // Set layer params
     for(int i=0; i<this->layers.size(); i++){
 
-        // Delete current params
-        for(int j=this->layers[i]->params.size()-1; j>=0; j--){
-            cout << "Deleting params " << j << " from layer " << i << "(" << this->layers[i]->name << ")" << endl;
-            if (this->layers[i]->params[i]!= nullptr){
-                delete this->layers[i]->params[i];
-            }
+        // Copy current params
+        for(int j=0; j<this->layers[i]->params.size(); j++){
+            Tensor* new_param = params[i][j];
+            new_param->toDevice(this->dev);  // Send to the same device as the net
+            Tensor::copy(new_param, this->layers[i]->params[j]);
         }
 
-        // Empty params
-        this->layers[i]->params.clear();
-
-        // Add new params
-        this->layers[i]->params = params[i];  // Pass reference. Do not copy
     }
 }
 
@@ -280,7 +276,7 @@ void Net::forward(vector<Tensor*> in)
       // Distribute to snets inputs
       for (int i = 0; i < in.size(); i++)
         distributeTensor(lin[i]);
-      
+
 
     }
 
@@ -647,6 +643,71 @@ void Net::print_loss(int b)
   }
 }
 
+vector<float> Net::get_losses(){
+    // NOTE: I have no idea how the internals of the metrics/loss values work,
+    // so I did a sort of copy and paste from print_loss fuction with minor workarounds
+    vector<float> loss_values;
+
+    if (this->isrecurrent) {
+        if (this->rnet!=nullptr) { this->rnet->get_losses(); } // Dangerous A.F.
+    } else {
+        int p = 0;
+
+        // Copy total_loss / fiterr (I don't know how it works but i don't like it...)
+        vector<float> tmp_total_error(total_loss);
+        vector<float> tmp_fiterr(fiterr);
+
+        int length=decsize;
+        for (int k = 0; k < lout.size(); k+=decsize) {
+
+            // Do stuff
+            for(int l=0;l<length;l++,p+=2) {
+                tmp_total_error[k] += tmp_fiterr[p];  // loss
+                tmp_fiterr[p] = tmp_fiterr[p + 1] = 0.0;
+            }
+
+            // Compute average loss
+            if (losses.size()>=(k+1)) {
+                loss_values.push_back(tmp_total_error[k] /  (float)(length*inferenced_samples));
+            }
+        }
+    }
+
+    return loss_values;
+}
+
+vector<float> Net::get_metrics(){
+    // NOTE: I have no idea how the internals of the metrics/loss values work,
+    // so I did a sort of copy and paste from print_loss fuction with minor workarounds
+    vector<float> metrics_values;
+
+    if (this->isrecurrent) {
+        if (this->rnet!=nullptr) { this->rnet->get_metrics(); } // Dangerous A.F.
+    } else {
+        int p = 0;
+
+        // Copy total_loss / fiterr (I don't know how it works but i don't like it...)
+        vector<float> tmp_total_metrics(total_metric);
+        vector<float> tmp_fiterr(fiterr);
+
+        int length=decsize;
+        for (int k = 0; k < lout.size(); k+=decsize) {
+
+            for(int l=0;l<length;l++,p+=2) {
+                tmp_total_metrics[k] += tmp_fiterr[p + 1];  // metric
+                tmp_fiterr[p] = tmp_fiterr[p + 1] = 0.0;
+            }
+
+            if (metrics.size()>=(k+1)) {
+                metrics_values.push_back( tmp_total_metrics[k] / (float)(length*inferenced_samples));
+            }
+
+        }
+    }
+
+    return metrics_values;
+}
+
 void Net::reset_grads()
 {
   if (isrecurrent)
@@ -976,6 +1037,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
       snets[i]->lout[j]->check_target();
       Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
 
+      /* Better do n-best
       if (isdecoder) {
         if (eval) {
           if (j==0) snets[i]->din[0]->input->fill_(0.0); //start
@@ -988,6 +1050,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
           else Tensor::copy(Ys[i][j-1], snets[i]->din[j]->input);
         }
       }
+      */
     }
   }
 
@@ -996,10 +1059,12 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
   else
   run_snets(train_batch_t);
 
+  /*
   if ((eval)&&(isdecoder))
     for (int i = 0; i < comp; i++)
       for (int j = 1; j < Y.size(); j++)
          snets[i]->lout[j-1]->detach(snets[i]->din[j]);
+  */
 
   // If training (eval==0), apply gradients
   if (!eval) {
@@ -1061,7 +1126,7 @@ void Net::evaluate(vtensor tin, vtensor tout,int bs) {
     for (j = 0; j < n / batch_size; j++) {
 
       for (k=0;k<batch_size;k++)
-      sind[k]=(j*batch_size)+k;
+        sind [k]=(j*batch_size)+k;
 
       train_batch(tin, tout, sind, 1);
 
@@ -1172,12 +1237,5 @@ vtensor Net::predict(vtensor tin) {
   }
 
 }
-
-
-
-
-
-
-
 
 //////

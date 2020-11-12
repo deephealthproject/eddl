@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -241,13 +241,13 @@ void cpu_softmax(Tensor *A, Tensor *B) {
 
 void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
     _profile(_CPU_D_SOFTMAX, 0);
-    PD->tsem->lock();
+
 
 #pragma omp parallel for
     for (int i = 0; i < D->size; i++)
         PD->ptr[i] += D->ptr[i] * (I->ptr[i] * (1.0 - I->ptr[i]));
 
-    PD->tsem->unlock();
+
     _profile(_CPU_D_SOFTMAX, 1);
 }
 
@@ -311,16 +311,14 @@ void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD) {
 
         // 1) Compute Jacobbian matrix: DS=[ NxN ]  // DjSi
         // 2) Compute delta: D * DS = (1,n)x(n,n)=(1,n)
-        // 2.1) Dot product: D0*DS0,0 + D1*DS0,1 + D2*DS0,2 + ...
+        // 2.1) Dot product: PD[i] = Dj*DjSi = D0*D0Di + D1*D1Di + ... Dn*DnSi
         for(int i=0; i<n_features; i++){  // Rows
             for(int j=0; j<n_features; j++){  // Cols
 
                 // Derivative
-                float DjSi = SM->ptr[start+i] * ((float)(i==j) - SM->ptr[start+j]);
+                float DjSi = SM->ptr[start+i] * (float)(i==j) - SM->ptr[start+j]*SM->ptr[start+i];
+                PD->ptr[start+i] += D->ptr[start+j] * DjSi;
 
-                // Dot product: Dj=D*DS[:, j]
-                // "i" trick. Technically, PD is (1, n) but I can consider it as (n, 1) without reshaping it
-                D->ptr[start+j] += PD->ptr[start+i] * DjSi;
             }
         }
     }

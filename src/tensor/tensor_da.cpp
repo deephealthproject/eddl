@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -14,6 +14,7 @@
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -48,6 +49,8 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, WrappingMode mode, f
         msg("This method requires two 4D tensors", "Tensor::shift");
     }
 
+    PROFILING_HEADER_EXTERN(shift);
+
     if (A->isCPU()) {
         cpu_shift(A, B, std::move(shift), mode, cval);
     }
@@ -62,6 +65,8 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, WrappingMode mode, f
         fpga_shift(A, B, std::move(shift), mode, cval);
     }
 #endif
+
+    PROFILING_FOOTER(shift);
 }
 
 Tensor* Tensor::rotate(float angle, vector<int> offset_center, WrappingMode mode, float cval){
@@ -78,6 +83,8 @@ void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center
         msg("This method requires two 4D tensors", "Tensor::rotate");
     }
 
+    PROFILING_HEADER_EXTERN(rotate);
+
     if (A->isCPU()) {
         cpu_rotate(A, B, angle, std::move(offset_center), mode, cval);
     }
@@ -92,6 +99,8 @@ void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center
         fpga_rotate(A, B, angle, std::move(offset_center), mode, cval);
     }
 #endif
+
+    PROFILING_FOOTER(rotate);
 }
 
 Tensor* Tensor::scale(vector<int> new_shape, WrappingMode mode, float cval, bool keep_size) {
@@ -120,6 +129,8 @@ void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mod
         msg("This method requires two 4D tensors", "Tensor::scale");
     }
 
+    PROFILING_HEADER_EXTERN(scale);
+
     if (A->isCPU()) {
         cpu_scale(A, B, std::move(new_shape), mode, cval);
     }
@@ -134,6 +145,8 @@ void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mod
         fpga_scale(A, B, std::move(new_shape), mode, cval);
     }
 #endif
+
+    PROFILING_FOOTER(scale);
 }
 
 
@@ -156,6 +169,8 @@ void Tensor::flip(Tensor *A, Tensor *B, int axis) {
         msg("This method requires two 4D tensors", "Tensor::flip");
     }
 
+    PROFILING_HEADER_EXTERN(flip);
+
     if (A->isCPU()) {
         cpu_flip(A, B, axis);
     }
@@ -170,6 +185,8 @@ void Tensor::flip(Tensor *A, Tensor *B, int axis) {
         fpga_flip(A, B, axis);
     }
 #endif
+
+    PROFILING_FOOTER(flip);
 }
 
 Tensor* Tensor::crop(vector<int> coords_from, vector<int> coords_to, float cval, bool keep_size){
@@ -200,6 +217,8 @@ void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coo
         msg("This method requires two 4D tensors", "Tensor::crop");
     }
 
+    PROFILING_HEADER_EXTERN(crop);
+
     if (A->isCPU()) {
         cpu_crop(A, B, std::move(coords_from), std::move(coords_to), cval, false);
     }
@@ -214,6 +233,8 @@ void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coo
         fpga_crop(A, B, std::move(coords_from), std::move(coords_to), cval, false);
     }
 #endif
+
+    PROFILING_FOOTER(crop);
 }
 
 Tensor* Tensor::crop_scale(vector<int> coords_from, vector<int> coords_to, WrappingMode mode, float cval){
@@ -237,6 +258,8 @@ void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<in
         msg("This method requires two 4D tensors", "Tensor::crop_scale");
     }
 
+    PROFILING_HEADER_EXTERN(crop_scale);
+
     if (A->isCPU()) {
         cpu_crop_scale(A, B, std::move(coords_from), std::move(coords_to), mode, cval);
     }
@@ -251,6 +274,8 @@ void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<in
         fpga_crop_scale(A, B, std::move(coords_from), std::move(coords_to), mode, cval);
     }
 #endif
+
+    PROFILING_FOOTER(crop_scale);
 }
 
 
@@ -277,6 +302,8 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
         msg("This method requires two 4D tensors", "Tensor::cutout");
     }
 
+    PROFILING_HEADER_EXTERN(cutout);
+
     if (A->isCPU()) {
         cpu_crop(A, B, std::move(coords_from), std::move(coords_to), cval, true);
     }
@@ -291,6 +318,8 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
         fpga_crop(A, B, std::move(coords_from), std::move(coords_to), cval, true);
     }
 #endif
+
+    PROFILING_FOOTER(cutout);
 }
 
 
@@ -318,6 +347,8 @@ void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<f
         msg("This method requires two 4D tensors", "Tensor::shift_random");
     }
 
+    PROFILING_HEADER_EXTERN(shift_random);
+
     if (A->isCPU()) {
         cpu_shift_random(A, B, std::move(factor_x), std::move(factor_y), mode, cval);
     }
@@ -332,6 +363,8 @@ void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<f
         fpga_shift_random(A, B, std::move(factor_x), std::move(factor_y), mode, cval);
     }
 #endif
+
+    PROFILING_FOOTER(shift_random);
 }
 
 
@@ -349,6 +382,8 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
         msg("This method requires two 4D tensors", "Tensor::rotate_random");
     }
 
+    PROFILING_HEADER_EXTERN(rotate_random);
+
     if (A->isCPU()) {
         cpu_rotate_random(A, B,  std::move(factor), std::move(offset_center), mode, cval);
     }
@@ -363,6 +398,8 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
         fpga_rotate_random(A, B,  std::move(factor), std::move(offset_center), mode, cval);
     }
 #endif
+
+    PROFILING_FOOTER(rotate_random);
 }
 
 Tensor* Tensor::scale_random(vector<float> factor, WrappingMode mode, float cval){
@@ -384,6 +421,8 @@ void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMo
         msg("This method requires two 4D tensors", "Tensor::scale_random");
     }
 
+    PROFILING_HEADER_EXTERN(scale_random);
+
     if (A->isCPU()) {
         cpu_scale_random(A, B, std::move(factor), mode, cval);
     }
@@ -398,6 +437,8 @@ void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMo
         fpga_scale_random(A, B, std::move(factor), mode, cval);
     }
 #endif
+
+    PROFILING_FOOTER(scale_random);
 }
 
 
@@ -420,6 +461,8 @@ void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
         msg("This method requires two 4D tensors", "Tensor::flip_random");
     }
 
+    PROFILING_HEADER_EXTERN(flip_random);
+
     if (A->isCPU()) {
         cpu_flip_random(A, B, axis);
     }
@@ -434,6 +477,8 @@ void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
         fpga_flip_random(A, B, axis);
     }
 #endif
+
+    PROFILING_FOOTER(flip_random);
 }
 
 Tensor* Tensor::crop_random(int height, int width, float cval, bool keep_size){
@@ -464,6 +509,8 @@ void Tensor::crop_random(Tensor *A, Tensor *B) {
         msg("This method requires two 4D tensors", "Tensor::crop_random");
     }
 
+    PROFILING_HEADER_EXTERN(crop_random);
+
     if (A->isCPU()) {
         cpu_crop_random(A, B);
     }
@@ -478,6 +525,8 @@ void Tensor::crop_random(Tensor *A, Tensor *B) {
         fpga_crop_random(A, B);
     }
 #endif
+
+    PROFILING_FOOTER(crop_random);
 }
 
 Tensor* Tensor::crop_scale_random(vector<float> factor, WrappingMode mode, float cval){
@@ -498,6 +547,8 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, Wrapp
         msg("This method requires two 4D tensors", "Tensor::crop_scale_random");
     }
 
+    PROFILING_HEADER_EXTERN(crop_scale_random);
+
     if (A->isCPU()) {
         cpu_crop_scale_random(A, B, std::move(factor), mode, cval);
     }
@@ -512,6 +563,8 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, Wrapp
         fpga_crop_scale_random(A, B, std::move(factor), mode, cval);
     }
 #endif
+
+    PROFILING_FOOTER(crop_scale_random);
 }
 
 Tensor* Tensor::cutout_random(vector<float> factor_x, vector<float> factor_y, float cval){
@@ -536,6 +589,8 @@ void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<
         msg("This method requires two 4D tensors", "Tensor::cutout_random");
     }
 
+    PROFILING_HEADER_EXTERN(cutout_random);
+
     if (A->isCPU()) {
         cpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), cval);
     }
@@ -550,4 +605,6 @@ void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<
         fpga_cutout_random(A, B, std::move(factor_x), std::move(factor_y), cval);
     }
 #endif
+
+  PROFILING_FOOTER(cutout_random);
 }

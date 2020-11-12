@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -230,14 +230,14 @@ void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
 
 
 void cpu_inc(Tensor *A, Tensor *B) {
-    B->tsem->lock();
+
 
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++){
         B->ptr[i] += A->ptr[i];
     }
 
-    B->tsem->unlock();
+
 }
 
 void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {

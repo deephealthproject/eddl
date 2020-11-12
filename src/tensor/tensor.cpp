@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -54,7 +54,7 @@ void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title){
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
 
-Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
+Tensor::Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2){
     /*
      * Important! If we are creating a GPU tensor, "fptr" must point to a GPU pointer.
      */
@@ -79,16 +79,18 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     updateShape(shape);
     updateSize();
     updateStrides();
-    updateData(fptr);
-
-    this->tsem = new mutex();
+    updateData(fptr, fptr2);
 }
 
 // From shape and device
 Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
-Tensor::Tensor(const vector<int> &shape, Tensor *T) : Tensor(shape,T->ptr, T->device) {}
+Tensor::Tensor(const vector<int> &shape, Tensor *T) : Tensor(shape,T->ptr, T->device
+#ifdef cFPGA
+		, (void *)T->fpga_ptr
+#endif
+		) {}
 
 Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : Tensor(shape, nullptr, DEV_CPU) {
     isshared=false;
@@ -109,7 +111,6 @@ Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : T
 
 Tensor::~Tensor() {
     this->deleteData();
-    if(this->tsem != nullptr) { this->tsem->unlock(); delete tsem; }
 }
 
 void Tensor::updateDevice(int dev){
@@ -211,17 +212,20 @@ void Tensor::updateData(float *fptr, void *fptr2,bool setshared){
 #ifdef cFPGA
     else if (this->isFPGA())
     {
+	#ifdef FPGA_DEBUG
+	printf("Tensor::updateData: fptr=%p, fptr2=%p, setshared=%d\n", fptr, fptr2, setshared);
+        #endif
         fpga_device = device-DEV_FPGA;
         if (!initfpga[fpga_device]) {
           #ifdef FPGA_DEBUG
-          printf("Initializing FPGA device\n");
+          printf(" initializing FPGA device\n");
           #endif
           fpga_init(/*fpga_device*/);
           initfpga[fpga_device]=1;
         }
         if (fptr == nullptr) {
           #ifdef FPGA_DEBUG
-          printf("  ([updateData fptr==null] creating tensor size %d; id being assigned %d)\n", this->size, next_fpga_tensor_id);
+          printf(" creating tensor: size=%d fpga_tensor_id=%d\n", this->size, next_fpga_tensor_id);
           #endif
           this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
           this->fpga_size = this->size;
@@ -231,27 +235,54 @@ void Tensor::updateData(float *fptr, void *fptr2,bool setshared){
           this->fpga_tensor_id = next_fpga_tensor_id;
           next_fpga_tensor_id++;
           #ifdef FPGA_DEBUG
-          printf("  ([updateData] ptr %p fpga_ptr %p)\n", this->ptr, this->fpga_ptr);
+          printf("  new pointers: ptr=%p fpga_ptr=%p\n", this->ptr, this->fpga_ptr);
           #endif
         } else {
-          // The data has already been created in CPU, so we need now to create a buffer in FPGA and write the buffer into it
-          // we first update the cpu buffer
-          #ifdef FPGA_DEBUG
-          printf("  ([updateData fptr!=null] fptr %p tensor id %d ptr %p fpga_ptr %p size %d fpga_size %d)\n", fptr, this->fpga_tensor_id, this->ptr, this->fpga_ptr, this->size, this->fpga_size);
-          #endif
-          this->fpga_size = this->size;
-          #ifdef FPGA_DEBUG
-          printf("    reallocated tensor id %d new size %d\n", this->fpga_tensor_id, this->fpga_size);
+          printf(" info: fpga_ptr %p fptr2 %p\n", this->fpga_ptr, fptr2);
+          if ((this->fpga_ptr == (cl::Buffer *)nullptr) && (fptr2 == nullptr)) {
+            this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
+            this->fpga_size = this->size;
+            this->fpga_tensor_id = next_fpga_tensor_id;
+            next_fpga_tensor_id++;
+            fpga_copy_to_fpga(fptr, this);
+            #ifdef FPGA_DEBUG
+            printf("  fpga_ptr and fptr2 were null, we create a buffer with tensor id %d\n", this->fpga_tensor_id);
             #endif
+          } else if ((this->fpga_ptr == (cl::Buffer *)nullptr) && (fptr2 != nullptr)) {
+            #ifdef FPGA_DEBUG
+            printf("  fpga_ptr null but fptr2 not\n");
+            #endif
+            this->fpga_size = this->size;
+            this->fpga_ptr = (cl::Buffer *)fptr2;
+	    this->fpga_tensor_id = next_fpga_tensor_id;
+	    next_fpga_tensor_id++;
+            #ifdef FPGA_DEBUG
+	    printf("   new fpga_size %d fpga_ptr %p fpga_tensor_id %d\n", this->fpga_size, this->fpga_ptr, this->fpga_tensor_id);
+            #endif
+          } else {
+            #ifdef FPGA_DEBUG
+	    printf("  fpga_ptr and fptr2 are not null\n");
+            #endif
+            this->fpga_size = this->size;
+            this->fpga_ptr = (cl::Buffer *)fptr2;
+            #ifdef FPGA_DEBUG
+	    printf("   new fpga_size %d fpga_ptr %x\n", this->fpga_size, this->fpga_ptr);
+            #endif
+          }
+          #ifdef FPGA_DEBUG
+          printf("  end of changes: fptr %p tensor id %d ptr %p fpga_ptr %p size %d fpga_size %d fptr2 %p)\n", fptr, this->fpga_tensor_id, this->ptr, this->fpga_ptr, this->size, this->fpga_size, fptr2);
+          #endif
           this->ptr = fptr;
-	  this->fpga_ptr = (cl::Buffer *)fptr2;
         }
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
         if (this->ndim == 2) {
           this->ptr2= new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
         }
-      }
+        #ifdef FPGA_DEBUG
+        printf("-------------------------\n");
+        #endif
+    }
 #endif
 }
 
@@ -355,6 +386,20 @@ void Tensor::toFPGA(int dev){
 #endif
 }
 
+void Tensor::toDevice(int dev){
+    int dev_id = Tensor::getDeviceID(dev);
+
+    // Select device
+    if(dev_id == 0){  // CPU
+        this->toCPU(dev);
+    }else if(dev_id == 1){  // GPU
+        this->toGPU(dev);
+    }else if(dev_id == 2) {  // FPGA
+        this->toFPGA(dev);
+    }else{
+        throw std::runtime_error("Not compiled for FPGA");
+    }
+}
 
 Tensor* Tensor::clone(){
     auto* t_new = new Tensor(this->shape, this->device);
@@ -436,7 +481,10 @@ void Tensor::print(int precision, bool raw) {
     buffer << std::fixed;
     buffer << std::setprecision(precision);
 
+    int lines = 0;
+    int max_lines = 100000;
     for (int i = 0; i < aux->size; ++i) {
+        if(i % this->stride[0]==0){lines++;}
 
         if(raw){
             // Print number
@@ -476,6 +524,13 @@ void Tensor::print(int precision, bool raw) {
                 }
             }
 
+            // Stop
+            if(lines >= max_lines){
+                cout << "Maximum tensor length exceeded." << endl;
+                cout << "Printing only first " << max_lines << " rows:" << endl;
+                break;
+            }
+
         }
 
     }
@@ -493,13 +548,20 @@ void Tensor::print(int precision, bool raw) {
     }
 }
 
-string Tensor::getDeviceName(){
-    if ((this->device >= DEV_CPU) && (this->device < DEV_GPU)) { return "CPU"; }
-    else if ((device >= DEV_GPU) && (this->device < DEV_FPGA)) { return "GPU"; }
-    else if (this->device >= DEV_FPGA) { return "FPGA"; }
+string Tensor::getDeviceName() const{
+    int dev_id = Tensor::getDeviceID(this->device);
+    if (dev_id == 0) { return "CPU"; }
+    else if (dev_id == 1) { return "GPU"; }
+    else if (dev_id == 2) { return "FPGA"; }
     return "unknown";
 }
 
+int Tensor::getDeviceID(int dev) const{
+    if ((dev >= DEV_CPU) && (dev < DEV_GPU)) { return 0; }
+    else if ((device >= DEV_GPU) && (dev < DEV_FPGA)) { return 1; }
+    else if (dev >= DEV_FPGA) { return 2; }
+    return -1;
+}
 
 bool Tensor::isSquared(Tensor *A){
     int last_dim = A->shape[0];

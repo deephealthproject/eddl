@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -70,7 +70,7 @@ namespace eddl {
     void removeLayer(Net *net, string l);
     void setTrainable(model net, string lanme, bool val);
 
-    vector<vtensor> get_parameters(model net, bool deepcopy=false);
+    vector<vtensor> get_parameters(model net, bool deepcopy=false, bool tocpu=false);
     void set_parameters(model net, const vector<vtensor>& params);
 
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
@@ -595,6 +595,22 @@ namespace eddl {
     */
     void print_loss(model m, int batch);
 
+    /**
+      *  @brief Get model losses
+      *
+      *  @param net  Model
+      *  @return vector<float>
+    */
+    vector<float> get_losses(model m);
+
+    /**
+      *  @brief Get model metrics
+      *
+      *  @param net  Model
+      *  @return vector<float>
+    */
+    vector<float> get_metrics(model m);
+
     // model constraints
     /**
       *  @brief Model parameters values clipping.
@@ -679,13 +695,20 @@ namespace eddl {
       *  @param l  Layer to detach
       *  @return   Detached Layer
     */
-    layer detach(layer l);/**
+    layer detach(layer l);
+    
+    /**
       *  @brief Sets the provided layers as detached, excluding them from the computation of the gradients.
       *
       *  @param l  Layers to detach
       *  @return   Detached Layers
     */
     vlayer detach(vlayer l);
+
+    /**
+      * @brief Shows profile information.
+    */
+    void show_profile();   
 
 
     ///////////////////////////////////////
@@ -709,16 +732,8 @@ namespace eddl {
     */
     layer Activation(layer parent, string activation, vector<float> params={}, string name="");
 
-    /**
-      *  @brief Applies a Softmax activation function to the given layer.
-      *
-      *  @see   https://en.wikipedia.org/wiki/Softmax_function
-      *
-      *  @param parent  Parent layer
-      *  @param name  Name of the layer
-      *  @return     Output of Softmax transformation
-    */
-    layer Softmax(layer parent, string name="");
+
+    layer SoftmaxDeprecated(layer parent, string name="");
 
     /**
       *  @brief Applies a Jacobian Softmax activation function to the given layer.
@@ -729,7 +744,7 @@ namespace eddl {
       *  @param name  Name of the layer
       *  @return     Output of Softmax transformation
     */
-    layer FullSoftmax(layer parent, string name="");
+    layer Softmax(layer parent, string name= "");
 
     /**
       *  @brief Applies a Sigmoid activation function to the given layer.
@@ -889,6 +904,21 @@ namespace eddl {
                  vector<int> strides = {1}, string padding = "same", bool use_bias = true,
                  int groups = 1, const vector<int> dilation_rate = {1}, string name = "");
 
+
+    /**
+      *  @brief Pointwise convolution
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer PointwiseConv(layer parent, int filters, const vector<int> &strides = {1, 1}, bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
     /**
       *  @brief Regular densely-connected NN layer.
@@ -1413,7 +1443,6 @@ namespace eddl {
       *  @see   https://arxiv.org/abs/1607.06450
       *
       *  @param parent  Parent layer
-      *  @param momentum  Momentum for the moving mean and the moving variance
       *  @param epsilon  Value added to the denominator for numerical stability
       *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
       *  @param name  A name for the operation
@@ -1432,7 +1461,6 @@ namespace eddl {
       *
       *  @param parent  Parent layer
       *  @param groups  Number of groups in which the channels will be divided
-      *  @param momentum  Momentum for the moving mean and the moving variance
       *  @param epsilon  Value added to the denominator for numerical stability
       *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
       *  @param name  A name for the operation
@@ -1461,8 +1489,13 @@ namespace eddl {
       *
       *  @param l1  A layer
       *  @param l2  A layer
-      *  @return     Difference between l1 and l2
+      *  @return Difference between l1 and l2
     */
+    layer Sub(layer l1, layer l2);
+    layer Sub(layer l1, float k);
+    layer Sub(float k, layer l1);
+
+    // Deprecate aliases
     layer Diff(layer l1, layer l2);
     layer Diff(layer l1, float k);
     layer Diff(float k, layer l1);
@@ -1547,7 +1580,7 @@ namespace eddl {
       *  @param l2  Layer
       *  @return     The result after computing the sum between layers l1 and l2
     */
-    layer Sum(layer l1, layer l2);
+    layer Add(layer l1, layer l2);
 
     /**
       *  @brief Layer that computes the sum of a float number and a layer.
@@ -1556,6 +1589,11 @@ namespace eddl {
       *  @param k  Number
       *  @return     Parent layer l1 after computing his sum with k
     */
+    layer Add(layer l1, float k);
+    layer Add(float k, layer l1);
+
+    // Deprecated
+    layer Sum(layer l1, layer l2);
     layer Sum(layer l1, float k);
     layer Sum(float k, layer l1);
 

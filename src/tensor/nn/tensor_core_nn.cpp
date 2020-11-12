@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -11,6 +11,7 @@
 
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -24,6 +25,13 @@
 
 extern int next_fpga_tensor_id;
 #endif
+
+PROFILING_ENABLE_EXTERN(repeat_nn);
+PROFILING_ENABLE_EXTERN(d_repeat_nn);
+PROFILING_ENABLE_EXTERN(select);
+PROFILING_ENABLE_EXTERN(select_back);
+PROFILING_ENABLE_EXTERN(set_select);
+PROFILING_ENABLE_EXTERN(set_select_back);
 
 namespace tensorNN {
 
@@ -41,6 +49,8 @@ namespace tensorNN {
             }
         }
 
+        PROFILING_HEADER(repeat_nn);
+
         if (A->isCPU() && B->isCPU()) {
             cpu_repeat_nn(A, B, size);
         }
@@ -51,14 +61,18 @@ namespace tensorNN {
 #endif
 #ifdef cFPGA
         else {
-
+            printf("repeat_nn not supported yet on FPGA\n");
+            exit(1);
         }
 #endif
+        PROFILING_FOOTER(repeat_nn);
     }
 
     void d_repeat_nn(Tensor *D, Tensor *A, vector<int> size) {
         // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
         if ((D->device != A->device)) msg("Tensors in different devices", "Tensor::D_Repeat_NN");
+
+        PROFILING_HEADER(d_repeat_nn);
 
         if (D->isCPU() && A->isCPU()) {
             cpu_d_repeat_nn(D, A, size);
@@ -70,13 +84,18 @@ namespace tensorNN {
 #endif
 #ifdef cFPGA
         else {
-
+            printf("d_repeat_nn not implemented in FPGA yet\n");
+            exit(1);
         }
 #endif
+        PROFILING_FOOTER(d_repeat_nn);
     }
 
 
     void select(Tensor *A, Tensor* B, SelDescriptor *sd){
+
+        PROFILING_HEADER(select);
+
         if (A->isCPU() && B->isCPU()) {
             cpu_select_nn(A, B, sd);
         }
@@ -92,10 +111,13 @@ namespace tensorNN {
             fpga_select_nn(A, B, sd);
         }
 #endif
-
+        PROFILING_FOOTER(select);
     }
 
     void select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
+
+        PROFILING_HEADER(select_back);
+
         if (A->isCPU() && B->isCPU()) {
             cpu_select_back_nn(A, B, sd);
         }
@@ -111,10 +133,13 @@ namespace tensorNN {
            fpga_select_back_nn(A, B, sd);
         }
 #endif
-
+        PROFILING_FOOTER(select_back);
     }
 
     void set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
+
+        PROFILING_HEADER(set_select);
+
         if (A->isCPU() && B->isCPU()) {
             cpu_set_select_nn(A, B, sd);
         }
@@ -130,10 +155,14 @@ namespace tensorNN {
             fpga_set_select_nn(A, B, sd);
         }
 #endif
+        PROFILING_FOOTER(set_select);
     }
 
 
     void set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
+
+        PROFILING_HEADER(set_select_back);
+
         if (A->isCPU() && B->isCPU()) {
             cpu_set_select_back_nn(A, B, sd);
         }
@@ -149,7 +178,7 @@ namespace tensorNN {
             fpga_set_select_back_nn(A, B, sd);
         }
 #endif
-
+        PROFILING_FOOTER(set_select_back);
     }
 
 }

@@ -1,13 +1,14 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -19,6 +20,11 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
+
+PROFILING_ENABLE_EXTERN(MPool2D);
+PROFILING_ENABLE_EXTERN(MPool2D_back);
+PROFILING_ENABLE_EXTERN(AvgPool2D);
+PROFILING_ENABLE_EXTERN(AvgPool2D_back);
 
 namespace tensorNN {
 
@@ -32,7 +38,9 @@ namespace tensorNN {
         /////////////////////////////////////////////////////////////////////
         if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D");
 
-        D->O->tsem->lock();
+	      PROFILING_HEADER(MPool2D);
+
+
         if (D->I->isCPU()) {
             cpu_mpool2D(D);
         }
@@ -48,7 +56,9 @@ namespace tensorNN {
         fpga_mpool2D(D);
       }
 #endif
-        D->O->tsem->unlock();
+
+
+	      PROFILING_FOOTER(MPool2D);
     }
 
     void MPool2D_back(PoolDescriptor *D) {
@@ -60,7 +70,9 @@ namespace tensorNN {
         /////////////////////////////////////////////////////////////////////
         if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D_back");
 
-        D->ID->tsem->lock();
+        PROFILING_HEADER(MPool2D_back);
+
+
         if (D->I->isCPU()) {
             cpu_mpool2D_back(D);
         }
@@ -76,7 +88,9 @@ namespace tensorNN {
         fpga_mpool2D_back(D);
       }
 #endif
-        D->ID->tsem->unlock();
+
+
+        PROFILING_FOOTER(MPool2D_back);
     }
 
 
@@ -89,7 +103,9 @@ namespace tensorNN {
         /////////////////////////////////////////////////////////////////////
         if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::AvgPool2D");
 
-        D->O->tsem->lock();
+        PROFILING_HEADER(AvgPool2D);
+
+
         if (D->I->isCPU()) {
             cpu_avgpool2D(D);
         }
@@ -105,7 +121,9 @@ namespace tensorNN {
         fpga_avgpool2D(D);
       }
 #endif
-        D->O->tsem->unlock();
+
+
+        PROFILING_FOOTER(AvgPool2D);
     }
 
     void AvgPool2D_back(PoolDescriptor *D) {
@@ -117,7 +135,9 @@ namespace tensorNN {
         /////////////////////////////////////////////////////////////////////
         if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::AvgPool2D_back");
 
-        D->ID->tsem->lock();
+        PROFILING_HEADER(AvgPool2D_back);
+
+
         if (D->I->isCPU()) {
             cpu_avgpool2D_back(D);
         }
@@ -133,7 +153,9 @@ namespace tensorNN {
         fpga_avgpool2D_back(D);
       }
 #endif
-        D->ID->tsem->unlock();
+
+
+        PROFILING_FOOTER(AvgPool2D_back);
     }
 
 }

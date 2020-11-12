@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -58,5 +58,9 @@ string printVector(vector<T> myvector){
 
 enum WrappingMode {Constant=0, Reflect=1, Nearest=2, Mirror=3, Wrap=4, Original=5};
 WrappingMode getWrappingMode(string mode);
+
+void __show_profile();
+
+void show_deprecated_warning(const string& deprecated_name, const string& new_name="", const string& type="function", const string& version="future");
 
 #endif //EDDL_UTILS_H

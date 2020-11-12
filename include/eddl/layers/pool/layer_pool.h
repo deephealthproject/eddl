@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -39,6 +39,23 @@ public:
     void resize(int batch) override;
 };
 
+/// Pool1D Layer
+class LPool1D : public LinLayer {
+public:
+    static int total_layers;
+    PoolDescriptor *pd;
+    Tensor* input_reshaped;
+
+    // constructors
+    LPool1D(Layer *parent, PoolDescriptor *cd, string name, int dev, int mem);
+
+    ~LPool1D();
+
+    void mem_delta() override;
+
+    void resize(int batch) override;
+};
+
 /// MaxPool2D Layer
 class LMaxPool : public LPool {
 public:
@@ -49,6 +66,32 @@ public:
     LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, const string& name, int dev, int mem);
 
     LMaxPool(Layer *parent, PoolDescriptor *cd, const string& name, int dev, int mem);
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    string plot(int c) override;
+
+};
+
+/// MaxPool1D Layer
+class LMaxPool1D : public LPool1D {
+public:
+
+    // constructors and clones
+    LMaxPool1D(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, const string& name, int dev, int mem);
+
+    LMaxPool1D(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, const string& name, int dev, int mem);
+
+    LMaxPool1D(Layer *parent, PoolDescriptor *cd, const string& name, int dev, int mem);
 
     // implementation
     void forward() override;

@@ -30,6 +30,8 @@ using namespace std;
 
 	void build_maxpool_node( LMaxPool *layer, onnx::GraphProto *graph );
 
+	void build_maxpool1D_node( LMaxPool1D *layer, onnx::GraphProto *graph );
+
 	void build_averagepool_node( LAveragePool *layer, onnx::GraphProto *graph );
 
 	void build_reshape_node( LReshape *layer, onnx::GraphProto *graph );
@@ -217,6 +219,10 @@ using namespace std;
 		{
 	    	build_maxpool_node( (LMaxPool*)(LinLayer*)layer, graph );
 	    } 
+		else if ( LMaxPool1D *t = dynamic_cast<LMaxPool1D*>( layer ) ) 
+		{
+	    	build_maxpool1D_node( (LMaxPool1D*)(LinLayer*)layer, graph );
+	    } 
 	    else if ( LAveragePool *t = dynamic_cast<LAveragePool*>( layer ) ) 
 		{
 	    	build_averagepool_node( (LAveragePool*)(LinLayer*)layer, graph );
@@ -276,7 +282,7 @@ using namespace std;
 			{
 	    		build_selu_node( (LActivation*)(LinLayer*)layer, graph );
 	    	} 
-			else if ( !((LActivation *)(layer))->act.compare( "softmax" ) ) 
+			else if ( !((LActivation *)(layer))->act.compare( "softmax" ) || !((LActivation *)(layer))->act.compare( "full_softmax" ) ) 
 			{
 	    		build_softmax_node( (LActivation*)(LinLayer*)layer, graph );
 	    	} 
@@ -474,7 +480,7 @@ using namespace std;
 		onnx::AttributeProto* conv_strides = node->add_attribute();
 		conv_strides->set_name( "strides" );
 		conv_strides->set_type( onnx::AttributeProto::INTS );
-		conv_strides->add_ints( layer->cd->sc );
+		conv_strides->add_ints( layer->cd->sr );
 
 		// Check if we are exporting weights or accumulated gradients 
 		if ( !gradients ) {
@@ -620,6 +626,37 @@ using namespace std;
 		max_pool_strides->add_ints( layer->pd->sr );
 		max_pool_strides->add_ints( layer->pd->sc );
 	}
+
+    void build_maxpool1D_node( LMaxPool1D *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "MaxPool" );
+		node->set_name( layer->name );
+		// Set the inputs of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr kernel_shape
+		onnx::AttributeProto* max_pool_ks = node->add_attribute();
+		max_pool_ks->set_name( "kernel_shape" );
+		max_pool_ks->set_type( onnx::AttributeProto::INTS );
+		max_pool_ks->add_ints( layer->pd->kr );
+		// Attr pads
+		onnx::AttributeProto* max_pool_pads = node->add_attribute();
+		max_pool_pads->set_name( "pads" );
+		max_pool_pads->set_type( onnx::AttributeProto::INTS );
+		max_pool_pads->add_ints( layer->pd->padrt );
+		max_pool_pads->add_ints( layer->pd->padrb );
+		// Attr strides
+		onnx::AttributeProto* max_pool_strides = node->add_attribute();
+		max_pool_strides->set_name( "strides" );
+		max_pool_strides->set_type( onnx::AttributeProto::INTS );
+		max_pool_strides->add_ints( layer->pd->sr );
+	}
+
 
 	void build_averagepool_node( LAveragePool *layer, onnx::GraphProto *graph ) {
 		// Add an empty node to the graph
