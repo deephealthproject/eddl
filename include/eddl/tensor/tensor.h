@@ -2376,19 +2376,6 @@ public:
 
     // Logic funcions: Truth value testing *****************************
 
-    bool all();
-    bool any();
-    Tensor* isfinite();
-    Tensor* isinf();
-    Tensor* isnan();
-    Tensor* isneginf();
-    Tensor* isposinf();
-    Tensor* logical_not();
-    Tensor* logical_and(Tensor *A);
-    Tensor* logical_or(Tensor *A);
-    Tensor* logical_xor(Tensor *A);
-    bool allclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
-    Tensor* isclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
 
     /**
       *  @brief Test whether all elements evaluate to True.
@@ -2397,6 +2384,7 @@ public:
       *  @return    bool
     */
     static bool all(Tensor *A);
+    bool all();
 
     /**
       *  @brief Test whether any element evaluates to True.
@@ -2405,6 +2393,7 @@ public:
       *  @return    bool
     */
     static bool any(Tensor *A);
+    bool any();
 
     // Logic funcions: Logical ops
 
@@ -2416,6 +2405,7 @@ public:
       *  @return    void
     */
     static void isfinite(Tensor *A, Tensor* B);
+    Tensor* isfinite();
 
     /**
       *  @brief Test element-wise for positive or negative infinity.
@@ -2425,6 +2415,7 @@ public:
       *  @return    void
     */
     static void isinf(Tensor *A, Tensor* B);
+    Tensor* isinf();
 
     /**
       *  @brief Test element-wise for Nan.
@@ -2434,6 +2425,7 @@ public:
       *  @return    void
     */
     static void isnan(Tensor *A, Tensor* B);
+    Tensor* isnan();
 
     /**
       *  @brief Test element-wise for negative infinity.
@@ -2443,6 +2435,7 @@ public:
       *  @return    void
     */
     static void isneginf(Tensor *A, Tensor* B);
+    Tensor* isneginf();
 
     /**
       *  @brief Test element-wise for positive infinity.
@@ -2452,6 +2445,7 @@ public:
       *  @return    void
     */
     static void isposinf(Tensor *A, Tensor* B);
+    Tensor* isposinf();
 
     // Logic funcions: Logical ops
 
@@ -2464,6 +2458,7 @@ public:
       *  @return    void
     */
     static void logical_and(Tensor *A, Tensor *B, Tensor *C);
+    Tensor* logical_and(Tensor *A);
 
     /**
       *  @brief Compute the truth value of ``A or B`` element-wise.
@@ -2474,6 +2469,7 @@ public:
       *  @return    void
     */
     static void logical_or(Tensor *A, Tensor *B, Tensor *C);
+    Tensor* logical_or(Tensor *A);
 
     /**
       *  @brief Compute the truth value of ``not A`` element-wise.
@@ -2483,6 +2479,7 @@ public:
       *  @return    void
     */
     static void logical_not(Tensor *A, Tensor *B);
+    Tensor* logical_not();
 
     /**
       *  @brief Compute the truth value of ``A xor B`` element-wise.
@@ -2493,6 +2490,7 @@ public:
       *  @return    void
     */
     static void logical_xor(Tensor *A, Tensor *B, Tensor *C);
+    Tensor* logical_xor(Tensor *A);
 
     // Logic funcions: Comparison ops *****************************
 
@@ -2507,6 +2505,7 @@ public:
       *  @return    void
     */
     static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
+    bool allclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
 
     /**
       *  @brief Returns a boolean array where a position is true if elements in A and B accomplish \f$|A-B| \leq atol+rtol\times|B|\f$
@@ -2520,6 +2519,7 @@ public:
       *  @return    void
     */
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
+    Tensor* isclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
 
     /**
       *  @brief Return the truth value of the input elements > ``v`` element-wise. In-place operation.
