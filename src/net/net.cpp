@@ -232,10 +232,11 @@ void Net::walk_back(Layer *l) {
 /////////////////////////////////////////
 string Net::summary() {
     std::stringstream ss;
-    ss << "---------------------------------------------------------" << endl;
+    ss << "-------------------------------------------------------------------------------" << endl;
     ss << name << endl;
-    ss << "---------------------------------------------------------" << endl;
+    ss << "-------------------------------------------------------------------------------" << endl;
 
+    int tot_size=0;
     for (auto & l : vfts) {
         // Get input/output shapes
         vector<int> ishape(l->input->shape);
@@ -249,14 +250,20 @@ string Net::summary() {
         string istr = "(" + printVector(ishape) + ")";
         string ostr = "(" + printVector(oshape) + ")";
 
-        ss << setw(30) << left << l->name << "|  ";
-        ss << setw(10) << left << istr;
-        ss << setw(8) << left << "=>";
-        ss << setw(10) << left << ostr;
+        int size=0;
+        for(auto &p:l->params)
+          size+=p->size;
+        tot_size+=size;
+
+        ss << setw(20) << left << l->name << "|  ";
+        ss << setw(20) << left << istr;
+        ss << setw(5) << left << "=>";
+        ss << setw(20) << left << ostr;
+        ss << setw(10) << left << size;
         ss << endl;
     }
-    ss << "---------------------------------------------------------" << endl;
-
+    ss << "-------------------------------------------------------------------------------" << endl;
+    ss << "Params: "<<tot_size<<endl;
     return ss.str();
 }
 

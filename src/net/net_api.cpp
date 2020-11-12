@@ -36,7 +36,6 @@ struct tdata {
   Net *net;
 };
 
-
 /////////////////////////////////////////
 void *train_batch_t(void *t) {
   auto *targs = (tdata *) t;
@@ -272,7 +271,7 @@ void Net::forward(vector<Tensor*> in)
       // Distribute to snets inputs
       for (int i = 0; i < in.size(); i++)
         distributeTensor(lin[i]);
-      
+
 
     }
 
@@ -968,6 +967,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
       snets[i]->lout[j]->check_target();
       Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
 
+      /* Better do n-best
       if (isdecoder) {
         if (eval) {
           if (j==0) snets[i]->din[0]->input->fill_(0.0); //start
@@ -980,6 +980,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
           else Tensor::copy(Ys[i][j-1], snets[i]->din[j]->input);
         }
       }
+      */
     }
   }
 
@@ -988,10 +989,12 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
   else
   run_snets(train_batch_t);
 
+  /*
   if ((eval)&&(isdecoder))
     for (int i = 0; i < comp; i++)
       for (int j = 1; j < Y.size(); j++)
          snets[i]->lout[j-1]->detach(snets[i]->din[j]);
+  */
 
   // If training (eval==0), apply gradients
   if (!eval) {
@@ -1053,7 +1056,7 @@ void Net::evaluate(vtensor tin, vtensor tout,int bs) {
     for (j = 0; j < n / batch_size; j++) {
 
       for (k=0;k<batch_size;k++)
-      sind[k]=(j*batch_size)+k;
+        sind [k]=(j*batch_size)+k;
 
       train_batch(tin, tout, sind, 1);
 
