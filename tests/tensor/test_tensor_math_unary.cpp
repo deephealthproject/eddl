@@ -1780,7 +1780,7 @@ TEST(TensorTestSuite, tensor_math_unary_prod){  // Factorial
     float t_cpu_prod = t_cpu->prod();
     float t_gpu_prod = t_gpu->prod(); t_gpu->toCPU();
 
-    ASSERT_NEAR(t_cpu_prod, t_gpu_prod, 10e-3f);  // Many multiplications lead to either zero o infinity
+    ASSERT_NEAR(t_cpu_prod, t_gpu_prod, 10e-1f);  // Many multiplications lead to either zero o infinity
 
     delete t_cpu;
     delete t_gpu;
