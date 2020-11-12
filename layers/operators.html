@@ -34,7 +34,6 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -92,12 +91,12 @@
             
               <p class="caption"><span class="caption-text">Installation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../installation/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../installation/build-options.html">Build and configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../installation/troubleshoot.html">Troubleshoot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../installation/faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Usage</span></p>
+<p class="caption"><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
@@ -274,18 +273,7 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4DiffE5layer5layer">
 <span id="_CPPv3N4eddl4DiffE5layer5layer"></span><span id="_CPPv2N4eddl4DiffE5layer5layer"></span><span id="eddl::Diff__layer.layer"></span><span class="target" id="namespaceeddl_1ad2ad133d1b1282ad4d5e2b84259f9ef5"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Diff</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4DiffE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Layer that computes the difference of two layers. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Difference between l1 and l2 </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: A layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: A layer </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dd></dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Diff</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">);</span> <span class="c1">// l1 and l2 are layers with the same shape</span>
@@ -531,18 +519,7 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3SumE5layer5layer">
 <span id="_CPPv3N4eddl3SumE5layer5layer"></span><span id="_CPPv2N4eddl3SumE5layer5layer"></span><span id="eddl::Sum__layer.layer"></span><span class="target" id="namespaceeddl_1ac7609101495bd4f639d62c8d370374e2"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sum</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SumE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Layer that computes the sum of two layers. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The result after computing the sum between layers l1 and l2 </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: Layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: Layer </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dd></dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">);</span> <span class="c1">// l1 and l2 are layers with the same shape</span>
@@ -551,18 +528,7 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3SumE5layerf">
 <span id="_CPPv3N4eddl3SumE5layerf"></span><span id="_CPPv2N4eddl3SumE5layerf"></span><span id="eddl::Sum__layer.float"></span><span class="target" id="namespaceeddl_1abe790c35f3853be91b30adb646139740"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sum</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SumE5layerf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Layer that computes the sum of a float number and a layer. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Parent layer l1 after computing his sum with k </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: Number </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dd></dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>

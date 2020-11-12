@@ -36,7 +36,6 @@
         <script src="_static/language_data.js"></script>
         <script src="_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.js"></script>
         <script src="_static/sphinx_tabs/tabs.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -92,12 +91,12 @@
             
               <p class="caption"><span class="caption-text">Installation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation/build-options.html">Build and configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation/troubleshoot.html">Troubleshoot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation/faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/build-options.html">Build and configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Usage</span></p>
+<p class="caption"><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/intermediate.html">Intermediate models</a></li>
@@ -251,8 +250,6 @@
 </li>
       <li><a href="bundle/optimizers.html#_CPPv4N4eddl6adamaxEfffff">eddl::adamax (C++ function)</a>
 </li>
-      <li><a href="layers/merge.html#_CPPv4N4eddl3AddERK6vectorI5layerE6string">eddl::Add (C++ function)</a>
-</li>
       <li><a href="layers/data_transformation.html#_CPPv4N4eddl6AffineE5layerffff6string">eddl::Affine (C++ function)</a>
 </li>
       <li><a href="layers/merge.html#_CPPv4N4eddl7AverageERK6vectorI5layerE6string">eddl::Average (C++ function)</a>
@@ -261,7 +258,7 @@
 </li>
       <li><a href="training/fine_grained.html#_CPPv4N4eddl8backwardE4loss">eddl::backward (C++ function)</a>, <a href="training/fine_grained.html#_CPPv4N4eddl8backwardE5model">[1]</a>, <a href="training/fine_grained.html#_CPPv4N4eddl8backwardE5model6vectorIP6TensorE">[2]</a>
 </li>
-      <li><a href="layers/normalization.html#_CPPv4N4eddl18BatchNormalizationE5layerbff6string">eddl::BatchNormalization (C++ function)</a>, <a href="layers/normalization.html#_CPPv4N4eddl18BatchNormalizationE5layerffb6string">[1]</a>
+      <li><a href="layers/normalization.html#_CPPv4N4eddl18BatchNormalizationE5layerffb6string">eddl::BatchNormalization (C++ function)</a>
 </li>
       <li><a href="model/model.html#_CPPv4N4eddl5buildE5model9optimizerRK6vectorI6stringERK6vectorI6stringEP8CompServb">eddl::build (C++ function)</a>
 </li>
@@ -367,7 +364,7 @@
 </li>
       <li><a href="bundle/regularizers.html#_CPPv4N4eddl2L2E5layerf">eddl::L2 (C++ function)</a>
 </li>
-      <li><a href="layers/normalization.html#_CPPv4N4eddl18LayerNormalizationE5layerbf6string">eddl::LayerNormalization (C++ function)</a>, <a href="layers/normalization.html#_CPPv4N4eddl18LayerNormalizationE5layerfb6string">[1]</a>
+      <li><a href="layers/normalization.html#_CPPv4N4eddl18LayerNormalizationE5layerfb6string">eddl::LayerNormalization (C++ function)</a>
 </li>
       <li><a href="layers/activations.html#_CPPv4N4eddl9LeakyReLuE5layerf6string">eddl::LeakyReLu (C++ function)</a>
 </li>
@@ -381,10 +378,10 @@
 </li>
       <li><a href="layers/operators.html#_CPPv4N4eddl4Log2E5layer">eddl::Log2 (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="layers/rnn.html#_CPPv4N4eddl4LSTME5layeribb6string">eddl::LSTM (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="layers/merge.html#_CPPv4N4eddl6MatMulERK6vectorI5layerE6string">eddl::MatMul (C++ function)</a>
 </li>
       <li><a href="layers/merge.html#_CPPv4N4eddl7MaximumERK6vectorI5layerE6string">eddl::Maximum (C++ function)</a>
@@ -414,6 +411,8 @@
       <li><a href="layers/core.html#_CPPv4N4eddl7PermuteE5layer6vectorIiE6string">eddl::Permute (C++ function)</a>
 </li>
       <li><a href="model/model.html#_CPPv4N4eddl4plotE5model6string6string">eddl::plot (C++ function)</a>
+</li>
+      <li><a href="layers/convolutional.html#_CPPv4N4eddl13PointwiseConvE5layeriRK6vectorIiEbiRK6vectorIiE6string">eddl::PointwiseConv (C++ function)</a>
 </li>
       <li><a href="layers/operators.html#_CPPv4N4eddl3PowE5layer5layer">eddl::Pow (C++ function)</a>, <a href="layers/operators.html#_CPPv4N4eddl3PowE5layerf">[1]</a>
 </li>
@@ -537,11 +536,11 @@
 </li>
       <li><a href="tensor/math.html#_CPPv4N6Tensor3addEP6TensorP6Tensor">Tensor::add (C++ function)</a>, <a href="tensor/math.html#_CPPv4N6Tensor3addEf">[1]</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor3allEP6Tensor">Tensor::all (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor3allEv">Tensor::all (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor8allcloseEP6TensorP6Tensorffb">Tensor::allclose (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor8allcloseEP6Tensorffb">Tensor::allclose (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor3anyEP6Tensor">Tensor::any (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor3anyEv">Tensor::any (C++ function)</a>
 </li>
       <li><a href="tensor/create.html#_CPPv4N6Tensor6arangeEfffi">Tensor::arange (C++ function)</a>
 </li>
@@ -623,7 +622,7 @@
 </li>
       <li><a href="tensor/create.html#_CPPv4N6Tensor9geomspaceEffii">Tensor::geomspace (C++ function)</a>
 </li>
-      <li><a href="tensor/manipulation.html#_CPPv4N6Tensor13getDeviceNameEv">Tensor::getDeviceName (C++ function)</a>
+      <li><a href="tensor/manipulation.html#_CPPv4NK6Tensor13getDeviceNameEv">Tensor::getDeviceName (C++ function)</a>
 </li>
       <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor7greaterEP6Tensor">Tensor::greater (C++ function)</a>, <a href="tensor/logic_functions.html#_CPPv4N6Tensor7greaterEf">[1]</a>
 </li>
@@ -637,23 +636,23 @@
 </li>
       <li><a href="tensor/math.html#_CPPv4N6Tensor3invEf">Tensor::inv (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb">Tensor::isclose (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor7iscloseEP6Tensorffb">Tensor::isclose (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor5isCPUEv">Tensor::isCPU (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor8isfiniteEP6TensorP6Tensor">Tensor::isfinite (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor8isfiniteEv">Tensor::isfinite (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor6isFPGAEv">Tensor::isFPGA (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor5isGPUEv">Tensor::isGPU (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor5isinfEP6TensorP6Tensor">Tensor::isinf (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor5isinfEv">Tensor::isinf (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor5isnanEP6TensorP6Tensor">Tensor::isnan (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor5isnanEv">Tensor::isnan (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor8isneginfEP6TensorP6Tensor">Tensor::isneginf (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor8isneginfEv">Tensor::isneginf (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor8isposinfEP6TensorP6Tensor">Tensor::isposinf (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor8isposinfEv">Tensor::isposinf (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor9isSquaredEP6Tensor">Tensor::isSquared (C++ function)</a>
 </li>
@@ -673,13 +672,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="tensor/math.html#_CPPv4N6Tensor4log2Ev">Tensor::log2 (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor11logical_andEP6TensorP6TensorP6Tensor">Tensor::logical_and (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor11logical_andEP6Tensor">Tensor::logical_and (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor11logical_notEP6TensorP6Tensor">Tensor::logical_not (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor11logical_notEv">Tensor::logical_not (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor10logical_orEP6TensorP6TensorP6Tensor">Tensor::logical_or (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor10logical_orEP6Tensor">Tensor::logical_or (C++ function)</a>
 </li>
-      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor11logical_xorEP6TensorP6TensorP6Tensor">Tensor::logical_xor (C++ function)</a>
+      <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor11logical_xorEP6Tensor">Tensor::logical_xor (C++ function)</a>
 </li>
       <li><a href="tensor/math.html#_CPPv4N6Tensor4lognEf">Tensor::logn (C++ function)</a>
 </li>

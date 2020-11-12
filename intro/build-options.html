@@ -34,7 +34,6 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -106,7 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Usage</span></p>
+<p class="caption"><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
@@ -228,7 +227,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/installation/build-options.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/intro/build-options.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -417,6 +416,18 @@ If using conda, get the path by activating the environment, and typing <code cla
 <p>Enabled by default</p>
 </div>
 <ul class="simple">
+<li><p><strong>Use HPC:</strong> To enable/disabled HPC flags, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_HPC</span></code>, such as:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_HPC<span class="o">=</span>ON
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Enabled by default.
+This enables flags such as: <code class="docutils literal notranslate"><span class="pre">-march=native</span> <span class="pre">-mtune=native</span> <span class="pre">-Ofast</span> <span class="pre">-msse</span> <span class="pre">-mfpmath=sse</span> <span class="pre">-ffast-math</span> <span class="pre">-ftree-vectorize</span></code>,
+that might cause some units tests to fail due to numerical errors (minor deviations from the value asserted)</p>
+</div>
+<ul class="simple">
 <li><p><strong>Use protobuf:</strong> Protobuf allows you to use the ONNX import/export functions, to use them, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_PROTOBUF</span></code>, such as:</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_PROTOBUF<span class="o">=</span>ON
@@ -434,7 +445,8 @@ If using conda, get the path by activating the environment, and typing <code cla
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Enabled by default</p>
+<p>Enabled by default.
+The flag <code class="docutils literal notranslate"><span class="pre">BUILD_HCP</span></code> needs to be disabled. If not, some tests might not pass due to numerical errors.</p>
 </div>
 <ul class="simple">
 <li><p><strong>Use local gtest:</strong> Uses the local copy of the gtest repository as fail-safe. Ignored if using superbuild.</p></li>

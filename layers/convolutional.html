@@ -34,7 +34,6 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -92,12 +91,12 @@
             
               <p class="caption"><span class="caption-text">Installation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../installation/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../installation/build-options.html">Build and configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../installation/troubleshoot.html">Troubleshoot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../installation/faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Usage</span></p>
+<p class="caption"><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
@@ -117,6 +116,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Convolutions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#conv1d">Conv1D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#conv2d">Conv2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pointwise-convolution">Pointwise Convolution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#d-upsampling">2D Upsampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convolutional-transpose">Convolutional Transpose</a></li>
 </ul>
@@ -297,6 +297,34 @@
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pointwise-convolution">
+<h2>Pointwise Convolution<a class="headerlink" href="#pointwise-convolution" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl13PointwiseConvE5layeriRK6vectorIiEbiRK6vectorIiE6string">
+<span id="_CPPv3N4eddl13PointwiseConvE5layeriRK6vectorIiEbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl13PointwiseConvE5layeriRK6vectorIiEbiRK6vectorIiE6string"></span><span id="eddl::PointwiseConv__layer.i.vector:i:CR.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1a4ca0c85796cef4ba1fde360339dd9d55"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">PointwiseConv</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl13PointwiseConvE5layeriRK6vectorIiEbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Pointwise convolution. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Convolution layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Vector of 2 integers, specifying the strides of the convolution along the height and width </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code>: Number of blocked connections from input channels to output channels </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: Vector of 2 integers, specifying the dilation rate to use for dilated convolution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">PointwiseConv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
 </pre></div>
 </div>
 </div>

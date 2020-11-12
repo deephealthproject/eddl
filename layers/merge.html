@@ -34,7 +34,6 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -92,12 +91,12 @@
             
               <p class="caption"><span class="caption-text">Installation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../installation/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../installation/build-options.html">Build and configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../installation/troubleshoot.html">Troubleshoot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../installation/faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Usage</span></p>
+<p class="caption"><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
@@ -245,23 +244,18 @@
 <h1>Merge<a class="headerlink" href="#merge" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="add">
 <h2>Add<a class="headerlink" href="#add" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl3AddERK6vectorI5layerE6string">
-<span id="_CPPv3N4eddl3AddERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl3AddERK6vectorI5layerE6string"></span><span id="eddl::Add__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1adde6ba39f75e6d5f620fe007c88a5b05"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Add</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3AddERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Layer that adds a list of layer inputs. </p>
-<p>It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).</p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Output of add operation with all input layers </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">layers</span></code>: List of layers </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Add” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">Add</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">layer</span> <span class="n">Add</span><span class="p">(</span><span class="nb">float</span> <span class="n">k</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l1</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">layer</span> <span class="n">Add</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="nb">float</span> <span class="n">k</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">layer</span> <span class="n">Add</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">in1</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
 <span class="n">layer</span> <span class="n">in2</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
