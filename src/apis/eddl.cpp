@@ -411,6 +411,15 @@ namespace eddl {
         m->print_loss(batch);
     }
 
+    vector<float> get_losses(model m){
+        return m->get_losses();
+    }
+
+    vector<float> get_metrics(model m){
+        return m->get_metrics();
+    }
+
+
     // model constraints
     void clamp(model m,float min,float max)
     {

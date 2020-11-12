@@ -595,6 +595,22 @@ namespace eddl {
     */
     void print_loss(model m, int batch);
 
+    /**
+      *  @brief Get model losses
+      *
+      *  @param net  Model
+      *  @return vector<float>
+    */
+    vector<float> get_losses(model m);
+
+    /**
+      *  @brief Get model metrics
+      *
+      *  @param net  Model
+      *  @return vector<float>
+    */
+    vector<float> get_metrics(model m);
+
     // model constraints
     /**
       *  @brief Model parameters values clipping.
