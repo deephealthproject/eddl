@@ -926,8 +926,6 @@ using namespace std;
 						size_vector.push_back((int)height_scale);
 						size_vector.push_back((int)width_scale);
 						actual_layer = new LUpSampling(parent, size_vector, interpolation_mode, name, dev, mem);
-						delete scales;
-
 					}
 					break;
 
