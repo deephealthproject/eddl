@@ -60,7 +60,7 @@ Is finite?
     // [-inf 0.00 inf]
     // ]
 
-    Tensor* r1 = t1->isneginf(); // returns new tensor
+    Tensor* r1 = t1->isfinite(); // returns new tensor
     
     r1->print(2);  // Temp.
     // [
@@ -69,7 +69,7 @@ Is finite?
     // ]
 
     //Other ways
-    Tensor::isneginf(t1, r1); // static
+    Tensor::isfinite(t1, r1); // static
     
 
 Is inf?
@@ -85,14 +85,14 @@ Is inf?
     // [-inf 0.00 inf]
     // ]
 
-    Tensor* r1 = t1->isneginf(); // returns new tensor
+    Tensor* r1 = t1->isinf(); // returns new tensor
     // [
     // [0.00 1.00 0.00]
     // [1.00 0.00 1.00]
     // ]
 
     //Other ways
-    Tensor::isneginf(t1, r1); // static
+    Tensor::isinf(t1, r1); // static
 
 Is NaN?
 ^^^^^^^^^^^^^^
@@ -107,14 +107,14 @@ Is NaN?
     // [-inf 0.00 inf]
     // ]
 
-    Tensor* r1 = t1->isneginf(); // returns new tensor
+    Tensor* r1 = t1->isnan(); // returns new tensor
     // [
     // [0.00 0.00 1.00]
     // [0.00 0.00 0.00]
     // ]
     
     //Other ways
-    Tensor::isneginf(t1, r1); // static
+    Tensor::isnan(t1, r1); // static
 
 
 Is -inf?
@@ -334,7 +334,7 @@ Greater than: "A > B"
  
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -366,7 +366,7 @@ Greater equal: "A >= B"
 .. code-block:: c++
 
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -398,7 +398,7 @@ Less than: "A < B"
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -449,7 +449,7 @@ Equal: "A == B"
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -485,7 +485,7 @@ Not Equal: "A != B"
 .. code-block:: c++
 
 
-    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f, 1); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -520,7 +520,7 @@ All Close?
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -530,7 +530,7 @@ All Close?
     // ]
 
 
-    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    Tensor* t2 = Tensor::range(1.0f, 25.0f); t2->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -553,7 +553,7 @@ Is Close?
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -563,7 +563,7 @@ Is Close?
     // ]
 
 
-    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    Tensor* t2 = Tensor::range(1.0f, 25.0f); t2->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -594,7 +594,7 @@ Greater Than: "A > B"
  
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -604,7 +604,7 @@ Greater Than: "A > B"
     // ]
 
 
-    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    Tensor* t2 = Tensor::range(1.0f, 25.0f); t2->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -635,7 +635,7 @@ Greater Equal: "A >= B"
 .. code-block:: c++
 
 
-    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -645,7 +645,7 @@ Greater Equal: "A >= B"
     // ]
 
 
-    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    Tensor* t2 = Tensor::range(1.0f, 25.0f); t2->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -677,7 +677,7 @@ Less Than: "A < B"
 .. code-block:: c++
 
     
-    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -687,7 +687,7 @@ Less Than: "A < B"
     // ]
 
 
-    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    Tensor* t2 = Tensor::range(1.0f, 25.0f); t2->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -718,7 +718,7 @@ Less Equal: "A <= B"
 
 .. code-block:: c++
 
-    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -728,7 +728,7 @@ Less Equal: "A <= B"
     // ]
 
 
-    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    Tensor* t2 = Tensor::range(1.0f, 25.0f); t2->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -758,7 +758,7 @@ Equal: "A == B"
 
 .. code-block:: c++
     
-    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -768,7 +768,7 @@ Equal: "A == B"
     // ]
 
 
-    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    Tensor* t2 = Tensor::range(1.0f, 25.0f); t2->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -802,7 +802,7 @@ Not Equal: "A != B"
 .. code-block:: c++
 
 
-    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2,3});
+    Tensor* t1 = Tensor::range(1.0f, 25.0f); t1->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
@@ -812,7 +812,7 @@ Not Equal: "A != B"
     // ]
 
 
-    Tensor* t2 = Tensor::range(1, 6); t2->reshape_({2,3});
+    Tensor* t2 = Tensor::range(1.0f, 25.0f); t2->reshape_({5,5});
     // [
     // [1.00 2.00 3.00 4.00 5.00]
     // [6.00 7.00 8.00 9.00 10.00]
