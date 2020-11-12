@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           opt, // Optimizer
-          {"categorical_cross_entropy"}, // Losses
+          {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
