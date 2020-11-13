@@ -48,7 +48,7 @@ if(BUILD_SUPERBUILD)
     add_subdirectory(cmake)
 endif()
 # This is executed at compilation time: "make"
-PROJECT(eddl VERSION 0.7 LANGUAGES CXX)
+PROJECT(eddl VERSION 0.8 LANGUAGES CXX)
 
 
 # SET C++ COMPILER STANDARD
