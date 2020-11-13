@@ -19,16 +19,16 @@
 extern "C" {
 
 // Fixed parameters (optimized at compilation/synthesis time)
-#define KW       3 // kernel width
-#define KH       3 // kernel height
-#define I        4 //16 // number of input channels
-#define O        4 //16 // number of output channels
-#define CPI      4 //16 // channels per input port
-#define CPO      4 //16 // channels per output port
+#define KW       3  // kernel width
+#define KH       3  // kernel height
+#define I        8  // number of input channels
+#define O        8  // number of output channels
+#define CPI      4  // channels per input port
+#define CPO      4  // channels per output port
 #define W        256 // input width
 #define H        256 // input height
-#define I_ITER   I/CPI // itreciones por entrada
-#define O_ITER   O/CPO // itreciones por entrada
+#define I_ITER   I/CPI // iterations per input
+#define O_ITER   O/CPO // iterations per output
 
 #define LOAD_MODEL
 #define READ_MODEL
@@ -93,15 +93,16 @@ static void read_input(pixel_in_t *ptr, float *k_ptr, float *b_ptr, hls::stream<
   pixel_in_t data;
   #pragma HLS ARRAY_PARTITION variable=data dim=0
 
+
   read_input_o_iter_loop:
   for (int o_iter = 0; o_iter < O_ITER; o_iter++){
-
     //Sending bias to add in pack of CPO bias
+    // int data_pointer = 0;
     read_loop_bias_load:
-      for (int b=CPO*o_iter; b<CPO+CPO*o_iter; b++) {
+      for (int b=0; b<CPO; b++) {
         #pragma HLS PIPELINE II=1
-        float v = b_ptr[b];
-        bias.pixel[0] = v;
+        // float v = b_ptr[b];
+        bias.pixel[0] = 1;
         b_out << bias;
       }
     read_input_i_iter_loop:
@@ -117,9 +118,9 @@ static void read_input(pixel_in_t *ptr, float *k_ptr, float *b_ptr, hls::stream<
         // printf("i = %d -- kernel_size_cpo = %d \n", i, kernel_size_cpo);
         read_loop_kernel_load_int:
         for (int j = 0; j < kernel_size_cpo; j++) {
-          int addr_k = j + i*kernel_size_cpo*I_ITER + i_iter*i_offset + o_iter*kernel_size_cpo;
-          float v = k_ptr[addr_k];
-          frame_k.pixel[kx].pixel[cpo] = v;
+           // int addr_k = j + i*kernel_size_cpo*I_ITER + i_iter*i_offset + o_iter*kernel_size_cpo;
+           // float v = k_ptr[addr_k];
+          frame_k.pixel[kx].pixel[cpo] = 1;
 
           #ifdef DEBUG_VERBOSE
           printf("[%d]:", addr_k);
@@ -140,24 +141,24 @@ static void read_input(pixel_in_t *ptr, float *k_ptr, float *b_ptr, hls::stream<
       }
 
     //Sending data to padding  in pack of CPI channels
+
     read_loop_data_load_i:
       for (int r=0; r<H*W; r++) {
         #pragma HLS PIPELINE II=1
-        int addr_d = r*I_ITER + i_iter;
-        data = ptr[addr_d];
-
+        // printf("r = %d \n", r);
+        // data = ptr[offset_read];
         #ifdef DEBUG_VERBOSE
         printf("data.pixel[0] = %6.2f  ", data.pixel[0]);
         printf("data.pixel[1] = %6.2f  ", data.pixel[1]);
         printf("data.pixel[2] = %6.2f  ", data.pixel[2]);
         printf("data.pixel[3] = %6.2f  \n", data.pixel[3]);
         #endif
-
-        out  << data;
+        out  << ptr[r];
+        // data_pointer++;
       }
 
-   }
-}
+   } //i_iter
+} //o_iter
 
 
 #ifdef DEBUG_VERBOSE
@@ -209,8 +210,9 @@ for (int o_iter = 0; o_iter < O_ITER; o_iter++){
       }
     }
 
-  }
-}
+  } //i_iter
+} //o_iter
+
 
 
 #ifdef DEBUG_VERBOSE
@@ -262,16 +264,17 @@ static void write_output(pixel_out_t *ptr, hls::stream<pixel_out_t> &in) {
   printf("write_output: start\n");
 #endif
 
-#ifdef WRITE_OUTPUT
 
-  write_output_o_iter_loop:
-  for (int o_iter = 0; o_iter<O_ITER; o_iter++){
+
+  // int data_pointer = 0;
+
+  // write_output_o_iter_loop:
+  // for (int o_iter = 0; o_iter<O_ITER; o_iter++){
     //writes must be performed with pixel_in_t struct
-
     write_output_data_size_loop:
-    for (int i=0; i<H*W; i++) {
-      int addr_d = i*O_ITER + o_iter;
-      ptr[addr_d] = in.read();
+    for (int i=0; i<H*W*O_ITER; i++) {
+      ptr[i] = in.read();
+      // data_pointer++;
       #ifdef DEBUG_VERBOSE
       printf("o_iter = %d para i = %d \n", o_iter, i);
       printf("ptr--p.pixel[0] = %6.2f \n", p.pixel[0]);
@@ -280,12 +283,9 @@ static void write_output(pixel_out_t *ptr, hls::stream<pixel_out_t> &in) {
       printf("ptr--p.pixel[3] = %6.2f \n\n", p.pixel[3]);
       #endif
     }
-  }
+  // } //o_iter
 
-#else
-  pixel_out_t sal;
-  for (int i=0; i<H*W; i++) in >> sal;
-#endif
+
 
 #ifdef DEBUG_VERBOSE
   printf("write_output: end\n");
@@ -383,8 +383,8 @@ for (int o_iter = 0; o_iter < O_ITER; o_iter++){
     }
   }
 
- }
-}
+} //i_iter
+} //o_iter
 
 
 #ifdef DEBUG_VERBOSE
@@ -485,9 +485,9 @@ static void mul(hls::stream<frame_t> &in, hls::stream<frame_t> &k_in, hls::strea
       sum[cpo] = 0.f;
      }
      out << p_out;
-   }
     }
-  }
+  } //i_iter
+} //o_iter
 
 #endif
 
@@ -556,12 +556,12 @@ static void add(hls::stream<pixel_out_t> &in, hls::stream<pixel_out_t> &b_in, hl
     #endif
 
     //It is necessary to reset the buffer each o_iter
-    add_init_buff_o_channels_loop:
-    for(int cpo = 0; cpo<CPO; cpo++){
-      for(int it = 0; it<num_iterations; it++){
-        buff_o_channels[cpo][it] = bias[cpo];
-      }
-    }
+    // add_init_buff_o_channels_loop:
+    // for(int cpo = 0; cpo<CPO; cpo++){
+    //   for(int it = 0; it<num_iterations; it++){
+    //     buff_o_channels[cpo][it] = bias[cpo];
+    //   }
+    // }
 
       #ifdef DEBUG_VERBOSE
       printf("o_iter = %d \n", o_iter);
@@ -577,18 +577,37 @@ static void add(hls::stream<pixel_out_t> &in, hls::stream<pixel_out_t> &b_in, hl
       //All input data have effect into output add
       add_i_iter_loop:
       for (int i_iter = 0; i_iter < I_ITER; i_iter++){
+        // //prueba
+        pixel_out_t data_out;
+        // pixel_out_t data;
+        // data = in.read();
+        // out<<data;
         #pragma HLS loop_flatten off
         add_load_data_it_loop:
         for(int it = 0; it<num_iterations; it++){
-
           pixel_out_t data_in;
           data_in = in.read();
+          pixel_out_t data;
           add_load_data_cpo_loop:
           for (int cpo=0; cpo<CPO; cpo++) {
-            buff_o_channels[cpo][it] = buff_o_channels[cpo][it] + data_in.pixel[cpo];
+            #pragma HLS unroll
+            if(i_iter == 0){
+              data.pixel[cpo] = bias[cpo];
+            }
+            else{
+              data.pixel[cpo] = buff_o_channels[cpo][it];
+            }
+            buff_o_channels[cpo][it] = data.pixel[cpo] + data_in.pixel[cpo];
+
+            if(i_iter ==(I_ITER-1)){
+              data_out.pixel[cpo] = buff_o_channels[cpo][it];
+            }
+          }
+          if(i_iter ==(I_ITER-1)){
+            out << data_out;
           }
         }
-      }
+      } //i_iter
 
       #ifdef DEBUG_VERBOSE
       printf("CH %d: ", o_iter*CPO);
@@ -613,30 +632,14 @@ static void add(hls::stream<pixel_out_t> &in, hls::stream<pixel_out_t> &b_in, hl
       printf("\n");
       #endif
 
-      pixel_out_t d_out;
 
-      //now we write the buff_o_channels to write_output function
-      add_write_data_it_loop:
-      for(int it = 0; it < num_iterations; it++){
-        add_write_data_cpo_loop:
-        for(int cpo = 0; cpo < CPO; cpo++){
-          d_out.pixel[cpo] = buff_o_channels[cpo][it];
-        }
-        out << d_out;
-        #ifdef DEBUG_VERBOSE
-        printf("d_out.pixel[0] = %6.2f \n", d_out.pixel[0]);
-        printf("d_out.pixel[1] = %6.2f \n", d_out.pixel[1]);
-        printf("d_out.pixel[2] = %6.2f \n", d_out.pixel[2]);
-        printf("d_out.pixel[3] = %6.2f \n\n", d_out.pixel[3]);
-        #endif
-      }
-
-  }
+  } //o_iter
 
 
 #ifdef DEBUG_VERBOSE
   printf("add: end\n");
 #endif
+
 
 }
 
