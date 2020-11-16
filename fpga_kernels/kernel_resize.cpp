@@ -372,7 +372,7 @@ static void upsize(hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out, in
 
 static void write_output(pixel_in_t *ptr, hls::stream<pixel_in_t> &in, int HOUT, int WOUT, int H, int W) {
   
-    printf("entraaaa444444444\n");
+   
 write_output_o_iter_loop:
   for (int o_iter = 0; o_iter<O_ITER; o_iter++){
     // writes must be performed with pixel_in_t struct
@@ -416,17 +416,15 @@ write_output_o_iter_loop:
 	 
 
   
-  printf("entraaaa55555555555\n");
+  
 
 }
 
 static void selector(hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out, int HOUT, int WOUT, int H, int W, int mode){
   if(mode == 0){
-	printf("entraaaa11111111111111\n");
 	upsize(in, out, HOUT, WOUT, H, W);
   }
   else{
-	printf("entraaaa2222222222222222\n");
 	downsize(in, out, HOUT, WOUT, H, W);
   }
 }
@@ -464,7 +462,7 @@ void k_resize(pixel_in_t *ptr_data, pixel_in_t *ptr_out, int HOUT, int WOUT, int
   selector(out_read, out_resize, HOUT, WOUT, H, W, mode);
   write_output(ptr_out, out_resize, HOUT, WOUT, H, W);
   
-  printf("entraaaa3333333333333333333\n");
+  
 }
 
 } // end extern "C"
