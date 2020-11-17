@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 5;
+    int epochs = 1;
     int batch_size = 128;
     int num_classes = 10;
 
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     l = ReLu(Dense(l, 1024));
     l = ReLu(Dense(l, 1024));
 
-    layer out = FullSoftmax(Dense(l, num_classes));
+    layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
 
     // dot from graphviz should be installed:
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           sgd(0.001, 0.9), // Optimizer
-          {"categorical_cross_entropy"}, // Losses
+          {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
@@ -96,11 +96,20 @@ int main(int argc, char **argv) {
         //vector<int> indices = random_indices(batch_size, s[0]);
         //train_batch(net, {x_train}, {y_train}, indices);
 
-        print_loss(net,j);
-        printf("\r");
+//        print_loss(net,j);
+//        printf("\r");
+
       }
       printf("\n");
     }
+
+    // Print loss and metrics
+    vector<float> losses1 = get_losses(net);
+    vector<float> metrics1 = get_metrics(net);
+    for(int i=0; i<losses1.size(); i++) {
+        cout << "Loss: " << losses1[i] << "\t" << "Metric: " << metrics1[i] << "   |   ";
+    }
+    cout << endl;
 
 
     // Evaluate model
@@ -108,7 +117,7 @@ int main(int argc, char **argv) {
     s=x_test->getShape();
     num_batches=s[0]/batch_size;
 
-    reset_loss(net);
+    reset_loss(net);  // Important
     for(j=0;j<num_batches;j++)  {
         vector<int> indices(batch_size);
         for(int i=0;i<indices.size();i++)
@@ -116,9 +125,19 @@ int main(int argc, char **argv) {
 
         eval_batch(net, {x_test}, {y_test}, indices);
 
-        print_loss(net,j);
-        printf("\r");
+//        print_loss(net,j);
+//        printf("\r");
+
       }
+
+    // Print loss and metrics
+    vector<float> losses2 = get_losses(net);
+    vector<float> metrics2 = get_metrics(net);
+    for(int i=0; i<losses2.size(); i++) {
+        cout << "Loss: " << losses2[i] << "\t" << "Metric: " << metrics2[i] << "   |   ";
+    }
+    cout << endl;
+
 
     //last batch
     if (s[0]%batch_size) {
@@ -129,12 +148,19 @@ int main(int argc, char **argv) {
 
       eval_batch(net, {x_test}, {y_test}, indices);
 
-      print_loss(net,j);
-      printf("\r");
+//      print_loss(net,j);
+//      printf("\r");
     }
     printf("\n");
 
 
+    // Print loss and metrics
+    vector<float> losses3 = get_losses(net);
+    vector<float> metrics3 = get_metrics(net);
+    for(int i=0; i<losses3.size(); i++) {
+        cout << "Loss: " << losses3[i] << "\t" << "Metric: " << metrics3[i] << "   |   ";
+    }
+    cout << endl;
 
 
 }

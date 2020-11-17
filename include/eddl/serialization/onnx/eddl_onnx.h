@@ -18,12 +18,21 @@
 //#if defined(cPROTO)
 //#   include "serialization/onnx/onnx.pb.h"
 //#endif
+	enum LOG_LEVEL{
+		TRACE = 0,
+		DEBUG = 1,
+		INFO = 2,
+		WARN = 3,
+		ERROR = 4,
+		NO_LOGS = 5
+	};
+
 
 
 	//Importing module
 	//------------------------------------------------------------------------------
 
-	Net* import_net_from_onnx_file(std::string path, int mem=0);
+	Net* import_net_from_onnx_file(std::string path, int mem=0, int log_level= LOG_LEVEL::INFO );
 
 	Net* import_net_from_onnx_pointer(void* serialized_model, size_t model_size, int mem=0); 
 	

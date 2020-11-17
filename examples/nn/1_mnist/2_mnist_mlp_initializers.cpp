@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     l = ReLu(GlorotUniform(Dense(l, 1024)));
     l = ReLu(RandomNormal(Dense(l, 1024),0.0,0.1));
 
-    layer out = FullSoftmax(Dense(l, num_classes));
+    layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
     net->verbosity_level = 0;
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           sgd(0.001, 0.9), // Optimizer
-          {"categorical_cross_entropy"}, // Losses
+          {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches

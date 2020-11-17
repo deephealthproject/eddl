@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -411,6 +411,15 @@ namespace eddl {
         m->print_loss(batch);
     }
 
+    vector<float> get_losses(model m){
+        return m->get_losses();
+    }
+
+    vector<float> get_metrics(model m){
+        return m->get_metrics();
+    }
+
+
     // model constraints
     void clamp(model m,float min,float max)
     {
@@ -430,21 +439,19 @@ namespace eddl {
     }
 
     Loss* getLoss(string type){
-        if (type == "mse" || type == "mean_squared_error"){
+        if (type == "mean_squared_error" || type == "mse"){
             return new LMeanSquaredError();
-        } else if (type == "categorical_cross_entropy"){
+        } else if (type == "categorical_cross_entropy" || type == "cross_entropy"  || type=="ce" || type=="cce"){
             return new LCategoricalCrossEntropy();
-        } else if (type == "binary_cross_entropy"){
+        } else if (type == "binary_cross_entropy" || type=="bce"){
             return new LBinaryCrossEntropy();
-        } else if (type == "cross_entropy"){
-            return new LCrossEntropy();
-        } else if (type == "soft_cross_entropy"){
+        } else if (type == "soft_cross_entropy" || type == "softmax_cross_entropy" || type == "sce"){
             return new LSoftCrossEntropy();
-        }
-        else if (type == "dice"){
+        } else if (type == "deprecated_cross_entropy"){
+            return new LCrossEntropy();
+        } else if (type == "dice"){
             return new LDice();
-        }
-        else if (type == "none"){
+        } else if (type == "none"){
             return new Loss("none");
         }
         return nullptr;
@@ -517,15 +524,15 @@ namespace eddl {
         return new LActivation(parent, activation, params, name, DEV_CPU, 0);
     }
 
-    layer Softmax(layer parent, string name){
-        show_deprecated_warning("Softmax", "FullSoftmax");
+    layer SoftmaxDeprecated(layer parent, string name){
+        show_deprecated_warning("SoftmaxDeprecated", "Softmax");
         vector<float> params = {};
-        return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
+        return new LActivation(parent,"softmax_deprecated", params, name, DEV_CPU, 0);
     }
 
-    layer FullSoftmax(layer parent, string name){
+    layer Softmax(layer parent, string name){
         vector<float> params = {};
-        return new LActivation(parent,"full_softmax", params, name, DEV_CPU, 0);
+        return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
     }
 
     layer Sigmoid(layer parent, string name){

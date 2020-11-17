@@ -1,13 +1,32 @@
-#ifndef _PROFILING
+/*
+* EDDL Library - European Distributed Deep Learning Library.
+* Version: 0.8
+* copyright (c) 2020, Universidad Polit�cnica de Valencia (UPV), PRHLT Research Centre
+* Date: November 2020
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* All rights reserved
+*/
 
+#ifndef _PROFILING
 #define _PROFILING
 
+#include "eddl/system_info.h"
+
+#ifdef EDDL_WINDOWS
+
+#include <chrono>
+#include <windows.h>
+#include <winsock.h>
+
+int gettimeofday(struct timeval* tp, struct timezone* tzp);
+
+#else
 #include <sys/time.h>
+#endif
 
 #define PROFILING_HEADER(fn) \
     struct timeval prof_t1; \
     gettimeofday(&prof_t1, NULL);
-
 
 #define PROFILING_ENABLE(fn) \
     unsigned long long prof_##fn##_time; \
@@ -44,8 +63,6 @@
             100.0 * prof_##fn##_time / acc, (float) prof_##fn##_time / (float) prof_##fn##_calls);
 #endif
 
-
-
 //CxHxW
 //
 //HxWxC
@@ -53,4 +70,3 @@
 //GxHxWxC (C=4)   Reshape + Permute
 //
 //32xHxW -> Reshape -> 8x4xHxW -> Permute(0, 2, 3, 1) -> 8xHxWx4   // hay capas y funciones
-

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -241,13 +241,13 @@ void cpu_softmax(Tensor *A, Tensor *B) {
 
 void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
     _profile(_CPU_D_SOFTMAX, 0);
-    PD->tsem->lock();
+
 
 #pragma omp parallel for
     for (int i = 0; i < D->size; i++)
         PD->ptr[i] += D->ptr[i] * (I->ptr[i] * (1.0 - I->ptr[i]));
 
-    PD->tsem->unlock();
+
     _profile(_CPU_D_SOFTMAX, 1);
 }
 

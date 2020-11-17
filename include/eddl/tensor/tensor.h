@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -92,7 +92,6 @@ public:
 
     // Aux variables
     int gpu_device;
-    mutex *tsem = nullptr;  // Multithreading. Tensor semaphore
 
 #ifdef cFPGA
     // fpga-related information
@@ -2377,82 +2376,71 @@ public:
 
     // Logic funcions: Truth value testing *****************************
 
-    bool all();
-    bool any();
-    Tensor* isfinite();
-    Tensor* isinf();
-    Tensor* isnan();
-    Tensor* isneginf();
-    Tensor* isposinf();
-    Tensor* logical_not();
-    Tensor* logical_and(Tensor *A);
-    Tensor* logical_or(Tensor *A);
-    Tensor* logical_xor(Tensor *A);
-    bool allclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
-    Tensor* isclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
 
     /**
       *  @brief Test whether all elements evaluate to True.
       *
-      *  @param A   Tensor to evaluate
       *  @return    bool
     */
+    bool all();
     static bool all(Tensor *A);
+    
 
     /**
       *  @brief Test whether any element evaluates to True.
       *
-      *  @param A   Tensor to evaluate
       *  @return    bool
     */
+    bool any();
     static bool any(Tensor *A);
+    
 
     // Logic funcions: Logical ops
 
     /**
       *  @brief Test element-wise for finiteness (not infinity or not Not a Number).
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isfinite();
     static void isfinite(Tensor *A, Tensor* B);
+    
 
     /**
       *  @brief Test element-wise for positive or negative infinity.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isinf();
     static void isinf(Tensor *A, Tensor* B);
+    
 
     /**
       *  @brief Test element-wise for Nan.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isnan();
     static void isnan(Tensor *A, Tensor* B);
+    
 
     /**
       *  @brief Test element-wise for negative infinity.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isneginf();
     static void isneginf(Tensor *A, Tensor* B);
+    
 
     /**
       *  @brief Test element-wise for positive infinity.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isposinf();
     static void isposinf(Tensor *A, Tensor* B);
+    
 
     // Logic funcions: Logical ops
 
@@ -2460,40 +2448,41 @@ public:
       *  @brief Compute the truth value of ``A and B`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param C   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_and(Tensor *A);
     static void logical_and(Tensor *A, Tensor *B, Tensor *C);
+    
 
     /**
       *  @brief Compute the truth value of ``A or B`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param C   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_or(Tensor *A);
     static void logical_or(Tensor *A, Tensor *B, Tensor *C);
+    
 
     /**
       *  @brief Compute the truth value of ``not A`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_not();
     static void logical_not(Tensor *A, Tensor *B);
+    
 
     /**
       *  @brief Compute the truth value of ``A xor B`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param C   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_xor(Tensor *A);
     static void logical_xor(Tensor *A, Tensor *B, Tensor *C);
+    
 
     // Logic funcions: Comparison ops *****************************
 
@@ -2501,26 +2490,26 @@ public:
       *  @brief Returns True if two arrays accomplish, element-wise, the condition \f$|A-B| \leq atol+rtol\times|B|\f$
       *
       *  @param A   Input tensor.
-      *  @param B   Input tensor.
       *  @param rtol relative tolerance.
       *  @param atol absolute tolerance.
       *  @param equal_nan if ``True``, then two ``NaN``s will be considered equal.
-      *  @return    void
+      *  @return    boolean indicating if all elements in tensor hold the condition
     */
+    bool allclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
     static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
-
+    
     /**
       *  @brief Returns a boolean array where a position is true if elements in A and B accomplish \f$|A-B| \leq atol+rtol\times|B|\f$
       *
       *  @param A   Input tensor.
-      *  @param B   Input tensor.
-      *  @param C   Output tensor.
       *  @param rtol relative tolerance.
       *  @param atol absolute tolerance.
       *  @param equal_nan if ``True``, then two ``NaN``s will be considered equal.
-      *  @return    void
+      *  @return    boolean indicating if all elements in tensor hold the condition
     */
+    Tensor* isclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
+    
 
     /**
       *  @brief Return the truth value of the input elements > ``v`` element-wise. In-place operation.
