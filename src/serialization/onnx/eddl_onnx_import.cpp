@@ -175,7 +175,7 @@ using namespace std;
 		map_layers["AveragePool"] = ONNX_LAYERS::AVGPOOL;
 		map_layers["GlobalMaxPool"] = ONNX_LAYERS::GLOBMAXPOOL;
 		map_layers["GlobalAveragePool"] = ONNX_LAYERS::GLOBAVGPOOL;
-		map_layers["Transpose"] = ONNX_LAYERS::PERMUTE;
+		//map_layers["Transpose"] = ONNX_LAYERS::PERMUTE;
 		// Activation layers
 		map_layers["Relu"] = ONNX_LAYERS::RELU;
 		map_layers["Sigmoid"] = ONNX_LAYERS::SIGMOID;
@@ -485,7 +485,7 @@ using namespace std;
 	Net* build_net_onnx(onnx::ModelProto model, int mem){
 
 		long long int ir_version = model.ir_version();
-		int log_level = LOG_LEVEL::INFO;
+		int log_level = LOG_LEVEL::TRACE;
 		// We have to check if the imported net has the
 		// version we created this importer for.
 		if(ir_version != 0x00000006) {
@@ -644,6 +644,7 @@ using namespace std;
 			string name = node->name();
 			int dev = DEV_CPU;//TODO: Check what device to use
 			Layer *actual_layer;
+			log_string("Checking for bug", log_level, LOG_LEVEL::DEBUG);
 
 			switch (layer_type) { //Every case should create the corresponding layer and asign it to "actual_layer" variable
 
@@ -815,6 +816,7 @@ using namespace std;
 					break;
 				case ONNX_LAYERS::DENSE:
 					{
+						log_string("Dense detected" , log_level, LOG_LEVEL::DEBUG);
 						int ndim;
 						bool use_bias = false;
 						float alpha;
@@ -872,6 +874,7 @@ using namespace std;
 						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
 
 						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
+
 						if(transB)
                             weights_tensor->permute_({1, 0});
 						Tensor::copy(weights_tensor, dense->W);
@@ -1718,6 +1721,29 @@ using namespace std;
 						string parent_name;
 						parent_name = node->input(0);
 						actual_layer = output_node_map[parent_name];
+					}
+					break;
+				case ONNX_LAYERS::TRANSPOSE:
+					{
+						log_string("Transpose layer detected" , log_level, LOG_LEVEL::DEBUG);
+						vector<int> perm;
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("storage_order")) {
+                                for(int h = 0; h < attribute.ints_size(); h++){
+                                    perm.push_back(attribute.ints(h));
+                                }
+							}
+						}
+						log_string("perm vector created" , log_level, LOG_LEVEL::DEBUG);
+
+						string parent_name;
+						parent_name = node->input(0);
+						Layer * parent = output_node_map[parent_name];
+						actual_layer = new LPermute(parent, perm, name, dev, mem);
+						log_string("Permute layer created" , log_level, LOG_LEVEL::DEBUG);
+
 					}
 					break;
 
