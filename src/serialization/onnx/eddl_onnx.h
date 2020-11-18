@@ -21,6 +21,14 @@
 	//Importing module
 	//------------------------------------------------------------------------------
 
+	/**
+	 * @brief Imports ONNX Net from file
+	 * 
+	 * @param path Path to the file where the net in ONNX format is saved
+	 * @param mem (default 0)
+	 * 
+	 * @return Net
+	*/ 
 	Net* import_net_from_onnx_file(std::string path, int mem=0);
 
 	Net* import_net_from_onnx_pointer(void* serialized_model, size_t model_size, int mem=0); 
@@ -35,6 +43,14 @@
 	//----------------------------------------------------------------------------------------
 
 	// Saves a model with the onnx format in the file path provided
+	/**
+	 * @brief Saves a model with the onnx format in the file path provided
+	 * 
+	 * @param net Net to be saved
+	 * @param path Path to the file where the net in ONNX format will be saved
+	 * 
+	 * @return (void)
+	*/ 
 	void save_net_to_onnx_file( Net *net, string path );
 
 	// Returns a pointer to the serialized model in Onnx
