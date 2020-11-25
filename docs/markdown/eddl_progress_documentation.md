@@ -285,6 +285,12 @@
 | toCPU   |      ✔️      |      ✔️       |          |
 | toGPU   |      ❌️     |      ❌️      | many versions |
 
+## ONNX
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| Save to file |  ✔️     |      ✔️       |          |
+| Import from file |  ✔️ |      ✔️       |          |
 
 
 # Training
