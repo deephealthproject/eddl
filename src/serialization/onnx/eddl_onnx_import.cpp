@@ -333,12 +333,15 @@ using namespace std;
 	}
 
 	//Parses one TensorProto pointer (Input or output) to eddl Tensor pointer
-	vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor) {
+	vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor, bool recurrent_net) {
 		onnx::TensorShapeProto tensorShape = tensor.shape();
 		vector<int> shape;
 		shape.push_back(1); //TODO check this is required
+		int start_index = 1;
+		if(recurrent_net && tensorShape.dim_size() > 2)
+			start_index = 2;
 
-		for(int i = 1; i < tensorShape.dim_size(); i++){
+		for(int i = start_index; i < tensorShape.dim_size(); i++){
 			shape.push_back(tensorShape.dim(i).dim_value());
 		}
 
@@ -347,7 +350,7 @@ using namespace std;
 
 	//Converts one vector of TensorProto pointers (Input or output)
 	//to one vector of eddl Tensor pointers.
-	vector<Layer*> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, int mem) {
+	vector<Layer*> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, int mem, bool recurrent_net) {
 		vector<Layer*> io;
 		onnx::TypeProto::Tensor tensor;
 		int dev = DEV_CPU;
@@ -355,7 +358,7 @@ using namespace std;
 		for(onnx::ValueInfoProto infoProto : io_onnx) {
 			tensor = infoProto.type().tensor_type();
 			string name = infoProto.name();
-			io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor)), name, dev, mem) );
+			io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor, recurrent_net)), name, dev, mem) );
 		}
 
 		for(Layer* layer : io){
@@ -473,6 +476,20 @@ using namespace std;
 
 
 
+	bool check_recurrent_nodes(vector<onnx::NodeProto> nodes){
+		map<string, ONNX_LAYERS> map_layers = create_enum_map();
+		for(int i = 0; i < nodes.size(); i++){ //Check if any node is recurrent
+			onnx::NodeProto *node = &nodes[i];
+			string layer_type_name = node->op_type();
+			ONNX_LAYERS layer_type = map_layers[layer_type_name];
+			if(layer_type == ONNX_LAYERS::LSTM)
+				return true;
+		}
+
+		return false;
+
+
+	}
 	//Builds a eddl Net from an instance of the onnx container for model
 	Net* build_net_onnx(onnx::ModelProto model, int mem, int log_level){
 
@@ -508,8 +525,12 @@ using namespace std;
 		//Model needs input in the constructor, so we start with that.
 
 		vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); //Get the inputs
+		vector<onnx::NodeProto> nodes = get_graph_nodes(graph);
+		bool recurrent_net = check_recurrent_nodes(nodes);
+		if(recurrent_net)
+			log_string("The net is recurrent" , log_level, LOG_LEVEL::INFO);
 
-		vector<Layer*> inputs =  parse_IO_tensors(inputs_onnx, mem); //Parse ONNX inputs to EDDL inputs
+		vector<Layer*> inputs =  parse_IO_tensors(inputs_onnx, mem, recurrent_net); //Parse ONNX inputs to EDDL inputs
 
 		vector<onnx::TensorProto> initializers = get_initializers(graph); // Retrieves the initializers from the graph.
 																		  // The weight for the layers can be found in the initializers.
@@ -519,7 +540,6 @@ using namespace std;
 		get_initializers_maps(initializers, map_init_values, map_init_dims);// Creates 2 maps
 																			//  Key: Input Name . Value: Weights
 																			//  Key: Input Name . Value: Dims
-		vector<onnx::NodeProto> nodes = get_graph_nodes(graph);
 		//The methodology is the following:
 		//We create three maps:
 		//map <string input, vector<onnx::NodeProto *> > input_node_map. The input will point towards the nodes that have this input
