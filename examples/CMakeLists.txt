@@ -126,7 +126,7 @@ if(BUILD_PROTOBUF)
     target_link_libraries(onnx_import eddl)
 
 
-# EXAMPLES: MNIST ****************************************************
+	# EXAMPLES: ONNX MNIST ****************************************************
 	add_executable(onnx_mnist_mlp "onnx/nn/1_mnist/1_mnist_mlp.cpp")
 	target_link_libraries(onnx_mnist_mlp eddl)
 
@@ -173,7 +173,7 @@ if(BUILD_PROTOBUF)
 	target_link_libraries(onnx_mnist_siamese eddl)
 
 
-# EXAMPLES: CIFAR10 ****************************************************
+	# EXAMPLES: ONNX CIFAR10 ****************************************************
 	add_executable(onnx_cifar_conv "onnx/nn/2_cifar10/1_cifar_conv.cpp")
 	target_link_libraries(onnx_cifar_conv eddl)
 
@@ -205,7 +205,7 @@ if(BUILD_PROTOBUF)
 	add_executable(onnx_drive_seg "onnx/nn/3_drive/1_drive_seg.cpp")
 	target_link_libraries(onnx_drive_seg eddl)
 
-# EXAMPLES: NLP ****************************************************
+	# EXAMPLES: ONNX NLP ****************************************************
 
 	add_executable(onnx_nlp_sentiment_rnn "onnx/nn/4_NLP/1_nlp_sentiment_rnn.cpp")
 	target_link_libraries(onnx_nlp_sentiment_rnn eddl)
