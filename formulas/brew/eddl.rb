@@ -27,7 +27,7 @@ class Eddl < Formula
 
       set(CMAKE_CXX_STANDARD 11)
 
-      add_executable(test example.cpp)
+      add_executable(test test.cpp)
 
       find_package(EDDL REQUIRED)
       target_link_libraries(test PUBLIC EDDL::eddl)
