@@ -1,14 +1,14 @@
 {% set name = "eddl-cpu" %}  # If this is a package for GPU, use: "eddl-gpu"
-{% set version = "v0.5.4a" %}
-{% set sha256 = "50acb25976f14e6caf5535b82fc760dd1a0f7e0b81db83906b62eddd8eba0db7" %}
+{% set version = "0.8a" %}
+{% set sha256 = "213a186ffad0bb779a254acc410988eee3b78e3823e614e43939f8fcb9e43aa7" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://github.com/deephealthproject/eddl/archive/{{ version }}.tar.gz
+  fn: {{ name }}-v{{ version }}.tar.gz
+  url: https://github.com/deephealthproject/eddl/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
@@ -21,7 +21,6 @@ requirements:
   host:
     - cmake
     - eigen
-    - zlib
     - protobuf
     - cudatoolkit
     - graphviz
@@ -29,7 +28,6 @@ requirements:
   run:
     - cmake
     - eigen
-    - zlib
     - protobuf
     - cudatoolkit
     - graphviz
