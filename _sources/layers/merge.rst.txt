@@ -4,7 +4,7 @@ Merge
 Add
 ----
 
-.. doxygenfunction:: Add
+.. doxygenfunction:: Add(layer l1, layer l2)
 
 Example:
 

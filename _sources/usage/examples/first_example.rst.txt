@@ -1,7 +1,7 @@
 First example
 -------------
 
-Copy this code to a new file, and let's name it ``main.cpp``:
+Copy this code to a new file and name it ``main.cpp``:
 
 .. code:: c++
 

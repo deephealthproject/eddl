@@ -36,6 +36,7 @@
         <script src="../_static/language_data.js"></script>
         <script src="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.js"></script>
         <script src="../_static/sphinx_tabs/tabs.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -134,6 +135,7 @@
 <p class="caption"><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Training</span></p>
 <ul>
@@ -332,7 +334,7 @@ conda activate eddl
 <span class="c1"># Build and install</span>
 mkdir build
 <span class="nb">cd</span> build
-cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/dir -DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dir
+cmake ..  <span class="c1"># -DCMAKE_PREFIX_PATH=/path/to/dir -DCMAKE_INSTALL_PREFIX=/path/to/dir  # (optional)</span>
 make install
 </pre></div>
 </div>
@@ -349,7 +351,7 @@ conda activate eddl
 <span class="c1"># Build and install</span>
 mkdir build
 <span class="nb">cd</span> build
-cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/dir -DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dir
+cmake ..  <span class="c1"># -DCMAKE_PREFIX_PATH=/path/to/dir -DCMAKE_INSTALL_PREFIX=/path/to/dir  # (optional)</span>
 
 make install
 </pre></div>

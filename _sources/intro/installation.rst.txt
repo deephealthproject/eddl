@@ -93,7 +93,7 @@ On Unix platforms, from the source directory:
             # Build and install
             mkdir build
             cd build
-            cmake .. -DCMAKE_PREFIX_PATH=/path/to/dir -DCMAKE_INSTALL_PREFIX=/path/to/dir
+            cmake ..  # -DCMAKE_PREFIX_PATH=/path/to/dir -DCMAKE_INSTALL_PREFIX=/path/to/dir  # (optional)
             make install
 
     .. tab:: MacOS
@@ -111,7 +111,7 @@ On Unix platforms, from the source directory:
             # Build and install
             mkdir build
             cd build
-            cmake .. -DCMAKE_PREFIX_PATH=/path/to/dir -DCMAKE_INSTALL_PREFIX=/path/to/dir
+            cmake ..  # -DCMAKE_PREFIX_PATH=/path/to/dir -DCMAKE_INSTALL_PREFIX=/path/to/dir  # (optional)
 
             make install
 

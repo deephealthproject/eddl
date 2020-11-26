@@ -62,6 +62,7 @@ The code is open source, and `available on github`_.
     :caption: Model
 
     model/model.rst
+    model/onnx.rst
 
 
 .. toctree::

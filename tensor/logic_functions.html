@@ -34,6 +34,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -126,6 +127,7 @@
 <p class="caption"><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Training</span></p>
 <ul>
@@ -281,7 +283,13 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3allEv">
 <span id="_CPPv3N6Tensor3allEv"></span><span id="_CPPv2N6Tensor3allEv"></span><span id="Tensor::all"></span><span class="target" id="class_tensor_1a94e8ac75290efbad7ea71623ea1939c7"></span>bool <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3allEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Test whether all elements evaluate to True. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>bool </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
 <span class="kt">bool</span> <span class="n">condition</span> <span class="o">=</span>  <span class="n">t1</span><span class="o">-&gt;</span><span class="n">all</span><span class="p">();</span> <span class="c1">//returns new tensor</span>
@@ -297,7 +305,13 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3anyEv">
 <span id="_CPPv3N6Tensor3anyEv"></span><span id="_CPPv2N6Tensor3anyEv"></span><span id="Tensor::any"></span><span class="target" id="class_tensor_1a2bf29d121e0d545ae27507a5caf6e43c"></span>bool <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">any</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3anyEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Test whether any element evaluates to True. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>bool </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="nb">true</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="nb">true</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
 
@@ -317,7 +331,13 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8isfiniteEv">
 <span id="_CPPv3N6Tensor8isfiniteEv"></span><span id="_CPPv2N6Tensor8isfiniteEv"></span><span id="Tensor::isfinite"></span><span class="target" id="class_tensor_1a8cd59a13d7e4d8b8f2adc37945afe3bc"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isfinite</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8isfiniteEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Test element-wise for finiteness (not infinity or not Not a Number). </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor with the results of the test as booleans </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">12</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="n">NAN</span><span class="p">,</span> <span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="o">+</span><span class="n">INFINITY</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
@@ -343,7 +363,13 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5isinfEv">
 <span id="_CPPv3N6Tensor5isinfEv"></span><span id="_CPPv2N6Tensor5isinfEv"></span><span id="Tensor::isinf"></span><span class="target" id="class_tensor_1a6187af54283864e4772afad093adf7d3"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isinf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5isinfEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Test element-wise for positive or negative infinity. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor with the results of the test as booleans </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">12</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="n">NAN</span><span class="p">,</span> <span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="o">+</span><span class="n">INFINITY</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
@@ -367,7 +393,13 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5isnanEv">
 <span id="_CPPv3N6Tensor5isnanEv"></span><span id="_CPPv2N6Tensor5isnanEv"></span><span id="Tensor::isnan"></span><span class="target" id="class_tensor_1ad2497c8c509647441e1dcb029068714c"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isnan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5isnanEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Test element-wise for Nan. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor with the results of the test as booleans </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">12</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="n">NAN</span><span class="p">,</span> <span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="o">+</span><span class="n">INFINITY</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
@@ -391,7 +423,13 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8isneginfEv">
 <span id="_CPPv3N6Tensor8isneginfEv"></span><span id="_CPPv2N6Tensor8isneginfEv"></span><span id="Tensor::isneginf"></span><span class="target" id="class_tensor_1a3bfd927e785f95eee8e24da64f9335f4"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isneginf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8isneginfEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Test element-wise for negative infinity. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor with the results of the test as booleans </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">12</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="n">NAN</span><span class="p">,</span> <span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="o">+</span><span class="n">INFINITY</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
@@ -415,7 +453,13 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8isposinfEv">
 <span id="_CPPv3N6Tensor8isposinfEv"></span><span id="_CPPv2N6Tensor8isposinfEv"></span><span id="Tensor::isposinf"></span><span class="target" id="class_tensor_1a179224cffd303944fee14ff60e4a78c4"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isposinf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8isposinfEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Test element-wise for positive infinity. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor with the results of the test as booleans </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">12</span><span class="p">,</span> <span class="n">INFINITY</span><span class="p">,</span> <span class="n">NAN</span><span class="p">,</span> <span class="o">-</span><span class="n">INFINITY</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="o">+</span><span class="n">INFINITY</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span>
 <span class="c1">// [</span>
@@ -442,7 +486,17 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor11logical_andEP6Tensor">
 <span id="_CPPv3N6Tensor11logical_andEP6Tensor"></span><span id="_CPPv2N6Tensor11logical_andEP6Tensor"></span><span id="Tensor::logical_and__TensorP"></span><span class="target" id="class_tensor_1a93a1c17ac1efda41a20c86070ae364fb"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_and</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11logical_andEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">and</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor with the result of the operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">1.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
@@ -482,7 +536,17 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor10logical_orEP6Tensor">
 <span id="_CPPv3N6Tensor10logical_orEP6Tensor"></span><span id="_CPPv2N6Tensor10logical_orEP6Tensor"></span><span id="Tensor::logical_or__TensorP"></span><span class="target" id="class_tensor_1a63dfdb6ec02aae14b35978c9f4457174"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_or</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10logical_orEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">or</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor with the result of the operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">1.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
@@ -522,7 +586,17 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor11logical_notEv">
 <span id="_CPPv3N6Tensor11logical_notEv"></span><span id="_CPPv2N6Tensor11logical_notEv"></span><span id="Tensor::logical_not"></span><span class="target" id="class_tensor_1ad90574e6fee3ae5daf0288af71755241"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_not</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11logical_notEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">A</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor with the result of the operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">1.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
@@ -552,7 +626,17 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor11logical_xorEP6Tensor">
 <span id="_CPPv3N6Tensor11logical_xorEP6Tensor"></span><span id="_CPPv2N6Tensor11logical_xorEP6Tensor"></span><span id="Tensor::logical_xor__TensorP"></span><span class="target" id="class_tensor_1a7290b8f9f3e06adc3cafb1da64d47353"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_xor</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11logical_xorEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">xor</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor with the result of the operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span> <span class="mf">1.0f</span><span class="p">);</span>
 <span class="c1">// [</span>
@@ -834,7 +918,20 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8allcloseEP6Tensorffb">
 <span id="_CPPv3N6Tensor8allcloseEP6Tensorffb"></span><span id="_CPPv2N6Tensor8allcloseEP6Tensorffb"></span><span id="Tensor::allclose__TensorP.float.float.b"></span><span class="target" id="class_tensor_1ac460fca81e7c002b18fc185c0bdc3bd5"></span>bool <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">allclose</code><span class="sig-paren">(</span>Tensor *<em>A</em>, float <em>rtol</em> = 1e-05, float <em>atol</em> = 1e-08, bool <em>equal_nan</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8allcloseEP6Tensorffb" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Returns True if two arrays accomplish, element-wise, the condition <span class="math notranslate nohighlight">\(|A-B| \leq atol+rtol\times|B|\)</span>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>boolean indicating if all elements in tensor hold the condition </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rtol</span></code>: relative tolerance. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">atol</span></code>: absolute tolerance. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">equal_nan</span></code>: if <code class="docutils literal notranslate"><span class="pre">True</span></code>, then two <code class="docutils literal notranslate"><span class="pre">NaN</span></code>s will be considered equal. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">,</span> <span class="mf">25.0f</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">});</span>
 <span class="c1">// [</span>
@@ -868,7 +965,20 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor7iscloseEP6Tensorffb">
 <span id="_CPPv3N6Tensor7iscloseEP6Tensorffb"></span><span id="_CPPv2N6Tensor7iscloseEP6Tensorffb"></span><span id="Tensor::isclose__TensorP.float.float.b"></span><span class="target" id="class_tensor_1a27cf74c3eca635fe75ff32949e3b18f7"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isclose</code><span class="sig-paren">(</span>Tensor *<em>A</em>, float <em>rtol</em> = 1e-05, float <em>atol</em> = 1e-08, bool <em>equal_nan</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7iscloseEP6Tensorffb" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Returns a boolean array where a position is true if elements in A and B accomplish <span class="math notranslate nohighlight">\(|A-B| \leq atol+rtol\times|B|\)</span>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>boolean indicating if all elements in tensor hold the condition </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rtol</span></code>: relative tolerance. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">atol</span></code>: absolute tolerance. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">equal_nan</span></code>: if <code class="docutils literal notranslate"><span class="pre">True</span></code>, then two <code class="docutils literal notranslate"><span class="pre">NaN</span></code>s will be considered equal. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">,</span> <span class="mf">25.0f</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">});</span>
 <span class="c1">// [</span>

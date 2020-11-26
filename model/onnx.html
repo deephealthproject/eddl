@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Linear algebra &mdash; EDDL  documentation</title>
+  <title>ONNX &mdash; EDDL  documentation</title>
   
 
   
@@ -41,8 +41,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Logic functions" href="logic_functions.html" />
-    <link rel="prev" title="Input/Output Operations" href="input_output.html" /> 
+    <link rel="next" title="Coarse training" href="../training/coarse.html" />
+    <link rel="prev" title="Model" href="model.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -125,9 +125,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Model</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ONNX</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#save-to-file">Save to file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-from-file">Import from file</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Training</span></p>
 <ul>
@@ -159,22 +163,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Tensor</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="create.html">Creation Routines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="image.html">Image operations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing &amp; Sorting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="input_output.html">Input/Output Operations</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Linear algebra</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#matrix-and-vector-operations">Matrix and vector operations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#interpolate">Interpolate</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#trace">Trace</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
             
@@ -221,13 +218,13 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Linear algebra</li>
+      <li>ONNX</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/tensor/linear_algebra.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/model/onnx.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -240,24 +237,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="linear-algebra">
-<h1>Linear algebra<a class="headerlink" href="#linear-algebra" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="matrix-and-vector-operations">
-<h2>Matrix and vector operations<a class="headerlink" href="#matrix-and-vector-operations" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="interpolate">
-<h3>Interpolate<a class="headerlink" href="#interpolate" title="Permalink to this headline">¶</a></h3>
+  <div class="section" id="onnx">
+<h1>ONNX<a class="headerlink" href="#onnx" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="save-to-file">
+<h2>Save to file<a class="headerlink" href="#save-to-file" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor11interpolateEfP6TensorfP6Tensor">
-<span id="_CPPv3N6Tensor11interpolateEfP6TensorfP6Tensor"></span><span id="_CPPv2N6Tensor11interpolateEfP6TensorfP6Tensor"></span><span id="Tensor::interpolate__float.TensorP.float.TensorP"></span><span class="target" id="class_tensor_1a551e53a799ea8e89cf388e2e92324863"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span>float <em>factor1</em>, Tensor *<em>A</em>, float <em>factor2</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11interpolateEfP6TensorfP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Element-wise weighted sum (interpolation) operation of two tensors. </p>
+<dt id="_CPPv421save_net_to_onnx_fileP3Net6string">
+<span id="_CPPv321save_net_to_onnx_fileP3Net6string"></span><span id="_CPPv221save_net_to_onnx_fileP3Net6string"></span><span id="save_net_to_onnx_file__NetP.string"></span><span class="target" id="src_2serialization_2onnx_2eddl__onnx_8h_1a8f247d66e3528791b986284eb208e449"></span>void <code class="sig-name descname">save_net_to_onnx_file</code><span class="sig-paren">(</span>Net *<em>net</em>, string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421save_net_to_onnx_fileP3Net6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Saves a model with the onnx format in the file path provided. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A new tensor C = factor1*A + factor2*B. </p>
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">factor1</span></code>: The weight for first member. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: A tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">factor2</span></code>: The weight for second member. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Another tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Net to be saved </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Path to the file where the net in ONNX format will be saved</p></li>
 </ul>
 </dd>
 </dl>
@@ -265,37 +258,22 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">1.0f</span><span class="p">);</span>
-<span class="c1">// [</span>
-<span class="c1">// [1.00 1.00 1.00]</span>
-<span class="c1">// [1.00 1.00 1.00]</span>
-<span class="c1">// ]</span>
-
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mf">10.0f</span><span class="p">);</span>
-<span class="c1">// [</span>
-<span class="c1">// [10.00 10.00 10.00]</span>
-<span class="c1">// [10.00 10.00 10.00]</span>
-<span class="c1">// ]</span>
-
- <span class="n">Tensor</span><span class="o">*</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">interpolate</span><span class="p">(</span><span class="mf">2.5f</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="mf">0.5f</span><span class="p">,</span> <span class="n">t2</span><span class="p">);</span>  <span class="c1">// a*t1 + b*t2</span>
-<span class="c1">// [</span>
-<span class="c1">// [7.50 7.50 7.50]</span>
-<span class="c1">// [7.50 7.50 7.50]</span>
-<span class="c1">// ]</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">save_net_to_onnx_file</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="s">&quot;my_model.onnx&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="trace">
-<h3>Trace<a class="headerlink" href="#trace" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="import-from-file">
+<h2>Import from file<a class="headerlink" href="#import-from-file" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor5traceEi">
-<span id="_CPPv3N6Tensor5traceEi"></span><span id="_CPPv2N6Tensor5traceEi"></span><span id="Tensor::trace__i"></span><span class="target" id="class_tensor_1adf7dca55a2e403bf6b639d7fd96b54d0"></span>float <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">trace</code><span class="sig-paren">(</span>int <em>k</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5traceEi" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Sum all the elements in a matrix diagonal. </p>
+<dt id="_CPPv425import_net_from_onnx_fileNSt6stringEi">
+<span id="_CPPv325import_net_from_onnx_fileNSt6stringEi"></span><span id="_CPPv225import_net_from_onnx_fileNSt6stringEi"></span><span id="import_net_from_onnx_file__ss.i"></span><span class="target" id="src_2serialization_2onnx_2eddl__onnx_8h_1a10914fc0d5452d18468ae6c2aecb4d73"></span>Net *<code class="sig-name descname">import_net_from_onnx_file</code><span class="sig-paren">(</span>std::string <em>path</em>, int <em>mem</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425import_net_from_onnx_fileNSt6stringEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Imports ONNX Net from file. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The sum of all the elements in the selected diagonal. </p>
+<dt><strong>Return</strong></dt><dd><p>Net </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: Offset. Used to select the diagonal to be summed. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Path to the file where the net in ONNX format is saved </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: (default 0)</p></li>
 </ul>
 </dd>
 </dl>
@@ -303,20 +281,8 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tensor</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
-<span class="c1">// [</span>
-<span class="c1">// [1.00 3.00 5.00]</span>
-<span class="c1">// [4.00 1.00 3.00]</span>
-<span class="c1">// [5.00 4.00 1.00]</span>
-<span class="c1">// ]</span>
-
-<span class="kt">float</span> <span class="n">tr0</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">trace</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="c1">// 3</span>
-
-<span class="kt">float</span> <span class="n">tr1</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">trace</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="c1">// 6</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Net</span><span class="o">*</span> <span class="n">net</span> <span class="o">=</span> <span class="n">import_net_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_model.onnx&quot;</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
-</div>
 </div>
 </div>
 </div>
@@ -329,10 +295,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="logic_functions.html" class="btn btn-neutral float-right" title="Logic functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../training/coarse.html" class="btn btn-neutral float-right" title="Coarse training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="input_output.html" class="btn btn-neutral float-left" title="Input/Output Operations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="model.html" class="btn btn-neutral float-left" title="Model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
