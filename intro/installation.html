@@ -334,7 +334,7 @@ conda activate eddl
 <span class="c1"># Build and install</span>
 mkdir build
 <span class="nb">cd</span> build
-cmake ..  <span class="c1"># -DCMAKE_PREFIX_PATH=/path/to/dir -DCMAKE_INSTALL_PREFIX=/path/to/dir  # (optional)</span>
+cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
 make install
 </pre></div>
 </div>
@@ -351,7 +351,7 @@ conda activate eddl
 <span class="c1"># Build and install</span>
 mkdir build
 <span class="nb">cd</span> build
-cmake ..  <span class="c1"># -DCMAKE_PREFIX_PATH=/path/to/dir -DCMAKE_INSTALL_PREFIX=/path/to/dir  # (optional)</span>
+cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
 
 make install
 </pre></div>
