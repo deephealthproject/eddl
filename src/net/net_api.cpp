@@ -153,11 +153,7 @@ void Net::run_snets(void *(*F)(void *t))
 
   int comp = snets.size();
 
-#ifdef EDDL_WINDOWS
   #pragma omp parallel for
-#else
-  #pragma omp taskloop num_tasks(comp)
-#endif
   for (int i = 0; i < comp; i++) {
     // Thread params
     td[i].net = snets[i];
