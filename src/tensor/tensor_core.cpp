@@ -791,7 +791,6 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
         Tensor *Bc=B->clone();
         Bc->toCPU();
 
-        cout<<".....";
         cpu_select(A, Bc, sind, ini, end,mask_zeros);
 
         Tensor::copy(Bc,B);
