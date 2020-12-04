@@ -305,7 +305,7 @@ void cpu_full_softmax_nd(Tensor *A, Tensor *B, bool stable, int axis){
     int k_stride = (chuck_size-1)*A->stride[axis];
 
 
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for(int si=0; si<n_samples; si++) {  // n chucks
             int start_b = si % inner_stride + si/inner_stride * sample_stride;
             int end_b = start_b + k_stride;
@@ -343,11 +343,13 @@ void cpu_full_softmax_nd(Tensor *A, Tensor *B, bool stable, int axis){
 }
 
 void cpu_d_full_softmax(Tensor *D, Tensor *I, Tensor *PD, int axis) {
-    if(axis==1 && D->ndim==2){
-        cpu_d_full_softmax_batched_2d(D, I, PD);
-    }else{
-        cpu_d_full_softmax_nd(D, I, PD, axis);
-    }
+    cpu_d_full_softmax_nd(D, I, PD, axis);
+//
+//    if(axis==1 && D->ndim==2){
+//        cpu_d_full_softmax_batched_2d(D, I, PD);
+//    }else{
+//        cpu_d_full_softmax_nd(D, I, PD, axis);
+//    }
 }
 
 void cpu_d_full_softmax_batched_2d(Tensor *D, Tensor *I, Tensor *PD) {
@@ -379,25 +381,29 @@ void cpu_d_full_softmax_batched_2d(Tensor *D, Tensor *I, Tensor *PD) {
 void cpu_d_full_softmax_nd(Tensor *D, Tensor *I, Tensor *PD, int axis) {
     Tensor* SM = I; // Alias (softmax)
 
-    int n_batches = D->shape[0];
-    int n_features = D->shape[1];
+    int chuck_size = D->shape[axis];
+    int n_samples = D->size/chuck_size;
+    int inner_stride = D->stride[axis];
+    int sample_stride = chuck_size*D->stride[axis];
+    int k_stride = (chuck_size-1)*D->stride[axis];
 
-#pragma omp parallel for
-    for(int bi=0; bi<n_batches; bi++){
-        // Contiguous data
-        int start = bi*n_features;
+    #pragma omp parallel for
+    for(int si=0; si<n_samples; si++) {  // n chucks
+        int start_b = si % inner_stride + si/inner_stride * sample_stride;
+        int end_b = start_b + k_stride;
 
         // 1) Compute Jacobbian matrix: DS=[ NxN ]  // DjSi
         // 2) Compute delta: D * DS = (1,n)x(n,n)=(1,n)
         // 2.1) Dot product: PD[i] = Dj*DjSi = D0*D0Di + D1*D1Di + ... Dn*DnSi
-        for(int i=0; i<n_features; i++){  // Rows
-            for(int j=0; j<n_features; j++){  // Cols
+        for (int i = start_b; i <= end_b; i += inner_stride) {  // Rows
+            for (int j = start_b; j <= end_b; j += inner_stride) {  // Cols
 
                 // Derivative
-                float DjSi = SM->ptr[start+i] * (float)(i==j) - SM->ptr[start+j]*SM->ptr[start+i];
-                PD->ptr[start+i] += D->ptr[start+j] * DjSi;
+                float DjSi = SM->ptr[i] * (float)(i==j) - SM->ptr[j]*SM->ptr[i];
+                PD->ptr[i] += D->ptr[j] * DjSi;
 
             }
         }
     }
+
 }
