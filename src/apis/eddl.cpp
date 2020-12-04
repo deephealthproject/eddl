@@ -530,8 +530,8 @@ namespace eddl {
         return new LActivation(parent,"softmax_deprecated", params, name, DEV_CPU, 0);
     }
 
-    layer Softmax(layer parent, string name){
-        vector<float> params = {};
+    layer Softmax(layer parent, int axis, string name){
+        vector<float> params = {static_cast<float>(axis)};
         return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
     }
 
