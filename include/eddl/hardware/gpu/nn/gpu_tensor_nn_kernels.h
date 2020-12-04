@@ -50,11 +50,13 @@ __global__ void d_exp(float *d,float *i,float *pd,long int size);
 __global__ void tanh(float *a,float *b,long int size);
 __global__ void d_tanh(float *d,float *i,float *pd,long int size);
 
-__global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals);
-//__global__ void d_softmax(float *d,float *i,float *pd,long int size);  // TODO: Missing
+__global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals);  // TODO: DEPRECATED
+//__global__ void d_softmax(float *d,float *i,float *pd,long int size);  // TODO: DEPRECATED
 
 __global__ void full_softmax_batched(float *A, float *B, bool stable, unsigned int n_batches, unsigned int n_features);
-__global__ void full_d_softmax_batched(float *d,float *i,float *pd, unsigned int n_batches, unsigned int n_features);
+__global__ void full_d_softmax_batched(float *D,float *I,float *PD, unsigned int n_batches, unsigned int n_features);
+__global__ void full_softmax_nd(float *A, float *B, bool stable, int n_samples, int inner_stride, int sample_stride, int k_stride);
+__global__ void full_d_softmax_nd(float *D,float *I,float *PD, int n_samples, int inner_stride, int sample_stride, int k_stride);
 
 __global__ void linear(float *a,float *b,float param, long int size);
 __global__ void d_linear(float *d,float *i,float *pd,float param, long int size);
