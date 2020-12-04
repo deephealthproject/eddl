@@ -776,7 +776,6 @@ namespace tensorNN {
         if (!Tensor::sameDevice(D, I) || !Tensor::sameDevice(D, PD))
             msg("Tensors in different devices", "Tensor::D_FullSoftmax");
         if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_FullSoftmax");
-        if (D->ndim != 2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)", "Tensor::D_Softmax");
 
         if (D->isCPU()) {
             cpu_d_full_softmax(D, I, PD, axis);
