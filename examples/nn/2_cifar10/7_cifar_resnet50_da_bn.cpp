@@ -49,10 +49,10 @@ layer ResBlock(layer l, int filters,int half, int expand=0) {
   l=BG(Conv(l,4*filters,{1,1},{1,1},"same",false));
 
   if (half)
-    return ReLu(Sum(BG(Conv(in,4*filters,{1,1},{2,2},"same",false)),l));
+    return ReLu(Add(BG(Conv(in,4*filters,{1,1},{2,2},"same",false)),l));
   else
-    if (expand) return ReLu(Sum(BG(Conv(in,4*filters,{1,1},{1,1},"same",false)),l));
-    else return ReLu(Sum(in,l));
+    if (expand) return ReLu(Add(BG(Conv(in,4*filters,{1,1},{1,1},"same",false)),l));
+    else return ReLu(Add(in,l));
 }
 
 int main(int argc, char **argv){
