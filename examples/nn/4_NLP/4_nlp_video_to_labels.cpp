@@ -63,9 +63,6 @@ Tensor *onehot(Tensor *in, int vocs)
 
 int main(int argc, char **argv) {
 
-    // ---------------------------
-    // Definicion de la red
-    // ---------------------------
     layer in  = Input({3, 256, 256});
     layer l=in;
 
@@ -82,17 +79,11 @@ int main(int argc, char **argv) {
     layer out = ReLu(l);
     model deepVO = Model({in},{out});
 
-    printf("============ OK =============\n");
-    // ---------------------------
-    // Build
-    // ---------------------------
     build(deepVO, adam(), {"mse"}, {"mse"},  CS_CPU() );
     plot(deepVO,"model.pdf","TB");
     summary(deepVO);
 
-    // -------------------------------------------------------------------------------------------------------
-    // Fit. Datos de entrenamiento 32 secuencias de 10 imágenes RGB de 256x256
-    // ------------------------------------------------------------------------------------------------------
+    // 32 samples that are sequences of 10 RGB images of 256x256. Target 2 values per image, a sequence as well
     Tensor* seqImages = Tensor::randu({32, 10, 3, 256, 256});
     Tensor* seqLabels = Tensor::randu({32, 10, 2});
     fit(deepVO, {seqImages}, {seqLabels}, 4, 10);
