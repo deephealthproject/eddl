@@ -88,17 +88,49 @@ TEST(TensorTestSuite, tensor_nn_full_softmax){
 
 
 TEST(TensorTestSuite, tensor_nn_full_softmax_nd){
-    // Test #1: Forward
-    Tensor* t1 = Tensor::arange(0, 2*3*5*6); t1->reshape_({2, 3, 5, 6});
-    Tensor* t1_out = Tensor::zeros_like(t1);
-    t1->print(2);
 
+    // Test GPU
+#ifdef cGPU
     int axis = 1;
-    tensorNN::FullSoftmax(t1, t1_out, axis);
-    t1_out->print(2);
 
-    // TODO: write tests
+    // Forward
+    Tensor* t_cpu_in = Tensor::randn({10, 3, 100, 100});
+    Tensor* t_gpu_in = t_cpu_in->clone(); t_gpu_in->toGPU();
 
-    int asd = 3;
+    // Forward: CPU
+    Tensor* t_cpu_out = Tensor::empty_like(t_cpu_in);
+    tensorNN::FullSoftmax(t_cpu_in, t_cpu_out, axis);
+
+    // Forward: GPU
+    Tensor* t_gpu_out = Tensor::empty_like(t_gpu_in);
+    tensorNN::FullSoftmax(t_gpu_in, t_gpu_out, axis);
+
+
+    // Backward: CPU
+    Tensor* t_cpu_delta = t_cpu_in;  // Whatever
+    Tensor* t_cpu_parent_delta = Tensor::zeros_like(t_cpu_in);
+    tensorNN::D_FullSoftmax(t_cpu_delta, t_cpu_out, t_cpu_parent_delta, axis);
+
+    // Backward: GPU
+    Tensor* t_gpu_delta = t_gpu_in;  // Whatever
+    Tensor* t_gpu_parent_delta = Tensor::zeros_like(t_gpu_in);
+    tensorNN::D_FullSoftmax(t_gpu_delta, t_gpu_out, t_gpu_parent_delta, axis);
+
+    t_gpu_out->toCPU();  // Keep in GPU until comparison
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_out, t_gpu_out, 10e-4));
+
+    t_gpu_parent_delta->toCPU();
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_parent_delta, t_gpu_parent_delta, 10e-4));
+
+    delete t_cpu_in;
+    delete t_gpu_in;
+    delete t_cpu_out;
+    delete t_gpu_out;
+    delete t_cpu_parent_delta;
+    delete t_gpu_parent_delta;
+//    delete t_cpu_delta;  // Aliases
+//    delete t_gpu_delta;  // Aliases
+
+#endif
 
 }
