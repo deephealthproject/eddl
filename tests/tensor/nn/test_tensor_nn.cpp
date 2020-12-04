@@ -97,6 +97,8 @@ TEST(TensorTestSuite, tensor_nn_full_softmax_nd){
     tensorNN::FullSoftmax(t1, t1_out, axis);
     t1_out->print(2);
 
+    // TODO: write tests
+
     int asd = 3;
 
 }
