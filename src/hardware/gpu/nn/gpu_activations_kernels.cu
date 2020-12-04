@@ -235,7 +235,7 @@ __global__ void d_tanh(float *d,float *i,float *pd,long int size)
 }
 
 
-
+// TODO: DEPRECATED
 __global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals)
 {
     float C_value=0;
@@ -315,6 +315,66 @@ __global__ void full_d_softmax_batched(float *D, float *I, float *PD, unsigned i
                 // Derivative
                 float DjSi = SM[start+i] * (float)(i==j) - SM[start+j]*SM[start+i];
                 PD[start+i] += D[start+j] * DjSi;
+
+            }
+        }
+    }
+}
+
+
+
+__global__ void full_softmax_nd(float *A, float *B, bool stable, int n_samples, int inner_stride, int sample_stride, int k_stride){
+    long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Batch index
+
+    if (thread_id_x < n_samples){
+        int si = (int)thread_id_x; // Alias
+
+        int start_b = si % inner_stride + si/inner_stride * sample_stride;
+        int end_b = start_b + k_stride;
+
+        // Numerical stability (opt.)
+        // stable => first value, no stable => 0.0f
+        float max_value = 0.0f;
+        if(stable){
+            for (int i = start_b; i <= end_b; i += inner_stride) {
+                if (A[i] > max_value) { max_value = A[i]; }
+            }
+        }
+
+        // Numerator
+        float denominator = 0.0f;
+        for (int i = start_b; i <= end_b; i += inner_stride) {
+            float value = expf(A[i] - max_value);
+            B[i] = value;
+            denominator += value;
+        }
+
+        // Softmax
+        for (int i = start_b; i <= end_b; i += inner_stride) {
+            B[i] /= denominator;
+        }
+    }
+}
+
+__global__ void full_d_softmax_nd(float *D, float *I, float *PD, int n_samples, int inner_stride, int sample_stride, int k_stride){
+    long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Batch index
+
+    if (thread_id_x < n_samples){
+        float* SM = I; // Alias (softmax)
+        int si = (int)thread_id_x; // Alias
+
+        int start_b = si % inner_stride + si/inner_stride * sample_stride;
+        int end_b = start_b + k_stride;
+
+        // 1) Compute Jacobbian matrix: DS=[ NxN ]  // DjSi
+        // 2) Compute delta: D * DS = (1,n)x(n,n)=(1,n)
+        // 2.1) Dot product: PD[i] = Dj*DjSi = D0*D0Di + D1*D1Di + ... Dn*DnSi
+        for (int i = start_b; i <= end_b; i += inner_stride) {  // Rows
+            for (int j = start_b; j <= end_b; j += inner_stride) {  // Cols
+
+                // Derivative
+                float DjSi = SM[i] * (float)(i==j) - SM[j]*SM[i];
+                PD[i] += D[j] * DjSi;
 
             }
         }
