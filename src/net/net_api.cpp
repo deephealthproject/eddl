@@ -880,8 +880,12 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
   if (tin.size()) {
     if (isencoder) {
       for(i=0;i<tin.size();i++)
-        xt.push_back(Tensor::permute(tin[i],{1,0,2})); // time x batch x dim
-
+        if (tin[i]->ndim==3)
+          xt.push_back(Tensor::permute(tin[i],{1,0,2})); // time x batch x dim
+        else if (tin[i]->ndim==4)
+          xt.push_back(Tensor::permute(tin[i],{1,0,2,3})); // time x batch x dim
+        else if (tin[i]->ndim==5)
+          xt.push_back(Tensor::permute(tin[i],{1,0,2,3,4})); // time x batch x dim
       inl=xt[0]->shape[0];
       for(i=0;i<xt.size();i++) {
         if (xt[i]->shape[0]!=inl)
@@ -894,11 +898,21 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
     if (isdecoder) {
       //set decoder input with outputs
       for(i=0;i<tout.size();i++)
-        xtd.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
+        if (tout[i]->ndim==3)
+          xtd.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
+        else if (tout[i]->ndim==4)
+          xtd.push_back(Tensor::permute(tout[i],{1,0,2,3})); // time x batch x dim
+        else if (tout[i]->ndim==5)
+          xtd.push_back(Tensor::permute(tout[i],{1,0,2,3,4})); // time x batch x dim
 
       //prepare output
       for(i=0;i<tout.size();i++)
-        yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
+        if (tout[i]->ndim==3)
+          yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
+        else if (tout[i]->ndim==4)
+          yt.push_back(Tensor::permute(tout[i],{1,0,2,3})); // time x batch x dim
+        else if (tout[i]->ndim==5)
+          yt.push_back(Tensor::permute(tout[i],{1,0,2,3,4})); // time x batch x dim
 
       outl=yt[0]->shape[0];
       for(i=0;i<yt.size();i++) {
