@@ -753,7 +753,7 @@ namespace tensorNN {
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::FullSoftmax");
 
         if (A->isCPU()) {
-            cpu_full_softmax(A, B, axis, true);
+            cpu_full_softmax(A, B, axis,true);
         }
 #ifdef cGPU
         else if (A->isGPU())

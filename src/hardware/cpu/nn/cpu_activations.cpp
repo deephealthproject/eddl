@@ -253,12 +253,12 @@ void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
 
 
 void cpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable){
-    cpu_full_softmax_nd(A, B, stable, axis);
+    cpu_full_softmax_nd(A, B, axis, stable);
 //
 //    if(axis==1 && A->ndim==2){  // TODO: Temp. This should be generic for n-dimensions
 //        cpu_full_softmax_batched_2d(A, B, stable);
 //    }else{
-//        cpu_full_softmax_nd(A, B, stable, axis);
+//        cpu_full_softmax_nd(A, B, axis, stable);
 //    }
 }
 
@@ -297,7 +297,7 @@ void cpu_full_softmax_batched_2d(Tensor *A, Tensor *B, bool stable){
 }
 
 
-void cpu_full_softmax_nd(Tensor *A, Tensor *B, bool stable, int axis){
+void cpu_full_softmax_nd(Tensor *A, Tensor *B, int axis, bool stable){
     int chuck_size = A->shape[axis];
     int n_samples = A->size/chuck_size;
     int inner_stride = A->stride[axis];
