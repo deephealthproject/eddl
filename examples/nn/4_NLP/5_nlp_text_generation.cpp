@@ -12,7 +12,6 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-#include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 
 using namespace eddl;
@@ -66,7 +65,6 @@ int main(int argc, char **argv) {
 
     download_flickr();
 
-
     // Settings
     int epochs = 100;
     int batch_size = 24;
@@ -75,28 +73,40 @@ int main(int argc, char **argv) {
     int outvs=2000;
     int embdim=32;
 
-    string path("resnet18-v1-7.onnx");
-    // Download from:
-    // https://www.dropbox.com/s/tn0d87dr035yhol/resnet18-v1-7.onnx
+    // Define network
+    layer in = Input({3,256,256}); //Image
+    layer l = in;
 
-  	Net* net_onnx = import_net_from_onnx_file(path, DEV_CPU);
+    l=ReLu(Conv(l,64,{3,3},{2,2}));
 
-    // Remove last layer
-    removeLayer(net_onnx, "resnetv15_dense0_fwd");
+    l=ResBlock(l, 64,2,1);//<<<-- output half size
+    l=ResBlock(l, 64,2,0);
 
-    layer in=getLayer(net_onnx, "data");
-    layer flatten=getLayer(net_onnx, "flatten_170");
+    l=ResBlock(l, 128,2,1);//<<<-- output half size
+    l=ResBlock(l, 128,2,0);
+
+    l=ResBlock(l, 256,2,1);//<<<-- output half size
+    l=ResBlock(l, 256,2,0);
+
+    l=ResBlock(l, 512,2,1);//<<<-- output half size
+    l=ResBlock(l, 512,2,0);
+
+    l=GlobalAveragePool(l);
+
+    l=Reshape(l,{-1});
 
     // Decoder
     layer ldec = Input({outvs});
     ldec = ReduceArgMax(ldec,{0});
     ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
-    layer l = Decoder(LSTM(ldec,512,true),flatten,"concat");
+    l = Decoder(LSTM(ldec,512,true),l,"concat");
 
     layer out = Softmax(Dense(l, outvs));
 
     model net = Model({in}, {out});
 
+    // dot from graphviz should be installed:
+    plot(net, "model.pdf");
 
     optimizer opt=adam(0.001);
     //opt->set_clip_val(0.01);
@@ -106,30 +116,19 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
-          ,false  //initialize false
+          CS_CPU()
     );
 
     // View model
     summary(net);
-    plot(net, "model.pdf");
-
 
     // Load dataset
     Tensor *x_train=Tensor::load("flickr_trX.bin","bin");
-    x_train->info();
+    x_train->info(); //1000,256,256,3
 
-    Tensor *xtrain=Tensor::permute(x_train,{0,3,1,2});
-    xtrain->info();
-
-    delete x_train;
-    x_train=Tensor::zeros({1000, 3, 224, 224});
-
-    Tensor::scale(xtrain,x_train,{224,224});
-    x_train->info();
-    x_train->div_(255.0);
+    Tensor *xtrain=Tensor::permute(x_train,{0,3,1,2});//1000,3,256,256
 
     Tensor *y_train=Tensor::load("flickr_trY.bin","bin");
     y_train->info();
@@ -138,11 +137,12 @@ int main(int argc, char **argv) {
     y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x input_dim
     y_train->info();
 
-
-    setTrainable(net,"flatten_170",false);
     // Train model
     for(int i=0;i<epochs;i++) {
-      fit(net, {x_train}, {y_train}, batch_size, 1);
+      fit(net, {xtrain}, {y_train}, batch_size, 1);
     }
+
+
+
 
 }

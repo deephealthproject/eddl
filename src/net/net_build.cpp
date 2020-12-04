@@ -236,7 +236,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     optimizer->setlayers(layers);
 
     // set loss functions and create targets tensors
-    if (isdecoder) {
+    if ((isdecoder)||(isencoder)) {
       decsize=lout.size()/lo.size();
       for(int i=0;i<decsize;i++)
         for(int j=0;j<lo.size();j++)
