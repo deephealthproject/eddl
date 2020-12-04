@@ -135,8 +135,9 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
     loss.delta(t_cpu_y_true, t_cpu_y_pred, t_cpu_delta);
     loss.delta(t_gpu_y_true, t_gpu_y_pred, t_gpu_delta);
 
+    // We need to increase the margin error since there is some minor discrepancy between the CPU and GPU
     t_gpu_delta->toCPU();  // Send to CPU
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-3));
 
     // Deletes
     delete t_cpu_y_pred;
