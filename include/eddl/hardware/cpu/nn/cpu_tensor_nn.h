@@ -55,9 +55,11 @@ void cpu_softmax(Tensor *A, Tensor *B);
 void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD);
 
 void cpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable);
-void cpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable);  // Aux. temp.
+void cpu_full_softmax_batched_2d(Tensor *A, Tensor *B, bool stable);  // TODO: Temp. function
+void cpu_full_softmax_nd(Tensor *A, Tensor *B, bool stable, int axis);  // TODO: Temp. function
 void cpu_d_full_softmax(Tensor *D, Tensor *I, Tensor *PD, int axis);
-void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD);  // Aux. temp.
+void cpu_d_full_softmax_batched_2d(Tensor *D, Tensor *I, Tensor *PD);  // TODO: Temp. function
+void cpu_d_full_softmax_nd(Tensor *D, Tensor *I, Tensor *PD, int axis); // TODO: Temp. function
 
 void cpu_linear(Tensor *A, Tensor *B, float param);
 void cpu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param);
