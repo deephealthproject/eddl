@@ -86,13 +86,10 @@ TEST(TensorTestSuite, tensor_nn_full_softmax){
 }
 
 
-
-TEST(TensorTestSuite, tensor_nn_full_softmax_nd){
+void test_softmax_nd(int axis){
 
     // Test GPU
 #ifdef cGPU
-    int axis = 1;
-
     // Forward
     Tensor* t_cpu_in = Tensor::randn({10, 3, 100, 100});
     Tensor* t_gpu_in = t_cpu_in->clone(); t_gpu_in->toGPU();
@@ -133,4 +130,24 @@ TEST(TensorTestSuite, tensor_nn_full_softmax_nd){
 
 #endif
 
+}
+
+TEST(TensorTestSuite, tensor_nn_full_softmax_nd0){
+    int axis = 0;
+    test_softmax_nd(axis);
+}
+
+TEST(TensorTestSuite, tensor_nn_full_softmax_nd1){
+    int axis = 1;
+    test_softmax_nd(axis);
+}
+
+TEST(TensorTestSuite, tensor_nn_full_softmax_nd2){
+    int axis = 2;
+    test_softmax_nd(axis);
+}
+
+TEST(TensorTestSuite, tensor_nn_full_softmax_nd3){
+    int axis = 3;
+    test_softmax_nd(axis);
 }
