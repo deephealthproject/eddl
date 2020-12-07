@@ -248,7 +248,7 @@ if(BUILD_OPENMP)
             find_package(OpenMP)
         else()
             # *nix and Apple
-            find_package(OpenMP 4.5)
+            find_package(OpenMP)  # 4.5
         endif()
         if(OpenMP_CXX_FOUND)
             target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
