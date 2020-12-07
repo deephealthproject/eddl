@@ -174,6 +174,9 @@ public:
 
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
     void prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
+    void prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
+    void prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
+    void prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
 
     void fit_recurrent(vtensor tin, vtensor tout, int batch_size, int epochs);
     void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);

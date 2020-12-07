@@ -70,8 +70,8 @@ namespace tensorNN{
     void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
 // Full Softmax
-    void FullSoftmax(Tensor *A, Tensor *B);
-    void D_FullSoftmax(Tensor *D, Tensor *I, Tensor *PD);
+    void FullSoftmax(Tensor *A, Tensor *B, int axis);
+    void D_FullSoftmax(Tensor *D, Tensor *I, Tensor *PD, int axis);
 
 // Tanh
     void Tanh(Tensor *A, Tensor *B);

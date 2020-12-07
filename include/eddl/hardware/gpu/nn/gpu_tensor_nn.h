@@ -58,8 +58,11 @@ void gpu_softmax(Tensor *A,Tensor *B);
 
 void gpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable);
 void gpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable);  // Aux. temp.
+void gpu_full_softmax_nd(Tensor *A, Tensor *B, int axis, bool stable);  // Aux. temp.
+
 void gpu_d_full_softmax(Tensor *D, Tensor *I, Tensor *PD, int axis);
 void gpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD);  // Aux. temp.
+void gpu_d_full_softmax_nd(Tensor *D, Tensor *I, Tensor *PD, int axis);  // Aux. temp.
 
 void gpu_linear(Tensor *A,Tensor *B,float param);
 void gpu_d_linear(Tensor *D,Tensor *I,Tensor *PD,float param);

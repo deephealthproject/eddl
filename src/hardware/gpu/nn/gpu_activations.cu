@@ -253,7 +253,7 @@ void gpu_d_tanh(Tensor *D,Tensor *I,Tensor *PD){
   check_cuda(cudaDeviceSynchronize(),"gpu_d_tanh");
 }
 
-
+// OLD SOFTMAX => DEPRECATED
 void gpu_softmax(Tensor *A,Tensor *B){
 
   int device=A->gpu_device;
@@ -293,9 +293,13 @@ void gpu_softmax(Tensor *A,Tensor *B){
 }
 
 void gpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable){
-    if(axis==1){
-        gpu_full_softmax_batched(A, B, stable);
-    }else{ msg("Not implemented Error", "gpu_full_softmax"); }
+    gpu_full_softmax_nd(A, B, axis, stable);
+
+//    if(axis==1 && A->ndim==2){  // TODO: Temp. This should be generic for n-dimensions
+//        gpu_full_softmax_batched(A, B, stable);
+//    }else{
+//        gpu_full_softmax_nd(A, B, stable, axis);
+//    }
 }
 
 void gpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable){
@@ -312,13 +316,37 @@ void gpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable){
 
     // Calculate derivative of Softmax
     full_softmax_batched<<<numBlocks, blockSize>>>(A->ptr, B->ptr, stable, n_batches, n_features);
-    check_cuda(cudaDeviceSynchronize(),"gpu_full_softmax");
+    check_cuda(cudaDeviceSynchronize(),"gpu_full_softmax_batched");
+}
+
+void gpu_full_softmax_nd(Tensor *A, Tensor *B, int axis, bool stable){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Get values
+    int chuck_size = A->shape[axis];
+    int n_samples = A->size/chuck_size;
+    int inner_stride = A->stride[axis];
+    int sample_stride = chuck_size*A->stride[axis];
+    int k_stride = (chuck_size-1)*A->stride[axis];
+
+    // Calculate cuda blocks
+    int blockSize = MAX_TPB;
+    int numBlocks = (n_samples + blockSize - 1) / blockSize; // Same as: ceil(N/threads_block)
+
+    // Calculate derivative of Softmax
+    full_softmax_nd<<<numBlocks, blockSize>>>(A->ptr, B->ptr, stable, n_samples, inner_stride, sample_stride, k_stride);
+    check_cuda(cudaDeviceSynchronize(),"gpu_full_softmax_nd");
 }
 
 void gpu_d_full_softmax(Tensor *D, Tensor *I, Tensor *PD, int axis){
-    if(axis==1){
-        gpu_d_full_softmax_batched(D, I, PD);
-    }else{ msg("Not implemented Error", "gpu_d_full_softmax"); }
+    gpu_d_full_softmax_nd(D, I, PD, axis);
+
+//    if(axis==1 && D->ndim==2){  // TODO: Temp. This should be generic for n-dimensions
+//        gpu_d_full_softmax_batched(D, I, PD);
+//    }else{
+//        gpu_d_full_softmax_nd(D, I, PD, axis);
+//    }
 }
 
 void gpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD){
@@ -335,5 +363,25 @@ void gpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD){
 
     // Calculate derivative of Softmax
     full_d_softmax_batched<<<numBlocks, blockSize>>>(D->ptr, I->ptr, PD->ptr, n_batches, n_features);
-    check_cuda(cudaDeviceSynchronize(),"gpu_d_full_softmax");
+    check_cuda(cudaDeviceSynchronize(),"gpu_d_full_softmax_batched");
+}
+
+void gpu_d_full_softmax_nd(Tensor *D, Tensor *I, Tensor *PD, int axis){
+    int device=D->gpu_device;
+    cudaSetDevice(device);
+
+    // Get values
+    int chuck_size = D->shape[axis];
+    int n_samples = D->size/chuck_size;
+    int inner_stride = D->stride[axis];
+    int sample_stride = chuck_size*D->stride[axis];
+    int k_stride = (chuck_size-1)*D->stride[axis];
+
+    // Calculate cuda blocks
+    int blockSize = MAX_TPB;
+    int numBlocks = (n_samples + blockSize - 1) / blockSize; // Same as: ceil(N/threads_block)
+
+    // Calculate derivative of Softmax
+    full_d_softmax_nd<<<numBlocks, blockSize>>>(D->ptr, I->ptr, PD->ptr, n_samples, inner_stride, sample_stride, k_stride);
+    check_cuda(cudaDeviceSynchronize(),"gpu_d_full_softmax_nd");
 }

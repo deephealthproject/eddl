@@ -530,8 +530,8 @@ namespace eddl {
         return new LActivation(parent,"softmax_deprecated", params, name, DEV_CPU, 0);
     }
 
-    layer Softmax(layer parent, string name){
-        vector<float> params = {};
+    layer Softmax(layer parent, int axis, string name){
+        vector<float> params = {static_cast<float>(axis)};
         return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
     }
 
@@ -1295,6 +1295,7 @@ namespace eddl {
                 msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
             }
             else if (status > 0){
+                cout<<cmd<<endl;
                 msg("wget failed to download dataset (exit code: " + to_string(status) + "). See previous messages for details.", "eddl.download_"+name);
             }
           }
@@ -1327,7 +1328,7 @@ namespace eddl {
     }
 
     void download_drive(){
-      download_dataset("drive","npy",{"sbd8eu32adcf5oi","qp0j8oiqzf6tc1a"});
+      download_dataset("drive","bin",{"tf3uzrsjtv4jiey","xakcuhby30ylpes"});
     }
 
 

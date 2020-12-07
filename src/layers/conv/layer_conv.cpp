@@ -128,7 +128,7 @@ void LConv::apply_accumulated_gradients() {
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
-    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  "share_"+name, dev,mem_level);
+    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  "share_"+to_string(c)+this->name, dev,mem_level);
     n->orig = this;
     n->isshared=true;
     n->trainable = trainable;

@@ -57,9 +57,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"binary_cross_entropy"}, // Losses
           {"binary_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
     );
 
     // View model
@@ -74,6 +74,8 @@ int main(int argc, char **argv) {
     x_train->reshape_({x_train->shape[0],length,1}); //batch x timesteps x input_dim
     x_test->reshape_({x_test->shape[0],length,1}); //batch x timesteps x input_dim
 
+    y_train->reshape_({y_train->shape[0],1,1}); //batch x timesteps x input_dim
+    y_test->reshape_({y_test->shape[0],1,1}); //batch x timesteps x input_dim
 
     // Train model
     for(int i=0;i<epochs;i++) {
