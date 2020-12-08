@@ -36,7 +36,7 @@ std::vector<int> vf2vi(const std::vector<float>& vf)
 
 using namespace std;
 
-#ifdef cPROTO 
+#ifdef cPROTO
 	enum ONNX_LAYERS{
 		//TODO Comment in which section belongs each layer
 		BATCHNORM,			// implemented
@@ -45,6 +45,7 @@ using namespace std;
 		DROP,               // implemented
 		//EMBEDDING,  		// Onnx doesn't support this
 		RESHAPE,            // implemented
+        SQUEEZE,            // implemented
 		FLATTEN,            // implemented
 		TRANSPOSE,          // implementing
 		TRANSPOSED_CONV,	// not implemented in eddl
@@ -80,11 +81,11 @@ using namespace std;
 		IDENTITY            // implemented
 
 
-		
+
 
 
 	};
-	
+
 
 	void log_string(string log, int actual_log_level, int string_log_level){
 		if(actual_log_level <= string_log_level){
@@ -160,6 +161,7 @@ using namespace std;
 		map_layers["Reshape"] = ONNX_LAYERS::RESHAPE;
 		map_layers["Flatten"] = ONNX_LAYERS::FLATTEN;
 		map_layers["Transpose"] = ONNX_LAYERS::TRANSPOSE;
+		map_layers["Squeeze"] = ONNX_LAYERS::SQUEEZE;
 		map_layers["ConvTranspose"] = ONNX_LAYERS::TRANSPOSED_CONV;
 		map_layers["Upsample"] = ONNX_LAYERS::UPSAMPLING;
 		map_layers["Softmax"] = ONNX_LAYERS::SOFTMAX;
@@ -191,7 +193,7 @@ using namespace std;
 		map_layers["Min"] = ONNX_LAYERS::MIN;
 		map_layers["LSTM"] = ONNX_LAYERS::LSTM;
 		map_layers["Identity"] = ONNX_LAYERS::IDENTITY;
-		
+
 
 		return map_layers;
 	}
@@ -199,7 +201,7 @@ using namespace std;
 
 	//Converts a raw onnx value tensor and writes it to a vector of that value type.
 	template <class T>
-	bool TryConvertingTensorRawValues( const onnx::TensorProto& onnx_tensor, vector<T> &field) 
+	bool TryConvertingTensorRawValues( const onnx::TensorProto& onnx_tensor, vector<T> &field)
 	{
 		if (!onnx_tensor.has_raw_data()) {
 			return false;
@@ -610,9 +612,15 @@ using namespace std;
 		while(!nodeQueue.empty()){
 			counter = 0;
 			onnx::NodeProto* node= nodeQueue.front();
+			log_string("Next node: " + node->name(), log_level, LOG_LEVEL::DEBUG);
+
+            // Look for inputs with empty ("") names that some libraries create, and delete them.
+            auto * inputs_list = node->mutable_input();
+            for (auto i = inputs_list->begin(); i != inputs_list->end(); i++)
+                if ((*i).empty())  i = --inputs_list->erase(i);
+
 			//6.1: Check all inputs are avaliable
 			bool avaliable = true;
-			log_string("Next node: " + node->name(), log_level, LOG_LEVEL::DEBUG);
 
 			for(int i = 0; i < node->input_size(); i++){
 				string input = node->input(i);
@@ -626,7 +634,7 @@ using namespace std;
 					continue;
 				}
 				avaliable = false;
-				log_string("Node " + node->name() + " is not avaliable yet"  , log_level, LOG_LEVEL::DEBUG);
+				log_string("Node " + node->name() + " is not avaliable yet. Missing input: " + input  , log_level, LOG_LEVEL::DEBUG);
 				break;
 			}
 			string output_name = node->output(0);
@@ -655,7 +663,6 @@ using namespace std;
 			string name = node->name();
 			int dev = DEV_CPU;//TODO: Check what device to use
 			Layer *actual_layer;
-			log_string("Checking for bug", log_level, LOG_LEVEL::DEBUG);
 
 			switch (layer_type) { //Every case should create the corresponding layer and asign it to "actual_layer" variable
 
@@ -669,7 +676,7 @@ using namespace std;
 							if(!attr_name.compare("epsilon")) epsilon = attribute.f();
 							if(!attr_name.compare("momentum")) momentum = attribute.f();
 						}
-						
+
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
@@ -884,7 +891,7 @@ using namespace std;
 							neuronas = dims[1];
 						string name = node->name();
 						Tensor * input_size = parent->output;
-						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
+						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem);
 
 						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
 
@@ -903,7 +910,7 @@ using namespace std;
 						actual_layer = dense;
 					}
 					break;
-					
+
 				case ONNX_LAYERS::UPSAMPLING:
 					{
 						string interpolation_mode;
@@ -916,15 +923,15 @@ using namespace std;
 							string attr_name = attribute.name();
 							if(!attr_name.compare("mode")) interpolation_mode = attribute.s();
 						}
-						
+
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
-						
+
 						string scales_name = node->input(1); //Get scales and dims
 						vector<float>* scales = &(map_init_values[scales_name]);
 						vector<int> scales_dims = map_init_dims[scales_name];
-						
+
 						if(scales_dims[0] != 4){
 							cerr << "Dimensions of upsampling layer in onnx are wrong" << endl;
 						}
@@ -932,7 +939,7 @@ using namespace std;
 						channel_scale = scales->at(1);
 						height_scale = scales->at(2);
 						width_scale = scales->at(3);
-						
+
 						string name = node->name();
 
 
@@ -953,7 +960,7 @@ using namespace std;
 							if(!attr_name.compare("seed")) seed = attribute.i();
 							if(!attr_name.compare("ratio")) ratio = attribute.f();
 						}
-						
+
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
@@ -1059,7 +1066,7 @@ using namespace std;
 						else if(map_init_values.count(parent_name)){ //This means it is a parameter and not a layer
 							for( int i = 0; i < node->output_size(); i++ ) {
 								map_init_values[node->output(i)] = map_init_values[parent_name];
-								map_init_dims[node->output(i)] = shape; 
+								map_init_dims[node->output(i)] = shape;
 								vector<onnx::NodeProto*> child_nodes = input_node_map[node->output(i)];
 								for(onnx::NodeProto * child : child_nodes){
 									nodeQueue.push(child);
@@ -1103,7 +1110,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "relu", param, name, dev, mem);
 					}
 					break;
@@ -1113,7 +1120,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "sigmoid", param, name, dev, mem);
 					}
 					break;
@@ -1123,7 +1130,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "hard_sigmoid", param, name, dev, mem);
 					}
 					break;
@@ -1133,7 +1140,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "tanh", param, name, dev, mem);
 					}
 					break;
@@ -1143,7 +1150,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "exp", param, name, dev, mem);
 					}
 					break;
@@ -1159,7 +1166,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "linear", param, name, dev, mem);
 					}
@@ -1176,7 +1183,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "leaky_relu", param, name, dev, mem);
 					}
@@ -1193,7 +1200,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "thresholded_relu", param, name, dev, mem);
 					}
@@ -1210,7 +1217,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "elu", param, name, dev, mem);
 					}
@@ -1229,7 +1236,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						param.push_back(alpha);
 						param.push_back(gamma);
 						actual_layer = new LActivation(parent, "selu", param, name, dev, mem);
@@ -1241,7 +1248,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "softsign", param, name, dev, mem);
 					}
 					break;
@@ -1251,7 +1258,7 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "softplus", param, name, dev, mem);
 					}
 					break;
@@ -1271,9 +1278,14 @@ using namespace std;
 						}
 
 						string name = node->name();
-						vector<float> param; 
-						actual_layer = new LActivation(parent, "softmax", param, name, dev, mem);
+                        int parent_dims = parent->output->getShape().size();
+                        if (axis < 0)  // Check if the target axis is a negative index
+                            axis = parent_dims + axis;  // Get the target axis index
+                        if (axis < 0 || axis >= parent_dims) // Check for invalid axis index
+                            msg("The target axis for Softmax is not valid: axis=" + to_string(axis), "ONNX::ImportNet");
 
+						vector<float> param = {(float)axis};
+						actual_layer = new LActivation(parent, "softmax", param, name, dev, mem);
 					}
 					break;
 				case ONNX_LAYERS::CONCAT:
@@ -1300,6 +1312,7 @@ using namespace std;
 					break;
 				case ONNX_LAYERS::ADD:
 					{
+						log_string("Add detected" , log_level, LOG_LEVEL::DEBUG);
 						vector<Layer *> parents;
 						string parent_name;
 						bool parameter_input = false;
@@ -1337,14 +1350,20 @@ using namespace std;
 								break;
 							}
 							else if((dense = dynamic_cast<LDense*>(parents[0]) )){
+						        log_string("Detected a Dense layer as the parent of the Add node." , log_level, LOG_LEVEL::DEBUG);
 								string bias_name = node->input(index_parameter);
 								vector<float> *bias = &(map_init_values[bias_name]);
 								vector<int> bias_dims = map_init_dims[bias_name];
 								if(!dense->use_bias){
+						            log_string("Setting the bias values of the parent Dense to the Add parameters." , log_level, LOG_LEVEL::DEBUG);
 									dense->use_bias = true;
 									dense->bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
+                                    dense->params.push_back(dense->bias);
+                                    dense->gbias = new Tensor(bias_dims, dev);
+                                    dense->gradients.push_back(dense->gbias);
 								}
 								else{ //If dense already has a bias, we sum it in top of the bias
+						            log_string("The parent Dense already has a bias. Adding the parameters of the Add operator to the parent bias." , log_level, LOG_LEVEL::DEBUG);
 									Tensor* add_to_bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
 									dense->bias = Tensor::add(dense->bias, add_to_bias);
 
@@ -1357,6 +1376,7 @@ using namespace std;
 						}
 						string name = node->name();
 						actual_layer = new LAdd(parents, name, dev, mem);
+						log_string("Add layer created" , log_level, LOG_LEVEL::DEBUG);
 
 					}
 					break;
@@ -1395,7 +1415,7 @@ using namespace std;
 						for ( int j = 0; j < node->input_size(); j++) {
 							parent_name = node->input(j);
 							if(map_init_values.count(parent_name)){
-								//Dense detected	
+								//Dense detected
 								if(dense_detected){
 									cerr << "MAT_MUL with two parameters" << endl;
 								}
@@ -1412,7 +1432,7 @@ using namespace std;
 							int neuronas = dims[1];
 							Layer *parent = parents[1-index_parameter];
 							bool use_bias = false;
-							LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
+							LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem);
 							Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
 							Tensor::copy(weights_tensor, dense->W );
 							delete weights_tensor;
@@ -1575,7 +1595,7 @@ using namespace std;
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
-						
+
 						if(hidden_size < 0){
 							cerr << "Model contains a LSTM without the number of neurons" << endl;
 						}
@@ -1631,7 +1651,7 @@ using namespace std;
 						delete weights_forget_g;
 
 						Tensor* weights_cell_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_cell_g), dev);
-						Tensor::copy(weights_forget_tensor, lstm->Wcx );
+						Tensor::copy(weights_cell_tensor, lstm->Wcx );
 						delete weights_cell_tensor;
 						delete weights_cell_g;
 
@@ -1734,6 +1754,66 @@ using namespace std;
 						actual_layer = output_node_map[parent_name];
 					}
 					break;
+				case ONNX_LAYERS::SQUEEZE:
+					{
+						log_string("Squeeze layer detected" , log_level, LOG_LEVEL::DEBUG);
+						vector<int> squeeze_axes;
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("axes")) {
+                                // Read the axes to squeeze
+                                for(int h = 0; h < attribute.ints_size(); h++){
+                                    squeeze_axes.push_back(attribute.ints(h));
+                                }
+							}
+						}
+
+						string parent_name;
+						parent_name = node->input(0);
+						Layer * parent = output_node_map[parent_name];
+                        // Check if we are trying to squeeze the axis 0 with a recurrent parent node
+                        //     - In ONNX, the output of a recurrent operator has the number of directions (1:onedirectional, 2:bidirectional)
+                        //       in the axis 0, so in the case of onedirectional models this dimension is squeezed. But to make it fit with
+                        //       the implementation of the eddl we have to skip this squeeze operation because is not needed.
+                        for (int i=0; i < squeeze_axes.size(); ++i) {
+                            if (squeeze_axes[i] == 0 && parent->isrecurrent) {
+						        log_string("Removing 0 axis from Squeeze operator. The parent node is recurrent." , log_level, LOG_LEVEL::WARN);
+                                squeeze_axes.erase(squeeze_axes.begin()+i);  // We remove the axis to squeeze
+                            }
+                        }
+
+                        if (squeeze_axes.size() == 0) {
+                            // We skip this node because there is no axis to squeeze
+						    log_string("Skiping squeeze operation. No axes to squeeze." , log_level, LOG_LEVEL::DEBUG);
+						    actual_layer = output_node_map[parent_name];
+                            break;
+                        } else { // There are axes to squeeze
+                            vector<int> target_shape;
+                            vector<int> parent_out_shape = parent->output->getShape();
+                            bool to_squeeze = false;
+                            for (int parent_ax = 0; parent_ax < parent_out_shape.size(); ++parent_ax) {
+                                to_squeeze = false;
+                                for (int target_ax : squeeze_axes) {
+                                    if (parent_ax == target_ax) {
+                                        if (parent_out_shape[parent_ax] == 1) {
+                                            to_squeeze = true;
+                                            break;
+                                        } else {
+						                    log_string("Trying to squeeze an axis with value different than one. Skiping the operator." , log_level, LOG_LEVEL::WARN);
+						                    actual_layer = output_node_map[parent_name];
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (!to_squeeze) target_shape.push_back(parent_out_shape[parent_ax]);
+                            }
+                            // We create a reshape layer to do the squeeze operation
+							actual_layer= new LReshape(parent, target_shape, name, dev, mem);
+                            log_string("Squeeze (with Reshape) layer created" , log_level, LOG_LEVEL::DEBUG);
+                        }
+					}
+					break;
 				case ONNX_LAYERS::TRANSPOSE:
 					{
 						log_string("Transpose layer detected" , log_level, LOG_LEVEL::DEBUG);
@@ -1741,7 +1821,7 @@ using namespace std;
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
-							if (!attr_name.compare("storage_order")) {
+							if (!attr_name.compare("perm")) {
                                 for(int h = 0; h < attribute.ints_size(); h++){
                                     perm.push_back(attribute.ints(h));
                                 }
@@ -1752,6 +1832,21 @@ using namespace std;
 						string parent_name;
 						parent_name = node->input(0);
 						Layer * parent = output_node_map[parent_name];
+
+                        if (recurrent_net) {
+                            if (perm.size() > 1) {
+                                if (perm[0] != 0 || perm[1] != 1) {
+						            log_string("Transpose layers in recurrent nets can not swap batch or sequence dimensions. Skiping Transpose layer..." , log_level, LOG_LEVEL::DEBUG);
+						            actual_layer = parent;
+                                    break;
+                                }
+                            } else {
+						        log_string("WARNING: Transpose layer with permute indices size of " + to_string(perm.size()) + ". Skiping Transpose layer..." , log_level, LOG_LEVEL::WARN);
+						        actual_layer = parent;
+                                break;
+                            }
+                        }
+
 						actual_layer = new LPermute(parent, perm, name, dev, mem);
 						log_string("Permute layer created" , log_level, LOG_LEVEL::DEBUG);
 
