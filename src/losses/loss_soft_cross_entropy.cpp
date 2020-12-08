@@ -17,7 +17,7 @@
 using namespace std;
 
 
-LSoftCrossEntropy::LSoftCrossEntropy() : Loss("soft_cross_entropy"){
+LSoftCrossEntropy::LSoftCrossEntropy() : Loss("softmax_cross_entropy"){
 }
 
 
