@@ -274,7 +274,7 @@ __global__ void full_softmax_batched(float *A, float *B, bool stable, unsigned i
 
         // Numerical stability (opt.)
         // stable => first value, no stable => 0.0f
-        float max_value = 0.0f;
+        float max_value = GPU_LOWEST_FLOAT;
         if(stable){
             for(unsigned int j=start; j<end; j++){
                 if (A[j] > max_value) { max_value = A[j]; }
@@ -282,9 +282,9 @@ __global__ void full_softmax_batched(float *A, float *B, bool stable, unsigned i
         }
 
         // Numerator
-        float denominator = 0.0f;
+        float denominator = GPU_EPS_FLOAT;
         for(unsigned int j=start; j<end; j++){
-            float value = expf(A[j] - max_value);
+            float value = expf(A[j] - max_value);  // Highest number should be zero
             B[j] = value;
             denominator += value;
         }
@@ -334,7 +334,7 @@ __global__ void full_softmax_nd(float *A, float *B, bool stable, int n_samples, 
 
         // Numerical stability (opt.)
         // stable => first value, no stable => 0.0f
-        float max_value = 0.0f;
+        float max_value = GPU_LOWEST_FLOAT;
         if(stable){
             for (int i = start_b; i <= end_b; i += inner_stride) {
                 if (A[i] > max_value) { max_value = A[i]; }
@@ -342,9 +342,9 @@ __global__ void full_softmax_nd(float *A, float *B, bool stable, int n_samples, 
         }
 
         // Numerator
-        float denominator = 0.0f;
+        float denominator = GPU_EPS_FLOAT;
         for (int i = start_b; i <= end_b; i += inner_stride) {
-            float value = expf(A[i] - max_value);
+            float value = expf(A[i] - max_value);  // Highest number should be zero
             B[i] = value;
             denominator += value;
         }
