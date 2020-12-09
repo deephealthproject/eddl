@@ -5,9 +5,9 @@ channels:
   - anaconda
 dependencies:
   - cmake>=3.9.2
-  - eigen>=3.3.7
-  - protobuf
-  - libprotobuf  # We need to avoid problems with paths (idk why)
+  - eigen==3.3.7
+  - protobuf==3.11.4
+  - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
   - zlib
   - cudatoolkit
   - gtest
