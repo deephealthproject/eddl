@@ -408,6 +408,7 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
 
 # SHOW OPTIONS
 message(STATUS "===========================================" )
+message(STATUS "============== CMAKE SUMMARY ==============" )
 message(STATUS "===========================================" )
 message(STATUS "Project name: " ${CMAKE_PROJECT_NAME} )
 message(STATUS "Project version: " ${CMAKE_PROJECT_VERSION} )
@@ -418,7 +419,9 @@ message(STATUS "Build target: " ${BUILD_TARGET} )
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
 message(STATUS "Build shared libs: " ${BUILD_SHARED_LIBS} )
 message(STATUS "Build coverage: " ${BUILD_COVERAGE} )
-message(STATUS "Superbuild: " ${BUILD_SUPERBUILD} )
+message(STATUS "Build sanitizers: " ${BUILD_SANITIZERS} )
+message(STATUS "Build HPC: " ${BUILD_HPC} )
+message(STATUS "Use superbuild: " ${BUILD_SUPERBUILD} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER}) | Version: ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})

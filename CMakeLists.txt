@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.9.2)
 option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
-option(BUILD_HPC "Compile using agressive flags" ON)
+option(BUILD_HPC "Compile using aggressive flags" ON)
 option(BUILD_TESTS "Compile tests (HCP needs to be disabled)" ON)  # Disable HCP to pass tests (there are numerical errors)
 option(USE_LOCAL_GTEST "Use the local library to avoid problems derived from the 'One Definition Rule'" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
@@ -19,6 +19,16 @@ option(BUILD_SANITIZERS "Flag to compile with sanitizers information" OFF)
 
 if(WIN32)
     option(BUILD_SHARED_LIBS "" OFF) # Prefer lib over dll in windows
+endif()
+
+###########################################################################
+############################### WARNINGS ##################################
+###########################################################################
+
+# Issues with HPC and logic functions
+if(BUILD_TESTS AND BUILD_HPC)
+    message(WARNING "[WARNING] Some logic functions are not compatible with the 'BUILD_HPC' flag.
+If you're unit testing, or using one of these logic functions: isfinite(), isinf(), isnan(), isposinf(), isneginf(); then we recommend you to disable the HPC flag: '-D BUILD_HPC=OFF' to obtain the expected results.")
 endif()
 
 ###########################################################################

@@ -1347,10 +1347,17 @@ using namespace std;
 		w->set_data_type( onnx::TensorProto::FLOAT );
 		vector<int> w_dims {1, 4*layer->units, layer->input->shape[1]}; // w_dims shape[0] = 1 beacuse is only forward
         w->mutable_dims()->Add( w_dims.begin(), w_dims.end() ); // Set the shape of the weights
-        w->mutable_float_data()->Add( layer->Wix->ptr, layer->Wix->ptr + layer->Wix->size ); // i weights
-        w->mutable_float_data()->Add( layer->Wox->ptr, layer->Wox->ptr + layer->Wox->size ); // o weights
-        w->mutable_float_data()->Add( layer->Wfx->ptr, layer->Wfx->ptr + layer->Wfx->size ); // f weights
-        w->mutable_float_data()->Add( layer->Wcx->ptr, layer->Wcx->ptr + layer->Wcx->size ); // c weights
+		/*
+		 * The Weights are permuted before saving them (required by ONNX standad)
+		 */
+		Tensor* Wix = layer->Wix->permute({1, 0});
+        w->mutable_float_data()->Add( Wix->ptr, Wix->ptr + Wix->size ); // i weights
+		Tensor* Wox = layer->Wox->permute({1, 0});
+        w->mutable_float_data()->Add( Wox->ptr, Wox->ptr + Wox->size ); // o weights
+		Tensor* Wfx = layer->Wfx->permute({1, 0});
+        w->mutable_float_data()->Add( Wfx->ptr, Wfx->ptr + Wfx->size ); // f weights
+		Tensor* Wcx = layer->Wcx->permute({1, 0});
+        w->mutable_float_data()->Add( Wcx->ptr, Wcx->ptr + Wcx->size ); // c weights
 
 		// R input (recurrent weights for all the layers W[iofc])
 		onnx::TensorProto* r = graph->add_initializer();
@@ -1358,10 +1365,18 @@ using namespace std;
 		r->set_data_type( onnx::TensorProto::FLOAT );
 		vector<int> r_dims {1, 4*layer->units, layer->units}; // r_dims shape[0] = 1 beacuse is only forward
         r->mutable_dims()->Add( r_dims.begin(), r_dims.end() ); // Set the shape of the weights
-        r->mutable_float_data()->Add( layer->Wih->ptr, layer->Wih->ptr + layer->Wih->size ); // i recurrent weights
-        r->mutable_float_data()->Add( layer->Woh->ptr, layer->Woh->ptr + layer->Woh->size ); // o recurrent weights
-        r->mutable_float_data()->Add( layer->Wfh->ptr, layer->Wfh->ptr + layer->Wfh->size ); // f recurrent weights
-        r->mutable_float_data()->Add( layer->Wch->ptr, layer->Wch->ptr + layer->Wch->size ); // c recurrent weights
+		/*
+		 * The Weights are permuted before saving them (required by ONNX standad)
+		 */
+		Tensor* Wih = layer->Wih->permute({1, 0});
+        r->mutable_float_data()->Add( Wih->ptr, Wih->ptr + Wih->size ); // i recurrent weights
+		Tensor* Woh = layer->Woh->permute({1, 0});
+        r->mutable_float_data()->Add( Woh->ptr, Woh->ptr + Woh->size ); // o recurrent weights
+		Tensor* Wfh = layer->Wfh->permute({1, 0});
+        r->mutable_float_data()->Add( Wfh->ptr, Wfh->ptr + Wfh->size ); // f recurrent weights
+		Tensor* Wch = layer->Wch->permute({1, 0});
+        r->mutable_float_data()->Add( Wch->ptr, Wch->ptr + Wch->size ); // c recurrent weights
+
 		// B input (biases for all the layers)
 		onnx::TensorProto* b = graph->add_initializer();
 		b->set_name( layer->name + "_B" );

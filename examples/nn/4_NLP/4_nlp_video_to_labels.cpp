@@ -79,7 +79,13 @@ int main(int argc, char **argv) {
     layer out = ReLu(l);
     model deepVO = Model({in},{out});
 
-    build(deepVO, adam(), {"mse"}, {"mse"},  CS_CPU() );
+    build(deepVO,
+          adam(),
+          {"mse"},
+          {"mse"},
+          CS_GPU({1})
+//          CS_CPU()
+          );
     plot(deepVO,"model.pdf","TB");
     summary(deepVO);
 
