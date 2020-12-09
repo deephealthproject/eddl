@@ -32,20 +32,15 @@ using namespace eddl;
 int main(int argc, char **argv) {
     cout << "Tests for development. Ignore." << endl;
 
-    Tensor* t1 = new Tensor({12, INFINITY, NAN, -INFINITY, 0.0f, +INFINITY}, {2,3});
-// [
-// [12.00 inf nan]
-// [-inf 0.00 inf]
-// ]
+//   Tensor* t1 = Tensor::load("/home/salvacarrion/Documents/Programming/C++/eddl/nan_tensor_lout_input.bin");
+    Tensor *t1 = new Tensor({-114.67 ,-153.77 ,-122.57 ,-113.86 ,-141.96 ,-119.93 ,-116.40 ,-135.25 ,-105.31 ,-117.21}, {1, 10}, DEV_CPU);
+   t1->print(2);
 
-    Tensor* r1 = t1->isfinite(); // returns new tensor
+   Tensor* t2 = Tensor::zeros_like(t1);
+//   t2 = t1->exp();
+   tensorNN::FullSoftmax(t1, t2, 1);
 
-    r1->print(2);  // Temp.
-// [
-// [1.00 0.00 0.00]
-// [0.00 1.00 0.00]
-// ]
-
+   t2->print(2);
 
     cout << "Done!" << endl;
 
