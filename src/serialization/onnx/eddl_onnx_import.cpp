@@ -1605,7 +1605,9 @@ using namespace std;
 						vector<int> dims_g = map_init_dims[weights_gates];
                         int input_size = dims_g[2];
 
-						vector<int> dims_input_lstm = {dims_g[2], dims_g[1]/4};
+						// Load input weights with shape [hidden_size, input_size]. After load we transpose
+						//    Note: EDDL input weights are of shape [input_size, hidden_size]
+						vector<int> dims_input_lstm = {dims_g[1]/4, dims_g[2]};
 
 						vector<float>* weights_input_g = new vector<float>;
 						vector<float>* weights_output_g = new vector<float>;
@@ -1634,43 +1636,53 @@ using namespace std;
 						recurrence_weights_cell_g->assign(  recurrence_weights_g->begin() + w_size * 3  , recurrence_weights_g->begin() + w_size * 4);
 
 						LLSTM* lstm = new LLSTM({parent}, hidden_size, 0, 0, name, dev, mem);
-
+						/*
+						* The Weights are permuted before copying them to the LSTM layer (mismatch between ONNX standad and EDDL implementation)
+						*/
 						Tensor* weights_input_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_input_g), dev);
+						weights_input_tensor->permute_({1, 0});
 						Tensor::copy(weights_input_tensor, lstm->Wix );
 						delete weights_input_tensor;
 						delete weights_input_g;
 
 						Tensor* weights_output_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_output_g), dev);
+						weights_output_tensor->permute_({1, 0});
 						Tensor::copy(weights_output_tensor, lstm->Wox );
 						delete weights_output_tensor;
 						delete weights_output_g;
 
 						Tensor* weights_forget_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_forget_g), dev);
+						weights_forget_tensor->permute_({1, 0});
 						Tensor::copy(weights_forget_tensor, lstm->Wfx );
 						delete weights_forget_tensor;
 						delete weights_forget_g;
 
 						Tensor* weights_cell_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_cell_g), dev);
+						weights_cell_tensor->permute_({1, 0});
 						Tensor::copy(weights_cell_tensor, lstm->Wcx );
 						delete weights_cell_tensor;
 						delete weights_cell_g;
 
 						Tensor* recurrence_weights_input_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_input_g), dev);
+						recurrence_weights_input_tensor->permute_({1, 0});
 						Tensor::copy(recurrence_weights_input_tensor, lstm->Wih );
 						delete recurrence_weights_input_tensor;
 						delete recurrence_weights_input_g;
 
 						Tensor* recurrence_weights_output_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_output_g), dev);
+						recurrence_weights_output_tensor->permute_({1, 0});
 						Tensor::copy(recurrence_weights_output_tensor, lstm->Woh );
 						delete recurrence_weights_output_tensor;
 						delete recurrence_weights_output_g;
 
 						Tensor* recurrence_weights_forget_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_forget_g), dev);
+						recurrence_weights_forget_tensor->permute_({1, 0});
 						Tensor::copy(recurrence_weights_forget_tensor, lstm->Wfh );
 						delete recurrence_weights_forget_tensor;
 						delete recurrence_weights_forget_g;
 
 						Tensor* recurrence_weights_cell_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_cell_g), dev);
+						recurrence_weights_cell_tensor->permute_({1, 0});
 						Tensor::copy(recurrence_weights_cell_tensor, lstm->Wch );
 						delete recurrence_weights_cell_tensor;
 						delete recurrence_weights_cell_g;
