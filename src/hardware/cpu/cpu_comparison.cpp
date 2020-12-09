@@ -10,7 +10,7 @@
 
 #include "eddl/hardware/cpu/cpu_tensor.h"
 #include "eddl/system_info.h"
-#include <limits>
+
 
 // CPU: Logic functions: Truth value testing
 bool cpu_all(Tensor *A){
