@@ -56,6 +56,17 @@
 #define MAX_GPUS 8
 #define MAX_FPGAS 8
 
+#define CPU_MIN_FLOAT 1.17549e-38f;  // Minimum finite value
+#define CPU_MAX_FLOAT 3.40282e+38f;  // Maximum finite value
+#define CPU_EPS_FLOAT 1.19209e-07f;  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
+#define CPU_LOWEST_FLOAT -3.40282e+38f;  // For floating-point types: implementation-dependent; generally, the negative of max()
+
+//const float CPU_MIN_FLOAT = std::numeric_limits<float>::min();  // Minimum finite value
+//const float CPU_MAX_FLOAT = std::numeric_limits<float>::max();  // Maximum finite value
+//const float CPU_EPS_FLOAT = std::numeric_limits<float>::epsilon();  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
+//const float CPU_LOWEST_FLOAT = -CPU_MAX_FLOAT;  // For floating-point types: implementation-dependent; generally, the negative of max()
+
+
 using namespace std;
 
 // TODO: Remove this. Don't like here
@@ -2422,7 +2433,8 @@ public:
     */
     Tensor* isnan();
     static void isnan(Tensor *A, Tensor* B);
-    
+
+    bool anynan();
 
     /**
       *  @brief Test element-wise for negative infinity.

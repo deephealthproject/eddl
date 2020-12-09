@@ -223,6 +223,13 @@ void Tensor::isnan(Tensor *A, Tensor* B){
     PROFILING_FOOTER(isnan);
 }
 
+bool Tensor::anynan(){
+    Tensor *tmp = this->isnan();  // For debugging. It's inefficient
+    float s = tmp->sum();
+    delete tmp;
+    return s>0.0f;
+}
+
 void Tensor::isneginf(Tensor *A, Tensor* B){
     checkCompatibility(A, B, "Tensor::isneginf");
 

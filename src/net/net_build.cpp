@@ -245,7 +245,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     else losses = vloss(lo);
 
     for (int i = 0; i < losses.size(); i++) {
-        if (losses[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
+        if (losses[i]->name == "softmax_cross_entropy") lout[i]->delta_bp = 1;
         lout[i]->target = new Tensor(lout[i]->output->getShape(), dev);
     }
     // set metrics

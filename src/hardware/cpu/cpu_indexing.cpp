@@ -9,7 +9,8 @@
 
 
 #include "eddl/hardware/cpu/cpu_tensor.h"
-#include <limits>
+
+
 
 std::pair<unsigned int*, int> cpu_nonzero(Tensor *A){
     // This can be improved:

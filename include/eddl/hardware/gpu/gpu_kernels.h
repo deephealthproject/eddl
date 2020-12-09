@@ -18,6 +18,12 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
+// Same as in tensor.h
+#define GPU_MIN_FLOAT 1.17549e-38f;  // Minimum finite value
+#define GPU_MAX_FLOAT 3.40282e+38f;  // Maximum finite value
+#define GPU_EPS_FLOAT 1.19209e-07f;  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
+#define GPU_LOWEST_FLOAT -3.40282e+38f;  // For floating-point types: implementation-dependent; generally, the negative of max()
+
 
 // GPU: Core (static)
 //void gpu_transpose(Tensor *A, Tensor *B);
