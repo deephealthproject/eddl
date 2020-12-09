@@ -15,9 +15,6 @@
 #include <cuda.h>
 #include <cstdio>
 
-// todo
-#define GPU_MAX_FLOAT 1000000.0f
-#define GPU_MIN_FLOAT -10000000.0f
 
 // GPU: Activations
 __global__ void relu(float *a,float *b,long int size);
