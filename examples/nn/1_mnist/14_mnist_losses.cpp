@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <iomanip>
 
 #include "eddl/apis/eddl.h"
 
@@ -112,23 +113,23 @@ int main(int argc, char **argv) {
 
       for(j=0;j<num_batches;j++)  {
 
-        cout<<"Batch "<<j<<" ";
+        cout<<"Batch "<<j;
         next_batch({x_train},{batch});
 
         zeroGrads(net);
 
         forward(net,{batch});
 
-        diceploss+=compute_loss(dicep)/batch_size;
-        cout<<"diceploss="<<diceploss/(j+1)<<" ";
-        fflush(stdout);
+        diceploss+=compute_loss(dicep)/(float)batch_size;
+        cout<<" ( dice_pixel_loss="<< std::setprecision(3) << std::fixed << diceploss/(float)(j+1);
 
-        diceiloss+=compute_loss(dicei)/batch_size;
-        cout<<"diceiloss="<<diceiloss/(j+1)<<" ";
-        fflush(stdout);
+        diceiloss+=compute_loss(dicei)/(float)batch_size;
+        cout<<"; dice_img_loss="<< std::setprecision(3) << std::fixed << diceiloss/(float)(j+1);
 
-        mseloss+=compute_loss(mse)/batch_size;
-        cout<<"mseloss="<<mseloss/(j+1)<<"\r";
+        mseloss+=compute_loss(mse)/(float)batch_size;
+        cout<<"; mse_loss=" << std::setprecision(3) << std::fixed <<  mseloss/(float)(j+1);
+
+        cout <<" )" <<"\r";
         fflush(stdout);
 
         optimize(dicep);
@@ -136,8 +137,6 @@ int main(int argc, char **argv) {
 
 
         update(net);
-
-
       }
 
       printf("\n");
