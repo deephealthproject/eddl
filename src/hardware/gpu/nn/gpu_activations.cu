@@ -20,7 +20,6 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
 
-#define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
 
 void gpu_relu(Tensor *A,Tensor *B){
