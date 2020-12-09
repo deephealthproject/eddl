@@ -46,7 +46,7 @@ void IHeUniform::apply(Tensor* params) {
 
         params->fill_rand_signed_uniform_(1.0);
 
-        float limits=sqrtf(6.0 / (float)(fin));
+        float limits=sqrtf(6.0f / (float)(fin));
 
         params->mult_(limits);
 
