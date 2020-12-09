@@ -274,7 +274,7 @@ void cpu_full_softmax_batched_2d(Tensor *A, Tensor *B, bool stable){
 
         // Numerical stability (opt.)
         // stable => first value, no stable => 0.0f
-        float max_value = 0.0f;
+        float max_value = CPU_LOWEST_FLOAT;
         if(stable){
             for(int j=start; j<end; j++){
                 if (A->ptr[j] > max_value) { max_value = A->ptr[j]; }
@@ -282,7 +282,7 @@ void cpu_full_softmax_batched_2d(Tensor *A, Tensor *B, bool stable){
         }
 
         // Numerator
-        float denominator = 0.0f;
+        float denominator = CPU_EPS_FLOAT;
         for(int j=start; j<end; j++){
             float value = ::expf(A->ptr[j] - max_value);
             B->ptr[j] = value;
@@ -318,7 +318,7 @@ void cpu_full_softmax_nd(Tensor *A, Tensor *B, int axis, bool stable){
 
             // Numerical stability (opt.)
             // stable => first value, no stable => 0.0f
-            float max_value = 0.0f;
+            float max_value = CPU_LOWEST_FLOAT;
             if (stable) {
                 for (int i = start_b; i <= end_b; i += inner_stride) {
                     if (A->ptr[i] > max_value) { max_value = A->ptr[i]; }
@@ -326,11 +326,9 @@ void cpu_full_softmax_nd(Tensor *A, Tensor *B, int axis, bool stable){
             }
 
             // Numerator
-            float denominator = 0.0f;
+            float denominator = CPU_EPS_FLOAT;
             for (int i = start_b; i <= end_b; i += inner_stride) {
-//                cout << i << endl;
-//                cout << A->ptr[i] << "  exp(x-max)=" << value << endl;
-                float value = ::expf(A->ptr[i] - max_value);
+                float value = ::expf(A->ptr[i] - max_value);  // Highest number should be zero
                 B->ptr[i] = value;
                 denominator += value;
             }
