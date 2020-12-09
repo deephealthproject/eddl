@@ -2422,7 +2422,8 @@ public:
     */
     Tensor* isnan();
     static void isnan(Tensor *A, Tensor* B);
-    
+
+    bool anynan();
 
     /**
       *  @brief Test element-wise for negative infinity.
