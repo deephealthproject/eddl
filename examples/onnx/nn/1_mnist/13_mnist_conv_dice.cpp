@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     layer out = Sigmoid(Conv(l,1, {3,3}));
     //l = Reshape(l,{-1});
 
-    //layer out = Activation(Dense(l, num_classes),"softmax", {1});
+    //layer out = Activation(Dense(l, num_classes),"softmax");
     model net = Model({in}, {out});
     net->verbosity_level = 0;
 
