@@ -727,6 +727,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param activation Name of the activation function
       *  @param params   Vector of floats representing the different params of the activation function
+      *  (Examples: softmax=>{axis}, elu=>{alpha}, selu=>{alpha, scale}, leaky_relu=>{alpha}, linear=>{alpha})
       *  @param name  Name of the layer
       *  @return     Activation layer
     */
@@ -741,11 +742,11 @@ namespace eddl {
       *  @see   https://en.wikipedia.org/wiki/Softmax_function
       *
       *  @param parent  Parent layer
-      *  @param axis  Dimension in which to operate
+      *  @param axis  Dimension in which to operate. Default -1, which uses the last axis
       *  @param name  Name of the layer
       *  @return     Output of Softmax transformation
     */
-    layer Softmax(layer parent, int axis=1, string name= "");
+    layer Softmax(layer parent, int axis=-1, string name= "");
 
     /**
       *  @brief Applies a Sigmoid activation function to the given layer.
