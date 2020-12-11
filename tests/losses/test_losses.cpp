@@ -111,7 +111,7 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
 #ifdef cGPU
     // Test: Loss value
     // Generate default predictions
-    int rows = 1000;
+    int rows = 100;
     Tensor* t_cpu_y_pred = Tensor::randu({rows}); // Default values between 0 and 1
     t_cpu_y_pred->clamp_(0.0f, 1.0f); // Clamp between 0.0 a 1 (just in case)
     Tensor* t_gpu_y_pred = t_cpu_y_pred->clone(); t_gpu_y_pred->toGPU();
@@ -124,7 +124,7 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
     // Compute loss
     float cpu_loss = loss.value(t_cpu_y_true, t_cpu_y_pred);
     float gpu_loss = loss.value(t_gpu_y_true, t_gpu_y_pred);
-    ASSERT_NEAR(cpu_loss-gpu_loss, 0.0f, 10e-4f);
+    ASSERT_NEAR(cpu_loss-gpu_loss, 0.0f, 10e-3f);
 
     // Test: Deltas
     // Generate matrices
@@ -137,7 +137,7 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
 
     // We need to increase the margin error since there is some minor discrepancy between the CPU and GPU
     t_gpu_delta->toCPU();  // Send to CPU
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-3));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-2));
 
     // Deletes
     delete t_cpu_y_pred;
