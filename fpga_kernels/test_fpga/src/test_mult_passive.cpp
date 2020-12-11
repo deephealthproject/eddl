@@ -40,14 +40,20 @@ cl::Program program;
 std::string binaryFile;
 
 // buffers
-data_type *data_in;
-data_type *values;
+data_type *data_in1;
+data_type *data_in2;
+data_type *data_in3;
+data_type *values1;
+data_type *values2;
 data_type *data_out;
 data_type *data_out_cpu;
 
 void allocate_buffers() {
-  data_in = (data_type*)malloc(SIZE * sizeof(data_type));
-  values = (data_type*)malloc(SIZE * sizeof(data_type));
+  data_in1 = (data_type*)malloc(SIZE * sizeof(data_type));
+  data_in2 = (data_type*)malloc(SIZE * sizeof(data_type));
+  data_in3 = (data_type*)malloc(SIZE * sizeof(data_type));
+  values1 = (data_type*)malloc(SIZE * sizeof(data_type));
+  values2 = (data_type*)malloc(SIZE * sizeof(data_type));
   data_out = (data_type*)malloc(SIZE * sizeof(data_type));
   data_out_cpu = (data_type*)malloc(SIZE * sizeof(data_type));
 }
@@ -63,13 +69,16 @@ void parse_arguments(int argc, char **argv) {
 }
 
 void deallocate_buffers() {
-  free(data_in);
-  free(values);
+  free(data_in1);
+  free(data_in2);
+  free(data_in3);
+  free(values1);
+  free(values2);
   free(data_out);
   free(data_out_cpu);
 }
 
-void cpu_mult_passive() {
+void cpu_mult_passive(data_type *data_in, data_type *values) {
 
   for (int i=0; i<SIZE; i++) data_out_cpu[i] = 0.f;
   //mult_passive
@@ -79,7 +88,7 @@ void cpu_mult_passive() {
 
 }
 
-void cpu_print_data_in() {
+void cpu_print_data_in(data_type *data_in) {
   printf("data in: ");
   for (int i=0; i<SIZE; i++){
     printf("%6.2f ", data_in[i]);
@@ -87,7 +96,7 @@ void cpu_print_data_in() {
   printf("\n");
 }
 
-void cpu_print_values() {
+void cpu_print_values(data_type *values) {
   printf("values: ");
   for (int i=0; i<SIZE; i++){
     printf("%6.2f ", values[i]);
@@ -226,12 +235,21 @@ int main(int argc, char **argv) {
 
   std::cout << "Filling buffer with useful data_in" << std::endl;
   for(int i=0; i<SIZE;i++){
-    data_in[i] = dist(gen);
+    data_in1[i] = dist(gen);
+  }
+  for(int i=0; i<SIZE;i++){
+    data_in2[i] = dist(gen);
+  }
+  for(int i=0; i<SIZE;i++){
+    data_in3[i] = dist(gen);
   }
 
   std::cout << "Filling values buffer with useful data" << std::endl;
   for (int i=0; i<SIZE; i++) {
-    values[i] = dist(gen);
+    values1[i] = 1;//dist(gen);
+  }
+  for (int i=0; i<SIZE; i++) {
+    values2[i] = 2;//dist(gen);
   }
 
 
@@ -242,9 +260,9 @@ int main(int argc, char **argv) {
   vector<cl::Event> kernel_events(3);
   vector<cl::Event> read_events(3);
   vector<cl::Event> write_events(2);
-  cl::Buffer buffer_a;
-  cl::Buffer buffer_b;
-  cl::Buffer buffer_v;
+  cl::Buffer buffer_in1, buffer_in2, buffer_in3;
+  cl::Buffer buffer_out;
+  cl::Buffer buffer_v1, buffer_v2;
 
 
   //-----------------------------
@@ -253,47 +271,45 @@ int main(int argc, char **argv) {
   // Device-to-host communication
   std::cout << "Creating Buffers..." << std::endl;
 
-  OCL_CHECK(err, buffer_a = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_data_in_bytes, data_in, &err));
-  OCL_CHECK(err, buffer_b = cl::Buffer(context, CL_MEM_WRITE_ONLY  | CL_MEM_USE_HOST_PTR , size_output_in_bytes, data_out, &err));
-  OCL_CHECK(err, buffer_v = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_values_in_bytes, values, &err));
+  OCL_CHECK(err, buffer_in1 = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_data_in_bytes, data_in1, &err));
+  OCL_CHECK(err, buffer_in2 = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_data_in_bytes, data_in2, &err));
+  OCL_CHECK(err, buffer_in3 = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_data_in_bytes, data_in3, &err));
+  OCL_CHECK(err, buffer_out = cl::Buffer(context, CL_MEM_WRITE_ONLY  | CL_MEM_USE_HOST_PTR , size_output_in_bytes, data_out, &err));
+  OCL_CHECK(err, buffer_v1 = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_values_in_bytes, values1, &err));
+  OCL_CHECK(err, buffer_v2 = cl::Buffer(context, CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_values_in_bytes, values2, &err));
+
 
 
   //-----------------------------
   // Copy input data to device global memory
-  // std::cout << "Copying data (Host to Device)..." << std::endl;
+  std::cout << "Copying data (Host to Device)..." << std::endl;
   // Because we are passing the write_events, it returns an event object
   // that identifies this particular command and can be used to query
   // or queue a wait for this particular command to complete.
-  OCL_CHECK(err, err = q.enqueueMigrateMemObjects( {buffer_a, buffer_v}, 0 /*0 means from host*/, NULL, &write_events[0]));
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects( {buffer_in1, buffer_in2, buffer_in3, buffer_v1, buffer_v2}, 0 /*0 means from host*/, NULL, &write_events[0]));
   set_callback(write_events[0], "ooo_queue");
 
   // OCL_CHECK(err, err = q.enqueueMigrateMemObjects( {buffer_v}, 0 /*0 means from host*/, NULL, &write_events[1]));
   // set_callback(write_events[1], "ooo_queue");
 
 
-  // timint stats
-  unsigned long long prof_time;
-  struct timeval prof_t1;
-  gettimeofday(&prof_t1, NULL);
 
-  int size = SIZE;
+// ------------------------------------------------FIRST EXECUTION----------------------------------------------------------
+
+  std::cout << "\n\nFIRST EXECUTION" << std::endl;
+  int size1 = SIZE;
+  int enable_read_from_ddr1 = 1;
 
   // set kernel arguments
   std::cout << "Sending args..." << std::endl;
-  int arg = 0;
-  OCL_CHECK(err, err = kernel_mult_passive.setArg(arg++, buffer_a));
-  OCL_CHECK(err, err = kernel_mult_passive.setArg(arg++, buffer_b));
-  OCL_CHECK(err, err = kernel_mult_passive.setArg(arg++, buffer_v));
-  OCL_CHECK(err, err = kernel_mult_passive.setArg(arg++, size));
+  int arg1 = 0;
+  OCL_CHECK(err, err = kernel_mult_passive.setArg(arg1++, buffer_in1));
+  OCL_CHECK(err, err = kernel_mult_passive.setArg(arg1++, buffer_out));
+  OCL_CHECK(err, err = kernel_mult_passive.setArg(arg1++, buffer_v1));
+  OCL_CHECK(err, err = kernel_mult_passive.setArg(arg1++, enable_read_from_ddr1));
+  OCL_CHECK(err, err = kernel_mult_passive.setArg(arg1++, size1));
 
 
-
-  //-----------------------------
-  // printf("Enqueueing NDRange kernel.\n");
-  // This event needs to wait for the write buffer operations to complete
-  // before executing. We are sending the write_events into its wait list to
-  // ensure that the order of operations is correct.
-  // Launch the Kernel
   std::vector<cl::Event> waitList;
   waitList.push_back(write_events[0]);
 
@@ -306,7 +322,7 @@ int main(int argc, char **argv) {
   std::vector<cl::Event> eventList;
   eventList.push_back(kernel_events[0]);
   // This operation only needs to wait for the kernel call.
-  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_b}, CL_MIGRATE_MEM_OBJECT_HOST, &eventList, &read_events[0]));
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_out}, CL_MIGRATE_MEM_OBJECT_HOST, &eventList, &read_events[0]));
   set_callback(read_events[0], "ooo_queue");
   OCL_CHECK(err, err = read_events[0].wait());
 
@@ -315,20 +331,33 @@ int main(int argc, char **argv) {
   OCL_CHECK(err, err = q.flush());
   OCL_CHECK(err, err = q.finish());
 
-  std::cout << "First time ..." << std::endl;
-  cpu_print_data_in();
-  cpu_print_values();
-  cpu_mult_passive();
+  cpu_print_data_in(data_in1);
+  cpu_print_values(values1);
+  cpu_mult_passive(data_in1, values1);
   cpu_print_out();
 
   check_result();
 
 
+// ------------------------------------------------SECOND EXECUTION----------------------------------------------------------
+  std::cout << "\n\nSECOND EXECUTION" << std::endl;
+  int size2 = SIZE;
+  int enable_read_from_ddr2 = 0;
+
+  // set kernel arguments
+  std::cout << "Sending args..." << std::endl;
+  int arg2 = 0;
+  OCL_CHECK(err, err = kernel_mult_passive.setArg(0, buffer_in2));
+  // OCL_CHECK(err, err = kernel_mult_passive.setArg(1, buffer_out));
+  OCL_CHECK(err, err = kernel_mult_passive.setArg(2, buffer_v2));
+  OCL_CHECK(err, err = kernel_mult_passive.setArg(3, enable_read_from_ddr2));
+  // OCL_CHECK(err, err = kernel_mult_passive.setArg(arg2++, size2));
+
   OCL_CHECK(err, err = q.enqueueNDRangeKernel(kernel_mult_passive, 0, 1, 1, &waitList, &kernel_events[1]));
   set_callback(kernel_events[1], "ooo_queue");
 
   OCL_CHECK(err, err = kernel_events[1].wait());
-  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_b}, CL_MIGRATE_MEM_OBJECT_HOST, &eventList, &read_events[1]));
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_out}, CL_MIGRATE_MEM_OBJECT_HOST, &eventList, &read_events[1]));
 
   set_callback(read_events[1], "ooo_queue");
   OCL_CHECK(err, err = read_events[1].wait());
@@ -337,22 +366,33 @@ int main(int argc, char **argv) {
   OCL_CHECK(err, err = q.flush());
   OCL_CHECK(err, err = q.finish());
 
-
-  std::cout << "Second time ..." << std::endl;
-  cpu_print_data_in();
-  cpu_print_values();
-  cpu_mult_passive();
+  cpu_print_data_in(data_in2);
+  cpu_print_values(values1);
+  cpu_mult_passive(data_in2, values1);
   cpu_print_out();
 
   check_result();
 
+// ------------------------------------------------THIRD EXECUTION----------------------------------------------------------
 
+  std::cout << "\n\nTHIRD EXECUTION" << std::endl;
+  int size3 = SIZE;
+  int enable_read_from_ddr3 = 0;
+
+  // set kernel arguments
+  std::cout << "Sending args..." << std::endl;
+  int arg3 = 0;
+  OCL_CHECK(err, err = kernel_mult_passive.setArg(0, buffer_in3));
+  // OCL_CHECK(err, err = kernel_mult_passive.setArg(arg3++, buffer_out));
+  // OCL_CHECK(err, err = kernel_mult_passive.setArg(arg3++, buffer_v));
+  OCL_CHECK(err, err = kernel_mult_passive.setArg(3, enable_read_from_ddr3));
+  // OCL_CHECK(err, err = kernel_mult_passive.setArg(arg3++, size3));
 
   OCL_CHECK(err, err = q.enqueueNDRangeKernel(kernel_mult_passive, 0, 1, 1, &waitList, &kernel_events[2]));
   set_callback(kernel_events[2], "ooo_queue");
 
   OCL_CHECK(err, err = kernel_events[2].wait());
-  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_b}, CL_MIGRATE_MEM_OBJECT_HOST, &eventList, &read_events[2]));
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_out}, CL_MIGRATE_MEM_OBJECT_HOST, &eventList, &read_events[2]));
 
   set_callback(read_events[2], "ooo_queue");
   OCL_CHECK(err, err = read_events[2].wait());
@@ -361,11 +401,9 @@ int main(int argc, char **argv) {
   OCL_CHECK(err, err = q.flush());
   OCL_CHECK(err, err = q.finish());
 
-
-  std::cout << "Third time ..." << std::endl;
-  cpu_print_data_in();
-  cpu_print_values();
-  cpu_mult_passive();
+  cpu_print_data_in(data_in3);
+  cpu_print_values(values1);
+  cpu_mult_passive(data_in3, values1);
   cpu_print_out();
 
   check_result();

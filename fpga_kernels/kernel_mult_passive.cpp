@@ -18,7 +18,6 @@
 #include <math.h>
 #include <stdio.h>
 
-int enable_read_values = 1;
 
 #define max_memory_size 8 //max size of the input values
 
@@ -31,24 +30,23 @@ static void read_input(float *in, hls::stream<float> &in_data_stream,  int size)
     }
 }
 
-static void read_values(float *values, hls::stream<float> &values_stream, int size){
+static void read_values(float *values, hls::stream<float> &values_stream, int enable_read_from_ddr, int size){
 
   static float values_memory[max_memory_size]; // config values_memory vector as a RAM memory
 
-  if(enable_read_values){
+  if(enable_read_from_ddr){
     read_values:
     for (int i = 0; i < size; i++) {
-      printf("read values \n");
+      printf("read values from DDR \n");
       #pragma HLS pipeline
       values_memory[i] = values[i];
       values_stream << values_memory[i];
-      enable_read_values = 0;
     }
   }
   else{
     send_values:
     for (int i = 0; i < size; i++) {
-      printf("send values \n");
+      printf("read values from internal memory \n");
       values_stream << values_memory[i];
     }
   }
@@ -60,6 +58,7 @@ static void mult_passive(hls::stream<float> &in_data_stream,  hls::stream<float>
       #pragma HLS pipeline
       float a = in_data_stream.read();
       float b = values_stream.read();
+      printf("a = %6.2f - value = %6.2f\n", a, b);
       out_data_stream << a*b;
     }
 }
@@ -72,7 +71,7 @@ static void write_result(float *out, hls::stream<float> &out_data_stream, int si
     }
 }
 
-void k_mult_passive(float *in, float *out, float *values, int size) {
+void k_mult_passive(float *in, float *out, float *values, int enable_read_from_ddr, int size) {
 
   #pragma HLS INTERFACE m_axi port=in  offset=slave bundle=gmem
   #pragma HLS INTERFACE m_axi port=out  offset=slave bundle=gmem
@@ -80,6 +79,7 @@ void k_mult_passive(float *in, float *out, float *values, int size) {
   #pragma HLS INTERFACE s_axilite port=in bundle=control
   #pragma HLS INTERFACE s_axilite port=out bundle=control
   #pragma HLS INTERFACE s_axilite port=values bundle=control
+  #pragma HLS INTERFACE s_axilite port=enable_read_from_ddr bundle=control
   #pragma HLS INTERFACE s_axilite port=size bundle=control
   #pragma HLS INTERFACE s_axilite port=return bundle=control
 
@@ -96,7 +96,7 @@ void k_mult_passive(float *in, float *out, float *values, int size) {
 
   #pragma HLS dataflow
   read_input(in, in_data_stream, size);
-  read_values(values, values_stream, size);
+  read_values(values, values_stream, enable_read_from_ddr, size);
   mult_passive(in_data_stream, out_data_stream, values_stream, size);
   write_result(out, out_data_stream, size);
  }
