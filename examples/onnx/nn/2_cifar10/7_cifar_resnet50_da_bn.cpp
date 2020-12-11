@@ -96,7 +96,7 @@ int main(int argc, char **argv){
 
   l=Reshape(l,{-1});
 
-  layer out=Activation(Dense(l,num_classes),"softmax");
+  layer out=Activation(Dense(l,num_classes),"softmax", {1});
 
   // net define input and output layers list
   model net=Model({in},{out});
