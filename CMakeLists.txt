@@ -27,8 +27,8 @@ endif()
 
 # Issues with HPC and logic functions
 if(BUILD_HPC)
-    message(WARNING "[WARNING] The 'BUILD_HPC' flag is enabled and might not work of a different CPU.
-If you intend to compile the library for different CPUs (or for a docker image), you should disable it: '-D BUILD_HPC=OFF'. This happens because we make use of native compiling flags.")
+    message(WARNING "[WARNING] The 'BUILD_HPC' flag is enabled and might not work on a different CPU.
+If you intend to compile the library for different CPUs (or for a docker image), you should disable it: '-D BUILD_HPC=OFF'. This happens because it makes use of native compiling flags.")
 endif()
 
 # Issues with HPC and logic functions
