@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
     l = ReLu(GlorotUniform(Dense(l, 1024)));
     l = ReLu(RandomNormal(Dense(l, 1024),0.0,0.1));
 
-    layer out = Activation(Dense(l, num_classes), "softmax");
+    layer out = Activation(Dense(l, num_classes),"softmax", {1});
     model net = Model({in}, {out});
     net->verbosity_level = 0;
 
