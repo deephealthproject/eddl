@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
     l = ReLu(Dense(l, 1024));
     l = ReLu(Dense(l, 1024));
 
-    layer out = Activation(Dense(l, num_classes),"softmax", {1});
+    layer out = Activation(Dense(l, num_classes),"softmax");
     model net = Model({in}, {out});
 
     // dot from graphviz should be installed:

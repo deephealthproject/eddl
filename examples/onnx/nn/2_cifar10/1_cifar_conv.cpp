@@ -56,7 +56,7 @@ int main(int argc, char **argv){
 
   l=Activation(Dense(l,128),"relu");
 
-  layer out=Activation(Dense(l,num_classes),"softmax", {1});
+  layer out=Activation(Dense(l,num_classes),"softmax");
 
   // net define input and output layers list
   model net=Model({in},{out});

@@ -60,7 +60,7 @@ int main(int argc, char **argv){
   l=Reshape(l,{-1});
   l=ReLu(BatchNormalization(Dense(l,512)));
 
-  layer out=Activation(Dense(l,num_classes),"softmax", {1});
+  layer out=Activation(Dense(l,num_classes),"softmax");
 
   // net define input and output layers list
   model net=Model({in},{out});

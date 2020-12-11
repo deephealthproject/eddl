@@ -32,6 +32,31 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
     output = new Tensor(input->shape, dev);
     delta_bp = 0;
 
+    // Softmax checks
+    if(this->act=="softmax"){
+        // Set default axis if none was specified
+        if(this->params.empty()){
+            this->params.push_back(-1);
+            std::cerr << "No axis for 'softmax' was specified. Using last one (-1) as default " << "(LActivation::Softmax)" << endl;
+        }
+
+        // Check number of axis
+        if(this->params.size()>1){
+            msg("Only one axis is supported ("  + std::to_string(this->params.size()) + " were specified)", "LActivation::Softmax");
+        }
+
+        // Replace -1 axis with last one
+        int lastAxis = (int)input->shape.size()-1;
+        if((int)this->params[0]==-1){
+            this->params[0] = lastAxis;
+        }
+
+        // Check bounds
+        if((int)this->params[0] <0 || (int)this->params[0]>lastAxis){
+            msg("The axis has to be a number from 0 to (number_of_dimensions - 1)", "LActivation::Softmax");
+        }
+    }
+
     parent->addchild(this);
     addparent(parent);
 }
