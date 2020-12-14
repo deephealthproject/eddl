@@ -81,12 +81,6 @@ public:
     void detach(Layer *l);
     vector<int> getShape();
 
-    Tensor* getWeights();
-    Tensor* setWeights(Tensor bias);
-
-    Tensor* getBias();
-    Tensor* setBias(Tensor bias);
-
     void clamp(float min,float max);
     void set_detach();
 
