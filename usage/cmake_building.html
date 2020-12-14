@@ -240,7 +240,7 @@ developing for several platforms. Assuming the following folder structure:</p>
    <span class="p">|</span>- CMakeLists.txt
 </pre></div>
 </div>
-<p>A folder named <code class="docutils literal notranslate"><span class="pre">first_example</span></code> with two files inside, a <code class="docutils literal notranslate"><span class="pre">*.cpp</span></code> and a <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>.
+<p>A folder named <code class="docutils literal notranslate"><span class="pre">first_example</span></code> with two files inside: a <code class="docutils literal notranslate"><span class="pre">*.cpp</span></code> and a <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>.
 Now, you can copy the following lines to the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file so that we can build the first example:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span> <span class="s">3.9.2</span><span class="p">)</span>
 <span class="nb">project</span><span class="p">(</span><span class="s">first_example</span><span class="p">)</span>
@@ -251,7 +251,7 @@ Now, you can copy the following lines to the <code class="docutils literal notra
 <span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">first_example</span> <span class="s">PUBLIC</span> <span class="s">EDDL::eddl</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><cite>cmake</cite> has to know where to find the headers, this is done through the <code class="docutils literal notranslate"><span class="pre">CMAKE_INSTALL_PREFIX</span></code>
+<p><cite>cmake</cite> has to know where to find the headers; this is done through the <code class="docutils literal notranslate"><span class="pre">CMAKE_INSTALL_PREFIX</span></code>
 variable. Note that <code class="docutils literal notranslate"><span class="pre">CMAKE_INSTALL_PREFIX</span></code> is usually the path to a folder containing the following
 subfolders: <code class="docutils literal notranslate"><span class="pre">include</span></code>, <code class="docutils literal notranslate"><span class="pre">lib</span></code> and <code class="docutils literal notranslate"><span class="pre">bin</span></code>, so you don’t have to pass any additional option for linking.
 Examples of valid values for <code class="docutils literal notranslate"><span class="pre">CMAKE_INSTALL_PREFIX</span></code> on Unix platforms are <code class="docutils literal notranslate"><span class="pre">/usr/local</span></code>, <code class="docutils literal notranslate"><span class="pre">/opt</span></code>.</p>

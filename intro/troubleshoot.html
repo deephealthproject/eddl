@@ -267,14 +267,14 @@
 <h2>Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="running-an-example">
 <h3>Running an example<a class="headerlink" href="#running-an-example" title="Permalink to this headline">¶</a></h3>
-<p>If you get an error like: <code class="docutils literal notranslate"><span class="pre">Segmentation</span> <span class="pre">fault</span> <span class="pre">(core</span> <span class="pre">dumped)</span></code> run running an example, this could be because you
+<p>If you get an error like <code class="docutils literal notranslate"><span class="pre">Segmentation</span> <span class="pre">fault</span> <span class="pre">(core</span> <span class="pre">dumped)</span></code> while running an example, it could be because you
 haven’t changed the computing service used in the example. (e.g: It uses de GPU and you don’t have one)</p>
-<p>Also, if it is using CPU and the library has been compile for CPU, it could be because your processor does not
+<p>Also, if it is using CPU and the library has been compiled for CPU, it could be because your processor does not
 support AVX instructions.</p>
 </div>
 <div class="section" id="openmp">
 <h3>OpenMP<a class="headerlink" href="#openmp" title="Permalink to this headline">¶</a></h3>
-<p>We have noticed several problems with default c++ compiler in Mac OS. If this is your case, we recommend you to use
+<p>We have noticed several problems with default c++ compiler in Mac OS. If this is your case, we recommend you use
 the <cite>clang</cite> compiler. To do so, you can execute the following commands (or append them to <code class="docutils literal notranslate"><span class="pre">.zprofile</span></code>):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang
 <span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang++
@@ -282,14 +282,14 @@ the <cite>clang</cite> compiler. To do so, you can execute the following command
 <span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
 </pre></div>
 </div>
-<p>If this doesn’t fix your problem, try updating CMake.
-As a last resort, you can always disable OpenMP and use the EDDL, by making use of the cmake flag <code class="docutils literal notranslate"><span class="pre">-D</span> <span class="pre">BUILD_OPENMP=OFF</span></code></p>
+<p>If this doesn’t fix your problem, try updating CMake.</p>
+<p>As a last resort, you can always disable OpenMP and use the EDDL by making use of the cmake flag <code class="docutils literal notranslate"><span class="pre">-D</span> <span class="pre">BUILD_OPENMP=OFF</span></code></p>
 </div>
 <div class="section" id="undefined-symbols-for-architecture-x86-64">
 <h3>Undefined symbols for architecture x86_64<a class="headerlink" href="#undefined-symbols-for-architecture-x86-64" title="Permalink to this headline">¶</a></h3>
 <p>This error might be due to the CMake cache or a conflict between compilers.</p>
-<p>First, try to delete the <code class="docutils literal notranslate"><span class="pre">build/</span></code> folder and run <code class="docutils literal notranslate"><span class="pre">cmake</span></code> again. If this doesn’t work, try to force a specific
-compiler either with the flag: <code class="docutils literal notranslate"><span class="pre">-DCMAKE_CXX_COMPILER</span></code> or by exporting these variables to your environment:</p>
+<p>First, try deleting the <code class="docutils literal notranslate"><span class="pre">build/</span></code> folder and run <code class="docutils literal notranslate"><span class="pre">cmake</span></code> again. If this doesn’t work, try forcing a specific
+compiler either with the flag <code class="docutils literal notranslate"><span class="pre">-DCMAKE_CXX_COMPILER</span></code> or by exporting these variables to your environment:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># In MacOS we recommend CLang</span>
 
 <span class="c1"># Set env variables</span>
@@ -318,18 +318,18 @@ compiler either with the flag: <code class="docutils literal notranslate"><span 
 <h2>Protobuf<a class="headerlink" href="#protobuf" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="missing-includes">
 <h3>Missing includes<a class="headerlink" href="#missing-includes" title="Permalink to this headline">¶</a></h3>
-<p>If you gent an error like this:</p>
+<p>If you get an error like this:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.../eddl/src/serialization/onnx/onnx.pb.h:10:10: fatal error: google/protobuf/port_def.inc: No such file or directory
 <span class="c1">#include &lt;google/protobuf/port_def.inc&gt;</span>
 </pre></div>
 </div>
-<p>First, make sure if you have protobuf installed and cmake is detecting the paths correctly:</p>
+<p>First, make sure that you have protobuf installed and cmake is detecting the paths correctly:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-- Protobuf include: /usr/include
 -- Protobuf libraries: /usr/lib/x86_64-linux-gnu/libprotobuf.so-lpthread
 -- Protobuf compiler: /usr/bin/protoc
 </pre></div>
 </div>
-<p>If using conda, first check if you have activated the environment: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">eddl</span></code>.
+<p>If you are using conda, first check that you have activated the environment: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">eddl</span></code>.
 Then, if the error persists, check if the paths of protobuf outputed by CMake have been mixed up with the paths from
 the system (in case protobuf is also installed in the system) like this:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-- Protobuf dir:
@@ -338,18 +338,18 @@ the system (in case protobuf is also installed in the system) like this:</p>
 -- Protobuf compiler: /home/salvacarrion/anaconda3/envs/eddl/bin/protoc
 </pre></div>
 </div>
-<p>You can try to fix it by forcing cmake to look into the conda env using the flags: <code class="docutils literal notranslate"><span class="pre">-DCMAKE_PREFIX_PATH=$CONDA_PREFIX</span> <span class="pre">-DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX</span></code> (We recommend to delete the <code class="docutils literal notranslate"><span class="pre">build/</span></code> folder to avoid cache problems)</p>
+<p>You can try fixing it by forcing cmake to look into the conda env using the flags: <code class="docutils literal notranslate"><span class="pre">-DCMAKE_PREFIX_PATH=$CONDA_PREFIX</span> <span class="pre">-DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX</span></code> (We recommend to delete the <code class="docutils literal notranslate"><span class="pre">build/</span></code> folder to avoid cache problems)</p>
 <p>If the error persists, use the flag <cite>-D BUILD_SUPERBUILD=ON</cite> to download all dependencies and link them automatically to the EDDL.</p>
 </div>
 <div class="section" id="missing-lib">
 <h3>Missing lib<a class="headerlink" href="#missing-lib" title="Permalink to this headline">¶</a></h3>
-<p>If you get an error like this…</p>
+<p>If you get an error like this:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="o">[</span><span class="m">2</span><span class="o">]</span>: *** No rule to make target <span class="s1">&#39;cmake/third_party/protobuf/lib/libprotobuf.a&#39;</span>, needed by <span class="s1">&#39;lib64/libeddl.so&#39;</span>.  Stop.
 </pre></div>
 </div>
-<p>…it is because when using <code class="docutils literal notranslate"><span class="pre">-DBUILD_SUPERBUILD=ON</span></code>, all critical dependencies are downloaded and compiled locally. These
+<p>It is because, when using <code class="docutils literal notranslate"><span class="pre">-DBUILD_SUPERBUILD=ON</span></code>, all critical dependencies are downloaded and compiled locally. These
 compiled libraries can be found in <code class="docutils literal notranslate"><span class="pre">eddl/build/cmake/third_party/</span></code>. The problem with the protobuf static library is
-that in some systems, it can be found either on <code class="docutils literal notranslate"><span class="pre">protobuf/lib/</span></code> or <code class="docutils literal notranslate"><span class="pre">protobuf/lib64/</span></code>.</p>
+that, in some systems, it can be found either on <code class="docutils literal notranslate"><span class="pre">protobuf/lib/</span></code> or <code class="docutils literal notranslate"><span class="pre">protobuf/lib64/</span></code>.</p>
 <p>Because the EDDL looks into <code class="docutils literal notranslate"><span class="pre">lib/</span></code> (by default), when the protobuf library appears in <code class="docutils literal notranslate"><span class="pre">lib64/</span></code> we cannot find it.
 To fix this, create a symbolic link from <code class="docutils literal notranslate"><span class="pre">lib64/</span></code> to <code class="docutils literal notranslate"><span class="pre">lib/</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Inside: eddl/build/cmake/third_party/protobuf/</span>
@@ -364,8 +364,8 @@ ln -s lib64 lib
 <div class="section" id="old-version-of-protoc">
 <h3>Old version of protoc<a class="headerlink" href="#old-version-of-protoc" title="Permalink to this headline">¶</a></h3>
 <p>This is because your version of protobuf is not compatible with the ONNX files we provide (<code class="docutils literal notranslate"><span class="pre">onnx.pb.h/cc</span></code> and
-<code class="docutils literal notranslate"><span class="pre">onnx.proto</span></code>). We know our that the current version of the EDDL v0.7 (at the moment of writing this) works with
-protobuf 3.11, to to install it, you can either use the conda environment (recommended):</p>
+<code class="docutils literal notranslate"><span class="pre">onnx.proto</span></code>). We know that the current version of the EDDL (v0.7 at the moment of writing this) works with
+protobuf 3.11. To install it, you can either use the conda environment (recommended):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install dependencies</span>
 conda env create -f environment.yml
 conda activate eddl
@@ -402,14 +402,14 @@ ldconfig
 </div>
 <div class="section" id="onnx-functions">
 <h3>ONNX functions<a class="headerlink" href="#onnx-functions" title="Permalink to this headline">¶</a></h3>
-<p>If the ONNX functions don’t work, it might be due to a problem with protobuf so:</p>
+<p>If the ONNX functions don’t work, it might be due to a problem with protobuf, so:</p>
 <ol class="arabic">
 <li><p>Make sure you have <code class="docutils literal notranslate"><span class="pre">protobuf</span></code> and <code class="docutils literal notranslate"><span class="pre">libprotobuf</span></code> installed in standard paths</p></li>
 <li><p>If you are building the EDDL from source:</p>
 <blockquote>
 <div><ol class="loweralpha simple">
 <li><p>Make use of the cmake flag: <code class="docutils literal notranslate"><span class="pre">BUILD_PROTOBUF=ON</span></code></p></li>
-<li><p>Go to <code class="docutils literal notranslate"><span class="pre">src/serialization/onnx/</span></code> and delete these files: <code class="docutils literal notranslate"><span class="pre">onnx.pb.cc</span></code> and <code class="docutils literal notranslate"><span class="pre">onnx.pb.cc</span></code>.</p></li>
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">src/serialization/onnx/</span></code> and delete these files: <code class="docutils literal notranslate"><span class="pre">onnx.pb.cc</span></code> and <code class="docutils literal notranslate"><span class="pre">onnx.pb.cc</span></code></p></li>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">protoc</span> <span class="pre">--cpp_out=.</span> <span class="pre">onnx.proto</span></code> in the previous directory (<code class="docutils literal notranslate"><span class="pre">src/serialization/onnx/</span></code>) and make sure these files have been generated: <code class="docutils literal notranslate"><span class="pre">onnx.pb.cc</span></code> and <code class="docutils literal notranslate"><span class="pre">onnx.pb.cc</span></code></p></li>
 </ol>
 </div></blockquote>
@@ -417,7 +417,7 @@ ldconfig
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Additionally, we recommend to make use of the anaconda environment (see <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a> section for more details).</p>
+<p>Additionally, we recommend making use of the Anaconda environment (see <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a> section for more details).</p>
 </div>
 </div>
 </div>
@@ -425,13 +425,13 @@ ldconfig
 <h2>CUDA<a class="headerlink" href="#cuda" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="unsupported-gnu-version">
 <h3>Unsupported GNU version<a class="headerlink" href="#unsupported-gnu-version" title="Permalink to this headline">¶</a></h3>
-<p>If you gent an error like this:</p>
+<p>If you get an error like this:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/usr/include/crt/host_config.h:138:2: error: <span class="c1">#error -- unsupported GNU version! gcc versions later than 8 are not supported!</span>
 <span class="m">138</span> <span class="p">|</span> <span class="c1">#error -- unsupported GNU version! gcc versions later than 8 are not supported!</span>
 </pre></div>
 </div>
-<p>This is because NVIDIA does not support all GNU compilers. Each new version of CUDA support a different range of GNU compilers.
-The solution is simply to use a GNU C++ compiler with a version lower or equal to 8.x; you can do this by:</p>
+<p>It is because NVIDIA does not support all GNU compilers. Each new version of CUDA supports a different range of GNU compilers.
+The solution is to simply use a GNU C++ compiler with a version lower or equal to 8.x. You can do this by:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>// Exporting these aliases to .bashrc
 <span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>gcc-8
 <span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>g++-8

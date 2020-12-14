@@ -266,7 +266,7 @@ conda activate eddl
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">cmake</span><span class="o">&gt;=</span><span class="mf">3.9</span><span class="o">.</span><span class="mi">2</span>
 <span class="o">-</span> <span class="n">eigen</span><span class="o">&gt;=</span><span class="mf">3.3</span><span class="o">.</span><span class="mi">7</span>
 <span class="o">-</span> <span class="n">protobuf</span>
-<span class="o">-</span> <span class="n">libprotobuf</span>  <span class="c1"># We need to avoid problems with paths (idk why)</span>
+<span class="o">-</span> <span class="n">libprotobuf</span>  <span class="c1"># We need to avoid problems with paths</span>
 <span class="o">-</span> <span class="n">zlib</span>
 <span class="o">-</span> <span class="n">cudatoolkit</span>
 <span class="o">-</span> <span class="n">gtest</span>
@@ -343,7 +343,7 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 <div class="section" id="additional-flags">
 <h3>Additional flags<a class="headerlink" href="#additional-flags" title="Permalink to this headline">¶</a></h3>
 <p>These flags can enable/disable features of the EDDL so that you can optimized and
-troubleshoot the compilation process (see: :doc:<code class="docutils literal notranslate"><span class="pre">troubleshoot</span></code>).</p>
+troubleshoot the compilation process (see: <a class="reference internal" href="troubleshoot.html"><span class="doc">Troubleshoot</span></a>).</p>
 <ul class="simple">
 <li><p><strong>Prefix path:</strong> Semicolon-separated list of directories specifying installation prefixes to be searched by the <code class="docutils literal notranslate"><span class="pre">find_package()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_program()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_library()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_file()</span></code>, and <code class="docutils literal notranslate"><span class="pre">find_path()</span></code> commands.</p></li>
 </ul>
@@ -461,7 +461,7 @@ The flag <code class="docutils literal notranslate"><span class="pre">BUILD_HCP<
 <p>Enabled by default.</p>
 <p>Why this? Because the Google C++ Testing Framework uses conditional compilation for some things.
 Because of the C++ “One Definition Rule”, gtest must be compiled with exactly the same flags as
-your C++ code under test. Therefore, to avoid or fix potential problems, we have provide you with
+your C++ code under test. Therefore, to avoid or fix potential problems, we have provided you with
 this flag in advance.</p>
 </div>
 <ul class="simple">
