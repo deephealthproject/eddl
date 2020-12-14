@@ -35,22 +35,20 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Segmentation fault (core dumped) | ✔️ |   | maybe needs more clarifications |
-| Protobuf problems | ✔️ |      ✔️       | check use of English  <br /> maybe explain how to know if protobuf and libprotobuf are installed in standard paths|
-| OpenMP  |    ✔️        |       ✔️      | check use of English |
-| Import/Export Numpy files |  |       | check use of English |
-| My model doesn't fit on the GPU but on X deep-learning framewok does |   | ✔️ | maybe needs more clarifications |
+| Compilation |  ✔️      |       ✔️      |          |
+| Memory  |      ✔️      |       ✔️      |          |
+| Protobuf |     ✔️      |       ✔️      |          |
+| CUDA    |      ✔️      |       ✔️      |          |
+| IDEs    |      ✔️      |       ✔️      |          |
 
 ## FAQ
 
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Is there a Python version? | ✔️ |     |          |
-| Can I contribute? | ✔️ |              |          |
-| Can I control the memory consumption? | ✔️ |   | maybe needs more clarifications |
-| Is it faster than PyTorch/TensorFlow/etc | ✔️ |   | check use of English <br /> add link to the benchmark section |
-| Is it more memory-efficient than PyTorch/TensorFlow/etc |   |   | check use of English <br /> add link to "can I control the mem. cons.?" |
+| Python library | ✔️    |              |          |
+| Contributions  | ✔️    |              |          |
+| Performance |    ✔️    |              |          |
 
 # Usage
 
@@ -59,7 +57,7 @@
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | First example |   ✔️   |      ✔️       |          |
-| Building with cmake | ✔️ |     ✔️      | check use of English |
+| Building with cmake | ✔️ |     ✔️      |          |
 
 ## Intermediate models
 
