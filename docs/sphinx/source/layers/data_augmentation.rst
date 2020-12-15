@@ -1,7 +1,7 @@
 Data augmentation
 =================
 
-This layers perform random transformations over the previous layer.
+These layers perform random transformations over the previous layer.
 Ranges are defined using relative coordinates between 0 and 1.
 
 .. note::

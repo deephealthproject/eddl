@@ -127,7 +127,6 @@
 
 ## Data augmentation
 
-* check use of English
 * note: work in progress
 * check "currently implemented"
 
