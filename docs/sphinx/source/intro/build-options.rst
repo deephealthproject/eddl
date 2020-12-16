@@ -35,7 +35,7 @@ If you decide to manually install these dependencies in your system (make sure t
     - cmake>=3.9.2
     - eigen>=3.3.7
     - protobuf
-    - libprotobuf  # We need to avoid problems with paths (idk why)
+    - libprotobuf  # We need to avoid problems with paths
     - zlib
     - cudatoolkit
     - gtest
@@ -122,7 +122,7 @@ Additional flags
 ^^^^^^^^^^^^^^^^
 
 These flags can enable/disable features of the EDDL so that you can optimized and
-troubleshoot the compilation process (see: :doc:``troubleshoot``).
+troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
 
 - **Prefix path:** Semicolon-separated list of directories specifying installation prefixes to be searched by the ``find_package()``, ``find_program()``, ``find_library()``, ``find_file()``, and ``find_path()`` commands.
@@ -251,7 +251,7 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
     Why this? Because the Google C++ Testing Framework uses conditional compilation for some things.
     Because of the C++ "One Definition Rule", gtest must be compiled with exactly the same flags as
-    your C++ code under test. Therefore, to avoid or fix potential problems, we have provide you with
+    your C++ code under test. Therefore, to avoid or fix potential problems, we have provided you with
     this flag in advance.
 
 - **Build examples:** To compile the examples, use the setting ``BUILD_EXAMPLES``, such as:

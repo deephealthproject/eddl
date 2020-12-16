@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
     l = ReLu(Conv(l,256,{3,3},{1,1}, "none"));
     l = Reshape(l,{-1});
 
-    layer out = Activation(Dense(l, num_classes), "softmax");
+    layer out = Activation(Dense(l, num_classes),"softmax");
     model net = Model({in}, {out});
     net->verbosity_level = 0;
 

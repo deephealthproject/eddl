@@ -1,6 +1,6 @@
 {% set name = "eddl-cpu" %}  # If this is a package for GPU, use: "eddl-gpu"
-{% set version = "0.8a" %}
-{% set sha256 = "213a186ffad0bb779a254acc410988eee3b78e3823e614e43939f8fcb9e43aa7" %}
+{% set version = "0.8.3a" %}
+{% set sha256 = "3d0678b4e00b9a5fb9c3905cf5bd3f5daa596684af47d1e77fbabbfd82f4e064" %}
 
 package:
   name: {{ name|lower }}
@@ -19,18 +19,20 @@ requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - cmake
-    - eigen
-    - protobuf
+    - cmake>=3.9.2
+    - eigen==3.3.7
+    - protobuf==3.11.4
+    - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
     - cudatoolkit
-    - graphviz
+    - graphviz  # Build & Run
     - wget
   run:
-    - cmake
-    - eigen
-    - protobuf
+    - cmake>=3.9.2
+    - eigen==3.3.7
+    - protobuf==3.11.4
+    - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
     - cudatoolkit
-    - graphviz
+    - graphviz  # Build & Run
     - wget
 
 test:

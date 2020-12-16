@@ -10,7 +10,7 @@ developing for several platforms. Assuming the following folder structure:
        |- main.cpp
        |- CMakeLists.txt
 
-A folder named ``first_example`` with two files inside, a ``*.cpp`` and a ``CMakeLists.txt``.
+A folder named ``first_example`` with two files inside: a ``*.cpp`` and a ``CMakeLists.txt``.
 Now, you can copy the following lines to the ``CMakeLists.txt`` file so that we can build the first example:
 
 .. code:: cmake
@@ -24,7 +24,7 @@ Now, you can copy the following lines to the ``CMakeLists.txt`` file so that we 
     target_link_libraries(first_example PUBLIC EDDL::eddl)
 
 
-`cmake` has to know where to find the headers, this is done through the ``CMAKE_INSTALL_PREFIX``
+`cmake` has to know where to find the headers; this is done through the ``CMAKE_INSTALL_PREFIX``
 variable. Note that ``CMAKE_INSTALL_PREFIX`` is usually the path to a folder containing the following
 subfolders: ``include``, ``lib`` and ``bin``, so you don't have to pass any additional option for linking.
 Examples of valid values for ``CMAKE_INSTALL_PREFIX`` on Unix platforms are ``/usr/local``, ``/opt``.

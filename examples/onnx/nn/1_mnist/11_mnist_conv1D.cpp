@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
     l = Reshape(l,{-1});
 
-    layer out = Activation(Dense(l, num_classes), "softmax");
+    layer out = Activation(Dense(l, num_classes),"softmax");
     model net = Model({in}, {out});
     net->verbosity_level = 0;
 

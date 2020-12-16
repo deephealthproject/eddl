@@ -235,22 +235,6 @@ void Layer::info() {
     cout << "===============\n\n";
 }
 
-Tensor* Layer::getWeights(){
-    return nullptr;
-}
-
-Tensor* Layer::setWeights(Tensor bias){
-    return nullptr;
-}
-
-Tensor* Layer::getBias(){
-    return nullptr;
-}
-
-Tensor* Layer::setBias(Tensor bias){
-    return nullptr;
-}
-
 
 void Layer::copy(Layer *l2){
     for(int i=0;i<params.size();i++){

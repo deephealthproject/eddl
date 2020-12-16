@@ -59,11 +59,11 @@ void msg(const string& text, const string& title) {
     if(!title.empty()){
         s += " (" + title + ")";
     }
-    cout<<"==================================================================\n";
-    cout<<s<<endl;
-    cout<<"==================================================================\n";
+    std::cerr << "==================================================================\n";
+    std::cerr << s << std::endl;
+    std::cerr << "==================================================================\n";
 
-    throw std::runtime_error("eddl exception");
+    throw std::runtime_error("RuntimeError: " + title);
 }
 
 

@@ -727,6 +727,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param activation Name of the activation function
       *  @param params   Vector of floats representing the different params of the activation function
+      *  (Examples: softmax=>{axis}, elu=>{alpha}, selu=>{alpha, scale}, leaky_relu=>{alpha}, linear=>{alpha})
       *  @param name  Name of the layer
       *  @return     Activation layer
     */
@@ -741,11 +742,11 @@ namespace eddl {
       *  @see   https://en.wikipedia.org/wiki/Softmax_function
       *
       *  @param parent  Parent layer
-      *  @param axis  Dimension in which to operate
+      *  @param axis  Dimension in which to operate. Default -1, which uses the last axis
       *  @param name  Name of the layer
       *  @return     Output of Softmax transformation
     */
-    layer Softmax(layer parent, int axis=1, string name= "");
+    layer Softmax(layer parent, int axis=-1, string name= "");
 
     /**
       *  @brief Applies a Sigmoid activation function to the given layer.
@@ -873,10 +874,10 @@ namespace eddl {
       *
       *  @param parent  Parent layer
       *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
-      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window
       *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
       *  @param padding  One of "none", "valid" or "same"
-      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param use_bias  Boolean, whether the layer uses a bias vector
       *  @param groups  Number of blocked connections from input channels to output channels
       *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
       *  @param name  A name for the operation
@@ -892,10 +893,10 @@ namespace eddl {
    *
    *  @param parent  Parent layer
    *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
-   *  @param kernel_size  Vector of 1 integers, specifying the height and width of the 2D convolution window.
+   *  @param kernel_size  Vector of 1 integers, specifying the height and width of the 2D convolution window
    *  @param strides  Vector of 1 integers, specifying the strides of the convolution along the height and width
    *  @param padding  One of "none", "valid" or "same"
-   *  @param use_bias  Boolean, whether the layer uses a bias vector.
+   *  @param use_bias  Boolean, whether the layer uses a bias vector
    *  @param groups  Number of blocked connections from input channels to output channels
    *  @param dilation_rate  Vector of 1 integers, specifying the dilation rate to use for dilated convolution
    *  @param name  A name for the operation
@@ -912,7 +913,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
       *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
-      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param use_bias  Boolean, whether the layer uses a bias vector
       *  @param groups  Number of blocked connections from input channels to output channels
       *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
       *  @param name  A name for the operation
@@ -963,7 +964,7 @@ namespace eddl {
       *
       *  @param parent  Parent layer
       *  @param size  Vector of 2 integers. The upsampling factors for rows and columns
-      *  @param interpolation  A string, one of nearest or bilinear
+      *  @param interpolation  A string, one of "nearest" or "bilinear"
       *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */
@@ -996,14 +997,14 @@ namespace eddl {
       *   The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.
       *
       *  @param parent  Parent layer
-      *  @param filters  the dimensionality of the output space (i.e. the number of output filters in the convolution).
-      *  @param kernel_size  the height and width of the 2D convolution window.
-      *  @param output_padding  the amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension
-      *  @param padding  one of "valid" or "same"
-      *  @param dilation_rate  the dilation rate to use for dilated convolution. Spacing between kernel elements.
-      *  @param strides  the strides of the convolution along the height and width.
-      *  @param use_bias  Boolean, whether the layer uses a bias vector.
-      *  @param name  A name for the operation.
+      *  @param filters  The dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  The height and width of the 2D convolution window
+      *  @param output_padding  The amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension
+      *  @param padding  One of "valid" or "same"
+      *  @param dilation_rate  The dilation rate to use for dilated convolution. Spacing between kernel elements
+      *  @param strides  The strides of the convolution along the height and width
+      *  @param use_bias  Boolean, whether the layer uses a bias vector
+      *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
@@ -1060,7 +1061,7 @@ namespace eddl {
     layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape=true, float constant=0.0f, string name="");
 
     /**
-      *  @brief Crops the given image at the center with size (width, height).
+      *  @brief Crops the given image at the center with size `(width, height)`.
       *
       *  @param parent  Parent layer
       *  @param size  Vector (height, width) size
@@ -1090,7 +1091,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param from_coords  Vector (top, left) coordinates
       *  @param to_coords  Vector (bottom, right) coordinates
-      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
       *  @param constant  Fill value for area outside the rotated image, it is used for all channels respectively
       *  @param name  A name for the operation
       *  @return     Output of crop scale transformation
@@ -1120,7 +1121,7 @@ namespace eddl {
     layer Flip(layer parent, int axis=0, string name="");
 
     /**
-      *  @brief Convert image to grayscale..
+      *  @brief Convert image to grayscale.
       *
       *  @param parent  Parent layer
       *  @param name  A name for the operation
@@ -1138,10 +1139,10 @@ namespace eddl {
     layer HorizontalFlip(layer parent, string name="");
 
     /**
-      *  @brief Pad the given image on all sides with the given “pad” value..
+      *  @brief Pad the given image on all sides with the given `pad` value.
       *
       *  @param parent  Parent layer
-      *  @param padding  Padding on each border.
+      *  @param padding  Padding on each border
       *  @param constant  pads with a constant value
       *  @param name  A name for the operation
       *  @return     Padded image
@@ -1154,8 +1155,8 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param angle  In degrees counter clockwise order
       *  @param offset_center  Optional center of rotation. Default is the center of the image
-      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
-      *  @param constant  Fill value for area outside the rotated image, it is used for all channels respectively.
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the rotated image, it is used for all channels respectively
       *  @return     Output of rotate transformation
     */
     layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="original", float constant=0.0f, string name="");
@@ -1166,8 +1167,8 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param new_shape  Vector with layer/images desired new shape
       *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
-      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
-      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively
       *  @return     Output of scale transformation
     */
     layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string name="");
@@ -1177,8 +1178,8 @@ namespace eddl {
       *
       *  @param parent  Parent layer
       *  @param shift  Vector of maximum absolute fraction for horizontal and vertical translations
-      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
-      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively
       *  @return     Output of scale transformation
     */
     layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
@@ -1231,7 +1232,7 @@ namespace eddl {
      *
      *  @param parent  Parent layer
      *  @param factor  Factor Range for random crop
-     *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+     *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
      *  @param name  A name for the operation
      *  @return     Output of random crop scale transformation
    */
@@ -1306,7 +1307,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param factor_x  Vector of factor fraction for horizontal translations
       *  @param factor_y  Vector of factor fraction for vertical translations
-      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
       *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
       *  @return     Output of scale transformation
     */
