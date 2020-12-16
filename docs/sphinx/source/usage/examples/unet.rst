@@ -1,7 +1,7 @@
 Training a U-Net
 -----------------
 
-This example trains and evaluates a U-Net
+This example trains and evaluates a U-Net. `[source] <https://github.com/deephealthproject/eddl/blob/master/examples/nn/3_drive/1_drive_seg.cpp>`_
 
 .. image:: /_static/images/models/segnet.svg
   :scale: 100%

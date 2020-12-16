@@ -1,7 +1,7 @@
 Training a simple MLP
 ---------------------
 
-This example trains and evaluates a simple multilayer perceptron.
+This example trains and evaluates a simple multilayer perceptron. `[source] <https://github.com/deephealthproject/eddl/blob/master/examples/nn/1_mnist/1_mnist_mlp.cpp>`_ 
 
 
 .. image:: /_static/images/models/mlp.svg

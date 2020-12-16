@@ -1,7 +1,7 @@
 Training a ResNet50
 ---------------------
 
-This example trains and evaluates ResNet50 using CIFAR-10.
+This example trains and evaluates ResNet50 using CIFAR-10. `[source] <https://github.com/deephealthproject/eddl/blob/master/examples/nn/2_cifar10/4_cifar_vgg16_bn.cpp>`_
 
 .. image:: /_static/images/models/resnet50.svg
   :scale: 100%
