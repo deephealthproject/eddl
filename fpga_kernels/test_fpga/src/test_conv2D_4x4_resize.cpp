@@ -82,10 +82,10 @@ std::string binaryFile;
 #define KW 3
 #define KH 3
 
-#define RELU 1  // Flag for ReLu activation. Active at high level
-#define MULT 1  // Flag for ReLu activation. Active at high level
-#define SIG 1  // Flag for ReLu activation. Active at high level
-#define MAXP 0 // Flag for ReLu activation. Active at high level
+#define RELU 0  // Flag for ReLu activation. Active at high level
+#define MULT 0  // Flag for ReLu activation. Active at high level
+#define SIG 0  // Flag for ReLu activation. Active at high level
+#define MAXP 1 // Flag for ReLu activation. Active at high level
 
 #define KWmpool 2
 #define KHmpool 2
@@ -325,7 +325,7 @@ void sigmoid(){
 	int size = O * WO * HO;
 	data_type valor;
 	for (int i = 0; i < size; i++) {
-		valor = 1/(1+exp(-(double)maxpool[i]));
+		valor = 1/(1+exp(-(double)out_cpu[i]));
 		out_cpu[i] = valor;
 	}  // check exp
 }

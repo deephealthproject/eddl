@@ -90,8 +90,8 @@
 extern "C" {
 
 // Data type to be used
-//#define data_type float
-#define data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
+#define data_type float
+//#define data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
 
 
 // To allow using defines inside Xilinx pragmas
@@ -401,7 +401,7 @@ static void split(int H, int W, hls::stream<pixel_out_t> &in, hls::stream<block_
 //
 static void write_data_channel(int H, int W, block_t *ptr, int offset, hls::stream<block_t> &in, int enable, int id) {
 
-  printf("write_data_channel_%d starts\n", id);
+  //printf("write_data_channel_%d starts\n", id);
 
 	
   if (enable) {
@@ -414,10 +414,10 @@ static void write_data_channel(int H, int W, block_t *ptr, int offset, hls::stre
       data = in.read();
       ptr[r+offset] = data;
 		printf("escribe\n");
-		printf("[0] = %6.2f  ",data.pixel[0].to_float());
-		printf("[1] = %6.2f  ",data.pixel[1].to_float());
-		printf("[2] = %6.2f  ",data.pixel[2].to_float());
-		printf("[3] = %6.2f  ",data.pixel[3].to_float());
+		printf("[0] = %6.2f  ",data.pixel[0]);
+		printf("[1] = %6.2f  ",data.pixel[1]);
+		printf("[2] = %6.2f  ",data.pixel[2]);
+		printf("[3] = %6.2f  ",data.pixel[3]);
 		printf("\n"); 
     }
   } else {
@@ -1016,7 +1016,7 @@ static void upsize(hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out, in
 	
      pixel_in_t repetidos[256];
 	#pragma HLS ARRAY_PARTITION variable=repetidos dim=0
-	printf("upsize ");
+	//printf("upsize ");
 	
 	int Wrepeat = WOUT/W; //las columnas
 	int Hrepeat = HOUT/H; //las filas
@@ -1033,7 +1033,7 @@ static void upsize(hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out, in
 	
 	int faltanH = HOUT - (Hrepeat * H);
 	int faltanW = WOUT - (Wrepeat * W);
-	printf("Wrepeat %d, Hrepeat %d, faltanW %d faltanH %d\n", Wrepeat, Hrepeat, faltanW, faltanH);
+	//printf("Wrepeat %d, Hrepeat %d, faltanW %d faltanH %d\n", Wrepeat, Hrepeat, faltanW, faltanH);
 
 	write_upsize_loop_exterior:
 	for(int i_iter = 0; i_iter < I_ITER; i_iter++){
@@ -1046,7 +1046,7 @@ static void upsize(hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out, in
 					//repetimos fila
 					out << repetidos[j];
 					//printf("enableH (%d,%d) contReptH = %d countH = %d",i,j,contReptH, countH);
-					printf("\n"); 
+					//printf("\n"); 
 					if(j == WOUT - 1){
 						enableH = 0;
 					}	
@@ -1054,7 +1054,7 @@ static void upsize(hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out, in
 					//repetimos la que sobra
 					out << repetidos[j];
 					//printf("enableH FALTA (%d,%d) contReptH = %d countH = %d",i,j,contReptH, countH);
-					printf("\n"); 
+					//printf("\n"); 
 					if(j == WOUT - 1){
 						enableHfalta = 0;
 						countH++;
@@ -1074,7 +1074,7 @@ static void upsize(hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out, in
 					if(contReptW < Wrepeat){
 						out << valor;
 						//printf("enableW 1 (%d,%d) contReptW = %d countW = %d",i,j, contReptW, countW);
-						printf("\n"); 
+						//printf("\n"); 
 						repetidos[j]=valor;
 						contReptW++;
 						if(j == WOUT - 1){
@@ -1090,7 +1090,7 @@ static void upsize(hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out, in
 						if(countW < faltanW){
 							out << valor;
 							//printf("enableW 2(%d,%d) contReptW = %d countW = %d",i,j, contReptW, countW);
-							printf("\n"); 
+							//printf("\n"); 
 							repetidos[j]=valor;
 							countW++;
 							enableW = 1;
@@ -1106,7 +1106,7 @@ static void upsize(hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out, in
 						//se acaba la fila
 						out << valor;
 						//printf("enableW 3(%d,%d) countW = %d",i,j, countW);
-						printf("\n"); 
+						//printf("\n"); 
 						countW = 0;
 					}
 				}
@@ -1160,10 +1160,10 @@ static void mult_(hls::stream<pixel_in_t> &in, hls::stream<pixel_in_t> &out, flo
 	if(enable){
 	  for(int i = 0; i < H*W*I_ITER; i++){	
 			data = in.read();
-			data.pixel[0] *= (data_type)v;
-			data.pixel[1] *= (data_type)v;
-			data.pixel[2] *= (data_type)v;
-			data.pixel[3] *= (data_type)v;
+			data.pixel[0] *= v;
+			data.pixel[1] *= v;
+			data.pixel[2] *= v;
+			data.pixel[3] *= v;
 			out << data;
 			 
 	  }
@@ -1189,16 +1189,16 @@ static void sigmoid(hls::stream<pixel_out_t> &in, hls::stream<pixel_out_t> &out,
 		  
 		  for(int i = 0; i < H*W; i++){	
 				data = in.read();
-				out_p.pixel[0] =  1/(1+exp(-data.pixel[0].to_float()));
-				out_p.pixel[1] =  1/(1+exp(-data.pixel[1].to_float()));
-				out_p.pixel[2] =  1/(1+exp(-data.pixel[2].to_float()));
-				out_p.pixel[3] =  1/(1+exp(-data.pixel[3].to_float()));
+				out_p.pixel[0] =  1/(1+exp(-data.pixel[0]));
+				out_p.pixel[1] =  1/(1+exp(-data.pixel[1]));
+				out_p.pixel[2] =  1/(1+exp(-data.pixel[2]));
+				out_p.pixel[3] =  1/(1+exp(-data.pixel[3]));
 				
-				printf("[0] = %6.2f  ",data.pixel[0].to_float());
-				printf("[1] = %6.2f  ",data.pixel[1].to_float());
-				printf("[2] = %6.2f  ",data.pixel[2].to_float());
-				printf("[3] = %6.2f  ",data.pixel[3].to_float());
-				printf("\n"); 
+/* 				printf("[0] = %6.2f  ",out_p.pixel[0]);
+				printf("[1] = %6.2f  ",out_p.pixel[1]);
+				printf("[2] = %6.2f  ",out_p.pixel[2]);
+				printf("[3] = %6.2f  ",out_p.pixel[3]);
+				printf("\n");  */
 				out << out_p;
 				 
 		  }
@@ -1235,10 +1235,10 @@ static void cvt_maxpool(int WI, int HI, hls::stream<pixel_out_t> &in, hls::strea
             pixel = in.read();
 			
 			
-			printf("[0] = %6.2f  ",pixel.pixel[0].to_float());
-			printf("[1] = %6.2f  ",pixel.pixel[1].to_float());
-			printf("[2] = %6.2f  ",pixel.pixel[2].to_float());
-			printf("[3] = %6.2f  ",pixel.pixel[3].to_float());
+			printf("[0] = %6.2f  ",pixel.pixel[0]);
+			printf("[1] = %6.2f  ",pixel.pixel[1]);
+			printf("[2] = %6.2f  ",pixel.pixel[2]);
+			printf("[3] = %6.2f  ",pixel.pixel[3]);
 			printf("\n"); 
 
             int row0_write = (hi % KHmpool) == 0;
@@ -1306,27 +1306,33 @@ static void mpool2d(int WO, int HO, hls::stream<frame_m> &in, hls::stream<pixel_
         }
         out << pix;
 		printf("SALE MAXPOOL");
-		printf("[0] = %6.2f  ",pix.pixel[0].to_float());
-		printf("[1] = %6.2f  ",pix.pixel[1].to_float());
-		printf("[2] = %6.2f  ",pix.pixel[2].to_float());
-		printf("[3] = %6.2f  ",pix.pixel[3].to_float());
+		printf("[0] = %6.2f  ",pix.pixel[0]);
+		printf("[1] = %6.2f  ",pix.pixel[1]);
+		printf("[2] = %6.2f  ",pix.pixel[2]);
+		printf("[3] = %6.2f  ",pix.pixel[3]);
 		printf("\n"); 
     }
 }
 
 static void maxpool(int W, int H, int WO, int HO, hls::stream<pixel_out_t> &in, hls::stream<pixel_out_t> &mpool_out, hls::stream<frame_m> &cvt_out_maxpool, int enable){
 	
-	//if(enable){
-/* 	#pragma HLS dataflow
-	cvt_maxpool(W, H, in, cvt_out_maxpool);
-	mpool2d(WO, HO, cvt_out_maxpool, mpool_out); */
 
-		 pixel_out_t data;
+	#pragma HLS dataflow
+	cvt_maxpool(W, H, in, cvt_out_maxpool);
+	mpool2d(WO, HO, cvt_out_maxpool, mpool_out);
+
+/* 		 pixel_out_t data;
 		 for(int i = 0; i < H*W; i++){	
 				data = in.read();
 				mpool_out << data;
+				printf("SALE MAXPOOL");
+				printf("[0] = %6.2f  ",data.pixel[0]);
+				printf("[1] = %6.2f  ",data.pixel[1]);
+				printf("[2] = %6.2f  ",data.pixel[2]);
+				printf("[3] = %6.2f  ",data.pixel[3]);
+				printf("\n"); 
 				 
-		  }
+		  } */
 
 
 
