@@ -6,6 +6,14 @@ RNN
 
 .. doxygenfunction:: RNN
 
+Example:
+
+.. code-block:: c++
+
+    l = RNN(lE,32);
+
+You can check a full example on :doc:`../usage/advanced`.
+
 
 GRU
 ---------------
@@ -25,3 +33,10 @@ LSTM
 
 .. doxygenfunction:: LSTM
 
+Example:
+
+.. code-block:: c++
+
+    l = LSTM(lE,32);
+
+You can check a full example on :doc:`../usage/advanced`.

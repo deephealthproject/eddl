@@ -176,7 +176,7 @@
 | :------ | :---------: | :----------: | :------- |
 | Conv1D  |     ✔️       |      ✔️       |          |
 | Conv2D  |     ✔️       |      ✔️       |          |
-| Pointwise |   ✔️       |      ❌️      |          |
+| Pointwise |   ✔️       |      ✔️       |          |
 | 2D Upsampling | ✔️     |      ✔️       | note about future versions |
 | Convolutional Transpose | ✔️ |  ❌️    | note: not implemented yet  |
 
@@ -195,7 +195,7 @@
 | MaxPooling1D |  ✔️     |      ✔️       |          |
 | MaxPooling |    ✔️     |      ✔️       |          |
 | GlobalMaxPooling | ✔️  |      ✔️       |          |
-| AveragePooling |   ✔️  |      ❌️      |          |
+| AveragePooling |   ✔️  |      ✔️       |          |
 | GlobalAveragePooling | ✔️ |   ✔️       |          |
 
 
@@ -203,8 +203,8 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| BatchNormalization |✔️ |      ✔️       | two versions |
-| LayerNormalization |✔️ |      ✔️       | two versions |
+| BatchNormalization |✔️ |      ✔️       |          |
+| LayerNormalization |✔️ |      ✔️       |          |
 | GroupNormalization |✔️ |      ✔️       |          |
 
 
@@ -215,7 +215,7 @@
 | Add     |     ✔️       |      ✔️       |          |
 | Average |     ✔️       |      ✔️       |          |
 | Concat  |     ✔️       |      ✔️       |          |
-| MatMul  |     ❌️      |      ✔️       | needs comments in the .h |
+| MatMul  |     ❌️      |      ✔️       |          |
 | Maximum |     ✔️       |      ✔️       |          |
 | Minimum |     ✔️       |      ✔️       |          |
 | Subtract |    ✔️       |      ✔️       |          |
@@ -241,7 +241,7 @@
 | Logarithm base 2 |  ✔️ |      ✔️       |          |
 | Logarithm base 10 | ✔️ |      ✔️       |          |
 | Multiplication |    ✔️ |      ✔️       | three versions <br/> not every version has its explanation in the .h |
-| Power   |       ✔️     |      ❌️      | two versions <br/> not every version has its explanation in the .h |
+| Power   |       ✔️     |      ❌️      |          |
 | Sqrt    |       ✔️     |      ✔️       |          |
 | Addition |      ✔️     |      ✔️       | three versions (sum) <br/> not every version has its explanation in the .h |
 
@@ -260,9 +260,9 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| RNN     |      ✔️      |      ❌️      |          |
-| GRU     |      ❌️     |      ✔️       | note: not yet implemented <br/>write comments in the .h |
-| LSTM    |      ✔️      |      ❌️      |          |
+| RNN     |      ✔️      |      ✔️       |          |
+| GRU     |      ❌️     |      ❌️      | note: not yet implemented <br/>write comments in the .h |
+| LSTM    |      ✔️      |      ✔️       |          |
 
 
 # Model

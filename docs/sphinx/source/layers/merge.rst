@@ -55,7 +55,6 @@ MatMul
 
 .. doxygenfunction:: MatMul
 
-It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
 
 Example:
 

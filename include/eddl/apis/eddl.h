@@ -1339,7 +1339,7 @@ namespace eddl {
       *  @brief Layer that averages a list of layer inputs.
       *
       *  @details
-      *   It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
+      *   It takes a list of layers as input, all of the same shape, and returns a single tensor (also of the same shape).
       *
       *  @param layers  List of layers
       *  @param name  A name for the operation
@@ -1351,22 +1351,32 @@ namespace eddl {
       *  @brief Layer that concatenates a list of inputs.
       *
       *  @details
-      *   It takes as input a list of layers and returns a single tensor, the concatenation of all inputs.
+      *   It takes a list of layers as input and returns a single tensor that is the concatenation of all the input layers.
       *
       *  @param layers  List of layers
-      *  @param axis  Axis along which to concatenate.
+      *  @param axis  Axis along which to concatenate
       *  @param name  A name for the operation
       *  @return     Output of concatenation operation with all input layers
     */
     layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
-
+    /**
+     *  @brief MatMul operation
+     * 
+     *  @details It takes a list of layers as input, all of the same shape, and returns a single tensor (also of the same shape).
+     *  
+     *  @param layers List of layers
+     *  @param name A name for the operation 
+     * 
+     *  @return Output of MatMul operation
+     *  
+    */
     layer MatMul(const vector<layer> &layers, string name = "");
 
     /**
-      *  @brief Layer that computes the maximum (element-wise) a list of inputs.
+      *  @brief Layer that computes the maximum (element-wise) of a list of inputs.
       *
       *  @details
-      *   It takes as input a list of tensors, all of the same shape, and returns a single tensor (also of the same shape).
+      *   It takes a list of tensors as input, all of the same shape, and returns a single tensor (also of the same shape).
       *
       *  @param layers  List of layers
       *  @param name  A name for the operation
@@ -1376,10 +1386,10 @@ namespace eddl {
 
 
     /**
-      *  @brief Layer that computes the minimum (element-wise) a list of inputs.
+      *  @brief Layer that computes the minimum (element-wise) of a list of inputs.
       *
       *  @details
-      *   It takes as input a list of tensors, all of the same shape, and returns a single tensor (also of the same shape).
+      *   It takes a list of tensors as input, all of the same shape, and returns a single tensor (also of the same shape).
       *
       *  @param layers  List of layers
       *  @param name  A name for the operation
@@ -1392,7 +1402,7 @@ namespace eddl {
       *  @brief Layer that subtracts two inputs.
       *
       *  @details
-      *   It takes as input a list of tensors of size 2, both of the same shape, and returns a single tensor, (inputs[0] - inputs[1]), also of the same shape.
+      *   It takes a list of tensors of size 2 as input, both of the same shape, and returns a single tensor (inputs[0] - inputs[1]), also of the same shape.
       *
       *  @param layers  List of layers
       *  @param name  A name for the operation
@@ -1413,7 +1423,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param stddev  Standard deviation of the noise distribution
       *  @param name  A name for the operation
-      *  @return     The parent after apply the GaussianNoise layer
+      *  @return     The parent after applying the GaussianNoise layer
     */
     layer GaussianNoise(layer parent, float stddev, string name = "");
 
@@ -1429,7 +1439,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param momentum  Momentum for the moving mean and the moving variance
       *  @param epsilon  Small float added to variance to avoid dividing by zero
-      *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
+      *  @param affine  If True, this module has learnable affine parameters
       *  @param name  A name for the operation
       *  @return     Parent layer after the normalization
     */
@@ -1440,13 +1450,13 @@ namespace eddl {
       *  @brief Layer normalization layer.
       *
       *  @details
-      *   Applies Layer Normalization over a input.
+      *   Applies Layer Normalization over an input.
       *
       *  @see   https://arxiv.org/abs/1607.06450
       *
       *  @param parent  Parent layer
       *  @param epsilon  Value added to the denominator for numerical stability
-      *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
+      *  @param affine  If True, this module has learnable affine parameters
       *  @param name  A name for the operation
       *  @return     Parent layer after the normalization
     */
@@ -1464,7 +1474,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param groups  Number of groups in which the channels will be divided
       *  @param epsilon  Value added to the denominator for numerical stability
-      *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
+      *  @param affine  If True, this module has learnable affine parameters
       *  @param name  A name for the operation
       *  @return     Parent layer after the normalization
     */
@@ -1482,18 +1492,26 @@ namespace eddl {
       *  @brief Computes the element-wise absolute value of the given input tensor.
       *
       *  @param l  Parent layer
-      *  @return     Parent layer l after computing the element-wise absol
+      *  @return     Parent layer `l` after computing the element-wise absolute value
     */
     layer Abs(layer l);
 
     /**
       *  @brief Layer that computes the difference of two layers.
       *
-      *  @param l1  A layer
-      *  @param l2  A layer
-      *  @return Difference between l1 and l2
+      *  @param l1  Layer
+      *  @param l2  Layer
+      *  @return Difference between `l1` and `l2`
     */
     layer Sub(layer l1, layer l2);
+
+    /**
+      *  @brief Layer that computes the difference of a layer and a float number.
+      *
+      *  @param l1  Parent layer
+      *  @param k  Number
+      *  @return     Parent layer `l1` after computing its difference with `k`
+    */
     layer Sub(layer l1, float k);
     layer Sub(float k, layer l1);
 
@@ -1505,19 +1523,26 @@ namespace eddl {
     /**
       *  @brief Layer that computes the element-wise division of two layers.
       *
-      *  @param l1  A layer
-      *  @param l2  A layer
-      *  @return     Element-wise division of l1 and l2
+      *  @param l1  Layer
+      *  @param l2  Layer
+      *  @return     Element-wise division of `l1` and `l2`
     */
     layer Div(layer l1, layer l2);
+    /**
+      *  @brief Layer that computes the division of a layer by a float number.
+      *
+      *  @param l1  Parent layer
+      *  @param k  Number
+      *  @return     Parent layer `l1` after dividing it by `k`
+    */
     layer Div(layer l1, float k);
     layer Div(float k, layer l1);
 
     /**
-      *  @brief Returns a new tensor with the exponential of the elements of the input tensor input.
+      *  @brief Returns a new tensor with the exponential of the elements of the input tensor.
       *
       *  @param l  Parent layer
-      *  @return     The exponential of l
+      *  @return     The exponential of `l`
     */
     layer Exp(layer l);
 
@@ -1526,34 +1551,41 @@ namespace eddl {
       *  @brief Layer that computes the logarithm of a layer.
       *
       *  @param l  Parent layer
-      *  @return     Parent layer l after computing his logarithm
+      *  @return     Parent layer `l` after computing its logarithm
     */
     layer Log(layer l);
 
     /**
-      *  @brief Layer that computes the logarithm to the base 2 of a layer.
+      *  @brief Layer that computes the logarithm to base 2 of a layer.
       *
       *  @param l  Parent layer
-      *  @return     Parent layer l after computing his logarithm to the base 2.
+      *  @return     Parent layer `l` after computing its logarithm to base 2
     */
     layer Log2(layer l);
 
     /**
-      *  @brief Layer that computes the logarithm to the base 10 of a layer.
+      *  @brief Layer that computes the logarithm to base 10 of a layer.
       *
       *  @param l  Parent layer
-      *  @return     Parent layer l after computing his logarithm to the base 10.
+      *  @return     Parent layer `l` after computing its logarithm to base 10
     */
     layer Log10(layer l);
 
     /**
       *  @brief  Layer that computes the element-wise multiplication of two layers.
       *
-      *  @param l1  A layer
-      *  @param l2  A layer
-      *  @return     Result of the element-wise multiplication of l1 and l2.
+      *  @param l1  Layer
+      *  @param l2  Layer
+      *  @return     Result of the element-wise multiplication of `l1` and `l2`
     */
     layer Mult(layer l1, layer l2);
+    /**
+      *  @brief Layer that computes the multiplication of a float number and a layer.
+      *
+      *  @param l1  Parent layer
+      *  @param k  Number
+      *  @return     Parent layer `l1` after multiplying its elements by `k`
+    */
     layer Mult(layer l1, float k);
     layer Mult(float k,layer l1);
 
@@ -1562,16 +1594,24 @@ namespace eddl {
       *
       *  @param l1  A layer
       *  @param l2  A layer
-      *  @return     Result of the element-wise power of l1 and l2.
+      *  @return     Result of the element-wise power of `l1` and `l2`
     */
     layer Pow(layer l1, layer l2);
+
+    /**
+      *  @brief Layer that computes the power of a layer raised to a float number.
+      *
+      *  @param l1  Parent layer
+      *  @param k  Number
+      *  @return     Parent layer `l1` after computing its power raised to `k`
+    */
     layer Pow(layer l1, float k);
 
     /**
       *  @brief  Layer that computes the square root of a layer.
       *
-      *  @param l1  Parent layer
-      *  @return     Result of the square root of l1.
+      *  @param l  Parent layer
+      *  @return     Result of the square root of `l`
     */
     layer Sqrt(layer l);
 
@@ -1580,7 +1620,7 @@ namespace eddl {
       *
       *  @param l1  Layer
       *  @param l2  Layer
-      *  @return     The result after computing the sum between layers l1 and l2
+      *  @return     The result after computing the sum of layers `l1` and `l2`
     */
     layer Add(layer l1, layer l2);
 
@@ -1589,7 +1629,7 @@ namespace eddl {
       *
       *  @param l1  Parent layer
       *  @param k  Number
-      *  @return     Parent layer l1 after computing his sum with k
+      *  @return     Parent layer `l1` after computing its sum with `k`
     */
     layer Add(layer l1, float k);
     layer Add(float k, layer l1);
@@ -1639,7 +1679,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param pool_size  Size of the average pooling windows
       *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
-      *  @param padding  One of "none", "valid" or "same" (case-insensitive).
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
       *  @param name  A name for the operation
       *  @return     The result after apply the average pooling operation over the parent layer
     */
@@ -1649,7 +1689,7 @@ namespace eddl {
       *
       *  @param parent  Parent layer
       *  @param name  A name for the operation
-      *  @return     The result after apply the global max pooling operation over the parent layer
+      *  @return     The result after applying the global max pooling operation over the parent layer
     */
     layer GlobalMaxPool(layer parent, string name = "");
     /**
@@ -1657,7 +1697,7 @@ namespace eddl {
       *
       *  @param parent  Parent layer
       *  @param name  A name for the operation
-      *  @return     The result after apply the global average pooling operation over the parent layer
+      *  @return     The result after applying the global average pooling operation over the parent layer
     */
     layer GlobalAveragePool(layer parent, string name = "");
     /**
@@ -1666,9 +1706,9 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param pool_size  Size of the max pooling windows
       *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
-      *  @param padding  One of "none", "valid" or "same" (case-insensitive).
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
       *  @param name  A name for the operation
-      *  @return     The result after apply the max pooling operation over the parent layer
+      *  @return     The result after applying the max pooling operation over the parent layer
     */
     layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
 
@@ -1678,9 +1718,9 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @param pool_size  Size of the max pooling windows
       *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
-      *  @param padding  One of "none", "valid" or "same" (case-insensitive).
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
       *  @param name  A name for the operation
-      *  @return     The result after apply the max pooling operation over the parent layer
+      *  @return     The result after applying the max pooling operation over the parent layer
     */
     layer MaxPool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");
 
@@ -1691,10 +1731,9 @@ namespace eddl {
       *  @brief Fully-connected RNN where the output is to be fed back to input.
       *
       *  @param parent  Parent layer
-      *  @param units  dimensionality of the output space.
-      *  @param num_layers  Number of RNN layers
-      *  @param use_bias  whether the layer uses a bias vector.
-      *  @param dropout  Fraction of the units to drop for the linear transformation of the inputs.
+      *  @param units  Dimensionality of the output space
+      *  @param activation Name of the activation function
+      *  @param use_bias  Whether the layer uses a bias vector
       *  @param bidirectional  Wether the RNN is bidirectional or not.
       *  @param name  A name for the operation
       *  @return     The RNN layer
@@ -1705,11 +1744,9 @@ namespace eddl {
       *  @brief Long Short-Term Memory layer - Hochreiter 1997.
       *
       *  @param parent  Parent layer
-      *  @param units  dimensionality of the output space.
-      *  @param num_layers  Number of RNN layers
-      *  @param use_bias  whether the layer uses a bias vector.
-      *  @param dropout  Fraction of the units to drop for the linear transformation of the inputs.
-      *  @param bidirectional  Wether the RNN is bidirectional or not.
+      *  @param units  Dimensionality of the output space
+      *  @param mask_zeros 
+      *  @param bidirectional  Wether the RNN is bidirectional or not
       *  @param name  A name for the operation
       *  @return     The LSTM layer
     */
