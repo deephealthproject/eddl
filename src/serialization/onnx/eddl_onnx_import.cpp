@@ -45,7 +45,7 @@ using namespace std;
 		DROP,               // implemented
 		//EMBEDDING,  		// Onnx doesn't support this
 		RESHAPE,            // implemented
-        SQUEEZE,            // implemented
+    SQUEEZE,            // implemented
 		FLATTEN,            // implemented
 		TRANSPOSE,          // implementing
 		TRANSPOSED_CONV,	// not implemented in eddl
@@ -78,12 +78,9 @@ using namespace std;
 		MIN,                // implemented
 		SUB,                // implemented
 		LSTM,               // implemented
-		IDENTITY            // implemented
-
-
-
-
-
+		IDENTITY,           // implemented
+		GATHER,             // works as embedding for eddl
+		CAST                //
 	};
 
 
@@ -193,7 +190,8 @@ using namespace std;
 		map_layers["Min"] = ONNX_LAYERS::MIN;
 		map_layers["LSTM"] = ONNX_LAYERS::LSTM;
 		map_layers["Identity"] = ONNX_LAYERS::IDENTITY;
-
+		map_layers["Gather"] = ONNX_LAYERS::GATHER;
+		map_layers["Cast"] = ONNX_LAYERS::CAST;
 
 		return map_layers;
 	}
@@ -340,7 +338,7 @@ using namespace std;
 		vector<int> shape;
 		shape.push_back(1); //TODO check this is required
 		int start_index = 1;
-		if(recurrent_net && tensorShape.dim_size() > 2)
+		if(recurrent_net)
 			start_index = 2;
 
 		for(int i = start_index; i < tensorShape.dim_size(); i++){
@@ -1550,7 +1548,7 @@ using namespace std;
 						actual_layer = new LMaxPool(parent, {h,w},{1,1}, "none", "gpool", dev, mem);
 					}
 					break;
-                case ONNX_LAYERS::LSTM:
+					case ONNX_LAYERS::LSTM:
 					{
 						vector<float> activation_alpha; //Values for configuring some activations with extra parameters
 						vector<float> activation_beta;  //Values for configuring some activations with extra parameters
@@ -1603,7 +1601,7 @@ using namespace std;
 						string weights_gates = node->input(1); //Get weights and dims
 						vector<float>* weights_g = &(map_init_values[weights_gates]);
 						vector<int> dims_g = map_init_dims[weights_gates];
-                        int input_size = dims_g[2];
+						int input_size = dims_g[2];
 
 						// Load input weights with shape [hidden_size, input_size]. After load we transpose
 						//    Note: EDDL input weights are of shape [input_size, hidden_size]
@@ -1613,7 +1611,7 @@ using namespace std;
 						vector<float>* weights_output_g = new vector<float>;
 						vector<float>* weights_forget_g = new vector<float>;
 						vector<float>* weights_cell_g = new vector<float>;
-                        int w_size = input_size * hidden_size;
+						int w_size = input_size * hidden_size;
 						weights_input_g->assign( weights_g->begin() + w_size * 0  , weights_g->begin() + w_size * 1);
 						weights_output_g->assign(weights_g->begin() + w_size * 1  , weights_g->begin() + w_size * 2);
 						weights_forget_g->assign(weights_g->begin() + w_size * 2  , weights_g->begin() + w_size * 3);
@@ -1629,7 +1627,7 @@ using namespace std;
 						vector<float>* recurrence_weights_output_g = new vector<float>;
 						vector<float>* recurrence_weights_forget_g = new vector<float>;
 						vector<float>* recurrence_weights_cell_g = new vector<float>;
-                        w_size = hidden_size * hidden_size;
+            w_size = hidden_size * hidden_size;
 						recurrence_weights_input_g->assign( recurrence_weights_g->begin() + w_size * 0  , recurrence_weights_g->begin() + w_size * 1);
 						recurrence_weights_output_g->assign(recurrence_weights_g->begin() + w_size * 1  , recurrence_weights_g->begin() + w_size * 2);
 						recurrence_weights_forget_g->assign(recurrence_weights_g->begin() + w_size * 2  , recurrence_weights_g->begin() + w_size * 3);
@@ -1732,38 +1730,73 @@ using namespace std;
 						delete bias_cell_tensor;
 						delete bias_cell;
 
-						/* In eddl we don't have bias for the recurrent weights
+						// Add the recurrent bias values
 						Tensor* bias_recurrence_input_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_input), dev);
-						Tensor::copy(bias_recurrence_input_tensor, lstm-> );
+						Tensor::add(bias_recurrence_input_tensor, lstm->inbias, lstm->inbias );
 						delete bias_recurrence_input_tensor;
 						delete bias_recurrence_input;
 
 						Tensor* bias_recurrence_output_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_output), dev);
-						Tensor::copy(bias_recurrence_output_tensor, lstm-> );
+						Tensor::add(bias_recurrence_output_tensor, lstm->onbias, lstm->onbias );
 						delete bias_recurrence_output_tensor;
 						delete bias_recurrence_output;
 
 						Tensor* bias_recurrence_forget_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_forget), dev);
-						Tensor::copy(bias_recurrence_forget_tensor, lstm-> );
+						Tensor::add(bias_recurrence_forget_tensor, lstm->fnbias, lstm->fnbias );
 						delete bias_recurrence_forget_tensor;
 						delete bias_recurrence_forget;
 
 						Tensor* bias_recurrence_cell_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_cell), dev);
-						Tensor::copy(bias_recurrence_cell_tensor, lstm-> );
+						Tensor::add(bias_recurrence_cell_tensor, lstm->cnbias, lstm->cnbias );
 						delete bias_recurrence_cell_tensor;
 						delete bias_recurrence_cell;
-						*/
 
 						actual_layer = lstm;
 					}
 					break;
-
 				case ONNX_LAYERS::IDENTITY:
 					{
 						log_string("Identity layer detected" , log_level, LOG_LEVEL::DEBUG);
 						string parent_name;
 						parent_name = node->input(0);
 						actual_layer = output_node_map[parent_name];
+					}
+					break;
+				case ONNX_LAYERS::CAST:
+					{
+						log_string("Cast layer detected" , log_level, LOG_LEVEL::DEBUG);
+						string parent_name;
+						parent_name = node->input(0);
+						actual_layer = output_node_map[parent_name];
+					}
+					break;
+
+				case ONNX_LAYERS::GATHER:
+					{
+						log_string("Gather layer detected" , log_level, LOG_LEVEL::DEBUG);
+						int axis=0; //Default value is 0
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("axis")) {
+								axis = attribute.i();
+							}					
+						}
+
+						string weights_name = node->input(0); //Get weights and dims
+						vector<float>* weights = &(map_init_values[weights_name]);
+						vector<int> dims = map_init_dims[weights_name];
+
+						string parent_name = node->input(1); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
+
+						LEmbedding* embedding = new LEmbedding(parent, dims[0], 1/*parent_shape[1]*/, dims[1], 0, name, dev, mem);
+						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
+						Tensor::copy(weights_tensor, embedding->E);
+
+						delete weights_tensor;
+						actual_layer = embedding;
 					}
 					break;
 				case ONNX_LAYERS::SQUEEZE:
@@ -1774,56 +1807,77 @@ using namespace std;
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
 							if (!attr_name.compare("axes")) {
-                                // Read the axes to squeeze
-                                for(int h = 0; h < attribute.ints_size(); h++){
-                                    squeeze_axes.push_back(attribute.ints(h));
-                                }
+								// Read the axes to squeeze
+								for(int h = 0; h < attribute.ints_size(); h++){
+								squeeze_axes.push_back(attribute.ints(h));
+								}
 							}
 						}
 
 						string parent_name;
 						parent_name = node->input(0);
 						Layer * parent = output_node_map[parent_name];
-                        // Check if we are trying to squeeze the axis 0 with a recurrent parent node
-                        //     - In ONNX, the output of a recurrent operator has the number of directions (1:onedirectional, 2:bidirectional)
-                        //       in the axis 0, so in the case of onedirectional models this dimension is squeezed. But to make it fit with
-                        //       the implementation of the eddl we have to skip this squeeze operation because is not needed.
-                        for (int i=0; i < squeeze_axes.size(); ++i) {
-                            if (squeeze_axes[i] == 0 && parent->isrecurrent) {
-						        log_string("Removing 0 axis from Squeeze operator. The parent node is recurrent." , log_level, LOG_LEVEL::WARN);
-                                squeeze_axes.erase(squeeze_axes.begin()+i);  // We remove the axis to squeeze
-                            }
-                        }
+						vector<int> parent_out_shape = parent->output->getShape();
+						// Check if we are trying to squeeze the axis 0 with a recurrent parent node
+						//     - In ONNX, the output of a recurrent operator has the number of directions (1:onedirectional, 2:bidirectional)
+						//       in the axis 0, so in the case of onedirectional models this dimension is squeezed. But to make it fit with
+						//       the implementation of the eddl we have to skip this squeeze operation because is not needed.
+						for (int i=0; i < squeeze_axes.size(); ++i) {
+							if (squeeze_axes[i] == 0 && parent->isrecurrent) {
+								log_string("Removing 0 axis from Squeeze operator. The parent node is recurrent." , log_level, LOG_LEVEL::WARN);
+								squeeze_axes.erase(squeeze_axes.begin()+i);  // We remove the axis to squeeze
+							}
+						}
 
-                        if (squeeze_axes.size() == 0) {
-                            // We skip this node because there is no axis to squeeze
-						    log_string("Skiping squeeze operation. No axes to squeeze." , log_level, LOG_LEVEL::DEBUG);
-						    actual_layer = output_node_map[parent_name];
-                            break;
-                        } else { // There are axes to squeeze
-                            vector<int> target_shape;
-                            vector<int> parent_out_shape = parent->output->getShape();
-                            bool to_squeeze = false;
-                            for (int parent_ax = 0; parent_ax < parent_out_shape.size(); ++parent_ax) {
-                                to_squeeze = false;
-                                for (int target_ax : squeeze_axes) {
-                                    if (parent_ax == target_ax) {
-                                        if (parent_out_shape[parent_ax] == 1) {
-                                            to_squeeze = true;
-                                            break;
-                                        } else {
-						                    log_string("Trying to squeeze an axis with value different than one. Skiping the operator." , log_level, LOG_LEVEL::WARN);
-						                    actual_layer = output_node_map[parent_name];
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (!to_squeeze) target_shape.push_back(parent_out_shape[parent_ax]);
-                            }
-                            // We create a reshape layer to do the squeeze operation
+						// Check if all the axes are valid
+						bool valid_axes = true;
+						for (int ax : squeeze_axes) {
+							if (ax >= parent_out_shape.size()) {
+								valid_axes = false;
+								break;
+							}
+						}
+
+						if (squeeze_axes.size() == 0) {
+							log_string("Skiping squeeze operation. No axes to squeeze." , log_level, LOG_LEVEL::DEBUG);
+							actual_layer = output_node_map[parent_name];
+							break;
+						} else if (!valid_axes) { 
+							log_string("Skiping squeeze operation. The axes to squeeze are not valid" , log_level, LOG_LEVEL::DEBUG);
+							actual_layer = output_node_map[parent_name];
+							break;
+						} else { // There are axes to squeeze
+							vector<int> target_shape;
+							bool to_squeeze = false;
+							for (int parent_ax = 0; parent_ax < parent_out_shape.size(); ++parent_ax) {
+								to_squeeze = false;
+								for (int target_ax : squeeze_axes) {
+									if (parent_ax == target_ax) {
+										if (parent_out_shape[parent_ax] == 1) {
+											to_squeeze = true;
+											break;
+										} else {
+											log_string("Trying to squeeze an axis with value different than one. Skiping the operator." , log_level, LOG_LEVEL::WARN);
+											actual_layer = output_node_map[parent_name];
+											break;
+										}
+									}
+								}
+								if (!to_squeeze) target_shape.push_back(parent_out_shape[parent_ax]);
+							}
+							// We create a reshape layer to do the squeeze operation
+							cout << "Going to create Squeeze with reshape:" << endl;
+							cout << "parent shape: ";
+							for (int s : parent_out_shape)
+								cout << s << ", ";
+							cout << endl;
+							cout << "target shape: ";
+							for (int s : target_shape)
+								cout << s << ", ";
+							cout << endl;
 							actual_layer= new LReshape(parent, target_shape, name, dev, mem);
-                            log_string("Squeeze (with Reshape) layer created" , log_level, LOG_LEVEL::DEBUG);
-                        }
+							log_string("Squeeze (with Reshape) layer created" , log_level, LOG_LEVEL::DEBUG);
+						}
 					}
 					break;
 				case ONNX_LAYERS::TRANSPOSE:

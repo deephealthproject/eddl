@@ -1,5 +1,10 @@
 #include <cstdio>
 #include <fstream>
+#include "eddl/layers/core/layer_core.h"
+#include "eddl/layers/layer.h"
+#include "eddl/layers/recurrent/layer_recurrent.h"
+#include "eddl/net/net.h"
+#include "eddl/optimizers/optim.h"
 #include "eddl/serialization/onnx/eddl_onnx.h"
 
 using namespace std;
@@ -21,6 +26,9 @@ using namespace std;
 
   // Fixes the input shape for recurrent models
   void prepare_recurrent_input( string input_name, string output_name, vector<int> input_shape, onnx::GraphProto *graph );
+
+  // Fixes the output shape for recurrent models
+  void prepare_recurrent_output( string input_name, string output_name, vector<int> output_shape, onnx::GraphProto *graph );
 
   // Node builders
   //----------------------------------------------------------------------------------------
@@ -89,7 +97,19 @@ using namespace std;
 
   void build_upsample_node( LUpSampling *layer, onnx::GraphProto *graph );
 
+  void build_squeeze_node( string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph );
+
   void build_lstm_node( LLSTM *layer, onnx::GraphProto *graph );
+
+  void handle_copy_states( LCopyStates *layer, onnx::GraphProto *graph );
+
+  void build_embedding_node( LEmbedding *layer, onnx::GraphProto *graph );
+
+  void build_identity_node( string node_name, string input, string output, onnx::GraphProto *graph );
+
+  void build_cast_node( string node_name, string input, string output, int cast_type, onnx::GraphProto *graph );
+
+  void build_gather_node( string node_name, string input, string output, LEmbedding *layer, onnx::GraphProto *graph );
 #endif
 
 #ifdef cPROTO
@@ -173,8 +193,21 @@ using namespace std;
     }
     bool is_recurrent = is_encoder || is_decoder;
 
+    /*
+     * We get all the input layers from the layers vector of the model
+     * instead of taking them from net->lin. Beacause for the case of
+     * a recurrent net with decoder the input layer that is connected 
+     * to the decoder is not added in the lin vector of the model.
+     * With this way we ensure that we are taking all the input layers
+     * of the model.
+     */
+    vector<Layer*> model_inputs = {};
+    for( Layer* aux_layer : net->layers ) 
+      if (LInput *t = dynamic_cast<LInput *>(aux_layer)) 
+        model_inputs.push_back(aux_layer);
+
     // Set the inputs shapes of the graph
-    for( Layer* input : net->lin ) {
+    for( Layer* input : model_inputs ) {
       onnx::ValueInfoProto* input_info = graph->add_input();
       input_info->set_name( input->name );
       onnx::TypeProto* input_type = input_info->mutable_type();
@@ -227,6 +260,17 @@ using namespace std;
       // Set the first dimension to a variable named "batch", to avoid setting a fixed batch size
       output_type_tensor_dim = output_type_tensor_shape->add_dim();
       output_type_tensor_dim->set_dim_param( "batch" );
+      if (is_decoder) {
+        output_type_tensor_dim = output_type_tensor_shape->add_dim();
+        output_type_tensor_dim->set_dim_param( "sequence" );
+
+        // Fix output shape to add the seq_len dimension
+        vector<int> output_shape = aux_output->output->getShape();
+        vector<int>::iterator it = output_shape.begin();
+        output_shape.insert(it+1, 1); // Insert seq_len=1 afer batch_size
+        prepare_recurrent_output( aux_output->name, aux_output->name + "_output", output_shape, graph );
+        output_info->set_name( aux_output->name + "_output" );
+      }
       // Set the rest of the dimensions
       for ( int i=1/*skip batch*/; i < output_shape.size(); ++i ) {
         output_type_tensor_dim = output_type_tensor_shape->add_dim();
@@ -321,13 +365,17 @@ using namespace std;
       build_dropout_node((LDropout *)(LinLayer *)layer, graph);
     } else if (LLSTM *t = dynamic_cast<LLSTM *>(layer)) {
       build_lstm_node((LLSTM *)(MLayer *)layer, graph);
+    } else if (LCopyStates *t = dynamic_cast<LCopyStates *>(layer)) {
+      handle_copy_states((LCopyStates *)(MLayer *)layer, graph);
+    } else if (LEmbedding *t = dynamic_cast<LEmbedding *>(layer)) {
+      build_embedding_node((LEmbedding *)(LinLayer *)layer, graph);
     } else {
       cout << "The layer " << layer->name << "has no OpType in Onnx." << endl;
       return;
     }
   }
 
-        // Node builders
+  // Node builders
   //----------------------------------------------------------------------------------------
 
   void build_conv_node( LConv *layer, onnx::GraphProto *graph, bool gradients ) {
@@ -1210,21 +1258,36 @@ using namespace std;
     }
   }
 
+  void build_squeeze_node( string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph ) {
+    onnx::NodeProto* node_sq = graph->add_node();
+    node_sq->set_op_type( "Squeeze" );
+    node_sq->set_name( node_name );
+    node_sq->add_input( input );
+    onnx::AttributeProto* axes_attr = node_sq->add_attribute();
+    axes_attr->set_name( "axes" );
+    axes_attr->set_type( onnx::AttributeProto::INTS );
+    for (int ax : axes)
+      axes_attr->add_ints( ax );
+    node_sq->add_output( output );
+  }
+
   void build_lstm_node( LLSTM *layer, onnx::GraphProto *graph ) {
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
     node->set_op_type( "LSTM" );
     node->set_name( layer->name );
-    // Set the inputs of the node from the parents of the layer
-    for ( Layer* parentl : layer->parent ) {
-      node->add_input( parentl->name );
-    }
+    // Set the input sequence of the LSTM
+    node->add_input( layer->parent[0]->name );
     node->add_input( layer->name + "_W" );
     node->add_input( layer->name + "_R" );
     node->add_input( layer->name + "_B" );
-    //node->add_input( layer->name + "_sequence_lens" );
-    //node->add_input( layer->name + "_initial_h" );
-    //node->add_input( layer->name + "_initial_c" );
+    node->add_input( "" );  // Empty str to skip the sequence_lens input
+    // Check if we have to copy states for a decoder LSTM
+    if ( layer->parent.size() > 1 && layer->isdecoder ) {
+      string l_copyStates_name = layer->parent[1]->name;
+      node->add_input( l_copyStates_name + "_h" );
+      node->add_input( l_copyStates_name + "_c" );
+    }
 
     // Attr activation alpha (for LSTM activation functions)
     // Not used in EDDL
@@ -1337,45 +1400,181 @@ using namespace std;
       *   Note: To select the output of the LSTM that the next layer in the graph takes as input
       *         we have to set that output name to the layer name (layer->name)
       */
+    node->add_output( layer->name + "_Y" );
+    node->add_output( layer->name + "_Y_h" );
+    node->add_output( layer->name + "_Y_c" );
     if ( layer->isdecoder ) {
-      node->add_output( layer->name ); // We select Y as output
-      node->add_output( layer->name + "_Y_h" );
-      node->add_output( layer->name + "_Y_c" );
+      // Squeeze: [seq_length, num_directions, batch_size, hidden_size] -> [seq_length, batch_size, hidden_size]
+      //   Note: The EDDL only supports one-directional LSTM, so num_directions=1
+      build_squeeze_node(
+        layer->name + "_outputSqueeze", // node name
+        layer->name + "_Y", // input name
+        layer->name, // Output name
+        {1}, // axes to squeeze
+        graph
+      );
     } else { // is encoder
-      node->add_output( layer->name + "_Y" );
-      node->add_output( layer->name + "_Y_h" );
-      node->add_output( layer->name + "_Y_c" );
-
-      // We need to make an Squeeze to Y_h in order to remove the "num_directions" dimension
-      // Note: The EDDL only supports one-directional LSTM, so num_directions=1
-      onnx::NodeProto* node_sq = graph->add_node();
-      node_sq->set_op_type( "Squeeze" );
-      node_sq->set_name( layer->name + "_outputSqueeze" );
-      node_sq->add_input( layer->name + "_Y_h" ); // Select hidden state output
-      // Attr input forget
-      onnx::AttributeProto* axes_attr = node_sq->add_attribute();
-      axes_attr->set_name( "axes" );
-      axes_attr->set_type( onnx::AttributeProto::INTS );
-      axes_attr->add_ints( 0 ); // To remove the num_directions dimension
-      // Set output of the Squeeze to be the "output" of the LSTM
-      node_sq->add_output( layer->name );
+      // Squeeze: [num_directions, batch_size, hidden_size] -> [batch_size, hidden_size]
+      //   Note: The EDDL only supports one-directional LSTM, so num_directions=1
+      build_squeeze_node(
+        layer->name + "_outputSqueeze", // node name
+        layer->name + "_Y_h", // input name
+        layer->name, // Output name
+        {0}, // axes to squeeze
+        graph
+      );
     }
+  }
+
+  void build_identity_node( string node_name, string input, string output, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Identity" );
+    node->set_name( node_name );
+    node->add_input( input );
+    node->add_output( output );
+  }
+
+  void build_cast_node( string node_name, string input, string output, int cast_type, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Cast" );
+    node->set_name( node_name );
+    node->add_input( input );
+    node->add_output( output );
+    /*
+     * Attr "to". To select the type of the cast
+     *
+     * Available types to cast (from TensorProto class in "onnx.proto") :
+     *   FLOAT = 1;   // float
+     *   UINT8 = 2;   // uint8_t
+     *   INT8 = 3;    // int8_t
+     *   UINT16 = 4;  // uint16_t
+     *   INT16 = 5;   // int16_t
+     *   INT32 = 6;   // int32_t
+     *   INT64 = 7;   // int64_t
+     *   STRING = 8;  // string
+     *   BOOL = 9;    // bool
+     */
+    onnx::AttributeProto* to_attr = node->add_attribute();
+    to_attr->set_name( "to" );
+    to_attr->set_type( onnx::AttributeProto::INT );
+    to_attr->set_i( cast_type );
+  }
+
+  void build_gather_node( string node_name, string input, string output, LEmbedding *layer, onnx::GraphProto *graph ) {
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Gather" );
+    node->set_name( node_name );
+    // Set the inputs: word indexes and embedding values (data)
+    node->add_input( layer->name + "_data" );
+    node->add_input( input );
+    node->add_output( output );
+
+    // Create the initializer with the embeddin data
+    onnx::TensorProto* embed_data = graph->add_initializer();
+    embed_data->set_name( layer->name + "_data" );
+    embed_data->set_data_type( onnx::TensorProto::FLOAT );
+    vector<int> embed_data_dims { layer->vocsize, layer->dim };
+    embed_data->mutable_dims()->Add( embed_data_dims.begin(), embed_data_dims.end() ); // Set the shape of the weights
+    embed_data->mutable_float_data()->Add( layer->E->ptr, layer->E->ptr + layer->E->size ); // Set the data values
+  }
+
+  void build_embedding_node( LEmbedding *layer, onnx::GraphProto *graph ) {
+    /*
+     * To create the embedding operation in ONNX we have to use the following steps:
+     *     1. Squeeze the last dim if the input shape is [batch, seq_len, 1]
+     *     2. Create a Cast op to int type for the indexes of the words
+     *     3. Create a Gather op to select the embeddings from the indexes from the Cast
+     */
+
+    // 1. Create the Squeeze node for dim 2
+    string cast_node_input;  
+    if (layer->length == 1) {
+      string squeeze_node_name = layer->name + "_squeeze";
+      string squeeze_node_input = layer->parent[0]->name;
+      string squeeze_node_output = layer->name + "_squeeze";
+      build_squeeze_node(
+        squeeze_node_name,
+        squeeze_node_input,
+        squeeze_node_output,
+        {2},
+        graph
+      );
+      cast_node_input = squeeze_node_output;
+    } else {
+      msg("The input of the embedding layer must have length 1 in order to export it", "ONNX::ExportNet");
+    }
+
+    // 2. Create the Cast op
+    string cast_node_name = layer->name + "_indexes_cast";
+    string cast_node_output = layer->name + "_cast";
+    build_cast_node(
+      cast_node_name,
+      cast_node_input,
+      cast_node_output,
+      6, // cast type to int32
+      graph
+    );
+
+    // 3. Creathe the Gahter op
+    build_gather_node(
+      layer->name, // node name
+      cast_node_output, // node input from cast node
+      layer->name, // node output name
+      layer, 
+      graph
+    );
   }
 
   // End: Node builders
   //----------------------------------------------------------------------------------------
 
+  void handle_copy_states( LCopyStates *layer, onnx::GraphProto *graph ) {
+    string parent_name = layer->parent[0]->name;
+    string child_name = layer->child[0]->name;
+    // Check the type of the parent layer to copy the states
+    if (LLSTM *l = dynamic_cast<LLSTM *>(layer->parent[0])) {
+      // Set the node to copy the hidden (h) state
+      string node_name = parent_name + "_to_" + child_name + "_CopyState_h";
+      string input_name = parent_name;
+      string output_name = layer->name + "_h";
+      /* 
+       * Add an Unsqueeze layer to reshape the h state to the desired shape for LSTM.
+       *
+       *   Note: The h state coming from the previous LSTM has been squeezed, so we 
+       *         have to unsqueeze it to get the desired shape for the decoder LSTM
+       */
+      onnx::NodeProto* node_sq = graph->add_node();
+      node_sq->set_op_type( "Unsqueeze" );
+      node_sq->set_name( layer->name + "_h_unsqueeze" );
+      node_sq->add_input( input_name ); // Select hidden state output
+      // Attr input forget
+      onnx::AttributeProto* axes_attr = node_sq->add_attribute();
+      axes_attr->set_name( "axes" );
+      axes_attr->set_type( onnx::AttributeProto::INTS );
+      axes_attr->add_ints( 0 ); // To add the "num_directions" dimension
+      node_sq->add_output( output_name );
+
+      // Set the node to copy the cell (c) state
+      node_name = parent_name + "_to_" + child_name + "_CopyState_c";
+      input_name = parent_name + "_Y_c";
+      output_name = layer->name + "_c";
+      build_identity_node( node_name, input_name, output_name, graph);
+    }
+  }
+
   void prepare_recurrent_input( string input_name, string output_name, vector<int> input_shape, onnx::GraphProto *graph ) {
-        /*
-         * This functions takes a graph of a recurrent net and adds a permute operator
-         * to fix the input shape from (batch_size, seq_len, in_len) to (seq_len, batch_size, in_len)
-         */
+    /*
+     * This functions takes a graph of a recurrent net and adds a transpose operator
+     * to fix the input shape from (batch_size, seq_len, in_shape) to (seq_len, batch_size, in_shape)
+     */
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
     node->set_op_type( "Transpose" );
     node->set_name( input_name + "_transpose" );
     // Set the inputs names of the node from the parents of the layer
-      node->add_input( input_name );
+    node->add_input( input_name );
     // Set the name of the output of the node to link with other nodes
     node->add_output( output_name );
 
@@ -1383,11 +1582,38 @@ using namespace std;
     onnx::AttributeProto* alpha_attr = node->add_attribute();
     alpha_attr->set_name( "perm" );
     alpha_attr->set_type( onnx::AttributeProto::INTS );
-        // Permute batch_size and seq_len
+    // Permute batch_size and seq_len
     alpha_attr->add_ints( 1 );
     alpha_attr->add_ints( 0 );
-        // Add the rest of dimensions
+    // Add the rest of dimensions
     for ( int i = 2/*Skip batch and seq*/; i < input_shape.size(); ++i  ) {
+      alpha_attr->add_ints( i );
+    }
+  }
+
+  void prepare_recurrent_output( string input_name, string output_name, vector<int> output_shape, onnx::GraphProto *graph ) {
+    /*
+     * This functions takes a graph of a recurrent net and adds a transpose operator
+     * to fix the output shape from (seq_len, batch_size, out_shape) to (batch_size, seq_len, out_shape) 
+     */
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Transpose" );
+    node->set_name( input_name + "_transpose" );
+    // Set the inputs name of the node from the parents of the layer
+    node->add_input( input_name );
+    // Set the name of the output of the node to link to the output of the model
+    node->add_output( output_name );
+
+    // Attr perm
+    onnx::AttributeProto* alpha_attr = node->add_attribute();
+    alpha_attr->set_name( "perm" );
+    alpha_attr->set_type( onnx::AttributeProto::INTS );
+    // Permute batch_size and seq_len
+    alpha_attr->add_ints( 1 );
+    alpha_attr->add_ints( 0 );
+    // Add the rest of dimensions
+    for ( int i = 2/*Skip batch and seq*/; i < output_shape.size(); ++i  ) {
       alpha_attr->add_ints( i );
     }
   }
