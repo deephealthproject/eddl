@@ -1938,7 +1938,7 @@ public:
     /**
     *   @brief Returns a new tensor with a dimension of size one inserted at the specified position.
     *   @param A Output tensor where the unsqueeze is stored.
-*   @param axis the index at which to insert the singleton dimension. Default: axis=0
+    *   @param axis the index at which to insert the singleton dimension. Default: axis=0
     *   @return A new tensor with the result
     */
     static Tensor* unsqueeze(Tensor *A, int axis=0);

@@ -76,7 +76,7 @@ namespace eddl {
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
 
     /**
-      *  @brief Tell the model which optimizer, losses, metrics and computing services use.
+      *  @brief Tell the model which optimizer, losses, metrics and computing services to use.
       *
       *  @param net  Model
       *  @param o  Optimizer
@@ -245,13 +245,13 @@ namespace eddl {
       *
       *  @param m  Model to train
       *  @param fname  Name of the logfile
-      *  @return     (void) Outputs log to the given file.
+      *  @return     (void) Outputs log to the given file
     */
     void setlogfile(model net,string fname);
     /**
       *  @brief  Prints a summary representation of your model.
       *
-      *  @param m  Model to train
+      *  @param m  Model to print
       *  @return     (void) Prints the model
     */
     void summary(model m);
@@ -259,7 +259,7 @@ namespace eddl {
       *  @brief  Plots a representation of your model.
       *
       *  @param m  Model to plot
-      *  @param fname  Where the plot is saved
+      *  @param fname  File where the plot will be saved
       *  @return     (void) Plots the model
     */
     void plot(model m, string fname, string mode="LR");
@@ -269,16 +269,16 @@ namespace eddl {
       *  @brief  Load weights to reinstantiate your model.
       *
       *  @param m  Model
-      *  @param fname  Where are the model weights
-      *  @return     (void) Load the weights
+      *  @param fname  File where the model weights are saved
+      *  @return     (void) Loads the weights
     */
     void load(model m, const string& fname, string format="bin");
     /**
       *  @brief  Save weights of a model.
       *
       *  @param m  Model
-      *  @param fname  Where the model weights will be saved
-      *  @return     (void) Save the weights
+      *  @param fname  File where the model weights will be saved
+      *  @return     (void) Saves the weights
     */
     void save(model m, const string& fname, string format="bin");
 
@@ -663,7 +663,7 @@ namespace eddl {
     */
     loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
     /**
-      *  @brief Get Metric by his name.
+      *  @brief Get Metric by its name.
       *
       *  @param type  Metric name/type
       *  @return     Selected Metric
@@ -1860,28 +1860,28 @@ namespace eddl {
     /**
       *  @brief Regularizer for L2 regularization.
       *
-      *  @param l  Parent layer to regularize.
-      *  @param l2   L2 regularization factor.
-      *  @return     The layer l regularized.
+      *  @param l  Parent layer to regularize
+      *  @param l2   L2 regularization factor
+      *  @return     The layer `l` regularized
     */
     layer L2(layer l,float l2);
 
     /**
       *  @brief Regularizer for L1 regularization.
       *
-      *  @param l  Parent layer to regularize.
-      *  @param l1   L1 regularization factor.
-      *  @return     The layer l regularized.
+      *  @param l  Parent layer to regularize
+      *  @param l1   L1 regularization factor
+      *  @return     The layer `l` regularized
     */
     layer L1(layer l,float l1);
 
     /**
-      *  @brief Regularizer for L1 and L2 regularization..
+      *  @brief Regularizer for L1 and L2 regularization.
       *
-      *  @param l  Parent layer to regularize.
-      *  @param l1   L1 regularization factor.
-      *  @param l2   L2 regularization factor.
-      *  @return     The layer l regularized.
+      *  @param l  Parent layer to regularize
+      *  @param l1   L1 regularization factor
+      *  @param l2   L2 regularization factor
+      *  @return     The layer `l` regularized
     */
     layer L1L2(layer l,float l1,float l2);
 

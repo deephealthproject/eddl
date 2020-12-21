@@ -208,11 +208,8 @@ clamp
 
 .. doxygenfunction:: eddl::clamp(model, float, float)
 
-Example:
 
-.. code-block:: c++
-    
-    void clamp(model m,float min,float max);
+
           
 compute_loss
 ^^^^^^^^^^^^^^^^^
