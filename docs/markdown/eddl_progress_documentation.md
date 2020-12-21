@@ -272,7 +272,7 @@
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | Constructor |  ✔️      |      ✔️       |          |
-| Build   |      ❌️     |      ✔️       | two different instructions <br/> needs comments in the .h |
+| Build   |      ✔️      |      ✔️       | two different instructions |
 | Summary |      ✔️      |      ✔️       |          |
 | Plot    |      ✔️      |      ✔️       |          |
 | Load    |      ✔️      |      ✔️       |          |
@@ -313,7 +313,7 @@
 | backward |        ✔️   |       ❌️     | 3 different instructions |
 | update  |         ✔️   |       ✔️      |          |
 | print_loss |      ✔️   |       ✔️      |          |
-| clamp   |         ✔️   |       ✔️      |          |
+| clamp   |         ✔️   |       ❌️     |          |
 | compute_loss |    ✔️   |       ✔️      |          |
 | compute_metric |  ✔️   |       ❌️     |          |
 | getLoss |         ✔️   |       ❌️     |          |
@@ -338,11 +338,10 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Mean Squared Error |❌️|      ✔️       |          |
-| CategoricalCrossEntropy |❌️| ✔️       |          |
-| BinaryCrossEntropy |❌️|      ✔️       |          |
-| Cross-Entropy |     ❌️|      ✔️       |          |
-| Soft Cross-Entropy |❌️|      ✔️       |          |
+| Mean Squared Error |✔️ |      ✔️       |          |
+| BinaryCrossEntropy |✔️ |      ✔️       |          |
+| CategoricalCrossEntropy |✔️ | ✔️       |          |
+| Soft Cross-Entropy |✔️ |      ✔️       |          |
 | Dice               |❌️|      ✔️       |          |
 
 
@@ -350,10 +349,10 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Mean Squared Error |❌️|       ✔️      |          |
-| Categorical Accuracy |❌️|     ✔️      |          |
-| Mean Absolute Error |❌️|      ✔️      |          |
-| Mean Relative Error |❌️|      ✔️      |          |
+| Mean Squared Error |❌️|       ❌️     |          |
+| Categorical Accuracy |❌️|     ❌️     |          |
+| Mean Absolute Error |❌️|      ❌️     |          |
+| Mean Relative Error |❌️|      ❌️     |          |
 
 
 ## Regularizers
@@ -415,295 +414,323 @@
 | DRIVE   |      ✔️      |       ❌️     |          |
 
 
-# Micellaneous ❌️
-
-empty ❌
-
 # Tensor
 
 ## Creation Routines
 
-* note: section in progress
+### Constructors
 
-### Constructor
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Tensor  |     ✔️      |       ✔️      | needs comments in the .h |
+| Tensor  |      ✔️      |       ✔️      |          |
 
-### Ones and zeros
+### Constructors & Initializers
+
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| zeros   |      ✔️      |       ✔️      |  |
-| ones    |      ✔️      |       ✔️      |  |
-| full    |      ✔️      |       ✔️      |  |
-| eye     |      ✔️      |       ✔️      |  |
-| identity |     ✔️      |       ✔️      |  |
+| empty   |      ✔️      |       ✔️      |          |
+| empty_like|    ✔️      |       ✔️      |          |
+| zeros   |      ✔️      |       ✔️      |          |
+| zeros_like|    ✔️      |       ✔️      |          |
+| ones    |      ✔️      |       ✔️      |          |
+| ones_like|     ✔️      |       ✔️      |          |
+| full    |      ✔️      |       ✔️      |          |
+| full_like|     ✔️      |       ✔️      |          |
+| eye     |      ✔️      |       ✔️      |          |
+| identity|      ✔️      |       ✔️      |          |
 
-### From existing data
-
-| Section | Explanation | Instructions | Comments |
-| :------ | :---------: | :----------: | :------- |
-| clone   |      ✔️     |       ✔️      |  |
-| reallocate |   ✔️     |       ✔️      |  |
-| copy    |      ✔️     |       ✔️      |  |
-
-
-### Numerical ranges
+### Constructors from existing data
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| arange  |      ✔️     |       ✔️      |  |
-| range   |      ✔️     |       ✔️      |  |
-| linspace |     ✔️     |       ✔️      |  |
-| logspace |     ✔️     |       ✔️      |  |
-| geomspace |    ✔️     |       ✔️      |  |
+| clone   |      ✔️      |       ✔️      |          |
+| reallocate|    ✔️      |       ✔️      |          |
+| copy    |      ✔️      |       ✔️      |          |
 
-### Random
+### Constructors from numerical ranges
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| randu   |      ✔️     |       ✔️      |  |
-| randn   |      ✔️     |       ✔️      |  |
+| arange  |      ✔️      |       ✔️      |          |
+| range   |      ✔️      |       ✔️      |          |
+| linspace|      ✔️      |       ✔️      |          |
+| logspace|      ✔️      |       ✔️      |          |
+| geomspace|     ✔️      |       ✔️      |          |
 
-### Build matrices
+### Constructors from random generators
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| diag    |      ✔️     |       ✔️      |  |
+| randu   |      ✔️      |       ✔️      |          |
+| randn   |      ✔️      |       ✔️      |          |
+
+### Constructors of matrices
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| diag    |      ✔️      |       ✔️      |          |
 
 
 ## Manipulation
 
-* note: section in progress 
-
-### Constructor
+### Devices and information
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Tensor  |      ✔️     |       ✔️      |  |
+| toCPU   |      ❌️     |       ✔️      | needs comments in the .h |
+| toGPU   |      ❌️     |       ✔️      | needs comments in the .h |
+| isCPU   |      ❌️     |       ✔️      | needs better comments in the .h |
+| isGPU   |      ❌️     |       ✔️      | needs better comments in the .h |
+| isFPG   |      ❌️     |       ✔️      | needs better comments in the .h |
+| getDeviceName| ❌️     |       ✔️      | needs better comments in the .h |
+| info    |      ✔️      |       ✔️      |          |
+| print   |      ✔️      |       ✔️      |          |
+| isSquared|     ✔️      |       ✔️      |          |
 
 ### Changing array shape
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| reshape |      ✔️     |       ✔️      |  |
-| flatten |      ✔️     |       ✔️      |  |
+| reshape |      ✔️      |       ✔️      |          |
+| flatten |      ✔️      |       ✔️      |          |
 
 ### Transpose-like operations
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| permute |      ✔️     |       ✔️      |  |
-| moveaxis |     ✔️     |       ✔️      |  |
-| swapaxis |     ✔️     |       ✔️      |  |
+| permute |      ✔️      |       ✔️      |          |
+| moveaxis|      ✔️      |       ✔️      |          |
+| swapaxis|      ✔️      |       ✔️      |          |
 
 ### Changing number of dimensions
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| squeeze |      ✔️     |       ✔️      |  |
-| unsqueeze |    ✔️     |       ✔️      |  |
+| squeeze |      ✔️      |       ✔️      |          |
+| unsqueeze|     ✔️      |       ✔️      |          |
 
 ### Joining arrays
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| concat  |      ✔️     |       ✔️      |  |
+| concat  |      ❌️     |      ✔️      | needs comments in the .h |
 
-### Rearranging elements and transformations
-
-| Section | Explanation | Instructions | Comments |
-| :------ | :---------: | :----------: | :------- |
-| shift   |      ✔️     |       ✔️      |  |
-| rotate  |      ✔️     |       ✔️      |  |
-| scale   |      ✔️     |       ✔️      |  |
-| flip    |      ✔️     |       ✔️      |  |
-| crop    |      ✔️     |       ✔️      |  |
-| crop_scale |   ✔️     |       ✔️      |  |
-| cutout  |      ✔️     |       ✔️      |  |
-| shift_random | ✔️     |       ✔️      |  |
-| rotate_random |✔️     |       ✔️      |  |
-| scale_random | ✔️     |       ✔️      |  |
-| flip_random |  ✔️     |       ✔️      |  |
-| crop_random |  ✔️     |       ✔️      |  |
-| crop_scale_random| ✔️ |       ✔️      |  |
-| cutout_random |✔️     |       ✔️      |  |
-
-
-## Binary operations ❌️
-
-* note: section in progress 
-
-## Indexing routines
-
-* note: section in progress
-
-### Generating index arrays
+### Value operations
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Generating index arrays |❌️|    ❌️   |          |
+| fill    |      ✔️      |       ✔️      |          |
+| fill_rand_uniform_| ✔️ |       ✔️      |          |
+| fill_rand_signed_uniform_|✔️|  ✔️      |          |
+| fill_rand_normal_| ✔️  |       ✔️      |          |
+| fill_rand_binary _| ✔️ |       ✔️      |          |
 
-### Indexing-like operations 
+
+## Image operations
+
+* Note about practical examples
+
+### Transformations
+
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| select  |      ✔️      |       ✔️      |  |
-| set_select |  ✔️      |       ✔️      |  |
+| shift   |      ✔️      |       ✔️      |          |
+| rotate  |      ✔️      |       ✔️      |          |
+| scale   |      ✔️      |       ✔️      |          |
+| flip    |      ✔️      |       ✔️      |          |
+| crop    |      ✔️      |       ✔️      |          |
+| crop_scale|    ✔️      |       ✔️      |          |
+| cutout  |      ✔️      |       ✔️      |          |
+
+### Data augmentations
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| shift_random|  ✔️      |       ✔️      |          |
+| rotate_random| ✔️      |       ✔️      |          |
+| scale_random|  ✔️      |       ✔️      |          |
+| flip_random|   ✔️      |       ✔️      |          |
+| crop_random|   ✔️      |       ✔️      |          |
+| crop_scale_random| ✔️  |       ✔️      |          |
+| cutout_random| ✔️      |       ✔️      |          |
+
+
+## Indexing & Sorting
+
+### Indexing
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| nonzero |      ✔️      |       ✔️      |          |
+| where   |      ✔️      |       ✔️      |          |
+| select  |      ✔️      |       ✔️      |          |
+| set_select|    ❌️     |       ✔️      | explanation of parameters not complete in the .h |
+
+### Sorting
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| sort    |      ✔️      |       ✔️      |          |
+| argsort |      ✔️      |       ✔️      |          |
 
 
 ## Input/Output Operations
 
-* note: section in progress
+* Note about practical examples
 
 ### Input
+
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| loadfs  |      ✔️      |       ✔️      |  |
-| load    |      ✔️      |       ✔️      |  | 
-| load_from_txt |✔️      |       ✔️      |  |
+| load    |      ✔️      |       ✔️      |          |
 
 ### Output
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| savefs  |       ✔️     |       ✔️      | Note: ONNX not yet implemented |
-| save    |       ✔️     |       ✔️      | Note: ONNX not yet implemented |
-| save2txt |      ✔️     |       ✔️      | Check parameter explanation |
+| save    |      ✔️      |       ✔️      |          |
 
 
 ## Linear algebra
 
-* note: section in progress
+### Matrix and vector operations
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Matrix and vector products | ❌️| ❌️  | just 'interpolate' <br/> needs comments in the .h |
-| Norms and other numbers | ❌️|    ❌️  |          |
-| Solving equations and inverting matrices |❌️ |❌️ |   |
+| interpolate|   ✔️      |       ✔️      |          |
+| trace   |      ✔️      |       ✔️      |          |
 
 
 ## Logic functions
 
-* note: section in progress
+* Note about practical examples
 
-### Truth value testing 
+### Truth value testing
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| all     |      ✔️      |       ✔️      | |
-| any     |      ✔️      |       ✔️      | |
+| all     |      ✔️      |       ✔️      |          |
+| any     |      ✔️      |       ✔️      |          |
 
 ### Array contents
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| isfinite |      ✔️     |       ✔️      |  |
-| isinf   |       ✔️     |       ✔️      |  |
-| isnan   |       ✔️     |       ✔️      |  |
-| isneginf |      ✔️     |       ✔️      |  |
-| isposinf |      ✔️     |       ✔️      |  |
+| isfinite|      ✔️      |       ✔️      |          |
+| isinf   |      ✔️      |       ✔️      |          |
+| isnan   |      ✔️      |       ✔️      |          |
+| isneginf|      ✔️      |       ✔️      |          |
+| isposinf|      ✔️      |       ✔️      |          |
 
 ### Logical operations
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| logical_and |    ✔️    |       ✔️      | needs comments in the .h <br/> the explanation of the parameters needs to be improved |
-| logical_or |     ✔️    |       ✔️      | needs comments in the .h <br/> the explanation of the parameters needs to be improved |
-| logical_not |    ✔️    |       ✔️      | needs comments in the .h <br/> the explanation of the parameters needs to be improved |
-| logical_xor |    ✔️    |       ✔️      | needs comments in the .h <br/> the explanation of the parameters needs to be improved |
+| logical_and|   ✔️      |       ✔️      |          |
+| logical_or|    ✔️      |       ✔️      |          |
+| logical_not|   ✔️      |       ✔️      |          |
+| logical_xor|   ✔️      |       ✔️      |          |
 
 ### Comparison
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| allclose |     ❌️     |       ✔️      | needs comments in the .h |
-| isclose |      ❌️     |       ✔️      | needs comments in the .h |
-| greater |      ✔️      |       ✔️      | needs comments in the .h <br/> the explanation of the parameters needs to be improved |
-| greater_equal |✔️      |       ✔️      | needs comments in the .h <br/> the explanation of the parameters needs to be improved |
-| less    |      ✔️      |       ✔️      | needs comments in the .h <br/> the explanation of the parameters needs to be improved |
-| less_equal |   ✔️      |       ✔️      | needs comments in the .h <br/> the explanation of the parameters needs to be improved |
-| equal   |      ✔️      |       ✔️      | needs comments in the .h <br/> the explanation of the parameters needs to be improved |
-| not_equal |    ✔️      |       ✔️      | needs comments in the .h <br/> the explanation of the parameters needs to be improved |
+| greater |      ✔️      |       ✔️      |          |
+| greater_equal| ✔️      |       ✔️      |          |
+| less    |      ✔️      |       ✔️      |          |
+| less_equal|    ✔️      |       ✔️      |          |
+| equal   |      ✔️      |       ✔️      |          |
+| not_equal|     ✔️      |       ✔️      |          |
 
-## Masked array operations ❌️
+### Binary Operations
 
-* note: section in progress
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| allclose|      ✔️      |       ✔️      |          |
+| isclose |      ✔️      |       ✔️      |          |
+| greater |      ✔️      |       ✔️      |          |
+| greater_equal| ✔️      |       ✔️      |          |
+| less    |      ✔️      |       ✔️      |          |
+| less_equal|    ✔️      |       ✔️      |          |
+| equal   |      ✔️      |       ✔️      |          |
+| not_equal|     ✔️      |       ✔️      |          |
 
-## Mathematical functions 
 
-* note: section in progress
+## Mathematical functions
+
+### Point-wise
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| abs     |      ✔️      |       ✔️      |          |
+| acos    |      ✔️      |       ✔️      |          |
+| add     |      ✔️      |       ✔️      |          |
+| asin    |      ✔️      |       ✔️      |          |
+| atan    |      ✔️      |       ✔️      |          |
+| ceil    |      ✔️      |       ✔️      |          |
+| clamp   |      ✔️      |       ✔️      |          |
+| clampmax|      ✔️      |       ✔️      |          |
+| clampmin|      ✔️      |       ✔️      |          |
+| cos     |      ✔️      |       ✔️      |          |
+| cosh    |      ✔️      |       ✔️      |          |
+| div     |      ✔️      |       ✔️      |          |
+| exp     |      ✔️      |       ✔️      |          |
+| floor   |      ✔️      |       ✔️      |          |
+| inv     |      ✔️      |       ✔️      |          |
+| log     |      ✔️      |       ✔️      |          |
+| log2    |      ✔️      |       ✔️      |          |
+| log10   |      ✔️      |       ✔️      |          |
+| logn    |      ✔️      |       ✔️      |          |
+| maximum |      ✔️      |       ✔️      |          |
+| minimum |      ✔️      |       ✔️      |          |
+| mod     |      ✔️      |       ✔️      |          |
+| mult    |      ✔️      |       ✔️      |          |
+| neg     |      ✔️      |       ✔️      |          |
+| normalize|     ✔️      |       ✔️      |          |
+| pow     |      ✔️      |       ✔️      |          |
+| powb    |      ✔️      |       ✔️      |          |
+| reciprocal|    ✔️      |       ✔️      |          |
+| remainder|     ✔️      |       ✔️      |          |
+| round   |      ✔️      |       ✔️      |          |
+| rsqrt   |      ✔️      |       ✔️      |          |
+| sigmoid |      ✔️      |       ✔️      |          |
+| sign    |      ✔️      |       ✔️      |          |
+| sin     |      ✔️      |       ✔️      |          |
+| sinh    |      ✔️      |       ✔️      |          |
+| sqr     |      ✔️      |       ✔️      |          |
+| sqrt    |      ✔️      |       ✔️      |          |
+| sub     |      ✔️      |       ✔️      |          |
+| tan     |      ✔️      |       ✔️      |          |
+| tanh    |      ✔️      |       ✔️      |          |
+| trunc   |      ✔️      |       ✔️      |          |
 
 ### Element-wise
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| abs     |      ✔️     |       ✔️      |  |
-| acos    |      ✔️     |       ✔️      |  |
-| add     |      ✔️     |       ✔️      |  |
-| asin    |      ✔️     |       ✔️      |  |
-| atan    |      ✔️     |       ✔️      |  |
-| ceil    |      ✔️     |       ✔️      |  |
-| clamp   |      ✔️     |       ✔️      |  |
-| clampmax |     ✔️     |       ✔️      |  |
-| clampmin |     ✔️     |       ✔️      |  |
-| cos     |      ✔️     |       ✔️      |  |
-| cosh    |      ✔️     |       ✔️      |  |
-| div     |      ✔️     |       ✔️      |  | 
-| exp     |      ✔️     |       ✔️      |  |
-| floor   |      ✔️     |       ✔️      |  |
-| log     |      ✔️     |       ✔️      |  |
-| log2    |      ✔️     |       ✔️      |  |
-| log10   |      ✔️     |       ✔️      |  |
-| logn    |      ✔️     |       ✔️      |  |
-| mod     |      ✔️     |       ✔️      |  |
-| mult    |      ✔️     |       ✔️      |  |
-| normalize    |      ✔️     |       ✔️      |  |
-| neg     |      ✔️     |       ✔️      |  |
-| pow     |      ✔️     |       ✔️      |  |
-| powb    |      ✔️     |       ✔️      |  |
-| reciprocal |   ✔️     |       ✔️      |  |
-| remainder |    ✔️     |       ✔️      |  |
-| round   |      ✔️     |       ✔️      |  |
-| rsqrt   |      ✔️     |       ✔️      |  |
-| sigmoid |      ✔️     |       ✔️      |  |
-| sign    |      ✔️     |       ✔️      |  |
-| sin     |      ✔️     |       ✔️      |  |
-| sinh    |      ✔️     |       ✔️      |  |
-| sqr     |      ✔️     |       ✔️      |  |
-| sqrt    |      ✔️     |       ✔️      |  |
-| sub     |      ✔️     |       ✔️      |  |
-| sum     |      ✔️     |       ✔️      |  |
-| tan     |      ✔️     |       ✔️      |  |
-| tanh    |      ✔️     |       ✔️      |  |
-| trunc   |      ✔️     |       ✔️      |  |
+| add     |      ✔️      |       ✔️      |          |
+| div     |      ✔️      |       ✔️      |          |
+| maximum |      ✔️      |       ✔️      |          |
+| minimum |      ✔️      |       ✔️      |          |
+| mult    |      ✔️      |       ✔️      |          |
+| sub     |      ✔️      |       ✔️      |          |
 
 ### Reductions
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| max     |      ✔️     |       ✔️      |  |
-| min     |      ✔️     |       ✔️      |  |
-
-
-## Miscellaneous
-
-* note: section in progress
-
-### Functions
-
-| Section | Explanation | Instructions | Comments |
-| :------ | :---------: | :----------: | :------- |
-| toCPU   |     ✔️      |       ✔️      |  |
-| toGPU   |     ✔️      |       ✔️      |  |
-| isCPU   |     ✔️      |       ✔️      |  |
-| isGPU   |     ✔️      |       ✔️      |  |
-| isFPGA  |     ✔️      |       ✔️      |  |
-| isSquared |   ✔️      |       ✔️      |  |
-| copy    |     ✔️      |       ✔️      |  |
-| clone   |     ✔️      |       ✔️      |  |
-| info    |     ✔️      |       ✔️      |  |
-| print   |     ✔️      |       ✔️      |  |
-| valid_indices | ✔️    |       ✔️      |  |
-| get_address_rowmajor |✔️|     ✔️      |  |
+| argmax  |      ✔️      |       ✔️      |          |
+| argmin  |      ✔️      |       ✔️      |          |
+| max     |      ✔️      |       ✔️      |          |
+| mean    |      ✔️      |       ✔️      |          |
+| median  |      ✔️      |       ✔️      |          |
+| min     |      ✔️      |       ✔️      |          |
+| mode    |      ✔️      |       ✔️      |          |
+| norm    |      ✔️      |       ✔️      |          |
+| prod    |      ✔️      |       ✔️      |          |
+| std     |      ✔️      |       ✔️      |          |
+| sum     |      ✔️      |       ✔️      |          |
+| sum_abs |      ✔️      |       ✔️      |          |
+| var     |      ✔️      |       ✔️      |          |

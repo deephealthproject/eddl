@@ -506,7 +506,7 @@ Not Equal: "A != B"
 
 
 Binary Operations
-^^^^^^^^^^^^^^^^^^^^^
+---------------------------
 
 
 All Close?
