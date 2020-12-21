@@ -22,44 +22,6 @@ using namespace eddl;
 // Only Decoder
 //////////////////////////////////
 
-layer ResBlock(layer l, int filters,int nconv,int half) {
-  layer in=l;
-
-  if (half)
-      l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{2,2})));
-  else
-      l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-
-
-  for(int i=0;i<nconv-1;i++)
-    l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-
-  if (half)
-    return Sum(BatchNormalization(Conv(in,filters,{1,1},{2,2})),l);
-  else
-    return Sum(l,in);
-}
-
-
-Tensor *onehot(Tensor *in, int vocs)
-{
-  int n=in->shape[0];
-  int l=in->shape[1];
-  int c=0;
-
-  Tensor *out=new Tensor({n,l,vocs});
-  out->fill_(0.0);
-
-  int p=0;
-  for(int i=0;i<n*l;i++,p+=vocs) {
-    int w=in->ptr[i];
-    if (w==0) c++;
-    out->ptr[p+w]=1.0;
-  }
-
-  cout<<"padding="<<(100.0*c)/(n*l)<<"%"<<endl;
-  return out;
-}
 
 int main(int argc, char **argv) {
 
