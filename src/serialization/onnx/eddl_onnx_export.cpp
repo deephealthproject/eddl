@@ -99,6 +99,8 @@ using namespace std;
 
   void build_squeeze_node( string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph );
 
+  void build_unsqueeze_node( string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph );
+
   void build_lstm_node( LLSTM *layer, onnx::GraphProto *graph );
 
   void handle_copy_states( LCopyStates *layer, onnx::GraphProto *graph );
@@ -1271,6 +1273,19 @@ using namespace std;
     node_sq->add_output( output );
   }
 
+  void build_unsqueeze_node( string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph ) {
+    onnx::NodeProto* node_usq = graph->add_node();
+    node_usq->set_op_type( "Unsqueeze" );
+    node_usq->set_name( node_name );
+    node_usq->add_input( input );
+    onnx::AttributeProto* axes_attr = node_usq->add_attribute();
+    axes_attr->set_name( "axes" );
+    axes_attr->set_type( onnx::AttributeProto::INTS );
+    for (int ax : axes)
+      axes_attr->add_ints( ax );
+    node_usq->add_output( output );
+  }
+
   void build_lstm_node( LLSTM *layer, onnx::GraphProto *graph ) {
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
@@ -1395,6 +1410,7 @@ using namespace std;
       *       * Y_h (optional) -> [num_directions, batch_size, hidden_size]
       *       * Y_c (optional) -> [num_directions, batch_size, hidden_size]
       *   - If the layer is encoder we select Y_h as output
+      *   - If the layer is encoder but there are more stacked LSTM, we select Y as output
       *   - If the layer is decoder we select Y as output
       *
       *   Note: To select the output of the LSTM that the next layer in the graph takes as input
@@ -1403,7 +1419,7 @@ using namespace std;
     node->add_output( layer->name + "_Y" );
     node->add_output( layer->name + "_Y_h" );
     node->add_output( layer->name + "_Y_c" );
-    if ( layer->isdecoder ) {
+    if ( layer->isdecoder || layer->child[0]->isrecurrent/*To detect stacked LSTM*/) {
       // Squeeze: [seq_length, num_directions, batch_size, hidden_size] -> [seq_length, batch_size, hidden_size]
       //   Note: The EDDL only supports one-directional LSTM, so num_directions=1
       build_squeeze_node(
@@ -1545,16 +1561,13 @@ using namespace std;
        *   Note: The h state coming from the previous LSTM has been squeezed, so we 
        *         have to unsqueeze it to get the desired shape for the decoder LSTM
        */
-      onnx::NodeProto* node_sq = graph->add_node();
-      node_sq->set_op_type( "Unsqueeze" );
-      node_sq->set_name( layer->name + "_h_unsqueeze" );
-      node_sq->add_input( input_name ); // Select hidden state output
-      // Attr input forget
-      onnx::AttributeProto* axes_attr = node_sq->add_attribute();
-      axes_attr->set_name( "axes" );
-      axes_attr->set_type( onnx::AttributeProto::INTS );
-      axes_attr->add_ints( 0 ); // To add the "num_directions" dimension
-      node_sq->add_output( output_name );
+      build_unsqueeze_node(
+        layer->name + "_h_unsqueeze", // node name
+        input_name, // input name
+        output_name, // Output name
+        {0}, // axes to squeeze
+        graph
+      );
 
       // Set the node to copy the cell (c) state
       node_name = parent_name + "_to_" + child_name + "_CopyState_c";
