@@ -371,7 +371,7 @@
 | GlorotNormal |    ✔️   |       ❌️     |          |
 | GlorotUniform |   ✔️   |       ❌️     |          |
 | RandomNormal |    ✔️   |       ❌️     |          |
-| RandomUniform |   ✔️   |       ❌️     |          |
+| RandomUniform |   ❌️  |       ❌️     | explanation of parameters not complete in the .h |
 | Constant |        ✔️   |       ❌️     |          |
 
 
@@ -552,7 +552,7 @@
 | rotate_random| ✔️      |       ✔️      |          |
 | scale_random|  ✔️      |       ✔️      |          |
 | flip_random|   ✔️      |       ✔️      |          |
-| crop_random|   ✔️      |       ✔️      |          |
+| crop_random|   ❌️     |       ✔️      | explanation of parameters not complete in the .h |
 | crop_scale_random| ✔️  |       ✔️      |          |
 | cutout_random| ✔️      |       ✔️      |          |
 
