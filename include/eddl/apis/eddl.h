@@ -126,7 +126,6 @@ namespace eddl {
       *  @brief Executes the code in the CPU.
       *
       *  @param th  Indicates the number of threads to use (-1 = all available threads)
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
     compserv CS_CPU(int th);
@@ -135,7 +134,7 @@ namespace eddl {
     /**
       *  @brief Executes the code in the GPU.
       *
-      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
+      *  @param th  Integer to set which GPUs will be used (1=on, 0=off)
       *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
@@ -243,7 +242,7 @@ namespace eddl {
     /**
       *  @brief  Save the training outputs of a model to a filename
       *
-      *  @param m  Model to train
+      *  @param net  Model to train
       *  @param fname  Name of the logfile
       *  @return     (void) Outputs log to the given file
     */
@@ -513,7 +512,7 @@ namespace eddl {
     /**
       *  @brief Resets model loss.
       *
-      *  @param net  Model
+      *  @param m  Model
       *  @return     (void)
     */
     void reset_loss(model m);
@@ -551,14 +550,14 @@ namespace eddl {
     /**
       *  @brief Set model gradients to zero.
       *
-      *  @param net  Model
+      *  @param m  Model
       *  @return     (void)
     */
     void zeroGrads(model m);
     /**
       *  @brief Computes the gradient by passing its argument (1x1 unit tensor by default) through the backward graph.
       *
-      *  @param net  Model
+      *  @param m  Model
       *  @param target  Targets
       *  @return     (void)
     */
@@ -589,7 +588,7 @@ namespace eddl {
     /**
       *  @brief Prints model loss at some batch.
       *
-      *  @param net  Model
+      *  @param m  Model
       *  @param batch  Batch number
       *  @return     (void)
     */
@@ -598,7 +597,7 @@ namespace eddl {
     /**
       *  @brief Get model losses
       *
-      *  @param net  Model
+      *  @param m  Model
       *  @return vector<float>
     */
     vector<float> get_losses(model m);
@@ -606,7 +605,7 @@ namespace eddl {
     /**
       *  @brief Get model metrics
       *
-      *  @param net  Model
+      *  @param m  Model
       *  @return vector<float>
     */
     vector<float> get_metrics(model m);
@@ -1840,8 +1839,8 @@ namespace eddl {
       *  @brief Random uniform initializer.
       *
       *  @param l  Parent layer to initialize
-      *  @param m  Mean of the normal distribution to draw samples
-      *  @param s  Standard deviation of the normal distribution to draw samples
+      *  @param min
+      *  @param max
       *  @param seed   Used to seed the random generator
       *  @return     The layer l initialized with a random normal distribution
     */
