@@ -216,11 +216,7 @@ if(BUILD_PROTOBUF)
 	add_executable(onnx_nlp_machine_translation "onnx/nn/4_NLP/3_nlp_machine_translation.cpp")
 	target_link_libraries(onnx_nlp_machine_translation eddl)
 
-	add_executable(onnx_nlp_text_generation "onnx/nn/4_NLP/4_nlp_text_generation.cpp")
-	target_link_libraries(onnx_nlp_text_generation eddl)
 
-	add_executable(onnx_nlp_text_generation_pretrained "onnx/nn/4_NLP/5_nlp_text_generation_pretrained.cpp")
-	target_link_libraries(onnx_nlp_text_generation_pretrained eddl)
 
 
 endif()

@@ -97,14 +97,17 @@ int main(int argc, char **argv) {
 
 
     // Decoder
-    layer ldec = Input({outvs});
-    ldec = ReduceArgMax(ldec,{0});
+    layer ldecin = Input({outvs});
+    layer ldec = ReduceArgMax(ldecin,{0});
     ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
 
     ldec = Concat({ldec,lreshape});
 
-    l = Decoder(LSTM(ldec,512,true));
+    l = LSTM(ldec,512,true);
+
     layer out = Softmax(Dense(l, outvs));
+
+    setDecoder(ldecin);
 
     model net = Model({image_in}, {out});
     plot(net, "model.pdf");
@@ -141,10 +144,10 @@ int main(int argc, char **argv) {
     y_train->info();
 
     // Train model
-    /*
-    for(int i=0;i<0;i++) {
+
+    for(int i=0;i<epochs;i++) {
       fit(net, {xtrain}, {y_train}, batch_size, 1);
-    }*/
+    }
 
 
     /////////////////////////////////////////////
@@ -180,7 +183,7 @@ int main(int argc, char **argv) {
 
 
     // Define only decoder for inference n-best
-    layer ldecin = Input({outvs});
+    ldecin = Input({outvs});
     layer image = Input({512});
     //layer lstates = States({2,512});
 

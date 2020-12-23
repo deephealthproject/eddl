@@ -1755,7 +1755,7 @@ namespace eddl {
 
     layer GetStates(layer parent);
 
-    layer Decoder(layer l,layer ld=nullptr, string m="concat");
+    void setDecoder(layer l);
 
     // Layers Methods
     vlayer getOut(model net);

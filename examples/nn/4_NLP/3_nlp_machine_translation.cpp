@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     ld = RandomUniform(Embedding(ld, outvs, 1,embedding),-0.05,0.05);
 
     // copy states from encoder
-    l = Decoder(LSTM({ld,cps},128));
+    l = LSTM({ld,cps},128);
     layer out = Softmax(Dense(l, outvs));
 
     model decoder=Model({ldin},{out});
@@ -78,6 +78,7 @@ int main(int argc, char **argv) {
 
     plot(decoder, "decoder.pdf");
 
+    setDecoder(ldin);
 
     model net = Model({in}, {out});
 

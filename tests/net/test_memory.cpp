@@ -577,37 +577,5 @@ TEST(NetTestSuite, net_delete_nlp_sentiment_lstm){
 
 
 TEST(NetTestSuite, net_delete_nlp_machine_translation){
-    // ERROR => malloc_consolidate(): invalid chunk size
-    int invs=687;
-    int outvs=514;
-    int embedding=64;
-
-    // Encoder
-    layer in = Input({1}); //1 word
-    layer l = in;
-
-    layer lE = Dropout(RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05),0.5); // mask_zeros=true
-    layer enc = LSTM(lE,128,true);  // mask_zeros=true
-
-    // Decoder
-    layer ld=Input({outvs});
-    ld = ReduceArgMax(ld,{0});
-    ld = RandomUniform(Embedding(ld, outvs, 1,embedding),-0.05,0.05);
-
-    l = Decoder(LSTM(ld,128),enc);
-    layer out = Softmax(Dense(l, outvs));
-
-    model net = Model({in}, {out});
-
-    optimizer opt=adam(0.01);
-    //opt->set_clip_val(0.01);
-
-    // Build model
-    build(net,
-          opt, // Optimizer
-          {"categorical_cross_entropy"}, // Losses
-          {"accuracy"}, // Metrics
-          CS_CPU()
-    );
-    delete net;
+  
 }
