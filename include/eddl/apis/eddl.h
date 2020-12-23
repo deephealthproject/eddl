@@ -1770,7 +1770,7 @@ namespace eddl {
     vector<Tensor*> getGradients(layer l1);
     void copyOutput(Layer *l1,Layer *l2);
     void copyDelta(Layer *l1,Layer *l2);
-    void copyParam(Layer *l1,Layer *l2, int p);
+    void copyParam(Layer *l1,Layer *l2, int p=-1);
     void copyGradient(Layer *l1,Layer *l2, int p);
 
 

@@ -1221,9 +1221,19 @@ namespace eddl {
     }
     void copyParam(Layer *l1,Layer *l2, int p)
     {
-        collectTensor(l1,"param",p);
-        Tensor::copy(l1->params[p],l2->params[p]);
-        distributeTensor(l2,"param",p);
+        if (p==-1) {
+          cout<<"copy all params from "<<l1->name<<" to "<<l2->name<<endl;
+          for(int i=0;i<l1->params.size();i++) {
+            collectTensor(l1,"param",i);
+            Tensor::copy(l1->params[i],l2->params[i]);
+            distributeTensor(l2,"param",i);
+          }
+        }
+        else {
+          collectTensor(l1,"param",p);
+          Tensor::copy(l1->params[p],l2->params[p]);
+          distributeTensor(l2,"param",p);
+        }
     }
 
     void copyGradient(Layer *l1,Layer *l2, int p)

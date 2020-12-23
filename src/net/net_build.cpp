@@ -571,6 +571,8 @@ Layer * Net::getLayer(string lname)
     if (layers[i]->name==lname) return layers[i];
   }
 
+  msg("Layer "+lname+" not found in model","getLayer");
+
   return nullptr;
 }
 

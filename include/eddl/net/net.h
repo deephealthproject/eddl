@@ -112,7 +112,7 @@ public:
 
 
     int inNet(Layer *l);
-    void walk(Layer *l);
+    void walk(Layer *l,vlayer lout);
     void walk_back(Layer *l);
 
 
