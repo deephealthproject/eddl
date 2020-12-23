@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     int epochs = 100;
     int batch_size = 24;
 
-    int olength=20;
+    int olength=1;
     int outvs=2000;
     int embdim=32;
 
@@ -99,7 +99,10 @@ int main(int argc, char **argv) {
     layer ldec = Input({outvs});
     ldec = ReduceArgMax(ldec,{0});
     ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
-    l = Decoder(LSTM(ldec,512,true),l,"concat");
+
+    ldec = Concat({ldec,l});
+
+    l = Decoder(LSTM(ldec,512,true));
 
     layer out = Softmax(Dense(l, outvs));
 
@@ -116,9 +119,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-//          CS_CPU()
+          CS_CPU()
     );
 
     // View model

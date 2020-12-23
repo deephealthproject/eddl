@@ -696,7 +696,7 @@ namespace eddl {
       *  @return   Detached Layer
     */
     layer detach(layer l);
-    
+
     /**
       *  @brief Sets the provided layers as detached, excluding them from the computation of the gradients.
       *
@@ -708,7 +708,7 @@ namespace eddl {
     /**
       * @brief Shows profile information.
     */
-    void show_profile();   
+    void show_profile();
 
 
     ///////////////////////////////////////
@@ -1361,14 +1361,14 @@ namespace eddl {
     layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
     /**
      *  @brief MatMul operation
-     * 
+     *
      *  @details It takes a list of layers as input, all of the same shape, and returns a single tensor (also of the same shape).
-     *  
+     *
      *  @param layers List of layers
-     *  @param name A name for the operation 
-     * 
+     *  @param name A name for the operation
+     *
      *  @return Output of MatMul operation
-     *  
+     *
     */
     layer MatMul(const vector<layer> &layers, string name = "");
 
@@ -1745,14 +1745,18 @@ namespace eddl {
       *
       *  @param parent  Parent layer
       *  @param units  Dimensionality of the output space
-      *  @param mask_zeros 
+      *  @param mask_zeros
       *  @param bidirectional  Wether the RNN is bidirectional or not
       *  @param name  A name for the operation
       *  @return     The LSTM layer
     */
     layer LSTM(layer parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
 
-    layer Decoder(layer l, layer ld, string op="concat");
+    layer LSTM(vector<layer> parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
+
+    layer GetStates(layer parent);
+
+    layer Decoder(layer l,layer ld=nullptr, string m="concat");
 
     // Layers Methods
     vlayer getOut(model net);

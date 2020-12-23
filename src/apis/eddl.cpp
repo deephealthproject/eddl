@@ -1029,11 +1029,13 @@ namespace eddl {
         return new LLSTM({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
-    void setDecoder(layer l)
+    layer LSTM(vector<layer> parent, int units, bool mask_zeros, bool bidirectional, string name){
+        return new LLSTM(parent, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
+    }
+
+    layer GetStates(layer parent)
     {
-       l->isdecoder=true;
-       for(int i=0;i<l->parent.size();i++)
-         setDecoder(l->parent[i]);
+      return new LCopyStates({parent},"getstates", DEV_CPU,0);
     }
 
 
@@ -1052,10 +1054,39 @@ namespace eddl {
       return rec;
     }
 
+    void setDecoder(layer l)
+    {
+       l->isdecoder=true;
+
+       int p=l->parent.size();
+       if (l->isrecurrent) p=min(p,1);
+
+       for(int i=0;i<p;i++)
+         setDecoder(l->parent[i]);
+
+    }
+
+
     layer Decoder(layer dec, layer enc, string op)
     {
 
-      bool enrec=isrec(enc);
+      if (dec->parent.size()>1) {
+        setDecoder(dec);
+      }
+      else {
+        dec->parent[0]->isdecoder=true;
+        if (dec->parent[0]->parent.size()>1)
+          setDecoder(dec->parent[0]->parent[0]);
+        else
+          setDecoder(dec->parent[0]);
+
+        dec->isdecoder=true;
+      }
+      return dec;
+
+
+      /*bool enrec=isrec(enc);
+
 
       if (enrec) {
         // copy states from encoder
@@ -1079,7 +1110,7 @@ namespace eddl {
       }
       else {
         cout<<"Dec "<<endl;
-        setDecoder(dec);
+
 
         layer in=dec->parent[0];
         in->detach(dec);
@@ -1099,6 +1130,7 @@ namespace eddl {
         delete dec;
         return n;
       }
+      */
     }
 
 

@@ -223,7 +223,9 @@ void Net::walk_back(Layer *l) {
 
         layers.push_back(l);
     }
-    for (int i = 0; i < l->parent.size(); i++)
+    int p=l->parent.size();
+    if (l->isrecurrent) p=min(1,p);
+    for (int i = 0; i < p; i++)
         walk_back(l->parent[i]);
 
 }

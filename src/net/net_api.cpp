@@ -297,25 +297,26 @@ void Net::forward_recurrent(vector<Tensor*> tin)
   int inl;
   int outl;
 
-
-  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
+  prepare_recurrent(tin,tin,inl,outl,xt,xtd,yt,tinr,toutr);
 
   build_rnet(inl,outl);
 
-  if ((isencoder)&&(isdecoder))
-    rnet->forward(tinr);
-  else if (isencoder)
-    rnet->forward(tinr);
-  else if (isdecoder)
-    rnet->forward(tin);
+  rnet->forward(toutr);
+
+  if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
+
 
   for(i=0;i<xt.size();i++)
     delete xt[i];
   xt.clear();
 
-  for(i=0;i<xtd.size();i++)
-    delete xtd[i];
-  xtd.clear();
+  for(i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
+
 
 }
 
