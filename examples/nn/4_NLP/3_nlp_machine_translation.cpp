@@ -116,9 +116,6 @@ int main(int argc, char **argv) {
 
     Tensor* ybatch = new Tensor({batch_size, olength,outvs});
     next_batch({y_train},{ybatch});
-  getchar();
-    forward(decoder,{ybatch});
-    getchar();
 
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);

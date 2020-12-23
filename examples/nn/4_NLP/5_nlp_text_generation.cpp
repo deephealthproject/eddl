@@ -117,9 +117,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
     );
 
     // View model
@@ -141,9 +141,10 @@ int main(int argc, char **argv) {
     y_train->info();
 
     // Train model
+    /*
     for(int i=0;i<0;i++) {
       fit(net, {xtrain}, {y_train}, batch_size, 1);
-    }
+    }*/
 
 
     /////////////////////////////////////////////
@@ -155,18 +156,22 @@ int main(int argc, char **argv) {
     model cnn=Model({image_in},{lreshape});
     summary(cnn);
     plot(cnn,"cnn.pdf");
-    build(cnn,adam(0.001),{"mse"},{"mse"},CS_GPU({1}),false);
+    build(cnn,adam(0.001),{"mse"},{"mse"},CS_CPU(),false);
 
     // forward images
     Tensor* xbatch = new Tensor({batch_size,3,256,256});
 
     int numbatches=x_train->shape[0]/batch_size;
-    for(j=0;j<num_batches;j++)  {
+    for(int j=0;j<1;j++)  {
+        cout<<"batch "<<j<<endl;
+
         next_batch({x_train},{xbatch});
-        forward(net,{xbatch});
+        forward(cnn,{xbatch});
 
         Tensor* ybatch=getOutput(lreshape);
 
+        string sample=to_string(j*batch_size)+":"+to_string((j+1)*batch_size);
+        timage->set_select({sample,":"},ybatch);
 
 
         delete ybatch;
@@ -177,6 +182,8 @@ int main(int argc, char **argv) {
     // Define only decoder for inference n-best
     layer ldecin = Input({outvs});
     layer image = Input({512});
+    //layer lstates = States({2,512});
+
     ldec = ReduceArgMax(ldecin,{0});
     ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
 
@@ -209,25 +216,29 @@ int main(int argc, char **argv) {
    ////// N-best for sample
 
    int s=100; //sample 100
+   Tensor *treshape=timage->select({to_string(s),":"});
+   Tensor *text=y_train->select({to_string(s),":",":"}); //1 x olength x outvs
+   Tensor *state=Tensor::zeros({512});
 
 
 
+   for(int j=0;j<olength;j++) {
 
+     Tensor *word;
+     if (j==0) word=Tensor::zeros({1,outvs});
+     else {
+       string n=to_string(j-1);
+       word=text->select({"0",n,":"});
+       word->reshape_({1,outvs});
+     }
 
+     //setState(lstate,state)
 
+     forward(decoder,{treshape,word});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+     Tensor *outword=getOutput(out);
+     delete state;
+     //state=getState(lstate);
+   }
 
 }
