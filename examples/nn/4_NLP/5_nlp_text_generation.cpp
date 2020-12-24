@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     download_flickr();
 
     // Settings
-    int epochs = 1;
+    int epochs = 0;
     int batch_size = 24;
 
     int olength=20;
@@ -144,7 +144,6 @@ int main(int argc, char **argv) {
     y_train->info();
 
     // Train model
-
     for(int i=0;i<epochs;i++) {
       fit(net, {xtrain}, {y_train}, batch_size, 1);
     }
@@ -154,12 +153,27 @@ int main(int argc, char **argv) {
     // INFERENCE
     /////////////////////////////////////////////
 
+
+
+
+    /////////////////////////////////////////////
+    /// Get all the reshapes of the images
+    /// Only use the CNN
+    /////////////////////////////////////////////
+
     Tensor *timage=new Tensor({x_train->shape[0], 512}); //images reshape
 
     model cnn=Model({image_in},{lreshape});
+
+
+    build(cnn,
+          adam(0.001), // not relevant
+          {"mse"}, // not relevant
+          {"mse"}, // not relevant
+          CS_CPU() // CPU
+    );
     summary(cnn);
     plot(cnn,"cnn.pdf");
-    build(cnn,adam(0.001),{"mse"},{"mse"},CS_CPU(),false);
 
     // forward images
     Tensor* xbatch = new Tensor({batch_size,3,256,256});
@@ -182,7 +196,10 @@ int main(int argc, char **argv) {
 
 
 
-    // Define only decoder for inference n-best
+    /////////////////////////////////////////////
+    /// Create Decoder non recurrent for n-best
+    /////////////////////////////////////////////
+
     ldecin = Input({outvs});
     layer image = Input({512});
     //layer lstates = States({2,512});
@@ -194,36 +211,35 @@ int main(int argc, char **argv) {
 
     l = LSTM(ldec,512,true);
 
+    l->isrecurrent=false; // Important
+
     out = Softmax(Dense(l, outvs));
 
     model decoder=Model({ldecin,image},{out});
-    plot(decoder, "decoder.pdf");
 
     // Build model
     build(decoder,
-          adam(0.001), // Optimizer
-          {"softmax_cross_entropy"}, // Losses
-          {"accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
-          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          adam(0.001), // not relevant
+          {"softmax_cross_entropy"}, // not relevant
+          {"accuracy"}, // not relevant
+          CS_CPU() // CPU
     );
+
     // View model
     summary(decoder);
+    plot(decoder, "decoder.pdf");
 
+    // Copy params from trained net
     copyParam(getLayer(net,"LSTM1"),getLayer(decoder,"LSTM2"));
     copyParam(getLayer(net,"dense1"),getLayer(decoder,"dense2"));
     copyParam(getLayer(net,"embedding1"),getLayer(decoder,"embedding2"));
 
 
-   ////// N-best for sample
-
+   ////// N-best for sample s
    int s=100; //sample 100
    Tensor *treshape=timage->select({to_string(s),":"});
    Tensor *text=y_train->select({to_string(s),":",":"}); //1 x olength x outvs
    Tensor *state=Tensor::zeros({512});
-
-
 
    for(int j=0;j<olength;j++) {
 
@@ -232,15 +248,17 @@ int main(int argc, char **argv) {
      else {
        string n=to_string(j-1);
        word=text->select({"0",n,":"});
-       word->reshape_({1,outvs});
+       word->reshape_({1,1,outvs});
      }
 
      //setState(lstate,state)
+     treshape->reshape_({1,512});
 
-     forward(decoder,{treshape,word});
+     cout<<"forward"<<endl;
+     forward(decoder,{word,treshape});
 
      Tensor *outword=getOutput(out);
-     delete state;
+     //delete state;
      //state=getState(lstate);
    }
 
