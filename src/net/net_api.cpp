@@ -262,6 +262,7 @@ void Net::forward(vector<Tensor*> in)
       msg("size missmatch in list of tensors","Net.forward(vtensor)");
 
       if (batch_size!=in[0]->shape[0]) {
+        cout<<batch_size<<" "<<in[0]->shape[0]<<endl;
         resize(in[0]->shape[0]);
       }
 
@@ -285,6 +286,10 @@ void Net::forward_recurrent(vector<Tensor*> tin)
 {
   int i,j,k,l;
 
+  if (isdecoder) {
+    msg("Recurrent nets with decoders can not use atomic funcs","forward");
+  }
+
   // prepare data for unroll net
   vtensor xt;
   vtensor xtd;
@@ -297,11 +302,11 @@ void Net::forward_recurrent(vector<Tensor*> tin)
   int inl;
   int outl;
 
-  prepare_recurrent(tin,tin,inl,outl,xt,xtd,yt,tinr,toutr);
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
   build_rnet(inl,outl);
 
-  rnet->forward(toutr);
+  rnet->forward(tinr);
 
   if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
 
@@ -331,6 +336,7 @@ void Net::forward(vector<Layer *> in)
     msg("size missmatch in list of tensors","Net.forward(vtensor)");
 
     if (batch_size!=in[0]->output->shape[0]) {
+
       resize(in[0]->output->shape[0]);
     }
   }
@@ -370,8 +376,10 @@ void Net::backward(vector<Tensor *> target)
       if (target.size()!=lout.size())
       msg("size missmatch in list of targets","Net.backward(vtensor)");
 
-      if (batch_size!=target[0]->shape[0])
-      msg("bakcward step with different batch_size than forward","Net.backward(vtensor)");
+      if (batch_size!=target[0]->shape[0]) {
+        cout<<batch_size<<"!="<<target[0]->shape[0]<<endl;
+        msg("bakcward step with different batch_size than forward","Net.backward(vtensor)");
+      }
 
       int comp=snets.size();
       if (batch_size<comp) {
@@ -407,6 +415,10 @@ void Net::backward_recurrent(vector<Tensor *> target)
 {
   int i,j,k,l;
 
+  if (isdecoder) {
+    msg("Recurrent nets with decoders can not use atomic funcs","backward");
+  }
+
   // prepare data for unroll net
   vtensor xt;
   vtensor xtd;
@@ -421,20 +433,21 @@ void Net::backward_recurrent(vector<Tensor *> target)
 
   prepare_recurrent(tin,target,inl,outl,xt,xtd,yt,tinr,toutr);
 
-  if ((isencoder)&&(isdecoder))
-    rnet->backward(toutr);
-  else if (isencoder)
-    rnet->backward(target);
-  else if (isdecoder)
-    rnet->backward(toutr);
+  rnet->backward(toutr);
+
+  if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
+
 
   for(i=0;i<xt.size();i++)
     delete xt[i];
   xt.clear();
 
-  for(i=0;i<xtd.size();i++)
-    delete xtd[i];
-  xtd.clear();
+  for(i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
 
 }
 

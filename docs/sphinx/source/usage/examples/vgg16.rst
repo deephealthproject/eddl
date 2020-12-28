@@ -1,7 +1,7 @@
 Training a VGG16
 ---------------------
 
-This example trains and evaluates VGG16 with Group Normalization using CIFAR-10. `[source] <https://github.com/deephealthproject/eddl/blob/master/examples/nn/2_cifar10/4_cifar_vgg16_bn.cpp>`_ 
+This example trains and evaluates VGG16 with Group Normalization using CIFAR-10. `[source] <https://github.com/deephealthproject/eddl/blob/master/examples/nn/2_cifar10/4_cifar_vgg16_bn.cpp>`__ 
 
 .. image:: /_static/images/models/vgg16.png
   

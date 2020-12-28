@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -56,38 +56,49 @@ int main(int argc, char **argv) {
     layer in = Input({1}); //1 word
     layer l = in;
 
-    layer lE = Dropout(RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05),0.5); // mask_zeros=true
+    layer lE = RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05); // mask_zeros=true
     layer enc = LSTM(lE,128,true);  // mask_zeros=true
+    layer cps=GetStates(enc);
+
+    model encoder=Model({in},{});
+    build(encoder);
+    plot(encoder, "encoder.pdf");
 
     // Decoder
-    layer ld=Input({outvs});
-    ld = ReduceArgMax(ld,{0});
+    layer ldin=Input({outvs});
+    layer ld = ReduceArgMax(ldin,{0});
     ld = RandomUniform(Embedding(ld, outvs, 1,embedding),-0.05,0.05);
 
-    l = Decoder(LSTM(ld,128),enc);
+    // copy states from encoder
+    l = LSTM({ld,cps},128);
     layer out = Softmax(Dense(l, outvs));
+
+    model decoder=Model({ldin},{out});
+    build(decoder,adam(0.001),{"softmax_cross_entropy"},{"accuracy"},CS_CPU());
+
+    plot(decoder, "decoder.pdf");
+
+    setDecoder(ldin);
 
     model net = Model({in}, {out});
 
-    // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
     optimizer opt=adam(0.01);
-    //opt->set_clip_val(0.01);
 
     // Build model
     build(net,
           opt, // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
     );
+
 
     // View model
     summary(net);
-
 
     // Load dataset
     Tensor *x_train=Tensor::load("eutrans_trX.bin","bin");
@@ -103,30 +114,16 @@ int main(int argc, char **argv) {
     y_test->reshape_({y_test->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
 
     // Train model
+
+    Tensor* ybatch = new Tensor({batch_size, olength,outvs});
+    next_batch({y_train},{ybatch});
+
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
-      //evaluate(net,{x_test},{y_test});
     }
 
-    // predict
-    /*
-    vtensor tout=predict(net,{x_train});
+   delete net;
 
-    for(int i=0;i<x_train->shape[0];i++) {
-      for(int j=0;j<olength;j++) {
-        float max=0.0;
-        int ind;
-        int p=i*outvs;
-        for(int k=0;k<outvs;k++,p++) {
-          if (tout[j]->ptr[p]>max) {
-            max=tout[j]->ptr[p];
-            ind=k;
-          }
-        }
-        printf("%d ",ind);
-      }
-      printf("\n");
-    }
-    */
+
 
 }

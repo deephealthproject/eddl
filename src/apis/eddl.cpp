@@ -1056,81 +1056,13 @@ namespace eddl {
 
     void setDecoder(layer l)
     {
+    
        l->isdecoder=true;
 
-       int p=l->parent.size();
-       if (l->isrecurrent) p=min(p,1);
-
+       int p=l->child.size();
        for(int i=0;i<p;i++)
-         setDecoder(l->parent[i]);
+         setDecoder(l->child[i]);
 
-    }
-
-
-    layer Decoder(layer dec, layer enc, string op)
-    {
-
-      if (dec->parent.size()>1) {
-        setDecoder(dec);
-      }
-      else {
-        dec->parent[0]->isdecoder=true;
-        if (dec->parent[0]->parent.size()>1)
-          setDecoder(dec->parent[0]->parent[0]);
-        else
-          setDecoder(dec->parent[0]);
-
-        dec->isdecoder=true;
-      }
-      return dec;
-
-
-      /*bool enrec=isrec(enc);
-
-
-      if (enrec) {
-        // copy states from encoder
-        cout<<"Enc-Dec\n";
-        layer cps=new LCopyStates({enc},"",DEV_CPU, 0);
-        cps->isdecoder=false;
-
-        setDecoder(dec);
-
-        // clone and link with encoder
-        layer in=dec->parent[0];
-        in->detach(dec);
-
-        layer n=dec->clone(0,1,{in,cps},DEV_CPU);
-        n->orig=nullptr;
-        n->name="dec_"+dec->name;
-        n->isdecoder=true;
-
-        delete dec;
-        return n;
-      }
-      else {
-        cout<<"Dec "<<endl;
-
-
-        layer in=dec->parent[0];
-        in->detach(dec);
-
-        layer lop;
-        if (op=="concat") lop=Concat({enc,in},1);
-          else if (op=="sum") lop=Sum(enc,in);
-        else {
-          msg("Incorrect operator layer","Decoder");
-        }
-        lop->isdecoder=true;
-
-        layer n=dec->clone(0,1,{lop},DEV_CPU);
-        n->orig=nullptr;
-        n->name="dec_"+dec->name;
-        n->isdecoder=true;
-        delete dec;
-        return n;
-      }
-      */
     }
 
 
@@ -1221,9 +1153,19 @@ namespace eddl {
     }
     void copyParam(Layer *l1,Layer *l2, int p)
     {
-        collectTensor(l1,"param",p);
-        Tensor::copy(l1->params[p],l2->params[p]);
-        distributeTensor(l2,"param",p);
+        if (p==-1) {
+          cout<<"copy all params from "<<l1->name<<" to "<<l2->name<<endl;
+          for(int i=0;i<l1->params.size();i++) {
+            collectTensor(l1,"param",i);
+            Tensor::copy(l1->params[i],l2->params[i]);
+            distributeTensor(l2,"param",i);
+          }
+        }
+        else {
+          collectTensor(l1,"param",p);
+          Tensor::copy(l1->params[p],l2->params[p]);
+          distributeTensor(l2,"param",p);
+        }
     }
 
     void copyGradient(Layer *l1,Layer *l2, int p)

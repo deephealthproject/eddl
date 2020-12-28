@@ -86,7 +86,7 @@ Net::Net(vlayer in, vlayer out):Net() {
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
     for (int i = 0; i < lin.size(); i++) {
-        walk(lin[i]);
+        walk(lin[i],lout);
     }
 
     for (int i = 0; i < lout.size(); i++) {
@@ -199,7 +199,7 @@ int Net::inNet(Layer *l) {
 
 
 /////////////////////////////////////////
-void Net::walk(Layer *l) {
+void Net::walk(Layer *l,vlayer lout) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
 
     if (!inNet(l)) {
@@ -207,8 +207,11 @@ void Net::walk(Layer *l) {
         else l->net=this;
 
         layers.push_back(l);
-        for (int i = 0; i < l->child.size(); i++)
-            walk(l->child[i]);
+        int ind;
+        if (!isIn(l, lout, ind)) {
+          for (int i = 0; i < l->child.size(); i++)
+            walk(l->child[i],lout);
+        }
 
     }
 }

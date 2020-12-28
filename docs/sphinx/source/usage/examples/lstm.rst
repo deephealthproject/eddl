@@ -1,7 +1,7 @@
 Training a LSTM
 ---------------------
 
-This example trains and evaluates an Embedding and LSTM using IMBD dataset. `[source] <https://github.com/deephealthproject/eddl/blob/master/examples/nn/4_NLP/2_nlp_sentiment_lstm.cpp>`_
+This example trains and evaluates an Embedding and LSTM using IMBD dataset. `[source] <https://github.com/deephealthproject/eddl/blob/master/examples/nn/4_NLP/2_nlp_sentiment_lstm.cpp>`__
 
 .. image:: /_static/images/models/lstm.png
   
