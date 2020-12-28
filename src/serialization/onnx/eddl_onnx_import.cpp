@@ -6,6 +6,8 @@
 #include "eddl/layers/normalization/layer_normalization.h"
 #include "eddl/layers/pool/layer_pool.h"
 #include "eddl/layers/recurrent/layer_recurrent.h"
+#include "eddl/layers/reductions/layer_reductions.h"
+#include "eddl/utils.h"
 #include <map>
 #include <set>
 #include <algorithm>
@@ -46,6 +48,7 @@ using namespace std;
 		//EMBEDDING,  		// Onnx doesn't support this
 		RESHAPE,            // implemented
     SQUEEZE,            // implemented
+    UNSQUEEZE,            // implemented
 		FLATTEN,            // implemented
 		TRANSPOSE,          // implementing
 		TRANSPOSED_CONV,	// not implemented in eddl
@@ -80,7 +83,17 @@ using namespace std;
 		LSTM,               // implemented
 		IDENTITY,           // implemented
 		GATHER,             // works as embedding for eddl
-		CAST                //
+		CAST,               // implemented
+		ABS,                // implemented
+		DIV,                // implemented
+		EXP,                // implemented
+		LOG,                // implemented
+		MUL,                // implemented
+		POW,                // implemented
+		SQRT,               // implemented
+		RMEAN,              // implemented
+		RSUM,               // implemented
+		ARGMAX              // implemented
 	};
 
 
@@ -159,6 +172,7 @@ using namespace std;
 		map_layers["Flatten"] = ONNX_LAYERS::FLATTEN;
 		map_layers["Transpose"] = ONNX_LAYERS::TRANSPOSE;
 		map_layers["Squeeze"] = ONNX_LAYERS::SQUEEZE;
+		map_layers["Unsqueeze"] = ONNX_LAYERS::UNSQUEEZE;
 		map_layers["ConvTranspose"] = ONNX_LAYERS::TRANSPOSED_CONV;
 		map_layers["Upsample"] = ONNX_LAYERS::UPSAMPLING;
 		map_layers["Softmax"] = ONNX_LAYERS::SOFTMAX;
@@ -192,6 +206,16 @@ using namespace std;
 		map_layers["Identity"] = ONNX_LAYERS::IDENTITY;
 		map_layers["Gather"] = ONNX_LAYERS::GATHER;
 		map_layers["Cast"] = ONNX_LAYERS::CAST;
+		map_layers["Abs"] = ONNX_LAYERS::ABS;
+		map_layers["Div"] = ONNX_LAYERS::DIV;
+		map_layers["Exp"] = ONNX_LAYERS::EXP;
+		map_layers["Log"] = ONNX_LAYERS::LOG;
+		map_layers["Mul"] = ONNX_LAYERS::MUL;
+		map_layers["Pow"] = ONNX_LAYERS::POW;
+		map_layers["Sqrt"] = ONNX_LAYERS::SQRT;
+		map_layers["ReduceMean"] = ONNX_LAYERS::RMEAN;
+		map_layers["ReduceSum"] = ONNX_LAYERS::RSUM;
+		map_layers["ArgMax"] = ONNX_LAYERS::ARGMAX;
 
 		return map_layers;
 	}
@@ -425,8 +449,8 @@ using namespace std;
 	Net* import_net_from_onnx_file(std::string path, int mem, int log_level) {
         // Check if the path exists
 	    if(!pathExists(path)){
-            msg("The specified path does not exist: " + path, "ONNX::ImportNet");
-        }
+				msg("The specified path does not exist: " + path, "ONNX::ImportNet");
+			}
 
 		// Verify that the version of the library that we linked against is
 		// compatible with the version of the headers we compiled against.
@@ -474,22 +498,85 @@ using namespace std;
 		return build_net_onnx(model, mem, LOG_LEVEL::INFO);
 	}
 
+	Layer* get_model_input_layer(Layer* l) {
+    if (LInput *lin = dynamic_cast<LInput *>(l)) 
+			return lin;
 
+		for (Layer* parent : l->parent) {
+			Layer* auxl = get_model_input_layer(parent);
+			if (auxl != nullptr) return auxl;
+		}
+
+		return nullptr;
+	}
+
+	bool node_is_recurrent(onnx::NodeProto* node, map<string, ONNX_LAYERS>& map_layers) {
+		ONNX_LAYERS layer_type = map_layers[node->op_type()];
+		if(layer_type == ONNX_LAYERS::LSTM)
+			return true;
+
+		return false;
+	}
+	
+	void set_decoder(Layer* l) {
+		l->isdecoder=true;
+		for(int i = 0; i < l->parent.size(); i++)
+			set_decoder(l->parent[i]);
+	}
+
+	bool node_is_decoder(onnx::NodeProto* node, map<string, vector<onnx::NodeProto*>>& input_node_map) {
+		/* Steps to check if the node is decoder:
+		 * 		1. The child nodes take the input from the output Y of the node. So the node is generating a sequence.
+		 *
+		 * 		2. The childs are not recurrent. Because in the case of an encoder with stacked recurrent layers, 
+		 * 			 the output of the layers is also the sequence (except the last one for encoding). And in that case
+		 * 			 we don't want to create a decoder layer, we just connect the stacked recurrent layers.
+		 */
+		bool is_decoder = false;
+
+		// 1. Check that the childs are getting the output from Y (the sequence with the output for each timestep)
+		string sequence_output_name = node->output(0);
+		vector<onnx::NodeProto*> childs = input_node_map[sequence_output_name];
+		if (childs.size() > 0) {
+			is_decoder = true;
+		} else {
+			return false;
+		}
+
+		// 2. Check that childs are not recurrent
+		queue<onnx::NodeProto *> forward_nodes_queue;
+		for(onnx::NodeProto* node : input_node_map[sequence_output_name])
+			forward_nodes_queue.push(node);
+		map<string, ONNX_LAYERS> map_layers = create_enum_map();
+		onnx::NodeProto* child;
+		while(!forward_nodes_queue.empty()) {
+			child = forward_nodes_queue.front();
+			// Add childs of each output of the current child node
+			for(int i=0; i < child->output_size(); ++i) {
+				for(onnx::NodeProto* node : input_node_map[child->output(i)]) {
+					forward_nodes_queue.push(node);
+				}
+			}
+			// Check if the child is a recurrent operator
+			if (node_is_recurrent(child, map_layers)) {
+				is_decoder = false;
+				break;
+			}
+			// Remove the current child from the queue
+			forward_nodes_queue.pop();
+		}
+		return is_decoder;
+	}
 
 	bool check_recurrent_nodes(vector<onnx::NodeProto> nodes){
 		map<string, ONNX_LAYERS> map_layers = create_enum_map();
 		for(int i = 0; i < nodes.size(); i++){ //Check if any node is recurrent
-			onnx::NodeProto *node = &nodes[i];
-			string layer_type_name = node->op_type();
-			ONNX_LAYERS layer_type = map_layers[layer_type_name];
-			if(layer_type == ONNX_LAYERS::LSTM)
+			if (node_is_recurrent(&nodes[i], map_layers))
 				return true;
 		}
-
 		return false;
-
-
 	}
+
 	//Builds a eddl Net from an instance of the onnx container for model
 	Net* build_net_onnx(onnx::ModelProto model, int mem, int log_level){
 
@@ -570,11 +657,11 @@ using namespace std;
 		//  We need another map for storing the constant nodes, who are always active
 		//  We design this map as map<string, onnx::NodeProto> and called constant_node_map
 
-		map<string, Layer*> 			output_node_map;
+		map<string, Layer*> output_node_map;
 
 		//1 2 and 3: Initialize maps
 
-		map<string, vector<onnx::NodeProto*>> 	input_node_map = initialize_input_node_map(nodes);
+		map<string, vector<onnx::NodeProto*>> input_node_map = initialize_input_node_map(nodes);
 
 		//4 and 5: Create queue of NodeProto
 
@@ -604,6 +691,12 @@ using namespace std;
 				nodeQueue.push(node);
 			}
 		}
+
+		/*
+		 * In the case of models with recurrent decoders, we have to track the input layers of the decoder layers
+		 * and avoid adding them to the input layers of the model.
+		 */
+		vector<string> inputs2remove = {};
 
 		map<string, ONNX_LAYERS> map_layers = create_enum_map();
 		//6 - While the queue is not empty:
@@ -800,9 +893,9 @@ using namespace std;
 						if(conv1d){
 							strides.push_back(1);
 							kernel_shape.push_back(1);
-                            dims.push_back(1);
-                            pads.push_back(0);
-                            pads.push_back(0);
+							dims.push_back(1);
+							pads.push_back(0);
+							pads.push_back(0);
 						}
 
 						filters = dims[0];
@@ -815,7 +908,7 @@ using namespace std;
 						else convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, node->input_size() > 2, mem);
 
 						if(conv1d) actual_layer = new LConv1D(parent, convol_descriptor, name, dev, mem);
-                        else actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
+						else actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
 
 						if(node->input_size() > 2){
 							string bias_name = node->input(2);
@@ -894,7 +987,7 @@ using namespace std;
 						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
 
 						if(transB)
-                            weights_tensor->permute_({1, 0});
+							weights_tensor->permute_({1, 0});
 						Tensor::copy(weights_tensor, dense->W);
 						delete weights_tensor;
 						if(use_bias){
@@ -1404,6 +1497,150 @@ using namespace std;
 
 					}
 					break;
+				case ONNX_LAYERS::ABS:
+					{
+						string parent_name = node->input(0);
+						Layer *parent = output_node_map[parent_name];
+
+						string name = node->name();
+						actual_layer = new LAbs(parent, name, dev, mem);
+					}
+					break;
+				case ONNX_LAYERS::DIV:
+					{
+						string first_operator_name = node->input(0);
+						Layer *first_operator = output_node_map[first_operator_name];
+
+						string second_operator_name = node->input(1);
+						Layer *second_operator = output_node_map[second_operator_name];
+
+						string name = node->name();
+						actual_layer = new LDiv(first_operator, second_operator, name, dev, mem);
+					}
+					break;
+				case ONNX_LAYERS::EXP:
+					{
+						string parent_name = node->input(0);
+						Layer *parent = output_node_map[parent_name];
+
+						string name = node->name();
+						actual_layer = new LExp(parent, name, dev, mem);
+					}
+					break;
+				case ONNX_LAYERS::LOG:
+					{
+						string parent_name = node->input(0);
+						Layer *parent = output_node_map[parent_name];
+
+						string name = node->name();
+						actual_layer = new LLog(parent, name, dev, mem);
+					}
+					break;
+				case ONNX_LAYERS::MUL:
+					{
+						string first_operator_name = node->input(0);
+						Layer *first_operator = output_node_map[first_operator_name];
+
+						string second_operator_name = node->input(1);
+						Layer *second_operator = output_node_map[second_operator_name];
+
+						string name = node->name();
+						actual_layer = new LMult(first_operator, second_operator, name, dev, mem);
+					}
+					break;
+				case ONNX_LAYERS::POW:
+					{
+						string first_operator_name = node->input(0);
+						Layer *first_operator = output_node_map[first_operator_name];
+
+						string second_operator_name = node->input(1);
+						Layer *second_operator = output_node_map[second_operator_name];
+
+						string name = node->name();
+						actual_layer = new LPow(first_operator, second_operator, name, dev, mem);
+					}
+					break;
+
+				case ONNX_LAYERS::SQRT:
+					{
+						string parent_name = node->input(0);
+						Layer *parent = output_node_map[parent_name];
+
+						string name = node->name();
+						actual_layer = new LSqrt(parent, name, dev, mem);
+					}
+					break;
+				case ONNX_LAYERS::RMEAN:
+					{
+						vector <int> axes;
+						bool keepdims = 1;
+						for ( int j = 0; j < node->attribute_size(); j++) {
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("axes")) {
+								for( int h = 0; h<attribute.ints_size(); h++){
+									axes.push_back(attribute.ints(h));
+								}
+							}
+							else if (!attr_name.compare("keepdims")) {
+								keepdims = attribute.i();
+							}
+							else printf("Error with ReduceMean attributes. Attribute name is: %s\n", attr_name.c_str());
+						}
+						string parent_name = node->input(0);
+						Layer *parent = output_node_map[parent_name];
+
+						string name = node->name();
+						actual_layer = new LRMean(parent, axes, keepdims, name, dev, mem);
+					}
+					break;
+				case ONNX_LAYERS::RSUM:
+					{
+						msg("ReduceSum operator not implemented.", "ONNX::ImportNet");
+						/*
+						vector <int> axes;
+						bool keepdims = 1;
+						for ( int j = 0; j < node->attribute_size(); j++) {
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("keepdims")) {
+								keepdims = attribute.i();
+							}
+							else printf("Error with ReduceSum attributes. Attribute name is: %s\n", attr_name.c_str());
+						}
+						string parent_name = node->input(0);
+						Layer *parent = output_node_map[parent_name];
+
+						string name = node->name();
+						actual_layer = new LRSum(parent, axes, keepdims, name, dev, mem);
+						*/
+					}
+					break;
+				case ONNX_LAYERS::ARGMAX:
+					{
+						int axis = 0;
+						bool keepdims = 1;
+						for ( int j = 0; j < node->attribute_size(); j++) {
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("axis")) {
+									axis = attribute.i();
+							}
+							else if (!attr_name.compare("keepdims")) {
+								keepdims = attribute.i();
+							}
+							else if (!attr_name.compare("select_last_index")) {
+								//Not implemented in EDDL
+							}
+							else printf("Error with Argmax attributes. Attribute name is: %s\n", attr_name.c_str());
+						}
+						string parent_name = node->input(0);
+						Layer *parent = output_node_map[parent_name];
+
+						string name = node->name();
+						actual_layer = new LRArgmax(parent, {axis}, keepdims, name, dev, mem);
+					}
+					break;
 				case ONNX_LAYERS::MAT_MUL:
 					{
 						vector<Layer *> parents;
@@ -1548,15 +1785,16 @@ using namespace std;
 						actual_layer = new LMaxPool(parent, {h,w},{1,1}, "none", "gpool", dev, mem);
 					}
 					break;
-					case ONNX_LAYERS::LSTM:
+				case ONNX_LAYERS::LSTM:
 					{
+						log_string("LSTM layer detected", log_level, LOG_LEVEL::DEBUG);
 						vector<float> activation_alpha; //Values for configuring some activations with extra parameters
 						vector<float> activation_beta;  //Values for configuring some activations with extra parameters
 						vector<string> activations;     //Activation functions in order for each gate
 						float clip = -1;                //Value for clipping
 						string direction = "";          //Forward, backward or reverse (Forward by default)
 						int hidden_size = -1;           //Number of neurons in the hidden layer
-						int input_forget = 0;			//If 1, couple the input and forget gates
+						int input_forget = 0;						//If 1, couple the input and forget gates
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
@@ -1593,6 +1831,21 @@ using namespace std;
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
+						vector<Layer*> parents = {parent};
+
+						/*
+						 * Check if the layer is Decoder by checking if there is not a recurrent layer after this one. To avoid
+						 * conflicts with the stacked LSTM layers that are encoders.
+						 */
+						bool is_decoder = node_is_decoder(node, input_node_map);
+
+						if (is_decoder) {
+							log_string("The layer " + name + " is decoder", log_level, LOG_LEVEL::DEBUG);
+							// We have to create the copy states layer for the decoder
+							Layer* parent_hstate = output_node_map[node->input(5)];  // 5: hidden state
+        			Layer* cps=new LCopyStates({parent_hstate}, "", dev, mem);
+							parents.push_back(cps);  // Add the layer to the parents for the LSTM
+						}
 
 						if(hidden_size < 0){
 							cerr << "Model contains a LSTM without the number of neurons" << endl;
@@ -1633,7 +1886,21 @@ using namespace std;
 						recurrence_weights_forget_g->assign(recurrence_weights_g->begin() + w_size * 2  , recurrence_weights_g->begin() + w_size * 3);
 						recurrence_weights_cell_g->assign(  recurrence_weights_g->begin() + w_size * 3  , recurrence_weights_g->begin() + w_size * 4);
 
-						LLSTM* lstm = new LLSTM({parent}, hidden_size, 0, 0, name, dev, mem);
+						LLSTM* lstm = new LLSTM(parents, hidden_size, 0, 0, name, dev, mem);
+
+						if (is_decoder) {
+							// Set attribute for unrolling
+							lstm->isdecoder = true;
+							set_decoder(lstm->parent[0]);
+							// We also have to remove the input layer that feeds the decoder from the input layers of the model
+							// First we search the corresponding input layer for the decoder
+							Layer* dec_linput = get_model_input_layer(lstm);
+							if (dec_linput != nullptr)
+								inputs2remove.push_back(dec_linput->name);
+							else
+								msg("Input layer for decoder " + name + " not found", "ONNX::ImportNet");
+						}
+
 						/*
 						* The Weights are permuted before copying them to the LSTM layer (mismatch between ONNX standad and EDDL implementation)
 						*/
@@ -1752,6 +2019,7 @@ using namespace std;
 						delete bias_recurrence_cell;
 
 						actual_layer = lstm;
+						log_string("LSTM layer created", log_level, LOG_LEVEL::DEBUG);
 					}
 					break;
 				case ONNX_LAYERS::IDENTITY:
@@ -1818,13 +2086,15 @@ using namespace std;
 						parent_name = node->input(0);
 						Layer * parent = output_node_map[parent_name];
 						vector<int> parent_out_shape = parent->output->getShape();
-						// Check if we are trying to squeeze the axis 0 with a recurrent parent node
-						//     - In ONNX, the output of a recurrent operator has the number of directions (1:onedirectional, 2:bidirectional)
-						//       in the axis 0, so in the case of onedirectional models this dimension is squeezed. But to make it fit with
-						//       the implementation of the eddl we have to skip this squeeze operation because is not needed.
+						// Check if we are trying to squeeze the axis 0 or 1 with a recurrent parent node
+						//		- In ONNX, the output tensors of a recurrent operator have a dimension with the number of directions
+						// 			of the layer (1:onedirectional, 2:bidirectional). In the case of a onedirectional layer the axis must
+						// 			be squeezed. But for the creation of the EDDL model we don't need to do this operation, so we skip it.
 						for (int i=0; i < squeeze_axes.size(); ++i) {
-							if (squeeze_axes[i] == 0 && parent->isrecurrent) {
-								log_string("Removing 0 axis from Squeeze operator. The parent node is recurrent." , log_level, LOG_LEVEL::WARN);
+							if ((squeeze_axes[i] == 0 || squeeze_axes[i] == 1) && parent->isrecurrent) {
+								log_string("Removing axes " + to_string(squeeze_axes[i]) + " from Squeeze operator. Operation not needed because the parent node is recurrent.", 
+									log_level, 
+									LOG_LEVEL::DEBUG);
 								squeeze_axes.erase(squeeze_axes.begin()+i);  // We remove the axis to squeeze
 							}
 						}
@@ -1865,18 +2135,78 @@ using namespace std;
 								}
 								if (!to_squeeze) target_shape.push_back(parent_out_shape[parent_ax]);
 							}
-							// We create a reshape layer to do the squeeze operation
-							cout << "Going to create Squeeze with reshape:" << endl;
-							cout << "parent shape: ";
-							for (int s : parent_out_shape)
-								cout << s << ", ";
-							cout << endl;
-							cout << "target shape: ";
-							for (int s : target_shape)
-								cout << s << ", ";
-							cout << endl;
 							actual_layer= new LReshape(parent, target_shape, name, dev, mem);
 							log_string("Squeeze (with Reshape) layer created" , log_level, LOG_LEVEL::DEBUG);
+						}
+					}
+					break;
+				case ONNX_LAYERS::UNSQUEEZE:
+					{
+						log_string("Unsqueeze layer detected" , log_level, LOG_LEVEL::DEBUG);
+						vector<int> unsqueeze_axes;
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("axes")) {
+								// Read the axes to squeeze
+								for(int h = 0; h < attribute.ints_size(); h++){
+									unsqueeze_axes.push_back(attribute.ints(h));
+								}
+							}
+						}
+
+						string parent_name;
+						parent_name = node->input(0);
+						Layer * parent = output_node_map[parent_name];
+						vector<int> parent_out_shape = parent->output->getShape();
+						// Check if we are trying to unsqueeze the axis 0 with a recurrent parent node
+						// 		- In ONNX, the output of a recurrent encoder operator (the hidden state) has the number of directions 
+						// 			(1:onedirectional, 2:bidirectional) in the axis 0, so in the case of onedirectional models this 
+						// 			dimension is squeezed. And in the case of connecting the parent recurrent node to another one, 
+						// 			a unsqueeze node is usually used to undo the previous squeeze operator. And to build the EDDl model
+						//			we don't need to create this ops, so we skip them.
+						for (int i=0; i < unsqueeze_axes.size(); ++i) {
+							if (unsqueeze_axes[i] == 0 && parent->isrecurrent) {
+								log_string("Removing 0 axis from Unsqueeze operator. The parent node is recurrent." , log_level, LOG_LEVEL::DEBUG);
+								unsqueeze_axes.erase(unsqueeze_axes.begin()+i);  // We remove the axis to squeeze
+							}
+						}
+
+						// Check if all the axes are valid
+						bool valid_axes = true;
+						for (int ax : unsqueeze_axes) {
+							if (ax > parent_out_shape.size()) {
+								valid_axes = false;
+								break;
+							}
+						}
+
+						if (unsqueeze_axes.size() == 0) {
+							log_string("Skiping unsqueeze operation. No axes to unsqueeze." , log_level, LOG_LEVEL::DEBUG);
+							actual_layer = output_node_map[parent_name];
+							break;
+						} else if (!valid_axes) { 
+							log_string("Skiping unsqueeze operation. The axes to unsqueeze are not valid" , log_level, LOG_LEVEL::DEBUG);
+							actual_layer = output_node_map[parent_name];
+							break;
+						} else { // There are axes to unsqueeze
+							// Sort the axes to unsqueeze
+							std::sort(unsqueeze_axes.begin(), unsqueeze_axes.end());
+							// Search for duplicates. DUPLICATES ARE NOT ALLOWED
+							for(int i = 0; i < unsqueeze_axes.size() - 1; i++) {
+								if (unsqueeze_axes[i] == unsqueeze_axes[i + 1]) {
+									unsqueeze_axes.erase(unsqueeze_axes.begin() + i);
+									log_string("Removing duplicates axis in Unsqueeze operator" , log_level, LOG_LEVEL::WARN);
+									i--;
+								}
+							}
+							// Insert the new dims
+							vector<int> target_shape = parent_out_shape;
+							for (int unsq_ax : unsqueeze_axes) {
+								target_shape.insert(target_shape.begin()+unsq_ax, 1);
+							}
+							actual_layer= new LReshape(parent, target_shape, name, dev, mem);
+							log_string("Unsqueeze (with Reshape) layer created" , log_level, LOG_LEVEL::DEBUG);
 						}
 					}
 					break;
@@ -1888,9 +2218,9 @@ using namespace std;
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
 							if (!attr_name.compare("perm")) {
-                                for(int h = 0; h < attribute.ints_size(); h++){
-                                    perm.push_back(attribute.ints(h));
-                                }
+								for(int h = 0; h < attribute.ints_size(); h++){
+									perm.push_back(attribute.ints(h));
+								}
 							}
 						}
 						log_string("perm vector created" , log_level, LOG_LEVEL::DEBUG);
@@ -1899,19 +2229,19 @@ using namespace std;
 						parent_name = node->input(0);
 						Layer * parent = output_node_map[parent_name];
 
-                        if (recurrent_net) {
-                            if (perm.size() > 1) {
-                                if (perm[0] != 0 || perm[1] != 1) {
-						            log_string("Transpose layers in recurrent nets can not swap batch or sequence dimensions. Skiping Transpose layer..." , log_level, LOG_LEVEL::DEBUG);
-						            actual_layer = parent;
-                                    break;
-                                }
-                            } else {
-						        log_string("WARNING: Transpose layer with permute indices size of " + to_string(perm.size()) + ". Skiping Transpose layer..." , log_level, LOG_LEVEL::WARN);
-						        actual_layer = parent;
-                                break;
-                            }
-                        }
+						if (recurrent_net) {
+							if (perm.size() > 1) {
+								if (perm[0] != 0 || perm[1] != 1) {
+									log_string("Transpose layers in recurrent nets can not swap batch or sequence dimensions. Skiping Transpose layer..." , log_level, LOG_LEVEL::DEBUG);
+									actual_layer = parent;
+									break;
+								}
+							} else {
+								log_string("WARNING: Transpose layer with permute indices size of " + to_string(perm.size()) + ". Skiping Transpose layer..." , log_level, LOG_LEVEL::WARN);
+								actual_layer = parent;
+								break;
+							}
+						}
 
 						actual_layer = new LPermute(parent, perm, name, dev, mem);
 						log_string("Permute layer created" , log_level, LOG_LEVEL::DEBUG);
@@ -1938,16 +2268,32 @@ using namespace std;
 
 		}
 		vector<Layer *> input_layers;
-		for( Layer* layer : inputs) input_layers.push_back(layer);
+		bool valid_input;
+		for( Layer* layer : inputs) {
+			valid_input = true;
+			// Check if we have to avoid setting the current input layer as an input for the model
+			for ( string lname : inputs2remove )
+				if ( lname.compare(layer->name) == 0) {
+					log_string("The input layer " + lname + " is not going to be a required input for the model. The EDDL will handle the input data for this layer.", 
+										log_level, 
+										LOG_LEVEL::DEBUG);
+					valid_input = false;
+				}
+			
+			if ( valid_input )
+				input_layers.push_back(layer);
+		}
 
 		vector<string> output_names = get_outputs(graph);
 		vector<Layer *> output_layers;
 		for( int i = 0; i < output_names.size(); i++ ) {
 			output_layers.push_back(output_node_map[output_names[i]]);
 		}
+
+		Net* imported_net = new Net(input_layers, output_layers);
+
 		log_string("Finished importing net from ONNX" , log_level, LOG_LEVEL::DEBUG);
-		//cout << "Net imported from ONNX succesfully" << endl;
-		return new Net(input_layers, output_layers);
+		return imported_net;
 	}
 
 	//Sets the weights of a input Net to the ones stored in the onnx net inside the pointer

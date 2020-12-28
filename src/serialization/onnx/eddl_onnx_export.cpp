@@ -2,7 +2,9 @@
 #include <fstream>
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/layer.h"
+#include "eddl/layers/operators/layer_operators.h"
 #include "eddl/layers/recurrent/layer_recurrent.h"
+#include "eddl/layers/reductions/layer_reductions.h"
 #include "eddl/net/net.h"
 #include "eddl/optimizers/optim.h"
 #include "eddl/serialization/onnx/eddl_onnx.h"
@@ -90,6 +92,24 @@ using namespace std;
   void build_max_node( LMaximum *layer, onnx::GraphProto *graph );
 
   void build_min_node( LMinimum *layer, onnx::GraphProto *graph );
+
+  void build_div_node( LDiv *layer, onnx::GraphProto *graph );
+
+  void build_exp_node( LExp *layer, onnx::GraphProto *graph );
+
+  void build_log_node( LLog *layer, onnx::GraphProto *graph );
+
+  void build_mul_node( LMult *layer, onnx::GraphProto *graph );
+
+  void build_pow_node( LPow *layer, onnx::GraphProto *graph );
+
+  void build_sqrt_node( LSqrt *layer, onnx::GraphProto *graph );
+
+  void build_rmean_node( LRMean *layer, onnx::GraphProto *graph );
+
+  void build_rsum_node( LRSum *layer, onnx::GraphProto *graph );
+
+  void build_rargmax_node( LRArgmax *layer, onnx::GraphProto *graph );
 
   void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph );
 
@@ -361,6 +381,24 @@ using namespace std;
       build_max_node((LMaximum *)(MLayer *)layer, graph);
     } else if (LMinimum *t = dynamic_cast<LMinimum *>(layer)) {
       build_min_node((LMinimum *)(MLayer *)layer, graph);
+    } else if (LDiv *t = dynamic_cast<LDiv *>(layer)) {
+      build_div_node((LDiv *)(OperatorLayer *)layer, graph);
+    } else if (LExp *t = dynamic_cast<LExp *>(layer)) {
+      build_exp_node((LExp *)(OperatorLayer *)layer, graph);
+    } else if (LLog *t = dynamic_cast<LLog *>(layer)) {
+      build_log_node((LLog *)(OperatorLayer *)layer, graph);
+    } else if (LMult *t = dynamic_cast<LMult *>(layer)) {
+      build_mul_node((LMult *)(OperatorLayer *)layer, graph);
+    } else if (LPow *t = dynamic_cast<LPow *>(layer)) {
+      build_pow_node((LPow *)(OperatorLayer *)layer, graph);
+    } else if (LSqrt *t = dynamic_cast<LSqrt *>(layer)) {
+      build_sqrt_node((LSqrt *)(OperatorLayer *)layer, graph);
+    } else if (LRMean *t = dynamic_cast<LRMean *>(layer)) {
+      build_rmean_node((LRMean *)(ReductionLayer *)layer, graph);
+    } else if (LRSum *t = dynamic_cast<LRSum *>(layer)) {
+      build_rsum_node((LRSum *)(ReductionLayer *)layer, graph);
+    } else if (LRArgmax *t = dynamic_cast<LRArgmax *>(layer)) {
+      build_rargmax_node((LRArgmax *)(ReductionLayer2 *)layer, graph);
     } else if (LBatchNorm *t = dynamic_cast<LBatchNorm *>(layer)) {
       build_batchnorm_node((LBatchNorm *)(LinLayer *)layer, graph);
     } else if (LDropout *t = dynamic_cast<LDropout *>(layer)) {
@@ -1128,6 +1166,137 @@ using namespace std;
     for ( Layer* parentl : layer->parent ) {
       node->add_input( parentl->name );
     }
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+  }  
+  
+  void build_div_node( LDiv *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Div" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+  }
+
+  void build_exp_node( LExp *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Exp" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+  }
+
+  void build_log_node( LLog *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Log" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+  }
+
+  void build_mul_node( LMult *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Mul" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+    
+  }
+
+  void build_pow_node( LPow *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Pow" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+  }
+
+  void build_sqrt_node( LSqrt *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Sqrt" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+  }
+
+  void build_rmean_node( LRMean *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "ReduceMean" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+    // Attr axes
+    onnx::AttributeProto* axes_attr = node->add_attribute();
+    axes_attr->set_name( "axes" );
+    axes_attr->set_type( onnx::AttributeProto::INTS );
+    for (int ax : layer->axis)
+      axes_attr->add_ints( ax );
+    // Attr keepdims
+    onnx::AttributeProto* keepdims_attr = node->add_attribute();
+    keepdims_attr->set_name( "keepdims" );
+    keepdims_attr->set_type( onnx::AttributeProto::INT );
+    keepdims_attr->set_i( (int)layer->keepdims );
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+  }
+
+  void build_rsum_node( LRSum *layer, onnx::GraphProto *graph ) {
+    // TODO
+	  msg("ReduceSum operator not implemented.", "ONNX::ExportNet");
+  }
+
+  void build_rargmax_node( LRArgmax *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "ArgMax" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+    // Attr axis
+    onnx::AttributeProto* axis_attr = node->add_attribute();
+    axis_attr->set_name( "axis" );
+    axis_attr->set_type( onnx::AttributeProto::INT );
+    axis_attr->set_i( layer->axis[0] );
+    // Attr keepdims
+    onnx::AttributeProto* keepdims_attr = node->add_attribute();
+    keepdims_attr->set_name( "keepdims" );
+    keepdims_attr->set_type( onnx::AttributeProto::INT );
+    keepdims_attr->set_i( (int)layer->keepdims );
     // Set the name of the output of the node to link with other nodes
     node->add_output( layer->name );
   }
