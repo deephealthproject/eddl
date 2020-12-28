@@ -183,12 +183,18 @@ Power
 ---------------
 
 
-.. doxygenfunction:: Pow(layer l1, layer l2)
-
 .. doxygenfunction:: Pow(layer l1, float k)
 
 
+.. code-block:: c++
+   
+   layer l1 = GaussGenerator(0.0, 1, {3, 32, 32});
+   layer l2 = GaussGenerator(0.0, 1, {3, 32, 32});
 
+   layer l = Pow(l1, l2);
+
+   //We can use the constant version for raising a layer to a constant exponent
+   layer l = Pow(l1, 3) 
 
 
 Sqrt

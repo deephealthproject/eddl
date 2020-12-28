@@ -1359,7 +1359,7 @@ namespace eddl {
     */
     layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
     /**
-     *  @brief MatMul operation
+     *  @brief Multiplication of matrices.
      *
      *  @details It takes a list of layers as input, all of the same shape, and returns a single tensor (also of the same shape).
      *
@@ -1668,7 +1668,24 @@ namespace eddl {
 
     // Generator Layers
 
+    /**
+      *  @brief Generates a gaussian noise output (typically used for GANs) with the specified mean and standard deviation.
+      *
+      *  @param mean  Mean of the gaussian distribution
+      *  @param stdev  Standard deviation of the gaussian distribution
+      *  @param size  Shape of the output tensor of the layer
+      *  @return     A layer that generates tensors with the specified gaussian distribution.
+    */
     layer GaussGenerator(float mean, float stdev, vector<int> size);
+
+    /**
+      *  @brief Generates a uniform noise output (typically used for GANs) with the specified lower and upper bound values.
+      *
+      *  @param low  Lower bound of the uniform distribution
+      *  @param high  Upper bound of the uniform distribution
+      *  @param size  Shape of the output tensor of the layer
+      *  @return     A layer that generates tensors with the specified uniform distribution.
+    */
     layer UniformGenerator(float low, float high, vector<int> size);
 
     // Pooling Layers

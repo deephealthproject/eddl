@@ -215,7 +215,7 @@
 | Add     |     ✔️       |      ✔️       |          |
 | Average |     ✔️       |      ✔️       |          |
 | Concat  |     ✔️       |      ✔️       |          |
-| MatMul  |     ❌️      |      ✔️       |          |
+| MatMul  |     ✔️      |      ✔️       |          |
 | Maximum |     ✔️       |      ✔️       |          |
 | Minimum |     ✔️       |      ✔️       |          |
 | Subtract |    ✔️       |      ✔️       |          |
@@ -225,8 +225,8 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Gaussian Generator |❌️|      ✔️       | needs comments in the .h |
-| Uniform Generator | ❌️|      ❌️      | needs comments in the .h |
+| Gaussian Generator |✔️|      ✔️       |  |
+| Uniform Generator | ✔️|      ✔️      |  |
 
 
 ## Operators
@@ -241,7 +241,7 @@
 | Logarithm base 2 |  ✔️ |      ✔️       |          |
 | Logarithm base 10 | ✔️ |      ✔️       |          |
 | Multiplication |    ✔️ |      ✔️       | three versions <br/> not every version has its explanation in the .h |
-| Power   |       ✔️     |      ❌️      |          |
+| Power   |       ✔️     |      ✔️       |          |
 | Sqrt    |       ✔️     |      ✔️       |          |
 | Addition |      ✔️     |      ✔️       | three versions (sum) <br/> not every version has its explanation in the .h |
 
