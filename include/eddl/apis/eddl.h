@@ -88,20 +88,23 @@ namespace eddl {
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, bool init_weights=true);
 
     // Computing services
+    
+    void toGPU(model net, vector<int> g, int lsb);
+    void toGPU(model net, vector<int> g, string mem);
     /**
       *  @brief Assign model operations to the GPU.
       *
       *  @param net  Model
       *  @param g  Vector with gpu ids to allocate the model
       *  @param lsb  Number of batches to sync model weights
+      *  @param mem  String. One of ``low_mem``, ``mid_mem`` or ``full_mem``.
       *  @return     (void)
     */
-    void toGPU(model net, vector<int> g, int lsb);
-    void toGPU(model net, vector<int> g, string mem);
     void toGPU(model net, vector<int> g, int lsb, string mem);
     void toGPU(model net, vector<int> g);
     void toGPU(model net, string mem);
     void toGPU(model net);
+    
     //void toGPU(model net, string mem);
     /**
       *  @brief Assign model operations to the CPU.
@@ -1659,11 +1662,65 @@ namespace eddl {
     layer Permute(layer l, vector<int> dims, string name="");
 
     // Reduction Layers
+
+    /**
+      *  @brief Computes the mean of the elements over the given axis
+      *
+      *  @param l  Parent layer
+      *  @param axis  Axis where to perform the reduction
+      *  @param keepdims  Boolean flag to indicate if original dimensions must be preserved
+      *  @return     A ReduceMean Layer.
+    */
     layer ReduceMean(layer l, vector<int> axis, bool keepdims = false);
+
+    /**
+      *  @brief Computes the variance of the elements over the given axis
+      *
+      *  @param l  Parent layer
+      *  @param axis  Axis where to perform the reduction
+      *  @param keepdims  Boolean flag to indicate if original dimensions must be preserved
+      *  @return     A ReduceVar Layer.
+    */
     layer ReduceVar(layer l, vector<int> axis, bool keepdims = false);
+
+    /**
+      *  @brief Computes the sum of the elements over the given axis
+      *
+      *  @param l  Parent layer
+      *  @param axis  Axis where to perform the reduction
+      *  @param keepdims  Boolean flag to indicate if original dimensions must be preserved
+      *  @return     A ReduceSum Layer.
+    */
     layer ReduceSum(layer l, vector<int> axis, bool keepdims = false);
+
+    /**
+      *  @brief Computes the maximum of the elements over the given axis
+      *
+      *  @param l  Parent layer
+      *  @param axis  Axis where to perform the reduction
+      *  @param keepdims  Boolean flag to indicate if original dimensions must be preserved
+      *  @return     A ReduceMax Layer.
+    */
     layer ReduceMax(layer l, vector<int> axis, bool keepdims = false);
+
+    /**
+      *  @brief Computes the minimum of the elements over the given axis
+      *
+      *  @param l  Parent layer
+      *  @param axis  Axis where to perform the reduction
+      *  @param keepdims  Boolean flag to indicate if original dimensions must be preserved
+      *  @return     A ReduceMin Layer.
+    */
     layer ReduceMin(layer l, vector<int> axis, bool keepdims = false);
+
+    /**
+      *  @brief Computes the position of the maximum of the elements over the given axis
+      *
+      *  @param l  Parent layer
+      *  @param axis  Axis where to perform the reduction
+      *  @param keepdims  Boolean flag to indicate if original dimensions must be preserved
+      *  @return     A ReduceArgMax Layer.
+    */
     layer ReduceArgMax(layer l, vector<int> axis, bool keepdims = false);
 
     // Generator Layers

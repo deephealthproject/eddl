@@ -7,7 +7,6 @@ ReduceMean
 
 .. doxygenfunction:: ReduceMean
 
-Reduced mean
 
 Example:
 
@@ -21,8 +20,12 @@ ReduceVar
 
 .. doxygenfunction:: ReduceVar
 
-Reduced variance
 
+Example:
+
+.. code-block:: c++
+
+    l = ReduceVar(l, {1}, true);
 
 
 ReduceSum
@@ -30,7 +33,13 @@ ReduceSum
 
 .. doxygenfunction:: ReduceSum
 
-Reduced sum
+Example:
+
+.. code-block:: c++
+
+    l = ReduceSum(l, {1}, true);
+
+
 
 Example:
 
@@ -45,7 +54,6 @@ ReduceMax
 
 .. doxygenfunction:: ReduceMax
 
-Reduced max
 
 
 Example:
@@ -60,7 +68,6 @@ ReduceMin
 
 .. doxygenfunction:: ReduceMin
 
-Reduced min
 
 Example:
 

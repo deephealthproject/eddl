@@ -249,11 +249,11 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| ReduceMean |   ❌️     |      ✔️       | needs comments in the .h |
-| ReduceVar |    ❌️     |      ❌️      | needs comments in the .h |
-| ReduceSum |    ❌️     |      ✔️       | needs comments in the .h |
-| ReduceMax |    ❌️     |      ✔️       | needs comments in the .h |
-| ReduceMin |    ❌️     |      ✔️       | needs comments in the .h |
+| ReduceMean |   ✔️     |      ✔️       |  |
+| ReduceVar |    ✔️     |      ✔️       |  |
+| ReduceSum |    ✔️     |      ✔️       |  |
+| ReduceMax |    ✔️     |      ✔️       |  |
+| ReduceMin |    ✔️     |      ✔️       |  |
 
 
 ## Recurrent
@@ -280,7 +280,7 @@
 | Learning rate (on the fly) |✔️ | ✔️    |          |
 | Logging |      ✔️      |      ✔️       |          |
 | toCPU   |      ✔️      |      ✔️       |          |
-| toGPU   |      ❌️     |      ❌️      | many versions |
+| toGPU   |      ✔️     |      ✔️        |  |
 
 ## ONNX
 

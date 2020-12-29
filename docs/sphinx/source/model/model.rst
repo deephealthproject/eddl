@@ -224,21 +224,19 @@ Example:
 
     toCPU(net);
 
-.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, int lsb)
+.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, int lsb, string mem)
 
 Example:
 
 .. code-block:: c++
+    
+    
+    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
+    
+    // Other ways
+    toGPU(net,{1},"low_mem"); // Model synchronization every batch
+    toGPU(net,{1}); // Model synchronization every batch and full_mem mode
+    toGPU(net, "low_mem"); // Model synchronization every batch and use of all available GPUs
+    toGPU(net); // Model synchronization every batch, use of all available GPUs, and full_mem mode
 
-    // In two gpus, syncronize every 100 batches, low_mem setup
-    toGPU(net,{1},100,"low_mem"); 
 
-.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, string mem)
-
-.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, int lsb, string mem)
-
-.. doxygenfunction:: eddl::toGPU(model net, vector<int> g)
-
-.. doxygenfunction:: eddl::toGPU(model net, string mem)
-
-.. doxygenfunction:: eddl::toGPU(model net)
