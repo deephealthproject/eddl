@@ -349,43 +349,45 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Mean Squared Error |❌️|       ❌️     |          |
-| Categorical Accuracy |❌️|     ❌️     |          |
-| Mean Absolute Error |❌️|      ❌️     |          |
-| Mean Relative Error |❌️|      ❌️     |          |
+| Mean Squared Error | ✔️|        ✔️     |          |
+| Categorical Accuracy | ✔️|      ✔️     |          |
+| Mean Absolute Error | ✔️|       ✔️     |          |
+| Mean Relative Error | ✔️|       ✔️     |          |
 
 
 ## Regularizers
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| L1      |      ✔️      |       ❌️     |          | 
-| L2      |      ✔️      |       ❌️     |          |
-| L1L2    |      ✔️      |       ❌️     |          |
+| L1      |      ✔️      |        ✔️     |          | 
+| L2      |      ✔️      |        ✔️     |          |
+| L1L2    |      ✔️      |        ✔️     |          |
 
 
 ## Initializers
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| GlorotNormal |    ✔️   |       ❌️     |          |
-| GlorotUniform |   ✔️   |       ❌️     |          |
-| RandomNormal |    ✔️   |       ❌️     |          |
-| RandomUniform |   ❌️  |       ❌️     | explanation of parameters not complete in the .h |
-| Constant |        ✔️   |       ❌️     |          |
+| GlorotNormal |    ✔️   |        ✔️     |          |
+| GlorotUniform |   ✔️   |        ✔️     |          |
+| RandomNormal |    ✔️   |        ✔️     |          |
+| RandomUniform |   ❌️  |        ✔️     | explanation of parameters not complete in the .h |
+| Constant |        ✔️   |        ✔️     |          |
+| HeUnifom |        ✔️   |        ✔️     |          |
+| HeNormal |        ✔️   |        ✔️     |          |
 
 
 ## Optimizers
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Adadelta |     ✔️      |       ❌️     |          |
-| Adam    |      ✔️      |       ❌️     |          |
-| Adagrad |      ✔️      |       ❌️     |          |
-| Adamax  |      ✔️      |       ❌️     |          |
-| Nadam   |      ✔️      |       ❌️     |          |
-| RMSProp |      ✔️      |       ❌️     |          |
-| SGD (Stochastic Gradient Descent) |✔️| ❌️|          |
+| Adadelta |     ✔️      |        ✔️     |          |
+| Adam    |      ✔️      |        ✔️     |          |
+| Adagrad |      ✔️      |        ✔️     |          |
+| Adamax  |      ✔️      |        ✔️     |          |
+| Nadam   |      ✔️      |        ✔️     |          |
+| RMSProp |      ✔️      |        ✔️     |          |
+| SGD (Stochastic Gradient Descent) |✔️|  ✔️|          |
 
 
 # Computing services
