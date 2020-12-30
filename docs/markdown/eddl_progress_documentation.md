@@ -306,17 +306,17 @@
 | next_batch |      ✔️   |       ✔️      |          |
 | train_batch |     ✔️   |       ✔️      | two different instructions |
 | eval_batch |      ✔️   |       ✔️      | two different instructions |
-| set_mode |        ✔️   |       ❌️     |          |
+| set_mode |        ✔️   |       ✔️     |          |
 | reset_loss |      ✔️   |       ✔️      |          |
-| forward |         ✔️   |       ❌️     | 4 different instructions |
+| forward |         ✔️   |       ✔️     |  |
 | zeroGrads |       ✔️   |       ✔️      |          |
-| backward |        ✔️   |       ❌️     | 3 different instructions |
+| backward |        ✔️   |       ✔️     |  |
 | update  |         ✔️   |       ✔️      |          |
 | print_loss |      ✔️   |       ✔️      |          |
-| clamp   |         ✔️   |       ❌️     |          |
+| clamp   |         ✔️   |       ✔️     |          |
 | compute_loss |    ✔️   |       ✔️      |          |
-| compute_metric |  ✔️   |       ❌️     |          |
-| getLoss |         ✔️   |       ❌️     |          |
+| compute_metric |  ✔️   |       ✔️     |          |
+| getLoss |         ✔️   |       ✔️     |          |
 | newloss |         ✔️   |       ✔️      | 2 different instructions |
 | getMetric |       ✔️   |       ❌️     |          |
 | newmetric |       ✔️   |       ❌️     | 2 different instructions |
@@ -371,7 +371,7 @@
 | GlorotNormal |    ✔️   |        ✔️     |          |
 | GlorotUniform |   ✔️   |        ✔️     |          |
 | RandomNormal |    ✔️   |        ✔️     |          |
-| RandomUniform |   ❌️  |        ✔️     | explanation of parameters not complete in the .h |
+| RandomUniform |   ✔️  |        ✔️     |  |
 | Constant |        ✔️   |        ✔️     |          |
 | HeUnifom |        ✔️   |        ✔️     |          |
 | HeNormal |        ✔️   |        ✔️     |          |
@@ -413,7 +413,7 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| DRIVE   |      ✔️      |       ❌️     |          |
+| DRIVE   |      ✔️      |       ✔️     |          |
 
 
 # Tensor
@@ -481,12 +481,12 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| toCPU   |      ❌️     |       ✔️      | needs comments in the .h |
-| toGPU   |      ❌️     |       ✔️      | needs comments in the .h |
-| isCPU   |      ❌️     |       ✔️      | needs better comments in the .h |
-| isGPU   |      ❌️     |       ✔️      | needs better comments in the .h |
-| isFPG   |      ❌️     |       ✔️      | needs better comments in the .h |
-| getDeviceName| ❌️     |       ✔️      | needs better comments in the .h |
+| toCPU   |      ✔️     |       ✔️      |  |
+| toGPU   |      ✔️     |       ✔️      |  |
+| isCPU   |      ✔️     |       ✔️      |  |
+| isGPU   |      ✔️     |       ✔️      |  |
+| isFPG   |      ✔️     |       ✔️      |  |
+| getDeviceName| ✔️     |       ✔️      |  |
 | info    |      ✔️      |       ✔️      |          |
 | print   |      ✔️      |       ✔️      |          |
 | isSquared|     ✔️      |       ✔️      |          |
@@ -517,7 +517,7 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| concat  |      ❌️     |      ✔️      | needs comments in the .h |
+| concat  |      ✔️     |      ✔️      |  |
 
 ### Value operations
 

@@ -41,14 +41,6 @@ Example:
 
 
 
-Example:
-
-.. code-block:: c++
-
-    l = ReduceSum(l, {1}, true);
-
-
-
 ReduceMax
 ---------------
 

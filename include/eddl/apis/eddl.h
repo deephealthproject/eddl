@@ -1913,8 +1913,8 @@ namespace eddl {
       *  @brief Random uniform initializer.
       *
       *  @param l  Parent layer to initialize
-      *  @param min
-      *  @param max
+      *  @param min lower bound of the uniform distribution
+      *  @param max upper bount of the uniform distribution
       *  @param seed   Used to seed the random generator
       *  @return     The layer l initialized with a random normal distribution
     */

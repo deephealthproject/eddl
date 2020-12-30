@@ -118,7 +118,11 @@ set_mode
 
 .. doxygenfunction:: set_mode
 
+.. code-block:: c++
     
+    set_mode(net, 0); // Test model
+    set_mode(net, 1); // Train model
+
           
         
 reset_loss
@@ -136,19 +140,20 @@ Example:
 forward
 ^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::forward(model m, vector<Layer*> in)
-
-.. doxygenfunction:: eddl::forward(model m, vector<Tensor*> in)
+.. doxygenfunction:: eddl::forward(model m)
 
 Example:
 
 .. code-block:: c++
 
-   forward(net, {xbatch});
+   forward(net);
 
-.. doxygenfunction:: eddl::forward(model m)
+   //Other ways
 
-.. doxygenfunction:: eddl::forward(model m, int b)
+   forward(net, layers); // Using vector of layers ``layers``
+   forward(net, tensors); // Using vector of tensors ``tensors``
+   forward(net, 10); // Forward resizing the batch size to 10
+
 
 
 
@@ -167,13 +172,18 @@ Example:
 backward
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: eddl::backward(model net)
 .. doxygenfunction:: eddl::backward(model m, vector<Tensor*> target)
 
 .. code-block:: c++
     
-    backward(net, {ybatch});
-          
-.. doxygenfunction:: eddl::backward(model net)
+    backward(net);
+
+    // Other ways
+
+    backward(net, target); // Using vector of tensors
+    backward(loss); // Computes gradients on the model associated to the loss object passed.
+
 
 .. doxygenfunction:: eddl::backward(loss l)
 
@@ -208,6 +218,10 @@ clamp
 
 .. doxygenfunction:: eddl::clamp(model, float, float)
 
+.. code-block:: c++
+    
+    clamp(net, 0.5, 0.7); // Clamps all the weights of the model between 0.5 and 0.7
+          
 
 
           
@@ -237,14 +251,26 @@ compute_metric
 
 .. doxygenfunction:: eddl::compute_metric(loss)
 
-        
+.. code-block:: c++
+    
+    loss mse = newloss(mse_loss, {out, target}, "mse_loss"); 
+    float my_loss = 0.0;
+    
+    for(j=0; j<num_batches; j++) {
+        next_batch({x_train},{batch});
+        zeroGrads(net);
+        forward(net, {batch});
+        my_loss += compute_metric(mse)/batch_size;
+        update(net);
+    }         
 
 getLoss
 ^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: eddl::getLoss
 
-         
+.. code-block:: c++
+    getLoss("mse_loss"); // Gets MSE Loss       
 
 newloss
 ^^^^^^^^^^^^^^^^^
