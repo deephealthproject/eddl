@@ -270,6 +270,7 @@ getLoss
 .. doxygenfunction:: eddl::getLoss
 
 .. code-block:: c++
+
     getLoss("mse_loss"); // Gets MSE Loss       
 
 newloss
