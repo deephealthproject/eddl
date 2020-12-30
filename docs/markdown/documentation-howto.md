@@ -95,9 +95,9 @@ To add new pages, they must be indicated in **index.rst** using the following st
 
     .. toctree::
         :maxdepth: 1
-        :caption: Título a mostrar en la barra lateral
+        :caption: Title to display in the sidebar
 
-        archivo/a/incluir_1.rst
-        archivo/a/incluir_2.rst
-        archivo/a/incluir_n.rst
+        file/to/include_1.rst
+        file/to/include_2.rst
+        file/to/include_n.rst
 
