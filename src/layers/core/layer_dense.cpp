@@ -111,8 +111,14 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     if (use_bias) n->bias = params[1];
 
     if ( distributed_training ) {
+        n->acc_gradients.clear();
+
         n->acc_gW = this->acc_gradients[0];
-        if ( use_bias ) n->acc_gbias = this->acc_gradients[1];
+        n->acc_gradients.push_back(n->acc_gW);
+        if ( use_bias ) {
+            n->acc_gbias = this->acc_gradients[1];
+            n->acc_gradients.push_back(n->acc_gbias);
+        }
     }
 
     n->params.push_back(n->W);
@@ -140,6 +146,8 @@ Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
     n->trainable = trainable;
     n->reg=reg;
     n->init=init;
+    if (distributed_training)
+        n->enable_distributed();
 
     return n;
 }
@@ -161,16 +169,14 @@ void LDense::reset_name_counter(){
 void LDense::enable_distributed(){
     distributed_training = true;
 
-    if ( distributed_training ) {
-        // Tensors with the accumulation of the gradients
-        acc_gW = new Tensor(vector<int>{input->shape[1], ndim}, dev);
-        acc_gW->fill_(0.0);
-        acc_gradients.push_back(acc_gW);
+    // Tensors with the accumulation of the gradients
+    acc_gW = new Tensor(vector<int>{input->shape[1], ndim}, dev);
+    acc_gW->fill_(0.0);
+    acc_gradients.push_back(acc_gW);
 
-        if (use_bias) {
-            acc_gbias = new Tensor(vector<int>{ndim}, dev);
-            acc_gbias->fill_(0.0);
-            acc_gradients.push_back(acc_gbias);
-        }
+    if (use_bias) {
+        acc_gbias = new Tensor(vector<int>{ndim}, dev);
+        acc_gbias->fill_(0.0);
+        acc_gradients.push_back(acc_gbias);
     }
 }

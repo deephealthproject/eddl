@@ -7,6 +7,7 @@
 #include "eddl/layers/pool/layer_pool.h"
 #include "eddl/layers/recurrent/layer_recurrent.h"
 #include "eddl/layers/reductions/layer_reductions.h"
+#include "eddl/tensor/tensor.h"
 #include "eddl/utils.h"
 #include <map>
 #include <set>
@@ -823,7 +824,7 @@ using namespace std;
 						string auto_pad_option = "";
 						bool auto_pad = false;
 						vector<float> *bias;
-                        bool conv1d = false;
+						bool conv1d = false;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
@@ -857,8 +858,8 @@ using namespace std;
 								for(int h = 0; h < attribute.ints_size(); h++){
 									pads.push_back(attribute.ints(h));
 								}
-                                if(attribute.ints_size() == 4)
-                                    swap(pads[1], pads[2]);
+								if(attribute.ints_size() == 4)
+									swap(pads[1], pads[2]);
 							}
 							else if (!attr_name.compare("strides")) { //
 								for(int h = 0; h < attribute.ints_size(); h++){
@@ -2296,6 +2297,17 @@ using namespace std;
 		return imported_net;
 	}
 
+	// Shares the weights to the snets on device
+	void share_weights(Net* net) {
+		for (int j = 0; j < net->layers.size(); j++) {
+			for (int k = 0; k < net->layers[j]->params.size(); k++) {
+				for (int i = 0; i < net->snets.size(); i++) {
+					Tensor::copy(net->layers[j]->params[k], net->snets[i]->layers[j]->params[k]);
+				}
+			}
+		}
+	}
+
 	//Sets the weights of a input Net to the ones stored in the onnx net inside the pointer
 	void set_weights_from_onnx_pointer(Net* net, void *ptr_model, size_t model_size )
 	{
@@ -2333,6 +2345,10 @@ using namespace std;
 			}
 			else cerr << "not implemented layer type" << endl;
 		}
+
+    // copy the new weights to devices
+		share_weights(net);
+
 		//erase the map we used to free the memory
 		map<string, vector<Tensor*> >::iterator it;
 		vector<Tensor*> delete_tensors;
@@ -2381,6 +2397,10 @@ using namespace std;
 			}
 			else cerr << "not implemented layer type" << endl;
 		}
+
+    // copy the new weights to devices
+		share_weights(net);
+
 		//erase the map we used to free the memory
 		map<string, vector<Tensor*> >::iterator it;
 		vector<Tensor*> delete_tensors;
@@ -2390,10 +2410,10 @@ using namespace std;
 				delete delete_tensors[i];
 			}
 		}
-    }
+  }
 
 	//Accumulates the gradients stored in the pointer to the input net
-    void apply_grads_from_onnx_pointer( Net* net, void * ptr_onnx, size_t count )
+  void apply_grads_from_onnx_pointer( Net* net, void * ptr_onnx, size_t count )
 	{
 		onnx::ModelProto model;
 		{
@@ -2441,10 +2461,13 @@ using namespace std;
 				delete delete_tensors[i];
 			}
 		}
+
+    // copy the new weights to devices
+		share_weights(net);
 	}
 
 	//Accumulates the gradients stored in the c++ string to the input net
-    void apply_grads_from_onnx(Net* net, std::string* model_string)
+  void apply_grads_from_onnx(Net* net, std::string* model_string)
 	{
 		onnx::ModelProto model;
 		{
@@ -2487,25 +2510,26 @@ using namespace std;
 			}
 		}
 
-    }
+    // copy the new weights to devices
+		share_weights(net);
+  }
 
 
 	//Returns a map containing the name of the layer as key and a tensor with the values of the model as value
 	map<string, vector<Tensor*> > get_tensors_from_onnx(onnx::ModelProto model)
 	{
-
 		map<string, vector<Tensor*> > tensors;
 
 		onnx::GraphProto graph = model.graph(); //Get the graph of the model.
 		//Model needs input and output in the constructor, so we start with that.
 
 		vector<onnx::TensorProto> initializers = get_initializers(graph); // Retrieves the initializers from the graph.
-																		  // The weight for the layers can be found in the initializers.
+		// The weight for the layers can be found in the initializers.
 		map<string, vector<float>> map_init_values;
 		map<string, vector<int>>   map_init_dims;
 		get_initializers_maps(initializers, map_init_values, map_init_dims); // Creates 2 maps
-																			//  Key: Input Name . Value: Weights
-																			//  Key: Input Name . Value: Dims
+		//  Key: Input Name . Value: Weights
+		//  Key: Input Name . Value: Dims
 		vector<onnx::NodeProto> nodes = get_graph_nodes(graph);
 
 		map<string, ONNX_LAYERS> map_layers = create_enum_map();

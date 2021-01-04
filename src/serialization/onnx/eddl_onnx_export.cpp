@@ -32,6 +32,12 @@ using namespace std;
   // Fixes the output shape for recurrent models
   void prepare_recurrent_output( string input_name, string output_name, vector<int> output_shape, onnx::GraphProto *graph );
 
+  // Synchronize the weights of the snets
+  void sync_params(Net *net);
+
+  // Synchronize the accumulated gradients of the snets
+  void sync_acc_gradients(Net *net);
+
   // Node builders
   //----------------------------------------------------------------------------------------
 
@@ -136,6 +142,30 @@ using namespace std;
 
 #ifdef cPROTO
 
+  void sync_params(Net *net) {
+    for (int j = 0; j < net->layers.size(); j++) {
+      for (int k = 0; k < net->layers[j]->params.size(); k++) {
+        net->layers[j]->params[k]->fill_(0.0);
+        for (int i = 0; i < net->snets.size(); i++) {
+          Tensor::inc(net->snets[i]->layers[j]->params[k], net->layers[j]->params[k]);
+        }
+        net->layers[j]->params[k]->div_(net->snets.size());
+      }
+    }
+  }
+
+  void sync_acc_gradients(Net *net) {
+    for (int j = 0; j < net->layers.size(); j++) {
+      for (int k = 0; k < net->layers[j]->acc_gradients.size(); k++) {
+        net->layers[j]->acc_gradients[k]->fill_(0.0);
+        for (int i = 0; i < net->snets.size(); i++) {
+          Tensor::inc(net->snets[i]->layers[j]->acc_gradients[k], net->layers[j]->acc_gradients[k]);
+        }
+        net->layers[j]->acc_gradients[k]->div_(net->snets.size());
+      }
+    }
+  }
+
   void save_net_to_onnx_file( Net *net, string path ) {
     // Check if the folder exists
     string folder = path.substr(0, path.find_last_of("\\/"));
@@ -143,9 +173,8 @@ using namespace std;
       msg("The file could not be saved. Check if the directory exists or if you have permissions to write in it.", "ONNX::ExportNet");
     }
 
-    // Builds all the model in onnx from the Net object
     if (net->snets[0]->dev!=DEV_CPU)
-      net->sync_weights();
+      sync_params(net);
     bool export_gradients = false; // We always store weights to file
     onnx::ModelProto model = build_onnx_model( net , export_gradients );
     // Create the file stream and save the serialization of the onnx model in it
@@ -156,9 +185,10 @@ using namespace std;
   }
 
   size_t serialize_net_to_onnx_pointer( Net *net, void * & serialized_model, bool gradients ) {
-    // Builds all the model in onnx from the Net object
-    if (net->snets[0]->dev!=DEV_CPU)
-      net->sync_weights();
+    if (net->snets[0]->dev!=DEV_CPU) {
+      sync_params(net);
+      if (gradients) sync_acc_gradients(net);
+    }
     onnx::ModelProto model = build_onnx_model( net , gradients );
     // Serialization of the model to an array of bytes
     size_t size = model.ByteSizeLong(); // Get the size of the serialized model
@@ -170,10 +200,11 @@ using namespace std;
     return size;
   }
 
-  string* serialize_net_to_onnx_string( Net *net, bool gradients) {
-    // Builds all the model in onnx from the Net object
-    if (net->snets[0]->dev!=DEV_CPU)
-      net->sync_weights();
+  string* serialize_net_to_onnx_string( Net *net, bool gradients ) {
+    if (net->snets[0]->dev!=DEV_CPU) {
+      sync_params(net);
+      if (gradients) sync_acc_gradients(net);
+    }
     onnx::ModelProto model = build_onnx_model( net , gradients );
     // Serialization of the model to an array of bytes
     string * model_string = new string();
