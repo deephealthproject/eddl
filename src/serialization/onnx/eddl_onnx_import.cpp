@@ -261,39 +261,43 @@ using namespace std;
 				}
 				break;
 			case onnx::TensorProto::UINT8:
-				//Se puede
 				for(int i = 0; i < t.int32_data_size(); i++){
 					values.push_back(t.int32_data(i));
 				}
 				break;
 			case onnx::TensorProto::INT8:
-				//Se puede
 				for(int i = 0; i < t.int32_data_size(); i++){
 					values.push_back(t.int32_data(i));
 				}
 				break;
 			case onnx::TensorProto::UINT16:
-				//Se puede
 				for(int i = 0; i < t.int32_data_size(); i++){
 					values.push_back(t.int32_data(i));
 				}
 				break;
 			case onnx::TensorProto::INT16:
-				//Se puede
 				for(int i = 0; i < t.int32_data_size(); i++){
 					values.push_back(t.int32_data(i));
 				}
 				break;
 			case onnx::TensorProto::INT32:
-				//Se puede
 				for(int i = 0; i < t.int32_data_size(); i++){
 					values.push_back(t.int32_data(i));
 				}
 				break;
 			case onnx::TensorProto::INT64:
-				//Se puede
-				for(int i = 0; i < t.int64_data_size(); i++){
-					values.push_back(t.int64_data(i)); } break;
+				if(t.has_raw_data()) {
+					vector<int64_t> aux_values;  // Vector to read the int64 values
+					TryConvertingTensorRawValues(t, aux_values);
+					for(float i : aux_values) {  // Cast to float
+						values.push_back(i); 
+					}
+				} else {
+					for(int i = 0; i < t.int64_data_size(); i++){
+						values.push_back(t.int64_data(i)); 
+					} 
+				}
+				break;
 			case onnx::TensorProto::STRING: //TODO: Make this
 				break;
 			case onnx::TensorProto::BOOL:
@@ -329,7 +333,6 @@ using namespace std;
 				break;
 
 			default:
-				//TODO: Show an error because the type is not recognized
 				cerr << "Vector type not recognized" << endl;
 				break;
 		}
