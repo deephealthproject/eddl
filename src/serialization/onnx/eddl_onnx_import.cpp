@@ -58,7 +58,6 @@ using namespace std;
 		AVGPOOL,            // needs testing
 		GLOBAVGPOOL,        // implemented
 		GLOBMAXPOOL,        // implemented
-		PERMUTE,            // implemented
 		// Activation layers
 		RELU, 				// implemented
 		SOFTMAX,			// implemented
@@ -181,7 +180,6 @@ using namespace std;
 		map_layers["AveragePool"] = ONNX_LAYERS::AVGPOOL;
 		map_layers["GlobalMaxPool"] = ONNX_LAYERS::GLOBMAXPOOL;
 		map_layers["GlobalAveragePool"] = ONNX_LAYERS::GLOBAVGPOOL;
-		//map_layers["Transpose"] = ONNX_LAYERS::PERMUTE;
 		// Activation layers
 		map_layers["Relu"] = ONNX_LAYERS::RELU;
 		map_layers["Sigmoid"] = ONNX_LAYERS::SIGMOID;
@@ -1179,24 +1177,6 @@ using namespace std;
 						Layer* parent = output_node_map[parent_name];
 
 						actual_layer = new LReshape(parent, {1,-1}, name, dev, mem);
-					}
-					break;
-				case ONNX_LAYERS::PERMUTE:
-					{
-						vector<int> dims;
-						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
-							onnx::AttributeProto attribute = node->attribute(j);
-							string attr_name = attribute.name();
-							if(!attr_name.compare("perm")){
-								for(int h = 1; h < attribute.ints_size(); h++)
-									dims.push_back(attribute.ints(h));
-							}
-						}
-						string parent_name = node->input(0);
-						Layer *parent = output_node_map[parent_name];
-
-						string name = node->name();
-						actual_layer = new LPermute(parent, dims, name, dev, mem);
 					}
 					break;
 				case ONNX_LAYERS::RELU:
@@ -2247,9 +2227,19 @@ using namespace std;
 							}
 						}
 
+						// EDDL models have to be batch first in shape
+						if (perm[0] != 0) {
+							msg("The perm vector of the operator " + name + " is not valid (perm[0] != 0). EDDL tensors are batch first.", "ONNX::ImportNet");
+						} else {
+							// Remove batch dimension to create the Permute layer
+							perm.erase(perm.begin());
+							// Fix the perm vector after removing batch dim
+							for (int i = 0; i < perm.size(); ++i)
+								perm[i]--;
+						}
+
 						actual_layer = new LPermute(parent, perm, name, dev, mem);
 						log_string("Permute layer created" , log_level, LOG_LEVEL::DEBUG);
-
 					}
 					break;
 

@@ -886,11 +886,12 @@ using namespace std;
     node->add_output( layer->name );
 
     // Attr perm
-    onnx::AttributeProto* alpha_attr = node->add_attribute();
-    alpha_attr->set_name( "perm" );
-    alpha_attr->set_type( onnx::AttributeProto::INTS );
+    onnx::AttributeProto* perm_attr = node->add_attribute();
+    perm_attr->set_name( "perm" );
+    perm_attr->set_type( onnx::AttributeProto::INTS );
+    perm_attr->add_ints(0);  // Set the batch size position. It must not be permuted in EDDL
     for ( int i : layer->sd->dims ) {
-      alpha_attr->add_ints( i );
+      perm_attr->add_ints( i+1 ); // Add 1 to fix the batch dim adition
     }
   }
 
