@@ -255,7 +255,7 @@ int main(int argc, char **argv) {
      treshape->reshape_({1,512});
 
      cout<<"forward"<<endl;
-     forward(decoder,{word,treshape});
+     forward(decoder,(vtensor){word,treshape});
 
      Tensor *outword=getOutput(out);
      //delete state;
