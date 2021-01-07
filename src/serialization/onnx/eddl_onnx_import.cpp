@@ -99,7 +99,7 @@ using namespace std;
 
 	void log_string(string log, int actual_log_level, int string_log_level){
 		if(actual_log_level <= string_log_level){
-			cout << log << endl;
+			cout << "[ONNX::LOG] " << log << endl;
 		}
 	}
 
@@ -128,7 +128,6 @@ using namespace std;
 			}
 		}
 		return input_node_map;
-
 	}
 
 	//Creates a map with the name of the constant node as key and the node container from onnx as value.
@@ -335,7 +334,6 @@ using namespace std;
 				break;
 		}
 		return values;
-
 	}
 
 	//Creates two maps. Both have the name of the initializer node as key. The values are a vector containing the weights and a vector containing the shape of the vector, respectively.
@@ -348,12 +346,8 @@ using namespace std;
 			}
 			string tensorName = tensor.name();
 			vector<float> values = parseTensorValues(tensor);
-
-
 			values_map[tensorName] = values;
 			dims_map[tensorName] = dims;
-
-
 		}
 		return;
 	}
@@ -387,12 +381,6 @@ using namespace std;
 			io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor, recurrent_net)), name, dev, mem) );
 		}
 
-		for(Layer* layer : io){
-			Tensor* outputTensor = layer->output;
-			vector<int> checkShape = outputTensor->shape;
-			for( int dim : checkShape){
-			}
-		}
 		return io;
 	}
 
@@ -449,16 +437,15 @@ using namespace std;
 
 	//Imports a net stored in a onnx file
 	Net* import_net_from_onnx_file(std::string path, int mem, int log_level) {
-        // Check if the path exists
-	    if(!pathExists(path)){
-				msg("The specified path does not exist: " + path, "ONNX::ImportNet");
-			}
+		// Check if the path exists
+		if(!pathExists(path)){
+			msg("The specified path does not exist: " + path, "ONNX::ImportNet");
+		}
 
 		// Verify that the version of the library that we linked against is
 		// compatible with the version of the headers we compiled against.
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
 		onnx::ModelProto model;
-
 		{
 			// Read the existing net.
 			fstream input(path , ios::in | ios::binary);
@@ -583,95 +570,81 @@ using namespace std;
 	Net* build_net_onnx(onnx::ModelProto model, int mem, int log_level){
 
 		long long int ir_version = model.ir_version();
-		// We have to check if the imported net has the
-		// version we created this importer for.
-		if(ir_version != 0x00000006) {
-			log_string("Ir_version < 6" , log_level, LOG_LEVEL::WARN);
-			log_string("Warning: Version is inferior to the one supported. ONNX module will try to load it anyway"  , log_level, LOG_LEVEL::WARN);
-			//cerr << "Ir_version < 6" << endl;
-			//cerr << "Warning: Version is inferior to the one supported. ONNX module will try to load it anyway" << endl;
-		}
-
 		// We omit the OperatorSetIdProto, since it doesn't do anything for EDDL
-		log_string("Ir_version = " + to_string(ir_version), log_level, LOG_LEVEL::INFO);
-		//cout << "Ir_version = " << ir_version << endl;
+		log_string("Ir_version = " + to_string(ir_version), log_level, LOG_LEVEL::DEBUG);
 		for(int i = 0; i < model.opset_import_size() ; i++){
-			log_string("Operator domain  = " + model.opset_import(i).domain(), log_level, LOG_LEVEL::INFO);
-			log_string("Operator version  = " + to_string(model.opset_import(i).version()), log_level, LOG_LEVEL::INFO);
-			//cout << "Operator domain  = " << model.opset_import(i).domain() << endl;
-			//cout << "Operator version = " << model.opset_import(i).version() << endl;
+			log_string("Operator domain  = " + model.opset_import(i).domain(), log_level, LOG_LEVEL::DEBUG);
+			log_string("Operator version  = " + to_string(model.opset_import(i).version()), log_level, LOG_LEVEL::DEBUG);
 		}
-		log_string("Producer_name: " + model.producer_name() , log_level, LOG_LEVEL::INFO);
-		log_string("Producer_version: " + model.producer_version() , log_level, LOG_LEVEL::INFO);
-		log_string("Domain: " + model.domain() , log_level, LOG_LEVEL::INFO);
-		log_string("Model_version: " + to_string(model.model_version()) , log_level, LOG_LEVEL::INFO);
-		//cout << "Producer_name: " << model.producer_name() << endl;
-		//cout << "Producer_version: " << model.producer_version() << endl;
-		//cout << "Domain: " << model.domain() << endl;
-		//cout << "Model_version: " << model.model_version() << endl;
+		log_string("Producer_name: " + model.producer_name() , log_level, LOG_LEVEL::DEBUG);
+		log_string("Producer_version: " + model.producer_version() , log_level, LOG_LEVEL::DEBUG);
+		log_string("Domain: " + model.domain() , log_level, LOG_LEVEL::DEBUG);
+		log_string("Model_version: " + to_string(model.model_version()) , log_level, LOG_LEVEL::DEBUG);
 		int counter = 0;
 		onnx::GraphProto graph = model.graph(); //Get the graph of the model.
-		//Model needs input in the constructor, so we start with that.
 
+		//Model needs input in the constructor, so we start with that.
 		vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); //Get the inputs
 		vector<onnx::NodeProto> nodes = get_graph_nodes(graph);
 		bool recurrent_net = check_recurrent_nodes(nodes);
 		if(recurrent_net)
-			log_string("The net is recurrent" , log_level, LOG_LEVEL::INFO);
+			log_string("The net is recurrent" , log_level, LOG_LEVEL::DEBUG);
 
 		vector<Layer*> inputs =  parse_IO_tensors(inputs_onnx, mem, recurrent_net); //Parse ONNX inputs to EDDL inputs
 
 		vector<onnx::TensorProto> initializers = get_initializers(graph); // Retrieves the initializers from the graph.
-																		  // The weight for the layers can be found in the initializers.
+		// The weight for the layers can be found in the initializers.
 
 		map<string, vector<float>> map_init_values;
 		map<string, vector<int>>   map_init_dims;
 		get_initializers_maps(initializers, map_init_values, map_init_dims);// Creates 2 maps
-																			//  Key: Input Name . Value: Weights
-																			//  Key: Input Name . Value: Dims
-		//The methodology is the following:
-		//We create three maps:
-		//map <string input, vector<onnx::NodeProto *> > input_node_map. The input will point towards the nodes that have this input
-		//map <string output, Layer* parent > output_node_map. To know from which (parent) node comes each input (The input is the output of the parent node)
-		//map <string input/output, bool> input_active_map     	The outputs will be put inside a bool, where we will see if it is active or not.
-		//
-		//The algorithm is the following:
-		//	1-We check the inputs of each node.
-		//		For each input we insert the input string as a key and the Node(s) that use it as a value in the input_node_map.
-		//		If that input is already on use, we will append the node to the existing vector
-		//	2-We check the outputs of each node. //NOT REQUIRED
-		//		For each output we insert the output string as a key and the Node that generates it as a value in the outputs_map //NOT REQUIRED
-		//	3-When we add an input/output to the map, we also add it to the input_active_map as key, and the value will be false by default. If it is already there, we do nothing. //NOT REQUIRED
-		//	4-Once we have constructed these maps, we create an empty queue of NodeProto
-		//	5-For the input nodes in the graph, we create the EDDL layer and add the nodes that use its output(s) to the queue
-		//	6-While the queue is not empty:
-		//		For each node:
-		//		6.1-Check if all its inputs (not the ones in 'initializers') exist in output_node_map
-		//		6.2-If they are not  --> continue
-		//		6.3-Else:
-		//				Create the EDDL layer
-		//				Add the nodes that use its outputs to the queue
-		//To create each EDDL layer:
-		//	1-Get its parent(s) by accessing to output_node_map using this node's input(s) as key(s)
-		//	2-Get its weights from 'initializers'
-		//	3-Create layer
-		//
-		//  We need another map for storing the constant nodes, who are always active
-		//  We design this map as map<string, onnx::NodeProto> and called constant_node_map
+		// map_init_values -> Key: Input Name - Value: Weights
+		// map_init_dims -> Key: Input Name - Value: Dims
+
+		/*
+		 * The methodology is the following:
+		 * We create three maps:
+		 * map <string input, vector<onnx::NodeProto *> > input_node_map. The input will point towards the nodes that have this input
+		 * map <string output, Layer* parent > output_node_map. To know from which (parent) node comes each input (The input is the output of the parent node)
+		 * map <string input/output, bool> input_active_map     	The outputs will be put inside a bool, where we will see if it is active or not.
+		 * 
+		 * The algorithm is the following:
+		 * 	1-We check the inputs of each node.
+		 * 		For each input we insert the input string as a key and the Node(s) that use it as a value in the input_node_map.
+		 * 		If that input is already on use, we will append the node to the existing vector
+		 * 	2-We check the outputs of each node. //NOT REQUIRED
+		 * 		For each output we insert the output string as a key and the Node that generates it as a value in the outputs_map //NOT REQUIRED
+		 * 	3-When we add an input/output to the map, we also add it to the input_active_map as key, and the value will be false by default. If it is already there, we do nothing. //NOT REQUIRED
+		 * 	4-Once we have constructed these maps, we create an empty queue of NodeProto
+		 * 	5-For the input nodes in the graph, we create the EDDL layer and add the nodes that use its output(s) to the queue
+		 * 	6-While the queue is not empty:
+		 * 		For each node:
+		 * 		6.1-Check if all its inputs (not the ones in 'initializers') exist in output_node_map
+		 * 		6.2-If they are not  --> continue
+		 * 		6.3-Else:
+		 * 				Create the EDDL layer
+		 * 				Add the nodes that use its outputs to the queue
+		 * To create each EDDL layer:
+		 * 	1-Get its parent(s) by accessing to output_node_map using this node's input(s) as key(s)
+		 * 	2-Get its weights from 'initializers'
+		 * 	3-Create layer
+		 * 
+		 *   We need another map for storing the constant nodes, who are always active
+		 *   We design this map as map<string, onnx::NodeProto> and called constant_node_map
+		 */
 
 		map<string, Layer*> output_node_map;
 
 		//1 2 and 3: Initialize maps
-
 		map<string, vector<onnx::NodeProto*>> input_node_map = initialize_input_node_map(nodes);
 
 		//4 and 5: Create queue of NodeProto
-
 		map<string, onnx::NodeProto*> constant_node_map =  initialize_constant_nodes( nodes);
 
 		queue<onnx::NodeProto *> nodeQueue = process_inputs(&inputs, &inputs_onnx, &input_node_map, &output_node_map);
 
-		for(int i = 0; i < nodes.size(); i++){ //Check if any node only has initializers and constant nodes as parameters, so we can process it right away
+		// Check if any node only has initializers and constant nodes as parameters, so we can process it right away
+		for(int i = 0; i < nodes.size(); i++){ 
 			onnx::NodeProto *node = &nodes[i];
 			bool avaliable = true;
 			for(int j = 0; j < node->input_size(); j++){
@@ -683,12 +656,10 @@ using namespace std;
 					continue;
 				}
 				avaliable = false;
-				//log_string("Node " + node->name() + " is not avaliable yet"  , log_level, LOG_LEVEL::DEBUG);
 				break;
 			}
 			if(avaliable){
-				log_string("Node " + node->name() + " is avaliable, since only has initializers and constant nodes as parameters"  , log_level, LOG_LEVEL::DEBUG);
-				//cout << "Node " << node->name() << " is avaliable" << endl;
+				log_string("Node " + node->name() + " is avaliable, since only has initializers and constant nodes as parameters.", log_level, LOG_LEVEL::DEBUG);
 				if(node->op_type() == "Constant" ) continue;
 				nodeQueue.push(node);
 			}
@@ -707,10 +678,10 @@ using namespace std;
 			onnx::NodeProto* node= nodeQueue.front();
 			log_string("Next node: " + node->name(), log_level, LOG_LEVEL::DEBUG);
 
-            // Look for inputs with empty ("") names that some libraries create, and delete them.
-            auto * inputs_list = node->mutable_input();
-            for (auto i = inputs_list->begin(); i != inputs_list->end(); i++)
-                if ((*i).empty())  i = --inputs_list->erase(i);
+			// Look for inputs with empty ("") names that some libraries create, and delete them.
+			auto * inputs_list = node->mutable_input();
+			for (auto i = inputs_list->begin(); i != inputs_list->end(); i++)
+				if ((*i).empty()) i = --inputs_list->erase(i);
 
 			//6.1: Check all inputs are avaliable
 			bool avaliable = true;
@@ -727,13 +698,13 @@ using namespace std;
 					continue;
 				}
 				avaliable = false;
-				log_string("Node " + node->name() + " is not avaliable yet. Missing input: " + input  , log_level, LOG_LEVEL::DEBUG);
+				log_string("Node " + node->name() + " is not avaliable yet. Missing input: " + input, log_level, LOG_LEVEL::DEBUG);
 				break;
 			}
 			string output_name = node->output(0);
 			if(output_node_map.count(output_name)){
 				nodeQueue.pop();
-				log_string("Node " + node->name() + " was already created"  , log_level, LOG_LEVEL::DEBUG);
+				log_string("Node " + node->name() + " was already created.", log_level, LOG_LEVEL::DEBUG);
 				continue; //This means this node was already created
 			}
 
@@ -742,6 +713,7 @@ using namespace std;
 				nodeQueue.pop();
 				continue;
 			}
+
 			//6.3
 			//Lets assume the maximum quantity of layer inputs a layer can have is 2
 			//vector<Layer *> parents; //Not required because inputs are ordered.
@@ -754,11 +726,10 @@ using namespace std;
 			log_string("Node " + node->name() + " has operation type = " + layer_type_name  , log_level, LOG_LEVEL::DEBUG);
 			ONNX_LAYERS layer_type = map_layers[layer_type_name];
 			string name = node->name();
-			int dev = DEV_CPU;//TODO: Check what device to use
+			int dev = DEV_CPU;
 			Layer *actual_layer;
 
 			switch (layer_type) { //Every case should create the corresponding layer and asign it to "actual_layer" variable
-
 				case ONNX_LAYERS::BATCHNORM:
 					{
 						double epsilon = 1e-05; //Default value
@@ -811,7 +782,6 @@ using namespace std;
 						Tensor* variance_tensor = new Tensor(variance_dims, NEW_FROM_VECTOR_PTR(variance_weights), dev);
 						Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->variance);
 						delete variance_tensor;
-
 					}
 					break;
 
@@ -821,7 +791,6 @@ using namespace std;
 						vector<int> kernel_shape;
 						vector<int> strides;
 						vector<int> pads;
-						//bool explicit_padding;
 						string auto_pad_option = "";
 						bool auto_pad = false;
 						vector<float> *bias;
@@ -872,14 +841,6 @@ using namespace std;
 							}
 						}
 
-						/*if(!explicit_padding){ //We have to add 0 padding to the conv descriptor
-							pads.resize(4,0);
-							pads[0] = 0;
-							pads[1] = 0;
-							pads[2] = 0;
-							pads[3] = 0;
-						}*/
-
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
@@ -927,6 +888,7 @@ using namespace std;
 						delete weights_tensor;
 					}
 					break;
+					
 				case ONNX_LAYERS::DENSE:
 					{
 						log_string("Dense detected" , log_level, LOG_LEVEL::DEBUG);
@@ -1034,8 +996,6 @@ using namespace std;
 						width_scale = scales->at(3);
 
 						string name = node->name();
-
-
 						vector<int> size_vector;
 						size_vector.push_back((int)height_scale);
 						size_vector.push_back((int)width_scale);
@@ -1060,7 +1020,6 @@ using namespace std;
 
 						string name = node->name();
 						actual_layer = new LDropout(parent, ratio, true, name, dev, mem);
-
 					}
 					break;
 
@@ -1081,7 +1040,7 @@ using namespace std;
 							string attr_name = attribute.name();
 							if (!attr_name.compare("auto_pad")) { //We dont know if it is implemented
 								if(!attribute.s().compare("NOTSET")) continue;
-                                // if(!attribute.s().compare("VALID")) explicit_padding=false;
+                // if(!attribute.s().compare("VALID")) explicit_padding=false;
 							}
 							else if (!attr_name.compare("ceil_mode")) {
 
@@ -1095,7 +1054,7 @@ using namespace std;
 								}
 							}
 							else if (!attr_name.compare("pads")) {
-                                explicit_padding = true;
+                explicit_padding = true;
 								for(int h = 0; h < 4; h++){
 									pads[h] = attribute.ints(h);
 								}
@@ -1107,14 +1066,11 @@ using namespace std;
 							}
 						}
 
-
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
 
 						string name = node->name();
-
-
 						actual_layer = new LAveragePool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
 					}
 					break;
@@ -1179,6 +1135,7 @@ using namespace std;
 						actual_layer = new LReshape(parent, {1,-1}, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::RELU:
 					{
 						string parent_name = node->input(0);
@@ -1189,6 +1146,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "relu", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::SIGMOID:
 					{
 						string parent_name = node->input(0);
@@ -1199,6 +1157,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "sigmoid", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::HARD_SIGMOID:
 					{
 						string parent_name = node->input(0);
@@ -1209,6 +1168,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "hard_sigmoid", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::TANH:
 					{
 						string parent_name = node->input(0);
@@ -1219,6 +1179,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "tanh", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::EXPONENTIAL:
 					{
 						string parent_name = node->input(0);
@@ -1229,6 +1190,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "exp", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::LINEAR:
 					{
 						float alpha;
@@ -1246,6 +1208,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "linear", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::LEAKY_RELU:
 					{
 						float alpha;
@@ -1263,6 +1226,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "leaky_relu", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::THRESHOLDED_RELU:
 					{
 						float alpha;
@@ -1280,6 +1244,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "thresholded_relu", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::ELU:
 					{
 						float alpha;
@@ -1297,6 +1262,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "elu", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::SELU:
 					{
 						float alpha = 1.0;
@@ -1317,6 +1283,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "selu", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::SOFTSIGN:
 					{
 						string parent_name = node->input(0);
@@ -1327,6 +1294,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "softsign", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::SOFTPLUS:
 					{
 						string parent_name = node->input(0);
@@ -1337,6 +1305,7 @@ using namespace std;
 						actual_layer = new LActivation(parent, "softplus", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::SOFTMAX:
 					{
 						string parent_name = node->input(0);
@@ -1353,16 +1322,17 @@ using namespace std;
 						}
 
 						string name = node->name();
-                        int parent_dims = parent->output->getShape().size();
-                        if (axis < 0)  // Check if the target axis is a negative index
-                            axis = parent_dims + axis;  // Get the target axis index
-                        if (axis < 0 || axis >= parent_dims) // Check for invalid axis index
-                            msg("The target axis for Softmax is not valid: axis=" + to_string(axis), "ONNX::ImportNet");
+						int parent_dims = parent->output->getShape().size();
+						if (axis < 0)  // Check if the target axis is a negative index
+							axis = parent_dims + axis;  // Get the target axis index
+						if (axis < 0 || axis >= parent_dims) // Check for invalid axis index
+							msg("The target axis for Softmax is not valid: axis = " + to_string(axis), "ONNX::ImportNet");
 
 						vector<float> param = {(float)axis};
 						actual_layer = new LActivation(parent, "softmax", param, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::CONCAT:
 					{
 						int axis = 1;
@@ -1382,9 +1352,9 @@ using namespace std;
 						}
 						string name = node->name();
 						actual_layer = new LConcat(parents, axis, name, dev, mem);
-
 					}
 					break;
+
 				case ONNX_LAYERS::ADD:
 					{
 						log_string("Add detected" , log_level, LOG_LEVEL::DEBUG);
@@ -1413,35 +1383,31 @@ using namespace std;
 								if(!convol_descriptor->use_bias){
 									convol_descriptor->use_bias = true; //We need to enable the bias
 									Tensor::copy(bias_tensor , convol_descriptor->bias);
-								}
-								else{
+								} else {
 									Tensor* auxiliar_tensor = Tensor::add(convol_descriptor->bias, bias_tensor);
 									Tensor::copy(auxiliar_tensor , convol_descriptor->bias);
 									delete auxiliar_tensor;
-
 								}
 								delete bias_tensor;
 								actual_layer = conv;
 								break;
 							}
-							else if((dense = dynamic_cast<LDense*>(parents[0]) )){
-						        log_string("Detected a Dense layer as the parent of the Add node." , log_level, LOG_LEVEL::DEBUG);
+							else if((dense = dynamic_cast<LDense*>(parents[0]))){
+								log_string("Detected a Dense layer as the parent of the Add node." , log_level, LOG_LEVEL::DEBUG);
 								string bias_name = node->input(index_parameter);
 								vector<float> *bias = &(map_init_values[bias_name]);
 								vector<int> bias_dims = map_init_dims[bias_name];
 								if(!dense->use_bias){
-						            log_string("Setting the bias values of the parent Dense to the Add parameters." , log_level, LOG_LEVEL::DEBUG);
+									log_string("Setting the bias values of the parent Dense to the Add parameters." , log_level, LOG_LEVEL::DEBUG);
 									dense->use_bias = true;
 									dense->bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
-                                    dense->params.push_back(dense->bias);
-                                    dense->gbias = new Tensor(bias_dims, dev);
-                                    dense->gradients.push_back(dense->gbias);
-								}
-								else{ //If dense already has a bias, we sum it in top of the bias
-						            log_string("The parent Dense already has a bias. Adding the parameters of the Add operator to the parent bias." , log_level, LOG_LEVEL::DEBUG);
+									dense->params.push_back(dense->bias);
+									dense->gbias = new Tensor(bias_dims, dev);
+									dense->gradients.push_back(dense->gbias);
+								} else { //If dense already has a bias, we sum it in top of the bias
+						      log_string("The parent Dense already has a bias. Adding the parameters of the Add operator to the parent bias." , log_level, LOG_LEVEL::DEBUG);
 									Tensor* add_to_bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
 									dense->bias = Tensor::add(dense->bias, add_to_bias);
-
 								}
 								//Tensor::copy(bias_tensor, dense->bias);
 								actual_layer=dense;
@@ -1452,9 +1418,9 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LAdd(parents, name, dev, mem);
 						log_string("Add layer created" , log_level, LOG_LEVEL::DEBUG);
-
 					}
 					break;
+
 				case ONNX_LAYERS::SUB:
 					{
 						vector<Layer *> parents;
@@ -1465,9 +1431,9 @@ using namespace std;
 						}
 						string name = node->name();
 						actual_layer = new LSubtract(parents, name, dev, mem);
-
 					}
 					break;
+
 				case ONNX_LAYERS::AVERAGE:
 					{
 						vector<Layer *> parents;
@@ -1478,9 +1444,9 @@ using namespace std;
 						}
 						string name = node->name();
 						actual_layer = new LAverage(parents, name, dev, mem);
-
 					}
 					break;
+
 				case ONNX_LAYERS::ABS:
 					{
 						string parent_name = node->input(0);
@@ -1490,6 +1456,7 @@ using namespace std;
 						actual_layer = new LAbs(parent, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::DIV:
 					{
 						string first_operator_name = node->input(0);
@@ -1502,6 +1469,7 @@ using namespace std;
 						actual_layer = new LDiv(first_operator, second_operator, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::EXP:
 					{
 						string parent_name = node->input(0);
@@ -1511,6 +1479,7 @@ using namespace std;
 						actual_layer = new LExp(parent, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::LOG:
 					{
 						string parent_name = node->input(0);
@@ -1520,6 +1489,7 @@ using namespace std;
 						actual_layer = new LLog(parent, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::MUL:
 					{
 						string first_operator_name = node->input(0);
@@ -1532,6 +1502,7 @@ using namespace std;
 						actual_layer = new LMult(first_operator, second_operator, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::POW:
 					{
 						string first_operator_name = node->input(0);
@@ -1554,6 +1525,7 @@ using namespace std;
 						actual_layer = new LSqrt(parent, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::RMEAN:
 					{
 						vector <int> axes;
@@ -1578,6 +1550,7 @@ using namespace std;
 						actual_layer = new LRMean(parent, axes, keepdims, name, dev, mem);
 					}
 					break;
+					
 				case ONNX_LAYERS::RSUM:
 					{
 						msg("ReduceSum operator not implemented.", "ONNX::ImportNet");
@@ -1600,6 +1573,7 @@ using namespace std;
 						*/
 					}
 					break;
+
 				case ONNX_LAYERS::ARGMAX:
 					{
 						int axis = 0;
@@ -1625,6 +1599,7 @@ using namespace std;
 						actual_layer = new LRArgmax(parent, {axis}, keepdims, name, dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::MAT_MUL:
 					{
 						vector<Layer *> parents;
@@ -1660,9 +1635,9 @@ using namespace std;
 						}
 						string name = node->name();
 						actual_layer = new LMatMul(parents, name, dev, mem);
-
 					}
 					break;
+
 				case ONNX_LAYERS::MAX:
 					{
 						vector<Layer *> parents;
@@ -1673,9 +1648,9 @@ using namespace std;
 						}
 						string name = node->name();
 						actual_layer = new LMaximum(parents, name, dev, mem);
-
 					}
 					break;
+
 				case ONNX_LAYERS::MIN:
 					{
 						vector<Layer *> parents;
@@ -1686,20 +1661,20 @@ using namespace std;
 						}
 						string name = node->name();
 						actual_layer = new LMinimum(parents, name, dev, mem);
-
 					}
 					break;
+
 				case ONNX_LAYERS::MAXPOOL:
 					{
 						int filters;
 						vector<int> kernel_shape;
 						vector<int> strides;
-                        vector<int> pads(4, 0);  // Default value. 4 zeros
-                        bool explicit_padding = false;
+						vector<int> pads(4, 0);  // Default value. 4 zeros
+						bool explicit_padding = false;
 						int ceil_mode = 0;
 						vector<int> dilations;
 						int storage_order = 0;
-                        bool pool1d = false;
+						bool pool1d = false;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
@@ -1708,34 +1683,31 @@ using namespace std;
 								if(!attribute.s().compare("NOTSET")) continue;
 								// if(!attribute.s().compare("VALID")) explicit_padding=false;
 							}
-							else if (!attr_name.compare("ceil_mode")) {
-
-							}
-							else if (!attr_name.compare("dilations")) {
-
-							}
+							//else if (!attr_name.compare("ceil_mode")) {
+							//}
+							//else if (!attr_name.compare("dilations")) {
+							//}
 							else if (!attr_name.compare("kernel_shape")) {
 								for( int h = 0; h<attribute.ints_size(); h++){
 									kernel_shape.push_back(attribute.ints(h));
 								}
-                                if (attribute.ints_size() == 1)
-                                    pool1d = true;
+								if (attribute.ints_size() == 1)
+									pool1d = true;
 							}
 							else if (!attr_name.compare("pads")) {
-                                explicit_padding = true;
-                                for(int h = 0; h < attribute.ints_size(); h++){
-                                    pads[h] = attribute.ints(h);
-                                }
+								explicit_padding = true;
+								for(int h = 0; h < attribute.ints_size(); h++){
+									pads[h] = attribute.ints(h);
+								}
 							}
-							else if (!attr_name.compare("storage_order")) {
-
-							}
+							//else if (!attr_name.compare("storage_order")) {
+							//}
 							else if (!attr_name.compare("strides")) {
 								for(int h = 0; h < attribute.ints_size(); h++){
 									strides.push_back(attribute.ints(h));
 								}
-                                if (attribute.ints_size() == 1)
-                                    pool1d = true;
+								if (attribute.ints_size() == 1)
+									pool1d = true;
 							}
 						}
 
@@ -1745,18 +1717,19 @@ using namespace std;
 
 						string name = node->name();
 
-                        if (parent_shape.size() == 3)
-                            pool1d = true;
+						if (parent_shape.size() == 3)
+							pool1d = true;
 
-                        if (pool1d) {
-                            strides.push_back(1);
-                            kernel_shape.push_back(1);
-						    actual_layer = new LMaxPool1D(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
-                        } else {
-						    actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
-                        }
+						if (pool1d) {
+							strides.push_back(1);
+							kernel_shape.push_back(1);
+							actual_layer = new LMaxPool1D(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+						} else {
+							actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+						}
 					}
-						break;
+					break;
+
 				case ONNX_LAYERS::GLOBMAXPOOL:
 					{
 						string parent_name = node->input(0); //Get parent
@@ -1769,6 +1742,7 @@ using namespace std;
 						actual_layer = new LMaxPool(parent, {h,w},{1,1}, "none", "gpool", dev, mem);
 					}
 					break;
+
 				case ONNX_LAYERS::LSTM:
 					{
 						log_string("LSTM layer detected", log_level, LOG_LEVEL::DEBUG);
@@ -2006,6 +1980,7 @@ using namespace std;
 						log_string("LSTM layer created", log_level, LOG_LEVEL::DEBUG);
 					}
 					break;
+					
 				case ONNX_LAYERS::IDENTITY:
 					{
 						log_string("Identity layer detected" , log_level, LOG_LEVEL::DEBUG);
@@ -2014,6 +1989,7 @@ using namespace std;
 						actual_layer = output_node_map[parent_name];
 					}
 					break;
+
 				case ONNX_LAYERS::CAST:
 					{
 						log_string("Cast layer detected" , log_level, LOG_LEVEL::DEBUG);
@@ -2051,6 +2027,7 @@ using namespace std;
 						actual_layer = embedding;
 					}
 					break;
+
 				case ONNX_LAYERS::SQUEEZE:
 					{
 						log_string("Squeeze layer detected" , log_level, LOG_LEVEL::DEBUG);
@@ -2124,6 +2101,7 @@ using namespace std;
 						}
 					}
 					break;
+
 				case ONNX_LAYERS::UNSQUEEZE:
 					{
 						log_string("Unsqueeze layer detected" , log_level, LOG_LEVEL::DEBUG);
@@ -2194,6 +2172,7 @@ using namespace std;
 						}
 					}
 					break;
+
 				case ONNX_LAYERS::TRANSPOSE:
 					{
 						log_string("Transpose layer detected" , log_level, LOG_LEVEL::DEBUG);
@@ -2244,8 +2223,7 @@ using namespace std;
 					break;
 
 				default:
-					log_string("FATAL: LAYER NOT RECOGNIZED WITH TYPE " + layer_type_name , log_level, LOG_LEVEL::ERROR);
-					//cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type_name <<  endl;
+					log_string("FATAL: LAYER NOT RECOGNIZED WITH TYPE " + layer_type_name, log_level, LOG_LEVEL::ERROR);
 					nodeQueue.pop();
 					continue;
 					break;
@@ -2259,7 +2237,6 @@ using namespace std;
 				}
 			}
 			nodeQueue.pop();
-
 		}
 		vector<Layer *> input_layers;
 		bool valid_input;
@@ -2328,7 +2305,6 @@ using namespace std;
 					cerr << "EDDL has not implemented convolutional without bias " << endl;
 					//conv.update_weights(layer_tensors[0]);
 				}
-
 			}
 			else if((dense = dynamic_cast<LDense*>( l ) )){
 				if(layer_tensors.size() > 1)
@@ -2380,7 +2356,6 @@ using namespace std;
 					cerr << "EDDL has not implemented convolutional without bias " << endl;
 					//conv.update_weights(layer_tensors[0]);
 				}
-
 			}
 			else if((dense = dynamic_cast<LDense*>( l ) )){
 				if(layer_tensors.size() > 1)
@@ -2421,7 +2396,6 @@ using namespace std;
 		LDense* dense;
 		for(Layer* l : net->layers){
 			if(!tensors.count(l->name)) {
-				//std::cerr << "EDDL doesn't find the layer in the imported net by ONNX: " << l->name << std::endl;
 				continue;
 			}
 			vector<Tensor*> layer_tensors = tensors[l->name];
@@ -2429,7 +2403,7 @@ using namespace std;
 				if(layer_tensors.size() > 1) {
 					conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
 				} else{
-					cerr << "EDDL has not implemented convolutional without bias " << endl;
+					cerr << "EDDL has not implemented convolutional without bias." << endl;
 					//conv.update_weights(layer_tensors[0]);
 				}
 
@@ -2483,7 +2457,6 @@ using namespace std;
 					cerr << "EDDL has not implemented convolutional without bias " << endl;
 					//conv.update_weights(layer_tensors[0]);
 				}
-
 			}
 			else if((dense = dynamic_cast<LDense*>( l ) )){
 				if(layer_tensors.size() > 1)
@@ -2536,9 +2509,7 @@ using namespace std;
 			switch (layer_type) {
 				case ONNX_LAYERS::CONV:
 					{
-
 						vector<Tensor*> conv_tensors;
-
 
 						string weights_name = node.input(1); //Get weights and dims
 						vector<float>* weights = &(map_init_values[weights_name]);
@@ -2560,7 +2531,6 @@ using namespace std;
 
 				case ONNX_LAYERS::DENSE:
 					{
-
 						vector<Tensor*> dense_tensors;
 
 						string weights_name = node.input(1); //Get weights and dims
@@ -2577,7 +2547,6 @@ using namespace std;
 						}
 
 						tensors[name] = dense_tensors;
-
 						break;
 					}
 
