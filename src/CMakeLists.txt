@@ -276,14 +276,14 @@ SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 if(USE_CUDA OR USE_CUDNN)
     include(CheckLanguage)
     check_language(CUDA)
+  #  find_package(CUDNN)
     message(STATUS "CMAKE_CUDA_COMPILER: ${CMAKE_CUDA_COMPILER}")
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
         if(USE_CUDNN)
             add_definitions(-DcCUDNN)
-        else() 
-           add_definitions(-DcGPU)
         endif()
+        add_definitions(-DcGPU)
         # Add extra files
         target_sources(${PROJECT_NAME} PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
 
