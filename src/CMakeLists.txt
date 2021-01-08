@@ -1,10 +1,10 @@
-###########################################################################
+##########################################################################
 ################################ OPTIONS ##################################
 ###########################################################################
 
 # USER OPTIONS *******************************
 #CUDNN option is CUDA+CUDNN
-set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA}") 
+set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA}") 
 option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
@@ -295,10 +295,10 @@ if(USE_CUDA OR USE_CUDNN)
                 )
 
         if(USE_CUDNN)
-            target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} ${CMAKE_CUDNN_INCLUDE_DIRECTORIES})
+            target_include_directories(${PROJECT_NAME} PRIVATE ${CUDAToolkit_INCLUDE_DIRS} ${CMAKE_CUDNN_INCLUDE_DIRECTORIES})
             target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand cudnn)
         else()
-            target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+            target_include_directories(${PROJECT_NAME} PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
             target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand)
         endif()
         if(APPLE)
@@ -322,6 +322,7 @@ if(USE_CUDA OR USE_CUDNN)
     endif()
 endif()
 SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
+SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 
 # FPGA
 if(USE_FPGA)
@@ -444,6 +445,7 @@ message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
 message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
 message(STATUS "-------------------------------------------" )
 message(STATUS "CUDA enabled: " ${USE_CUDA} )
+message(STATUS "CUDNN enabled: " ${USE_CUDNN} )
 if(USE_CUDA OR USE_CUDNN)
 message(STATUS "CUDA compiler: ${CMAKE_CUDA_COMPILER} | Version: ${CUDA_VERSION}")
 message(STATUS "CUDA host compiler: " ${CUDA_HOST_COMPILER})

@@ -26,11 +26,7 @@ if(USE_OPENMP)
 endif()
 
 # CUDA
-if(USE_CUDA)
-    enable_language(CUDA)
-endif()
-# CUDNN
-if(USE_CUDNN)
+if(USE_CUDA OR USE_CUDNN)
     enable_language(CUDA)
 endif()
 
