@@ -10,6 +10,7 @@ dependencies:
   - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
   - zlib
   - cudatoolkit
+  - cudnn
   - gtest
   - graphviz  # Build & Run
   - wget
