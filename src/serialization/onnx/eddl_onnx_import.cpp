@@ -1553,8 +1553,6 @@ using namespace std;
 					
 				case ONNX_LAYERS::RSUM:
 					{
-						msg("ReduceSum operator not implemented.", "ONNX::ImportNet");
-						/*
 						vector <int> axes;
 						bool keepdims = 1;
 						for ( int j = 0; j < node->attribute_size(); j++) {
@@ -1562,6 +1560,11 @@ using namespace std;
 							string attr_name = attribute.name();
 							if (!attr_name.compare("keepdims")) {
 								keepdims = attribute.i();
+							} 
+							else if ( !attr_name.compare("axes") ) {
+								for( int h = 0; h < attribute.ints_size(); h++){
+									axes.push_back(attribute.ints(h));
+								}
 							}
 							else printf("Error with ReduceSum attributes. Attribute name is: %s\n", attr_name.c_str());
 						}
@@ -1570,7 +1573,6 @@ using namespace std;
 
 						string name = node->name();
 						actual_layer = new LRSum(parent, axes, keepdims, name, dev, mem);
-						*/
 					}
 					break;
 
