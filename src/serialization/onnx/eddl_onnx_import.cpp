@@ -1,3 +1,4 @@
+#include "eddl/layers/operators/layer_operators.h"
 #include "eddl/serialization/onnx/eddl_onnx.h"
 #include <queue>
 #include <fstream>
@@ -41,59 +42,53 @@ using namespace std;
 
 #ifdef cPROTO
 	enum ONNX_LAYERS{
-		//TODO Comment in which section belongs each layer
-		BATCHNORM,			// implemented
-		CONV,				// implemented
-		DENSE,				// implemented
-		DROP,               // implemented
-		//EMBEDDING,  		// Onnx doesn't support this
-		RESHAPE,            // implemented
-    SQUEEZE,            // implemented
-    UNSQUEEZE,            // implemented
-		FLATTEN,            // implemented
-		TRANSPOSE,          // implementing
-		TRANSPOSED_CONV,	// not implemented in eddl
-		UPSAMPLING,         // deprecated in ONNX, but works for EDDL
-		MAXPOOL,			// implemented
-		AVGPOOL,            // needs testing
-		GLOBAVGPOOL,        // implemented
-		GLOBMAXPOOL,        // implemented
-		// Activation layers
-		RELU, 				// implemented
-		SOFTMAX,			// implemented
-		SIGMOID,            // implemented
-		HARD_SIGMOID,       // implemented
-		TANH,               // implemented
-		LINEAR,             // implemented
-		EXPONENTIAL,        // implemented
-		LEAKY_RELU,         // implemented
-		THRESHOLDED_RELU,   // implemented
-		ELU,                // implemented
-		SELU,               // implemented
-		SOFTPLUS,           // implemented
-		SOFTSIGN,           // implemented
-		// Merge layers
-		CONCAT,				// implemented
-		ADD,                // implemented
-		AVERAGE,            // implemented
-		MAT_MUL,            // implemented
-		MAX,				// implemented
-		MIN,                // implemented
-		SUB,                // implemented
-		LSTM,               // implemented
-		IDENTITY,           // implemented
-		GATHER,             // works as embedding for eddl
-		CAST,               // implemented
-		ABS,                // implemented
-		DIV,                // implemented
-		EXP,                // implemented
-		LOG,                // implemented
-		MUL,                // implemented
-		POW,                // implemented
-		SQRT,               // implemented
-		RMEAN,              // implemented
-		RSUM,               // implemented
-		ARGMAX              // implemented
+		BATCHNORM,					// OPSET: 9
+		CONV,								// OPSET: 11, 1
+		DENSE,							// OPSET: 13, 11
+		DROP,								// OPSET: 10, 7
+		RESHAPE,						// OPSET: 13, 5
+    SQUEEZE,						// OPSET: 11, 1
+    UNSQUEEZE,					// OPSET: 11, 1
+		FLATTEN,						// OPSET: 13, 11, 9, 1
+		TRANSPOSE,					// OPSET: 13, 1
+		UPSAMPLING,					// OPSET: 9 (Op deprecated in ONNX)
+		MAXPOOL,						// OPSET: 12, 11, 10, 8, 1
+		AVGPOOL,						// OPSET: 11, 10, 7, 1 - TODO: testing
+		GLOBAVGPOOL,				// OPSET: 1
+		GLOBMAXPOOL,				// OPSET: 1
+		RELU,								// OPSET: 14, 13, 6
+		SOFTMAX,						// OPSET: 11, 1
+		SIGMOID,						// OPSET: 13, 6
+		HARD_SIGMOID,				// OPSET: 6
+		TANH,								// OPSET: 13, 6
+		LINEAR,							// Not in ONNX: Custom operator
+		EXPONENTIAL,				// Not in ONNX: Custom operator
+		LEAKY_RELU,					// OPSET: 6
+		THRESHOLDED_RELU,		// OPSET: 10
+		ELU,								// OPSET: 6
+		SELU,								// OPSET: 6
+		SOFTPLUS,						// OPSET: 1
+		SOFTSIGN,						// OPSET: 1
+		CONCAT,							// OPSET: 13, 11, 4, 1
+		ADD,								// OPSET: 13, 7
+		MAT_MUL,						// OPSET: 13, 9, 1 (Only for MatMul+Add Dense layer)
+		LSTM,								// OPSET: 7, 1
+		IDENTITY,						// We skip this layer when found
+		GATHER,							// OPSET: 13, 11, 1
+		CAST,								// We skip this layer when found
+		ABS,								// OPSET: 13, 6
+		DIV,								// OPSET: 13, 7
+		EXP,								// OPSET: 13, 6
+		LOG,								// OPSET: 13, 6
+		MUL,								// OPSET: 13, 7
+		//POW,							// OPSET: 13, 12, 7 (TODO: Implement LPow)
+		SQRT,								// OPSET: 13, 6
+		SUB,								// OPSET: 13, 7
+		RMAX,								// OPSET: 13, 12, 11, 1
+		RMIN,								// OPSET: 13, 12, 11, 1
+		RMEAN,							// OPSET: 13, 11, 1
+		RSUM,								// OPSET: 11, 1
+		ARGMAX							// OPSET: 13, 12, 11, 1
 	};
 
 
@@ -158,7 +153,6 @@ using namespace std;
 		return nodeQueue;
 	}
 
-
 	//Creates a map where the key is the onnx name for the layer type and the value is the constant value in the enumeration for onnx layer type.
 	map<string, ONNX_LAYERS> create_enum_map()
 	{
@@ -172,7 +166,6 @@ using namespace std;
 		map_layers["Transpose"] = ONNX_LAYERS::TRANSPOSE;
 		map_layers["Squeeze"] = ONNX_LAYERS::SQUEEZE;
 		map_layers["Unsqueeze"] = ONNX_LAYERS::UNSQUEEZE;
-		map_layers["ConvTranspose"] = ONNX_LAYERS::TRANSPOSED_CONV;
 		map_layers["Upsample"] = ONNX_LAYERS::UPSAMPLING;
 		map_layers["Softmax"] = ONNX_LAYERS::SOFTMAX;
 		map_layers["MaxPool"] = ONNX_LAYERS::MAXPOOL;
@@ -185,7 +178,7 @@ using namespace std;
 		map_layers["HardSigmoid"] = ONNX_LAYERS::HARD_SIGMOID;
 		map_layers["Tanh"] = ONNX_LAYERS::TANH;
 		map_layers["Linear"] = ONNX_LAYERS::LINEAR;
-		map_layers["Exp"] = ONNX_LAYERS::EXPONENTIAL;
+		map_layers["Exponential"] = ONNX_LAYERS::EXPONENTIAL;
 		map_layers["LeakyRelu"] = ONNX_LAYERS::LEAKY_RELU;
 		map_layers["ThresholdedRelu"] = ONNX_LAYERS::THRESHOLDED_RELU;
 		map_layers["Elu"] = ONNX_LAYERS::ELU;
@@ -195,11 +188,8 @@ using namespace std;
 		// Merge Layers
 		map_layers["Concat"] = ONNX_LAYERS::CONCAT;
 		map_layers["Add"] = ONNX_LAYERS::ADD;
-		map_layers["Sub"] = ONNX_LAYERS::SUB;
-		map_layers["Average"] = ONNX_LAYERS::AVERAGE;
 		map_layers["MatMul"] = ONNX_LAYERS::MAT_MUL;
-		map_layers["Max"] = ONNX_LAYERS::MAX;
-		map_layers["Min"] = ONNX_LAYERS::MIN;
+
 		map_layers["LSTM"] = ONNX_LAYERS::LSTM;
 		map_layers["Identity"] = ONNX_LAYERS::IDENTITY;
 		map_layers["Gather"] = ONNX_LAYERS::GATHER;
@@ -209,8 +199,11 @@ using namespace std;
 		map_layers["Exp"] = ONNX_LAYERS::EXP;
 		map_layers["Log"] = ONNX_LAYERS::LOG;
 		map_layers["Mul"] = ONNX_LAYERS::MUL;
-		map_layers["Pow"] = ONNX_LAYERS::POW;
+		//map_layers["Pow"] = ONNX_LAYERS::POW;
 		map_layers["Sqrt"] = ONNX_LAYERS::SQRT;
+		map_layers["Sub"] = ONNX_LAYERS::SUB;
+		map_layers["ReduceMax"] = ONNX_LAYERS::RMAX;
+		map_layers["ReduceMin"] = ONNX_LAYERS::RMIN;
 		map_layers["ReduceMean"] = ONNX_LAYERS::RMEAN;
 		map_layers["ReduceSum"] = ONNX_LAYERS::RSUM;
 		map_layers["ArgMax"] = ONNX_LAYERS::ARGMAX;
@@ -810,12 +803,10 @@ using namespace std;
 								else if(!attribute.s().compare("SAME_UPPER"))
 									auto_pad_option = "same";
 							}
-							else if (!attr_name.compare("dilations")) { //It isn't implemented in eddl
-
-							}
-							else if (!attr_name.compare("group")) { //We don't know if this exists in eddl
-
-							}
+							//else if (!attr_name.compare("dilations")) { It isn't implemented in eddl
+							//}
+							//else if (!attr_name.compare("group")) { It isn't implemented in eddl
+							//}
 							else if (!attr_name.compare("kernel_shape")) { //
 								for( int h = 0; h<attribute.ints_size(); h++){
 									kernel_shape.push_back(attribute.ints(h));
@@ -1005,12 +996,10 @@ using namespace std;
 
 				case ONNX_LAYERS::DROP:
 					{
-						int seed=0;
 						float ratio=0.5;
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
-							if(!attr_name.compare("seed")) seed = attribute.i();
 							if(!attr_name.compare("ratio")) ratio = attribute.f();
 						}
 
@@ -1042,12 +1031,10 @@ using namespace std;
 								if(!attribute.s().compare("NOTSET")) continue;
                 // if(!attribute.s().compare("VALID")) explicit_padding=false;
 							}
-							else if (!attr_name.compare("ceil_mode")) {
-
-							}
-							else if (!attr_name.compare("count_include_pad")) {
-
-							}
+							//else if (!attr_name.compare("ceil_mode")) { Not in EDDL
+							//}
+							//else if (!attr_name.compare("count_include_pad")) { Not in EDDL
+							//}
 							else if (!attr_name.compare("kernel_shape")) {
 								for( int h = 0; h<attribute.ints_size(); h++){
 									kernel_shape.push_back(attribute.ints(h));
@@ -1265,8 +1252,8 @@ using namespace std;
 
 				case ONNX_LAYERS::SELU:
 					{
-						float alpha = 1.0;
-						float gamma = 1.0;
+						float alpha = 1.67326;
+						float gamma = 1.0507;
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
@@ -1421,32 +1408,6 @@ using namespace std;
 					}
 					break;
 
-				case ONNX_LAYERS::SUB:
-					{
-						vector<Layer *> parents;
-						string parent_name;
-						for ( int j = 0; j < node->input_size(); j++) {
-							parent_name = node->input(j);
-							parents.push_back(output_node_map[parent_name]);
-						}
-						string name = node->name();
-						actual_layer = new LSubtract(parents, name, dev, mem);
-					}
-					break;
-
-				case ONNX_LAYERS::AVERAGE:
-					{
-						vector<Layer *> parents;
-						string parent_name;
-						for ( int j = 0; j < node->input_size(); j++) {
-							parent_name = node->input(j);
-							parents.push_back(output_node_map[parent_name]);
-						}
-						string name = node->name();
-						actual_layer = new LAverage(parents, name, dev, mem);
-					}
-					break;
-
 				case ONNX_LAYERS::ABS:
 					{
 						string parent_name = node->input(0);
@@ -1503,6 +1464,7 @@ using namespace std;
 					}
 					break;
 
+				/*
 				case ONNX_LAYERS::POW:
 					{
 						string first_operator_name = node->input(0);
@@ -1515,6 +1477,7 @@ using namespace std;
 						actual_layer = new LPow(first_operator, second_operator, name, dev, mem);
 					}
 					break;
+				*/
 
 				case ONNX_LAYERS::SQRT:
 					{
@@ -1523,6 +1486,101 @@ using namespace std;
 
 						string name = node->name();
 						actual_layer = new LSqrt(parent, name, dev, mem);
+					}
+					break;
+
+				case ONNX_LAYERS::SUB:
+					{
+						string first_operator_name = node->input(0);
+						Layer *first_operator = output_node_map[first_operator_name];
+
+						string second_operator_name = node->input(1);
+						Layer *second_operator = output_node_map[second_operator_name];
+
+						string name = node->name();
+						actual_layer = new LDiff(first_operator, second_operator, name, dev, mem);
+					}
+					break;
+
+				case ONNX_LAYERS::RMAX:
+					{
+						vector <int> axes;
+						bool keepdims = 1;
+						for ( int j = 0; j < node->attribute_size(); j++) {
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("axes")) {
+								for( int h = 0; h<attribute.ints_size(); h++){
+									axes.push_back(attribute.ints(h));
+								}
+							}
+							else if (!attr_name.compare("keepdims")) {
+								keepdims = attribute.i();
+							}
+							else printf("Error with ReduceMax attributes. Attribute name is: %s\n", attr_name.c_str());
+						}
+
+						string parent_name = node->input(0);
+						Layer *parent = output_node_map[parent_name];
+
+						// Prepare the axes for EDDL. Because in EDDL you can't reduce the batch axis (0).
+						for(int i = 0; i < axes.size(); ++i ) {
+							if (axes[i] > 0)
+								axes[i]--;
+							else if (axes[i] == 0)
+								msg("You can't reduce the batch axis in Reduce Max layer.", "ONNX::ImportNet");
+							else {
+								// From negative to positive axis value
+								int parent_out_rank = parent->getShape().size();
+								axes[i] += parent_out_rank;
+
+								axes[i]--;
+							}
+						}
+
+						string name = node->name();
+						actual_layer = new LRMax(parent, axes, keepdims, name, dev, mem);
+					}
+					break;
+
+				case ONNX_LAYERS::RMIN:
+					{
+						vector <int> axes;
+						bool keepdims = 1;
+						for ( int j = 0; j < node->attribute_size(); j++) {
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("axes")) {
+								for( int h = 0; h<attribute.ints_size(); h++){
+									axes.push_back(attribute.ints(h));
+								}
+							}
+							else if (!attr_name.compare("keepdims")) {
+								keepdims = attribute.i();
+							}
+							else printf("Error with ReduceMin attributes. Attribute name is: %s\n", attr_name.c_str());
+						}
+
+						string parent_name = node->input(0);
+						Layer *parent = output_node_map[parent_name];
+
+						// Prepare the axes for EDDL. Because in EDDL you can't reduce the batch axis (0).
+						for(int i = 0; i < axes.size(); ++i ) {
+							if (axes[i] > 0)
+								axes[i]--;
+							else if (axes[i] == 0)
+								msg("You can't reduce the batch axis in Reduce Min layer.", "ONNX::ImportNet");
+							else {
+								// From negative to positive axis value
+								int parent_out_rank = parent->getShape().size();
+								axes[i] += parent_out_rank;
+
+								axes[i]--;
+							}
+						}
+
+						string name = node->name();
+						actual_layer = new LRMin(parent, axes, keepdims, name, dev, mem);
 					}
 					break;
 
@@ -1543,8 +1601,24 @@ using namespace std;
 							}
 							else printf("Error with ReduceMean attributes. Attribute name is: %s\n", attr_name.c_str());
 						}
+
 						string parent_name = node->input(0);
 						Layer *parent = output_node_map[parent_name];
+
+						// Prepare the axes for EDDL. Because in EDDL you can't reduce the batch axis (0).
+						for(int i = 0; i < axes.size(); ++i ) {
+							if (axes[i] > 0)
+								axes[i]--;
+							else if (axes[i] == 0)
+								msg("You can't reduce the batch axis in Reduce Mean layer.", "ONNX::ImportNet");
+							else {
+								// From negative to positive axis value
+								int parent_out_rank = parent->getShape().size();
+								axes[i] += parent_out_rank;
+
+								axes[i]--;
+							}
+						}
 
 						string name = node->name();
 						actual_layer = new LRMean(parent, axes, keepdims, name, dev, mem);
@@ -1568,8 +1642,24 @@ using namespace std;
 							}
 							else printf("Error with ReduceSum attributes. Attribute name is: %s\n", attr_name.c_str());
 						}
+
 						string parent_name = node->input(0);
 						Layer *parent = output_node_map[parent_name];
+
+						// Prepare the axes for EDDL. Because in EDDL you can't reduce the batch axis (0).
+						for(int i = 0; i < axes.size(); ++i ) {
+							if (axes[i] > 0)
+								axes[i]--;
+							else if (axes[i] == 0)
+								msg("You can't reduce the batch axis in Reduce Sum layer.", "ONNX::ImportNet");
+							else {
+								// From negative to positive axis value
+								int parent_out_rank = parent->getShape().size();
+								axes[i] += parent_out_rank;
+
+								axes[i]--;
+							}
+						}
 
 						string name = node->name();
 						actual_layer = new LRSum(parent, axes, keepdims, name, dev, mem);
@@ -1578,7 +1668,7 @@ using namespace std;
 
 				case ONNX_LAYERS::ARGMAX:
 					{
-						int axis = 0;
+						int axis = 1;
 						bool keepdims = 1;
 						for ( int j = 0; j < node->attribute_size(); j++) {
 							onnx::AttributeProto attribute = node->attribute(j);
@@ -1589,13 +1679,26 @@ using namespace std;
 							else if (!attr_name.compare("keepdims")) {
 								keepdims = attribute.i();
 							}
-							else if (!attr_name.compare("select_last_index")) {
-								//Not implemented in EDDL
-							}
+							//else if (!attr_name.compare("select_last_index")) {  Not implemented in EDDL
+							//}
 							else printf("Error with Argmax attributes. Attribute name is: %s\n", attr_name.c_str());
 						}
+						
 						string parent_name = node->input(0);
 						Layer *parent = output_node_map[parent_name];
+
+						// Prepare the axis for EDDL. Because in EDDL you can't reduce the batch axis (0).
+						if (axis > 0)
+							axis--;
+						else if (axis == 0)
+							msg("You can't select the batch axis in Arg Max layer.", "ONNX::ImportNet");
+						else {
+							// From negative to positive axis value
+							int parent_out_rank = parent->getShape().size();
+							axis = parent_out_rank + axis;
+
+							axis--;
+						}
 
 						string name = node->name();
 						actual_layer = new LRArgmax(parent, {axis}, keepdims, name, dev, mem);
@@ -1637,32 +1740,6 @@ using namespace std;
 						}
 						string name = node->name();
 						actual_layer = new LMatMul(parents, name, dev, mem);
-					}
-					break;
-
-				case ONNX_LAYERS::MAX:
-					{
-						vector<Layer *> parents;
-						string parent_name;
-						for ( int j = 0; j < node->input_size(); j++) {
-							parent_name = node->input(j);
-							parents.push_back(output_node_map[parent_name]);
-						}
-						string name = node->name();
-						actual_layer = new LMaximum(parents, name, dev, mem);
-					}
-					break;
-
-				case ONNX_LAYERS::MIN:
-					{
-						vector<Layer *> parents;
-						string parent_name;
-						for ( int j = 0; j < node->input_size(); j++) {
-							parent_name = node->input(j);
-							parents.push_back(output_node_map[parent_name]);
-						}
-						string name = node->name();
-						actual_layer = new LMinimum(parents, name, dev, mem);
 					}
 					break;
 

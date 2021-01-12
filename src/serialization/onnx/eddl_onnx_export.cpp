@@ -41,103 +41,151 @@ using namespace std;
   // Node builders
   //----------------------------------------------------------------------------------------
 
+  // OPSET: 11, 1
   void build_conv_node( LConv *layer, onnx::GraphProto *graph, bool gradients );
 
+  // OPSET: 11, 1 (same operator than Conv2D)
   void build_conv1D_node( LConv1D *layer, onnx::GraphProto *graph, bool gradients );
 
+  // OPSET: 13, 11
   void build_gemm_node( LDense *layer, onnx::GraphProto *graph, bool gradients );
 
+  // MatMul OPSET: 13, 9, 1 - Add OPSET: 13, 7
   void build_dense_with_matmul_node( LDense *layer, onnx::GraphProto *graph, bool gradients );
 
+  // OPSET: 12, 11, 10, 8, 1
   void build_maxpool_node( LMaxPool *layer, onnx::GraphProto *graph );
 
+  // OPSET: 12, 11, 10, 8, 1
   void build_maxpool1D_node( LMaxPool1D *layer, onnx::GraphProto *graph );
 
+  // OPSET: 11, 10, 7, 1
   void build_averagepool_node( LAveragePool *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 5
   void build_reshape_node( LReshape *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 1
   void build_permute_node( LPermute *layer, onnx::GraphProto *graph );
 
+  // OPSET: 14, 13, 6
   void build_relu_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 6
   void build_sigmoid_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 6
   void build_hard_sigmoid_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 6
   void build_tanh_node( LActivation *layer, onnx::GraphProto *graph );
 
-  void build_exp_node( LActivation *layer, onnx::GraphProto *graph );
+  // Not in ONNX: Custom operator
+  void build_exponential_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // Not in ONNX: Custom operator
   void build_linear_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 6
   void build_leaky_relu_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 10
   void build_thresholded_relu_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 6
   void build_elu_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 6
   void build_selu_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 11, 1
   void build_softmax_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 1
   void build_softsign_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 1
   void build_softplus_node( LActivation *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 11, 4, 1
   void build_concat_node( LConcat *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 6
+  void build_abs_node( LAbs *layer, onnx::GraphProto *graph );
+
+  // OPSET: 13, 7
   void build_add_node( LAdd *layer, onnx::GraphProto *graph );
 
-  void build_sub_node( LSubtract *layer, onnx::GraphProto *graph );
-
-  void build_average_node( LAverage *layer, onnx::GraphProto *graph );
-
-  void build_matmul_node( LMatMul *layer, onnx::GraphProto *graph );
-
-  void build_max_node( LMaximum *layer, onnx::GraphProto *graph );
-
-  void build_min_node( LMinimum *layer, onnx::GraphProto *graph );
-
+  // OPSET: 13, 7
   void build_div_node( LDiv *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 6
   void build_exp_node( LExp *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 6
   void build_log_node( LLog *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 7
   void build_mul_node( LMult *layer, onnx::GraphProto *graph );
 
-  void build_pow_node( LPow *layer, onnx::GraphProto *graph );
+  // OPSET: 13, 12, 7
+  // TODO: Implement layer LPow
+  //void build_pow_node( LPow *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 6
   void build_sqrt_node( LSqrt *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 7
+  void build_sub_node( LDiff *layer, onnx::GraphProto *graph );
+
+  // OPSET: 13, 11, 1
   void build_rmean_node( LRMean *layer, onnx::GraphProto *graph );
 
+  // OPSET: 11, 1
   void build_rsum_node( LRSum *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 12, 11, 1
+  void build_rmax_node( LRMax *layer, onnx::GraphProto *graph );
+
+  // OPSET: 13, 12, 11, 1
+  void build_rmin_node( LRMin *layer, onnx::GraphProto *graph );
+
+  // OPSET: 13, 12, 11, 1
   void build_rargmax_node( LRArgmax *layer, onnx::GraphProto *graph );
 
+  // OPSET: 9
   void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph );
 
+  // OPSET: 10, 7
   void build_dropout_node( LDropout *layer, onnx::GraphProto *graph );
 
+  // OPSET: 9
   void build_upsample_node( LUpSampling *layer, onnx::GraphProto *graph );
 
+  // OPSET: 11, 1
   void build_squeeze_node( string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph );
 
+  // OPSET: 11, 1
   void build_unsqueeze_node( string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph );
 
+  // OPSET: 7, 1
   void build_lstm_node( LLSTM *layer, onnx::GraphProto *graph );
 
-  void handle_copy_states( LCopyStates *layer, onnx::GraphProto *graph );
-
+  // Implemented with Gather Op for OPSET: 13, 11, 1
   void build_embedding_node( LEmbedding *layer, onnx::GraphProto *graph );
 
+  // OPSET: 13, 1
   void build_identity_node( string node_name, string input, string output, onnx::GraphProto *graph );
 
+  // OPSET: 13, 9, 6
   void build_cast_node( string node_name, string input, string output, int cast_type, onnx::GraphProto *graph );
 
+  // OPSET: 13, 11, 1
   void build_gather_node( string node_name, string input, string output, LEmbedding *layer, onnx::GraphProto *graph );
+
+  // Not an ONNX operator. Built from unsqueeze and identity operators.
+  void handle_copy_states( LCopyStates *layer, onnx::GraphProto *graph );
+
 #endif
 
 #ifdef cPROTO
@@ -376,7 +424,7 @@ using namespace std;
       } else if (!((LActivation *)(layer))->act.compare("tanh")) {
         build_tanh_node((LActivation *)(LinLayer *)layer, graph);
       } else if (!((LActivation *)(layer))->act.compare("exp")) {
-        build_exp_node((LActivation *)(LinLayer *)layer, graph);
+        build_exponential_node((LActivation *)(LinLayer *)layer, graph);
       } else if (!((LActivation *)(layer))->act.compare("linear")) {
         build_linear_node((LActivation *)(LinLayer *)layer, graph);
       } else if (!((LActivation *)(layer))->act.compare("leaky_relu")) {
@@ -400,18 +448,10 @@ using namespace std;
 
     } else if (LConcat *t = dynamic_cast<LConcat *>(layer)) {
       build_concat_node((LConcat *)(MLayer *)layer, graph);
+    } else if (LAbs *t = dynamic_cast<LAbs *>(layer)) {
+      build_abs_node((LAbs *)(OperatorLayer *)layer, graph);
     } else if (LAdd *t = dynamic_cast<LAdd *>(layer)) {
       build_add_node((LAdd *)(MLayer *)layer, graph);
-    } else if (LSubtract *t = dynamic_cast<LSubtract *>(layer)) {
-      build_sub_node((LSubtract *)(MLayer *)layer, graph);
-    } else if (LAverage *t = dynamic_cast<LAverage *>(layer)) {
-      build_average_node((LAverage *)(MLayer *)layer, graph);
-    } else if (LMatMul *t = dynamic_cast<LMatMul *>(layer)) {
-      build_matmul_node((LMatMul *)(MLayer *)layer, graph);
-    } else if (LMaximum *t = dynamic_cast<LMaximum *>(layer)) {
-      build_max_node((LMaximum *)(MLayer *)layer, graph);
-    } else if (LMinimum *t = dynamic_cast<LMinimum *>(layer)) {
-      build_min_node((LMinimum *)(MLayer *)layer, graph);
     } else if (LDiv *t = dynamic_cast<LDiv *>(layer)) {
       build_div_node((LDiv *)(OperatorLayer *)layer, graph);
     } else if (LExp *t = dynamic_cast<LExp *>(layer)) {
@@ -420,14 +460,20 @@ using namespace std;
       build_log_node((LLog *)(OperatorLayer *)layer, graph);
     } else if (LMult *t = dynamic_cast<LMult *>(layer)) {
       build_mul_node((LMult *)(OperatorLayer *)layer, graph);
-    } else if (LPow *t = dynamic_cast<LPow *>(layer)) {
-      build_pow_node((LPow *)(OperatorLayer *)layer, graph);
+    //} else if (LPow *t = dynamic_cast<LPow *>(layer)) {
+    //  build_pow_node((LPow *)(OperatorLayer *)layer, graph);
     } else if (LSqrt *t = dynamic_cast<LSqrt *>(layer)) {
       build_sqrt_node((LSqrt *)(OperatorLayer *)layer, graph);
+    } else if (LDiff *t = dynamic_cast<LDiff *>(layer)) {
+      build_sub_node((LDiff *)(OperatorLayer *)layer, graph);
     } else if (LRMean *t = dynamic_cast<LRMean *>(layer)) {
       build_rmean_node((LRMean *)(ReductionLayer *)layer, graph);
     } else if (LRSum *t = dynamic_cast<LRSum *>(layer)) {
       build_rsum_node((LRSum *)(ReductionLayer *)layer, graph);
+    } else if (LRMax *t = dynamic_cast<LRMax *>(layer)) {
+      build_rmax_node((LRMax *)(ReductionLayer *)layer, graph);
+    } else if (LRMin *t = dynamic_cast<LRMin *>(layer)) {
+      build_rmin_node((LRMin *)(ReductionLayer *)layer, graph);
     } else if (LRArgmax *t = dynamic_cast<LRArgmax *>(layer)) {
       build_rargmax_node((LRArgmax *)(ReductionLayer2 *)layer, graph);
     } else if (LBatchNorm *t = dynamic_cast<LBatchNorm *>(layer)) {
@@ -625,7 +671,8 @@ using namespace std;
     }
     // Set the input params names of the Gemm(Dense) op
     node->add_input( layer->name + "_W" );
-    node->add_input( layer->name + "_b" );
+    if ( layer->use_bias )
+      node->add_input( layer->name + "_b" );
     // Set the name of the output of the node to link with other nodes
     node->add_output( layer->name );
 
@@ -947,10 +994,10 @@ using namespace std;
     node->add_output( layer->name );
   }
 
-  void build_exp_node( LActivation *layer, onnx::GraphProto *graph ) {
+  void build_exponential_node( LActivation *layer, onnx::GraphProto *graph ) {
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
-    node->set_op_type( "Exp" );
+    node->set_op_type( "Exponential" );  // **Custom operator**
     node->set_name( layer->name );
     // Set the inputs names of the node from the parents of the layer
     for ( Layer* parentl : layer->parent ) {
@@ -963,7 +1010,7 @@ using namespace std;
   void build_linear_node( LActivation *layer, onnx::GraphProto *graph ) {
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
-    node->set_op_type( "Linear" );
+    node->set_op_type( "Linear" );  // **Custom operator**
     node->set_name( layer->name );
     // Set the inputs names of the node from the parents of the layer
     for ( Layer* parentl : layer->parent ) {
@@ -1137,10 +1184,10 @@ using namespace std;
     node->add_output( layer->name );
   }
 
-  void build_sub_node( LSubtract *layer, onnx::GraphProto *graph ) {
+  void build_abs_node( LAbs *layer, onnx::GraphProto *graph ) {
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
-    node->set_op_type( "Sub" );
+    node->set_op_type( "Abs" );
     node->set_name( layer->name );
     // Set the inputs names of the node from the parents of the layer
     for ( Layer* parentl : layer->parent ) {
@@ -1150,58 +1197,6 @@ using namespace std;
     node->add_output( layer->name );
   }
 
-  void build_average_node( LAverage *layer, onnx::GraphProto *graph ) {
-    // Add an empty node to the graph
-    onnx::NodeProto* node = graph->add_node();
-    node->set_op_type( "Average" );
-    node->set_name( layer->name );
-    // Set the inputs names of the node from the parents of the layer
-    for ( Layer* parentl : layer->parent ) {
-      node->add_input( parentl->name );
-    }
-    // Set the name of the output of the node to link with other nodes
-    node->add_output( layer->name );
-  }
-
-  void build_matmul_node( LMatMul *layer, onnx::GraphProto *graph ) {
-    // Add an empty node to the graph
-    onnx::NodeProto* node = graph->add_node();
-    node->set_op_type( "MatMul" );
-    node->set_name( layer->name );
-    // Set the inputs names of the node from the parents of the layer
-    for ( Layer* parentl : layer->parent ) {
-      node->add_input( parentl->name );
-    }
-    // Set the name of the output of the node to link with other nodes
-    node->add_output( layer->name );
-  }
-
-  void build_max_node( LMaximum *layer, onnx::GraphProto *graph ) {
-    // Add an empty node to the graph
-    onnx::NodeProto* node = graph->add_node();
-    node->set_op_type( "Max" );
-    node->set_name( layer->name );
-    // Set the inputs names of the node from the parents of the layer
-    for ( Layer* parentl : layer->parent ) {
-      node->add_input( parentl->name );
-    }
-    // Set the name of the output of the node to link with other nodes
-    node->add_output( layer->name );
-  }
-
-  void build_min_node( LMinimum *layer, onnx::GraphProto *graph ) {
-    // Add an empty node to the graph
-    onnx::NodeProto* node = graph->add_node();
-    node->set_op_type( "Min" );
-    node->set_name( layer->name );
-    // Set the inputs names of the node from the parents of the layer
-    for ( Layer* parentl : layer->parent ) {
-      node->add_input( parentl->name );
-    }
-    // Set the name of the output of the node to link with other nodes
-    node->add_output( layer->name );
-  }  
-  
   void build_div_node( LDiv *layer, onnx::GraphProto *graph ) {
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
@@ -1255,6 +1250,7 @@ using namespace std;
     
   }
 
+  /*
   void build_pow_node( LPow *layer, onnx::GraphProto *graph ) {
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
@@ -1267,11 +1263,25 @@ using namespace std;
     // Set the name of the output of the node to link with other nodes
     node->add_output( layer->name );
   }
+  */
 
   void build_sqrt_node( LSqrt *layer, onnx::GraphProto *graph ) {
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
     node->set_op_type( "Sqrt" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+  }
+
+  void build_sub_node( LDiff *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Sub" );
     node->set_name( layer->name );
     // Set the inputs names of the node from the parents of the layer
     for ( Layer* parentl : layer->parent ) {
@@ -1295,7 +1305,7 @@ using namespace std;
     axes_attr->set_name( "axes" );
     axes_attr->set_type( onnx::AttributeProto::INTS );
     for (int ax : layer->axis)
-      axes_attr->add_ints( ax );
+      axes_attr->add_ints( ax + 1 );
     // Attr keepdims
     onnx::AttributeProto* keepdims_attr = node->add_attribute();
     keepdims_attr->set_name( "keepdims" );
@@ -1320,7 +1330,61 @@ using namespace std;
     axes_attr->set_name( "axes" );
     axes_attr->set_type( onnx::AttributeProto::INTS );
     for ( int ax : layer->axis )
-      axes_attr->add_ints( ax );
+      axes_attr->add_ints( ax + 1 );
+
+    // Attr keepdims
+    onnx::AttributeProto* keepdims_attr = node->add_attribute();
+    keepdims_attr->set_name( "keepdims" );
+    keepdims_attr->set_type( onnx::AttributeProto::INT );
+    keepdims_attr->set_i( layer->keepdims );
+
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+  }
+
+  void build_rmax_node( LRMax *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "ReduceMax" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+
+    // Attr axes
+    onnx::AttributeProto* axes_attr = node->add_attribute();
+    axes_attr->set_name( "axes" );
+    axes_attr->set_type( onnx::AttributeProto::INTS );
+    for ( int ax : layer->axis )
+      axes_attr->add_ints( ax + 1 );
+
+    // Attr keepdims
+    onnx::AttributeProto* keepdims_attr = node->add_attribute();
+    keepdims_attr->set_name( "keepdims" );
+    keepdims_attr->set_type( onnx::AttributeProto::INT );
+    keepdims_attr->set_i( layer->keepdims );
+
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+  }
+
+  void build_rmin_node( LRMin *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "ReduceMin" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+
+    // Attr axes
+    onnx::AttributeProto* axes_attr = node->add_attribute();
+    axes_attr->set_name( "axes" );
+    axes_attr->set_type( onnx::AttributeProto::INTS );
+    for ( int ax : layer->axis )
+      axes_attr->add_ints( ax + 1 );
 
     // Attr keepdims
     onnx::AttributeProto* keepdims_attr = node->add_attribute();
@@ -1345,7 +1409,7 @@ using namespace std;
     onnx::AttributeProto* axis_attr = node->add_attribute();
     axis_attr->set_name( "axis" );
     axis_attr->set_type( onnx::AttributeProto::INT );
-    axis_attr->set_i( layer->axis[0] );
+    axis_attr->set_i( layer->axis[0] + 1 );
     // Attr keepdims
     onnx::AttributeProto* keepdims_attr = node->add_attribute();
     keepdims_attr->set_name( "keepdims" );
@@ -1448,6 +1512,19 @@ using namespace std;
   }
 
   void build_upsample_node( LUpSampling *layer, onnx::GraphProto *graph ) {
+    // Scales input for the upsample node
+    onnx::TensorProto* scales = graph->add_initializer();
+    scales->set_name( layer->name + "_scales" );
+    scales->set_data_type( onnx::TensorProto::FLOAT );
+    scales->add_dims( 2 + layer->size.size() ); // (batch_size, channels, height, width)
+    // Add the scale factor for the first two dimensions
+    for( int i = 0; i < 2; ++i ) {
+      scales->add_float_data( 1 );
+    }
+    for( int i = 0; i < layer->size.size(); ++i) {
+      scales->add_float_data( layer->size[i] );
+    }
+
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
     node->set_op_type( "Upsample" );
@@ -1466,21 +1543,6 @@ using namespace std;
     mode_attr->set_name( "mode" );
     mode_attr->set_type( onnx::AttributeProto::STRING );
     mode_attr->set_s( layer->interpolation );
-
-    // Scales input
-    onnx::TensorProto* scales = graph->add_initializer();
-    scales->set_name( layer->name + "_scales" );
-    scales->set_data_type( onnx::TensorProto::FLOAT );
-    scales->add_dims( 2 + layer->size.size() ); // (batch_size, channels, height, width)
-
-    // Add the scale factor for the first two dimensions
-    for( int i = 0; i < 2; ++i ) {
-      scales->add_float_data( 1 );
-    }
-
-    for( int i = 0; i < layer->size.size(); ++i) {
-      scales->add_float_data( layer->size[i] );
-    }
   }
 
   void build_squeeze_node( string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph ) {
@@ -1710,7 +1772,7 @@ using namespace std;
     node->add_input( input );
     node->add_output( output );
 
-    // Create the initializer with the embeddin data
+    // Create the initializer with the embedding data
     onnx::TensorProto* embed_data = graph->add_initializer();
     embed_data->set_name( layer->name + "_data" );
     embed_data->set_data_type( onnx::TensorProto::FLOAT );
