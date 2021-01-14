@@ -294,13 +294,12 @@ if(USE_CUDA OR USE_CUDNN)
                 #CUDA_SEPARABLE_COMPILATION ON
                 )
 
+        target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+        target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand)
         if(USE_CUDNN)
-            target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} ${CMAKE_CUDNN_INCLUDE_DIRECTORIES})
+            target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDNN_INCLUDE_DIRECTORIES})
             target_link_directories(${PROJECT_NAME} PRIVATE  ${CMAKE_CUDNN_INCLUDE_LIBS})
-            target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand cudnn)
-        else()
-            target_include_directories(${PROJECT_NAME} PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
-            target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand)
+            target_link_libraries(${PROJECT_NAME} PRIVATE cudnn)
         endif()
         if(APPLE)
             # We need to add the path to the driver (libcuda.dylib) as an rpath,
