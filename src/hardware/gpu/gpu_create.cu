@@ -11,6 +11,7 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
+#include <cudnn.h>
 
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_kernels.h"
@@ -23,7 +24,6 @@
 void gpu_range(Tensor *A, float start, float step) {
     int device=A->gpu_device;
     cudaSetDevice(device);
-
     setDims(A);
 
     range<<<dimGrid,dimBlock>>>(A->ptr, start, step, A->size);

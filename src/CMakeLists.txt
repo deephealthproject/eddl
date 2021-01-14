@@ -4,7 +4,7 @@
 
 # USER OPTIONS *******************************
 #CUDNN option is CUDA+CUDNN
-set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA}") 
+set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA}") 
 option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
@@ -295,7 +295,8 @@ if(USE_CUDA OR USE_CUDNN)
                 )
 
         if(USE_CUDNN)
-            target_include_directories(${PROJECT_NAME} PRIVATE ${CUDAToolkit_INCLUDE_DIRS} ${CMAKE_CUDNN_INCLUDE_DIRECTORIES})
+            target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} ${CMAKE_CUDNN_INCLUDE_DIRECTORIES})
+            target_link_directories(${PROJECT_NAME} PRIVATE  ${CMAKE_CUDNN_INCLUDE_LIBS})
             target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand cudnn)
         else()
             target_include_directories(${PROJECT_NAME} PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
