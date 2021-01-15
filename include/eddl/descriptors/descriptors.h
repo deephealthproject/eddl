@@ -70,7 +70,7 @@ public:
 
     int nk, kr, kc, kz;
     int sr, sc;
-    int ir, ic, iz;
+    int in, ir, ic, iz;
     int r, c, z;
     int padrt,padrb;
     int padcl,padcr;

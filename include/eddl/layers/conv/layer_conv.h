@@ -17,6 +17,13 @@
 #include "eddl/layers/layer.h"
 #include "eddl/regularizers/regularizer.h"
 
+#ifdef cCUDNN
+#include <cudnn.h>
+extern cudnnHandle_t hdnn;
+
+#endif
+
+
 #define TRMODE 1
 #define TSMODE 0
 
@@ -30,6 +37,24 @@ public:
 	bool distributed_training;
 
     ConvolDescriptor *cd;
+#ifdef cCUDNN
+    // Following cuDNN nomenclature
+    cudnnHandle_t cudnn_handle;
+    cudnnConvolutionMode_t convolution_mode;
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+
+    cudnnConvolutionFwdAlgo_t fwd_algorithm;
+    cudnnConvolutionBwdFilterAlgo_t bwd_filter_algorithm;
+    cudnnConvolutionBwdDataAlgo_t bwd_weights_algorithm;
+
+    cudnnConvolutionDescriptor_t convolution_descriptor;
+    cudnnTensorDescriptor_t xDesc; //input. also dxDesc
+    cudnnFilterDescriptor_t wDesc; //kernels also dwDesc
+    cudnnTensorDescriptor_t yDesc; //output also dyDesc
+
+    int cudnn_env_init = -1;
+#endif
 
     // constructors and clones
     LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev, int mem);

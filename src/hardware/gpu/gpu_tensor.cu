@@ -113,7 +113,7 @@ void check_cuda(cudaError_t err,const char *msg)
 
 #ifdef cCUDNN
 
-void check_cudnn(cudnnStatus_t status, const char *f)
+void check_cudnn(cudnnStatus_t status)
 {
     if (status != CUDNN_STATUS_SUCCESS)
     {
