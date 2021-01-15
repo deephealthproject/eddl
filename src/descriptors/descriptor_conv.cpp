@@ -137,8 +137,8 @@ void ConvolDescriptor::build(Tensor *A) {
         // convolution: matC=matA*matK
     }
 #ifdef cGPU
+//#ifndef cCUDNN
     else if (I->isGPU()) {
-#ifndef cCUDNN
         if (mem_level>1) {
             // Lowering
             gpuIB=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
@@ -149,7 +149,6 @@ void ConvolDescriptor::build(Tensor *A) {
             if (mem_level==0)
                 gpuOB=new Tensor(vector<int>{z,A->shape[0]*r*c}, I->device);
         }
-#endif
         // Tensor with variable shared ptr, delete create ptr
         gpuI=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpuI->ptr);
@@ -167,6 +166,7 @@ void ConvolDescriptor::build(Tensor *A) {
         gpugK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpugK->ptr);
     }
+//#endif
 #endif
 
 #ifdef cFPGA

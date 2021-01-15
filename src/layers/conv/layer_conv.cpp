@@ -37,6 +37,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     // Set default name
     if(name.empty()) this->name = "conv" + to_string(++total_layers);
 
+    std::cout<<"STart de BUILD capa"<<this->name<<std::endl;
     input = parent->output;
     cd = D;
     cd->build(input);
@@ -48,12 +49,9 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
 
-    cudnnConvolutionDescriptor_t convolution_descriptor;
-    cudnnTensorDescriptor_t xDesc; //input. also dxDesc
-    cudnnFilterDescriptor_t wDesc; //kernels also dwDesc
-    cudnnTensorDescriptor_t yDesc; //output also dyDesc
-
-    cudnnCreateConvolutionDescriptor(&convolution_descriptor);
+    if(cudnnCreateConvolutionDescriptor(&convolution_descriptor)!=CUDNN_STATUS_SUCCESS){
+        std::cout<<"Error en conv desc"<<endl;
+    }
     /*cudnnStatus_t cudnnSetConvolution2dDescriptor(
     cudnnConvolutionDescriptor_t    convDesc,
     int                             pad_h,
@@ -70,10 +68,17 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
                                     1,1,
                                     convolution_mode, data_type);
 
-    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                               cd->in,cd->iz,cd->ir,cd->ic);
-    cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, cd->nk, cd->kz, cd->kr, cd->kc);
-    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, cd->in, cd->z,cd->r,cd->c);
+   cudnnCreateTensorDescriptor(&xDesc);
+   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 cd->in,cd->iz,cd->ir,cd->ic);
+   cudnnCreateFilterDescriptor(&wDesc);
+   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, cd->nk, cd->kz, cd->kr, cd->kc);
+
+   cudnnCreateTensorDescriptor(&yDesc);
+   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, cd->in, cd->z,cd->r,cd->c);
+   cudnnCreateTensorDescriptor(&bDesc);
+   cudnnSetTensor4dDescriptor(bDesc, tensor_format, data_type, cd->nk, 1,1,1);
+
     #endif
 
 //    delta = cd->D;
@@ -91,6 +96,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
 
     parent->addchild(this);
     addparent(parent);
+    std::cout<<"Fin de BUILD capa"<<this->name<<std::endl;
 }
 
 

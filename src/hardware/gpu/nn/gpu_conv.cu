@@ -62,7 +62,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
   int device=D->I->gpu_device;
   cudaSetDevice(device);
-
+  std::cout<<"Alla voooooooooooooy"<<std::endl;
   int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
   D->gpuK->ptr=D->K->ptr;
