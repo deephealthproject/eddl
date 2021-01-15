@@ -43,43 +43,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     cd->build(input);
 
     output = cd->O;
-#ifdef cCUDNN
-    cudnn_handle = hdnn;
-    convolution_mode = CUDNN_CONVOLUTION; //CUDNN_CROSS_CORRELATION
-    data_type = CUDNN_DATA_FLOAT;
-    tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
 
-    if(cudnnCreateConvolutionDescriptor(&convolution_descriptor)!=CUDNN_STATUS_SUCCESS){
-        std::cout<<"Error en conv desc"<<endl;
-    }
-    /*cudnnStatus_t cudnnSetConvolution2dDescriptor(
-    cudnnConvolutionDescriptor_t    convDesc,
-    int                             pad_h,
-    int                             pad_w,
-    int                             u, //stride vertical
-    int                             v, //stride horizontal
-    int                             dilation_h,
-    int                             dilation_w,
-    cudnnConvolutionMode_t          mode,
-    cudnnDataType_t                 computeType)*/
-    cudnnSetConvolution2dDescriptor(convolution_descriptor,
-                                    cd->pad[0], cd->pad[2],
-                                    cd->stride[0], cd->stride[1],
-                                    1,1,
-                                    convolution_mode, data_type);
-
-   cudnnCreateTensorDescriptor(&xDesc);
-   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                 cd->in,cd->iz,cd->ir,cd->ic);
-   cudnnCreateFilterDescriptor(&wDesc);
-   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, cd->nk, cd->kz, cd->kr, cd->kc);
-
-   cudnnCreateTensorDescriptor(&yDesc);
-   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, cd->in, cd->z,cd->r,cd->c);
-   cudnnCreateTensorDescriptor(&bDesc);
-   cudnnSetTensor4dDescriptor(bDesc, tensor_format, data_type, cd->nk, 1,1,1);
-
-    #endif
 
 //    delta = cd->D;
 //    cd->ID = parent->delta;

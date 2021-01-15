@@ -22,7 +22,8 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
 
-
+void * shared_workspace=nullptr;
+size_t workspace_size=0;
 
 void gpu_im2col(ConvolDescriptor *D, int col2im){
   int device=D->I->gpu_device;
@@ -60,9 +61,10 @@ void gpu_im2col_low(ConvolDescriptor *D, int col2im,int b){
 
 void gpu_conv2D(ConvolDescriptor *D) {
 
+  cout<<"STARTTTTTTTTTT   AQUI" <<endl;
   int device=D->I->gpu_device;
   cudaSetDevice(device);
-  std::cout<<"Alla voooooooooooooy"<<std::endl;
+#ifndef cCUDNN
   int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
   D->gpuK->ptr=D->K->ptr;
@@ -92,7 +94,41 @@ void gpu_conv2D(ConvolDescriptor *D) {
     }
 
   }
-
+#else
+  if (D->cudnn_env_init < 0){
+      cout<<"AQUI" <<endl;
+      D->cudnn_env_init = 1;
+      cout<<"AQUI 2" <<endl;
+      int requestedAlgoCount;
+      cout<<"AQUI 3" <<endl;
+      check_cudnn(cudnnGetConvolutionForwardAlgorithmMaxCount(D->cudnn_handle, &requestedAlgoCount));
+      cout<<"AQUI 4" <<endl;
+      int returnedAlgoCount;
+      cout<<"AQUI 5" <<endl;
+      cudnnConvolutionFwdAlgoPerf_t * perfResults = new cudnnConvolutionFwdAlgoPerf_t [requestedAlgoCount];
+      check_cudnn(cudnnFindConvolutionForwardAlgorithm( D->cudnn_handle, D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
+                  requestedAlgoCount, &returnedAlgoCount, perfResults));
+      cout<<" A total of "<< returnedAlgoCount <<" where tested and the best is: "<< perfResults[0].algo <<endl;
+      D->fwd_algorithm = perfResults[0].algo;
+      check_cudnn(cudnnGetConvolutionForwardWorkspaceSize(D->cudnn_handle,D->xDesc, D->wDesc, D->convolution_descriptor,  D->yDesc,
+                                                          D->fwd_algorithm, &workspace_size));
+      cout<<"It needs "<< workspace_size << "bytes" <<endl;
+  }
+/*  cudnnStatus_t cudnnConvolutionForward(
+    cudnnHandle_t                       handle,
+    const void                         *alpha,
+    const cudnnTensorDescriptor_t       xDesc,
+    const void                         *x,
+    const cudnnFilterDescriptor_t       wDesc,
+    const void                         *w,
+    const cudnnConvolutionDescriptor_t  convDesc,
+    cudnnConvolutionFwdAlgo_t           algo,
+    void                               *workSpace,
+    size_t                              workSpaceSizeInBytes,
+    const void                         *beta,
+    const cudnnTensorDescriptor_t       yDesc,
+    void                               *y);*/
+#endif
   if (D->use_bias) {
     int size=D->bias->shape[0];
     for(int i=0;i<size;i+=1024) {

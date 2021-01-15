@@ -137,7 +137,6 @@ void ConvolDescriptor::build(Tensor *A) {
         // convolution: matC=matA*matK
     }
 #ifdef cGPU
-//#ifndef cCUDNN
     else if (I->isGPU()) {
         if (mem_level>1) {
             // Lowering
@@ -166,7 +165,45 @@ void ConvolDescriptor::build(Tensor *A) {
         gpugK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpugK->ptr);
     }
-//#endif
+#ifdef cCUDNN
+    //CUDNN
+    cudnn_handle = hdnn;
+    convolution_mode = CUDNN_CONVOLUTION; //CUDNN_CROSS_CORRELATION
+    data_type = CUDNN_DATA_FLOAT;
+    tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
+
+    if(cudnnCreateConvolutionDescriptor(&convolution_descriptor)!=CUDNN_STATUS_SUCCESS){
+        std::cout<<"Error en conv desc"<<endl;
+    }
+    /*cudnnStatus_t cudnnSetConvolution2dDescriptor(
+    cudnnConvolutionDescriptor_t    convDesc,
+    int                             pad_h,
+    int                             pad_w,
+    int                             u, //stride vertical
+    int                             v, //stride horizontal
+    int                             dilation_h,
+    int                             dilation_w,
+    cudnnConvolutionMode_t          mode,
+    cudnnDataType_t                 computeType)*/
+    cudnnSetConvolution2dDescriptor(convolution_descriptor,
+                                    pad[0], pad[2],
+                                    stride[0], stride[1],
+                                    1,1,
+                                    convolution_mode, data_type);
+
+   cudnnCreateTensorDescriptor(&xDesc);
+   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 in,iz,ir,ic);
+   cudnnCreateFilterDescriptor(&wDesc);
+   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
+
+   cudnnCreateTensorDescriptor(&yDesc);
+   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
+   cudnnCreateTensorDescriptor(&bDesc);
+   cudnnSetTensor4dDescriptor(bDesc, tensor_format, data_type, nk, 1,1,1);
+   cudnn_env_init = -1;
+
+#endif
 #endif
 
 #ifdef cFPGA
