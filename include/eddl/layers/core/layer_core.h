@@ -161,7 +161,12 @@ public:
     string act;
     static int total_layers;
     vector<float> params;
-
+#ifdef cCUDNN
+    cudnnActivationDescriptor_t activationDesc;
+    cudnnActivationMode_t mode;
+    cudnnNanPropagation_t reluNanOpt;
+    double coef;
+#endif
     LActivation(Layer *parent, string act, vector<float> params, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
