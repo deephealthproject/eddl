@@ -8,6 +8,7 @@
 #include "eddl/layers/pool/layer_pool.h"
 #include "eddl/layers/recurrent/layer_recurrent.h"
 #include "eddl/layers/reductions/layer_reductions.h"
+#include "eddl/layers/da/layer_da.h"
 #include "eddl/tensor/tensor.h"
 #include "eddl/utils.h"
 #include <map>
@@ -88,7 +89,8 @@ using namespace std;
 		RMIN,								// OPSET: 13, 12, 11, 1
 		RMEAN,							// OPSET: 13, 11, 1
 		RSUM,								// OPSET: 11, 1
-		ARGMAX							// OPSET: 13, 12, 11, 1
+		ARGMAX,							// OPSET: 13, 12, 11, 1
+		RESIZE
 	};
 
 
@@ -207,6 +209,7 @@ using namespace std;
 		map_layers["ReduceMean"] = ONNX_LAYERS::RMEAN;
 		map_layers["ReduceSum"] = ONNX_LAYERS::RSUM;
 		map_layers["ArgMax"] = ONNX_LAYERS::ARGMAX;
+		map_layers["Resize"] = ONNX_LAYERS::RESIZE;
 
 		return map_layers;
 	}
@@ -787,6 +790,7 @@ using namespace std;
 						string auto_pad_option = "";
 						bool auto_pad = false;
 						vector<float> *bias;
+						bool use_bias = node->input_size() > 2;
 						bool conv1d = false;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
@@ -858,13 +862,14 @@ using namespace std;
 						if(!auto_pad){
 							kernel_shape.insert(kernel_shape.begin(), filters); //Add number of filters to kernel shape
 							convol_descriptor = new ConvolDescriptor(kernel_shape, strides, pads);
+							convol_descriptor->use_bias = use_bias;
 						}
-						else convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, node->input_size() > 2, mem);
+						else convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, use_bias, mem);
 
 						if(conv1d) actual_layer = new LConv1D(parent, convol_descriptor, name, dev, mem);
 						else actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
 
-						if(node->input_size() > 2){
+						if(use_bias){
 							string bias_name = node->input(2);
 							bias = &(map_init_values[bias_name]);
 							vector<int> bias_shape;
@@ -2298,6 +2303,27 @@ using namespace std;
 
 						actual_layer = new LPermute(parent, perm, name, dev, mem);
 						log_string("Permute layer created" , log_level, LOG_LEVEL::DEBUG);
+					}
+					break;
+
+				case ONNX_LAYERS::RESIZE:
+					{
+						bool reshape_out = true;
+						string da_mode("constant");
+						float constant = 0.0;
+
+						string parent_name = node->input(0);
+						Layer * parent = output_node_map[parent_name];
+						vector<int> new_shape = parent->getShape();
+
+						string weights_name = node->input(2);
+						float* dim_scales = NEW_FROM_VECTOR_PTR(&(map_init_values[weights_name]));
+
+						for (int i = 0; i < new_shape.size(); ++i) {
+							new_shape[i] = new_shape[i] * dim_scales[i];
+						}
+
+        		actual_layer = new LScale(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
 					}
 					break;
 
