@@ -162,10 +162,24 @@ public:
     static int total_layers;
     vector<float> params;
 #ifdef cCUDNN
+    //Softmax
+    cudnnSoftmaxAlgorithm_t  algorithm;
+    cudnnSoftmaxMode_t  softmax_mode;
+
+    //Other Activations
     cudnnActivationDescriptor_t activationDesc;
     cudnnActivationMode_t mode;
     cudnnNanPropagation_t reluNanOpt;
     double coef;
+
+    //BOTH softmax and activations
+    cudnnHandle_t cudnn_handle;
+    cudnnTensorDescriptor_t    xDesc;
+    cudnnTensorDescriptor_t    yDesc;
+
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+
 #endif
     LActivation(Layer *parent, string act, vector<float> params, string name, int dev, int mem);
 

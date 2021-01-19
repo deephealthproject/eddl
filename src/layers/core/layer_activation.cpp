@@ -24,47 +24,70 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
 
     this->act = act;
     this->params = params;
-#ifdef cCUDNN
-    cudnnCreateActivationDescriptor(&activationDesc);
-    if(this->act == "sigmoid"){
-        mode = CUDNN_ACTIVATION_SIGMOID;
-    }
-    else if(this->act == "relu"){
-        mode = CUDNN_ACTIVATION_RELU;
-        coef = 9999999.0f; //this->params[0]; //upper boud
-        reluNanOpt = CUDNN_PROPAGATE_NAN;
-    }
-    else if(this->act == "thresholded_relu"){
-        mode = CUDNN_ACTIVATION_CLIPPED_RELU;
-        coef = this->params[0]; //threshold
-        reluNanOpt = CUDNN_PROPAGATE_NAN;
-    }
-    else if(this->act == "tanh"){
-        mode = CUDNN_ACTIVATION_TANH;
-    }
-    else if(this->act == "elu"){
-        mode = CUDNN_ACTIVATION_ELU;
-        reluNanOpt = CUDNN_PROPAGATE_NAN;
-    }
-    else if(this->act == "linear"){
-        mode = CUDNN_ACTIVATION_IDENTITY;
-    }
-    else{
-        std:cerr<<"Warning. "<<this->act<<" activation is not supported in CUDNN. A RELU will be executed." <<std::endl;
-        mode = CUDNN_ACTIVATION_RELU;
-        coef = this->params[0]; //upper boud
-        reluNanOpt = CUDNN_PROPAGATE_NAN;
-    }
 
-    cudnnSetActivationDescriptor( activationDesc, mode, reluNanOpt, coef);
-
-#endif
     input = parent->output;
 #ifdef DEBUG_FPGA
     printf("creating output for RELU\n");
 #endif
     output = new Tensor(input->shape, dev);
     delta_bp = 0;
+
+#ifdef cCUDNN
+
+    data_type = CUDNN_DATA_FLOAT;
+    tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
+    //BOTH softmax and activations
+    cudnn_handle = hdnn;
+    cudnnCreateTensorDescriptor(&xDesc);
+    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 input->shape[0], input->shape[1], input->shape[2], input->shape[3]);
+    cudnnCreateTensorDescriptor(&yDesc);
+    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                 output->shape[0], output->shape[1], output->shape[2], output->shape[3]);
+
+
+    if(this->act == "softmax"){
+        algorithm = CUDNN_SOFTMAX_ACCURATE;
+        softmax_mode = CUDNN_SOFTMAX_MODE_INSTANCE;
+
+    }
+    else{
+        cudnnCreateActivationDescriptor(&activationDesc);
+        if(this->act == "sigmoid"){
+            mode = CUDNN_ACTIVATION_SIGMOID;
+        }
+        else if(this->act == "relu"){
+            mode = CUDNN_ACTIVATION_RELU;
+            coef = 9999999.0f; //this->params[0]; //upper boud
+            reluNanOpt = CUDNN_PROPAGATE_NAN;
+        }
+        else if(this->act == "thresholded_relu"){
+            mode = CUDNN_ACTIVATION_CLIPPED_RELU;
+            coef = this->params[0]; //threshold
+            reluNanOpt = CUDNN_PROPAGATE_NAN;
+        }
+        else if(this->act == "tanh"){
+            mode = CUDNN_ACTIVATION_TANH;
+        }
+        else if(this->act == "elu"){
+            mode = CUDNN_ACTIVATION_ELU;
+            reluNanOpt = CUDNN_PROPAGATE_NAN;
+        }
+        else if(this->act == "linear"){
+            mode = CUDNN_ACTIVATION_IDENTITY;
+        }
+        else{
+            std:cerr<<"Warning. "<<this->act<<" activation is not supported in CUDNN. A RELU will be executed." <<std::endl;
+            mode = CUDNN_ACTIVATION_RELU;
+            coef = 9999999.0f; //this->params[0]; //upper boud
+            reluNanOpt = CUDNN_PROPAGATE_NAN;
+        }
+
+        cudnnSetActivationDescriptor( activationDesc, mode, reluNanOpt, coef);
+    }
+
+
+#else
 
     // Softmax checks
     if(this->act=="softmax"){
@@ -90,6 +113,7 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
             msg("The axis has to be a number from 0 to (number_of_dimensions - 1)", "LActivation::Softmax");
         }
     }
+#endif
 
     parent->addchild(this);
     addparent(parent);
@@ -98,12 +122,18 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
 
 void LActivation::forward(){
 
-    if (act == "relu"){
-#ifndef cCUDNN
-        tensorNN::ReLu(this->input, this->output);
+#ifdef cCUDNN
+    float alpha = 1.0f;
+    float beta = 0.0f;
+    if(act == "softmax"){
+        cudnnSoftmaxForward(cudnn_handle, algorithm, softmax_mode, &alpha, xDesc, input, &beta, yDesc, output);
+    }
+    else{
+        cudnnActivationForward(cudnn_handle, activationDesc, &alpha, xDesc, input, &beta, yDesc, output);
+    }
 #else
-        //tensorNN::ReLu(this->input, this->output);
-#endif
+    if (act == "relu"){
+        tensorNN::ReLu(this->input, this->output);
     }else if (act == "thresholded_relu"){
         float alpha = this->params[0];
         tensorNN::ThresholdedReLu(this->input, this->output, alpha);
@@ -153,6 +183,7 @@ void LActivation::forward(){
         float alpha = this->params[0];
         tensorNN::Linear(this->input, this->output, alpha);
     }
+#endif
 }
 
 
