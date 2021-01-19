@@ -5,6 +5,7 @@
 #include "eddl/layers/operators/layer_operators.h"
 #include "eddl/layers/recurrent/layer_recurrent.h"
 #include "eddl/layers/reductions/layer_reductions.h"
+#include "eddl/layers/da/layer_da.h"
 #include "eddl/net/net.h"
 #include "eddl/optimizers/optim.h"
 #include "eddl/serialization/onnx/eddl_onnx.h"
@@ -170,6 +171,9 @@ using namespace std;
 
   // OPSET: 7, 1
   void build_lstm_node( LLSTM *layer, onnx::GraphProto *graph );
+
+  // OPSET: 13
+  void build_resize_node( LScale *layer, onnx::GraphProto *graph );
 
   // Implemented with Gather Op for OPSET: 13, 11, 1
   void build_embedding_node( LEmbedding *layer, onnx::GraphProto *graph );
@@ -486,6 +490,8 @@ using namespace std;
       handle_copy_states((LCopyStates *)(MLayer *)layer, graph);
     } else if (LEmbedding *t = dynamic_cast<LEmbedding *>(layer)) {
       build_embedding_node((LEmbedding *)(LinLayer *)layer, graph);
+    } else if (LScale *t = dynamic_cast<LScale *>(layer)) {
+      build_resize_node((LScale *)(LDataAugmentation *)(LinLayer *)layer, graph);
     } else {
       cout << "The layer " << layer->name << "has no OpType in Onnx." << endl;
       return;
@@ -506,7 +512,8 @@ using namespace std;
     }
     // Set the input params names of the conv op
     node->add_input( layer->name + "_W" );
-    node->add_input( layer->name + "_b" );
+    if (layer->cd->use_bias)
+      node->add_input( layer->name + "_b" );
     // Set the name of the output of the node to link with other nodes
     node->add_output( layer->name );
 
@@ -554,13 +561,16 @@ using namespace std;
       conv_w->mutable_dims()->Add( layer->cd->K->shape.begin(), layer->cd->K->shape.end() ); // Set the shape of the weights
       conv_w->mutable_float_data()->Add( layer->cd->K->ptr, layer->cd->K->ptr + layer->cd->K->size ); // Set the weights values
       //conv_w->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->K->ptr), sizeof(float) * layer->cd->K->size );
+
       // Bias input
-      onnx::TensorProto* conv_b = graph->add_initializer();
-      conv_b->set_name( layer->name + "_b" );
-      conv_b->set_data_type( onnx::TensorProto::FLOAT );
-      conv_b->mutable_dims()->Add( layer->cd->bias->shape.begin(), layer->cd->bias->shape.end() ); // Set the shape of the bias
-      conv_b->mutable_float_data()->Add( layer->cd->bias->ptr, layer->cd->bias->ptr + layer->cd->bias->size); // Set the bias values
-      //conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->bias->ptr), sizeof(float) * layer->cd->bias->size );
+      if (layer->cd->use_bias) {
+        onnx::TensorProto* conv_b = graph->add_initializer();
+        conv_b->set_name( layer->name + "_b" );
+        conv_b->set_data_type( onnx::TensorProto::FLOAT );
+        conv_b->mutable_dims()->Add( layer->cd->bias->shape.begin(), layer->cd->bias->shape.end() ); // Set the shape of the bias
+        conv_b->mutable_float_data()->Add( layer->cd->bias->ptr, layer->cd->bias->ptr + layer->cd->bias->size); // Set the bias values
+        //conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->bias->ptr), sizeof(float) * layer->cd->bias->size );
+      }
     } else {
       // Accumulated gradients (Weights) input
       onnx::TensorProto* conv_w = graph->add_initializer();
@@ -569,13 +579,16 @@ using namespace std;
       conv_w->mutable_dims()->Add( layer->cd->acc_gK->shape.begin(), layer->cd->acc_gK->shape.end() ); // Set the accumulated gradiens shape (weights)
       conv_w->mutable_float_data()->Add( layer->cd->acc_gK->ptr, layer->cd->acc_gK->ptr + layer->cd->acc_gK->size ); // Set the accumulated gradients values (weights)
       //conv_w->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gK->ptr), sizeof(float) * layer->cd->acc_gK->size );
+
       // Accumulated gradients (bias) input
-      onnx::TensorProto* conv_b = graph->add_initializer();
-      conv_b->set_name( layer->name + "_b" );
-      conv_b->set_data_type( onnx::TensorProto::FLOAT );
-      conv_b->mutable_dims()->Add( layer->cd->acc_gbias->shape.begin(), layer->cd->acc_gbias->shape.end() ); // Set the accumulated gradients shape (bias)
-      conv_b->mutable_float_data()->Add( layer->cd->acc_gbias->ptr, layer->cd->acc_gbias->ptr + layer->cd->acc_gbias->size); // Set the accumulated gradients values (bias)
-      //conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gbias->ptr), sizeof(float) * layer->cd->acc_gbias->size );
+      if (layer->cd->use_bias) {
+        onnx::TensorProto* conv_b = graph->add_initializer();
+        conv_b->set_name( layer->name + "_b" );
+        conv_b->set_data_type( onnx::TensorProto::FLOAT );
+        conv_b->mutable_dims()->Add( layer->cd->acc_gbias->shape.begin(), layer->cd->acc_gbias->shape.end() ); // Set the accumulated gradients shape (bias)
+        conv_b->mutable_float_data()->Add( layer->cd->acc_gbias->ptr, layer->cd->acc_gbias->ptr + layer->cd->acc_gbias->size); // Set the accumulated gradients values (bias)
+        //conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gbias->ptr), sizeof(float) * layer->cd->acc_gbias->size );
+      }
     }
   }
 
@@ -590,7 +603,8 @@ using namespace std;
     }
     // Set the input params names of the conv op
     node->add_input( layer->name + "_W" );
-    node->add_input( layer->name + "_b" );
+    if (layer->cd->use_bias)
+      node->add_input( layer->name + "_b" );
     // Set the name of the output of the node to link with other nodes
     node->add_output( layer->name );
 
@@ -635,13 +649,16 @@ using namespace std;
       conv_w->mutable_dims()->Add( layer->cd->K->shape.begin(), --layer->cd->K->shape.end() ); // Set the shape of the weights
       conv_w->mutable_float_data()->Add( layer->cd->K->ptr, layer->cd->K->ptr + layer->cd->K->size ); // Set the weights values
       //conv_w->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->K->ptr), sizeof(float) * layer->cd->K->size );
+
       // Bias input
-      onnx::TensorProto* conv_b = graph->add_initializer();
-      conv_b->set_name( layer->name + "_b" );
-      conv_b->set_data_type( onnx::TensorProto::FLOAT );
-      conv_b->mutable_dims()->Add( layer->cd->bias->shape.begin(), layer->cd->bias->shape.end() ); // Set the shape of the bias
-      conv_b->mutable_float_data()->Add( layer->cd->bias->ptr, layer->cd->bias->ptr + layer->cd->bias->size); // Set the bias values
-      //conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->bias->ptr), sizeof(float) * layer->cd->bias->size );
+      if (layer->cd->use_bias) {
+        onnx::TensorProto* conv_b = graph->add_initializer();
+        conv_b->set_name( layer->name + "_b" );
+        conv_b->set_data_type( onnx::TensorProto::FLOAT );
+        conv_b->mutable_dims()->Add( layer->cd->bias->shape.begin(), layer->cd->bias->shape.end() ); // Set the shape of the bias
+        conv_b->mutable_float_data()->Add( layer->cd->bias->ptr, layer->cd->bias->ptr + layer->cd->bias->size); // Set the bias values
+        //conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->bias->ptr), sizeof(float) * layer->cd->bias->size );
+      }
     } else {
       // Accumulated gradients (Weights) input
       onnx::TensorProto* conv_w = graph->add_initializer();
@@ -650,13 +667,16 @@ using namespace std;
       conv_w->mutable_dims()->Add( layer->cd->acc_gK->shape.begin(), --layer->cd->acc_gK->shape.end() ); // Set the accumulated gradiens shape (weights)
       conv_w->mutable_float_data()->Add( layer->cd->acc_gK->ptr, layer->cd->acc_gK->ptr + layer->cd->acc_gK->size ); // Set the accumulated gradients values (weights)
       //conv_w->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gK->ptr), sizeof(float) * layer->cd->acc_gK->size );
+
       // Accumulated gradients (bias) input
-      onnx::TensorProto* conv_b = graph->add_initializer();
-      conv_b->set_name( layer->name + "_b" );
-      conv_b->set_data_type( onnx::TensorProto::FLOAT );
-      conv_b->mutable_dims()->Add( layer->cd->acc_gbias->shape.begin(), layer->cd->acc_gbias->shape.end() ); // Set the accumulated gradients shape (bias)
-      conv_b->mutable_float_data()->Add( layer->cd->acc_gbias->ptr, layer->cd->acc_gbias->ptr + layer->cd->acc_gbias->size); // Set the accumulated gradients values (bias)
-      //conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gbias->ptr), sizeof(float) * layer->cd->acc_gbias->size );
+      if (layer->cd->use_bias) {
+        onnx::TensorProto* conv_b = graph->add_initializer();
+        conv_b->set_name( layer->name + "_b" );
+        conv_b->set_data_type( onnx::TensorProto::FLOAT );
+        conv_b->mutable_dims()->Add( layer->cd->acc_gbias->shape.begin(), layer->cd->acc_gbias->shape.end() ); // Set the accumulated gradients shape (bias)
+        conv_b->mutable_float_data()->Add( layer->cd->acc_gbias->ptr, layer->cd->acc_gbias->ptr + layer->cd->acc_gbias->size); // Set the accumulated gradients values (bias)
+        //conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gbias->ptr), sizeof(float) * layer->cd->acc_gbias->size );
+      }
     }
   }
 
@@ -1725,6 +1745,55 @@ using namespace std;
         graph
       );
     }
+  }
+
+  void build_resize_node( LScale *layer, onnx::GraphProto *graph ) {
+    // Add an empty node to the graph
+    onnx::NodeProto* node = graph->add_node();
+    node->set_op_type( "Resize" );
+    node->set_name( layer->name );
+    // Set the inputs names of the node from the parents of the layer
+    for ( Layer* parentl : layer->parent ) {
+      node->add_input( parentl->name );
+    }
+    node->add_input( layer->name + "_roi" );
+    node->add_input( layer->name + "_scales" );
+    // Set the name of the output of the node to link with other nodes
+    node->add_output( layer->name );
+
+    // coordinate_transformation_mode attr
+    onnx::AttributeProto* trans_mode_attr = node->add_attribute();
+    trans_mode_attr->set_name( "coordinate_transformation_mode" );
+    trans_mode_attr->set_type( onnx::AttributeProto::STRING );
+    trans_mode_attr->set_s( "asymmetric" );
+
+    // coordinate_transformation_mode attr
+    onnx::AttributeProto* mode_attr = node->add_attribute();
+    mode_attr->set_name( "mode" );
+    mode_attr->set_type( onnx::AttributeProto::STRING );
+    mode_attr->set_s( "nearest" );
+
+    // roi input
+    onnx::TensorProto* roi = graph->add_initializer();
+    roi->set_name( layer->name + "_roi" );
+    roi->set_data_type( onnx::TensorProto::FLOAT );
+    roi->add_dims( 8 );
+    // Set roi to : [0,0,0,0,1,1,1,1] (To select the full input tensor)
+    int parent_dims = layer->parent[0]->output->getShape().size();
+    for( int i = 0; i < parent_dims; ++i )
+      roi->add_float_data( 0 );
+    for( int i = 0; i < parent_dims; ++i )
+      roi->add_float_data( 1 );
+
+    // scales input
+    onnx::TensorProto* scales = graph->add_initializer();
+    scales->set_name( layer->name + "_scales" );
+    scales->set_data_type( onnx::TensorProto::FLOAT );
+    scales->add_dims( 4 );
+    scales->add_float_data(1);  // Batch
+    scales->add_float_data(1);  // Channels
+    scales->add_float_data(layer->new_shape[0] / layer->input->getShape()[2]);  // H
+    scales->add_float_data(layer->new_shape[1] / layer->input->getShape()[3]);  // H
   }
 
   void build_identity_node( string node_name, string input, string output, onnx::GraphProto *graph ) {

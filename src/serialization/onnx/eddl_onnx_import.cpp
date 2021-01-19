@@ -90,7 +90,7 @@ using namespace std;
 		RMEAN,							// OPSET: 13, 11, 1
 		RSUM,								// OPSET: 11, 1
 		ARGMAX,							// OPSET: 13, 12, 11, 1
-		RESIZE
+		RESIZE							// OPSET: 13
 	};
 
 
@@ -2309,8 +2309,24 @@ using namespace std;
 				case ONNX_LAYERS::RESIZE:
 					{
 						bool reshape_out = true;
-						string da_mode("constant");
+						string da_mode("nearest");
 						float constant = 0.0;
+
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("coordinate_transformation_mode")) {
+								if (attribute.s().compare("asymmetric")) {
+									msg("In Resize operator, the coordinate transformation mode \"" + attribute.s() + "\" is not supported. It must be \"asymmetric\".", "ONNX::ImportNet");
+								}
+							}
+							if (!attr_name.compare("mode")) {
+								if (attribute.s().compare("nearest")) {
+									// ONNX only supports: "nearest", "linear" and "cubic".
+									msg("In Resize operator, the mode \"" + attribute.s() + "\" is not supported. It must be \"nearest\".", "ONNX::ImportNet");
+								}
+							}
+						}
 
 						string parent_name = node->input(0);
 						Layer * parent = output_node_map[parent_name];
@@ -2319,6 +2335,7 @@ using namespace std;
 						string weights_name = node->input(2);
 						float* dim_scales = NEW_FROM_VECTOR_PTR(&(map_init_values[weights_name]));
 
+						// Compute new shape by scaling the parent output shape
 						for (int i = 0; i < new_shape.size(); ++i) {
 							new_shape[i] = new_shape[i] * dim_scales[i];
 						}
