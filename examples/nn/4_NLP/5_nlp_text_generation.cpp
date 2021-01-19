@@ -202,7 +202,7 @@ int main(int argc, char **argv) {
 
     ldecin = Input({outvs});
     layer image = Input({512});
-    //layer lstates = States({2,512});
+    //TODO: layer lstates = States({2,512});
 
     ldec = ReduceArgMax(ldecin,{0});
     ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
@@ -251,7 +251,7 @@ int main(int argc, char **argv) {
        word->reshape_({1,1,outvs});
      }
 
-     //setState(lstate,state)
+     //TODO: setState(lstate,state)
      treshape->reshape_({1,512});
 
      cout<<"forward"<<endl;
@@ -259,7 +259,7 @@ int main(int argc, char **argv) {
 
      Tensor *outword=getOutput(out);
      //delete state;
-     //state=getState(lstate);
+     //TODO: state=getState(lstate);
    }
 
 }

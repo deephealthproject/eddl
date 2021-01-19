@@ -1,0 +1,12 @@
+TODO
+
+- Soporte ONNX: Gather, Unsqueeze ??
+- Comprobar modelos pre-entrenados onnx:
+  - Resizing 224 y predict
+  - o bien ImageNet
+
+- Decoder -> inferencia n-best
+- Ejemplos Enconder-Decoder: MT, Descripción de Imágenes/Videos
+- Modelos de atención
+- Conv3D
+- Apoyo use-cases (examples)
