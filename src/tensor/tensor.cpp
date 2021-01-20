@@ -162,6 +162,7 @@ void Tensor::deleteData(){
         else if (this->isGPU())
         {
             gpu_delete_tensor(this->gpu_device, this->ptr);
+            //cout<<"delete here"<<endl;
         }
 #endif
 #ifdef cFPGA
@@ -585,6 +586,6 @@ void Tensor::resize(int b, float *fptr, void *fptr2, bool delete_data) {
     updateShape(new_shape);
     updateSize();
     updateStrides();
-    if (fptr != nullptr && delete_data) deleteData();  // Potential error on layers such as Reshape (passed pointer)
+    if (!isshared && delete_data) deleteData();  // Potential error on layers such as Reshape (passed pointer)
     updateData(fptr, fptr2);
 }
