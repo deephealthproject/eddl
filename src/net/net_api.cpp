@@ -153,6 +153,34 @@ void Net::run_snets(void *(*F)(void *t))
 
   int comp = snets.size();
 
+  if((snets[0]->dev != DEV_CPU) && (comp > 1))
+  {
+    #pragma omp parallel for
+    for (int i = 0; i < comp; i++) {
+      // Thread params
+      td[i].net = snets[i];
+      // Call function
+      F(&td[i]);
+    }
+  }
+  else
+  {
+    // Thread params
+    td[0].net = snets[0];
+    // Call function
+    F(&td[0]);
+  }
+}
+
+/*
+void Net::run_snets(void *(*F)(void *t))
+{
+  void *status;
+  int rc;
+  struct tdata td[100];
+
+  int comp = snets.size();
+
   #pragma omp parallel for
   for (int i = 0; i < comp; i++) {
     // Thread params
@@ -161,7 +189,7 @@ void Net::run_snets(void *(*F)(void *t))
     F(&td[i]);
   }
 }
-
+*/
 
 //////////////////////////////////////////////////////////////
 //////// SIMPLE ATOMICS FUNCS
