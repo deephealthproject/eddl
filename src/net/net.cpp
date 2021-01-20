@@ -166,7 +166,9 @@ Net::~Net(){
     // IF CPU : net = snets[0]   snets.push_back(this)
 
    // IF GPU: net , snets[0]= clone en GPU
-
+ 
+   
+    // clean device mem
     for(int i=0;i<snets.size();i++){
       for(int j=0;j<snets[i]->layers.size();j++) {
         if (snets[i]->layers[j]!=nullptr) {
@@ -176,13 +178,21 @@ Net::~Net(){
       }
     }
 
-    //TODO:
-    /*
-    if (GPU){
+    // net running on device != CPU
+    // clean also CPU mem
+    if (snets[0]!=this){
       for(int j=0;j<layers.size();j++)
          delete layers[j];
     }
-    */
+   
+
+ 
+    // clean inputs
+    for(int i=0; i<snets.size(); i++) {
+        Xs[i].clear();
+        Ys[i].clear();
+    }
+
 
     if (rnet!=nullptr) {delete rnet; rnet = nullptr;}
 }
