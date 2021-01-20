@@ -27,10 +27,13 @@ size_t workspace_size=0;
 
 int allocate_workspace(size_t size){
     if (size <= workspace_size){
+        std::cout<<size <<" is smaller than "<<workspace_size<<" so return"<<std::endl;
         return 0;
     }
     else {
+        std::cout<<size <<" is bigger than "<<workspace_size<<" so update"<<std::endl;
         workspace_size = size;
+        cudaFree(shared_workspace);
         return cudaMalloc((void **) &shared_workspace, size);
     }
 }
@@ -74,6 +77,8 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
   int device=D->I->gpu_device;
   cudaSetDevice(device);
+  float alpha = 1.0f;
+  float beta = 0.0f;
 #ifndef cCUDNN
   int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
@@ -105,30 +110,65 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
   }
 #else
+  std::cout<<"starting convolution... init?"<< D->cudnn_env_init <<std::endl;
   if (D->cudnn_env_init < 0){
       D->cudnn_env_init = 1;
       int requestedAlgoCount;
-      check_cudnn(cudnnGetConvolutionForwardAlgorithmMaxCount(D->cudnn_handle, &requestedAlgoCount));
+      //check_cudnn(cudnnGetConvolutionForwardAlgorithmMaxCount(D->cudnn_handle, &requestedAlgoCount));
+      cudnnStatus_t bbb = cudnnGetConvolutionForwardAlgorithmMaxCount(
+              D->cudnn_handle, &requestedAlgoCount);
+  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error 1 "<< cudnnGetErrorString(bbb) <<std::endl;
       int returnedAlgoCount;
       cudnnConvolutionFwdAlgoPerf_t * perfResults = new cudnnConvolutionFwdAlgoPerf_t [requestedAlgoCount];
-      check_cudnn(cudnnFindConvolutionForwardAlgorithm( D->cudnn_handle, D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
-                  requestedAlgoCount, &returnedAlgoCount, perfResults));
+      //check_cudnn(cudnnFindConvolutionForwardAlgorithm( D->cudnn_handle, D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
+      //            requestedAlgoCount, &returnedAlgoCount, perfResults));
+      bbb = cudnnFindConvolutionForwardAlgorithm( D->cudnn_handle, D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
+                  requestedAlgoCount, &returnedAlgoCount, perfResults);
+  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error 2 "<< cudnnGetErrorString(bbb) <<std::endl;
       int aux_alg = 0;
       size_t size;
       do{
+          cout<<"Miro alg"<<aux_alg<<endl;
           D->fwd_algorithm = perfResults[aux_alg].algo;
-          check_cudnn(cudnnGetConvolutionForwardWorkspaceSize(D->cudnn_handle,D->xDesc, D->wDesc,
+          cout<<D->cudnn_handle<<endl;
+
+    cudnnDataType_t         dataType;
+    int                     n;
+    int                     c;
+    int                     h;
+    int                     w;
+    int                     nStride;
+    int                     cStride;
+    int                     hStride;
+    int                     wStride;
+    cudnnTensorFormat_t        format;
+    bbb = cudnnGetTensor4dDescriptor(D->xDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
+  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get xDesc "<< cudnnGetErrorString(bbb) <<std::endl;
+    std::cout <<"xDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w << ", " <<nStride <<", " <<cStride<<", "<<hStride<<", " <<wStride<<std::endl;
+    bbb = cudnnGetFilter4dDescriptor(D->wDesc, &dataType, &format, &n, &c, &h, &w);
+    if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get wDesc "<< cudnnGetErrorString(bbb) <<std::endl;
+    std::cout <<"wDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w <<std::endl;
+    bbb = cudnnGetTensor4dDescriptor(D->yDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
+  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get yDesc "<< cudnnGetErrorString(bbb) <<std::endl;
+    std::cout <<"yDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w << ", "<<nStride <<", " <<cStride<<", " <<hStride<<", " <<wStride<<std::endl;
+          //check_cudnn(cudnnGetConvolutionForwardWorkspaceSize(D->cudnn_handle,D->xDesc, D->wDesc,
+          //                                                    D->convolution_descriptor,  D->yDesc,
+          //                                                    D->fwd_algorithm, &size));
+          bbb =cudnnGetConvolutionForwardWorkspaceSize(D->cudnn_handle,D->xDesc, D->wDesc,
                                                               D->convolution_descriptor,  D->yDesc,
-                                                              D->fwd_algorithm, &size));
+                                                              D->fwd_algorithm, &size);
+  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error 3 "<< cudnnGetErrorString(bbb) <<std::endl;
           aux_alg++;
       }
       while(allocate_workspace(size));
+  std::cout<<" convolution env created... init?"<< D->cudnn_env_init <<std::endl;
   }
-  float alpha = 1.0f;
-  float beta = 0.0f;
-  check_cudnn(cudnnConvolutionForward( D->cudnn_handle, &alpha, D->xDesc, D->I, D->wDesc, D->K,
-    D->convolution_descriptor, D->fwd_algorithm, shared_workspace, workspace_size,
-    &beta, D->yDesc, D->O));
+  cudnnStatus_t aaa = cudnnConvolutionForward( D->cudnn_handle, &alpha, D->xDesc, D->I->ptr,
+                                       D->wDesc, D->K->ptr,
+                                       D->convolution_descriptor, D->fwd_algorithm,
+                                       shared_workspace, workspace_size,
+                                       &beta, D->yDesc, D->O->ptr);
+  if(aaa != CUDNN_STATUS_SUCCESS) std::cout<<"Error en convolucion "<< cudnnGetErrorString(aaa) <<std::endl;
 #endif
   if (D->use_bias) {
 #ifndef cCUDNN
@@ -139,7 +179,8 @@ void gpu_conv2D(ConvolDescriptor *D) {
       check_cuda(cudaDeviceSynchronize(),"gpu_addbias");
     }
 #else
-    check_cudnn(cudnnAddTensor(D->cudnn_handle, &alpha, D->bDesc, D->bias, &alpha, D->yDesc, D->O));
+    check_cudnn(cudnnAddTensor(D->cudnn_handle, &alpha, D->bDesc, D->bias->ptr,
+                               &alpha, D->yDesc, D->O->ptr));
 #endif
   }
 

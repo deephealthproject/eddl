@@ -111,7 +111,8 @@ void ConvolDescriptor::build(Tensor *A) {
 
     padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
     padcl = pad[2]; padcr = pad[3];  // cols: left-right
-
+    for(int i = 0; i< pad.size();i++)
+    std::cout<<"PADING "<< pad[i] <<std::endl;
     if ((r <= 0) || (c <= 0)) {
         cout<<"rows="<<r<<" cols"<<c<<endl;
         msg("Invalid output shape", "ConvolDescriptor::build");
@@ -184,11 +185,14 @@ void ConvolDescriptor::build(Tensor *A) {
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  in,iz,ir,ic);
    // Descriptor for kerneks
+   std::cout<<"xDesc ("<<in<<","<< iz<<","<< ir<<","<< ic << std::endl;
    cudnnCreateFilterDescriptor(&wDesc);
    cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
+   std::cout<<"wDesc ("<<nk<<","<< kz<<","<< kr<<","<< kc << std::endl;
    // Descriptor for output
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
+   std::cout<<"yDesc ("<<in<<","<< z<<","<< r<<","<< c << std::endl;
    //Descriptor for bias
    cudnnCreateTensorDescriptor(&bDesc);
    cudnnSetTensor4dDescriptor(bDesc, tensor_format, data_type, 1, nk,1,1);
@@ -235,6 +239,18 @@ void ConvolDescriptor::resize(int b)
             gpuOB=new Tensor(vector<int>{z,b*r*c}, I->device);
         }
     }
+#ifdef cCUDNN
+       //Descriptor for Input data
+   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 b,iz,ir,ic);
+   // Descriptor for kerneks
+   std::cout<<"xDesc ("<<b<<","<< iz<<","<< ir<<","<< ic << std::endl;
+   // Descriptor for output
+   cudnnCreateTensorDescriptor(&yDesc);
+   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+   std::cout<<"yDesc ("<<O->shape[0]<<","<< O->shape[1]<<","<< O->shape[2]<<","<< O->shape[3] << std::endl;
+
+#endif
 #endif
 
 #ifdef cFPGA
