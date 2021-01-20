@@ -563,6 +563,12 @@ void Net::compute_loss()
       }
     }
 
+    for (int j = 0,p=0; j < lout.size(); j++,p+=2) { 
+      total_loss[j] += fiterr[p];  // losses
+      total_metric[j] += fiterr[p + 1];  // metric
+      fiterr[p] = fiterr[p + 1] = 0.0;
+    }
+  
     inferenced_samples+=batch_size;
   }
 }
@@ -615,15 +621,16 @@ void Net::print_loss(int b)
   }
   else {
     fprintf(stdout,"Batch %d ",b);
+    
     int length=decsize;
     for (int k = 0; k < lout.size(); k+=decsize) {
-
+/*
       for(int l=0;l<length;l++,p+=2) {
         total_loss[k] += fiterr[p];  // loss
         total_metric[k] += fiterr[p + 1];  // metric
         fiterr[p] = fiterr[p + 1] = 0.0;
       }
-
+  */  
       string name=lout[k]->name;
 
       fprintf(stdout, "%s ( ", name.c_str());

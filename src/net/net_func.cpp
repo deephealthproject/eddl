@@ -135,6 +135,8 @@ void Net::do_compute_loss() {
     if (metrics.size()>=(i+1)){
         fiterr[p + 1] = metrics[i]->value(lout[i]->target, lout[i]->output);
     }
+
+  
   }
 
   if (VERBOSE) {
