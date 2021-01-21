@@ -235,6 +235,33 @@ public:
 
 };
 
+/// Unsqueeze Layer
+class LUnsqueeze : public LinLayer {
+public:
+    static int total_layers;
+    int axis;
+
+    // constructors and clones
+    LUnsqueeze(Layer *parent, int axis, string name, int dev, int mem);
+    ~LUnsqueeze() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    // implementation
+    void mem_delta() override;
+    void free_delta() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+
+};
 
 /// Transpose Layer
 class LTranspose : public LinLayer {
