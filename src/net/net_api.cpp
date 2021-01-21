@@ -624,13 +624,7 @@ void Net::print_loss(int b)
     
     int length=decsize;
     for (int k = 0; k < lout.size(); k+=decsize) {
-/*
-      for(int l=0;l<length;l++,p+=2) {
-        total_loss[k] += fiterr[p];  // loss
-        total_metric[k] += fiterr[p + 1];  // metric
-        fiterr[p] = fiterr[p + 1] = 0.0;
-      }
-  */  
+
       string name=lout[k]->name;
 
       fprintf(stdout, "%s ( ", name.c_str());
