@@ -28,14 +28,14 @@ Adam::Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_dec
 
 }
 
-Adam::~Adam() {
+Adam::~Adam() { 
     for(int i=0; i<mT.size(); i++){ delete mT[i]; }
     for(int i=0; i<vT.size(); i++){ delete vT[i]; }
     for(int i=0; i<mCap.size(); i++){ delete mCap[i]; }
     for(int i=0; i<vCap.size(); i++){ delete vCap[i]; }
 }
 
-void Adam::change(vector<float> &p) {
+void Adam::change(vector<float> p) {
   if (p.size()>0) lr = p[0];
   cout<<"Optimizer Adam set new lr="<<lr<<"\n";
 }

@@ -28,7 +28,7 @@ SGD::~SGD() {
     for(int i=0; i<mT.size(); i++){ delete mT[i]; }
 }
 
-void SGD::change(vector<float> &p) {
+void SGD::change(vector<float> p) {
     if (p.size()>0) lr = p[0];
     if (p.size()>1) mu = p[1];
 }

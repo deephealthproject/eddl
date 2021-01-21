@@ -160,14 +160,25 @@ Net::Net(vector <Net *> vnets):Net()
 
 Net::~Net(){
 
+    // clean inputs
+    for(int i=0; i<snets.size(); i++) {
+        Xs[i].clear();
+        Ys[i].clear();
+    }
+
+    for(int i=0;i<snets.size();i++)
+        if (snets[i]->optimizer!=nullptr)
+            delete snets[i]->optimizer;
+
+    if (snets[0]!=this)
+        if (optimizer!=nullptr)
+            delete optimizer;
+
+  
     if (mnets.size()) return;
 
-
-    // IF CPU : net = snets[0]   snets.push_back(this)
-
-   // IF GPU: net , snets[0]= clone en GPU
- 
-   
+ // IF CPU : net = snets[0]   snets.push_back(this)
+    // IF GPU: net , snets[0]= clone en GPU
     // clean device mem
     for(int i=0;i<snets.size();i++){
       for(int j=0;j<snets[i]->layers.size();j++) {
@@ -177,22 +188,15 @@ Net::~Net(){
         }
       }
     }
-
+ 
     // net running on device != CPU
     // clean also CPU mem
     if (snets[0]!=this){
-      for(int j=0;j<layers.size();j++)
+      for(int j=0;j<layers.size();j++) {
          delete layers[j];
+      }
     }
    
-
- 
-    // clean inputs
-    for(int i=0; i<snets.size(); i++) {
-        Xs[i].clear();
-        Ys[i].clear();
-    }
-
 
     if (rnet!=nullptr) {delete rnet; rnet = nullptr;}
 }

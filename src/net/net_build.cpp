@@ -174,12 +174,14 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 
+
   if (isbuild) return;
 
+  cout<<"Building "<<name<<endl;
 
   for(int i=0;i<layers.size();i++) {
     if ((layers[i]->orig!=nullptr)&&(layers[i]->orig->net!=this)) {
-      cout<<layers[i]->name<<endl;
+      //cout<<layers[i]->name<<endl;
       layers[i]->orig->net->build(opt->clone(),{},{},cs,true);
     }
     else if (layers[i]->net!=this) {
@@ -187,7 +189,6 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
     }
   }
 
-  cout<<"Building "<<name<<endl;
 
   build(opt, lo, me, initialize);
 
@@ -322,8 +323,27 @@ void Net::set_compserv(CompServ *cs){
         if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
 
         if (!cs->isshared) {
-            split(devsel.size(),DEV_GPU);
+         if (mnets.size()) {
+          // comes from a merge of nets
+          for(int j=0;j<mnets.size();j++)
+              if (!mnets[j]->isbuild) {
+                mnets[j]->build(optimizer->clone(),{},{},cs,true);
+              }
+
+          cout<<"Building merge "<<endl;
+          for(int i=0;i<devsel.size();i++) {
+            vector <Net *>sm;
+            for(int j=0;j<mnets.size();j++) {
+              sm.push_back(mnets[j]->snets[i]);
+            }
+            snets.push_back(new Net(sm));
+            snets[i]->build(optimizer->clone(), losses, metrics);
         }
+      }
+      else {
+        split(devsel.size(),DEV_GPU);
+      }
+    }
 
 
 #endif
@@ -350,34 +370,16 @@ void Net::set_compserv(CompServ *cs){
         if (!devsel.size()) msg("No fpga selected","Net.build");
 
         cout<<"split into "<<devsel.size()<<" FPGAs devices\n";
-
         if (!cs->isshared) {
-          if (mnets.size()){
-            // comes from a merge of nets
-            for(int j=0;j<mnets.size();j++)
-              if (!mnets[j]->isbuild){
-                mnets[j]->build(optimizer->clone(),{},{},cs,true);
-              }
-
-            cout<<"Building merge "<<endl;
-            for(int i=0;i<devsel.size();i++) {
-              vector <Net *>sm;
-              for(int j=0;j<mnets.size();j++) {
-                sm.push_back(mnets[j]->snets[i]);
-              }
-              snets.push_back(new Net(sm));
-              snets[i]->build(optimizer->clone(), losses, metrics);
-            }
-          }
-          else {
             split(devsel.size(),DEV_FPGA);
-          }
         }
 #endif
-        }
-    } else {
-        msg("Distributed version not yet implemented", "Net.set_compserv");
+      }
     }
+    else {
+       msg("Distributed version not yet implemented", "Net.set_compserv");
+    }
+
 
     // create input and output tensors (X,Y)
     for (int i = 0; i < snets.size(); i++) {
@@ -386,7 +388,7 @@ void Net::set_compserv(CompServ *cs){
       for (int j = 0; j < snets[i]->lout.size(); j++)
           Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
     }
-  }
+}
 
 // Split nets among CS
 void Net::split(int c, int todev) {
