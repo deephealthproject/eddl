@@ -612,13 +612,41 @@ namespace eddl {
         return new LConv1D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
+    layer Conv2D(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides, string padding,  bool use_bias,
+               int groups, const vector<int> &dilation_rate,string name){
+        return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
+
+    layer Conv3D(layer parent, int filters, const vector<int> &kernel_size,
+                 const vector<int> &strides, string padding,  bool use_bias,
+                 int groups, const vector<int> &dilation_rate,string name){
+        msg("Not implemented error", "Conv3D");
+        return nullptr;
+    }
+
+    // Legacy
     layer PointwiseConv(layer parent, int filters,
+                          const vector<int> &strides, bool use_bias,
+                          int groups, const vector<int> &dilation_rate,string name){
+        return new LConv(parent, filters, {1, 1}, strides, "none", groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
+
+
+    layer PointwiseConv2D(layer parent, int filters,
                const vector<int> &strides, bool use_bias,
                int groups, const vector<int> &dilation_rate,string name){
         return new LConv(parent, filters, {1, 1}, strides, "none", groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
+    // Legacy
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
+                const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
+                const vector<int> &strides, bool use_bias, string name){
+        return new LConvT(parent, filters, kernel_size, output_padding, padding, dilation_rate, strides, use_bias, name, DEV_CPU, 0);
+    }
+
+    layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
                 const vector<int> &strides, bool use_bias, string name){
         return new LConvT(parent, filters, kernel_size, output_padding, padding, dilation_rate, strides, use_bias, name, DEV_CPU, 0);
@@ -642,7 +670,12 @@ namespace eddl {
         return new LInput(new Tensor(s), name, DEV_CPU, 0);
     }
 
+    // Legacy
     layer UpSampling(layer parent, const vector<int> &size, string interpolation, string name){
+        return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
+    }
+
+    layer UpSampling2D(layer parent, const vector<int> &size, string interpolation, string name){
         return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
     }
 

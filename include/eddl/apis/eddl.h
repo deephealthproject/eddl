@@ -640,7 +640,7 @@ namespace eddl {
     */
     float compute_metric(loss L);
     /**
-      *  @brief Get Loss by its name.
+      *  @brief Get Loss object by its name.
       *
       *  @param type  Loss name/type
       *  @return     Selected Loss
@@ -665,7 +665,7 @@ namespace eddl {
     */
     loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
     /**
-      *  @brief Get Metric by its name.
+      *  @brief Get Metric object by its name.
       *
       *  @param type  Metric name/type
       *  @return     Selected Metric
@@ -872,7 +872,7 @@ namespace eddl {
     layer Tanh(layer parent, string name="");
 
     /**
-      *  @brief 2D Convolution layer.
+      *  @brief Convolution layer.
       *
       *  @param parent  Parent layer
       *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
@@ -910,7 +910,43 @@ namespace eddl {
 
 
     /**
-      *  @brief Pointwise convolution
+  *  @brief 2D Convolution layer.
+  *
+  *  @param parent  Parent layer
+  *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+  *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window
+  *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+  *  @param padding  One of "none", "valid" or "same"
+  *  @param use_bias  Boolean, whether the layer uses a bias vector
+  *  @param groups  Number of blocked connections from input channels to output channels
+  *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+  *  @param name  A name for the operation
+  *  @return     Convolution layer
+*/
+    layer Conv2D(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    /**
+    *  @brief 3D Convolution layer.
+    *
+    *  @param parent  Parent layer
+    *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+    *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window
+    *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+    *  @param padding  One of "none", "valid" or "same"
+    *  @param use_bias  Boolean, whether the layer uses a bias vector
+    *  @param groups  Number of blocked connections from input channels to output channels
+    *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+    *  @param name  A name for the operation
+    *  @return     Convolution layer
+    */
+    layer Conv3D(layer parent, int filters, const vector<int> &kernel_size,
+                 const vector<int> &strides = {1, 1, 1}, string padding = "same", bool use_bias = true,
+                 int groups = 1, const vector<int> &dilation_rate = {1, 1, 1}, string name = "");
+
+    /**
+      *  @brief Pointwise 2D convolution
       *
       *  @param parent  Parent layer
       *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
@@ -921,8 +957,12 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     Convolution layer
     */
-    layer PointwiseConv(layer parent, int filters, const vector<int> &strides = {1, 1}, bool use_bias = true,
+    layer PointwiseConv2D(layer parent, int filters, const vector<int> &strides = {1, 1}, bool use_bias = true,
                int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    // Legacy
+    layer PointwiseConv(layer parent, int filters, const vector<int> &strides = {1, 1}, bool use_bias = true,
+                        int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
     /**
       *  @brief Regular densely-connected NN layer.
@@ -970,6 +1010,9 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */
+    layer UpSampling2D(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
+
+    // Legacy
     layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
 
     /**
@@ -1028,10 +1071,15 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */
-    layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
+    layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
+    // Legacy
+    layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
+                  const vector<int> &output_padding, string padding = "same",
+                  const vector<int> &dilation_rate = {1, 1},
+                  const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
 
     /**
       *  @brief Turns positive integers (indexes) into dense vectors of fixed size. eg. [[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]
