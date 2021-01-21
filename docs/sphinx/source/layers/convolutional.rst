@@ -29,29 +29,29 @@ Example:
 Conv3D
 --------
 
-.. doxygenfunction:: eddl::Conv2D
+.. doxygenfunction:: eddl::Conv3D
 
 .. note::
 
     **Work in progress**. Not yet implemented.
 
 
-Pointwise Convolution
------------------------
+Pointwise Convolution 2D
+------------------------
 
-.. doxygenfunction:: eddl::PointwiseConv(layer parent, int filters, const vector<int> &strides = {1, 1}, bool use_bias = true, int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "")
+.. doxygenfunction:: eddl::PointwiseConv2D
 
 Example:
 
 .. code-block:: c++
 
-    l = PointwiseConv(l, 32, {3,3}, {1,1});
+    l = PointwiseConv2D(l, 32, {3,3}, {1,1});
   
 
 2D Upsampling 
 --------------
 
-.. doxygenfunction:: eddl::UpSampling
+.. doxygenfunction:: eddl::UpSampling2D
 
 .. note::
 
@@ -61,13 +61,13 @@ Example:
 
 .. code-block:: c++
 
-    l = UpSampling(l, {2, 2});
+    l = UpSampling2D(l, {2, 2});
     
 
 Convolutional Transpose
 ------------------------
 
-.. doxygenfunction:: eddl::ConvT
+.. doxygenfunction:: eddl::ConvT2D
 
 .. note::
 
