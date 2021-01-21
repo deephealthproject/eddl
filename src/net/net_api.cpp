@@ -563,55 +563,17 @@ void Net::compute_loss()
       }
     }
 
-    for (int j = 0,p=0; j < lout.size(); j++,p+=2) { 
-      total_loss[j] += fiterr[p];  // losses
-      total_metric[j] += fiterr[p + 1];  // metric
-      fiterr[p] = fiterr[p + 1] = 0.0;
-    }
+    int p=0;
+    for(int k=0;k<lout.size();k+=decsize)
+     for (int j = 0; j < lout.size(); j++,p+=2) { 
+       total_loss[k] += fiterr[p];  // losses
+       total_metric[k] += fiterr[p + 1];  // metric
+       fiterr[p] = fiterr[p + 1] = 0.0;
+      }
   
     inferenced_samples+=batch_size;
   }
 }
-
-float Net::get_metric( const string  layer_name, const string  metric_name )
-{
-    float value=-1.;
-    string lname="";
-
-    if (isrecurrent) {
-        value = -1.;
-    } else {
-        int p=0;
-        int length = decsize;
-        for (int k = 0; k < lout.size(); k+=decsize) {
-
-            for( int l=0; l < length; l++, p+=2 ) {
-                total_loss[k] += fiterr[p];  // loss
-                total_metric[k] += fiterr[p + 1];  // metric
-                fiterr[p] = fiterr[p + 1] = 0.0;
-            }
-
-            if ( layer_name.size() > 0 ) {
-                lname = lout[k]->name;
-                if (lout[k]->isshared) lname=lout[k]->orig->name;
-            }
-
-            // if no layer specified and more than one layer then
-            // the required metric of the last output layer will be returned
-
-            if ( layer_name.size() == 0 || layer_name == lname ) {
-
-                if ( losses[k]->name == metric_name ) {
-                    value = total_loss[k] / (length*inferenced_samples);
-                } else if ( metrics[k]->name == metric_name ) {
-                    value = total_metric[k] / (length*inferenced_samples);
-                }
-            }
-        }
-    }
-    return value;
-}
-
 void Net::print_loss(int b)
 {
   int p = 0;
@@ -681,13 +643,14 @@ void Net::print_loss(int b)
   }
 }
 
+
 vector<float> Net::get_losses(){
     // NOTE: I have no idea how the internals of the metrics/loss values work,
     // so I did a sort of copy and paste from print_loss fuction with minor workarounds
     vector<float> loss_values;
 
     if (this->isrecurrent) {
-        if (this->rnet!=nullptr) { this->rnet->get_losses(); } // Dangerous A.F.
+        if (this->rnet!=nullptr) { return this->rnet->get_losses(); } // Dangerous A.F.
     } else {
         int p = 0;
 
