@@ -1028,11 +1028,26 @@ namespace eddl {
     }
 
     layer GlobalAveragePool(layer parent, string name){
-        if (parent->output->ndim!=4) msg("GlobalAveragePool only over 4D tensors","GlobalAveragePool");
+        if (parent->output->ndim!=4) msg("GlobalAveragePool only works over 4D tensors","GlobalAveragePool");
 
         int h=parent->output->shape[2];
         int w=parent->output->shape[3];
         return AveragePool(parent, {h,w},{1,1});
+    }
+
+    layer GlobalAveragePool1D(layer parent, string name){
+        if (parent->output->ndim!=3) msg("GlobalAveragePool only works over 3D tensors","GlobalAveragePool1D");
+
+        int h=parent->output->shape[2];
+        return AveragePool1D(parent, {h},{1});
+    }
+
+    layer GlobalAveragePool2D(layer parent, string name){
+        return GlobalAveragePool(parent, name);
+    }
+
+    layer GlobalAveragePool3D(layer parent, string name){
+        msg("Not implemented error", "GlobalAveragePool3D");
     }
 
     // Generic (in-theory)
@@ -1060,6 +1075,21 @@ namespace eddl {
         int h=parent->output->shape[2];
         int w=parent->output->shape[3];
         return MaxPool(parent, {h,w}, {1,1},"none","gpool");
+    }
+
+    layer GlobalMaxPool1D(layer parent, string name){
+        if (parent->output->ndim!=3) msg("GlobalMaxPool1D only works over 3D tensors","GlobalMaxPool1D");
+
+        int h=parent->output->shape[2];
+        return AveragePool1D(parent, {h},{1});
+    }
+
+    layer GlobalMaxPool2D(layer parent, string name){
+        return GlobalMaxPool(parent, name);
+    }
+
+    layer GlobalMaxPool3D(layer parent, string name){
+        msg("Not implemented error", "GlobalMaxPool3D");
     }
 
     // Recurrent Layers

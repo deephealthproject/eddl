@@ -1775,7 +1775,7 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after apply the average pooling operation over the parent layer
     */
-    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");
+    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
 
     /**
       *  @brief AveragePooling1D operation.
@@ -1820,7 +1820,7 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after applying the global max pooling operation over the parent layer
     */
-    layer GlobalMaxPool(layer parent, string name = "");
+    layer GlobalMaxPool(layer parent, string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
 
     /**
       *  @brief Global Average pooling operation.
@@ -1829,7 +1829,36 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after applying the global average pooling operation over the parent layer
     */
-    layer GlobalAveragePool(layer parent, string name = "");
+    layer GlobalAveragePool(layer parent, string name = ""); // TODO: Deprecated? Generic but not generic... (2D only)
+
+    /**
+        *  @brief GlobalAveragePooling1D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool1D(layer parent, string name = "");
+
+
+    /**
+        *  @brief GlobalAveragePooling2D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool2D(layer parent, string name = "");
+
+    /**
+        *  @brief GlobalAveragePooling3D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool3D(layer parent, string name = "");
+
     /**
       *  @brief Max pooling operation.
       *
@@ -1840,7 +1869,7 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after applying the max pooling operation over the parent layer
     */
-    layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
+    layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
 
     /**
       *  @brief MaxPooling1D operation.
