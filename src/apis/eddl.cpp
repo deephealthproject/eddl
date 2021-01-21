@@ -660,6 +660,9 @@ namespace eddl {
         return new LSqueeze(parent, axis, name, DEV_CPU, 0);
     }
 
+    layer Unsqueeze(layer parent, const int axis, string name){
+        return new LUnsqueeze(parent, axis, name, DEV_CPU, 0);
+    }
 
     layer Transpose(layer parent, string name){
         vector<int> dims;

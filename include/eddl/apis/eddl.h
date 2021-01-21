@@ -1001,6 +1001,16 @@ namespace eddl {
     */
     layer Squeeze(layer parent, int axis=-1, string name = "");
 
+        /**
+      *  @brief Dimension of size one is inserted at the specified position. (Batch dimension is ignored)
+      *
+      *  @param parent  Parent layer
+      *  @param  axis if given, the input will be unsqueezed only in this dimension
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Unsqueeze(layer parent, int axis=0, string name = "");
+
     /**
       *  @brief Transposed convolution layer (sometimes called Deconvolution).
       *
