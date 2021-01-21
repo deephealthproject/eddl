@@ -302,7 +302,7 @@ void Net::set_compserv(CompServ *cs){
         // split on multiple GPUs
         int ngpus=gpu_devices();
         if (ngpus==0) {
-          msg("GPU devices not found","Net.set_compserv(");
+          msg("GPU devices not found","Net.set_compserv");
         }
         if (cs->local_gpus.size()>ngpus)
         {
@@ -324,12 +324,6 @@ void Net::set_compserv(CompServ *cs){
 
         if (!cs->isshared) {
          if (mnets.size()) {
-          // comes from a merge of nets
-          for(int j=0;j<mnets.size();j++)
-              if (!mnets[j]->isbuild) {
-                mnets[j]->build(optimizer->clone(),{},{},cs,true);
-              }
-
           cout<<"Building merge "<<endl;
           for(int i=0;i<devsel.size();i++) {
             vector <Net *>sm;
@@ -338,12 +332,12 @@ void Net::set_compserv(CompServ *cs){
             }
             snets.push_back(new Net(sm));
             snets[i]->build(optimizer->clone(), losses, metrics);
-        }
-      }
-      else {
-        split(devsel.size(),DEV_GPU);
-      }
-    }
+          }
+         } 
+         else {
+          split(devsel.size(),DEV_GPU);
+         }
+        }  
 
 
 #endif
