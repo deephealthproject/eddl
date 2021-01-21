@@ -808,27 +808,23 @@ namespace eddl {
 
     // Normalization
     layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
-        layer p = parent;
-        if(parent->output->shape.size()==3){
-            std::cerr << "BatchNorm only works over 2D or 4D tensors. Since a 3D tensor was received, its shape was automatically unsqueezed to a 4D tensor." << std::endl;
-            std::cerr << "()" << std::endl;
-            p = Unsqueeze(p, 2);  // ([Batch - ignored], d0, d1)
-        }
-        return new LBatchNorm(p, momentum, epsilon, affine, name, DEV_CPU, 0);
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "BatchNormalization"); }
+
+        return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
 
     layer BatchNormalization(layer parent, bool affine, float momentum, float epsilon,  string name){
-        layer p = parent;
-        if(parent->output->shape.size()==3){
-            std::cerr << "BatchNorm only works over 2D or 4D tensors. Since a 3D tensor was received, its shape was automatically unsqueezed to a 4D tensor." << std::endl;
-            p = Unsqueeze(p, 2);  // ([Batch - ignored], d0, d1)
-        }
-        return new LBatchNorm(p, momentum, epsilon, affine, name, DEV_CPU, 0);
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "BatchNormalization"); }
+
+        return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
 
     layer LayerNormalization(layer parent, float epsilon, bool affine, string name){
         return new LLayerNorm(parent,  epsilon, affine, name, DEV_CPU, 0);
     }
+
     layer LayerNormalization(layer parent, bool affine,float epsilon,  string name)
     {
         return new LLayerNorm(parent,  epsilon, affine, name, DEV_CPU, 0);
@@ -1008,48 +1004,6 @@ namespace eddl {
         return new LUniform(low, high, size, "", DEV_CPU, 0);
     }
 
-    // Pooling Layers
-    layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
-        return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
-    }
-
-    layer AveragePool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
-        pool_size.push_back(1);
-        strides.push_back(1);
-        return new LAveragePool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
-    }
-
-    layer AveragePool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
-        return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
-    }
-
-    layer AveragePool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
-        msg("Not implemented error", "AveragePool3D");
-    }
-
-    layer GlobalAveragePool(layer parent, string name){
-        if (parent->output->ndim!=4) msg("GlobalAveragePool only works over 4D tensors","GlobalAveragePool");
-
-        int h=parent->output->shape[2];
-        int w=parent->output->shape[3];
-        return AveragePool(parent, {h,w},{1,1}, "globalaveragepool");
-    }
-
-    layer GlobalAveragePool1D(layer parent, string name){
-        if (parent->output->ndim!=3) msg("GlobalAveragePool1D only works over 3D tensors","GlobalAveragePool1D");
-
-        int h=parent->output->shape[2];
-        return AveragePool1D(parent, {h},{1});
-    }
-
-    layer GlobalAveragePool2D(layer parent, string name){
-        return GlobalAveragePool(parent, name);
-    }
-
-    layer GlobalAveragePool3D(layer parent, string name){
-        msg("Not implemented error", "GlobalAveragePool3D");
-    }
-
     // Generic (in-theory)
     layer MaxPool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
         return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
@@ -1069,31 +1023,90 @@ namespace eddl {
         msg("Not implemented error", "MaxPool3D");
     }
 
-    layer GlobalMaxPool(layer parent, string name){
-        if (parent->output->ndim!=4) msg("GlobalMaxPool only over 4D tensors","GlobalMaxPool");
+    // Pooling Layers
+    layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
+        return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
 
-        int h=parent->output->shape[2];
-        int w=parent->output->shape[3];
-        return MaxPool(parent, {h,w}, {1,1},"none","globalmaxpool");
+    layer AveragePool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        pool_size.push_back(1);
+        strides.push_back(1);
+        return new LAveragePool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer AveragePool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer AveragePool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        msg("Not implemented error", "AveragePool3D");
+    }
+
+
+    layer GlobalMaxPool(layer parent, string name){
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "GlobalMaxPool"); }
+
+        return GlobalMaxPool2D(parent, name);
     }
 
     layer GlobalMaxPool1D(layer parent, string name){
         if (parent->output->ndim!=3) msg("GlobalMaxPool1D only works over 3D tensors","GlobalMaxPool1D");
 
         int h=parent->output->shape[2];
-        return AveragePool1D(parent, {h},{1});
+
+        if(name.empty()) { name = "GlobalMaxPool1D"; }  // Set default name
+        return MaxPool1D(parent, {h},{1}, name);
     }
 
     layer GlobalMaxPool2D(layer parent, string name){
-        return GlobalMaxPool(parent, name);
+        // Check dimension
+        if (parent->output->ndim!=4) msg("GlobalMaxPool only over 4D tensors","GlobalMaxPool2D");
+
+        int h=parent->output->shape[2];
+        int w=parent->output->shape[3];
+
+        if(name.empty()) { name = "GlobalMaxPool2D"; }  // Set default name
+        return MaxPool(parent, {h,w}, {1,1},"none", name);
     }
 
     layer GlobalMaxPool3D(layer parent, string name){
         msg("Not implemented error", "GlobalMaxPool3D");
     }
 
-    // Recurrent Layers
+    layer GlobalAveragePool(layer parent, string name){
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "GlobalAveragePool"); }
 
+        return GlobalAveragePool2D(parent, name);
+    }
+
+    layer GlobalAveragePool1D(layer parent, string name){
+        // Expands dimensions if needed
+        if (parent->output->ndim!=3) msg("GlobalAveragePool1D only works over 3D tensors","GlobalAveragePool1D");
+
+        int h=parent->output->shape[2];
+
+        if(name.empty()) { name = "GlobalAveragePool1D"; }  // Set default name
+        return AveragePool1D(parent, {h},{1}, "none", name);
+    }
+
+    layer GlobalAveragePool2D(layer parent, string name){
+        // Check dimension
+        if (parent->output->ndim!=4) msg("GlobalAveragePool only works over 4D tensors","GlobalAveragePool2D");
+
+        int h=parent->output->shape[2];
+        int w=parent->output->shape[3];
+
+        if(name.empty()) { name = "GlobalAveragePool2D"; }  // Set default name
+        return AveragePool(parent, {h,w},{1,1},  "none",name);
+    }
+
+    layer GlobalAveragePool3D(layer parent, string name){
+        msg("Not implemented error", "GlobalAveragePool3D");
+    }
+
+    // Recurrent Layers
     layer RNN(layer parent, int units, string activation, bool use_bias, bool bidirectional, string name){
 
         return new LRNN({parent}, units, activation, use_bias, bidirectional, name, DEV_CPU, 0);
@@ -1379,9 +1392,15 @@ namespace eddl {
       download_dataset("drive","bin",{"tf3uzrsjtv4jiey","xakcuhby30ylpes"});
     }
 
-
-
-
-
+    // Auxiliar functions
+    layer _expand3d_to_4d(layer parent, string name){
+        layer p = parent;
+        if(parent->output->shape.size()==3){
+            std::cerr << name << " only works over 2D or 4D tensors. Since a 3D tensor was received, its shape was automatically unsqueezed to a 4D tensor." << std::endl;
+            std::cerr << "()" << std::endl;
+            p = Unsqueeze(p, 2);  // ([Batch - ignored], d0, d1)
+        }
+        return p;
+    }
 
 }//namespace
