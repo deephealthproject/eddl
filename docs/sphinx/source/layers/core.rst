@@ -75,7 +75,7 @@ Example:
 
 
 Unsqueeze
---------
+----------
 
 .. doxygenfunction:: Unsqueeze
 
