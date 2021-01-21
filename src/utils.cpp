@@ -389,6 +389,26 @@ string get_parent_dir(const string& fname){
            : fname.substr(0, pos);
 }
 
+vector<int> compute_squeeze(vector<int> shape, int axis){
+    // Remove single dimension entries from the array
+    vector<int> new_shape;
+    for(int i=0; i<shape.size(); i++){
+        int dim = shape[i];
+
+        // If dimension is greater than 1
+        if(dim>1 || (i!=axis && axis!=-1)){
+            new_shape.push_back(dim);
+        }
+    }
+
+    return new_shape;
+};
+
+vector<int> compute_unsqueeze(vector<int> shape, int axis){
+    vector<int> new_shape(shape);
+    new_shape.insert(new_shape.begin()+axis, 1); // Add one dimension to the beginning
+    return new_shape;
+}
 
 WrappingMode getWrappingMode(string mode){
     if(mode == "constant"){

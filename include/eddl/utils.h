@@ -46,6 +46,9 @@ bool pathExists(const std::string &s);
 
 string get_parent_dir(const string& fname);
 
+vector<int> compute_squeeze(vector<int> shape, int axis);
+vector<int> compute_unsqueeze(vector<int> shape, int axis);
+
 template<typename T>
 string printVector(vector<T> myvector){
     string temp = "";
