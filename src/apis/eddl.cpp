@@ -1153,6 +1153,14 @@ namespace eddl {
         return new LLSTM(parent, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
+    layer GRU(layer parent, int units, bool mask_zeros, bool bidirectional, string name) {
+        return new LGRU({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
+    }
+
+    layer GRU(vector<layer> parent, int units, bool mask_zeros, bool bidirectional, string name) {
+        return new LGRU(parent, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
+    }
+
     layer GetStates(layer parent)
     {
       return new LCopyStates({parent},"getstates", DEV_CPU,0);

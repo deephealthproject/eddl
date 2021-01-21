@@ -2012,6 +2012,20 @@ namespace eddl {
 
     layer LSTM(vector<layer> parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
 
+    /**
+      *  @brief Gated Recurrent Unit (GRU).
+      *
+      *  @param parent  Parent layer
+      *  @param units  Dimensionality of the output space
+      *  @param mask_zeros
+      *  @param bidirectional  Wether the RNN is bidirectional or not
+      *  @param name  A name for the operation
+      *  @return     The GRU layer
+    */
+    layer GRU(layer parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
+
+    layer GRU(vector<layer> parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
+
     layer GetStates(layer parent);
 
     void setDecoder(layer l);
