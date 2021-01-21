@@ -1805,7 +1805,7 @@ namespace eddl {
     layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
 
     /**
-      *  @brief Max 1D pooling operation.
+      *  @brief MaxPooling1D operation.
       *
       *  @param parent  Parent layer
       *  @param pool_size  Size of the max pooling windows
@@ -1816,6 +1816,29 @@ namespace eddl {
     */
     layer MaxPool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");
 
+    /**
+      *  @brief MaxPooling2D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the max pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after applying the max pooling operation over the parent layer
+    */
+    layer MaxPool2D(layer parent, vector<int> pool_size = {2, 2}, vector<int> strides = {2, 2}, string padding = "none", string name = "");
+
+    /**
+      *  @brief MaxPooling3D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the max pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after applying the max pooling operation over the parent layer
+    */
+    layer MaxPool3D(layer parent, vector<int> pool_size = {2, 2, 2}, vector<int> strides = {2, 2, 2}, string padding = "none", string name = "");
 
     // Recurrent Layers
 

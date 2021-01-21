@@ -1021,13 +1021,23 @@ namespace eddl {
         return AveragePool(parent, {h,w},{1,1});
     }
 
+    // Generic (in-theory)
     layer MaxPool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
         return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
+
     layer MaxPool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
         pool_size.push_back(1);
         strides.push_back(1);
         return new LMaxPool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer MaxPool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer MaxPool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        msg("Not implemented error", "MaxPool3D");
     }
 
     layer GlobalMaxPool(layer parent, string name){
