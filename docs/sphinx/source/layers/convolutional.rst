@@ -11,20 +11,29 @@ Example:
 
 .. code-block:: c++
     
-    l = Conv1D(l,16, {3},{1});
+    l = Conv1D(l, 16, {3}, {1});
 
 
 Conv2D
 --------
 
-.. doxygenfunction:: eddl::Conv
+.. doxygenfunction:: eddl::Conv2D
 
 Example:
 
 .. code-block:: c++
 
-    l = Conv(l,32, {3,3},{1,1});
-    
+    l = Conv2D(l, 32, {3,3}, {1,1});
+
+
+Conv3D
+--------
+
+.. doxygenfunction:: eddl::Conv2D
+
+.. note::
+
+    **Work in progress**. Not yet implemented.
 
 
 Pointwise Convolution
@@ -36,7 +45,7 @@ Example:
 
 .. code-block:: c++
 
-    l = PointwiseConv(l,32, {3,3},{1,1});
+    l = PointwiseConv(l, 32, {3,3}, {1,1});
   
 
 2D Upsampling 
@@ -62,7 +71,4 @@ Convolutional Transpose
 
 .. note::
 
-    **Not implemented yet**
-
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#convolutional-layers
-
+    **Work in progress**. Not yet implemented.

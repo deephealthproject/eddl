@@ -26,6 +26,7 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
 
     // Compute loss
     float value = loss.value(t1_y_true, t1_y_true_pred);
+    value /= (float)t1_y_true->shape[0];  // Why? b/c Batch normalization was removed
     ASSERT_NEAR(value, 0.524911046f, 10e-4f);
 
 
@@ -92,6 +93,7 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
 
     // Compute loss
     float value = loss.value(t1_y_true, t1_y_true_pred);
+    value /= (float)t1_y_true->shape[0];  // Why? b/c Batch normalization was removed
     ASSERT_NEAR(value, 0.4564, 10e-4f);
 
 

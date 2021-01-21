@@ -220,16 +220,8 @@ Tensor* Tensor::flatten(Tensor *A){
 
 
 void Tensor::squeeze_(int axis){
-    // Remove single dimension entries from the array
-    vector<int> new_shape;
-    for(int i=0; i<this->shape.size(); i++){
-        int dim = this->shape[i];
-
-        // If dimension is greater than 1
-        if(dim>1 || (i!=axis && axis!=-1)){
-            new_shape.push_back(dim);
-        }
-    }
+    // Remove dimension/s
+    vector<int> new_shape = compute_squeeze(this->shape, axis);
     this->reshape_(new_shape);
 }
 
@@ -246,8 +238,8 @@ Tensor* Tensor::squeeze(Tensor *A, int axis){
 
 
 void Tensor::unsqueeze_(int axis){
-    vector<int> new_shape(this->shape);
-    new_shape.insert(new_shape.begin()+axis, 1); // Add one dimension to the beginning
+    // Add dimension
+    vector<int> new_shape = compute_unsqueeze(this->shape, axis);
     this->reshape_(new_shape);
 }
 

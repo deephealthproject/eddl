@@ -58,6 +58,37 @@ Example:
    l = Flatten(l);
 
 
+Squeeze
+--------
+
+.. doxygenfunction:: Squeeze
+
+Example:
+
+.. code-block:: c++
+
+   // Squeeze all dimensions (ignoring batch)
+   l = Squeeze(l, -1);  // ([B,] 32, 1, 5, 1) => ([B,] 32, 5)
+
+   // Squeeze specific dimension (ignoring batch)
+   l = Squeeze(l, 3);  // ([B,] 32, 1, 5, 1) => ([B,] 32, 1, 5)
+
+
+Unsqueeze
+--------
+
+.. doxygenfunction:: Unsqueeze
+
+Example:
+
+.. code-block:: c++
+
+   // Unsqueeze dimension (ignoring batch)
+   l = Unsqueeze(l, 0);  // ([B,] 5) => ([B,] 1, 5)
+
+   // Unsqueeze dimension (ignoring batch)
+   l = Unsqueeze(l, 1);  // ([B,] 5) => ([B,] 5, 1)
+
 
 Input
 --------

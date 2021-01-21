@@ -991,6 +991,25 @@ namespace eddl {
     */
     layer Flatten(layer parent, string name = "");
 
+    /**
+      *  @brief Dimension of size one is removed at the specified position. (Batch dimension is ignored)
+      *
+      *  @param parent  Parent layer
+      *  @param  axis if given, the input will be squeezed only in this dimension. Else (-1), squeezes all
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Squeeze(layer parent, int axis=-1, string name = "");
+
+        /**
+      *  @brief Dimension of size one is inserted at the specified position. (Batch dimension is ignored)
+      *
+      *  @param parent  Parent layer
+      *  @param  axis if given, the input will be unsqueezed only in this dimension
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Unsqueeze(layer parent, int axis=0, string name = "");
 
     /**
       *  @brief Transposed convolution layer (sometimes called Deconvolution).
@@ -1756,7 +1775,44 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after apply the average pooling operation over the parent layer
     */
-    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");
+    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
+
+    /**
+      *  @brief AveragePooling1D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the average pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after apply the average pooling operation over the parent layer
+    */
+    layer AveragePool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");
+
+    /**
+      *  @brief AveragePooling2D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the average pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after apply the average pooling operation over the parent layer
+    */
+    layer AveragePool2D(layer parent, vector<int> pool_size = {2, 2}, vector<int> strides = {2, 2}, string padding = "none", string name = "");
+
+        /**
+      *  @brief AveragePooling3D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the average pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after apply the average pooling operation over the parent layer
+    */
+    layer AveragePool3D(layer parent, vector<int> pool_size = {2, 2, 2}, vector<int> strides = {2, 2, 2}, string padding = "none", string name = "");
+
     /**
       *  @brief Global Max pooling operation.
       *
@@ -1764,7 +1820,8 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after applying the global max pooling operation over the parent layer
     */
-    layer GlobalMaxPool(layer parent, string name = "");
+    layer GlobalMaxPool(layer parent, string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
+
     /**
       *  @brief Global Average pooling operation.
       *
@@ -1772,7 +1829,36 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after applying the global average pooling operation over the parent layer
     */
-    layer GlobalAveragePool(layer parent, string name = "");
+    layer GlobalAveragePool(layer parent, string name = ""); // TODO: Deprecated? Generic but not generic... (2D only)
+
+    /**
+        *  @brief GlobalAveragePooling1D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool1D(layer parent, string name = "");
+
+
+    /**
+        *  @brief GlobalAveragePooling2D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool2D(layer parent, string name = "");
+
+    /**
+        *  @brief GlobalAveragePooling3D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool3D(layer parent, string name = "");
+
     /**
       *  @brief Max pooling operation.
       *
@@ -1783,10 +1869,10 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after applying the max pooling operation over the parent layer
     */
-    layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
+    layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
 
     /**
-      *  @brief Max 1D pooling operation.
+      *  @brief MaxPooling1D operation.
       *
       *  @param parent  Parent layer
       *  @param pool_size  Size of the max pooling windows
@@ -1797,6 +1883,29 @@ namespace eddl {
     */
     layer MaxPool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");
 
+    /**
+      *  @brief MaxPooling2D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the max pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after applying the max pooling operation over the parent layer
+    */
+    layer MaxPool2D(layer parent, vector<int> pool_size = {2, 2}, vector<int> strides = {2, 2}, string padding = "none", string name = "");
+
+    /**
+      *  @brief MaxPooling3D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the max pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after applying the max pooling operation over the parent layer
+    */
+    layer MaxPool3D(layer parent, vector<int> pool_size = {2, 2, 2}, vector<int> strides = {2, 2, 2}, string padding = "none", string name = "");
 
     // Recurrent Layers
 
