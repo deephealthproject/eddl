@@ -21,6 +21,9 @@ Optimizer::Optimizer() {
   clip_val=-1;
 }
 
+Optimizer::~Optimizer() {
+}
+
 void Optimizer::set_clip_val(float v)
 {
   clip_val=v;
