@@ -1032,11 +1032,11 @@ namespace eddl {
 
         int h=parent->output->shape[2];
         int w=parent->output->shape[3];
-        return AveragePool(parent, {h,w},{1,1});
+        return AveragePool(parent, {h,w},{1,1}, "globalaveragepool");
     }
 
     layer GlobalAveragePool1D(layer parent, string name){
-        if (parent->output->ndim!=3) msg("GlobalAveragePool only works over 3D tensors","GlobalAveragePool1D");
+        if (parent->output->ndim!=3) msg("GlobalAveragePool1D only works over 3D tensors","GlobalAveragePool1D");
 
         int h=parent->output->shape[2];
         return AveragePool1D(parent, {h},{1});
@@ -1074,7 +1074,7 @@ namespace eddl {
 
         int h=parent->output->shape[2];
         int w=parent->output->shape[3];
-        return MaxPool(parent, {h,w}, {1,1},"none","gpool");
+        return MaxPool(parent, {h,w}, {1,1},"none","globalmaxpool");
     }
 
     layer GlobalMaxPool1D(layer parent, string name){
