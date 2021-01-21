@@ -991,6 +991,15 @@ namespace eddl {
     */
     layer Flatten(layer parent, string name = "");
 
+    /**
+      *  @brief Dimension of size one is removed at the specified position. (Batch dimension is ignored)
+      *
+      *  @param parent  Parent layer
+      *  @param  axis if given, the input will be squeezed only in this dimension. Else (-1), squeezes all
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Squeeze(layer parent, int axis=-1, string name = "");
 
     /**
       *  @brief Transposed convolution layer (sometimes called Deconvolution).

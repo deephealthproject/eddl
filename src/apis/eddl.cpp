@@ -656,6 +656,11 @@ namespace eddl {
         return Reshape(parent, {-1}, name);
     }
 
+    layer Squeeze(layer parent, const int axis, string name){
+        return new LSqueeze(parent, axis, name, DEV_CPU, 0);
+    }
+
+
     layer Transpose(layer parent, string name){
         vector<int> dims;
         bool ignoreBatch = true;
