@@ -264,14 +264,7 @@ compute_metric
         update(net);
     }         
 
-getLoss
-^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: eddl::getLoss
-
-.. code-block:: c++
-
-    getLoss("mse_loss"); // Gets MSE Loss       
 
 newloss
 ^^^^^^^^^^^^^^^^^
@@ -291,14 +284,6 @@ Example:
    }
    
    loss mse = newloss(mse_loss, {out, target}, "mse_loss");
-
-        
-
-getMetric
-^^^^^^^^^^^^^^^^^
-
-.. doxygenfunction:: eddl::getMetric
-
 
 
 newmetric
