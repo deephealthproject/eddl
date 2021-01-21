@@ -207,6 +207,35 @@ public:
 
 };
 
+/// Squeeze Layer
+class LSqueeze : public LinLayer {
+public:
+    static int total_layers;
+    int axis;
+
+    // constructors and clones
+    LSqueeze(Layer *parent, int axis, string name, int dev, int mem);
+    ~LSqueeze() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    // implementation
+    void mem_delta() override;
+    void free_delta() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+
+};
+
+
 /// Transpose Layer
 class LTranspose : public LinLayer {
 public:
