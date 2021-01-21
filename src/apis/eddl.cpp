@@ -808,10 +808,22 @@ namespace eddl {
 
     // Normalization
     layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
-        return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
+        layer p = parent;
+        if(parent->output->shape.size()==3){
+            std::cerr << "BatchNorm only works over 2D or 4D tensors. Since a 3D tensor was received, its shape was automatically unsqueezed to a 4D tensor." << std::endl;
+            std::cerr << "()" << std::endl;
+            p = Unsqueeze(p, 2);  // ([Batch - ignored], d0, d1)
+        }
+        return new LBatchNorm(p, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
+
     layer BatchNormalization(layer parent, bool affine, float momentum, float epsilon,  string name){
-        return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
+        layer p = parent;
+        if(parent->output->shape.size()==3){
+            std::cerr << "BatchNorm only works over 2D or 4D tensors. Since a 3D tensor was received, its shape was automatically unsqueezed to a 4D tensor." << std::endl;
+            p = Unsqueeze(p, 2);  // ([Batch - ignored], d0, d1)
+        }
+        return new LBatchNorm(p, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
 
     layer LayerNormalization(layer parent, float epsilon, bool affine, string name){
