@@ -48,11 +48,7 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
                  output->shape[0], output->shape[1],
                  (output->shape.size()> 2) ? output->shape[2]:1,
                  (output->shape.size()> 3) ? output->shape[3]:1);
-    /*std::cout<<"Input: ("<<input->shape.size()<<","<<input->shape[0]<<","<< input->shape[1]<<","<<
-    input->shape[2]<<","<< input->shape[3] << std::endl;
-    std::cout<<"Output: ("<<output->shape.size()<<","<<output->shape[0]<<","<< output->shape[1]<<","<<
-    output->shape[2]<<","<< output->shape[3] << std::endl;
-*/
+
     if(this->act == "softmax"){
         algorithm = CUDNN_SOFTMAX_ACCURATE;
         softmax_mode = CUDNN_SOFTMAX_MODE_INSTANCE;
@@ -65,20 +61,20 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
         }
         else if(this->act == "relu"){
             mode = CUDNN_ACTIVATION_RELU;
-            coef = 9999999.0f; //this->params[0]; //upper boud
-            reluNanOpt = CUDNN_PROPAGATE_NAN;
+            coef = 0.0; //this->params[0]; //upper boud
+            reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
         }
         else if(this->act == "thresholded_relu"){
             mode = CUDNN_ACTIVATION_CLIPPED_RELU;
             coef = this->params[0]; //threshold
-            reluNanOpt = CUDNN_PROPAGATE_NAN;
+            reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
         }
         else if(this->act == "tanh"){
             mode = CUDNN_ACTIVATION_TANH;
         }
         else if(this->act == "elu"){
             mode = CUDNN_ACTIVATION_ELU;
-            reluNanOpt = CUDNN_PROPAGATE_NAN;
+            reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
         }
         else if(this->act == "linear"){
             mode = CUDNN_ACTIVATION_IDENTITY;
@@ -86,8 +82,8 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
         else{
             std:cerr<<"Warning. "<<this->act<<" activation is not supported in CUDNN. A RELU will be executed." <<std::endl;
             mode = CUDNN_ACTIVATION_RELU;
-            coef = 9999999.0f; //this->params[0]; //upper boud
-            reluNanOpt = CUDNN_PROPAGATE_NAN;
+            coef = 0.0; //this->params[0]; //upper boud
+            reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
         }
 
         cudnnStatus_t aaa = cudnnSetActivationDescriptor( activationDesc, mode, reluNanOpt, coef);
@@ -127,13 +123,46 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
     parent->addchild(this);
     addparent(parent);
 }
+#ifdef cCUDNN
+void LActivation::resize(int batch){
+//    cout<<name<<" resizing\n";
+    if (output!=nullptr) output->resize(batch);
+    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 input->shape[0], input->shape[1],
+                 (input->shape.size()> 2) ? input->shape[2]:1,
+                 (input->shape.size()> 3) ? input->shape[3]:1);
+    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                 output->shape[0], output->shape[1],
+                 (output->shape.size()> 2) ? output->shape[2]:1,
+                 (output->shape.size()> 3) ? output->shape[3]:1);
+    //    if (delta!=nullptr) { if (!mem_level) delta->resize(batch); }
 
+}
+#endif
 
 void LActivation::forward(){
 
 #ifdef cCUDNN
     float alpha = 1.0f;
     float beta = 0.0f;
+    /* cudnnDataType_t         dataType;
+    int                     n;
+    int                     c;
+    int                     h;
+    int                     w;
+    int                     nStride;
+    int                     cStride;
+    int                     hStride;
+    int                     wStride;
+    cudnnTensorFormat_t        format;
+    cudnnStatus_t bbb = cudnnGetTensor4dDescriptor(xDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
+  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get xDesc "<< cudnnGetErrorString(bbb) <<std::endl;
+      std::cout <<"xDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w << ", " <<nStride <<", " <<cStride<<", "<<hStride<<", " <<wStride<<std::endl;
+
+  bbb = cudnnGetTensor4dDescriptor(yDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
+  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get yDesc "<< cudnnGetErrorString(bbb) <<std::endl;
+    std::cout <<"xyDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w << ", " <<nStride <<", " <<cStride<<", "<<hStride<<", " <<wStride<<std::endl;
+*/
     if(act == "softmax"){
         cudnnStatus_t aaa = cudnnSoftmaxForward(cudnn_handle, algorithm, softmax_mode, &alpha, xDesc, input->ptr,
                             &beta, yDesc, output->ptr);

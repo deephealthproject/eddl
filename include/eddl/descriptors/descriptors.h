@@ -161,6 +161,23 @@ public:
     Tensor *indX, *indY; // indexes
     int mem_level; // see CS
 
+#ifdef cCUDNN
+    cudnnPoolingDescriptor_t    poolingDesc;
+    cudnnPoolingMode_t          mode;
+    cudnnNanPropagation_t       maxpoolingNanOpt;
+    int                         windowHeight;
+    int                         windowWidth;
+    int                         verticalPadding;
+    int                         horizontalPadding;
+    int                         verticalStride;
+    int                         horizontalStride;
+/* Heritage from convolution descriptor
+    cudnnHandle_t cudnn_handle;
+    cudnnTensorDescriptor_t xDesc; //input. also dxDesc
+    cudnnTensorDescriptor_t yDesc; //output also dyDesc
+*/
+ #endif
+
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, const string& p, int mem=0);
 
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);

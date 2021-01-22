@@ -70,7 +70,7 @@ LConv::~LConv(){
 
 // virtual
 void LConv::resize(int batch){
-    std::cout<<"RESIZEEEEEEE!"<<std::endl;
+    //std::cout<<"RESIZEEEEEEE!"<<std::endl;
     cd->resize(batch);
 }
 

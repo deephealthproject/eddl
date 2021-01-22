@@ -27,11 +27,9 @@ size_t workspace_size=0;
 
 int allocate_workspace(size_t size){
     if (size <= workspace_size){
-        std::cout<<size <<" is smaller than "<<workspace_size<<" so return"<<std::endl;
         return 0;
     }
     else {
-        std::cout<<size <<" is bigger than "<<workspace_size<<" so update"<<std::endl;
         workspace_size = size;
         cudaFree(shared_workspace);
         return cudaMalloc((void **) &shared_workspace, size);
@@ -110,7 +108,6 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
   }
 #else
-  std::cout<<"starting convolution... init?"<< D->cudnn_env_init <<std::endl;
   if (D->cudnn_env_init < 0){
       D->cudnn_env_init = 1;
       int requestedAlgoCount;
@@ -128,11 +125,10 @@ void gpu_conv2D(ConvolDescriptor *D) {
       int aux_alg = 0;
       size_t size;
       do{
-          cout<<"Miro alg"<<aux_alg<<endl;
           D->fwd_algorithm = perfResults[aux_alg].algo;
-          cout<<D->cudnn_handle<<endl;
+          //cout<<D->cudnn_handle<<endl;
 
-    cudnnDataType_t         dataType;
+    /* cudnnDataType_t         dataType;
     int                     n;
     int                     c;
     int                     h;
@@ -151,6 +147,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
     bbb = cudnnGetTensor4dDescriptor(D->yDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
   if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get yDesc "<< cudnnGetErrorString(bbb) <<std::endl;
     std::cout <<"yDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w << ", "<<nStride <<", " <<cStride<<", " <<hStride<<", " <<wStride<<std::endl;
+       */
           //check_cudnn(cudnnGetConvolutionForwardWorkspaceSize(D->cudnn_handle,D->xDesc, D->wDesc,
           //                                                    D->convolution_descriptor,  D->yDesc,
           //                                                    D->fwd_algorithm, &size));
@@ -161,7 +158,6 @@ void gpu_conv2D(ConvolDescriptor *D) {
           aux_alg++;
       }
       while(allocate_workspace(size));
-  std::cout<<" convolution env created... init?"<< D->cudnn_env_init <<std::endl;
   }
   cudnnStatus_t aaa = cudnnConvolutionForward( D->cudnn_handle, &alpha, D->xDesc, D->I->ptr,
                                        D->wDesc, D->K->ptr,

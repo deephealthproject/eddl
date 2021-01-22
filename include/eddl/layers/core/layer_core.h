@@ -190,6 +190,10 @@ public:
     void save(std::ofstream &ofs, string format) override;
     void load(std::ifstream &ifs, string format) override;
 
+#ifdef cCUDNN
+    void resize(int batch) override;
+#endif
+
     void forward() override;
 
     void backward() override;
