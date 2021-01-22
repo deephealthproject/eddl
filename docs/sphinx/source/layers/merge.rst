@@ -1,22 +1,6 @@
 Merge
 =====
 
-Add
-----
-
-.. doxygenfunction:: Add(layer l1, layer l2)
-
-Example:
-
-.. code-block:: c++
-
-   layer in1 = Input({3,584,584});
-   layer in2 = Input({3,584,584});
-
-   layer l = Add({in1,in2});
-   
-
-
 
 Average
 -------
@@ -98,19 +82,4 @@ Example:
    layer l = Minimum({in1,in2});
    
 
-
-Subtract
----------
-
-.. doxygenfunction:: Subtract
-
-Example:
-
-.. code-block:: c++
-
-   layer in1 = Input({3,584,584});
-   layer in2 = Input({3,584,584});
-
-   layer l = Subtract({in1,in2});
-   
 
