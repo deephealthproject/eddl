@@ -180,17 +180,13 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
   cout<<"Building "<<name<<endl;
 
   for(int i=0;i<layers.size();i++) {
-    if ((layers[i]->orig!=nullptr)&&(layers[i]->orig->net!=this)) {
-      //cout<<layers[i]->name<<endl;
-      layers[i]->orig->net->build(opt->clone(),{},{},cs,true);
-    }
-    else if (layers[i]->net!=this) {
+    if (layers[i]->net!=this) {
       layers[i]->net->build(opt->clone(),{},{},cs,true);
     }
   }
 
 
-  build(opt, lo, me, initialize);
+  make_graph(opt, lo, me, initialize);
 
   set_compserv(cs);
 
@@ -209,7 +205,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
 }
 
 
-void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
+void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if (VERBOSE) cout<<"Build net "<<name<<"\n";
 
     // check devices
@@ -324,14 +320,13 @@ void Net::set_compserv(CompServ *cs){
 
         if (!cs->isshared) {
          if (mnets.size()) {
-          cout<<"Building merge "<<endl;
           for(int i=0;i<devsel.size();i++) {
             vector <Net *>sm;
             for(int j=0;j<mnets.size();j++) {
               sm.push_back(mnets[j]->snets[i]);
             }
             snets.push_back(new Net(sm));
-            snets[i]->build(optimizer->clone(), losses, metrics);
+            snets[i]->make_graph(optimizer->clone(), losses, metrics);
           }
          } 
          else {
@@ -448,7 +443,7 @@ void Net::split(int c, int todev) {
         char cname[100];
         sprintf(cname,"snet_%d",i);
         snets[i]->name=cname;
-        snets[i]->build(optimizer->clone(), losses, metrics);
+        snets[i]->make_graph(optimizer->clone(), losses, metrics);
         if(onnx_pretrained){ //We need to copy the imported weights to each snet
             //printf("Copying from CPU to GPU\n");
             for(int i = 0; i < snets.size(); i++)

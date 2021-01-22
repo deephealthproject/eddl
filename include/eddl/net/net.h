@@ -40,7 +40,7 @@ int isInorig(Layer *l, vlayer vl, int &ind);
 
 class Net {
 private:
-    void build(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
+    void make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
 
     void set_compserv(CompServ *cs);
 

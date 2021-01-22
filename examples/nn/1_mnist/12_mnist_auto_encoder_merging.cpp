@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
+    int epochs = 10;
     int batch_size = 100;
 
     // Define encoder
@@ -41,6 +41,9 @@ int main(int argc, char **argv) {
 
     model encoder = Model({in}, {out});
 
+    encoder->name="encoder";
+
+
 
     // Define decoder
     in = Input({64});
@@ -50,21 +53,25 @@ int main(int argc, char **argv) {
     out = Sigmoid(Dense(l, 784));
 
     model decoder = Model({in}, {out});
-
+    decoder->name="decoder";
 
     // Merge both models into a new one
     model net = Model({encoder,decoder});
 
+    net->name="Merge";
+
     // Build model
     build(net,
-          adam(0.0001), // Optimizer
+          adam(0.001), // Optimizer
           {"mse"}, // Losses
           {"dice"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          //CS_CPU()
 	  //CS_FPGA({1})
     );
+    
+
     summary(net);
     plot(net, "model.pdf");
 

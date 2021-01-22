@@ -26,6 +26,7 @@ using namespace eddl;
 
 layer BG(layer l) {
   return GaussianNoise(BatchNormalization(l),0.3);
+  //return l;
 }
 
 layer ResBlock(layer l, int filters,int nconv,int half) {
