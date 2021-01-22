@@ -109,7 +109,7 @@ void LBatchNorm::forward() {
 
     int M,N;
     int b,z,r,c,d;
-    Tensor *in;
+    Tensor *in, *opa2;
 
     if (input->ndim==2) {
         N=b=input->shape[0];
@@ -133,6 +133,11 @@ void LBatchNorm::forward() {
 
 
     Tensor::copy(in,opa);
+    if (input->isCPU()) {
+        opa2 = output->clone();
+        if (input->ndim == 4) tensorNN::permute_channels_first(in, opa2);
+        else Tensor::copy(in, opa2);
+    }
     if (affine) {
         Tensor *var=new Tensor({N,M},input->device);
         Tensor *ones=new Tensor({N,1},input->device);
@@ -151,7 +156,49 @@ void LBatchNorm::forward() {
     }
     else Tensor::copy(in,output);
 
-
+    if (input->isCPU()) { // new implementation for affine
+        float *temp = new float[N * M];
+        if (affine) {
+            switch (input->ndim) {
+            case 2:
+                r = c = 1;
+                /* for (int i = 0; i < N; i++) {
+                    for (int j = 0; j < M; j++) {
+                        // printf("%e %e\n", var->ptr[j], bn_b->ptr[j]);
+                        temp[i * M + j] = opa2->ptr[i * M + j] * bn_g->ptr[j] + bn_b->ptr[j];
+                    }
+                }
+                break; */
+            case 4:
+                z=input->shape[1];
+                for (int i = 0; i < b; ++i) {
+                    int psrc=i*(z*r*c);
+                    for(int j=0;j<z;j++) // M
+                        for(int k=0;k<r;k++)
+                            for(int m=0;m<c;m++,psrc++) {
+                                // int pdest=i*(r*c*z)+k*(c*z)+m*z+j;
+                                // B->ptr[pdest]=A->ptr[psrc];
+                                temp[psrc] = opa2->ptr[psrc] * bn_g->ptr[j] + bn_b->ptr[j];
+                            }
+                }
+                break;
+            default:
+                printf("input->ndim %d\n", input->ndim);
+                abort();
+            }
+            delete opa2;
+            float maxerror = 0.0;
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < M; j++) {
+                    float diff = fabs(temp[i * M + j] - output->ptr[i * M + j]) / fabs(temp[i * M + j]);
+                    // if (diff > 1e-5) printf("%e %e %e\n", diff, temp[i * M + j], output->ptr[i * M + j]);
+                    if (diff > maxerror) maxerror = diff;
+                }
+            }
+            printf("affine input->ndim %d maxerror %e\n", input->ndim, maxerror);
+        }
+        delete temp;
+    }
     delete in;
 }
 
