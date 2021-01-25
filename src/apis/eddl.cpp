@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -411,6 +411,15 @@ namespace eddl {
         m->print_loss(batch);
     }
 
+    vector<float> get_losses(model m){
+        return m->get_losses();
+    }
+
+    vector<float> get_metrics(model m){
+        return m->get_metrics();
+    }
+
+
     // model constraints
     void clamp(model m,float min,float max)
     {
@@ -430,19 +439,19 @@ namespace eddl {
     }
 
     Loss* getLoss(string type){
-        if (type == "mse" || type == "mean_squared_error"){
+        if (type == "mean_squared_error" || type == "mse"){
             return new LMeanSquaredError();
-        } else if (type == "full_cross_entropy"){
-            return new LFullCrossEntropy();
-        } else if (type == "cross_entropy"){
-            return new LCrossEntropy();
-        } else if (type == "soft_cross_entropy"){
+        } else if (type == "categorical_cross_entropy" || type == "cross_entropy"  || type=="ce" || type=="cce"){
+            return new LCategoricalCrossEntropy();
+        } else if (type == "binary_cross_entropy" || type=="bce"){
+            return new LBinaryCrossEntropy();
+        } else if (type == "soft_cross_entropy" || type == "softmax_cross_entropy" || type == "sce"){
             return new LSoftCrossEntropy();
-        }
-        else if (type == "dice"){
+        } else if (type == "deprecated_cross_entropy"){
+            return new LCrossEntropy();
+        } else if (type == "dice"){
             return new LDice();
-        }
-        else if (type == "none"){
+        } else if (type == "none"){
             return new Loss("none");
         }
         return nullptr;
@@ -515,14 +524,15 @@ namespace eddl {
         return new LActivation(parent, activation, params, name, DEV_CPU, 0);
     }
 
-    layer Softmax(layer parent, string name){
+    layer SoftmaxDeprecated(layer parent, string name){
+        show_deprecated_warning("SoftmaxDeprecated", "Softmax");
         vector<float> params = {};
-        return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
+        return new LActivation(parent,"softmax_deprecated", params, name, DEV_CPU, 0);
     }
 
-    layer FullSoftmax(layer parent, string name){
-        vector<float> params = {};
-        return new LActivation(parent,"full_softmax", params, name, DEV_CPU, 0);
+    layer Softmax(layer parent, int axis, string name){
+        vector<float> params = {static_cast<float>(axis)};
+        return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
     }
 
     layer Sigmoid(layer parent, string name){
@@ -602,6 +612,11 @@ namespace eddl {
         return new LConv1D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
+    layer PointwiseConv(layer parent, int filters,
+               const vector<int> &strides, bool use_bias,
+               int groups, const vector<int> &dilation_rate,string name){
+        return new LConv(parent, filters, {1, 1}, strides, "none", groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
 
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
@@ -820,24 +835,39 @@ namespace eddl {
     }
 
 
-
-
     //  Operator Layers
     layer Abs(layer l){
         return new LAbs(l, "", DEV_CPU, 0);
     }
 
+
+    layer Sub(layer l1, layer l2){
+        return new LDiff(l1, l2, "", DEV_CPU, 0);
+    }
+
+    layer Sub(layer l1, float k){
+        return new LDiff(l1, k, "", DEV_CPU, 0);
+    }
+
+    layer Sub(float k,layer l1){
+        return new LDiff(k, l1, "", DEV_CPU, 0);
+    }
+
     layer Diff(layer l1, layer l2){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(l1, l2, "", DEV_CPU, 0);
     }
 
     layer Diff(layer l1, float k){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(l1, k, "", DEV_CPU, 0);
     }
 
     layer Diff(float k,layer l1){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(k, l1, "", DEV_CPU, 0);
     }
+
     layer Div(layer l1, layer l2){
         return new LDiv(l1, l2, "", DEV_CPU, 0);
     }
@@ -889,15 +919,30 @@ namespace eddl {
         return new LSqrt(l, "", DEV_CPU, 0);
     }
 
+    layer Add(layer l1, layer l2){
+        return new LSum(l1, l2, "", DEV_CPU, 0);
+    }
+
+    layer Add(layer l1, float k){
+        return new LSum(l1, k, "", DEV_CPU, 0);
+    }
+
+    layer Add(float k,layer l1){
+        return new LSum(l1, k, "", DEV_CPU, 0);
+    }
+
     layer Sum(layer l1, layer l2){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, l2, "", DEV_CPU, 0);
     }
 
     layer Sum(layer l1, float k){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, k, "", DEV_CPU, 0);
     }
 
     layer Sum(float k,layer l1){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, k, "", DEV_CPU, 0);
     }
 
@@ -960,18 +1005,9 @@ namespace eddl {
         return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
     layer MaxPool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
-
-        vector<int> shape=parent->output->getShape();
-        shape.push_back(1);
-        LReshape *l=new LReshape(parent, shape, "", DEV_CPU, 0);
-
         pool_size.push_back(1);
         strides.push_back(1);
-        LMaxPool *lp=new LMaxPool(l, pool_size, strides, padding, name, DEV_CPU, 0);
-
-        vector<int> shape2=lp->output->getShape();
-        shape2.pop_back();
-        return new LReshape(lp,shape2, "", DEV_CPU, 0);
+        return new LMaxPool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
 
     layer GlobalMaxPool(layer parent, string name){
@@ -1259,6 +1295,7 @@ namespace eddl {
                 msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
             }
             else if (status > 0){
+                cout<<cmd<<endl;
                 msg("wget failed to download dataset (exit code: " + to_string(status) + "). See previous messages for details.", "eddl.download_"+name);
             }
           }
@@ -1291,7 +1328,7 @@ namespace eddl {
     }
 
     void download_drive(){
-      download_dataset("drive","npy",{"sbd8eu32adcf5oi","qp0j8oiqzf6tc1a"});
+      download_dataset("drive","bin",{"tf3uzrsjtv4jiey","xakcuhby30ylpes"});
     }
 
 

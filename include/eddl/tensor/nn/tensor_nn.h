@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -18,9 +18,11 @@ namespace tensorNN{
 // ***** Losses *****************************
     void cent(Tensor *A, Tensor *B, Tensor *C);
 
-    float FullCrossEntropy(Tensor* y_true, Tensor* y_pred);
-    void D_FullCrossEntropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
+    float categorical_cross_entropy(Tensor* y_true, Tensor* y_pred);
+    void d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
 
+    float binary_cross_entropy(Tensor* y_true, Tensor* y_pred);
+    void d_binary_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
 
 // ***** Metrics *****************************
     int accuracy(Tensor *A, Tensor *B);
@@ -68,8 +70,8 @@ namespace tensorNN{
     void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
 // Full Softmax
-    void FullSoftmax(Tensor *A, Tensor *B);
-    void D_FullSoftmax(Tensor *D, Tensor *I, Tensor *PD);
+    void FullSoftmax(Tensor *A, Tensor *B, int axis);
+    void D_FullSoftmax(Tensor *D, Tensor *I, Tensor *PD, int axis);
 
 // Tanh
     void Tanh(Tensor *A, Tensor *B);

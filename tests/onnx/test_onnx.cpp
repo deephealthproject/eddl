@@ -32,7 +32,7 @@ Net* get_network(){
     l = ReLu(Dense(l, 1024));
     l = BatchNormalization(l);
 
-    layer out = Activation(Dense(l, 10), "softmax");
+    layer out = Softmax(Dense(l, 10));
     model net = Model({in}, {out});
 
     return net;

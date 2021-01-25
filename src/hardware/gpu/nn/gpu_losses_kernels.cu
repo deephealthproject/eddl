@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -32,7 +32,7 @@ __global__ void cent(float* a, float* b, float* c, long int size)
 
 
 
-__global__ void gpu_full_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int n_batches, unsigned int n_features){
+__global__ void gpu_categorical_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int n_batches, unsigned int n_features){
     long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Batch index
 
     if (thread_id_x < n_batches){
@@ -50,11 +50,11 @@ __global__ void gpu_full_cross_entropy(float* y_true, float* y_pred, float* sum_
         }
 
         // Store partial sums (later will be reduced)
-        sum_array[thread_id_x] = -bi_sum;
+        sum_array[thread_id_x] = bi_sum;
     }
 }
 
-__global__ void gpu_d_full_cross_entropy(float* y_true, float* y_pred, float* delta, long int size){
+__global__ void gpu_d_categorical_cross_entropy(float* y_true, float* y_pred, float* delta, long int size){
     long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Index
 
     if (thread_id_x < size){
@@ -62,3 +62,25 @@ __global__ void gpu_d_full_cross_entropy(float* y_true, float* y_pred, float* de
         delta[thread_id_x] = -y_true[thread_id_x] * (1.0f/ (y_pred[thread_id_x]+eps) );
     }
 }
+
+__global__ void gpu_binary_cross_entropy(float* y_true, float* y_pred, float* sum_array, unsigned int size){
+    long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Index
+
+    if (thread_id_x < size){
+        float eps =10e-8;
+
+        // Store sums (later will be reduced)
+        sum_array[thread_id_x] = y_true[thread_id_x] * logf(y_pred[thread_id_x]+eps) + (1.0-y_true[thread_id_x]) * logf(1.0f-y_pred[thread_id_x]+eps);
+    }
+
+}
+
+__global__ void gpu_d_binary_cross_entropy(float* y_true, float* y_pred, float* delta, long int size){
+    long int thread_id_x = blockIdx.x*blockDim.x + threadIdx.x; // Index
+
+    if (thread_id_x < size){
+        float eps =10e-8;
+        delta[thread_id_x] = -( y_true[thread_id_x] * 1.0f/(y_pred[thread_id_x]+eps) + (1.0-y_true[thread_id_x]) * 1.0f/(1.0f-y_pred[thread_id_x]+eps) * -1.0f );
+    }
+}
+

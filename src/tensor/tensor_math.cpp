@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -2522,7 +2522,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
         msg("Incompatible dims", "Tensor::add");
     }
 
-    C->tsem->lock();
+
     if (A->isCPU()) {
         cpu_add(scA, A, scB, B, C, incC);
     }
@@ -2539,7 +2539,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
       }
 #endif
 
-    C->tsem->unlock();
+
 
     PROFILING_FOOTER(add);
 }
@@ -2595,7 +2595,7 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
     PROFILING_HEADER_EXTERN(el_div);
 
-    C->tsem->lock();
+
     if (A->isCPU()) {
         cpu_el_div(A, B, C, incC);
     }
@@ -2611,7 +2611,7 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
         fpga_el_div(A,B,C,incC);
       }
 #endif
-    C->tsem->unlock();
+
 
     PROFILING_FOOTER(el_div);
 }
@@ -2646,7 +2646,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     }
 
 
-    C->tsem->lock();
+
 
     if (A->isCPU()) {
         cpu_mult2D(A, tA, B, tB, C, incC);
@@ -2664,7 +2664,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
         fpga_mult2D(A,tA,B,tB,C,incC);
       }
 #endif
-    C->tsem->unlock();
+
 
     PROFILING_FOOTER(mult2D);
 }
@@ -2679,7 +2679,7 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
     PROFILING_HEADER_EXTERN(el_mult);
 
-    C->tsem->lock();
+
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_mult");
     if ((!sameShape(A, B)) || (!sameShape(A, C))) {
         A->info();
@@ -2703,7 +2703,7 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
          fpga_el_mult(A,B,C,incC);
       }
 #endif
-    C->tsem->unlock();
+
 
     PROFILING_FOOTER(el_mult);    
 }
@@ -2723,7 +2723,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
 
     PROFILING_HEADER_EXTERN(sum2D_rowwise);
 
-    C->tsem->lock();
+
     if (A->isCPU()) {
         cpu_sum2D_rowwise(A, B, C);
     }
@@ -2739,7 +2739,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
         fpga_sum2D_rowwise(A,B,C);
       }
 #endif
-    C->tsem->unlock();
+
 
     PROFILING_FOOTER(sum2D_rowwise);
 }
@@ -2759,7 +2759,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 
     PROFILING_HEADER_EXTERN(reduce_sum2D);
 
-    B->tsem->lock();
+
     if (A->isCPU()) {
         cpu_reduce_sum2D(A, B, axis, incB);
     }
@@ -2775,7 +2775,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
         fpga_reduce_sum2D(A,B,axis,incB);
       }
 #endif
-    B->tsem->unlock();
+
 
     PROFILING_FOOTER(reduce_sum2D);    
 }
@@ -2794,7 +2794,7 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 
     PROFILING_HEADER_EXTERN(sum2D_colwise);
 
-    C->tsem->lock();
+
     if (A->isCPU()) {
         cpu_sum2D_colwise(A, B, C);
     }
@@ -2810,7 +2810,7 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
         fpga_sum2D_colwise(A,B,C);
       }
 #endif
-    C->tsem->unlock();
+
 
     PROFILING_FOOTER(sum2D_colwise);    
 }

@@ -652,7 +652,7 @@ void fpga_cpuemu_d_softmax(Tensor *D, Tensor *I, Tensor *PD){
 
 void fpga_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
  _profile_fpga(_FPGA_D_SOFTMAX, 0);
-  PD->tsem->lock();
+
 #ifndef K_ENABLED_D_SOFTMAX
   fpga_cpuemu_d_softmax(D, I, PD);
 #else
@@ -667,7 +667,7 @@ void fpga_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_d_softmax, NULL, &event));
   q.finish();
 #endif
-  PD->tsem->unlock();
+
   _profile_fpga(_FPGA_D_SOFTMAX, 1);
 }
 

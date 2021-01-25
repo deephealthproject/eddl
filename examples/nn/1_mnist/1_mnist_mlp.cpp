@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 100;
+    int epochs = 10;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     l = LeakyReLu(Dense(l, 1024));
     l = LeakyReLu(Dense(l, 1024));
 
-    layer out = Softmax(Dense(l, num_classes));
+    layer out = Softmax(Dense(l, num_classes), -1);  // Softmax axis optional (default=-1)
     model net = Model({in}, {out});
     net->verbosity_level = 0;
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           sgd(0.001), // Optimizer
-          {"cross_entropy"}, // Losses
+          {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches

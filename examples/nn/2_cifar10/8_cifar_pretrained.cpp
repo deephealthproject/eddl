@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -40,7 +40,7 @@ int main(int argc, char **argv){
   // create a new graph to adapt the output for CIFAR
   layer in=Input({512});
   layer l=Dense(in,10);
-  l=Softmax(l);
+  l= Softmax(l);
 
   model net_adap=Model({in},{l});
 
@@ -48,12 +48,12 @@ int main(int argc, char **argv){
   model net=Model({net_onnx,net_adap});
 
   build(net,
-        sgd(0.01), // Optimizer
-        {"soft_cross_entropy"}, // Losses
+        sgd(0.001), // Optimizer
+        {"softmax_cross_entropy"}, // Losses
         {"accuracy"}, // Metrics
-        //CS_GPU({1}) // one GPU
+        CS_GPU({1}) // one GPU
         //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-        CS_CPU()
+        //CS_CPU()
   );
 
   summary(net);

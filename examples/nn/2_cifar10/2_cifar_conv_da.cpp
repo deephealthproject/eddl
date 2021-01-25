@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -55,7 +55,7 @@ int main(int argc, char **argv){
 
     l=Activation(BatchNormalization(Dense(l,128)),"relu");
 
-    layer out=Activation(BatchNormalization(Dense(l,num_classes)),"softmax");
+    layer out= Softmax(BatchNormalization(Dense(l, num_classes)));
 
     // net define input and output layers list
     model net=Model({in},{out});
@@ -64,7 +64,7 @@ int main(int argc, char **argv){
     // Build model
     build(net,
           adam(0.001), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches

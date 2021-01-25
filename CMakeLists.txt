@@ -9,9 +9,14 @@ cmake_minimum_required(VERSION 3.9.2)
 option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
+<<<<<<< HEAD
 option(BUILD_HPC "Compile using agressive flags" OFF)
 option(BUILD_TESTS "Compile tests" ON)
 option(BUILD_DIST "Compile for a distributed execution" OFF)
+=======
+option(BUILD_HPC "Compile using aggressive flags" ON)
+option(BUILD_TESTS "Compile tests (HCP needs to be disabled)" ON)  # Disable HCP to pass tests (there are numerical errors)
+>>>>>>> d97875b3161d3e7a9199d35079d57a7d4ce3c6fa
 option(USE_LOCAL_GTEST "Use the local library to avoid problems derived from the 'One Definition Rule'" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_RUNTIME "Compile runtime" ON)
@@ -21,6 +26,22 @@ option(BUILD_SANITIZERS "Flag to compile with sanitizers information" OFF)
 
 if(WIN32)
     option(BUILD_SHARED_LIBS "" OFF) # Prefer lib over dll in windows
+endif()
+
+###########################################################################
+############################### WARNINGS ##################################
+###########################################################################
+
+# Issues with HPC and logic functions
+if(BUILD_HPC)
+    message(WARNING "[WARNING] The 'BUILD_HPC' flag is enabled and might not work on a different CPU.
+If you intend to compile the library for different CPUs (or for a docker image), you should disable it: '-D BUILD_HPC=OFF'. This happens because it makes use of native compiling flags.")
+endif()
+
+# Issues with HPC and logic functions
+if(BUILD_TESTS AND BUILD_HPC)
+    message(WARNING "[WARNING] Some logic functions are not compatible with the 'BUILD_HPC' flag.
+If you're unit testing, or using one of these logic functions: isfinite(), isinf(), isnan(), isposinf(), isneginf(); then we recommend you to disable the HPC flag: '-D BUILD_HPC=OFF' to obtain the expected results.")
 endif()
 
 ###########################################################################
@@ -50,7 +71,7 @@ if(BUILD_SUPERBUILD)
     add_subdirectory(cmake)
 endif()
 # This is executed at compilation time: "make"
-PROJECT(eddl VERSION 0.7 LANGUAGES CXX)
+PROJECT(eddl VERSION 0.8 LANGUAGES CXX)
 
 
 # SET C++ COMPILER STANDARD
@@ -102,7 +123,7 @@ if(UNIX)
     endif()
 
     if(BUILD_HPC)
-        #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -mtune=native")  # This does not work on many machines
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -mtune=native")
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -msse -mfpmath=sse -ffast-math")
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ftree-vectorize")
     endif()

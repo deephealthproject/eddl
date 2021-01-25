@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -38,7 +38,7 @@ void Conv2D(ConvolDescriptor *D) {
 
     PROFILING_HEADER(Conv2D);
 
-    D->O->tsem->lock();
+
     if (D->I->isCPU()) {
         cpu_conv2D(D);
     }
@@ -54,7 +54,7 @@ void Conv2D(ConvolDescriptor *D) {
         fpga_conv2D(D);
     }
 #endif
-    D->O->tsem->unlock();
+
 
     PROFILING_FOOTER(Conv2D);
 }
@@ -70,7 +70,7 @@ void Conv2D_grad(ConvolDescriptor *D) {
 
     PROFILING_HEADER(Conv2D_grad);
 
-    D->gK->tsem->lock();
+
     if (D->I->isCPU()) {
         cpu_conv2D_grad(D);
     }
@@ -85,7 +85,7 @@ void Conv2D_grad(ConvolDescriptor *D) {
         fpga_conv2D_grad(D);
     }
 #endif
-    D->gK->tsem->unlock();
+
 
     PROFILING_FOOTER(Conv2D_grad);
 }
@@ -101,7 +101,7 @@ void Conv2D_back(ConvolDescriptor *D) {
 
     PROFILING_HEADER(Conv2D_back);
 
-    D->ID->tsem->lock();
+
     if (D->I->isCPU()) {
         cpu_conv2D_back(D);
     }
@@ -116,7 +116,7 @@ void Conv2D_back(ConvolDescriptor *D) {
         fpga_conv2D_back(D);
     }
 #endif
-    D->ID->tsem->unlock();
+
 
     PROFILING_FOOTER(Conv2D_back);
 }

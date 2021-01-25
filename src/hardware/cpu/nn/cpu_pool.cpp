@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -31,7 +31,7 @@ void cpu_mpool2D(PoolDescriptor *D){
                 for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc, p++) { // cols: left-right
 
                     // Get max value in window
-                    float max = std::numeric_limits<float>::min();
+                    float max = CPU_LOWEST_FLOAT;
                     for(int ki=0; ki<D->kr; ki++){  // rows (kernel): top-bottom
                         for(int kj=0; kj<D->kc; kj++) { // cols (kernel): left-right
 

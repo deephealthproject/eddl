@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -32,14 +32,15 @@ using namespace eddl;
 int main(int argc, char **argv) {
     cout << "Tests for development. Ignore." << endl;
 
-    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_();  // 4D tensor needed
+//   Tensor* t1 = Tensor::load("/home/salvacarrion/Documents/Programming/C++/eddl/nan_tensor_lout_input.bin");
+    Tensor *t1 = new Tensor({-114.67 ,-153.77 ,-122.57 ,-113.86 ,-141.96 ,-119.93 ,-116.40 ,-135.25 ,-105.31 ,-117.21}, {1, 10}, DEV_CPU);
+   t1->print(2);
 
-    // Cutout
-    Tensor* t2 = t1->cutout({50, 250}, {250, 400});
-    t2->save("lena_cutout.jpg");
+   Tensor* t2 = Tensor::zeros_like(t1);
+//   t2 = t1->exp();
+   tensorNN::FullSoftmax(t1, t2, 1);
 
-    // Other ways
-    Tensor::cutout(t1, t2, {50, 250}, {250, 400});  // Static
+   t2->print(2);
 
     cout << "Done!" << endl;
 

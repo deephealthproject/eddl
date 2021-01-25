@@ -15,15 +15,15 @@ The code is open source, and `available on github`_.
     :maxdepth: 1
     :caption: Installation
 
-    installation/installation.rst
-    installation/build-options.rst
-    installation/troubleshoot.rst
-    installation/faq.rst
+    intro/installation.rst
+    intro/build-options.rst
+    intro/troubleshoot.rst
+    intro/faq.rst
 
 
 .. toctree::
     :maxdepth: 1
-    :caption: Usage
+    :caption: Get started
 
     usage/getting_started.rst
     usage/intermediate.rst
@@ -62,6 +62,7 @@ The code is open source, and `available on github`_.
     :caption: Model
 
     model/model.rst
+    model/onnx.rst
 
 
 .. toctree::

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -59,11 +59,11 @@ void msg(const string& text, const string& title) {
     if(!title.empty()){
         s += " (" + title + ")";
     }
-    cout<<"==================================================================\n";
-    cout<<s<<endl;
-    cout<<"==================================================================\n";
+    std::cerr << "==================================================================\n";
+    std::cerr << s << std::endl;
+    std::cerr << "==================================================================\n";
 
-    throw std::runtime_error("eddl exception");
+    throw std::runtime_error("RuntimeError: " + title);
 }
 
 
@@ -419,6 +419,14 @@ WrappingMode getWrappingMode(string mode){
         return WrappingMode::Constant;
     }
 }
+
+void show_deprecated_warning(const string& deprecated_name, const string& new_name, const string& type, const string& version){
+    std::cerr << "[DEPRECATION WARNING]:" << std::endl;
+    std::cerr << "The '" << deprecated_name << "' " << type << " will be deprecated in a " << version << " version";
+    if (!new_name.empty()) { std::cerr << " in favor of '" << new_name << "'"; }
+    std::cerr << "." << std::endl;
+}
+
 
 // ---------------------------------------------------------------------------------------------
 // Profiling

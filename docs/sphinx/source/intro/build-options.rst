@@ -35,7 +35,7 @@ If you decide to manually install these dependencies in your system (make sure t
     - cmake>=3.9.2
     - eigen>=3.3.7
     - protobuf
-    - libprotobuf  # We need to avoid problems with paths (idk why)
+    - libprotobuf  # We need to avoid problems with paths
     - zlib
     - cudatoolkit
     - openssl
@@ -122,7 +122,12 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 Additional flags
 ^^^^^^^^^^^^^^^^
 
+<<<<<<< HEAD:docs/sphinx/source/installation/build-options.rst
 These flags can enable/disable features of the EDDL so that you can optimize and troubleshoot the compilation process (see: :doc:``troubleshoot``).
+=======
+These flags can enable/disable features of the EDDL so that you can optimized and
+troubleshoot the compilation process (see: :doc:`troubleshoot`).
+>>>>>>> d97875b3161d3e7a9199d35079d57a7d4ce3c6fa:docs/sphinx/source/intro/build-options.rst
 
 
 - **Prefix path:** Semicolon-separated list of directories specifying installation prefixes to be searched by the ``find_package()``, ``find_program()``, ``find_library()``, ``find_file()``, and ``find_path()`` commands.
@@ -204,6 +209,17 @@ These flags can enable/disable features of the EDDL so that you can optimize and
 
     Enabled by default
 
+- **Use HPC:** To enable/disabled HPC flags, use the setting ``BUILD_HPC``, such as:
+
+.. code:: bash
+
+    -DBUILD_HPC=ON
+
+.. note::
+
+    Enabled by default.
+    This enables flags such as: ``-march=native -mtune=native -Ofast -msse -mfpmath=sse -ffast-math -ftree-vectorize``,
+    that might cause some units tests to fail due to numerical errors (minor deviations from the value asserted)
 
 - **Use protobuf:** Protobuf allows you to use the ONNX import/export functions, to use them, use the setting ``BUILD_PROTOBUF``, such as:
 
@@ -224,7 +240,8 @@ These flags can enable/disable features of the EDDL so that you can optimize and
 
 .. note::
 
-    Enabled by default
+    Enabled by default.
+    The flag ``BUILD_HCP`` needs to be disabled. If not, some tests might not pass due to numerical errors.
 
 
 - **Use local gtest:** Uses the local copy of the gtest repository as a fail-safe. Ignored if using superbuild.
@@ -238,8 +255,13 @@ These flags can enable/disable features of the EDDL so that you can optimize and
     Enabled by default.
 
     Why this? Because the Google C++ Testing Framework uses conditional compilation for some things.
+<<<<<<< HEAD:docs/sphinx/source/installation/build-options.rst
     Because of the C++ "One Definition Rule", gtest must be compiled with the same flags as
     your C++ code under test. Therefore, to avoid or fix potential problems, we have provide you with
+=======
+    Because of the C++ "One Definition Rule", gtest must be compiled with exactly the same flags as
+    your C++ code under test. Therefore, to avoid or fix potential problems, we have provided you with
+>>>>>>> d97875b3161d3e7a9199d35079d57a7d4ce3c6fa:docs/sphinx/source/intro/build-options.rst
     this flag in advance.
 
 - **Build examples:** To compile the examples, use the setting ``BUILD_EXAMPLES``, such as:

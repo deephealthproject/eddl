@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -19,18 +19,18 @@
 using namespace std;
 
 
-LFullCrossEntropy::LFullCrossEntropy() : Loss("full_cross_entropy"){}
+LBinaryCrossEntropy::LBinaryCrossEntropy() : Loss("binary_cross_entropy"){}
 
-void LFullCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
-    tensorNN::D_FullCrossEntropy(T, Y, D);
+void LBinaryCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
+    tensorNN::d_binary_cross_entropy(T, Y, D);
 }
 
-float LFullCrossEntropy::value(Tensor *T, Tensor *Y) {
-    float loss_value = tensorNN::FullCrossEntropy(T, Y);
+float LBinaryCrossEntropy::value(Tensor *T, Tensor *Y) {
+    float loss_value = tensorNN::binary_cross_entropy(T, Y);
     return loss_value;
 }
 
-Loss* LFullCrossEntropy::clone()
+Loss* LBinaryCrossEntropy::clone()
 {
-  return new LFullCrossEntropy();
+  return new LBinaryCrossEntropy();
 }

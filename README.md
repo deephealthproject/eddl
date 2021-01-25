@@ -1,5 +1,5 @@
 <p style="text-align: center;">
-  <img src="https://raw.githubusercontent.com/salvacarrion/salvacarrion.github.io/master/assets/hot-linking/logo-eddl.png" alt="EDDL" height="140" width="300">
+  <img src="https://github.com/deephealthproject/eddl/blob/master/docs/sphinx/source/_static/images/logos/logo-eddl-medium.png" alt="EDDL" height="140" width="300">
 </p>
 
 -----------------
@@ -18,7 +18,7 @@ Please note that EDDL is an ambitious project with few hands on it. Our short-te
 
  *"Plans are only good intentions unless they immediately degenerate into hard work"*
 
-## Installation [here](https://deephealthproject.github.io/eddl/installation/installation.html)
+## Installation [here](https://deephealthproject.github.io/eddl/intro/installation.html)
 
 ## Getting started [here](https://deephealthproject.github.io/eddl/usage/getting_started.html)
 

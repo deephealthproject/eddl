@@ -14,6 +14,8 @@
 
 using namespace eddl;
 
+// Fast check for GPU: CS_GP-U({1}, "low_mem")
+// Fast check for CPU: CS_CP-U()
 
 TEST(NetTestSuite, memory_leaks_select){
     layer in=Input({3, 32, 32});
@@ -44,7 +46,7 @@ TEST(NetTestSuite, net_delete_mnist_mlp){
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -72,7 +74,7 @@ TEST(NetTestSuite, net_delete_mnist_initializers){
     // Build model
     build(net,
           sgd(0.01, 0.9), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -101,7 +103,7 @@ TEST(NetTestSuite, net_delete_mnist_regularizers){
     // Build model
     build(net,
           sgd(0.01, 0.9), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -137,7 +139,7 @@ TEST(NetTestSuite, net_delete_mnist_da){
     // Build model
     build(net,
           sgd(0.01, 0.9), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -170,7 +172,7 @@ TEST(NetTestSuite, net_delete_mnist_conv){
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -199,7 +201,7 @@ TEST(NetTestSuite, net_delete_mnist_rnn){
     // Build model
     build(net,
           rmsprop(0.001), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -229,7 +231,7 @@ TEST(NetTestSuite, net_delete_mnist_conv1D){
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -389,7 +391,7 @@ TEST(NetTestSuite, net_delete_cifar_resnet50_da_bg){
     // Build model
     build(net,
           sgd(0.001,0.9), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -450,13 +452,16 @@ layer UNetWithPadding(layer x, bool use_concat){
 
 TEST(NetTestSuite, net_delete_drive_seg_da) {
 
+    int input_size = 584/4;
+    int crop_size = 512/4;
+
     // Network for Data Augmentation
-    layer in1=Input({3,584,584});
-    layer in2=Input({1,584,584});
+    layer in1=Input({3,input_size,input_size});
+    layer in2=Input({1,input_size,input_size});
 
     layer l=Concat({in1,in2});   // Cat image and mask
     l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
-    l= CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
+    l= CenteredCrop(l,{crop_size,crop_size});         // Crop to work with sizes power 2
     layer img=Select(l,{"0:3"}); // UnCat [0-2] image
     layer mask=Select(l,{"3"});  // UnCat [3] mask
     // Both, image and mask, have the same augmentation
@@ -469,37 +474,42 @@ TEST(NetTestSuite, net_delete_drive_seg_da) {
     delete danet;
 }
 
-//TEST(NetTestSuite, net_delete_drive_seg_concat) {
-//    // Build SegNet
-//    bool use_concat = true;
-//    layer in=Input({3,512,512});
-//    layer out=Sigmoid(UNetWithPadding(in, use_concat));
-//    model segnet=Model({in},{out});
-//    build(segnet,
-//          adam(0.00001), // Optimizer
-//          {"mse"}, // Losses
-//          {"mse"}, // Metrics
-//          CS_CPU(-1)
-//    );
-//    delete segnet;
-//}
+TEST(NetTestSuite, net_delete_drive_seg_concat) {
+    int input_size = 584/4;
+    int crop_size = 512/4;
 
-//
-//TEST(NetTestSuite, net_delete_drive_seg_sum){
-//
-//    // Build SegNet
-//    bool use_concat = false;
-//    layer in=Input({3,512,512});
-//    layer out=Sigmoid(UNetWithPadding(in, use_concat));
-//    model segnet=Model({in},{out});
-//    build(segnet,
-//          adam(0.00001), // Optimizer
-//          {"mse"}, // Losses
-//          {"mse"}, // Metrics
-//          CS_CPU(-1)
-//    );
-//    delete segnet;
-//}
+    // Build SegNet
+    bool use_concat = true;
+    layer in=Input({3,crop_size,crop_size});
+    layer out=Sigmoid(UNetWithPadding(in, use_concat));
+    model segnet=Model({in},{out});
+    build(segnet,
+          adam(0.00001), // Optimizer
+          {"mse"}, // Losses
+          {"mse"}, // Metrics
+          CS_CPU()
+    );
+    delete segnet;
+}
+
+
+TEST(NetTestSuite, net_delete_drive_seg_sum){
+    int input_size = 584/4;
+    int crop_size = 512/4;
+
+    // Build SegNet
+    bool use_concat = false;
+    layer in=Input({3,crop_size,crop_size});
+    layer out=Sigmoid(UNetWithPadding(in, use_concat));
+    model segnet=Model({in},{out});
+    build(segnet,
+          adam(0.00001), // Optimizer
+          {"mse"}, // Losses
+          {"mse"}, // Metrics
+          CS_CPU()
+    );
+    delete segnet;
+}
 
 
 
@@ -526,7 +536,7 @@ TEST(NetTestSuite, net_delete_nlp_sentiment_rnn){
     // Build model
     build(net,
           opt, // Optimizer
-          {"cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"binary_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -558,7 +568,7 @@ TEST(NetTestSuite, net_delete_nlp_sentiment_lstm){
     // Build model
     build(net,
           opt, // Optimizer
-          {"cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"binary_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -595,7 +605,7 @@ TEST(NetTestSuite, net_delete_nlp_machine_translation){
     // Build model
     build(net,
           opt, // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
           CS_CPU()
     );

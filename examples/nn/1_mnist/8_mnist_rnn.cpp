@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -50,11 +50,11 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           rmsprop(0.001), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
 	  //CS_FPGA({1})
     );
 
@@ -70,7 +70,9 @@ int main(int argc, char **argv) {
 
     // Reshape to fit recurrent batch x timestep x dim
     x_train->reshape_({60000,28,28});
+    y_train->reshape_({60000,1,10});
     x_test->reshape_({10000,28,28});
+    y_test->reshape_({10000,1,10});
 
     // Preprocessing
     x_train->div_(255.0f);

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -56,6 +56,17 @@
 #define MAX_GPUS 8
 #define MAX_FPGAS 8
 
+#define CPU_MIN_FLOAT 1.17549e-38f;  // Minimum finite value
+#define CPU_MAX_FLOAT 3.40282e+38f;  // Maximum finite value
+#define CPU_EPS_FLOAT 1.19209e-07f;  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
+#define CPU_LOWEST_FLOAT -3.40282e+38f;  // For floating-point types: implementation-dependent; generally, the negative of max()
+
+//const float CPU_MIN_FLOAT = std::numeric_limits<float>::min();  // Minimum finite value
+//const float CPU_MAX_FLOAT = std::numeric_limits<float>::max();  // Maximum finite value
+//const float CPU_EPS_FLOAT = std::numeric_limits<float>::epsilon();  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
+//const float CPU_LOWEST_FLOAT = -CPU_MAX_FLOAT;  // For floating-point types: implementation-dependent; generally, the negative of max()
+
+
 using namespace std;
 
 // TODO: Remove this. Don't like here
@@ -65,7 +76,7 @@ typedef vector<int> tshape;
 class Tensor {
 private:
     // Load methods
-    static Tensor* load_from_bin(std::ifstream &ifs);
+    static Tensor* load_from_bin(std::ifstream &ifs, int start_row, int end_row);
     static Tensor* load_from_onnx(std::ifstream &ifs);
     static Tensor* load_from_img(const string &filename, const string &format);
 //    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);  // Deprecated
@@ -92,7 +103,6 @@ public:
 
     // Aux variables
     int gpu_device;
-    mutex *tsem = nullptr;  // Multithreading. Tensor semaphore
 
 #ifdef cFPGA
     // fpga-related information
@@ -255,7 +265,7 @@ public:
       *  @param format    File format. Accepted formats are: bin, onnx, csv, tsv, txt.
       *  @return    Tensor
     */
-    static Tensor* loadfs(std::ifstream &ifs, string format="");
+    static Tensor* loadfs(std::ifstream &ifs, const string& format="");
 
     /**
       *  @brief Load tensor from file.
@@ -269,15 +279,15 @@ public:
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
 
-    /**
-      *  @brief Load data from a text file
-      *
-      *  @param filename  Name of the file to load the tensor from.
-      *  @param delimiter    Character used to separate the columns of the file.
-      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
-      *  @return    Tensor
-    */
-    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
+//    /**
+//      *  @brief Load data from a text file
+//      *
+//      *  @param filename  Name of the file to load the tensor from.
+//      *  @param delimiter    Character used to separate the columns of the file.
+//      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
+//      *  @return    Tensor
+//    */
+//    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
     /**
       *  @brief Load tensor from a void pointer.
@@ -286,6 +296,16 @@ public:
       *  @return    Tensor
     */
     static Tensor* load_from_ptr(void * src);
+
+        /**
+      *  @brief Load a binary file from the row i to row j
+      *
+      *  @param filename  Name of the file to load the tensor from.
+      *  @param start_row  Index for the initial row (starts from 0)
+      *  @param end_row  Index for the last row (ends at n-1)
+      *  @return    Tensor
+    */
+    static Tensor* load_partial(const string& filename, int start_row=0, int end_row=-1);
 
     /**
       *  @brief Save tensor to a filestream.
@@ -318,7 +338,7 @@ public:
       *  @param header      Header rows.
       *  @return    void
     */
-    void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
+    void save2txt(const string& filename, char delimiter=',', const vector<string> &header={});
 
     /**
       *  @brief Save tensor to a void pointer.
@@ -2367,68 +2387,72 @@ public:
 
     // Logic funcions: Truth value testing *****************************
 
+
     /**
       *  @brief Test whether all elements evaluate to True.
       *
-      *  @param A   Tensor to evaluate
       *  @return    bool
     */
+    bool all();
     static bool all(Tensor *A);
+    
 
     /**
       *  @brief Test whether any element evaluates to True.
       *
-      *  @param A   Tensor to evaluate
       *  @return    bool
     */
+    bool any();
     static bool any(Tensor *A);
+    
 
     // Logic funcions: Logical ops
 
     /**
       *  @brief Test element-wise for finiteness (not infinity or not Not a Number).
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isfinite();
     static void isfinite(Tensor *A, Tensor* B);
+    
 
     /**
       *  @brief Test element-wise for positive or negative infinity.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isinf();
     static void isinf(Tensor *A, Tensor* B);
+    
 
     /**
       *  @brief Test element-wise for Nan.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isnan();
     static void isnan(Tensor *A, Tensor* B);
+
+    bool anynan();
 
     /**
       *  @brief Test element-wise for negative infinity.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isneginf();
     static void isneginf(Tensor *A, Tensor* B);
+    
 
     /**
       *  @brief Test element-wise for positive infinity.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isposinf();
     static void isposinf(Tensor *A, Tensor* B);
+    
 
     // Logic funcions: Logical ops
 
@@ -2436,40 +2460,41 @@ public:
       *  @brief Compute the truth value of ``A and B`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param C   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_and(Tensor *A);
     static void logical_and(Tensor *A, Tensor *B, Tensor *C);
+    
 
     /**
       *  @brief Compute the truth value of ``A or B`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param C   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_or(Tensor *A);
     static void logical_or(Tensor *A, Tensor *B, Tensor *C);
+    
 
     /**
       *  @brief Compute the truth value of ``not A`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_not();
     static void logical_not(Tensor *A, Tensor *B);
+    
 
     /**
       *  @brief Compute the truth value of ``A xor B`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param C   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_xor(Tensor *A);
     static void logical_xor(Tensor *A, Tensor *B, Tensor *C);
+    
 
     // Logic funcions: Comparison ops *****************************
 
@@ -2477,26 +2502,26 @@ public:
       *  @brief Returns True if two arrays accomplish, element-wise, the condition \f$|A-B| \leq atol+rtol\times|B|\f$
       *
       *  @param A   Input tensor.
-      *  @param B   Input tensor.
       *  @param rtol relative tolerance.
       *  @param atol absolute tolerance.
       *  @param equal_nan if ``True``, then two ``NaN``s will be considered equal.
-      *  @return    void
+      *  @return    boolean indicating if all elements in tensor hold the condition
     */
+    bool allclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
     static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
-
+    
     /**
       *  @brief Returns a boolean array where a position is true if elements in A and B accomplish \f$|A-B| \leq atol+rtol\times|B|\f$
       *
       *  @param A   Input tensor.
-      *  @param B   Input tensor.
-      *  @param C   Output tensor.
       *  @param rtol relative tolerance.
       *  @param atol absolute tolerance.
       *  @param equal_nan if ``True``, then two ``NaN``s will be considered equal.
-      *  @return    void
+      *  @return    boolean indicating if all elements in tensor hold the condition
     */
+    Tensor* isclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
+    
 
     /**
       *  @brief Return the truth value of the input elements > ``v`` element-wise. In-place operation.
@@ -2816,6 +2841,7 @@ public:
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, vector<Tensor*> t, unsigned int axis);
 
+    static Tensor* stack(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.
@@ -3204,6 +3230,7 @@ Tensor* Tensor::load(const string& filename, string format){
     ifs.close();
     return t;
 }
+
 
 /**
     *   @brief Check if two tensors are compatible, it is, they are in the same device and have the same shape.

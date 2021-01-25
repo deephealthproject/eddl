@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -236,7 +236,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     optimizer->setlayers(layers);
 
     // set loss functions and create targets tensors
-    if (isdecoder) {
+    if ((isdecoder)||(isencoder)) {
       decsize=lout.size()/lo.size();
       for(int i=0;i<decsize;i++)
         for(int j=0;j<lo.size();j++)
@@ -245,7 +245,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     else losses = vloss(lo);
 
     for (int i = 0; i < losses.size(); i++) {
-        if (losses[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
+        if (losses[i]->name == "softmax_cross_entropy") lout[i]->delta_bp = 1;
         lout[i]->target = new Tensor(lout[i]->output->getShape(), dev);
     }
     // set metrics

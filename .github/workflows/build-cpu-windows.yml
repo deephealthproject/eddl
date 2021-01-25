@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #os: [windows-latest, windows-2016]
+        #os: [windows-latest, windows-2016] 
         os: [windows-latest]
     steps:
     - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G "Visual Studio 16 2019" -A x64 -T ClangCL -DBUILD_SUPERBUILD=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TARGET=CPU ..
+        cmake -G "Visual Studio 16 2019" -A x64 -DBUILD_SUPERBUILD=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TARGET=CPU ..
       shell: cmd
     - name: Build
       run: cmake --build build --config Release
@@ -31,3 +31,4 @@ jobs:
         cd build
         "bin/Release/unit_tests.exe"
       shell: cmd
+      

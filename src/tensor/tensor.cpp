@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -80,8 +80,6 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2){
     updateSize();
     updateStrides();
     updateData(fptr, fptr2);
-
-    this->tsem = new mutex();
 }
 
 // From shape and device
@@ -113,7 +111,6 @@ Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : T
 
 Tensor::~Tensor() {
     this->deleteData();
-    if(this->tsem != nullptr) { this->tsem->unlock(); delete tsem; }
 }
 
 void Tensor::updateDevice(int dev){

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -128,7 +128,7 @@ void LConv::apply_accumulated_gradients() {
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
-    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  "share_"+name, dev,mem_level);
+    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  "share_"+to_string(c)+this->name, dev,mem_level);
     n->orig = this;
     n->isshared=true;
     n->trainable = trainable;

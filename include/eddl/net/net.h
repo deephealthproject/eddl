@@ -1,9 +1,9 @@
 
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -171,9 +171,14 @@ public:
     vector<vtensor> get_parameters(bool deepcopy=false, bool tocpu=false);
     void set_parameters(const vector<vtensor>& params);
 
+    vector<float> get_losses();
+    vector<float> get_metrics();
 
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
     void prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
+    void prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
+    void prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
+    void prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
 
     void fit_recurrent(vtensor tin, vtensor tout, int batch_size, int epochs);
     void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);

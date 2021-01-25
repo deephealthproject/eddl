@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.8
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -31,6 +31,31 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
 #endif
     output = new Tensor(input->shape, dev);
     delta_bp = 0;
+
+    // Softmax checks
+    if(this->act=="softmax"){
+        // Set default axis if none was specified
+        if(this->params.empty()){
+            this->params.push_back(-1);
+            std::cerr << "No axis for 'softmax' was specified. Using last one (-1) as default " << "(LActivation::Softmax)" << endl;
+        }
+
+        // Check number of axis
+        if(this->params.size()>1){
+            msg("Only one axis is supported ("  + std::to_string(this->params.size()) + " were specified)", "LActivation::Softmax");
+        }
+
+        // Replace -1 axis with last one
+        int lastAxis = (int)input->shape.size()-1;
+        if((int)this->params[0]==-1){
+            this->params[0] = lastAxis;
+        }
+
+        // Check bounds
+        if((int)this->params[0] <0 || (int)this->params[0]>lastAxis){
+            msg("The axis has to be a number from 0 to (number_of_dimensions - 1)", "LActivation::Softmax");
+        }
+    }
 
     parent->addchild(this);
     addparent(parent);
@@ -67,11 +92,12 @@ void LActivation::forward(){
     }else if (act == "softsign"){
         tensorNN::Softsign(this->input, this->output);
 
-    }else if (act == "softmax"){
+    }else if (act == "softmax_deprecated"){  // TODO: Deprecated
         tensorNN::Softmax(this->input, this->output);
 
-    }else if (act == "full_softmax"){
-        tensorNN::FullSoftmax(this->input, this->output);
+    }else if (act == "softmax"){
+        int axis = (int)this->params[0];
+        tensorNN::FullSoftmax(this->input, this->output, axis);
 
     }else if (act == "sigmoid"){
         tensorNN::Sigmoid(this->input, this->output);
@@ -125,11 +151,12 @@ void LActivation::backward(){
         }else if (act == "softsign"){
             tensorNN::D_softsign(delta, output, parent[0]->delta);
 
-        }else if (act == "softmax"){
+        }else if (act == "softmax_deprecated"){  // TODO: Deprecaated
             tensorNN::D_Softmax(delta, output, parent[0]->delta);
 
-        }else if (act == "full_softmax"){
-            tensorNN::D_FullSoftmax(delta, output, parent[0]->delta);
+        }else if (act == "softmax"){
+            int axis = (int)this->params[0];
+            tensorNN::D_FullSoftmax(delta, output, parent[0]->delta, axis);
 
         }else if (act == "sigmoid"){
             tensorNN::D_Sigmoid(delta, output, parent[0]->delta);

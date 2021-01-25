@@ -26,7 +26,7 @@ std::vector<int> vf2vi(const std::vector<float>& vf)
 #endif
 
 #if defined(cPROTO)
-	Net* build_net_onnx(onnx::ModelProto model, int mem);
+	Net* build_net_onnx(onnx::ModelProto model, int mem, int log_level);
 #endif
 
 #if defined(cPROTO)
@@ -36,7 +36,7 @@ std::vector<int> vf2vi(const std::vector<float>& vf)
 
 using namespace std;
 
-#ifdef cPROTO 
+#ifdef cPROTO
 	enum ONNX_LAYERS{
 		//TODO Comment in which section belongs each layer
 		BATCHNORM,			// implemented
@@ -45,6 +45,7 @@ using namespace std;
 		DROP,               // implemented
 		//EMBEDDING,  		// Onnx doesn't support this
 		RESHAPE,            // implemented
+        SQUEEZE,            // implemented
 		FLATTEN,            // implemented
 		TRANSPOSE,          // implementing
 		TRANSPOSED_CONV,	// not implemented in eddl
@@ -76,12 +77,21 @@ using namespace std;
 		MAX,				// implemented
 		MIN,                // implemented
 		SUB,                // implemented
-		LSTM                // not implemented yet
-		
+		LSTM,               // implemented
+		IDENTITY            // implemented
+
+
+
 
 
 	};
 
+
+	void log_string(string log, int actual_log_level, int string_log_level){
+		if(actual_log_level <= string_log_level){
+			cout << log << endl;
+		}
+	}
 
 	int verbose=0;
 	//Gets the initializers from the onnx layer graph
@@ -141,7 +151,8 @@ using namespace std;
 
 
 	//Creates a map where the key is the onnx name for the layer type and the value is the constant value in the enumeration for onnx layer type.
-	map<string, ONNX_LAYERS> create_enum_map(){
+	map<string, ONNX_LAYERS> create_enum_map()
+	{
 		map<string, ONNX_LAYERS> map_layers;
 		map_layers["BatchNormalization"] = ONNX_LAYERS::BATCHNORM;
 		map_layers["Conv"] = ONNX_LAYERS::CONV;
@@ -150,6 +161,7 @@ using namespace std;
 		map_layers["Reshape"] = ONNX_LAYERS::RESHAPE;
 		map_layers["Flatten"] = ONNX_LAYERS::FLATTEN;
 		map_layers["Transpose"] = ONNX_LAYERS::TRANSPOSE;
+		map_layers["Squeeze"] = ONNX_LAYERS::SQUEEZE;
 		map_layers["ConvTranspose"] = ONNX_LAYERS::TRANSPOSED_CONV;
 		map_layers["Upsample"] = ONNX_LAYERS::UPSAMPLING;
 		map_layers["Softmax"] = ONNX_LAYERS::SOFTMAX;
@@ -157,7 +169,7 @@ using namespace std;
 		map_layers["AveragePool"] = ONNX_LAYERS::AVGPOOL;
 		map_layers["GlobalMaxPool"] = ONNX_LAYERS::GLOBMAXPOOL;
 		map_layers["GlobalAveragePool"] = ONNX_LAYERS::GLOBAVGPOOL;
-		map_layers["Transpose"] = ONNX_LAYERS::PERMUTE;
+		//map_layers["Transpose"] = ONNX_LAYERS::PERMUTE;
 		// Activation layers
 		map_layers["Relu"] = ONNX_LAYERS::RELU;
 		map_layers["Sigmoid"] = ONNX_LAYERS::SIGMOID;
@@ -180,6 +192,8 @@ using namespace std;
 		map_layers["Max"] = ONNX_LAYERS::MAX;
 		map_layers["Min"] = ONNX_LAYERS::MIN;
 		map_layers["LSTM"] = ONNX_LAYERS::LSTM;
+		map_layers["Identity"] = ONNX_LAYERS::IDENTITY;
+
 
 		return map_layers;
 	}
@@ -187,7 +201,8 @@ using namespace std;
 
 	//Converts a raw onnx value tensor and writes it to a vector of that value type.
 	template <class T>
-	bool TryConvertingTensorRawValues( const onnx::TensorProto& onnx_tensor, vector<T> &field) {
+	bool TryConvertingTensorRawValues( const onnx::TensorProto& onnx_tensor, vector<T> &field)
+	{
 		if (!onnx_tensor.has_raw_data()) {
 			return false;
 		}
@@ -320,12 +335,15 @@ using namespace std;
 	}
 
 	//Parses one TensorProto pointer (Input or output) to eddl Tensor pointer
-	vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor) {
+	vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor, bool recurrent_net) {
 		onnx::TensorShapeProto tensorShape = tensor.shape();
 		vector<int> shape;
 		shape.push_back(1); //TODO check this is required
+		int start_index = 1;
+		if(recurrent_net && tensorShape.dim_size() > 2)
+			start_index = 2;
 
-		for(int i = 1; i < tensorShape.dim_size(); i++){
+		for(int i = start_index; i < tensorShape.dim_size(); i++){
 			shape.push_back(tensorShape.dim(i).dim_value());
 		}
 
@@ -334,7 +352,7 @@ using namespace std;
 
 	//Converts one vector of TensorProto pointers (Input or output)
 	//to one vector of eddl Tensor pointers.
-	vector<Layer*> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, int mem) {
+	vector<Layer*> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, int mem, bool recurrent_net) {
 		vector<Layer*> io;
 		onnx::TypeProto::Tensor tensor;
 		int dev = DEV_CPU;
@@ -342,7 +360,7 @@ using namespace std;
 		for(onnx::ValueInfoProto infoProto : io_onnx) {
 			tensor = infoProto.type().tensor_type();
 			string name = infoProto.name();
-			io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor)), name, dev, mem) );
+			io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor, recurrent_net)), name, dev, mem) );
 		}
 
 		for(Layer* layer : io){
@@ -406,7 +424,7 @@ using namespace std;
 
 
 	//Imports a net stored in a onnx file
-	Net* import_net_from_onnx_file(std::string path, int mem) {
+	Net* import_net_from_onnx_file(std::string path, int mem, int log_level) {
         // Check if the path exists
 	    if(!pathExists(path)){
             msg("The specified path does not exist: " + path, "ONNX::ImportNet");
@@ -425,7 +443,7 @@ using namespace std;
 				//return;
 			}
 		}
-		return build_net_onnx(model, mem);
+		return build_net_onnx(model, mem, log_level);
 	}
 
 	//Imports a net from a pointer passed as argument
@@ -440,7 +458,7 @@ using namespace std;
 			}
 			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
 		}
-		return build_net_onnx(model, mem);
+		return build_net_onnx(model, mem, LOG_LEVEL::INFO);
 	}
 
 	//Imports a net from a c++ string passed as argument.
@@ -455,39 +473,66 @@ using namespace std;
 			}
 			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
 		}
-		return build_net_onnx(model, mem);
+		return build_net_onnx(model, mem, LOG_LEVEL::INFO);
 	}
 
 
 
+	bool check_recurrent_nodes(vector<onnx::NodeProto> nodes){
+		map<string, ONNX_LAYERS> map_layers = create_enum_map();
+		for(int i = 0; i < nodes.size(); i++){ //Check if any node is recurrent
+			onnx::NodeProto *node = &nodes[i];
+			string layer_type_name = node->op_type();
+			ONNX_LAYERS layer_type = map_layers[layer_type_name];
+			if(layer_type == ONNX_LAYERS::LSTM)
+				return true;
+		}
+
+		return false;
+
+
+	}
 	//Builds a eddl Net from an instance of the onnx container for model
-	Net* build_net_onnx(onnx::ModelProto model, int mem){
+	Net* build_net_onnx(onnx::ModelProto model, int mem, int log_level){
 
 		long long int ir_version = model.ir_version();
 		// We have to check if the imported net has the
 		// version we created this importer for.
 		if(ir_version != 0x00000006) {
-			cerr << "Ir_version < 6" << endl;
-			cerr << "Warning: Version is inferior to the one supported. ONNX module will try to load it anyway" << endl;
+			log_string("Ir_version < 6" , log_level, LOG_LEVEL::WARN);
+			log_string("Warning: Version is inferior to the one supported. ONNX module will try to load it anyway"  , log_level, LOG_LEVEL::WARN);
+			//cerr << "Ir_version < 6" << endl;
+			//cerr << "Warning: Version is inferior to the one supported. ONNX module will try to load it anyway" << endl;
 		}
 
 		// We omit the OperatorSetIdProto, since it doesn't do anything for EDDL
-		cout << "Ir_version = " << ir_version << endl;
+		log_string("Ir_version = " + to_string(ir_version), log_level, LOG_LEVEL::INFO);
+		//cout << "Ir_version = " << ir_version << endl;
 		for(int i = 0; i < model.opset_import_size() ; i++){
-			cout << "Operator domain  = " << model.opset_import(i).domain() << endl;
-			cout << "Operator version = " << model.opset_import(i).version() << endl;
+			log_string("Operator domain  = " + model.opset_import(i).domain(), log_level, LOG_LEVEL::INFO);
+			log_string("Operator version  = " + to_string(model.opset_import(i).version()), log_level, LOG_LEVEL::INFO);
+			//cout << "Operator domain  = " << model.opset_import(i).domain() << endl;
+			//cout << "Operator version = " << model.opset_import(i).version() << endl;
 		}
-		cout << "Producer_name: " << model.producer_name() << endl;
-		cout << "Producer_version: " << model.producer_version() << endl;
-		cout << "Domain: " << model.domain() << endl;
-		cout << "Model_version: " << model.model_version() << endl;
+		log_string("Producer_name: " + model.producer_name() , log_level, LOG_LEVEL::INFO);
+		log_string("Producer_version: " + model.producer_version() , log_level, LOG_LEVEL::INFO);
+		log_string("Domain: " + model.domain() , log_level, LOG_LEVEL::INFO);
+		log_string("Model_version: " + to_string(model.model_version()) , log_level, LOG_LEVEL::INFO);
+		//cout << "Producer_name: " << model.producer_name() << endl;
+		//cout << "Producer_version: " << model.producer_version() << endl;
+		//cout << "Domain: " << model.domain() << endl;
+		//cout << "Model_version: " << model.model_version() << endl;
 		int counter = 0;
 		onnx::GraphProto graph = model.graph(); //Get the graph of the model.
 		//Model needs input in the constructor, so we start with that.
 
 		vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); //Get the inputs
+		vector<onnx::NodeProto> nodes = get_graph_nodes(graph);
+		bool recurrent_net = check_recurrent_nodes(nodes);
+		if(recurrent_net)
+			log_string("The net is recurrent" , log_level, LOG_LEVEL::INFO);
 
-		vector<Layer*> inputs =  parse_IO_tensors(inputs_onnx, mem); //Parse ONNX inputs to EDDL inputs
+		vector<Layer*> inputs =  parse_IO_tensors(inputs_onnx, mem, recurrent_net); //Parse ONNX inputs to EDDL inputs
 
 		vector<onnx::TensorProto> initializers = get_initializers(graph); // Retrieves the initializers from the graph.
 																		  // The weight for the layers can be found in the initializers.
@@ -497,7 +542,6 @@ using namespace std;
 		get_initializers_maps(initializers, map_init_values, map_init_dims);// Creates 2 maps
 																			//  Key: Input Name . Value: Weights
 																			//  Key: Input Name . Value: Dims
-		vector<onnx::NodeProto> nodes = get_graph_nodes(graph);
 		//The methodology is the following:
 		//We create three maps:
 		//map <string input, vector<onnx::NodeProto *> > input_node_map. The input will point towards the nodes that have this input
@@ -552,9 +596,11 @@ using namespace std;
 					continue;
 				}
 				avaliable = false;
+				//log_string("Node " + node->name() + " is not avaliable yet"  , log_level, LOG_LEVEL::DEBUG);
 				break;
 			}
 			if(avaliable){
+				log_string("Node " + node->name() + " is avaliable, since only has initializers and constant nodes as parameters"  , log_level, LOG_LEVEL::DEBUG);
 				//cout << "Node " << node->name() << " is avaliable" << endl;
 				if(node->op_type() == "Constant" ) continue;
 				nodeQueue.push(node);
@@ -566,8 +612,16 @@ using namespace std;
 		while(!nodeQueue.empty()){
 			counter = 0;
 			onnx::NodeProto* node= nodeQueue.front();
+			log_string("Next node: " + node->name(), log_level, LOG_LEVEL::DEBUG);
+
+            // Look for inputs with empty ("") names that some libraries create, and delete them.
+            auto * inputs_list = node->mutable_input();
+            for (auto i = inputs_list->begin(); i != inputs_list->end(); i++)
+                if ((*i).empty())  i = --inputs_list->erase(i);
+
 			//6.1: Check all inputs are avaliable
 			bool avaliable = true;
+
 			for(int i = 0; i < node->input_size(); i++){
 				string input = node->input(i);
 				if(map_init_values.count(input)){
@@ -580,11 +634,13 @@ using namespace std;
 					continue;
 				}
 				avaliable = false;
+				log_string("Node " + node->name() + " is not avaliable yet. Missing input: " + input  , log_level, LOG_LEVEL::DEBUG);
 				break;
 			}
 			string output_name = node->output(0);
 			if(output_node_map.count(output_name)){
 				nodeQueue.pop();
+				log_string("Node " + node->name() + " was already created"  , log_level, LOG_LEVEL::DEBUG);
 				continue; //This means this node was already created
 			}
 
@@ -602,6 +658,7 @@ using namespace std;
 			// a map <String-Enumeration> for creating a switch, where
 			// we call the constructor of that layer
 			string layer_type_name = node->op_type();
+			log_string("Node " + node->name() + " has operation type = " + layer_type_name  , log_level, LOG_LEVEL::DEBUG);
 			ONNX_LAYERS layer_type = map_layers[layer_type_name];
 			string name = node->name();
 			int dev = DEV_CPU;//TODO: Check what device to use
@@ -619,7 +676,7 @@ using namespace std;
 							if(!attr_name.compare("epsilon")) epsilon = attribute.f();
 							if(!attr_name.compare("momentum")) momentum = attribute.f();
 						}
-						
+
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
@@ -709,6 +766,8 @@ using namespace std;
 								for(int h = 0; h < attribute.ints_size(); h++){
 									pads.push_back(attribute.ints(h));
 								}
+                                if(attribute.ints_size() == 4)
+                                    swap(pads[1], pads[2]);
 							}
 							else if (!attr_name.compare("strides")) { //
 								for(int h = 0; h < attribute.ints_size(); h++){
@@ -773,10 +832,11 @@ using namespace std;
 						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
 						Tensor::copy(weights_tensor, convol_descriptor->K);
 						delete weights_tensor;
-						break;
 					}
+					break;
 				case ONNX_LAYERS::DENSE:
 					{
+						log_string("Dense detected" , log_level, LOG_LEVEL::DEBUG);
 						int ndim;
 						bool use_bias = false;
 						float alpha;
@@ -831,9 +891,10 @@ using namespace std;
 							neuronas = dims[1];
 						string name = node->name();
 						Tensor * input_size = parent->output;
-						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
+						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem);
 
 						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
+
 						if(transB)
                             weights_tensor->permute_({1, 0});
 						Tensor::copy(weights_tensor, dense->W);
@@ -849,7 +910,7 @@ using namespace std;
 						actual_layer = dense;
 					}
 					break;
-					
+
 				case ONNX_LAYERS::UPSAMPLING:
 					{
 						string interpolation_mode;
@@ -862,15 +923,15 @@ using namespace std;
 							string attr_name = attribute.name();
 							if(!attr_name.compare("mode")) interpolation_mode = attribute.s();
 						}
-						
+
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
-						
+
 						string scales_name = node->input(1); //Get scales and dims
 						vector<float>* scales = &(map_init_values[scales_name]);
 						vector<int> scales_dims = map_init_dims[scales_name];
-						
+
 						if(scales_dims[0] != 4){
 							cerr << "Dimensions of upsampling layer in onnx are wrong" << endl;
 						}
@@ -878,7 +939,7 @@ using namespace std;
 						channel_scale = scales->at(1);
 						height_scale = scales->at(2);
 						width_scale = scales->at(3);
-						
+
 						string name = node->name();
 
 
@@ -886,8 +947,6 @@ using namespace std;
 						size_vector.push_back((int)height_scale);
 						size_vector.push_back((int)width_scale);
 						actual_layer = new LUpSampling(parent, size_vector, interpolation_mode, name, dev, mem);
-						delete scales;
-
 					}
 					break;
 
@@ -901,7 +960,7 @@ using namespace std;
 							if(!attr_name.compare("seed")) seed = attribute.i();
 							if(!attr_name.compare("ratio")) ratio = attribute.f();
 						}
-						
+
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
@@ -1007,7 +1066,7 @@ using namespace std;
 						else if(map_init_values.count(parent_name)){ //This means it is a parameter and not a layer
 							for( int i = 0; i < node->output_size(); i++ ) {
 								map_init_values[node->output(i)] = map_init_values[parent_name];
-								map_init_dims[node->output(i)] = shape; 
+								map_init_dims[node->output(i)] = shape;
 								vector<onnx::NodeProto*> child_nodes = input_node_map[node->output(i)];
 								for(onnx::NodeProto * child : child_nodes){
 									nodeQueue.push(child);
@@ -1043,58 +1102,58 @@ using namespace std;
 
 						string name = node->name();
 						actual_layer = new LPermute(parent, dims, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::RELU:
 					{
 						string parent_name = node->input(0);
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "relu", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SIGMOID:
 					{
 						string parent_name = node->input(0);
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "sigmoid", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::HARD_SIGMOID:
 					{
 						string parent_name = node->input(0);
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "hard_sigmoid", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::TANH:
 					{
 						string parent_name = node->input(0);
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "tanh", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::EXPONENTIAL:
 					{
 						string parent_name = node->input(0);
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "exp", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::LINEAR:
 					{
 						float alpha;
@@ -1107,11 +1166,11 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "linear", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::LEAKY_RELU:
 					{
 						float alpha;
@@ -1124,11 +1183,11 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "leaky_relu", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::THRESHOLDED_RELU:
 					{
 						float alpha;
@@ -1141,11 +1200,11 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "thresholded_relu", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::ELU:
 					{
 						float alpha;
@@ -1158,11 +1217,11 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						param.push_back(alpha);
 						actual_layer = new LActivation(parent, "elu", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SELU:
 					{
 						float alpha = 1.0;
@@ -1177,32 +1236,32 @@ using namespace std;
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						param.push_back(alpha);
 						param.push_back(gamma);
 						actual_layer = new LActivation(parent, "selu", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SOFTSIGN:
 					{
 						string parent_name = node->input(0);
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "softsign", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SOFTPLUS:
 					{
 						string parent_name = node->input(0);
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						vector<float> param; 
+						vector<float> param;
 						actual_layer = new LActivation(parent, "softplus", param, name, dev, mem);
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SOFTMAX:
 					{
 						string parent_name = node->input(0);
@@ -1219,11 +1278,16 @@ using namespace std;
 						}
 
 						string name = node->name();
-						vector<float> param; 
-						actual_layer = new LActivation(parent, "softmax", param, name, dev, mem);
-						break;
+                        int parent_dims = parent->output->getShape().size();
+                        if (axis < 0)  // Check if the target axis is a negative index
+                            axis = parent_dims + axis;  // Get the target axis index
+                        if (axis < 0 || axis >= parent_dims) // Check for invalid axis index
+                            msg("The target axis for Softmax is not valid: axis=" + to_string(axis), "ONNX::ImportNet");
 
+						vector<float> param = {(float)axis};
+						actual_layer = new LActivation(parent, "softmax", param, name, dev, mem);
 					}
+					break;
 				case ONNX_LAYERS::CONCAT:
 					{
 						int axis = 1;
@@ -1244,10 +1308,11 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LConcat(parents, axis, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::ADD:
 					{
+						log_string("Add detected" , log_level, LOG_LEVEL::DEBUG);
 						vector<Layer *> parents;
 						string parent_name;
 						bool parameter_input = false;
@@ -1285,14 +1350,20 @@ using namespace std;
 								break;
 							}
 							else if((dense = dynamic_cast<LDense*>(parents[0]) )){
+						        log_string("Detected a Dense layer as the parent of the Add node." , log_level, LOG_LEVEL::DEBUG);
 								string bias_name = node->input(index_parameter);
 								vector<float> *bias = &(map_init_values[bias_name]);
 								vector<int> bias_dims = map_init_dims[bias_name];
 								if(!dense->use_bias){
+						            log_string("Setting the bias values of the parent Dense to the Add parameters." , log_level, LOG_LEVEL::DEBUG);
 									dense->use_bias = true;
 									dense->bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
+                                    dense->params.push_back(dense->bias);
+                                    dense->gbias = new Tensor(bias_dims, dev);
+                                    dense->gradients.push_back(dense->gbias);
 								}
 								else{ //If dense already has a bias, we sum it in top of the bias
+						            log_string("The parent Dense already has a bias. Adding the parameters of the Add operator to the parent bias." , log_level, LOG_LEVEL::DEBUG);
 									Tensor* add_to_bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
 									dense->bias = Tensor::add(dense->bias, add_to_bias);
 
@@ -1305,9 +1376,10 @@ using namespace std;
 						}
 						string name = node->name();
 						actual_layer = new LAdd(parents, name, dev, mem);
+						log_string("Add layer created" , log_level, LOG_LEVEL::DEBUG);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::SUB:
 					{
 						vector<Layer *> parents;
@@ -1319,8 +1391,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LSubtract(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::AVERAGE:
 					{
 						vector<Layer *> parents;
@@ -1332,8 +1404,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LAverage(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::MAT_MUL:
 					{
 						vector<Layer *> parents;
@@ -1343,7 +1415,7 @@ using namespace std;
 						for ( int j = 0; j < node->input_size(); j++) {
 							parent_name = node->input(j);
 							if(map_init_values.count(parent_name)){
-								//Dense detected	
+								//Dense detected
 								if(dense_detected){
 									cerr << "MAT_MUL with two parameters" << endl;
 								}
@@ -1360,7 +1432,7 @@ using namespace std;
 							int neuronas = dims[1];
 							Layer *parent = parents[1-index_parameter];
 							bool use_bias = false;
-							LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
+							LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem);
 							Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
 							Tensor::copy(weights_tensor, dense->W );
 							delete weights_tensor;
@@ -1370,8 +1442,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LMatMul(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::MAX:
 					{
 						vector<Layer *> parents;
@@ -1383,8 +1455,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LMaximum(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::MIN:
 					{
 						vector<Layer *> parents;
@@ -1396,8 +1468,8 @@ using namespace std;
 						string name = node->name();
 						actual_layer = new LMinimum(parents, name, dev, mem);
 
-						break;
 					}
+					break;
 				case ONNX_LAYERS::MAXPOOL:
 					{
 						int filters;
@@ -1408,6 +1480,7 @@ using namespace std;
 						int ceil_mode = 0;
 						vector<int> dilations;
 						int storage_order = 0;
+                        bool pool1d = false;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
@@ -1426,10 +1499,12 @@ using namespace std;
 								for( int h = 0; h<attribute.ints_size(); h++){
 									kernel_shape.push_back(attribute.ints(h));
 								}
+                                if (attribute.ints_size() == 1)
+                                    pool1d = true;
 							}
 							else if (!attr_name.compare("pads")) {
                                 explicit_padding = true;
-                                for(int h = 0; h < 4; h++){
+                                for(int h = 0; h < attribute.ints_size(); h++){
                                     pads[h] = attribute.ints(h);
                                 }
 							}
@@ -1440,6 +1515,8 @@ using namespace std;
 								for(int h = 0; h < attribute.ints_size(); h++){
 									strides.push_back(attribute.ints(h));
 								}
+                                if (attribute.ints_size() == 1)
+                                    pool1d = true;
 							}
 						}
 
@@ -1449,7 +1526,16 @@ using namespace std;
 
 						string name = node->name();
 
-						actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+                        if (parent_shape.size() == 3)
+                            pool1d = true;
+
+                        if (pool1d) {
+                            strides.push_back(1);
+                            kernel_shape.push_back(1);
+						    actual_layer = new LMaxPool1D(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+                        } else {
+						    actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+                        }
 					}
 						break;
 				case ONNX_LAYERS::GLOBMAXPOOL:
@@ -1463,6 +1549,7 @@ using namespace std;
 
 						actual_layer = new LMaxPool(parent, {h,w},{1,1}, "none", "gpool", dev, mem);
 					}
+					break;
                 case ONNX_LAYERS::LSTM:
 					{
 						vector<float> activation_alpha; //Values for configuring some activations with extra parameters
@@ -1508,7 +1595,7 @@ using namespace std;
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
-						
+
 						if(hidden_size < 0){
 							cerr << "Model contains a LSTM without the number of neurons" << endl;
 						}
@@ -1518,7 +1605,9 @@ using namespace std;
 						vector<int> dims_g = map_init_dims[weights_gates];
                         int input_size = dims_g[2];
 
-						vector<int> dims_input_lstm = {dims_g[2], dims_g[1]/4};
+						// Load input weights with shape [hidden_size, input_size]. After load we transpose
+						//    Note: EDDL input weights are of shape [input_size, hidden_size]
+						vector<int> dims_input_lstm = {dims_g[1]/4, dims_g[2]};
 
 						vector<float>* weights_input_g = new vector<float>;
 						vector<float>* weights_output_g = new vector<float>;
@@ -1547,43 +1636,53 @@ using namespace std;
 						recurrence_weights_cell_g->assign(  recurrence_weights_g->begin() + w_size * 3  , recurrence_weights_g->begin() + w_size * 4);
 
 						LLSTM* lstm = new LLSTM({parent}, hidden_size, 0, 0, name, dev, mem);
-
+						/*
+						* The Weights are permuted before copying them to the LSTM layer (mismatch between ONNX standad and EDDL implementation)
+						*/
 						Tensor* weights_input_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_input_g), dev);
+						weights_input_tensor->permute_({1, 0});
 						Tensor::copy(weights_input_tensor, lstm->Wix );
 						delete weights_input_tensor;
 						delete weights_input_g;
 
 						Tensor* weights_output_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_output_g), dev);
+						weights_output_tensor->permute_({1, 0});
 						Tensor::copy(weights_output_tensor, lstm->Wox );
 						delete weights_output_tensor;
 						delete weights_output_g;
 
 						Tensor* weights_forget_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_forget_g), dev);
+						weights_forget_tensor->permute_({1, 0});
 						Tensor::copy(weights_forget_tensor, lstm->Wfx );
 						delete weights_forget_tensor;
 						delete weights_forget_g;
 
 						Tensor* weights_cell_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_cell_g), dev);
-						Tensor::copy(weights_forget_tensor, lstm->Wcx );
+						weights_cell_tensor->permute_({1, 0});
+						Tensor::copy(weights_cell_tensor, lstm->Wcx );
 						delete weights_cell_tensor;
 						delete weights_cell_g;
 
 						Tensor* recurrence_weights_input_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_input_g), dev);
+						recurrence_weights_input_tensor->permute_({1, 0});
 						Tensor::copy(recurrence_weights_input_tensor, lstm->Wih );
 						delete recurrence_weights_input_tensor;
 						delete recurrence_weights_input_g;
 
 						Tensor* recurrence_weights_output_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_output_g), dev);
+						recurrence_weights_output_tensor->permute_({1, 0});
 						Tensor::copy(recurrence_weights_output_tensor, lstm->Woh );
 						delete recurrence_weights_output_tensor;
 						delete recurrence_weights_output_g;
 
 						Tensor* recurrence_weights_forget_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_forget_g), dev);
+						recurrence_weights_forget_tensor->permute_({1, 0});
 						Tensor::copy(recurrence_weights_forget_tensor, lstm->Wfh );
 						delete recurrence_weights_forget_tensor;
 						delete recurrence_weights_forget_g;
 
 						Tensor* recurrence_weights_cell_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_cell_g), dev);
+						recurrence_weights_cell_tensor->permute_({1, 0});
 						Tensor::copy(recurrence_weights_cell_tensor, lstm->Wch );
 						delete recurrence_weights_cell_tensor;
 						delete recurrence_weights_cell_g;
@@ -1659,8 +1758,116 @@ using namespace std;
 					}
 					break;
 
+				case ONNX_LAYERS::IDENTITY:
+					{
+						log_string("Identity layer detected" , log_level, LOG_LEVEL::DEBUG);
+						string parent_name;
+						parent_name = node->input(0);
+						actual_layer = output_node_map[parent_name];
+					}
+					break;
+				case ONNX_LAYERS::SQUEEZE:
+					{
+						log_string("Squeeze layer detected" , log_level, LOG_LEVEL::DEBUG);
+						vector<int> squeeze_axes;
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("axes")) {
+                                // Read the axes to squeeze
+                                for(int h = 0; h < attribute.ints_size(); h++){
+                                    squeeze_axes.push_back(attribute.ints(h));
+                                }
+							}
+						}
+
+						string parent_name;
+						parent_name = node->input(0);
+						Layer * parent = output_node_map[parent_name];
+                        // Check if we are trying to squeeze the axis 0 with a recurrent parent node
+                        //     - In ONNX, the output of a recurrent operator has the number of directions (1:onedirectional, 2:bidirectional)
+                        //       in the axis 0, so in the case of onedirectional models this dimension is squeezed. But to make it fit with
+                        //       the implementation of the eddl we have to skip this squeeze operation because is not needed.
+                        for (int i=0; i < squeeze_axes.size(); ++i) {
+                            if (squeeze_axes[i] == 0 && parent->isrecurrent) {
+						        log_string("Removing 0 axis from Squeeze operator. The parent node is recurrent." , log_level, LOG_LEVEL::WARN);
+                                squeeze_axes.erase(squeeze_axes.begin()+i);  // We remove the axis to squeeze
+                            }
+                        }
+
+                        if (squeeze_axes.size() == 0) {
+                            // We skip this node because there is no axis to squeeze
+						    log_string("Skiping squeeze operation. No axes to squeeze." , log_level, LOG_LEVEL::DEBUG);
+						    actual_layer = output_node_map[parent_name];
+                            break;
+                        } else { // There are axes to squeeze
+                            vector<int> target_shape;
+                            vector<int> parent_out_shape = parent->output->getShape();
+                            bool to_squeeze = false;
+                            for (int parent_ax = 0; parent_ax < parent_out_shape.size(); ++parent_ax) {
+                                to_squeeze = false;
+                                for (int target_ax : squeeze_axes) {
+                                    if (parent_ax == target_ax) {
+                                        if (parent_out_shape[parent_ax] == 1) {
+                                            to_squeeze = true;
+                                            break;
+                                        } else {
+						                    log_string("Trying to squeeze an axis with value different than one. Skiping the operator." , log_level, LOG_LEVEL::WARN);
+						                    actual_layer = output_node_map[parent_name];
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (!to_squeeze) target_shape.push_back(parent_out_shape[parent_ax]);
+                            }
+                            // We create a reshape layer to do the squeeze operation
+							actual_layer= new LReshape(parent, target_shape, name, dev, mem);
+                            log_string("Squeeze (with Reshape) layer created" , log_level, LOG_LEVEL::DEBUG);
+                        }
+					}
+					break;
+				case ONNX_LAYERS::TRANSPOSE:
+					{
+						log_string("Transpose layer detected" , log_level, LOG_LEVEL::DEBUG);
+						vector<int> perm;
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("perm")) {
+                                for(int h = 0; h < attribute.ints_size(); h++){
+                                    perm.push_back(attribute.ints(h));
+                                }
+							}
+						}
+						log_string("perm vector created" , log_level, LOG_LEVEL::DEBUG);
+
+						string parent_name;
+						parent_name = node->input(0);
+						Layer * parent = output_node_map[parent_name];
+
+                        if (recurrent_net) {
+                            if (perm.size() > 1) {
+                                if (perm[0] != 0 || perm[1] != 1) {
+						            log_string("Transpose layers in recurrent nets can not swap batch or sequence dimensions. Skiping Transpose layer..." , log_level, LOG_LEVEL::DEBUG);
+						            actual_layer = parent;
+                                    break;
+                                }
+                            } else {
+						        log_string("WARNING: Transpose layer with permute indices size of " + to_string(perm.size()) + ". Skiping Transpose layer..." , log_level, LOG_LEVEL::WARN);
+						        actual_layer = parent;
+                                break;
+                            }
+                        }
+
+						actual_layer = new LPermute(parent, perm, name, dev, mem);
+						log_string("Permute layer created" , log_level, LOG_LEVEL::DEBUG);
+
+					}
+					break;
+
 				default:
-					cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type_name <<  endl;
+					log_string("FATAL: LAYER NOT RECOGNIZED WITH TYPE " + layer_type_name , log_level, LOG_LEVEL::ERROR);
+					//cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type_name <<  endl;
 					nodeQueue.pop();
 					continue;
 					break;
@@ -1684,7 +1891,8 @@ using namespace std;
 		for( int i = 0; i < output_names.size(); i++ ) {
 			output_layers.push_back(output_node_map[output_names[i]]);
 		}
-		cout << "Net imported from ONNX succesfully" << endl;
+		log_string("Finished importing net from ONNX" , log_level, LOG_LEVEL::DEBUG);
+		//cout << "Net imported from ONNX succesfully" << endl;
 		return new Net(input_layers, output_layers);
 	}
 
@@ -1737,7 +1945,8 @@ using namespace std;
 	}
 
 	//Sets the weights of a input Net to the ones stored in the onnx net inside the c++ string
-	void set_weights_from_onnx(Net* net, std::string* model_string){
+	void set_weights_from_onnx(Net* net, std::string* model_string)
+	{
 		onnx::ModelProto model;
 		{
 			if(!model.ParseFromString(*model_string)){
@@ -1835,7 +2044,8 @@ using namespace std;
 	}
 
 	//Accumulates the gradients stored in the c++ string to the input net
-    void apply_grads_from_onnx(Net* net, std::string* model_string){
+    void apply_grads_from_onnx(Net* net, std::string* model_string)
+	{
 		onnx::ModelProto model;
 		{
 			if(!model.ParseFromString(*model_string)){
@@ -1881,7 +2091,8 @@ using namespace std;
 
 
 	//Returns a map containing the name of the layer as key and a tensor with the values of the model as value
-	map<string, vector<Tensor*> > get_tensors_from_onnx(onnx::ModelProto model){
+	map<string, vector<Tensor*> > get_tensors_from_onnx(onnx::ModelProto model)
+	{
 
 		map<string, vector<Tensor*> > tensors;
 
