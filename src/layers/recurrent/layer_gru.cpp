@@ -248,12 +248,12 @@ void LGRU::backward() {
     Tensor *d_hidden = new Tensor(delta->getShape(), dev);
     Tensor *daux = new Tensor(delta->getShape(), dev);
 
-    Tensor::el_mult(delta, zn, d_z, 0); // d_z: delta for hn, pending to apply derivative
     
     /*
      * h gate
      */
     daux->fill_(0.0);
+    Tensor::el_mult(delta, zn, d_z, 0); // d_z: delta for hn, pending to apply derivative
     tensorNN::D_Tanh(d_z, hn, d_z);  // d_z: delta for hn
     if (trainable) {
         // Update gradients
@@ -304,6 +304,8 @@ void LGRU::backward() {
      */
     Tensor::el_mult(delta, hn, d_h, 0);
     if (parent.size() > 1) {
+        // not_zn: (1 - $z_t$)
+        Tensor::el_mult(delta, not_zn, parent[1]->delta_states[0], 1); // Propagate delta to parent from the child
         Tensor::el_mult(delta, parent[1]->states[0], d_hidden, 0);
     } else {
         d_hidden->fill_(0.0);
