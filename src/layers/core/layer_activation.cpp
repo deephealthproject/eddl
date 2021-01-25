@@ -145,32 +145,15 @@ void LActivation::forward(){
 #ifdef cCUDNN
     float alpha = 1.0f;
     float beta = 0.0f;
-    /* cudnnDataType_t         dataType;
-    int                     n;
-    int                     c;
-    int                     h;
-    int                     w;
-    int                     nStride;
-    int                     cStride;
-    int                     hStride;
-    int                     wStride;
-    cudnnTensorFormat_t        format;
-    cudnnStatus_t bbb = cudnnGetTensor4dDescriptor(xDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
-  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get xDesc "<< cudnnGetErrorString(bbb) <<std::endl;
-      std::cout <<"xDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w << ", " <<nStride <<", " <<cStride<<", "<<hStride<<", " <<wStride<<std::endl;
-
-  bbb = cudnnGetTensor4dDescriptor(yDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
-  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get yDesc "<< cudnnGetErrorString(bbb) <<std::endl;
-    std::cout <<"xyDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w << ", " <<nStride <<", " <<cStride<<", "<<hStride<<", " <<wStride<<std::endl;
-*/
     if(act == "softmax"){
-        cudnnStatus_t aaa = cudnnSoftmaxForward(cudnn_handle, algorithm, softmax_mode, &alpha, xDesc, input->ptr,
-                            &beta, yDesc, output->ptr);
+        cudnnStatus_t aaa = cudnnSoftmaxForward(cudnn_handle, algorithm, softmax_mode,
+                                                &alpha, xDesc, this->input->ptr,
+                            &beta, yDesc, this->output->ptr);
         if( aaa != CUDNN_STATUS_SUCCESS) std::cout<<"SOFTMAX" <<cudnnGetErrorString(aaa)<<std::endl;
     }
     else{
-        cudnnStatus_t aaa = cudnnActivationForward(cudnn_handle, activationDesc, &alpha, xDesc, input->ptr,
-                               &beta, yDesc, output->ptr);
+        cudnnStatus_t aaa = cudnnActivationForward(cudnn_handle, activationDesc, &alpha, xDesc, this->input->ptr,
+                               &beta, yDesc, this->output->ptr);
         if( aaa != CUDNN_STATUS_SUCCESS) std::cout<<"ACT" <<cudnnGetErrorString(aaa)<<std::endl;
     }
 #else
@@ -233,6 +216,7 @@ void LActivation::backward(){
     if (delta_bp){
         Tensor::inc(delta, parent[0]->delta);
     }else {
+#ifndef cCUDNN
         if (act == "relu"){
             tensorNN::D_ReLu(delta, input, parent[0]->delta);
 
@@ -285,6 +269,26 @@ void LActivation::backward(){
             float alpha = this->params[0];
             tensorNN::D_Linear(delta, input, parent[0]->delta, alpha);
         }
+#else
+        float alpha = 1.0f;
+       float beta = 0.0f;
+       if (act == "softmax"){
+            cudnnStatus_t ccc = cudnnSoftmaxBackward(this->cudnn_handle, this->algorithm, this->softmax_mode,
+                                                     &alpha, this->yDesc, this->output->ptr,
+                                                     this->yDesc, this->delta->ptr,
+                                                     &beta, this->xDesc, this->parent[0]->delta->ptr);
+            if( ccc != CUDNN_STATUS_SUCCESS) std::cout<<"SOFT_BACK" <<cudnnGetErrorString(ccc)<<std::endl;
+        }
+        else{
+             cudnnStatus_t ccc = cudnnActivationBackward(this->cudnn_handle, this->activationDesc,
+                                                         &alpha, this->yDesc, this->output->ptr,
+                                                         this->yDesc, this->delta->ptr,
+                                                         this->xDesc, this->input->ptr, &beta,
+                                                         this->xDesc, this->parent[0]->delta->ptr);
+            if( ccc != CUDNN_STATUS_SUCCESS) std::cout<<"ACT_BACK" <<cudnnGetErrorString(ccc)<<std::endl;
+        }
+    #endif
+
     }
 }
 
