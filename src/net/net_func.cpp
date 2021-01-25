@@ -136,7 +136,7 @@ void Net::do_compute_loss() {
         fiterr[p + 1] = metrics[i]->value(lout[i]->target, lout[i]->output);
     }
 
-  
+
   }
 
   if (VERBOSE) {
@@ -232,27 +232,28 @@ void distributeTensor(Layer *l,string tname, int p)
   if (sn->snets[0]->dev==DEV_CPU) return;
 
   int i,j,comp;
-
-  comp=sn->snets.size();
-
-  if (sn->batch_size<comp) {
-    msg("batch_size lower than computing service parallelism","distributeTensor");
-
-  }
-  int thread_batch_size=sn->batch_size / comp;
-
   vector<int> sind(sn->batch_size);
-  for(int k=0;k<sn->batch_size;k++) sind[k]=k;
+  int thread_batch_size;
+
+  if ((tname=="output")||(tname=="delta")) {
+    // output or deltas
+    // check batch_size and comp
+    comp=sn->snets.size();
+    if (sn->batch_size<comp) {
+      msg("batch_size lower than computing service parallelism","distributeTensor");
+    }
+    thread_batch_size=sn->batch_size / comp;
+    for(int k=0;k<sn->batch_size;k++) sind[k]=k;
+  }
 
 
   for(i=0;i<sn->snets.size();i++) {
     Layer *sl=nullptr;
-
     for(j=0;j<sn->snets[i]->layers.size();j++)
-    if (sn->snets[i]->layers[j]->orig==l) {
-      sl=sn->snets[i]->layers[j];
-      break;
-    }
+      if (sn->snets[i]->layers[j]->orig==l) {
+        sl=sn->snets[i]->layers[j];
+        break;
+      }
 
     if (sl==nullptr) {
       cout<<l->name<<"\n";
@@ -262,15 +263,20 @@ void distributeTensor(Layer *l,string tname, int p)
     int start = i * thread_batch_size;
     int end = start + sl->output->shape[0];
 
-    if (tname=="output")
+    if (tname=="output") {
       Tensor::select(l->output, sl->output, sind, start, end);
+    }
     else if (tname=="delta") {
       sl->mem_delta();
       Tensor::select(l->delta, sl->delta, sind, start, end);
     }
-    else if (tname=="param")
-    Tensor::copy(l->params[p],sl->params[p]);
-    else if (tname=="gradient")
-    Tensor::copy(l->gradients[p],sl->gradients[p]);
+    else if (tname=="param") {
+      cout<<"Distribute param to device "<<i<<endl;
+      Tensor::copy(l->params[p],sl->params[p]);
+    }
+    else if (tname=="gradient") {
+      Tensor::copy(l->gradients[p],sl->gradients[p]);
+    }
   }
+
 }
