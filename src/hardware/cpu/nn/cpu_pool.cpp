@@ -17,6 +17,30 @@
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
 
+float get_pixel(int b,int px,int py,int pz,PoolDescriptor *D,int isize,int irsize) {
+  // Check boundaries of the window
+  if (px<0) return 0.0;
+  if (py<0) return 0.0;
+  if (px>=D->ic) return 0.0;
+  if (py>=D->ir) return 0.0;
+
+  // Compute address from indices (row-major)
+  unsigned int address = (b*isize) + (pz*irsize) + (py*D->ic) + px;
+  return D->I->ptr[address];
+}
+
+void add_pixel(int b,int px,int py,int pz,PoolDescriptor *D,int isize,int irsize,float val) {
+  // Check boundaries of the window
+  if (px<0) return;
+  if (py<0) return;
+  if (px>=D->ic) return;
+  if (py>=D->ir) return;
+
+  // Compute address from indices (row-major)
+  unsigned int address = (b*isize) + (pz*irsize) + (py*D->ic) + px;
+  D->ID->ptr[address]+=val;
+}
+
 void cpu_mpool2D(PoolDescriptor *D){
     _profile(_CPU_MPOOL2D, 0);
     int isize = D->ir*D->ic*D->iz;

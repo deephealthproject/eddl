@@ -131,10 +131,29 @@ public:
 };
 
 
-class PoolDescriptor : public ConvolDescriptor {
+class PoolDescriptor {
+
 public:
     Tensor *indX, *indY; // indexes
+    vector<int> ksize;
+    vector<int> stride;
+    vector<int> pad; // {rows-top, rows-bottom, cols-left, cols-right}
+    string padding; // valid/none, same/zeros, custom
+
+    int nk, kr, kc, kz;
+    int sr, sc;
+    int ir, ic, iz;
+    int r, c, z;
+    int padrt,padrb;
+    int padcl,padcr;
+    int size;  // Auxiliar var
+    bool use_bias;
     int mem_level; // see CS
+
+    Tensor *I= nullptr; // Input map
+    Tensor *ID= nullptr;// Delta input map
+    Tensor *D = nullptr; // Delta
+    Tensor *O= nullptr; // Outputmap
 
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, const string& p, int mem=0);
 
@@ -144,6 +163,9 @@ public:
 
     void build(Tensor *A);
     void resize(int b);
+    static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
+    static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
+    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
 };
 
 #endif //EDDL_DESCRIPTORS_H

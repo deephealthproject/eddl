@@ -32,6 +32,7 @@ LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, const string& name, int dev
     // Params
     D->indX = new Tensor(D->O->shape, dev);  // Is this needed here?
     D->indY = new Tensor(D->O->shape, dev);
+
 }
 
 

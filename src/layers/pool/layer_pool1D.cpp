@@ -47,7 +47,7 @@ LPool1D::LPool1D(Layer *parent, PoolDescriptor *D, string name, int dev, int mem
 }
 
 LPool1D::~LPool1D(){
-//    delete pd;
+    delete pd;
 }
 
 void LPool1D::mem_delta(){

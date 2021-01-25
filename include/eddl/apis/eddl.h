@@ -85,7 +85,7 @@ namespace eddl {
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, bool init_weights=true);
 
     // Computing services
-    
+
     void toGPU(model net, vector<int> g, int lsb);
     void toGPU(model net, vector<int> g, string mem);
     /**
@@ -101,7 +101,7 @@ namespace eddl {
     void toGPU(model net, vector<int> g);
     void toGPU(model net, string mem);
     void toGPU(model net);
-    
+
     //void toGPU(model net, string mem);
     /**
       *  @brief Assign model operations to the CPU.
@@ -2057,7 +2057,7 @@ namespace eddl {
     void copyDelta(Layer *l1,Layer *l2);
     void copyParam(Layer *l1,Layer *l2, int p=-1);
     void copyGradient(Layer *l1,Layer *l2, int p);
-
+    void distributeParams(Layer *l);
 
     ///////////////////////////////////////
     //  INITIALIZERS

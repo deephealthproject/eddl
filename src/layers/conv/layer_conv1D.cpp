@@ -71,7 +71,7 @@ LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int m
 
 
 LConv1D::~LConv1D(){
-//    delete cd;  // Just in case
+    delete cd;  
 }
 
 // virtual

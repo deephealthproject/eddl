@@ -1181,7 +1181,7 @@ namespace eddl {
 
     void setDecoder(layer l)
     {
-    
+
        l->isdecoder=true;
 
        int p=l->child.size();
@@ -1291,6 +1291,8 @@ namespace eddl {
         Tensor::copy(l1->delta,l2->delta);
         distributeTensor(l2,"delta");
     }
+
+
     void copyParam(Layer *l1,Layer *l2, int p)
     {
         if (p==-1) {
@@ -1313,6 +1315,12 @@ namespace eddl {
         collectTensor(l1,"gradient",p);
         Tensor::copy(l1->gradients[p],l2->gradients[p]);
         distributeTensor(l2,"gradient",p);
+    }
+
+    void distributeParams(Layer *l)
+    {
+         for(int i=0;i<l->params.size();i++)
+           distributeTensor(l,"param",i);
     }
 
 
