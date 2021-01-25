@@ -197,6 +197,7 @@ void ConvolDescriptor::build(Tensor *A) {
    cudnnCreateTensorDescriptor(&bDesc);
    cudnnSetTensor4dDescriptor(bDesc, tensor_format, data_type, 1, nk,1,1);
    cudnn_env_init = -1;
+   cudnn_conv_back_init = -1;
 
 #endif
 #endif

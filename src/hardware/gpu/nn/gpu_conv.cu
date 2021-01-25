@@ -108,6 +108,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
   }
 #else
+  // FWD environment
   if (D->cudnn_env_init < 0){
       D->cudnn_env_init = 1;
       int requestedAlgoCount;
@@ -126,31 +127,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
       size_t size;
       do{
           D->fwd_algorithm = perfResults[aux_alg].algo;
-          //cout<<D->cudnn_handle<<endl;
 
-    /* cudnnDataType_t         dataType;
-    int                     n;
-    int                     c;
-    int                     h;
-    int                     w;
-    int                     nStride;
-    int                     cStride;
-    int                     hStride;
-    int                     wStride;
-    cudnnTensorFormat_t        format;
-    bbb = cudnnGetTensor4dDescriptor(D->xDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
-  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get xDesc "<< cudnnGetErrorString(bbb) <<std::endl;
-    std::cout <<"xDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w << ", " <<nStride <<", " <<cStride<<", "<<hStride<<", " <<wStride<<std::endl;
-    bbb = cudnnGetFilter4dDescriptor(D->wDesc, &dataType, &format, &n, &c, &h, &w);
-    if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get wDesc "<< cudnnGetErrorString(bbb) <<std::endl;
-    std::cout <<"wDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w <<std::endl;
-    bbb = cudnnGetTensor4dDescriptor(D->yDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
-  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"get yDesc "<< cudnnGetErrorString(bbb) <<std::endl;
-    std::cout <<"yDesc: "<<dataType<<", "<< n<<", " <<c<<", " <<h<< ", "<<w << ", "<<nStride <<", " <<cStride<<", " <<hStride<<", " <<wStride<<std::endl;
-       */
-          //check_cudnn(cudnnGetConvolutionForwardWorkspaceSize(D->cudnn_handle,D->xDesc, D->wDesc,
-          //                                                    D->convolution_descriptor,  D->yDesc,
-          //                                                    D->fwd_algorithm, &size));
           bbb =cudnnGetConvolutionForwardWorkspaceSize(D->cudnn_handle,D->xDesc, D->wDesc,
                                                               D->convolution_descriptor,  D->yDesc,
                                                               D->fwd_algorithm, &size);
@@ -158,6 +135,58 @@ void gpu_conv2D(ConvolDescriptor *D) {
           aux_alg++;
       }
       while(allocate_workspace(size));
+  }
+  //BWD environment
+  if (D->cudnn_conv_back_init < 0){
+      D->cudnn_conv_back_init = 1;
+       int requestedAlgoCount;
+      //check_cudnn(cudnnGetConvolutionForwardAlgorithmMaxCount(D->cudnn_handle, &requestedAlgoCount));
+      /////////////// FILTERS!!!
+      cudnnStatus_t bbb = cudnnGetConvolutionBackwardFilterAlgorithmMaxCount(
+              D->cudnn_handle, &requestedAlgoCount);
+      int returnedAlgoCount;
+      cudnnConvolutionBwdFilterAlgoPerf_t * perfResults = new cudnnConvolutionBwdFilterAlgoPerf_t [requestedAlgoCount];
+
+      bbb = cudnnFindConvolutionBackwardFilterAlgorithm(D->cudnn_handle, D->xDesc, D->yDesc,
+                                                        D->convolution_descriptor, D->wDesc, requestedAlgoCount,
+                                                        &returnedAlgoCount, perfResults);
+      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd 1 "<< cudnnGetErrorString(bbb) <<std::endl;
+      int aux_alg = 0;
+      size_t size;
+      do{
+          D->bwd_filter_algorithm = perfResults[aux_alg].algo;
+
+          bbb =cudnnGetConvolutionBackwardFilterWorkspaceSize(D->cudnn_handle,D->xDesc, D->yDesc,
+                                                              D->convolution_descriptor,  D->wDesc,
+                                                              D->bwd_filter_algorithm, &size);
+          if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd 2 "<< cudnnGetErrorString(bbb) <<std::endl;
+          aux_alg++;
+      }
+      while(allocate_workspace(size));
+
+      //////////// DATA!!!!
+      requestedAlgoCount = 0;
+     bbb = cudnnGetConvolutionBackwardDataAlgorithmMaxCount(D->cudnn_handle, &requestedAlgoCount);
+     returnedAlgoCount=0;
+      cudnnConvolutionBwdDataAlgoPerf_t * perfResults_d = new cudnnConvolutionBwdDataAlgoPerf_t [requestedAlgoCount];
+
+      bbb = cudnnFindConvolutionBackwardDataAlgorithm(D->cudnn_handle, D->wDesc, D->yDesc,
+                                                        D->convolution_descriptor, D->xDesc, requestedAlgoCount,
+                                                        &returnedAlgoCount, perfResults_d);
+      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd 3 "<< cudnnGetErrorString(bbb) <<std::endl;
+      aux_alg = 0;
+       size=0;
+      do{
+          D->bwd_data_algorithm = perfResults_d[aux_alg].algo;
+
+          bbb =cudnnGetConvolutionBackwardDataWorkspaceSize(D->cudnn_handle,D->wDesc, D->yDesc,
+                                                              D->convolution_descriptor,  D->xDesc,
+                                                              D->bwd_data_algorithm, &size);
+          if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd 4 "<< cudnnGetErrorString(bbb) <<std::endl;
+          aux_alg++;
+      }
+      while(allocate_workspace(size));
+
   }
   cudnnStatus_t aaa = cudnnConvolutionForward( D->cudnn_handle, &alpha, D->xDesc, D->I->ptr,
                                        D->wDesc, D->K->ptr,
@@ -190,7 +219,9 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
   int device=D->I->gpu_device;
 
   cudaSetDevice(device);
-
+  float alpha=1.0;
+  float beta = 0.0;
+#ifndef cCUDNN
   int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
 
@@ -217,14 +248,29 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
         gpu_mult2D(D->gpuD,0,D->gpuI,0,D->gpugK,1);
     }
   }
+#else
+        cudnnStatus_t ddd = cudnnConvolutionBackwardFilter(D->cudnn_handle, &alpha,
+                                      D->xDesc, D->I->ptr,
+                                      D->yDesc, D->D->ptr, D->convolution_descriptor,
+                                      D->bwd_filter_algorithm,
+                                      shared_workspace, workspace_size,
+                                      &beta, D->wDesc, D->gK->ptr);
+  if(ddd != CUDNN_STATUS_SUCCESS) std::cout<<"Error en convolucion back filter"<< cudnnGetErrorString(ddd) <<std::endl;
 
+#endif
   if (D->use_bias) {
+#ifndef cCUDNN
     int size=D->bias->shape[0];
     for(int i=0;i<size;i+=1024) {
       int s=min(1024,size-i);
       gpu_deltabias_k<<<D->D->shape[0],s>>>(D->D->ptr, D->D->shape[0], D->r,D->c,D->nk,D->gbias->ptr,i);
       check_cuda(cudaDeviceSynchronize(),"gpu_deltabias");
     }
+#else
+      check_cudnn(cudnnConvolutionBackwardBias(D->cudnn_handle, &alpha, D->yDesc, D->D->ptr,
+                                               &beta, D->bDesc, D->gbias->ptr));
+#endif
+
   }
 
 
@@ -236,7 +282,7 @@ void gpu_conv2D_back(ConvolDescriptor *D){
 
   int device=D->I->gpu_device;
   cudaSetDevice(device);
-
+#ifndef cCUDNN
   int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
   D->gpuK->ptr=D->K->ptr;
@@ -268,6 +314,14 @@ void gpu_conv2D_back(ConvolDescriptor *D){
       gpu_im2col(D,1);
     }
   }
-
+#else
+    float alpha = 1.0f;
+    float beta = 1.0f;
+    check_cudnn(cudnnConvolutionBackwardData(D->cudnn_handle, &alpha, D->wDesc, D->K->ptr,
+                                             D->yDesc, D->D->ptr,
+                                             D->convolution_descriptor, D->bwd_data_algorithm,
+                                             shared_workspace, workspace_size,
+                                             &beta, D->xDesc, D->ID->ptr));
+#endif
 
 }

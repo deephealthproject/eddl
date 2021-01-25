@@ -119,7 +119,7 @@ public:
 
     cudnnConvolutionFwdAlgo_t fwd_algorithm;
     cudnnConvolutionBwdFilterAlgo_t bwd_filter_algorithm;
-    cudnnConvolutionBwdDataAlgo_t bwd_weights_algorithm;
+    cudnnConvolutionBwdDataAlgo_t bwd_data_algorithm;
     cudnnConvolutionDescriptor_t convolution_descriptor;
     cudnnTensorDescriptor_t xDesc; //input. also dxDesc
     cudnnFilterDescriptor_t wDesc; //kernels also dwDesc
@@ -127,6 +127,7 @@ public:
     cudnnTensorDescriptor_t bDesc; //bias, also dbias
 
     int cudnn_env_init;
+    int cudnn_conv_back_init;
 #endif
 
 
