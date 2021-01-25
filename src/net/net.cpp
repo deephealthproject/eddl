@@ -109,10 +109,15 @@ Net::~Net(){
 
     // clean inputs
     for(int i=0; i<snets.size(); i++) {
+        for(int j=0;j<Xs[i].size();j++) {
+          delete Xs[i][j];   
+          delete Ys[i][j];
+        } 
         Xs[i].clear();
         Ys[i].clear();
     }
-
+    
+    // delete optimizer
     for(int i=0;i<snets.size();i++)
         if (snets[i]->optimizer!=nullptr)
             delete snets[i]->optimizer;
