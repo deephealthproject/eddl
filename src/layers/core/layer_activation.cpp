@@ -143,6 +143,7 @@ void LActivation::resize(int batch){
 void LActivation::forward(){
 
 #ifdef cCUDNN
+    std::cout<<"FWD "<< act << std::endl;
     float alpha = 1.0f;
     float beta = 0.0f;
     if(act == "softmax"){
@@ -217,6 +218,7 @@ void LActivation::backward(){
         Tensor::inc(delta, parent[0]->delta);
     }else {
 #ifndef cCUDNN
+        std::cout<<"FWD "<< act << std::endl;
         if (act == "relu"){
             tensorNN::D_ReLu(delta, input, parent[0]->delta);
 
