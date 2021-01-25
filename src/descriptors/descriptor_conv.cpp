@@ -145,9 +145,10 @@ void ConvolDescriptor::build(Tensor *A) {
     gbias = new Tensor(vector<int>{nk}, I->device);
 
     if (I->isCPU()) {
-        // mem for ptr, lowering im2col   
-        unsigned long int l_size =  (unsigned long)(A->shape[0] * r * c) * (unsigned long)(kr * kc * kz);     
+        // mem for ptr, lowering im2col
+        unsigned long int l_size =  (unsigned long)(A->shape[0] * r * c) * (unsigned long)(kr * kc * kz);
         ptrI=get_fmem(l_size,"ConvolDescriptor::build");
+        matI=Eigen::Map<Eigen::MatrixXf>(ptrI, r*c,kz*kr*kc);
 	   _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
     }
 #ifdef cGPU
