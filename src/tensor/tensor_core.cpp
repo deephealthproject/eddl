@@ -698,6 +698,7 @@ void Tensor::set_select(const vector<string>& indices, float value){
     if(sd->oshape==A->shape){
         Tensor::set_select(this, A, sd);
     }else{
+      
         msg("Incompatible dimensions", "Tensor::set_select");
     }
 
@@ -713,6 +714,9 @@ void Tensor::set_select(const vector<string>& indices, Tensor *A){
     if(sd->oshape==A->shape){
         Tensor::set_select(this, A, sd);
     }else{
+        info();
+        A->info();
+
         msg("Incompatible dimensions", "Tensor::set_select");
     }
 

@@ -218,6 +218,9 @@ void collectTensor(Layer *l,string tname, int p)
     Tensor::copy(sl->params[p],l->params[p]);
     else if (tname=="gradient")
     Tensor::copy(sl->gradients[p],l->gradients[p]);
+    else if (tname=="state")
+    Tensor::copy(sl->states[p],l->states[p]);
+
   }
 }
 

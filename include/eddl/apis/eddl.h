@@ -2009,6 +2009,20 @@ namespace eddl {
 
     layer LSTM(vector<layer> parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
 
+    layer States(const vector<int> &shape, string name = "");
+
+    /**
+      *  @brief Upsampling layer.
+      *
+      *  @details
+      *   Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
+      *
+      *  @param parent  Parent layer
+      *  @param size  Vector of 2 integers. The upsampling factors for rows and columns
+      *  @param interpolation  A string, one of "nearest" or "bilinear"
+      *  @param name  A name for the operation
+      *  @return     Output layer after upsampling operation
+    */
     /**
       *  @brief Gated Recurrent Unit (GRU).
       *
@@ -2035,8 +2049,10 @@ namespace eddl {
     Tensor* getDelta(layer l1);
     Tensor* getParam(layer l1, int p);
     Tensor* getGradient(layer l1,int p);
+    Tensor* getState(layer l1,int p);
     vector<Tensor*> getParams(layer l1);
     vector<Tensor*> getGradients(layer l1);
+    vector<Tensor*> getStates(layer l1);
     void copyOutput(Layer *l1,Layer *l2);
     void copyDelta(Layer *l1,Layer *l2);
     void copyParam(Layer *l1,Layer *l2, int p=-1);

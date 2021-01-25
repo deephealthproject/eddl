@@ -44,6 +44,26 @@ public:
 };
 
 /// RNN Layer
+class LStates : public MLayer {
+public:
+    static int total_layers;
+
+    LStates(Tensor *in, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+};
+
+/// RNN Layer
 class LRNN : public MLayer {
 public:
     int units;

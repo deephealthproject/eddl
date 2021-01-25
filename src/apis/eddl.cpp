@@ -661,6 +661,12 @@ namespace eddl {
         return new LInput(new Tensor(s), name, DEV_CPU, 0);
     }
 
+    layer States(const vector<int> &shape, string name){
+        tshape s = vector<int>(shape.begin(), shape.end());
+        if (s.size()!=2) msg("States must have two dimensions, numstates x dim_states","eddl.States");
+        s.insert(s.begin(), 1); // batch + num_states + dim_states
+        return new LStates(new Tensor(s), name, DEV_CPU, 0);
+    }
     // Legacy
     layer UpSampling(layer parent, const vector<int> &size, string interpolation, string name){
         return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
@@ -1234,6 +1240,12 @@ namespace eddl {
         return l1->gradients[p]->clone();
     }
 
+    Tensor* getState(layer l1,int p){
+        collectTensor(l1,"state",p);
+        return l1->states[p]->clone();
+    }
+
+
     // get vector of tensor
     vector<Tensor*> getParams(layer l1){
       vector<Tensor*> n;
@@ -1249,6 +1261,15 @@ namespace eddl {
       for(int i=0;i<l1->gradients.size();i++) {
         collectTensor(l1,"gradients",i);
         n.push_back(l1->gradients[i]->clone());
+      }
+      return n;
+    }
+
+    vector<Tensor*> getStates(layer l1){
+      vector<Tensor*> n;
+      for(int i=0;i<l1->states.size();i++) {
+        collectTensor(l1,"states",i);
+        n.push_back(l1->states[i]->clone());
       }
       return n;
     }
