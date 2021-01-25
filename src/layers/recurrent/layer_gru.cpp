@@ -181,12 +181,12 @@ void LGRU::forward() {
         rn_hidden = new Tensor({input->shape[0], units}, dev);
         Tensor::el_mult(rn, parent[1]->states[0], rn_hidden, 0);
         Tensor::mult2D(rn_hidden, 0, Wh_hidden, 0, hn, 1);
-    }// else (rn * hidden_-1) * Wh_hidden = 0
+    } // else (rn * hidden_-1) * Wh_hidden = 0
     Tensor::sum2D_rowwise(hn, hn_bias, hn);
     tensorNN::Tanh(hn, hn);
 
     /*
-     * Compute h output of the cell: state_hidden = (1 - zn) * hidden_-1 + zn * hn 
+     * Compute h output of the cell: state_hidden = (1 - zn) * hidden_-1 + zn * hn
      */
     hidden_not_zn = new Tensor({input->shape[0], units}, dev);
     if (parent.size() > 1) {
@@ -220,10 +220,12 @@ void LGRU::forward() {
         delete zn;
         delete rn;
         delete hn;
-        delete rn_hidden;
         delete zn_hn;
         delete hidden_not_zn;
-        delete not_zn;
+        if (parent.size() > 1) {
+            delete rn_hidden;
+            delete not_zn;
+        }
         if (mask_zeros) delete mask;
     }
 }
@@ -243,90 +245,95 @@ void LGRU::backward() {
         }
     }
 
-    Tensor *d_h = new Tensor(delta->getShape(), dev);
-    Tensor *d_z = new Tensor(delta->getShape(), dev);
-    Tensor *d_hidden = new Tensor(delta->getShape(), dev);
+    Tensor *d1 = new Tensor(delta->getShape(), dev);
+    Tensor *d2 = new Tensor(delta->getShape(), dev);
     Tensor *daux = new Tensor(delta->getShape(), dev);
 
-    
     /*
      * h gate
      */
+    Tensor::el_mult(delta, zn, d1, 0);
     daux->fill_(0.0);
-    Tensor::el_mult(delta, zn, d_z, 0); // d_z: delta for hn, pending to apply derivative
-    tensorNN::D_Tanh(d_z, hn, d_z);  // d_z: delta for hn
+    tensorNN::D_Tanh(d1, hn, daux);  // daux: delta for hn
     if (trainable) {
         // Update gradients
         // parent[0]->output = $x_t$
-        Tensor::mult2D(parent[0]->output, 1, d_z, 0, gWh_x, 1);
+        Tensor::mult2D(parent[0]->output, 1, daux, 0, gWh_x, 1);
         if (parent.size() > 1) {
-            // rn_hidden = $r_t * h_{t-1}$
-            Tensor::mult2D(rn_hidden, 1, d_z, 0, gWh_hidden, 1);
+            // rn_hidden = rn * h_hidden = $r_t * h_{t-1}$
+            Tensor::mult2D(rn_hidden, 1, daux, 0, gWh_hidden, 1);
         }
-        Tensor::reduce_sum2D(d_z, ghn_bias, 0, 1);
+        Tensor::reduce_sum2D(daux, ghn_bias, 0, 1);
     }
     // Propagate delta to parent
-    Tensor::mult2D(d_z, 0, Wh_x, 1, parent[0]->delta, 1);
+    Tensor::mult2D(daux, 0, Wh_x, 1, parent[0]->delta, 1);
     if (parent.size() > 1) {
-        Tensor::mult2D(d_z, 0, Wh_hidden, 1, daux, 1);
-        // daux is the delta for $h_{t-1}$
         // rn = $r_t$
-        Tensor::el_mult(daux, rn, parent[1]->delta_states[0], 1);
+        Tensor::mult2D(rn, 0, Wh_hidden, 1, d1, 0);
+        // daux * d1 is temporarely the delta for $h_{t-1}$
+        Tensor::el_mult(daux, d1, parent[1]->delta_states[0], 1);
     }
 
     /*
      * r gate
+     *
+     * daux comming from previous block for gate h already contains delta * zn * tanh'()
      */
-    // parent[1]->states[0]: $h_{t-1}$
+    // parent[1]->states[0] is  $h_{t-1}$
     if (parent.size() > 1) {
-        Tensor::el_mult(daux, parent[1]->states[0], daux, 0);
+        Tensor::mult2D(parent[1]->states[0], 0, Wh_hidden, 1, d1, 0);
+        Tensor::el_mult(daux, d1, d2, 0);
+        daux->fill_(0.0);
+        tensorNN::D_Sigmoid(d2, rn, daux); // daux is now the delta for rn, i.e., $r_t$
     } else {
         daux->fill_(0.0);
     }
-    tensorNN::D_Sigmoid(daux, rn, daux); // daux is the delta for $r_t$
     if (trainable) {
         // Update gradients
         // parent[0]->output = $x_t$
         Tensor::mult2D(parent[0]->output, 1, daux, 0, gWr_x, 1);
-        if (parent.size() > 1) 
-            // parent[1]->states[0]: $h_{t-1}$
+        if (parent.size() > 1)
+            // parent[1]->states[0] is $h_{t-1}$
             Tensor::mult2D(parent[1]->states[0], 1, daux, 0, gWr_hidden, 1);
         Tensor::reduce_sum2D(daux, grn_bias, 0, 1);
     }
     // Propagate delta to parent
     Tensor::mult2D(daux, 0, Wr_x, 1, parent[0]->delta, 1);
-    if (parent.size() > 1) 
+    if (parent.size() > 1)
         // parent[1]->delta_states[0]: delta for $h_{t-1}$
         Tensor::mult2D(daux, 0, Wr_hidden, 1, parent[1]->delta_states[0], 1);
 
     /*
      * z gate
+     *
+     * gWz = delta * (hn - h_hidden) * sigmoid'() * x_t     = (d1 - d2) * sigmoid'() * x_t
+     * gUz = delta * (hn - h_hidden) * sigmoid'() * h_{t-1} = (d1 - d2) * sigmoid'() * h_{t-1}
      */
-    Tensor::el_mult(delta, hn, d_h, 0);
+    Tensor::el_mult(delta, hn, d1, 0);
     if (parent.size() > 1) {
-        // not_zn: (1 - $z_t$)
+        // not_zn is (1 - $z_t$)
         Tensor::el_mult(delta, not_zn, parent[1]->delta_states[0], 1); // Propagate delta to parent from the child
-        Tensor::el_mult(delta, parent[1]->states[0], d_hidden, 0);
-    } else {
-        d_hidden->fill_(0.0);
+
+        Tensor::el_mult(delta, parent[1]->states[0], d2, 0);
+        Tensor::sub(d1, d2, daux); // d1 - d2 --> daux
+        Tensor::copy(daux, d1);
     }
 
-    Tensor::sub(d_h, d_hidden, daux);
-    // d_h - d_hidden
-    tensorNN::D_Sigmoid(daux, zn, daux); // daux is the delta for $z_t$
+    daux->fill_(0.0);
+    tensorNN::D_Sigmoid(d1, zn, daux); // now daux is the delta for $z_t$
     if (trainable) {
         // Update gradients
-        // parent[0]->output = $x_t$
+        // parent[0]->output is $x_t$
         Tensor::mult2D(parent[0]->output, 1, daux, 0, gWz_x, 1);
-        if (parent.size() > 1) 
+        if (parent.size() > 1)
             // parent[1]->states[0]: $h_{t-1}$
             Tensor::mult2D(parent[1]->states[0], 1, daux, 0, gWz_hidden, 1);
         Tensor::reduce_sum2D(daux, gzn_bias, 0, 1);
     }
     // Propagate delta to parent
     Tensor::mult2D(daux, 0, Wz_x, 1, parent[0]->delta, 1);
-    if (parent.size() > 1) 
-        // parent[1]->delta_states[0]: delta for $h_{t-1}$
+    if (parent.size() > 1)
+        // parent[1]->delta_states[0] is the delta for $h_{t-1}$
         Tensor::mult2D(daux, 0, Wz_hidden, 1, parent[1]->delta_states[0], 1);
 
     if (mask_zeros) {
@@ -345,9 +352,8 @@ void LGRU::backward() {
         delete mask;
     }
 
-    delete d_h;
-    delete d_z;
-    delete d_hidden;
+    delete d1;
+    delete d2;
     delete daux;
     delete rn;
     delete zn;
@@ -358,7 +364,6 @@ void LGRU::backward() {
         delete not_zn;
         delete rn_hidden;
     }
-
 }
 
 
