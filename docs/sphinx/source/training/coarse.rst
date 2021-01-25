@@ -10,7 +10,6 @@ Fit
 Example:
 
 .. code-block:: c++
-    :linenos:
     
     model net = Model({in}, {out});
 

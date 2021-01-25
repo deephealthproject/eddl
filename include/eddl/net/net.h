@@ -40,7 +40,7 @@ int isInorig(Layer *l, vlayer vl, int &ind);
 
 class Net {
 private:
-    void build(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
+    void make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
 
     void set_compserv(CompServ *cs);
 
@@ -81,7 +81,6 @@ public:
 
     Optimizer *optimizer;
     vector<Net *> snets;
-    vector<Net *> mnets;
     Net* rnet;
 
     vtensor Xs[MAX_THREADS];
@@ -89,7 +88,6 @@ public:
 
     Net();
     Net(vlayer in, vlayer out);
-    Net(vector <Net *> vnets);
     ~Net();
 
 
@@ -105,14 +103,13 @@ public:
     Net *unroll_enc_dec(int inl, int outl);
     Net *unroll_dec(int inl, int outl);
     void build_rnet(int inl,int outl);
-    Layer* getLayer(vlayer in);
     Layer* getLayer(string l);
     void removeLayer(string l);
     void setTrainable(string lanme, bool val);
 
 
     int inNet(Layer *l);
-    void walk(Layer *l);
+    void walk(Layer *l,vlayer lout);
     void walk_back(Layer *l);
 
 
@@ -155,7 +152,6 @@ public:
     void forward();
     void forward_recurrent(vector<Tensor*> tin);
     void reset_loss();
-    float get_metric( const string  layer_name, const string  metric_name );
     void print_loss(int b);
     void backward(vector<Tensor *> target);
     void backward(Layer* (*f)(Layer *),Layer *out);

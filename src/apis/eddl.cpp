@@ -36,18 +36,9 @@ namespace eddl {
         return new Net(in, out);
     }
 
-    model Model(vector<Net*> vnets) {
-      return new Net(vnets);
-    }
-
     void setName(model m, string name)
     {
       m->name=name;
-    }
-
-    layer getLayer(model net, vlayer in)
-    {
-      return net->getLayer(in);
     }
 
     layer getLayer(model net, string lname)
@@ -612,13 +603,41 @@ namespace eddl {
         return new LConv1D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
+    layer Conv2D(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides, string padding,  bool use_bias,
+               int groups, const vector<int> &dilation_rate,string name){
+        return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
+
+    layer Conv3D(layer parent, int filters, const vector<int> &kernel_size,
+                 const vector<int> &strides, string padding,  bool use_bias,
+                 int groups, const vector<int> &dilation_rate,string name){
+        msg("Not implemented error", "Conv3D");
+        return nullptr;
+    }
+
+    // Legacy
     layer PointwiseConv(layer parent, int filters,
+                          const vector<int> &strides, bool use_bias,
+                          int groups, const vector<int> &dilation_rate,string name){
+        return new LConv(parent, filters, {1, 1}, strides, "none", groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
+
+
+    layer PointwiseConv2D(layer parent, int filters,
                const vector<int> &strides, bool use_bias,
                int groups, const vector<int> &dilation_rate,string name){
         return new LConv(parent, filters, {1, 1}, strides, "none", groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
+    // Legacy
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
+                const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
+                const vector<int> &strides, bool use_bias, string name){
+        return new LConvT(parent, filters, kernel_size, output_padding, padding, dilation_rate, strides, use_bias, name, DEV_CPU, 0);
+    }
+
+    layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
                 const vector<int> &strides, bool use_bias, string name){
         return new LConvT(parent, filters, kernel_size, output_padding, padding, dilation_rate, strides, use_bias, name, DEV_CPU, 0);
@@ -642,7 +661,18 @@ namespace eddl {
         return new LInput(new Tensor(s), name, DEV_CPU, 0);
     }
 
+    layer States(const vector<int> &shape, string name){
+        tshape s = vector<int>(shape.begin(), shape.end());
+        if (s.size()!=2) msg("States must have two dimensions, numstates x dim_states","eddl.States");
+        s.insert(s.begin(), 1); // batch + num_states + dim_states
+        return new LStates(new Tensor(s), name, DEV_CPU, 0);
+    }
+    // Legacy
     layer UpSampling(layer parent, const vector<int> &size, string interpolation, string name){
+        return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
+    }
+
+    layer UpSampling2D(layer parent, const vector<int> &size, string interpolation, string name){
         return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
     }
 
@@ -654,6 +684,14 @@ namespace eddl {
 
     layer Flatten(layer parent, string name){
         return Reshape(parent, {-1}, name);
+    }
+
+    layer Squeeze(layer parent, const int axis, string name){
+        return new LSqueeze(parent, axis, name, DEV_CPU, 0);
+    }
+
+    layer Unsqueeze(layer parent, const int axis, string name){
+        return new LUnsqueeze(parent, axis, name, DEV_CPU, 0);
     }
 
     layer Transpose(layer parent, string name){
@@ -800,15 +838,23 @@ namespace eddl {
 
     // Normalization
     layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "BatchNormalization"); }
+
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
+
     layer BatchNormalization(layer parent, bool affine, float momentum, float epsilon,  string name){
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "BatchNormalization"); }
+
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
 
     layer LayerNormalization(layer parent, float epsilon, bool affine, string name){
         return new LLayerNorm(parent,  epsilon, affine, name, DEV_CPU, 0);
     }
+
     layer LayerNormalization(layer parent, bool affine,float epsilon,  string name)
     {
         return new LLayerNorm(parent,  epsilon, affine, name, DEV_CPU, 0);
@@ -988,38 +1034,109 @@ namespace eddl {
         return new LUniform(low, high, size, "", DEV_CPU, 0);
     }
 
-    // Pooling Layers
-    layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding,
-                      string name){
-        return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
-    }
-    layer GlobalAveragePool(layer parent, string name){
-        if (parent->output->ndim!=4) msg("GlobalAveragePool only over 4D tensors","GlobalAveragePool");
-
-        int h=parent->output->shape[2];
-        int w=parent->output->shape[3];
-        return AveragePool(parent, {h,w},{1,1});
-    }
-
+    // Generic (in-theory)
     layer MaxPool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
         return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
+
     layer MaxPool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
         pool_size.push_back(1);
         strides.push_back(1);
         return new LMaxPool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
 
+    layer MaxPool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer MaxPool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        msg("Not implemented error", "MaxPool3D");
+    }
+
+    // Pooling Layers
+    layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
+        return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer AveragePool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        pool_size.push_back(1);
+        strides.push_back(1);
+        return new LAveragePool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer AveragePool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer AveragePool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        msg("Not implemented error", "AveragePool3D");
+    }
+
+
     layer GlobalMaxPool(layer parent, string name){
-        if (parent->output->ndim!=4) msg("GlobalMaxPool only over 4D tensors","GlobalMaxPool");
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "GlobalMaxPool"); }
+
+        return GlobalMaxPool2D(parent, name);
+    }
+
+    layer GlobalMaxPool1D(layer parent, string name){
+        if (parent->output->ndim!=3) msg("GlobalMaxPool1D only works over 3D tensors","GlobalMaxPool1D");
+
+        int h=parent->output->shape[2];
+
+        if (name.empty()) { name = "GlobalMaxPool1D"; }  // Set default name
+        return MaxPool1D(parent, {h},{1}, name);
+    }
+
+    layer GlobalMaxPool2D(layer parent, string name){
+        // Check dimension
+        if (parent->output->ndim!=4) msg("GlobalMaxPool only over 4D tensors","GlobalMaxPool2D");
 
         int h=parent->output->shape[2];
         int w=parent->output->shape[3];
-        return MaxPool(parent, {h,w}, {1,1},"none","gpool");
+
+        if(name.empty()) { name = "GlobalMaxPool2D"; }  // Set default name
+        return MaxPool(parent, {h,w}, {1,1},"none", name);
+    }
+
+    layer GlobalMaxPool3D(layer parent, string name){
+        msg("Not implemented error", "GlobalMaxPool3D");
+    }
+
+    layer GlobalAveragePool(layer parent, string name){
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "GlobalAveragePool"); }
+
+        return GlobalAveragePool2D(parent, name);
+    }
+
+    layer GlobalAveragePool1D(layer parent, string name){
+        // Expands dimensions if needed
+        if (parent->output->ndim!=3) msg("GlobalAveragePool1D only works over 3D tensors","GlobalAveragePool1D");
+
+        int h=parent->output->shape[2];
+
+        if(name.empty()) { name = "GlobalAveragePool1D"; }  // Set default name
+        return AveragePool1D(parent, {h},{1}, "none", name);
+    }
+
+    layer GlobalAveragePool2D(layer parent, string name){
+        // Check dimension
+        if (parent->output->ndim!=4) msg("GlobalAveragePool only works over 4D tensors","GlobalAveragePool2D");
+
+        int h=parent->output->shape[2];
+        int w=parent->output->shape[3];
+
+        if(name.empty()) { name = "GlobalAveragePool2D"; }  // Set default name
+        return AveragePool(parent, {h,w},{1,1},  "none",name);
+    }
+
+    layer GlobalAveragePool3D(layer parent, string name){
+        msg("Not implemented error", "GlobalAveragePool3D");
     }
 
     // Recurrent Layers
-
     layer RNN(layer parent, int units, string activation, bool use_bias, bool bidirectional, string name){
 
         return new LRNN({parent}, units, activation, use_bias, bidirectional, name, DEV_CPU, 0);
@@ -1029,11 +1146,21 @@ namespace eddl {
         return new LLSTM({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
-    void setDecoder(layer l)
+    layer LSTM(vector<layer> parent, int units, bool mask_zeros, bool bidirectional, string name){
+        return new LLSTM(parent, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
+    }
+
+    layer GRU(layer parent, int units, bool mask_zeros, bool bidirectional, string name) {
+        return new LGRU({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
+    }
+
+    layer GRU(vector<layer> parent, int units, bool mask_zeros, bool bidirectional, string name) {
+        return new LGRU(parent, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
+    }
+
+    layer GetStates(layer parent)
     {
-       l->isdecoder=true;
-       for(int i=0;i<l->parent.size();i++)
-         setDecoder(l->parent[i]);
+      return new LCopyStates({parent},"getstates", DEV_CPU,0);
     }
 
 
@@ -1052,53 +1179,15 @@ namespace eddl {
       return rec;
     }
 
-    layer Decoder(layer dec, layer enc, string op)
+    void setDecoder(layer l)
     {
+    
+       l->isdecoder=true;
 
-      bool enrec=isrec(enc);
+       int p=l->child.size();
+       for(int i=0;i<p;i++)
+         setDecoder(l->child[i]);
 
-      if (enrec) {
-        // copy states from encoder
-        cout<<"Enc-Dec\n";
-        layer cps=new LCopyStates({enc},"",DEV_CPU, 0);
-        cps->isdecoder=false;
-
-        setDecoder(dec);
-
-        // clone and link with encoder
-        layer in=dec->parent[0];
-        in->detach(dec);
-
-        layer n=dec->clone(0,1,{in,cps},DEV_CPU);
-        n->orig=nullptr;
-        n->name="dec_"+dec->name;
-        n->isdecoder=true;
-
-        delete dec;
-        return n;
-      }
-      else {
-        cout<<"Dec "<<endl;
-        setDecoder(dec);
-
-        layer in=dec->parent[0];
-        in->detach(dec);
-
-        layer lop;
-        if (op=="concat") lop=Concat({enc,in},1);
-          else if (op=="sum") lop=Sum(enc,in);
-        else {
-          msg("Incorrect operator layer","Decoder");
-        }
-        lop->isdecoder=true;
-
-        layer n=dec->clone(0,1,{lop},DEV_CPU);
-        n->orig=nullptr;
-        n->name="dec_"+dec->name;
-        n->isdecoder=true;
-        delete dec;
-        return n;
-      }
     }
 
 
@@ -1151,6 +1240,12 @@ namespace eddl {
         return l1->gradients[p]->clone();
     }
 
+    Tensor* getState(layer l1,int p){
+        collectTensor(l1,"state",p);
+        return l1->states[p]->clone();
+    }
+
+
     // get vector of tensor
     vector<Tensor*> getParams(layer l1){
       vector<Tensor*> n;
@@ -1166,6 +1261,15 @@ namespace eddl {
       for(int i=0;i<l1->gradients.size();i++) {
         collectTensor(l1,"gradients",i);
         n.push_back(l1->gradients[i]->clone());
+      }
+      return n;
+    }
+
+    vector<Tensor*> getStates(layer l1){
+      vector<Tensor*> n;
+      for(int i=0;i<l1->states.size();i++) {
+        collectTensor(l1,"states",i);
+        n.push_back(l1->states[i]->clone());
       }
       return n;
     }
@@ -1189,9 +1293,19 @@ namespace eddl {
     }
     void copyParam(Layer *l1,Layer *l2, int p)
     {
-        collectTensor(l1,"param",p);
-        Tensor::copy(l1->params[p],l2->params[p]);
-        distributeTensor(l2,"param",p);
+        if (p==-1) {
+          cout<<"copy all params from "<<l1->name<<" to "<<l2->name<<endl;
+          for(int i=0;i<l1->params.size();i++) {
+            collectTensor(l1,"param",i);
+            Tensor::copy(l1->params[i],l2->params[i]);
+            distributeTensor(l2,"param",i);
+          }
+        }
+        else {
+          collectTensor(l1,"param",p);
+          Tensor::copy(l1->params[p],l2->params[p]);
+          distributeTensor(l2,"param",p);
+        }
     }
 
     void copyGradient(Layer *l1,Layer *l2, int p)
@@ -1331,9 +1445,15 @@ namespace eddl {
       download_dataset("drive","bin",{"tf3uzrsjtv4jiey","xakcuhby30ylpes"});
     }
 
-
-
-
-
+    // Auxiliar functions
+    layer _expand3d_to_4d(layer parent, string name){
+        layer p = parent;
+        if(parent->output->shape.size()==3){
+            std::cerr << name << " only works over 2D or 4D tensors. Since a 3D tensor was received, its shape was automatically unsqueezed to a 4D tensor." << std::endl;
+            std::cerr << "()" << std::endl;
+            p = Unsqueeze(p, 2);  // ([Batch - ignored], d0, d1)
+        }
+        return p;
+    }
 
 }//namespace

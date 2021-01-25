@@ -28,8 +28,9 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = 10;
-    int batch_size = 100;
+    int batch_size = 200;
     int num_classes = 10;
+
 
     // Define network
     layer in = Input({784});
@@ -49,7 +50,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          sgd(0.001), // Optimizer
+          adam(0.001), // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
@@ -59,6 +60,8 @@ int main(int argc, char **argv) {
     );
 //    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
+    
+    
     // View model
     summary(net);
 

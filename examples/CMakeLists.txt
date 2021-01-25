@@ -37,17 +37,12 @@ target_link_libraries(mnist_rnn_func eddl)
 add_executable(mnist_conv1D "nn/1_mnist/11_mnist_conv1D.cpp")
 target_link_libraries(mnist_conv1D eddl)
 
-add_executable(mnist_auto_merging "nn/1_mnist/12_mnist_auto_encoder_merging.cpp")
-target_link_libraries(mnist_auto_merging eddl)
-
 add_executable(mnist_conv_dice "nn/1_mnist/13_mnist_conv_dice.cpp")
 target_link_libraries(mnist_conv_dice eddl)
 
 add_executable(mnist_losses "nn/1_mnist/14_mnist_losses.cpp")
 target_link_libraries(mnist_losses eddl)
 
-add_executable(mnist_siamese "nn/1_mnist/15_mnist_siamese.cpp")
-target_link_libraries(mnist_siamese eddl)
 
 
 # EXAMPLES: CIFAR10 ****************************************************
@@ -74,9 +69,6 @@ target_link_libraries(cifar_resnet_da_bn eddl)
 
 add_executable(cifar_resnet50_da_bn "nn/2_cifar10/7_cifar_resnet50_da_bn.cpp")
 target_link_libraries(cifar_resnet50_da_bn eddl)
-
-add_executable(cifar_pretrained "nn/2_cifar10/8_cifar_pretrained.cpp")
-target_link_libraries(cifar_pretrained eddl)
 
 # EXAMPLES: Drive segmentation ****************************************************
 add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
@@ -164,8 +156,6 @@ if(BUILD_PROTOBUF)
 	add_executable(onnx_mnist_conv1D "onnx/nn/1_mnist/11_mnist_conv1D.cpp")
 	target_link_libraries(onnx_mnist_conv1D eddl)
 
-	add_executable(onnx_mnist_auto_merging "onnx/nn/1_mnist/12_mnist_auto_encoder_merging.cpp")
-	target_link_libraries(onnx_mnist_auto_merging eddl)
 
 	add_executable(onnx_mnist_conv_dice "onnx/nn/1_mnist/13_mnist_conv_dice.cpp")
 	target_link_libraries(onnx_mnist_conv_dice eddl)
@@ -173,8 +163,6 @@ if(BUILD_PROTOBUF)
 	add_executable(onnx_mnist_losses "onnx/nn/1_mnist/14_mnist_losses.cpp")
 	target_link_libraries(onnx_mnist_losses eddl)
 
-	add_executable(onnx_mnist_siamese "onnx/nn/1_mnist/15_mnist_siamese.cpp")
-	target_link_libraries(onnx_mnist_siamese eddl)
 
 
 	# EXAMPLES: ONNX CIFAR10 ****************************************************
@@ -202,8 +190,7 @@ if(BUILD_PROTOBUF)
 	add_executable(onnx_cifar_resnet50_da_bn "onnx/nn/2_cifar10/7_cifar_resnet50_da_bn.cpp")
 	target_link_libraries(onnx_cifar_resnet50_da_bn eddl)
 
-	add_executable(onnx_cifar_pretrained "onnx/nn/2_cifar10/8_cifar_pretrained.cpp")
-	target_link_libraries(onnx_cifar_pretrained eddl)
+
 
 # EXAMPLES: Drive segmentation ****************************************************
 	add_executable(onnx_drive_seg "onnx/nn/3_drive/1_drive_seg.cpp")
@@ -220,11 +207,7 @@ if(BUILD_PROTOBUF)
 	add_executable(onnx_nlp_machine_translation "onnx/nn/4_NLP/3_nlp_machine_translation.cpp")
 	target_link_libraries(onnx_nlp_machine_translation eddl)
 
-	add_executable(onnx_nlp_text_generation "onnx/nn/4_NLP/4_nlp_text_generation.cpp")
-	target_link_libraries(onnx_nlp_text_generation eddl)
 
-	add_executable(onnx_nlp_text_generation_pretrained "onnx/nn/4_NLP/5_nlp_text_generation_pretrained.cpp")
-	target_link_libraries(onnx_nlp_text_generation_pretrained eddl)
 
 
 >>>>>>> d97875b3161d3e7a9199d35079d57a7d4ce3c6fa

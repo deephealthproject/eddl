@@ -1,6 +1,8 @@
 Logic functions
 ===============
 
+.. note::
+   A practical example of the vast majority of the operations in this page are included in a working example in our `GitHub respository <https://github.com/deephealthproject/eddl/blob/master/examples/tensor/eddl_ops.cpp>`_
 
 Truth value testing
 ---------------------------
@@ -504,7 +506,7 @@ Not Equal: "A != B"
 
 
 Binary Operations
-^^^^^^^^^^^^^^^^^^^^^
+---------------------------
 
 
 All Close?

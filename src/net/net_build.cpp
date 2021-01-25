@@ -174,22 +174,19 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 
+
   if (isbuild) return;
 
+  cout<<"Building "<<name<<endl;
 
   for(int i=0;i<layers.size();i++) {
-    if ((layers[i]->orig!=nullptr)&&(layers[i]->orig->net!=this)) {
-      cout<<layers[i]->name<<endl;
-      layers[i]->orig->net->build(opt->clone(),{},{},cs,true);
-    }
-    else if (layers[i]->net!=this) {
+    if (layers[i]->net!=this) {
       layers[i]->net->build(opt->clone(),{},{},cs,true);
     }
   }
 
-  cout<<"Building "<<name<<endl;
 
-  build(opt, lo, me, initialize);
+  make_graph(opt, lo, me, initialize);
 
   set_compserv(cs);
 
@@ -208,7 +205,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
 }
 
 
-void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
+void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if (VERBOSE) cout<<"Build net "<<name<<"\n";
 
     // check devices
@@ -301,7 +298,7 @@ void Net::set_compserv(CompServ *cs){
         // split on multiple GPUs
         int ngpus=gpu_devices();
         if (ngpus==0) {
-          msg("GPU devices not found","Net.set_compserv(");
+          msg("GPU devices not found","Net.set_compserv");
         }
         if (cs->local_gpus.size()>ngpus)
         {
@@ -322,8 +319,8 @@ void Net::set_compserv(CompServ *cs){
         if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
 
         if (!cs->isshared) {
-            split(devsel.size(),DEV_GPU);
-        }
+          split(devsel.size(),DEV_GPU);
+        }  
 
 
 #endif
@@ -350,34 +347,16 @@ void Net::set_compserv(CompServ *cs){
         if (!devsel.size()) msg("No fpga selected","Net.build");
 
         cout<<"split into "<<devsel.size()<<" FPGAs devices\n";
-
         if (!cs->isshared) {
-          if (mnets.size()){
-            // comes from a merge of nets
-            for(int j=0;j<mnets.size();j++)
-              if (!mnets[j]->isbuild){
-                mnets[j]->build(optimizer->clone(),{},{},cs,true);
-              }
-
-            cout<<"Building merge "<<endl;
-            for(int i=0;i<devsel.size();i++) {
-              vector <Net *>sm;
-              for(int j=0;j<mnets.size();j++) {
-                sm.push_back(mnets[j]->snets[i]);
-              }
-              snets.push_back(new Net(sm));
-              snets[i]->build(optimizer->clone(), losses, metrics);
-            }
-          }
-          else {
             split(devsel.size(),DEV_FPGA);
-          }
         }
 #endif
-        }
-    } else {
-        msg("Distributed version not yet implemented", "Net.set_compserv");
+      }
     }
+    else {
+       msg("Distributed version not yet implemented", "Net.set_compserv");
+    }
+
 
     // create input and output tensors (X,Y)
     for (int i = 0; i < snets.size(); i++) {
@@ -386,7 +365,7 @@ void Net::set_compserv(CompServ *cs){
       for (int j = 0; j < snets[i]->lout.size(); j++)
           Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
     }
-  }
+}
 
 // Split nets among CS
 void Net::split(int c, int todev) {
@@ -452,7 +431,7 @@ void Net::split(int c, int todev) {
         char cname[100];
         sprintf(cname,"snet_%d",i);
         snets[i]->name=cname;
-        snets[i]->build(optimizer->clone(), losses, metrics);
+        snets[i]->make_graph(optimizer->clone(), losses, metrics);
         if(onnx_pretrained){ //We need to copy the imported weights to each snet
             //printf("Copying from CPU to GPU\n");
             for(int i = 0; i < snets.size(); i++)
@@ -571,59 +550,16 @@ Layer * Net::getLayer(string lname)
     if (layers[i]->name==lname) return layers[i];
   }
 
+  msg("Layer "+lname+" not found in model","getLayer");
+
   return nullptr;
 }
 
-Layer * Net::getLayer(vlayer in)
-{
-  int i,j,k,l,ind;
-  if (lin.size()!=in.size())
-    msg("Error size of input layers set","Net:Net");
+<<<<<<< HEAD
+=======
 
 
-  vlayer nlayers;
-  //input layers
-  for (i = 0; i < lin.size(); i++)  {
-    vlayer par;
-    Layer *n=lin[i]->share(0, 1, par);
-
-    n->name=in[0]->name+n->name;
-    nlayers.push_back(n);
-
-    in[i]->addchild(n);
-    n->addparent(in[i]);
-  }
-
-  // rest of layers
-  for (k = 0; k < layers.size(); k++) {
-      for (j = 0; j < layers.size(); j++) {
-          if (!isInorig(layers[j], nlayers, ind)) {
-              vlayer par;
-              for (l = 0; l < layers[j]->parent.size(); l++) {
-                  if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
-                  else {par.push_back(nlayers[ind]);}
-              }
-              if (l == layers[j]->parent.size()) {
-                  Layer *n;
-                  n=layers[j]->share(0, 1, par);
-                  nlayers.push_back(n);
-                  n->name=in[0]->name+n->name;
-                  n->isshared=true;
-              }
-          }
-      }
-    }
-
-  vlayer nout;
-  // set outputs
-  for (j = 0; j < lout.size(); j++)
-    if (isInorig(lout[j], nlayers, ind))
-        nout.push_back(nlayers[ind]);
-
-  return nout[0];
-
-}
-
+>>>>>>> 408c7ad5e27361ddb58c6248a9d97117bb528769
 void Net::enable_distributed(){
     for(Layer* l : layers)
         l->enable_distributed();

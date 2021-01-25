@@ -420,6 +420,7 @@ public:
       *  @brief Create a tensor with the shape an device of the input tensor and filled with a specific value.
       *
       *  @param A  Input tensor from wich to take shape and device.
+      *  @param value  Value to use to fill the tensor
       *  @return     Value initialized A-shaped tensor
     */
     static Tensor* full_like(Tensor *A, float value);
@@ -491,8 +492,7 @@ public:
     /**
       *  @brief Create a tensor representing the identity matrix. Equivalent to calling function ``eye`` with ``offset = 0``.
       *
-      *  @param shape  Shape of the tensor to create.
-      *  @param value  Value to use to fill the tensor.
+      *  @param rows  Shape of the tensor to create.
       *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
       *  @return     Tensor of the specified shape filled with the value
     */
@@ -935,26 +935,26 @@ public:
 
     /**
     *   @brief In-place element-wise acos operation
-    *   @param A. The tensor where the operation is applied
-    *   @return A new tensor with abs applied over A
+    *   @return A new tensor with the result of acos operation
     */
     Tensor* acos();
 
     /**
     *   @brief Element-wise acos operation
+    *   @param A The tensor where the operation is applied
     *   @param B A new tensor with acos applied
     */
     static void acos(Tensor *A, Tensor *B);
 
     /**
     *   @brief In-place element-wise add operation of a tensor and a real value
-    *   @param v. The real number to add
+    *   @param v The real number to add
     */
     void add_(float v);
 
     /**
     *   @brief Element-wise add operation of a tensor and a real value
-    *   @param v. The real number to add
+    *   @param v The real number to add
     *   @return A new tensor with the sum
     */
     Tensor* add(float v);
@@ -1152,7 +1152,7 @@ public:
 
     /**
     *   @brief In-place element-wise division operation of two tensors
-    *   @param A. The tensor to divide by
+    *   @param A The tensor to divide by
     */
     void div_(Tensor* A); // this = this ./ A
 
@@ -1202,7 +1202,7 @@ public:
 
     /**
     *   @brief Element-wise floor operation.
-    *   @param A. The tensor where the operation is applied.
+    *   @param A The tensor where the operation is applied.
     *   @param B The output tensor.
     */
     static void floor(Tensor *A, Tensor *B);
@@ -1326,7 +1326,7 @@ public:
 
     /**
     *   @brief In-place multiplication operation of a tensor by a scalar.
-    *   @param v. The value to multiply by
+    *   @param v The value to multiply by
     */
     void mult_(float v);
 
@@ -1378,15 +1378,15 @@ public:
 
     /**
     *   @brief In-place element-wise normalization of values in a given range.
-    *   @param min. The lower bound of the new range
-    *   @param max. The upper bound of the new range
+    *   @param min The lower bound of the new range
+    *   @param max The upper bound of the new range
     */
     void normalize_(float min=0.0f, float max=1.0f);
 
     /**
     *   @brief In-place element-wise normalization of values in a given range.
-    *   @param min. The lower bound of the new range.
-    *   @param max. The upper bound of the new range.
+    *   @param min The lower bound of the new range.
+    *   @param max The upper bound of the new range.
     *   @return A tensor with the result.
     */
     Tensor* normalize(float min=0.0f, float max=1.0f);
@@ -1395,8 +1395,8 @@ public:
     *   @brief In-place element-wise normalization of values in a given range.
     *   @param A The tensor where the operation is applied.
     *   @param B The output tensor.
-    *   @param min. The lower bound of the new range
-    *   @param max. The upper bound of the new range
+    *   @param min The lower bound of the new range
+    *   @param max The upper bound of the new range
     */
     static void normalize(Tensor *A, Tensor *B, float min=0.0f, float max=1.0f);
 
@@ -1409,7 +1409,7 @@ public:
 
     /**
     *   @brief Element-wise power operation with base e.
-    *   @param exp. The exponent.
+    *   @param exp The exponent.
     *   @return A tensor with the result.
     */
     Tensor* pow(float exp);
@@ -1456,14 +1456,14 @@ public:
 
     /**
     *   @brief Element-wise reciprocal operation.
-    *   @param A. The tensor where the operation is applied.
+    *   @param A The tensor where the operation is applied.
     *   @param B A tensor with reciprocal(A), element-wise
     */
     static void reciprocal(Tensor *A, Tensor *B);
 
     /**
     *   @brief In-place element-wise reminder operation.
-    *   @param v. The real to divide A by
+    *   @param v The real to divide A by
     */
     void remainder_(float v);
 
@@ -1628,7 +1628,7 @@ public:
 
     /**
     *   @brief In-place element-wise substraction operation of two tensors.
-    *   @param A. The tensor to substract.
+    *   @param A The tensor to substract.
     */
     void sub_(Tensor* A); // this = this .- A
 
@@ -1851,8 +1851,7 @@ public:
     /**
     *   @brief Interchange two axes of an array.
     *   @param axis1 First axis.
-    *   @param destination Destination position for the original axis. These must also be unique
-    *   @return axis2 Second axis.
+    *   @param axis2 Destination position for the original axis. These must also be unique
     *   @return A new tensor with the result
     */
     Tensor* swapaxis(int axis1, int axis2);
@@ -1875,7 +1874,7 @@ public:
     /**
     *   @brief Set a new shape to a tensor.
     *   @param A The output vector where te reshape is stored.
-    *   @param dims A vector containing the new shape.
+    *   @param shape A vector containing the new shape.
     *   @return A new tensor with the result
     */
     static Tensor* reshape(Tensor *A, const vector<int> &shape);
@@ -1938,7 +1937,7 @@ public:
     /**
     *   @brief Returns a new tensor with a dimension of size one inserted at the specified position.
     *   @param A Output tensor where the unsqueeze is stored.
-*   @param axis the index at which to insert the singleton dimension. Default: axis=0
+    *   @param axis the index at which to insert the singleton dimension. Default: axis=0
     *   @return A new tensor with the result
     */
     static Tensor* unsqueeze(Tensor *A, int axis=0);
@@ -1979,6 +1978,7 @@ public:
     /**
 *   @brief Rotate the tensor. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
 *   @param angle The rotation angle in degrees.
+*   @param offset_center The center where to perform the rotation
 *   @param mode Must be one of the following:
 *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
 *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
@@ -1995,6 +1995,7 @@ public:
     *   @param A Input tensor.
     *   @param B Output tensor.
     *   @param angle The rotation angle in degrees.
+    *   @param offset_center The center where to perform the rotation
     *   @param mode Must be one of the following:
     *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
     *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
@@ -2242,6 +2243,7 @@ public:
     *   @brief Crop randomly the tensor.
     *   @param height Height of the crop (must be smaller than the original image)
     *   @param width Width of the crop (must be smaller than the original image)
+    *   @param cval
     *   @param keep_size Keep original size
     */
     Tensor* crop_random(int height, int width, float cval=0.0f, bool keep_size=false);

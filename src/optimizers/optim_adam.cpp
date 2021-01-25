@@ -28,14 +28,14 @@ Adam::Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_dec
 
 }
 
-Adam::~Adam() {
+Adam::~Adam() { 
     for(int i=0; i<mT.size(); i++){ delete mT[i]; }
     for(int i=0; i<vT.size(); i++){ delete vT[i]; }
     for(int i=0; i<mCap.size(); i++){ delete mCap[i]; }
     for(int i=0; i<vCap.size(); i++){ delete vCap[i]; }
 }
 
-void Adam::change(vector<float> &p) {
+void Adam::change(vector<float> p) {
   if (p.size()>0) lr = p[0];
   cout<<"Optimizer Adam set new lr="<<lr<<"\n";
 }
@@ -100,7 +100,13 @@ void Adam::applygrads(int batch) {
 
             Tensor::add(-lr, mCap[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
 
+<<<<<<< HEAD
             if(layers[i]->distributed_training) Tensor::add(-lr, mCap[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
+=======
+            // Distributed training: Accumulation of gradients
+            if (layers[i]->acc_gradients.size() > 0) 
+              Tensor::add(-lr, mCap[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
+>>>>>>> 408c7ad5e27361ddb58c6248a9d97117bb528769
         }
     }
     else p+=layers[i]->get_trainable_params_count();

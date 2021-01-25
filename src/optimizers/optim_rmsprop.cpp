@@ -29,7 +29,7 @@ RMSProp::~RMSProp() {
     for(int i=0; i<gT1.size(); i++){ delete gT1[i]; gT1[i] = nullptr;}
 }
 
-void RMSProp::change(vector<float> &p) {
+void RMSProp::change(vector<float> p) {
   if (p.size()>0) lr = p[0];
   if (p.size()>1) rho = p[1];
   cout<<"Optimizer RMSProp set new lr="<<lr<<" rho="<<rho<<"\n";
@@ -91,7 +91,13 @@ void RMSProp::applygrads(int batch) {
 
             Tensor::add(-lr, gT[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
 
+<<<<<<< HEAD
             if (layers[i]->distributed_training) Tensor::add(-lr, gT[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
+=======
+            // Distributed training: Accumulation of gradients
+            if (layers[i]->acc_gradients.size() > 0) 
+              Tensor::add(-lr, gT[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
+>>>>>>> 408c7ad5e27361ddb58c6248a9d97117bb528769
         }
     }
     else p+=layers[i]->get_trainable_params_count();

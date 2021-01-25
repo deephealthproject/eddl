@@ -161,8 +161,8 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     if ( distributed_training ) {
         n->acc_gradients.clear();
 
-        n->cd->acc_gK  = cd->acc_gK;
-        n->cd->acc_gbias  = cd->acc_gbias;
+        n->cd->acc_gK = cd->acc_gK;
+        n->cd->acc_gbias = cd->acc_gbias;
 
         n->acc_gradients.push_back(n->cd->acc_gK);
         n->acc_gradients.push_back(n->cd->acc_gbias);
@@ -185,6 +185,8 @@ Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
     n->reg=reg;
     n->init=init;
 
+    if (distributed_training)
+        n->enable_distributed();
 
     return n;
 }

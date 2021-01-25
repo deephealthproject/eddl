@@ -108,6 +108,7 @@ public:
 
 };
 
+
 /// AveragePool2D Layer
 class LAveragePool : public LPool {
 public:
@@ -118,6 +119,33 @@ public:
     LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem);
 
     LAveragePool(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem);
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    string plot(int c) override;
+
+};
+
+
+/// AveragePool1D Layer
+class LAveragePool1D : public LPool1D {
+public:
+
+    // constructors and clones
+    LAveragePool1D(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, const string& name, int dev, int mem);
+
+    LAveragePool1D(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, const string& name, int dev, int mem);
+
+    LAveragePool1D(Layer *parent, PoolDescriptor *cd, const string& name, int dev, int mem);
 
     // implementation
     void forward() override;

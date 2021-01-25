@@ -1,22 +1,6 @@
 Merge
 =====
 
-Add
-----
-
-.. doxygenfunction:: Add(layer l1, layer l2)
-
-Example:
-
-.. code-block:: c++
-
-   layer in1 = Input({3,584,584});
-   layer in2 = Input({3,584,584});
-
-   layer l = Add({in1,in2});
-   
-
-
 
 Average
 -------
@@ -55,7 +39,6 @@ MatMul
 
 .. doxygenfunction:: MatMul
 
-It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
 
 Example:
 
@@ -99,19 +82,4 @@ Example:
    layer l = Minimum({in1,in2});
    
 
-
-Subtract
----------
-
-.. doxygenfunction:: Subtract
-
-Example:
-
-.. code-block:: c++
-
-   layer in1 = Input({3,584,584});
-   layer in2 = Input({3,584,584});
-
-   layer l = Subtract({in1,in2});
-   
 

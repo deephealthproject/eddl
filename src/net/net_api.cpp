@@ -153,6 +153,34 @@ void Net::run_snets(void *(*F)(void *t))
 
   int comp = snets.size();
 
+  if((snets[0]->dev != DEV_CPU) && (comp > 1))
+  {
+    #pragma omp parallel for
+    for (int i = 0; i < comp; i++) {
+      // Thread params
+      td[i].net = snets[i];
+      // Call function
+      F(&td[i]);
+    }
+  }
+  else
+  {
+    // Thread params
+    td[0].net = snets[0];
+    // Call function
+    F(&td[0]);
+  }
+}
+
+/*
+void Net::run_snets(void *(*F)(void *t))
+{
+  void *status;
+  int rc;
+  struct tdata td[100];
+
+  int comp = snets.size();
+
   #pragma omp parallel for
   for (int i = 0; i < comp; i++) {
     // Thread params
@@ -161,7 +189,7 @@ void Net::run_snets(void *(*F)(void *t))
     F(&td[i]);
   }
 }
-
+*/
 
 //////////////////////////////////////////////////////////////
 //////// SIMPLE ATOMICS FUNCS
@@ -262,6 +290,7 @@ void Net::forward(vector<Tensor*> in)
       msg("size missmatch in list of tensors","Net.forward(vtensor)");
 
       if (batch_size!=in[0]->shape[0]) {
+        cout<<batch_size<<" "<<in[0]->shape[0]<<endl;
         resize(in[0]->shape[0]);
       }
 
@@ -285,6 +314,10 @@ void Net::forward_recurrent(vector<Tensor*> tin)
 {
   int i,j,k,l;
 
+  if (isdecoder) {
+    msg("Recurrent nets with decoders can not use atomic funcs","forward");
+  }
+
   // prepare data for unroll net
   vtensor xt;
   vtensor xtd;
@@ -297,25 +330,26 @@ void Net::forward_recurrent(vector<Tensor*> tin)
   int inl;
   int outl;
 
-
   prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
   build_rnet(inl,outl);
 
-  if ((isencoder)&&(isdecoder))
-    rnet->forward(tinr);
-  else if (isencoder)
-    rnet->forward(tinr);
-  else if (isdecoder)
-    rnet->forward(tin);
+  rnet->forward(tinr);
+
+  if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
+
 
   for(i=0;i<xt.size();i++)
     delete xt[i];
   xt.clear();
 
-  for(i=0;i<xtd.size();i++)
-    delete xtd[i];
-  xtd.clear();
+  for(i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
+
 
 }
 
@@ -330,6 +364,7 @@ void Net::forward(vector<Layer *> in)
     msg("size missmatch in list of tensors","Net.forward(vtensor)");
 
     if (batch_size!=in[0]->output->shape[0]) {
+
       resize(in[0]->output->shape[0]);
     }
   }
@@ -369,8 +404,10 @@ void Net::backward(vector<Tensor *> target)
       if (target.size()!=lout.size())
       msg("size missmatch in list of targets","Net.backward(vtensor)");
 
-      if (batch_size!=target[0]->shape[0])
-      msg("bakcward step with different batch_size than forward","Net.backward(vtensor)");
+      if (batch_size!=target[0]->shape[0]) {
+        cout<<batch_size<<"!="<<target[0]->shape[0]<<endl;
+        msg("bakcward step with different batch_size than forward","Net.backward(vtensor)");
+      }
 
       int comp=snets.size();
       if (batch_size<comp) {
@@ -406,6 +443,10 @@ void Net::backward_recurrent(vector<Tensor *> target)
 {
   int i,j,k,l;
 
+  if (isdecoder) {
+    msg("Recurrent nets with decoders can not use atomic funcs","backward");
+  }
+
   // prepare data for unroll net
   vtensor xt;
   vtensor xtd;
@@ -420,20 +461,21 @@ void Net::backward_recurrent(vector<Tensor *> target)
 
   prepare_recurrent(tin,target,inl,outl,xt,xtd,yt,tinr,toutr);
 
-  if ((isencoder)&&(isdecoder))
-    rnet->backward(toutr);
-  else if (isencoder)
-    rnet->backward(target);
-  else if (isdecoder)
-    rnet->backward(toutr);
+  rnet->backward(toutr);
+
+  if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
+
 
   for(i=0;i<xt.size();i++)
     delete xt[i];
   xt.clear();
 
-  for(i=0;i<xtd.size();i++)
-    delete xtd[i];
-  xtd.clear();
+  for(i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
 
 }
 
@@ -521,49 +563,17 @@ void Net::compute_loss()
       }
     }
 
+    int p=0;
+    for(int k=0;k<lout.size();k+=decsize)
+     for (int j = 0; j < lout.size(); j++,p+=2) { 
+       total_loss[k] += fiterr[p];  // losses
+       total_metric[k] += fiterr[p + 1];  // metric
+       fiterr[p] = fiterr[p + 1] = 0.0;
+      }
+  
     inferenced_samples+=batch_size;
   }
 }
-
-float Net::get_metric( const string  layer_name, const string  metric_name )
-{
-    float value=-1.;
-    string lname="";
-
-    if (isrecurrent) {
-        value = -1.;
-    } else {
-        int p=0;
-        int length = decsize;
-        for (int k = 0; k < lout.size(); k+=decsize) {
-
-            for( int l=0; l < length; l++, p+=2 ) {
-                total_loss[k] += fiterr[p];  // loss
-                total_metric[k] += fiterr[p + 1];  // metric
-                fiterr[p] = fiterr[p + 1] = 0.0;
-            }
-
-            if ( layer_name.size() > 0 ) {
-                lname = lout[k]->name;
-                if (lout[k]->isshared) lname=lout[k]->orig->name;
-            }
-
-            // if no layer specified and more than one layer then
-            // the required metric of the last output layer will be returned
-
-            if ( layer_name.size() == 0 || layer_name == lname ) {
-
-                if ( losses[k]->name == metric_name ) {
-                    value = total_loss[k] / (length*inferenced_samples);
-                } else if ( metrics[k]->name == metric_name ) {
-                    value = total_metric[k] / (length*inferenced_samples);
-                }
-            }
-        }
-    }
-    return value;
-}
-
 void Net::print_loss(int b)
 {
   int p = 0;
@@ -573,14 +583,9 @@ void Net::print_loss(int b)
   }
   else {
     fprintf(stdout,"Batch %d ",b);
+    
     int length=decsize;
     for (int k = 0; k < lout.size(); k+=decsize) {
-
-      for(int l=0;l<length;l++,p+=2) {
-        total_loss[k] += fiterr[p];  // loss
-        total_metric[k] += fiterr[p + 1];  // metric
-        fiterr[p] = fiterr[p + 1] = 0.0;
-      }
 
       string name=lout[k]->name;
 
@@ -638,13 +643,14 @@ void Net::print_loss(int b)
   }
 }
 
+
 vector<float> Net::get_losses(){
     // NOTE: I have no idea how the internals of the metrics/loss values work,
     // so I did a sort of copy and paste from print_loss fuction with minor workarounds
     vector<float> loss_values;
 
     if (this->isrecurrent) {
-        if (this->rnet!=nullptr) { this->rnet->get_losses(); } // Dangerous A.F.
+        if (this->rnet!=nullptr) { return this->rnet->get_losses(); } // Dangerous A.F.
     } else {
         int p = 0;
 

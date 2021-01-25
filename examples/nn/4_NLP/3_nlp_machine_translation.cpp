@@ -58,22 +58,25 @@ int main(int argc, char **argv) {
 
     layer lE = RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05); // mask_zeros=true
     layer enc = LSTM(lE,128,true);  // mask_zeros=true
+    layer cps=GetStates(enc);
 
     // Decoder
-    layer ld=Input({outvs});
-    ld = ReduceArgMax(ld,{0});
+    layer ldin=Input({outvs});
+    layer ld = ReduceArgMax(ldin,{0});
     ld = RandomUniform(Embedding(ld, outvs, 1,embedding),-0.05,0.05);
 
-    l = Decoder(LSTM(ld,128),enc);
+    // input from embedding and
+    // state from encoder
+    l = LSTM({ld,cps},128);
     layer out = Softmax(Dense(l, outvs));
+
+    setDecoder(ldin);
 
     model net = Model({in}, {out});
 
-    // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
     optimizer opt=adam(0.01);
-    //opt->set_clip_val(0.01);
 
     // Build model
     build(net,
@@ -82,7 +85,7 @@ int main(int argc, char **argv) {
           {"accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-//          CS_CPU()
+          //CS_CPU()
     );
 
 
@@ -103,12 +106,13 @@ int main(int argc, char **argv) {
     y_test->reshape_({y_test->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
 
     // Train model
+    Tensor* ybatch = new Tensor({batch_size, olength,outvs});
+    next_batch({y_train},{ybatch});
+
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
     }
 
-   delete net;
-
-
+    delete net;
 
 }

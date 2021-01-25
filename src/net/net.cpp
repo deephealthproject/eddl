@@ -86,7 +86,7 @@ Net::Net(vlayer in, vlayer out):Net() {
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
     for (int i = 0; i < lin.size(); i++) {
-        walk(lin[i]);
+        walk(lin[i],lout);
     }
 
     for (int i = 0; i < lout.size(); i++) {
@@ -104,69 +104,27 @@ Net::Net(vlayer in, vlayer out):Net() {
     build_randn_table();
 }
 
-Net::Net(vector <Net *> vnets):Net()
-{
-  int vsize=vnets.size();
-  int ind;
-
-  if (vsize<2) {
-    msg("Use at least two networks to concatenate","Net::Net");
-  }
-
-  for(int i=0;i<vnets[0]->lin.size();i++)
-    lin.push_back(vnets[0]->lin[i]);
-
-  for(int i=0;i<vnets[0]->layers.size();i++)
-    layers.push_back(vnets[0]->layers[i]);
-
-///
-  for(int i=0;i<vnets.size()-1;i++) {
-    if (vnets[i]->lout.size()!=vnets[i+1]->lin.size())
-      msg("out layers does not match in layers","Net");
-    for(int j=0;j<vnets[i+1]->layers.size();j++)
-        layers.push_back(vnets[i+1]->layers[j]);
-
-    for(int j=0;j<vnets[i]->lout.size();j++) {
-        vnets[i]->lout[j]->addchild(vnets[i+1]->lin[j]);
-        vnets[i+1]->lin[j]->addparent(vnets[i]->lout[j]);
-    }
-  }
-
-
-  for(int i=0;i<vnets[vsize-1]->lout.size();i++)
-    lout.push_back(vnets[vsize-1]->lout[i]);
-
-
-  for (int i = 0; i < lout.size(); i++) {
-    total_loss.push_back(0.0);
-    total_metric.push_back(0.0);
-    fiterr.push_back(0.0);
-    fiterr.push_back(0.0);
-  }
-
-  isrecurrent=false;
-  rnet=nullptr;
-
-  for(int i=0;i<vnets.size();i++)
-    mnets.push_back(vnets[i]);
-
-  build_randn_table();
-
-
-}
-
-
-
 
 Net::~Net(){
 
-    if (mnets.size()) return;
+    // clean inputs
+    for(int i=0; i<snets.size(); i++) {
+        Xs[i].clear();
+        Ys[i].clear();
+    }
+
+    for(int i=0;i<snets.size();i++)
+        if (snets[i]->optimizer!=nullptr)
+            delete snets[i]->optimizer;
+
+    if (snets[0]!=this)
+        if (optimizer!=nullptr)
+            delete optimizer;
 
 
     // IF CPU : net = snets[0]   snets.push_back(this)
-
-   // IF GPU: net , snets[0]= clone en GPU
-
+    // IF GPU: net , snets[0]= clone en GPU
+    // clean device mem
     for(int i=0;i<snets.size();i++){
       for(int j=0;j<snets[i]->layers.size();j++) {
         if (snets[i]->layers[j]!=nullptr) {
@@ -175,14 +133,15 @@ Net::~Net(){
         }
       }
     }
-
-    //TODO:
-    /*
-    if (GPU){
-      for(int j=0;j<layers.size();j++)
+ 
+    // net running on device != CPU
+    // clean also CPU mem
+    if (snets[0]!=this){
+      for(int j=0;j<layers.size();j++) {
          delete layers[j];
+      }
     }
-    */
+   
 
     if (rnet!=nullptr) {delete rnet; rnet = nullptr;}
 }
@@ -199,7 +158,7 @@ int Net::inNet(Layer *l) {
 
 
 /////////////////////////////////////////
-void Net::walk(Layer *l) {
+void Net::walk(Layer *l,vlayer lout) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
 
     if (!inNet(l)) {
@@ -207,8 +166,11 @@ void Net::walk(Layer *l) {
         else l->net=this;
 
         layers.push_back(l);
-        for (int i = 0; i < l->child.size(); i++)
-            walk(l->child[i]);
+        int ind;
+        if (!isIn(l, lout, ind)) {
+          for (int i = 0; i < l->child.size(); i++)
+            walk(l->child[i],lout);
+        }
 
     }
 }
@@ -223,7 +185,9 @@ void Net::walk_back(Layer *l) {
 
         layers.push_back(l);
     }
-    for (int i = 0; i < l->parent.size(); i++)
+    int p=l->parent.size();
+    if (l->isrecurrent) p=min(1,p);
+    for (int i = 0; i < p; i++)
         walk_back(l->parent[i]);
 
 }
