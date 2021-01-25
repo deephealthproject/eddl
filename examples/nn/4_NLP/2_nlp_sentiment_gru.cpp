@@ -17,7 +17,7 @@
 using namespace eddl;
 
 //////////////////////////////////
-// Embeding+LSTM
+// Embeding+GRU
 // using imdb preprocessed from keras
 // 2000 words
 //////////////////////////////////
