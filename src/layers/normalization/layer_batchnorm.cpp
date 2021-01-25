@@ -100,6 +100,17 @@ void LBatchNorm::resize(int batch){
     }
 }
 
+float maxerror(int size, float *a, float *b)
+{
+    float maxerror = 0.0;
+    for (int i = 0; i < size; i++) {
+        float diff = fabs(a[i] - b[i]) / fabs(a[i]);
+        // if (diff > 1e-5) printf("%e %e %e\n", diff, a[i], b[i]);
+        if (diff > maxerror) maxerror = diff;
+    }
+    return maxerror;
+}
+
 // Batchnorm works over 2D Tensors
 // Essentialy 4D Tensors are reshaped as 2D and
 // Permute 4D tensors and set N,M values.
@@ -109,7 +120,7 @@ void LBatchNorm::forward() {
 
     int M,N;
     int b,z,r,c,d;
-    Tensor *in, *opa2;
+    Tensor *in;
 
     if (input->ndim==2) {
         N=b=input->shape[0];
@@ -133,11 +144,6 @@ void LBatchNorm::forward() {
 
 
     Tensor::copy(in,opa);
-    if (input->isCPU()) {
-        opa2 = output->clone();
-        if (input->ndim == 4) tensorNN::permute_channels_first(in, opa2);
-        else Tensor::copy(in, opa2);
-    }
     if (affine) {
         Tensor *var=new Tensor({N,M},input->device);
         Tensor *ones=new Tensor({N,1},input->device);
@@ -156,8 +162,12 @@ void LBatchNorm::forward() {
     }
     else Tensor::copy(in,output);
 
+    // printf("M=%d N=%d %d %d\n", M, N, mean->size, variance->size);
     if (input->isCPU()) { // new implementation for affine
-        float *temp = new float[N * M];
+        float *output2 = new float[N * M];
+        float *mean2 = new float[M];
+        float *variance2 = new float[M];
+        float *opa2 = new float[N * M];
         if (affine) {
             switch (input->ndim) {
             case 2:
@@ -165,20 +175,42 @@ void LBatchNorm::forward() {
                 /* for (int i = 0; i < N; i++) {
                     for (int j = 0; j < M; j++) {
                         // printf("%e %e\n", var->ptr[j], bn_b->ptr[j]);
-                        temp[i * M + j] = opa2->ptr[i * M + j] * bn_g->ptr[j] + bn_b->ptr[j];
+                        output2[i * M + j] = opa2->ptr[i * M + j] * bn_g->ptr[j] + bn_b->ptr[j];
                     }
                 }
                 break; */
             case 4:
-                z=input->shape[1];
-                for (int i = 0; i < b; ++i) {
-                    int psrc=i*(z*r*c);
-                    for(int j=0;j<z;j++) // M
-                        for(int k=0;k<r;k++)
-                            for(int m=0;m<c;m++,psrc++) {
-                                // int pdest=i*(r*c*z)+k*(c*z)+m*z+j;
-                                // B->ptr[pdest]=A->ptr[psrc];
-                                temp[psrc] = opa2->ptr[psrc] * bn_g->ptr[j] + bn_b->ptr[j];
+                z = input->shape[1];
+                // compute mean and variance
+                for (int j = 0; j < z; j++) mean2[j] = variance2[j] = 0.0;
+                for (int i = 0; i < b; i++) {
+                    int p = i * (z * r *c);
+                    for(int j = 0; j < z; j++) // M
+                        for(int k = 0; k < r; k++)
+                            for(int m = 0; m < c; m++, p++) {
+                                mean2[j] += input->ptr[p];
+                                variance2[j] += input->ptr[p] * input->ptr[p];
+                            }
+                }
+                for(int j = 0; j < z; j++) {
+                    mean2[j] = mean2[j] / N;
+                    variance2[j] = variance2[j] / N - mean2[j] * mean2[j];
+                    // update global statistics
+                    /* if (momentum != 0.0) {
+                        mean->ptr[j] = momentum * mean->ptr[j] + (1.0 - momentum) * mean2[j];
+                        variance->ptr[j] = momentum * variance->ptr[j] + (1.0 - momentum) * variance2[j];
+                    } */
+                    variance2[j] = sqrt(variance2[j] + epsilon);
+                }
+                // normalization
+                for (int i = 0; i < b; i++) {
+                    int p = i * (z * r *c);
+                    for(int j = 0; j < z; j++) // M
+                        for(int k = 0; k < r; k++)
+                            for(int m = 0; m < c; m++, p++) {
+                                opa2[p] = (input->ptr[p] - mean2[j]) / variance2[j];
+                                // affine transformation
+                                output2[p] = opa2[p] * bn_g->ptr[j] + bn_b->ptr[j];
                             }
                 }
                 break;
@@ -186,18 +218,15 @@ void LBatchNorm::forward() {
                 printf("input->ndim %d\n", input->ndim);
                 abort();
             }
-            delete opa2;
-            float maxerror = 0.0;
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < M; j++) {
-                    float diff = fabs(temp[i * M + j] - output->ptr[i * M + j]) / fabs(temp[i * M + j]);
-                    // if (diff > 1e-5) printf("%e %e %e\n", diff, temp[i * M + j], output->ptr[i * M + j]);
-                    if (diff > maxerror) maxerror = diff;
-                }
-            }
-            printf("affine input->ndim %d maxerror %e\n", input->ndim, maxerror);
+            printf("maxerror %e %e %e \n",
+                    maxerror(M, mean2, bn_mean->ptr),
+                    maxerror(M, variance2, bn_var->ptr),
+                    maxerror(M, output2, output->ptr));
         }
-        delete temp;
+        delete output2;
+        delete mean2;
+        delete variance2;
+        delete opa2;
     }
     delete in;
 }
