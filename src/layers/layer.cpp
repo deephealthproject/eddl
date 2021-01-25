@@ -49,7 +49,6 @@ Layer::Layer(string name, int dev, int mem) {
 
 Layer::~Layer(){
     // Note: nullptr are not really needed. However, I like to have this pointers pointing to "something" just in case
-
     if (output!=nullptr) { delete output; output = nullptr; }
     if (delta!=nullptr)  { delete delta; delta = nullptr; }
     if (target!=nullptr) { delete target; target = nullptr; }

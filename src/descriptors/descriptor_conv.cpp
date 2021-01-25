@@ -59,6 +59,25 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
 
 ConvolDescriptor::~ConvolDescriptor(){
     // input, output, delta, params[], and gradients[], acc_gradients[] => deleted in ~Layer()
+    if (O->isCPU()) {
+        delete[] ptrI;
+    }
+#ifdef cGPU
+    else if (O->isGPU()) {
+
+        if (mem_level>1) {
+            // Lowering
+            delete gpuIB;
+        }
+        else {
+            // Big tensor with all the batch for lowering
+            delete gpuIB;
+            if (mem_level==0)
+                delete gpuOB;
+        }
+    }
+#endif
+
 }
 
 void ConvolDescriptor::build(Tensor *A) {
@@ -117,7 +136,6 @@ void ConvolDescriptor::build(Tensor *A) {
     }
 
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-//    if (!mem_level) { D = new Tensor(O->shape, A->device); }
 
     // Params
     K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
@@ -128,16 +146,13 @@ void ConvolDescriptor::build(Tensor *A) {
 
     if (I->isCPU()) {
         // mem for ptr, lowering im2col
-        ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
-	 _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
-	 matI=Eigen::Map<Eigen::MatrixXf>(ptrI, r*c,kz*kr*kc);
-  	 //matK=Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
-         //matgK=Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
-        // convolution: matC=matA*matK
+        unsigned long int l_size =  (unsigned long)(A->shape[0] * r * c) * (unsigned long)(kr * kc * kz);
+        ptrI=get_fmem(l_size,"ConvolDescriptor::build");
+        matI=Eigen::Map<Eigen::MatrixXf>(ptrI, r*c,kz*kr*kc);
+	   _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
     }
 #ifdef cGPU
     else if (I->isGPU()) {
-
         if (mem_level>1) {
             // Lowering
             gpuIB=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
@@ -176,8 +191,6 @@ void ConvolDescriptor::build(Tensor *A) {
 	// We allocate also on cpu so to ease the cpuemu flow
         // mem for ptr, lowering im2col
         ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
-        new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
-        new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
     }
 #endif
 }
@@ -187,7 +200,7 @@ void ConvolDescriptor::resize(int b)
     if (b==O->shape[0]) return;
 
     O->resize(b);
-//    if (!mem_level) D->resize(b);
+
 
     // Prevent overflow. (512*512*512*3*3*3 = 3,623,878,656 > MAX_INT (2,147,483,647))
     unsigned long int l_size =  (unsigned long)(b * r * c) * (unsigned long)(kr * kc * kz);
@@ -195,7 +208,7 @@ void ConvolDescriptor::resize(int b)
     if (I->isCPU()) {
         delete[] ptrI;
         ptrI=get_fmem(l_size, "ConvolDescriptor::build");
-	 _profile_add_tensor(l_size);
+	   _profile_add_tensor(l_size);
     }
 #ifdef cGPU
     else if (I->isGPU()) {
