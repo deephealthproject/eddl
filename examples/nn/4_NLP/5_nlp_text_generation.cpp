@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
           adam(0.001), // not relevant
           {"mse"}, // not relevant
           {"mse"}, // not relevant
-          CS_CPU() // CPU
+          CS_CPU(),false // CPU
     );
     summary(cnn);
     plot(cnn,"cnn.pdf");

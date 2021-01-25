@@ -62,10 +62,7 @@ namespace eddl {
       *  @return     Model instance
     */
     model Model(vlayer in, vlayer out);
-    model Model(vector<Net*> vnets);
     void setName(model m, string name);
-
-    layer getLayer(Net *net, vlayer in);
     layer getLayer(Net *net, string l);
     void removeLayer(Net *net, string l);
     void setTrainable(model net, string lanme, bool val);

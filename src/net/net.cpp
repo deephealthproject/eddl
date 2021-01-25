@@ -104,59 +104,6 @@ Net::Net(vlayer in, vlayer out):Net() {
     build_randn_table();
 }
 
-Net::Net(vector <Net *> vnets):Net()
-{
-  int vsize=vnets.size();
-  int ind;
-
-  if (vsize<2) {
-    msg("Use at least two networks to concatenate","Net::Net");
-  }
-
-  for(int i=0;i<vnets[0]->lin.size();i++)
-    lin.push_back(vnets[0]->lin[i]);
-
-  for(int i=0;i<vnets[0]->layers.size();i++)
-    layers.push_back(vnets[0]->layers[i]);
-
-///
-  for(int i=0;i<vnets.size()-1;i++) {
-    if (vnets[i]->lout.size()!=vnets[i+1]->lin.size())
-      msg("out layers does not match in layers","Net");
-    for(int j=0;j<vnets[i+1]->layers.size();j++)
-        layers.push_back(vnets[i+1]->layers[j]);
-
-    for(int j=0;j<vnets[i]->lout.size();j++) {
-        vnets[i]->lout[j]->addchild(vnets[i+1]->lin[j]);
-        vnets[i+1]->lin[j]->addparent(vnets[i]->lout[j]);
-    }
-  }
-
-
-  for(int i=0;i<vnets[vsize-1]->lout.size();i++)
-    lout.push_back(vnets[vsize-1]->lout[i]);
-
-
-  for (int i = 0; i < lout.size(); i++) {
-    total_loss.push_back(0.0);
-    total_metric.push_back(0.0);
-    fiterr.push_back(0.0);
-    fiterr.push_back(0.0);
-  }
-
-  isrecurrent=false;
-  rnet=nullptr;
-
-  for(int i=0;i<vnets.size();i++)
-    mnets.push_back(vnets[i]);
-
-  build_randn_table();
-
-
-}
-
-
-
 
 Net::~Net(){
 
@@ -174,10 +121,8 @@ Net::~Net(){
         if (optimizer!=nullptr)
             delete optimizer;
 
-  
-    if (mnets.size()) return;
 
- // IF CPU : net = snets[0]   snets.push_back(this)
+    // IF CPU : net = snets[0]   snets.push_back(this)
     // IF GPU: net , snets[0]= clone en GPU
     // clean device mem
     for(int i=0;i<snets.size();i++){

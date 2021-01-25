@@ -81,7 +81,6 @@ public:
 
     Optimizer *optimizer;
     vector<Net *> snets;
-    vector<Net *> mnets;
     Net* rnet;
 
     vtensor Xs[MAX_THREADS];
@@ -89,7 +88,6 @@ public:
 
     Net();
     Net(vlayer in, vlayer out);
-    Net(vector <Net *> vnets);
     ~Net();
 
 
@@ -105,7 +103,6 @@ public:
     Net *unroll_enc_dec(int inl, int outl);
     Net *unroll_dec(int inl, int outl);
     void build_rnet(int inl,int outl);
-    Layer* getLayer(vlayer in);
     Layer* getLayer(string l);
     void removeLayer(string l);
     void setTrainable(string lanme, bool val);

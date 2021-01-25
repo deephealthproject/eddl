@@ -22,11 +22,11 @@ using namespace eddl;
 // Using fit for training
 //////////////////////////////////
 layer Block1(layer l,int filters) {
-  return ReLu(BatchNormalization(Conv(l,filters,{1,1},{1,1})));
+  return ReLu(Conv(l,filters,{1,1},{1,1}));
 }
 layer Block3_2(layer l,int filters) {
-  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
+  l=ReLu(Conv(l,filters,{3,3},{1,1}));
+  l=ReLu(Conv(l,filters,{3,3},{1,1}));
   return l;
 }
 

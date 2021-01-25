@@ -319,19 +319,7 @@ void Net::set_compserv(CompServ *cs){
         if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
 
         if (!cs->isshared) {
-         if (mnets.size()) {
-          for(int i=0;i<devsel.size();i++) {
-            vector <Net *>sm;
-            for(int j=0;j<mnets.size();j++) {
-              sm.push_back(mnets[j]->snets[i]);
-            }
-            snets.push_back(new Net(sm));
-            snets[i]->make_graph(optimizer->clone(), losses, metrics);
-          }
-         } 
-         else {
           split(devsel.size(),DEV_GPU);
-         }
         }  
 
 
@@ -566,58 +554,6 @@ Layer * Net::getLayer(string lname)
 
   return nullptr;
 }
-
-Layer * Net::getLayer(vlayer in)
-{
-  int i,j,k,l,ind;
-  if (lin.size()!=in.size())
-    msg("Error size of input layers set","Net:Net");
-
-
-  vlayer nlayers;
-  //input layers
-  for (i = 0; i < lin.size(); i++)  {
-    vlayer par;
-    Layer *n=lin[i]->share(0, 1, par);
-
-    n->name=in[0]->name+n->name;
-    nlayers.push_back(n);
-
-    in[i]->addchild(n);
-    n->addparent(in[i]);
-  }
-
-  // rest of layers
-  for (k = 0; k < layers.size(); k++) {
-      for (j = 0; j < layers.size(); j++) {
-          if (!isInorig(layers[j], nlayers, ind)) {
-              vlayer par;
-              for (l = 0; l < layers[j]->parent.size(); l++) {
-                  if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
-                  else {par.push_back(nlayers[ind]);}
-              }
-              if (l == layers[j]->parent.size()) {
-                  Layer *n;
-                  n=layers[j]->share(0, 1, par);
-                  nlayers.push_back(n);
-                  n->name=in[0]->name+n->name;
-                  n->isshared=true;
-              }
-          }
-      }
-    }
-
-  vlayer nout;
-  // set outputs
-  for (j = 0; j < lout.size(); j++)
-    if (isInorig(lout[j], nlayers, ind))
-        nout.push_back(nlayers[ind]);
-
-  return nout[0];
-
-}
-
-
 
 
 

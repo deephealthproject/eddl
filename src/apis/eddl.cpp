@@ -36,18 +36,9 @@ namespace eddl {
         return new Net(in, out);
     }
 
-    model Model(vector<Net*> vnets) {
-      return new Net(vnets);
-    }
-
     void setName(model m, string name)
     {
       m->name=name;
-    }
-
-    layer getLayer(model net, vlayer in)
-    {
-      return net->getLayer(in);
     }
 
     layer getLayer(model net, string lname)
@@ -1088,7 +1079,7 @@ namespace eddl {
 
         int h=parent->output->shape[2];
 
-        if(name.empty()) { name = "GlobalMaxPool1D"; }  // Set default name
+        if (name.empty()) { name = "GlobalMaxPool1D"; }  // Set default name
         return MaxPool1D(parent, {h},{1}, name);
     }
 
