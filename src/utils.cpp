@@ -54,6 +54,20 @@
 #endif
 
 
+
+ostream &operator<<(ostream &os, const vector<int> shape) {
+    int i;
+    os << "(";
+    for (i = 0; i < shape.size() - 1; ++i) {
+        os << shape[i];
+        os << "x";
+    }
+    os << shape[i] << ")";
+
+    return os;
+}
+
+
 void msg(const string& text, const string& title) {
     string s(text);
     if(!title.empty()){
