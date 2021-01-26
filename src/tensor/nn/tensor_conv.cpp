@@ -25,6 +25,10 @@ PROFILING_ENABLE_EXTERN(Conv2D);
 PROFILING_ENABLE_EXTERN(Conv2D_grad);
 PROFILING_ENABLE_EXTERN(Conv2D_back);
 
+PROFILING_ENABLE_EXTERN(Conv3D);
+PROFILING_ENABLE_EXTERN(Conv3D_grad);
+PROFILING_ENABLE_EXTERN(Conv3D_back);
+
 namespace tensorNN{
 
 void Conv2D(ConvolDescriptor *D) {
@@ -117,8 +121,100 @@ void Conv2D_back(ConvolDescriptor *D) {
     }
 #endif
 
-
     PROFILING_FOOTER(Conv2D_back);
+}
+
+
+void Conv3D(ConvolDescriptor3D *D) {
+    /////////////////////////////////////////////////////////////////////
+    //// Conv3D
+    //// Dimensions must be compatible
+    //// A is input 5D Tensor, batch_shape + (channels, conv_dim1, conv_dim2, conv_dim3)
+    //// D is a ConvolDescriptor3D
+    /////////////////////////////////////////////////////////////////////
+    if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::Conv3D");
+
+//    PROFILING_HEADER(Conv3D);
+
+
+    if (D->I->isCPU()) {
+        cpu_conv3D(D);
+    }
+#ifdef cGPU
+    else if (D->I->isGPU())
+    {
+        gpu_conv3D(D);
+    }
+#endif
+#ifdef cFPGA
+        else {
+    fpga_conv3D(D);
+}
+#endif
+
+
+//    PROFILING_FOOTER(Conv3D);
+}
+
+void Conv3D_grad(ConvolDescriptor3D *D) {
+    /////////////////////////////////////////////////////////////////////
+    //// Conv3D Grad
+    //// Dimensions must be compatible
+    //// A is input 5D Tensor, batch_shape + (channels, conv_dim1, conv_dim2, conv_dim3)
+    //// D is a ConvolDescriptor3D
+    /////////////////////////////////////////////////////////////////////
+    if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::Conv3D");
+
+//    PROFILING_HEADER(Conv3D_grad);
+
+
+    if (D->I->isCPU()) {
+        cpu_conv3D_grad(D);
+    }
+#ifdef cGPU
+    else if (D->I->isGPU())
+    {
+        gpu_conv3D_grad(D);
+    }
+#endif
+#ifdef cFPGA
+        else {
+    fpga_conv3D_grad(D);
+}
+#endif
+
+
+//    PROFILING_FOOTER(Conv3D_grad);
+}
+
+void Conv3D_back(ConvolDescriptor3D *D) {
+    /////////////////////////////////////////////////////////////////////
+    //// Conv3D Back
+    //// Dimensions must be compatible
+    //// A is input 5D Tensor, batch_shape + (channels, conv_dim1, conv_dim2, conv_dim3)
+    //// D is a ConvolDescriptor3D
+    /////////////////////////////////////////////////////////////////////
+    if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::Conv3D");
+
+//    PROFILING_HEADER(Conv3D_back);
+
+
+    if (D->I->isCPU()) {
+        cpu_conv3D_back(D);
+    }
+#ifdef cGPU
+    else if (D->I->isGPU())
+    {
+        gpu_conv3D_back(D);
+    }
+#endif
+#ifdef cFPGA
+        else {
+    fpga_conv3D_back(D);
+}
+#endif
+
+//    PROFILING_FOOTER(Conv3D_back);
 }
 
 }

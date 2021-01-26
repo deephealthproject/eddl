@@ -24,8 +24,6 @@
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #endif
 
-#define VERBOSE 0
-
 using namespace std;
 using namespace std::chrono;
 
@@ -64,15 +62,6 @@ void Net::fts() {
 
     }
 
-   if (VERBOSE) {
-    for (i = 0; i < vfts.size(); i++) {
-      cout<<vfts[i]->name<<"-->";
-    }
-    cout<<"\n";
-    getchar();
-  }
-
-
 }
 
 
@@ -109,15 +98,6 @@ void Net::bts() {
 
     }
 
-if (VERBOSE) {
-   for (i = 0; i < vbts.size(); i++) {
-     cout<<vbts[i]->name<<"-->";
-   }
-   cout<<"\n";
-   getchar();
-}
-
-
 }
 
 
@@ -135,18 +115,8 @@ void Net::toCPU(int t){
     snets.clear();
 
     set_compserv(cs);
-
-    if (cs->type == "local") {
-      if (VERBOSE)  {
-        if (snets[0]->dev == DEV_CPU)
-          cout << "Net running on CPU\n";
-        else if (snets[0]->dev < DEV_FPGA)
-          cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
-        else
-          cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
-      }
-    }
 }
+
 void Net::toGPU(vector<int> g,int lsb,int mem){
     CompServ *cs=new CompServ(0, g, {},lsb,mem);
 
@@ -158,22 +128,10 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
     snets.clear();
 
     set_compserv(cs);
-
-    if (VERBOSE) {
-    if (cs->type == "local") {
-      if (snets[0]->dev == DEV_CPU)
-        cout << "Net running on CPU\n";
-      else if (snets[0]->dev < DEV_FPGA)
-        cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
-      else
-        cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
-    }
-  }
 }
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
-
 
   if (isbuild) return;
 
@@ -185,28 +143,16 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
     }
   }
 
-
   make_graph(opt, lo, me, initialize);
 
   set_compserv(cs);
 
-  if (VERBOSE) {
-    if (cs->type == "local") {
-      if (snets[0]->dev == DEV_CPU)
-        cout << "Net running on CPU\n";
-      else if (snets[0]->dev < DEV_FPGA)
-        cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
-      else
-        cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
-    }
-  }
   isbuild=true;
 
 }
 
 
 void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
-    if (VERBOSE) cout<<"Build net "<<name<<"\n";
 
     // check devices
     dev = -1;
@@ -305,18 +251,14 @@ void Net::set_compserv(CompServ *cs){
           msg("GPU list on ComputingService is larger than available devices","Net.set_compserv");
         }
 
-        if (VERBOSE) cout<<"Selecting GPUs from CS_GPU\n";
 
         for(int i=0;i<cs->local_gpus.size();i++)
           if (cs->local_gpus[i]) {
             devsel.push_back(i);
-            if (VERBOSE) cout<<"GPU ("<<i<<")\n";
           }
 
         if (!devsel.size())
           msg("No gpu selected","Net.set_compserv");
-
-        if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
 
         if (!cs->isshared) {
           split(devsel.size(),DEV_GPU);
@@ -357,7 +299,6 @@ void Net::set_compserv(CompServ *cs){
        msg("Distributed version not yet implemented", "Net.set_compserv");
     }
 
-
     // create input and output tensors (X,Y)
     for (int i = 0; i < snets.size(); i++) {
       for (int j = 0; j < snets[i]->lin.size(); j++)
@@ -382,7 +323,6 @@ void Net::split(int c, int todev) {
 
     //clone net into CompServices
     for (i = 0; i < c; i++) {
-        if (VERBOSE) cout << "Split " << i << "\n";
 
         nlayers.clear();
         nin.clear();
@@ -450,7 +390,6 @@ void Net::resize(int b)
   if (batch_size==b) return;
 
   batch_size=b;
-  if (VERBOSE) cout<<"Resizing Net to batch_size="<<batch_size<<"\n";
 
   int c=snets.size();
   int bs,m;
@@ -466,11 +405,9 @@ void Net::resize(int b)
     m = batch_size % c;
   }
 
-  for (j = 0; j < layers.size(); j++) {
-//      cout << "[DEBUG]: resizing layer " << layers[j]->name << endl;
+  for (j = 0; j < layers.size(); j++) 
       layers[j]->resize(batch_size);
-  }
-
+  
   for(i=0; i<c; i++) {
     Xs[i].clear();
     Ys[i].clear();
@@ -543,10 +480,10 @@ void Net::removeLayer(string lname)
   }// for layers
 }
 
+
 Layer * Net::getLayer(string lname)
 {
   for(int i=0;i<layers.size();i++) {
-    //cout<<layers[i]->name<<endl;
     if (layers[i]->name==lname) return layers[i];
   }
 

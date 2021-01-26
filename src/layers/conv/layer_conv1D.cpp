@@ -35,7 +35,7 @@ LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int m
     // Check dev with tensor dev
 
     // Set default name
-    if(name.empty()) this->name = "conv1D" + to_string(++total_layers);
+    if(name.empty()) this->name = "conv1d" + to_string(++total_layers);
 
     input = parent->output;
 
