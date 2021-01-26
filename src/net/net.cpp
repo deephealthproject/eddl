@@ -94,8 +94,8 @@ Net::Net(vlayer in, vlayer out):Net() {
 
 
 Net::~Net(){
-    // IF CPU : net = snets[0]   snets.push_back(this)
-    // IF GPU: net , snets[0]= clone en GPU
+    // IF CPU : net = snets[0]   
+    // IF GPU: net , snets[0]= clone on GPU
 
     // Clean inputs
     for(int i=0; i<Xs->size(); i++) {

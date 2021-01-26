@@ -172,25 +172,6 @@ void Net::run_snets(void *(*F)(void *t))
   }
 }
 
-/*
-void Net::run_snets(void *(*F)(void *t))
-{
-  void *status;
-  int rc;
-  struct tdata td[100];
-
-  int comp = snets.size();
-
-  #pragma omp parallel for
-  for (int i = 0; i < comp; i++) {
-    // Thread params
-    td[i].net = snets[i];
-    // Call function
-    F(&td[i]);
-  }
-}
-*/
-
 //////////////////////////////////////////////////////////////
 //////// SIMPLE ATOMICS FUNCS
 void Net::setmode(int m) {
