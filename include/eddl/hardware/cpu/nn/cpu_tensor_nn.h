@@ -95,6 +95,10 @@ void cpu_conv3D_back(ConvolDescriptor3D *D);
 void cpu_mpool2D(PoolDescriptor*D);
 void cpu_mpool2D_back(PoolDescriptor *D);
 
+// MaxPool3D
+void cpu_mpool3D(PoolDescriptor3D *D);
+void cpu_mpool3D_back(PoolDescriptor3D *D);
+
 // AvgPool
 void cpu_avgpool2D(PoolDescriptor*D);
 void cpu_avgpool2D_back(PoolDescriptor *D);
