@@ -25,14 +25,13 @@ using namespace eddl;
 
 int main(int argc, char **argv) {
 
-    layer in  = Input({3, 256, 256});
+    layer in  = Input({3, 10, 256, 256});
     layer l=in;
 
-    l=MaxPool(ReLu(Conv(l,2,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,4,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,8,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,16,{3,3},{1,1})),{2,2});
-    l=GlobalAveragePool(l);
+    l=MaxPool3D(ReLu(Conv3D(l,2,{1, 3, 3},{1, 1, 1}, "same")),{1, 2, 2}, {1, 2, 2}, "same");
+    l=MaxPool3D(ReLu(Conv3D(l,4,{1, 3, 3},{1, 1, 1}, "same")),{1, 2, 2}, {1, 2, 2}, "same");
+    l=MaxPool3D(ReLu(Conv3D(l,8,{1, 3, 3},{1, 1, 1}, "same")),{1, 2, 2}, {1, 2, 2}, "same");
+    l=GlobalMaxPool3D(l);
     l = Flatten(l);
     l = LSTM(l, 128);
     l = Dense(l, 100);
@@ -52,8 +51,12 @@ int main(int argc, char **argv) {
     summary(deepVO);
 
     // 32 samples that are sequences of 10 RGB images of 256x256. Target 2 values per image, a sequence as well
-    Tensor* seqImages = Tensor::randu({32, 10, 3, 256, 256});
+    Tensor* seqImages = Tensor::randu({32, 3, 10, 256, 256});
     Tensor* seqLabels = Tensor::randu({32, 10, 2});
+
+    // Channels first
+//    seqImages->permute_({1, 2});  // B,(L,C),H,W => Batch, (channels, length), height, width
+
     fit(deepVO, {seqImages}, {seqLabels}, 4, 10);
 
     return 0;
