@@ -25,15 +25,14 @@ using namespace eddl;
 
 int main(int argc, char **argv) {
 
-    layer in  = Input({3, 256, 256});
+    layer in  = Input({10, 3, 256, 256});
     layer l=in;
-
-    l=MaxPool(ReLu(Conv(l,2,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,4,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,8,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,16,{3,3},{1,1})),{2,2});
-    l=GlobalAveragePool(l);
-    l = Flatten(l);
+    l = Permute(l, {1, 0, 2, 3});  // Conv3D expects (B,C,dim1,dim2,dim3)
+    l=MaxPool3D(ReLu(Conv3D(l,4,{3, 3, 3},{1, 1, 1}, "same")),{2, 2, 2}, {2, 2, 2}, "same");
+    l=MaxPool3D(ReLu(Conv3D(l,8,{3, 3, 3},{1, 1, 1}, "same")),{2, 2, 2}, {2, 2, 2}, "same");
+    l=MaxPool3D(ReLu(Conv3D(l,16,{3, 3, 3},{1, 1, 1}, "same")),{2, 2, 2}, {2, 2, 2}, "same");
+    l=GlobalMaxPool3D(l);
+    l = Reshape(l, {-1});
     l = LSTM(l, 128);
     l = Dense(l, 100);
     l = ReLu(l);
@@ -45,8 +44,8 @@ int main(int argc, char **argv) {
           adam(),
           {"mse"},
           {"mse"},
-          CS_GPU({1})
-//          CS_CPU()
+//          CS_GPU({1})
+          CS_CPU()
           );
     plot(deepVO,"model.pdf","TB");
     summary(deepVO);
@@ -54,6 +53,8 @@ int main(int argc, char **argv) {
     // 32 samples that are sequences of 10 RGB images of 256x256. Target 2 values per image, a sequence as well
     Tensor* seqImages = Tensor::randu({32, 10, 3, 256, 256});
     Tensor* seqLabels = Tensor::randu({32, 10, 2});
+
+
     fit(deepVO, {seqImages}, {seqLabels}, 4, 10);
 
     return 0;

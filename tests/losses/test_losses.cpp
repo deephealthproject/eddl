@@ -71,7 +71,7 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
     loss.delta(t_gpu_y_true, t_gpu_y_pred, t_gpu_delta);
 
     t_gpu_delta->toCPU();  // Send to CPU
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-3));
 
     // Deletes
     delete t_cpu_y_pred;
