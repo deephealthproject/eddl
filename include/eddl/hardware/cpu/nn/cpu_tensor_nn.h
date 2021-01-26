@@ -81,12 +81,17 @@ int cpu_accuracy(Tensor *A, Tensor *B);
 int cpu_bin_accuracy(Tensor *A, Tensor *B);
 
 
-// Conv
+// Conv2D
 void cpu_conv2D(ConvolDescriptor *D);
 void cpu_conv2D_grad(ConvolDescriptor *D);
 void cpu_conv2D_back(ConvolDescriptor *D);
 
-// MaxPool
+// Conv3D
+void cpu_conv3D(ConvolDescriptor3D *D);
+void cpu_conv3D_grad(ConvolDescriptor3D *D);
+void cpu_conv3D_back(ConvolDescriptor3D *D);
+
+// MaxPool2D
 void cpu_mpool2D(PoolDescriptor*D);
 void cpu_mpool2D_back(PoolDescriptor *D);
 
