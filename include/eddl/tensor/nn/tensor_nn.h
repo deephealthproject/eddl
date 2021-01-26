@@ -96,6 +96,9 @@ namespace tensorNN{
     void MPool2D(PoolDescriptor *D);
     void MPool2D_back(PoolDescriptor *D);
 
+    // MaxPool3D
+    void MPool3D(PoolDescriptor3D *D);
+    void MPool3D_back(PoolDescriptor3D *D);
 
 // AvgPool
     void AvgPool2D(PoolDescriptor *D);
