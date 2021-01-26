@@ -23,18 +23,6 @@
 
 
 
-ostream &operator<<(ostream &os, const vector<int> shape) {
-    int i;
-    os << "(";
-    for (i = 0; i < shape.size() - 1; ++i) {
-        os << shape[i];
-        os << "x";
-    }
-    os << shape[i] << ")";
-
-    return os;
-}
-
 /////////////////////////////////////////
 int isIn(Layer *l, vlayer vl, int &ind) {
     for (int i = 0; i < vl.size(); i++)
@@ -163,38 +151,27 @@ int Net::inNet(Layer *l) {
 
 
 /////////////////////////////////////////
-void Net::walk(Layer *l,vlayer lout) {
-    // If this layer is not in the network, add it, as well as all its children (recursively)
+void Net::walk(Layer *l,vlayer lout) {    
+    if (l->orig!=nullptr) l->net=l->orig->net;
+    else l->net=this;
+    
+    if (!inNet(l)) 
+       layers.push_back(l);
 
-    if (!inNet(l)) {
-        if (l->orig!=nullptr) l->net=l->orig->net;
-        else l->net=this;
-
-        layers.push_back(l);
-        int ind;
-        if (!isIn(l, lout, ind)) {
-          for (int i = 0; i < l->child.size(); i++)
-            walk(l->child[i],lout);
-        }
-
-    }
+    for (int i = 0; i < l->child.size(); i++)
+       walk(l->child[i],lout);
 }
+
 /////////////////////////////////////////
 void Net::walk_back(Layer *l) {
-    // If this layer is not in the network, add it, as well as all its children (recursively)
+    if (l->orig!=nullptr) l->net=l->orig->net;
+    else l->net=this;
 
-    if (!inNet(l)) {
-        //cout<<l->name<<"  BACK\n";
-        if (l->orig!=nullptr) l->net=l->orig->net;
-        else l->net=this;
-
+    if (!inNet(l)) 
         layers.push_back(l);
-    }
-    int p=l->parent.size();
-    if (l->isrecurrent) p=min(1,p);
-    for (int i = 0; i < p; i++)
+    
+    for (int i = 0; i < l->parent.size(); i++)
         walk_back(l->parent[i]);
-
 }
 
 
