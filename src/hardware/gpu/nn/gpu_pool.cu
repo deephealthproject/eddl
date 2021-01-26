@@ -34,7 +34,7 @@ void gpu_mpool2D(PoolDescriptor *D){
 #else
     float alpha=1.0;
     float beta=0.0;
-    std::cout<<"FWD pool"<<std::endl;
+    //std::cout<<"FWD pool"<<std::endl;
     check_cudnn(cudnnPoolingForward(D->cudnn_handle, D->poolingDesc,
                                     &alpha, D->xDesc, D->I->ptr,
                                     &beta, D->yDesc, D->O->ptr));

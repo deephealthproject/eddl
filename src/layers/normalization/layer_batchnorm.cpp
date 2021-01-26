@@ -205,23 +205,7 @@ void LBatchNorm::forward() {
 #else
     float alpha = 1.0;
     float beta = 0.0;
- std::cout<<"BN layer FWD: "<< this->name <<std::endl;
- /*   cudnnDataType_t         dataType;
-    int                     n;
-    int                     c;
-    int                     h;
-    int                     w;
-    int                     nStride;
-    int                     cStride;
-    int                     hStride;
-    int                     wStride;
-    cudnnGetTensor4dDescriptor(xDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
-    std::cout <<"xDESC" << dataType <<", "<<n<<", "<<c<<", "<<h<<", "<<w<<", "<<nStride<<", "<<cStride<<", "<<hStride<<","<<wStride<<std::endl;
-    cudnnGetTensor4dDescriptor(yDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
-    std::cout <<"yDESC" << dataType <<", "<<n<<", "<<c<<", "<<h<<", "<<w<<", "<<nStride<<", "<<cStride<<", "<<hStride<<","<<wStride<<std::endl;
-    cudnnGetTensor4dDescriptor(bnScaleBiasMeanVarDesc, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride);
-    std::cout <<"FULL" << dataType <<", "<<n<<", "<<c<<", "<<h<<", "<<w<<", "<<nStride<<", "<<cStride<<", "<<hStride<<","<<wStride<<std::endl;
-*/
+
     cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(cudnn_handle, bn_mode, &alpha, &beta,
                                                              xDesc, input->ptr, yDesc, output->ptr,
                                                              bnScaleBiasMeanVarDesc, bn_g->ptr, bn_b->ptr,
@@ -234,7 +218,7 @@ void LBatchNorm::forward() {
 
 void LBatchNorm::backward(){
 
-    std::cout<<"BN layer BWD: "<< this->name <<std::endl;
+    //std::cout<<"BN layer BWD: "<< this->name <<std::endl;
 #ifndef cCUDNN
     int M,N;
     int b,z,r,c,d;
@@ -303,22 +287,13 @@ void LBatchNorm::backward(){
       float alphaParamDiff = 1.0;
       float betaParamDiff = 0.0;
 
-      /*
+
       cudnnStatus_t nnn= cudnnBatchNormalizationBackward(cudnn_handle, bn_mode, &alphaDataDiff, &betaDataDiff,
                                                          &alphaParamDiff, &betaParamDiff, xDesc, input->ptr,
-                                                         yDesc, *dy,
-      const cudnnTensorDescriptor_t    dxDesc,
-      void                            *dx,
-      const cudnnTensorDescriptor_t    bnScaleBiasDiffDesc,
-      const void                      *bnScale,
-      void                            *resultBnScaleDiff,
-      void                            *resultBnBiasDiff,
-      double                           epsilon,
-      const void                      *savedMean,
-      const void                      *savedInvVariance);
-
-    if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error fwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;
-       */
+                                                         yDesc, delta->ptr, xDesc, parent[0]->delta->ptr,
+                                                         bnScaleBiasMeanVarDesc,bn_g->ptr, gbn_g->ptr, gbn_b->ptr,
+                                                         epsilon, bn_mean->ptr, bn_var->ptr);
+    if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;
 #endif
 
 }
