@@ -499,5 +499,5 @@ TEST(NetTestSuite, net_delete_nlp_sentiment_lstm){
 
 
 TEST(NetTestSuite, net_delete_nlp_machine_translation){
-  
+
 }
