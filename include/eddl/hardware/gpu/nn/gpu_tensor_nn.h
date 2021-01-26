@@ -80,12 +80,17 @@ void gpu_d_binary_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
 void gpu_accuracy(Tensor *A,Tensor *B,int *acc);
 void gpu_bin_accuracy(Tensor *A,Tensor *B,int *acc);
 
-// Conv
+// Conv3D
 void gpu_conv2D(ConvolDescriptor *D);
 void gpu_conv2D_grad(ConvolDescriptor *D);
 void gpu_conv2D_back(ConvolDescriptor *D);
 
-// MaxPool
+// Conv3D
+void gpu_conv3D(ConvolDescriptor3D *D);
+void gpu_conv3D_grad(ConvolDescriptor3D *D);
+void gpu_conv3D_back(ConvolDescriptor3D *D);
+
+// MaxPool2D
 void gpu_mpool2D(PoolDescriptor *D);
 void gpu_mpool2D_back(PoolDescriptor *D);
 
