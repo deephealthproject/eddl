@@ -108,23 +108,27 @@ Net::Net(vlayer in, vlayer out):Net() {
 Net::~Net(){
 
     // clean inputs
-    for(int i=0; i<snets.size(); i++) {
+    for(int i=0; i<Xs->size(); i++) {
         for(int j=0;j<Xs[i].size();j++) {
-          delete Xs[i][j];   
-          delete Ys[i][j];
+          if(!Xs[i].empty()){ delete Xs[i][j]; }
+          if(!Ys[i].empty()){ delete Ys[i][j]; }
         } 
         Xs[i].clear();
         Ys[i].clear();
     }
     
     // delete optimizer
-    for(int i=0;i<snets.size();i++)
-        if (snets[i]->optimizer!=nullptr)
+    for(int i=0;i<snets.size();i++){
+        if (snets[i]->optimizer!=nullptr){
             delete snets[i]->optimizer;
+        }
+    }
 
-    if (snets[0]!=this)
-        if (optimizer!=nullptr)
+    if (snets[0]!=this){
+        if (optimizer!=nullptr){
             delete optimizer;
+        }
+    }
 
 
     // IF CPU : net = snets[0]   snets.push_back(this)
@@ -148,7 +152,7 @@ Net::~Net(){
     }
    
 
-    if (rnet!=nullptr) {delete rnet; rnet = nullptr;}
+    if (rnet!=nullptr) { delete rnet; rnet = nullptr;}
 }
 
 
