@@ -54,20 +54,6 @@
 #endif
 
 
-
-ostream &operator<<(ostream &os, const vector<int> shape) {
-    int i;
-    os << "(";
-    for (i = 0; i < shape.size() - 1; ++i) {
-        os << shape[i];
-        os << "x";
-    }
-    os << shape[i] << ")";
-
-    return os;
-}
-
-
 void msg(const string& text, const string& title) {
     string s(text);
     if(!title.empty()){
@@ -101,11 +87,10 @@ float *get_fmem(unsigned long int size, const string &str){
     // New calls your type constructor, Malloc not - Same for destructor
     // New is an operator, Malloc a function (slower)
     try{
-        ptr = new float[size];
+        //ptr = new float[size];
         //ptr=(float *)malloc(size*sizeof(float));
         //ptr=(float *)aligned_alloc(64, size*sizeof(float));
-        //posix_memalign((void **)&ptr, 64, size*sizeof(float));
-
+        posix_memalign((void **)&ptr, 64, size*sizeof(float));
     }
     catch (std::bad_alloc& badAlloc){
         error=true;
