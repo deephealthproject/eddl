@@ -25,7 +25,9 @@ using namespace eddl;
 
 int main(int argc, char **argv) {
 
-    layer in  = Input({10, 3, 256, 256});
+    int size = 256/2;
+
+    layer in  = Input({10, 3, size, size});
     layer l=in;
     l = Permute(l, {1, 0, 2, 3});  // Conv3D expects (B,C,dim1,dim2,dim3)
     l=MaxPool3D(ReLu(Conv3D(l,4,{3, 3, 3},{1, 1, 1}, "same")),{2, 2, 2}, {2, 2, 2}, "same");
@@ -44,14 +46,14 @@ int main(int argc, char **argv) {
           adam(),
           {"mse"},
           {"mse"},
-//          CS_GPU({1})
-          CS_CPU()
+          CS_GPU({1})
+//          CS_CPU()
           );
     plot(deepVO,"model.pdf","TB");
     summary(deepVO);
 
     // 32 samples that are sequences of 10 RGB images of 256x256. Target 2 values per image, a sequence as well
-    Tensor* seqImages = Tensor::randu({32, 10, 3, 256, 256});
+    Tensor* seqImages = Tensor::randu({32, 10, 3, size, size});
     Tensor* seqLabels = Tensor::randu({32, 10, 2});
 
 
