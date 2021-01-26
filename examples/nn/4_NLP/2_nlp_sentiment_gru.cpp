@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
-      //evaluate(net,{x_test},{y_test});
+      evaluate(net,{x_test},{y_test});
     }
 
 }
