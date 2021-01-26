@@ -35,7 +35,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     // Check dev with tensor dev
 
     // Set default name
-    if(name.empty()) this->name = "conv" + to_string(++total_layers);
+    if(name.empty()) this->name = "conv2d" + to_string(++total_layers);
 
     input = parent->output;
     cd = D;
