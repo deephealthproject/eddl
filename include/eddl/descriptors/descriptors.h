@@ -237,4 +237,42 @@ public:
     static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
 };
 
+class PoolDescriptor3D {
+
+public:
+    Tensor *indX, *indY; // indexes
+    vector<int> ksize;
+    vector<int> stride;
+    vector<int> pad; // {depth-front, depth-back, rows-top, rows-bottom, cols-left, cols-right}
+    string padding; // valid/none, same/zeros, custom
+
+    int nk, kz, kd, kr, kc;  // nk=num filters, kz=kernel channels, kd=kernel depth, kr=kernel rows, kc=Kernel cols
+    int sd, sr, sc;  // sd=stride depth, sr=stride rows, sc=stride cols
+    int iz, id, ir, ic;  // iz=input channels, id=input depth, ir=input rows, ic=input cols
+    int z, d, r, c;  // z=channels, d=depth, r=rows, c=cols
+    int paddf,paddb;  // pad(ding) d(epth) + f(ront) / b(ack)
+    int padrt,padrb; // pad(ding) r(ows) + t(op) / b(ottom)
+    int padcl,padcr; // pad(ding) c(ols) + l(eft) / r(ight)
+    int size;  // Auxiliar var
+    bool use_bias;
+    int mem_level; // see CS
+
+    Tensor *I= nullptr; // Input map
+    Tensor *ID= nullptr;// Delta input map
+    Tensor *D = nullptr; // Delta
+    Tensor *O= nullptr; // Outputmap
+
+    PoolDescriptor3D(const vector<int> &ks, const vector<int> &st, const string& p, int mem=0);
+
+    PoolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
+
+    ~PoolDescriptor3D();
+
+    void build(Tensor *A);
+    void resize(int b);
+    static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
+    static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
+    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
+};
+
 #endif //EDDL_DESCRIPTORS_H
