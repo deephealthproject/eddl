@@ -131,7 +131,8 @@ void ConvolDescriptor::build(Tensor *A) {
     padcl = pad[2]; padcr = pad[3];  // cols: left-right
 
     if ((r <= 0) || (c <= 0)) {
-        cout<<"rows="<<r<<" cols"<<c<<endl;
+        if(r <= 0) { std::cerr << "'Rows' are reach 0 or less (" << r << ")" << std::endl; }
+        if(c <= 0) { std::cerr << "'Columns' are reach 0 or less (" << c << ")" << std::endl; }
         msg("Invalid output shape", "ConvolDescriptor::build");
     }
 
