@@ -612,8 +612,7 @@ namespace eddl {
     layer Conv3D(layer parent, int filters, const vector<int> &kernel_size,
                  const vector<int> &strides, string padding,  bool use_bias,
                  int groups, const vector<int> &dilation_rate,string name){
-        msg("Not implemented error", "Conv3D");
-        return nullptr;
+        return new LConv3D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
     // Legacy
@@ -1050,7 +1049,7 @@ namespace eddl {
     }
 
     layer MaxPool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
-        msg("Not implemented error", "MaxPool3D");
+        return new LMaxPool3D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
 
     // Pooling Layers
@@ -1101,7 +1100,15 @@ namespace eddl {
     }
 
     layer GlobalMaxPool3D(layer parent, string name){
-        msg("Not implemented error", "GlobalMaxPool3D");
+        // Check dimension
+        if (parent->output->ndim!=5) msg("GlobalMaxPool only works over 5D tensors","GlobalMaxPool3D");
+
+        int d=parent->output->shape[2];
+        int h=parent->output->shape[3];
+        int w=parent->output->shape[4];
+
+        if(name.empty()) { name = "GlobalMaxPool3D"; }  // Set default name
+        return MaxPool3D(parent, {d, h,w}, {1, 1,1},"none", name);
     }
 
     layer GlobalAveragePool(layer parent, string name){
