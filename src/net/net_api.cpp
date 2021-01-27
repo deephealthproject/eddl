@@ -864,7 +864,7 @@ void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, 
     tinr.push_back(new Tensor(xt[i]->shape,xt[i]->ptr,xt[i]->device));
   }
 
-
+  
   // PREPARE INPUT and OUTPUT DECODER
   for(i=0;i<tout.size();i++) {
     if (tout[i]->ndim<3)
@@ -884,6 +884,7 @@ void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, 
     if (yt[i]->shape[0]!=outl)
     msg("Output tensors with different time steps","fit_recurrent");
   }
+  cout<<"Vec2Seq "<<inl<<" to "<<outl<<"\n";  
 
   int offset;
   for(i=0;i<yt.size();i++) {
@@ -983,6 +984,8 @@ void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &ou
     msg("Output tensors with different time steps","fit_recurrent");
   }
 
+  cout<<"Seq2Seq "<<inl<<" to "<<outl<<"\n";
+
   for(i=0;i<yt.size();i++) {
     offset=yt[i]->size/yt[i]->shape[0];
     vector<int>shape;
@@ -1003,15 +1006,13 @@ void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &ou
       toutr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset),yt[i]->device));
   }
 
-
-
-
 }
 
 
 void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z)
 {
   int i, j, k, n;
+
 
   // Check whether is encoder, decoder or both.
   for(i=0;i<vfts.size();i++) {
@@ -1076,6 +1077,11 @@ void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, 
       msg("Output tensors with different time steps","Net::prepare_recurrent");
     }
   }
+
+  if (outl>1)
+    cout<<"Synchronous Seq2Seq "<<inl<<" to "<<outl<<"\n";
+  else  
+    cout<<"Recurrent "<<inl<<" to "<<outl<<"\n";
 
   for(i=0;i<yt.size();i++) {
     offset=yt[i]->size/yt[i]->shape[0];
@@ -1186,21 +1192,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
       Tensor::select(Y[j], Ys[i][j], sind, start, end);
       snets[i]->lout[j]->check_target();
       Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
-
-      /* Better do n-best
-      if (isdecoder) {
-        if (eval) {
-          if (j==0) snets[i]->din[0]->input->fill_(0.0); //start
-          else {
-            snets[i]->lout[j-1]->addchild(snets[i]->din[j]);
-          }
-        }
-        else {
-          if (j==0) snets[i]->din[0]->input->fill_(0.0); //start
-          else Tensor::copy(Ys[i][j-1], snets[i]->din[j]->input);
-        }
-      }
-      */
     }
   }
 
@@ -1208,13 +1199,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
   run_snets(eval_batch_t);
   else
   run_snets(train_batch_t);
-
-  /*
-  if ((eval)&&(isdecoder))
-    for (int i = 0; i < comp; i++)
-      for (int j = 1; j < Y.size(); j++)
-         snets[i]->lout[j-1]->detach(snets[i]->din[j]);
-  */
 
   // If training (eval==0), apply gradients
   if (!eval) {
@@ -1309,30 +1293,19 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout, int bs) {
 
   build_rnet(inl,outl);
 
-  if ((isencoder)&&(isdecoder))
-    rnet->evaluate(tinr,toutr,bs);
-  else if (isencoder){
-    rnet->evaluate(tinr,toutr,bs);}
-  else if (isdecoder)
-    rnet->evaluate(tinr,toutr,bs);
+  rnet->evaluate(tinr,toutr,bs);
 
   for(i=0;i<tinr.size();i++) delete(tinr[i]);
   for(i=0;i<toutr.size();i++) delete(toutr[i]);
 
-  if (isencoder) {
-    for(i=0;i<xt.size();i++)
+  for(i=0;i<xt.size();i++)
       delete xt[i];
-    xt.clear();
-  }
-  if (isdecoder) {
-    for(i=0;i<xtd.size();i++)
-      delete xtd[i];
-    xtd.clear();
+  xt.clear();
 
-    for(i=0;i<yt.size();i++)
+  for(i=0;i<yt.size();i++)
       delete yt[i];
-    yt.clear();
-  }
+  yt.clear();
+  
 
 }
 

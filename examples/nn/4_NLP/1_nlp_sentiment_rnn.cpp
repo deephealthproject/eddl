@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_imdb_2000();
 
     // Settings
-    int epochs = 10;
+    int epochs = 1;
     int batch_size = 32;
 
     int length=250;
@@ -58,9 +58,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"binary_cross_entropy"}, // Losses
           {"binary_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-//          CS_CPU()
+          CS_CPU()
     );
 
     // View model
@@ -84,5 +84,7 @@ int main(int argc, char **argv) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
       evaluate(net,{x_test},{y_test});
     }
+
+    delete net;
 
 }

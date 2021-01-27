@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
           sgd(0.001, 0.9), // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          CS_GPU({1},"low_mem") // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
           //CS_CPU()
 	      //CS_FPGA({1})
@@ -92,16 +92,13 @@ int main(int argc, char **argv) {
         next_batch({x_train,y_train},{xbatch,ybatch});
         train_batch(net, {xbatch}, {ybatch});
 
-        //OR:
-        //vector<int> indices = random_indices(batch_size, s[0]);
-        //train_batch(net, {x_train}, {y_train}, indices);
-
-//        print_loss(net,j);
-//        printf("\r");
-
+        print_loss(net,j);
+        printf("\r");
       }
       printf("\n");
     }
+    printf("\n");   
+
 
     // Print loss and metrics
     vector<float> losses1 = get_losses(net);
@@ -125,10 +122,12 @@ int main(int argc, char **argv) {
 
         eval_batch(net, {x_test}, {y_test}, indices);
 
-//        print_loss(net,j);
-//        printf("\r");
+        print_loss(net,j);
+        printf("\r");
 
       }
+
+    printf("\n");
 
     // Print loss and metrics
     vector<float> losses2 = get_losses(net);
@@ -151,7 +150,7 @@ int main(int argc, char **argv) {
 //      print_loss(net,j);
 //      printf("\r");
     }
-    printf("\n");
+    
 
 
     // Print loss and metrics

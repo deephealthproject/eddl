@@ -55,10 +55,12 @@ void Net::do_forward() {
 void Net::do_backward() {
   for (int i = 0; i < vbts.size(); i++) {
     if (!vbts[i]->trainable) return;
-    // Reserve parent's delta (if reserved, ignored)
+  
     vbts[i]->mem_delta_parent();
 
-    vbts[i]->backward();
+     vbts[i]->backward();
+
+    if(vbts[i]->mem_level) { vbts[i]->free_delta(); }
   }
 }
 

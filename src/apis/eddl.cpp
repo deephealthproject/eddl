@@ -1466,7 +1466,7 @@ namespace eddl {
         if(parent->output->shape.size()==3){
             std::cerr << name << " only works over 2D or 4D tensors. Since a 3D tensor was received, its shape was automatically unsqueezed to a 4D tensor." << std::endl;
             std::cerr << "()" << std::endl;
-            p = Unsqueeze(p, 2);  // ([Batch - ignored], d0, d1)
+            p = Unsqueeze(p, 0);  // ([Batch - ignored], d0, d1)
         }
         return p;
     }
