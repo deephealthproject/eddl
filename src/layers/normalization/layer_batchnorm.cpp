@@ -100,26 +100,28 @@ void LBatchNorm::resize(int batch){
     }
 }
 
-void cpu_batchnorm_forward(int b, int z, int r, int c,
+void cpu_batchnorm_forward(int b, int z, int rc,
         float *input, float *output, float *opa,
         float *global_mean, float *global_variance,
         float *affine_g, float *affine_b,
         float *mean, float *variance,
         bool trmode, float epsilon, float momentum)
 {
+    const int block_size = 256;
+    int rcz = rc * z;
     if (trmode) {
         // compute mean and variance
         for (int j = 0; j < z; j++) mean[j] = variance[j] = 0.0;
-        for (int i = 0; i < b; i++) {
-            int p = i * (z * r * c);
-            for (int j = 0; j < z; j++) // M
-                for (int k = 0; k < r; k++)
-                    for (int m = 0; m < c; m++, p++) {
-                        mean[j] += input[p];
-                        variance[j] += input[p] * input[p];
-                    }
-        }
-        float N = b * r * c;
+        for (int k = 0; k < rcz; k += block_size)
+            for (int i = 0; i < b; i++) {
+                int p = k + i * rcz;
+                for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
+                    int j = (k + l) / rc;
+                    mean[j] += input[p];
+                    variance[j] += input[p] * input[p];
+                }
+            }
+        float N = b * rc;
         for (int j = 0; j < z; j++) {
             mean[j] = mean[j] / N;
             variance[j] = variance[j] / N - mean[j] * mean[j];
@@ -134,16 +136,19 @@ void cpu_batchnorm_forward(int b, int z, int r, int c,
         // TODO
     }
     // normalization
-    for (int i = 0; i < b; i++) {
-        int p = i * (z * r * c);
-        for (int j = 0; j < z; j++) // M
-            for (int k = 0; k < r; k++)
-                for (int m = 0; m < c; m++, p++) {
-                    opa[p] = (input[p] - mean[j]) / variance[j];
-                    // affine transformation
-                    output[p] = opa[p] * affine_g[j] + affine_b[j];
-                }
-    }
+    for (int k = 0; k < rcz; k += block_size)
+        for (int i = 0; i < b; i++) {
+            int p = k + i * rcz;
+            for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
+                int j = (k + l) / rc;
+                float o = (input[p] - mean[j]) / variance[j];
+                // affine transformation
+                if (affine_g != NULL) {
+                    opa[p] = o;
+                    output[p] = o * affine_g[j] + affine_b[j];
+                } else output[p] = o;
+            }
+        }
 }
 
 float maxerror(int size, float *a, float *b)
@@ -188,11 +193,14 @@ void LBatchNorm::forward() {
         opa->reshape_({N,M});
     }
 
-    float *global_mean = new float[M];
-    float *global_variance = new float[M];
-    for (int j = 0; j < M; j++) {
-        global_mean[j] = mean->ptr[j];
-        global_variance[j] = variance->ptr[j];
+    float *global_mean, *global_variance;
+    if (input->isCPU()) {
+        global_mean = new float[M];
+        global_variance = new float[M];
+        for (int j = 0; j < M; j++) {
+            global_mean[j] = mean->ptr[j];
+            global_variance[j] = variance->ptr[j];
+        }
     }
 
     BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
@@ -216,6 +224,8 @@ void LBatchNorm::forward() {
         tensorNN::permute_channels_first(in,output);
     }
     else Tensor::copy(in,output);
+
+
     delete in;
 
     if (input->isCPU()) { // new implementation for cpu
@@ -227,8 +237,7 @@ void LBatchNorm::forward() {
         float *mean2 = new float[M];
         float *variance2 = new float[M];
         cpu_batchnorm_forward(input->shape[0], input->shape[1],
-            input->ndim > 2 ? input->shape[2] : 1,
-            input->ndim > 3 ? input->shape[3] : 1,
+            input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
             input->ptr, output2, opa2,
             global_mean, global_variance,
             affine ? bn_g->ptr : NULL,
@@ -245,9 +254,9 @@ void LBatchNorm::forward() {
         delete mean2;
         delete variance2;
         delete opa2;
+        delete global_mean;
+        delete global_variance;
     }
-    delete global_mean;
-    delete global_variance;
 }
 
 void LBatchNorm::backward(){
