@@ -140,6 +140,7 @@ Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
     LRNN *n = new LRNN(p, units, activation, use_bias, bidirectional, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
     n->isshared=true;
+    n->do_deletes = false;
 
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
@@ -165,8 +166,10 @@ Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
     n->gradients.push_back(n->gWy);
     if (use_bias) n->gradients.push_back(n->gbias);
 
-    n->reg=reg;
-    n->init=init;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     return n;
 }
@@ -176,6 +179,7 @@ Layer *LRNN::clone(int c, int bs, vector<Layer *> p, int todev) {
     n->orig = this;
 
     // TODO: Implement
+    assert(0);
 
     return n;
 }

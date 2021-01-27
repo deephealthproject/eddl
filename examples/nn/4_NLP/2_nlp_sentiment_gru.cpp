@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_imdb_2000();
 
     // Settings
-    int epochs = 1;
+    int epochs = 2;
     int batch_size = 32;
 
     int length=250;
@@ -78,13 +78,16 @@ int main(int argc, char **argv) {
     y_train->reshape_({y_train->shape[0], 1, 1}); //batch x timesteps x input_dim
     y_test->reshape_({y_test->shape[0], 1, 1}); //batch x timesteps x input_dim
 
-
-printf("main(): before do selects.\n");    
+/*
     Tensor* x_mini_train = x_train->select({"0:64", ":", ":"});
     Tensor* y_mini_train = y_train->select({"0:64", ":", ":"});
     Tensor* x_mini_test  = x_test->select({"0:64", ":", ":"});
     Tensor* y_mini_test  = y_test->select({"0:64", ":", ":"});
-printf("main(): after do selects.\n");    
+*/
+    Tensor* x_mini_train = x_train;
+    Tensor* y_mini_train = y_train;
+    Tensor* x_mini_test  = x_test;
+    Tensor* y_mini_test  = y_test;
 
 
     // Train model
@@ -93,10 +96,10 @@ printf("main(): after do selects.\n");
       evaluate(net, {x_mini_test}, {y_mini_test});
     }
 
-    delete x_mini_train;
-    delete y_mini_train;
-    delete x_mini_test;
-    delete y_mini_test;
+    if (x_mini_train != x_train) delete x_mini_train;
+    if (y_mini_train != y_train) delete y_mini_train;
+    if (x_mini_test != x_test) delete x_mini_test;
+    if (y_mini_test != y_test) delete y_mini_test;
     delete x_train;
     delete y_train;
     delete x_test;

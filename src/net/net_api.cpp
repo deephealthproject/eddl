@@ -546,12 +546,12 @@ void Net::compute_loss()
 
     int p=0;
     for(int k=0;k<lout.size();k+=decsize)
-     for (int j = 0; j < lout.size(); j++,p+=2) { 
+     for (int j = 0; j < lout.size(); j++,p+=2) {
        total_loss[k] += fiterr[p];  // losses
        total_metric[k] += fiterr[p + 1];  // metric
        fiterr[p] = fiterr[p + 1] = 0.0;
       }
-  
+
     inferenced_samples+=batch_size;
   }
 }
@@ -564,7 +564,7 @@ void Net::print_loss(int b)
   }
   else {
     fprintf(stdout,"Batch %d ",b);
-    
+
     int length=decsize;
     for (int k = 0; k < lout.size(); k+=decsize) {
 
@@ -574,8 +574,8 @@ void Net::print_loss(int b)
       if (losses.size()>=(k+1)) {
         fprintf(stdout, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
       }
-      if (metrics.size()>=(k+1)) {
-        fprintf(stdout, "metric[%s]=%1.4f ", metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
+      if (this->metrics.size()>=(k+1)) {
+        fprintf(stdout, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
       }
 
       fprintf(stdout, ") -- ");
@@ -586,9 +586,9 @@ void Net::print_loss(int b)
         if (losses.size()>=(k+1)) {
           fprintf(flog_tr, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
         }
-        if (metrics.size()>=(k+1)) {
-          if (metrics[k]->name!="none")
-          fprintf(flog_tr, "metric[%s]=%1.4f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+        if (this->metrics.size()>=(k+1)) {
+          if (this->metrics[k]->name!="none")
+          fprintf(flog_tr, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
         }
 
         fprintf(flog_tr, " -- ");
@@ -600,9 +600,9 @@ void Net::print_loss(int b)
         if (losses.size()>=(k+1)) {
           fprintf(flog_ts, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
         }
-        if (metrics.size()>=(k+1)) {
-          if (metrics[k]->name!="none")
-          fprintf(flog_ts, "metric[%s]=%1.4f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+        if (this->metrics.size()>=(k+1)) {
+          if (this->metrics[k]->name!="none")
+          fprintf(flog_ts, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
         }
 
         fprintf(flog_ts, " -- ");
@@ -680,7 +680,7 @@ vector<float> Net::get_metrics(){
                 tmp_fiterr[p] = tmp_fiterr[p + 1] = 0.0;
             }
 
-            if (metrics.size()>=(k+1)) {
+            if (this->metrics.size()>=(k+1)) {
                 metrics_values.push_back( tmp_total_metrics[k] / (float)(length*inferenced_samples));
             }
 
@@ -753,7 +753,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
   int i, j, k, n;
 
   if (isrecurrent) {
-    fit_recurrent(tin,tout, batch, epochs);
+    fit_recurrent(tin, tout, batch, epochs);
   }
   else{
 
@@ -864,7 +864,7 @@ void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, 
     tinr.push_back(new Tensor(xt[i]->shape,xt[i]->ptr,xt[i]->device));
   }
 
-  
+
   // PREPARE INPUT and OUTPUT DECODER
   for(i=0;i<tout.size();i++) {
     if (tout[i]->ndim<3)
@@ -884,7 +884,7 @@ void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, 
     if (yt[i]->shape[0]!=outl)
     msg("Output tensors with different time steps","fit_recurrent");
   }
-  cout<<"Vec2Seq "<<inl<<" to "<<outl<<"\n";  
+  cout<<"Vec2Seq "<<inl<<" to "<<outl<<"\n";
 
   int offset;
   for(i=0;i<yt.size();i++) {
@@ -1080,7 +1080,7 @@ void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, 
 
   if (outl>1)
     cout<<"Synchronous Seq2Seq "<<inl<<" to "<<outl<<"\n";
-  else  
+  else
     cout<<"Recurrent "<<inl<<" to "<<outl<<"\n";
 
   for(i=0;i<yt.size();i++) {
@@ -1305,7 +1305,7 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout, int bs) {
   for(i=0;i<yt.size();i++)
       delete yt[i];
   yt.clear();
-  
+
 
 }
 

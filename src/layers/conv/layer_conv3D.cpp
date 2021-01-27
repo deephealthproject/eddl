@@ -132,6 +132,7 @@ Layer *LConv3D::share(int c, int bs, vector<Layer *> p) {
     n->orig = this;
     n->isshared=true;
     n->trainable = trainable;
+    n->do_deletes = false;
 
     n->cd->use_bias=cd->use_bias;
 
@@ -168,8 +169,10 @@ Layer *LConv3D::share(int c, int bs, vector<Layer *> p) {
         n->acc_gradients.push_back(n->cd->acc_gbias);
     }
 
-    n->reg=reg;
-    n->init=init;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     return n;
 }
@@ -178,12 +181,15 @@ Layer *LConv3D::clone(int c, int bs, vector<Layer *> p, int todev) {
 
     LConv3D *n = new LConv3D(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
     n->trainable = trainable;
+    n->do_deletes = false;
 
     n->orig = this;
-    n->cd->use_bias=cd->use_bias;
+    n->cd->use_bias = cd->use_bias;
 
-    n->reg=reg;
-    n->init=init;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     if (distributed_training)
         n->enable_distributed();

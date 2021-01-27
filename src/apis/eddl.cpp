@@ -66,10 +66,10 @@ namespace eddl {
 
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
-        if (cs== nullptr){
+        if (cs == nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
         }
-        if (o== nullptr){
+        if (o == nullptr){
             o = new SGD(0.001,0.9);
         }
 
@@ -98,12 +98,16 @@ namespace eddl {
         }
 
         // Assign default computing service
-        if (cs== nullptr){
+        if (cs == nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
         }
 
-
         net->build(o, l, m, cs, init_weights);
+
+        // do not free the objects pointed to by the elements of the following
+        // vectors, but clean the internal data structure of these vectors
+        m.clear();
+        l.clear();
     }
 
     // Computing services
@@ -1069,6 +1073,7 @@ namespace eddl {
 
     layer AveragePool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
         msg("Not implemented error", "AveragePool3D");
+        return nullptr;
     }
 
 
@@ -1141,6 +1146,7 @@ namespace eddl {
 
     layer GlobalAveragePool3D(layer parent, string name){
         msg("Not implemented error", "GlobalAveragePool3D");
+        return nullptr;
     }
 
     // Recurrent Layers
@@ -1337,42 +1343,49 @@ namespace eddl {
     ///////////////////////////////////////
     layer GlorotNormal(layer l,int seed)
     {
-        l->init=new IGlorotNormal(seed);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IGlorotNormal(seed);
         return l;
     }
 
-    layer HeUniform(layer l,int seed)
+    layer HeUniform(layer l, int seed)
     {
-        l->init=new IHeUniform(seed);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IHeUniform(seed);
         return l;
     }
-    layer HeNormal(layer l,int seed)
+    layer HeNormal(layer l, int seed)
     {
-        l->init=new IHeNormal(seed);
-        return l;
-    }
-
-    layer GlorotUniform(layer l,int seed)
-    {
-        l->init=new IGlorotUniform(seed);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IHeNormal(seed);
         return l;
     }
 
-    layer RandomNormal(layer l, float m,float s, float seed)
+    layer GlorotUniform(layer l, int seed)
     {
-        l->init=new IRandomNormal(m,s,seed);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IGlorotUniform(seed);
         return l;
     }
 
-    layer RandomUniform(layer l, float min,float max, float seed)
+    layer RandomNormal(layer l, float m, float s, float seed)
     {
-        l->init=new IRandomUniform(min,max,seed);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IRandomNormal(m, s, seed);
+        return l;
+    }
+
+    layer RandomUniform(layer l, float min, float max, float seed)
+    {
+        if (l->init != nullptr) delete l->init;
+        l->init = new IRandomUniform(min, max, seed);
         return l;
     }
 
     layer Constant(layer l, float v)
     {
-        l->init=new IConstant(v);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IConstant(v);
         return l;
     }
 
@@ -1381,15 +1394,18 @@ namespace eddl {
     //  REGULARIZERS
     ///////////////////////////////////////
     layer L2(layer l,float l2){
-        l->reg=new RL2(l2);
+        if (l->reg != nullptr) delete l->reg;
+        l->reg = new RL2(l2);
         return l;
     }
     layer L1(layer l,float l1){
-        l->reg=new RL1(l1);
+        if (l->reg != nullptr) delete l->reg;
+        l->reg = new RL1(l1);
         return l;
     }
-    layer L1L2(layer l,float l1,float l2){
-        l->reg=new RL1L2(l1,l2);
+    layer L1L2(layer l, float l1, float l2){
+        if (l->reg != nullptr) delete l->reg;
+        l->reg = new RL1L2(l1, l2);
         return l;
     }
 

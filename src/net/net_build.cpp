@@ -199,9 +199,11 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if (isdecoder) {
       for(int i=0;i<decsize;i++)
         for(int j=0;j<me.size();j++)
-           metrics.push_back(me[j]);
+            this->metrics.push_back(me[j]);
+    } else {
+        for(int j=0;j<me.size();j++)
+            this->metrics.push_back(me[j]);
     }
-    else metrics = vmetrics(me);
 
     // forward sort
     fts();
@@ -266,7 +268,7 @@ void Net::set_compserv(CompServ *cs){
 
         if (!cs->isshared) {
           split(devsel.size(),DEV_GPU);
-        }  
+        }
 
 
 #endif
@@ -375,7 +377,7 @@ void Net::split(int c, int todev) {
         char cname[100];
         sprintf(cname,"snet_%d",i);
         snets[i]->name=cname;
-        snets[i]->make_graph(optimizer->clone(), losses, metrics);
+        snets[i]->make_graph(optimizer->clone(), this->losses, this->metrics);
         if(onnx_pretrained){ //We need to copy the imported weights to each snet
             //printf("Copying from CPU to GPU\n");
             for(int i = 0; i < snets.size(); i++)
@@ -409,9 +411,9 @@ void Net::resize(int b)
     m = batch_size % c;
   }
 
-  for (j = 0; j < layers.size(); j++) 
+  for (j = 0; j < layers.size(); j++)
       layers[j]->resize(batch_size);
-  
+
   for(i=0; i<c; i++) {
     for (unsigned int j = 0; j < Xs[i].size(); ++j) delete Xs[i][j];
     for (unsigned int j = 0; j < Ys[i].size(); ++j) delete Ys[i][j];

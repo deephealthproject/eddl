@@ -423,8 +423,11 @@ Layer *LGRU::share(int c, int bs, vector<Layer *> p) {
         n->gradients.push_back(gWh_hidden);
     }
 
-    n->reg=reg;
-    n->init=init;
+    n->do_deletes = false;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     return n;
 }
@@ -434,6 +437,7 @@ Layer *LGRU::clone(int c, int bs, vector<Layer *> p, int todev) {
     n->orig = this;
 
     // TODO: Implement
+    assert(0);
 
     return n;
 }

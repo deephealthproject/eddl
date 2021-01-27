@@ -47,15 +47,15 @@ void Net::do_reset_grads() {
 
 void Net::do_forward() {
 
-  for (int i = 0; i < vfts.size(); i++) 
+  for (int i = 0; i < vfts.size(); i++)
     vfts[i]->forward();
-    
+
 }
 
 void Net::do_backward() {
   for (int i = 0; i < vbts.size(); i++) {
     if (!vbts[i]->trainable) return;
-  
+
     vbts[i]->mem_delta_parent();
 
      vbts[i]->backward();
@@ -81,8 +81,8 @@ void Net::do_compute_loss() {
         fiterr[p] = losses[i]->value(lout[i]->target, lout[i]->output);
     }
     // metric value
-    if (metrics.size()>=(i+1)){
-        fiterr[p + 1] = metrics[i]->value(lout[i]->target, lout[i]->output);
+    if (this->metrics.size()>=(i+1)){
+        fiterr[p + 1] = this->metrics[i]->value(lout[i]->target, lout[i]->output);
     }
   }
 }

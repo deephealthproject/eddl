@@ -94,7 +94,7 @@ Net::Net(vlayer in, vlayer out):Net() {
 
 
 Net::~Net(){
-    // IF CPU : net = snets[0]   
+    // IF CPU : net = snets[0]
     // IF GPU: net , snets[0]= clone on GPU
 
     // Clean inputs
@@ -124,6 +124,13 @@ Net::~Net(){
         }
     }
 
+    // clean metrics and losses
+    // if (this->snets[0] != this) {
+        for (auto m : this->metrics) delete m;
+        this->metrics.clear();
+        for (auto m : this->losses) delete m;
+        this->losses.clear();
+    // }
 
     // clean device mem
     for(int i=0;i<snets.size();i++){
@@ -143,8 +150,9 @@ Net::~Net(){
       }
     }
 
-
     if (rnet!=nullptr) { delete rnet; rnet = nullptr;}
+
+    if (this->cs != nullptr) { delete this->cs; this->cs = nullptr; }
 }
 
 
@@ -159,11 +167,11 @@ int Net::inNet(Layer *l) {
 
 
 /////////////////////////////////////////
-void Net::walk(Layer *l,vlayer lout) {    
+void Net::walk(Layer *l,vlayer lout) {
     if (l->orig!=nullptr) l->net=l->orig->net;
     else l->net=this;
-    
-    if (!inNet(l)) 
+
+    if (!inNet(l))
        layers.push_back(l);
 
     for (int i = 0; i < l->child.size(); i++)
@@ -175,9 +183,9 @@ void Net::walk_back(Layer *l) {
     if (l->orig!=nullptr) l->net=l->orig->net;
     else l->net=this;
 
-    if (!inNet(l)) 
+    if (!inNet(l))
         layers.push_back(l);
-    
+
     for (int i = 0; i < l->parent.size(); i++)
         walk_back(l->parent[i]);
 }
@@ -259,8 +267,11 @@ void Net::plot(string fname,string mode) {
 
     cmd = "dot -T " + type + " ./tmp.dot >" + "./" + fname;
 
-    system(cmd.c_str());
-
+    int rc = system(cmd.c_str());
+    if (rc != EXIT_SUCCESS) {
+        std::cerr << "Unable to run the following command" << std::endl << std::endl
+                << "   " << cmd << std::endl;
+    }
 }
 
 /////////////////////////////////////////

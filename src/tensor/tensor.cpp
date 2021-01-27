@@ -145,12 +145,9 @@ void Tensor::updateStrides() {
 void Tensor::deleteData(){
     // Carefpdal, you can't know is a pointer is allocated
     if (isshared) {
-        printf("Tensor::deleteData(): NOT released %ld bytes\n", this->size*sizeof(float));
-
         if (/*this->isCPU() && this->ndim == 2 &&*/ this->ptr2 != nullptr) {
             delete this->ptr2;
             this->ptr2 = nullptr;
-            printf("Tensor::deleteData(): released Eigen pointer\n");
         }
         return;
     }
@@ -162,10 +159,9 @@ void Tensor::deleteData(){
                 delete this->ptr2; //double free or corruption (out)
                 this->ptr2 = nullptr;
             }
-            delete[] this->ptr;
+            // delete[] this->ptr;
+            free(this->ptr); // because currently memory for tensor data is allocated by means of posix_memalign()
             this->ptr = nullptr;
-
-            printf("Tensor::deleteData(): released %ld bytes\n", this->size*sizeof(float));
         }
 #ifdef cGPU
         else if (this->isGPU())
@@ -201,13 +197,6 @@ void Tensor::updateData(float *fptr, void *fptr2, bool setshared){
         } else {
             this->ptr = fptr; isshared=setshared;
         };
-
-        if (fptr==nullptr) {
-            printf("Tensor::updateData(): reserved %ld bytes\n", this->size*sizeof(float));
-        } else {
-            printf("Tensor::updateData(): assigned %ld bytes\n", this->size*sizeof(float));
-        }
-        printf("Tensor::updateData(): isshared = %d \n", isshared);
 
         if (this->ptr2 != nullptr) {
             delete this->ptr2;
