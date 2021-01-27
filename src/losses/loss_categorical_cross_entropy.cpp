@@ -23,6 +23,7 @@ LCategoricalCrossEntropy::LCategoricalCrossEntropy() : Loss("categorical_cross_e
 
 void LCategoricalCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
     tensorNN::d_categorical_cross_entropy(T, Y, D);
+    D->div_(D->shape[0]);
 }
 
 float LCategoricalCrossEntropy::value(Tensor *T, Tensor *Y) {
