@@ -141,6 +141,10 @@ for (i = 0; i < inl; i++)
   for (j = 0; j < nout[i].size(); j++)
     noutl.push_back(nout[i][j]);
 
+  delete [] nin;
+  delete [] nlayers;
+  delete [] nout;
+
 Net *rnet=new Net(ninl, noutl);
 
 return rnet;

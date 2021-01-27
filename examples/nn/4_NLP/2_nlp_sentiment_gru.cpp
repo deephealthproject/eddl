@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_imdb_2000();
 
     // Settings
-    int epochs = 10;
+    int epochs = 1;
     int batch_size = 32;
 
     int length=250;
@@ -38,10 +38,10 @@ int main(int argc, char **argv) {
     layer in = Input({1}); //1 word
     layer l = in;
 
-    layer lE = RandomUniform(Embedding(l, vocsize, 1,embdim),-0.05,0.05);
+    layer lE = RandomUniform(Embedding(l, vocsize, 1, embdim), -0.05, 0.05);
 
-    l = GRU(lE,32);
-    l = ReLu(Dense(l,256));
+    l = GRU(lE, 32);
+    l = ReLu(Dense(l, 256));
 
     layer out = Sigmoid(Dense(l, 1));
     model net = Model({in}, {out});
@@ -71,16 +71,37 @@ int main(int argc, char **argv) {
     Tensor* x_test=Tensor::load("imdb_2000_tsX.bin");
     Tensor* y_test=Tensor::load("imdb_2000_tsY.bin");
 
-    x_train->reshape_({x_train->shape[0],length,1}); //batch x timesteps x input_dim
-    x_test->reshape_({x_test->shape[0],length,1}); //batch x timesteps x input_dim
 
-    y_train->reshape_({y_train->shape[0],1,1}); //batch x timesteps x input_dim
-    y_test->reshape_({y_test->shape[0],1,1}); //batch x timesteps x input_dim
+    x_train->reshape_({x_train->shape[0], length, 1}); //batch x timesteps x input_dim
+    x_test->reshape_({x_test->shape[0], length, 1}); //batch x timesteps x input_dim
+
+    y_train->reshape_({y_train->shape[0], 1, 1}); //batch x timesteps x input_dim
+    y_test->reshape_({y_test->shape[0], 1, 1}); //batch x timesteps x input_dim
+
+
+printf("main(): before do selects.\n");    
+    Tensor* x_mini_train = x_train->select({"0:64", ":", ":"});
+    Tensor* y_mini_train = y_train->select({"0:64", ":", ":"});
+    Tensor* x_mini_test  = x_test->select({"0:64", ":", ":"});
+    Tensor* y_mini_test  = y_test->select({"0:64", ":", ":"});
+printf("main(): after do selects.\n");    
+
 
     // Train model
     for(int i=0;i<epochs;i++) {
-      fit(net, {x_train}, {y_train}, batch_size, 1);
-      evaluate(net,{x_test},{y_test});
+      fit(net, {x_mini_train}, {y_mini_train}, batch_size, 1);
+      evaluate(net, {x_mini_test}, {y_mini_test});
     }
 
+    delete x_mini_train;
+    delete y_mini_train;
+    delete x_mini_test;
+    delete y_mini_test;
+    delete x_train;
+    delete y_train;
+    delete x_test;
+    delete y_test;
+    delete net;
+
+    return EXIT_SUCCESS;
 }

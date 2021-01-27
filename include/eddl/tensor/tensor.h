@@ -136,7 +136,7 @@ public:
     *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
     *  @return a tensor
     */
-    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=0);
+    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=nullptr);
 
     /**
     *  @brief Construct an uninitialized tensor
@@ -171,7 +171,7 @@ public:
     void updateShape(const vector<int> &new_shape);
     void updateSize();
     void updateStrides();
-    void updateData(float* ptr, void *ptr2=NULL,bool setshared=true);
+    void updateData(float* ptr, void *ptr2=nullptr, bool setshared=true);
     void deleteData();
 
     /**

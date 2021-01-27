@@ -111,12 +111,16 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
         ifs.seekg(start_offset*sizeof(float), std::ifstream::cur);
     }
 
+    auto *t1 = new Tensor(r_shape, DEV_CPU);
+    ifs.read(reinterpret_cast<char*>(t1->ptr), n_read * sizeof(float));
     // Load content (row-major)
+    /*
     auto *r_ptr = new float[r_size];
     ifs.read(reinterpret_cast<char*>(r_ptr), n_read * sizeof(float));
 
     // Return new tensor
     auto *t1 = new Tensor(r_shape, r_ptr, DEV_CPU);
+    */
 //    t1->info();
     return t1;
 }

@@ -794,7 +794,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     // Create array to store batch indices (later random)
     vind sind;
     for (i = 0; i < batch_size; i++)
-    sind.push_back(0);
+        sind.push_back(0);
 
 
     // Start training
@@ -1361,6 +1361,10 @@ vtensor Net::predict_recurrent(vtensor tin) {
   for(int i=0;i<xt.size();i++)
     delete xt[i];
   xt.clear();
+
+  for(int i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
 
   return out;
 }

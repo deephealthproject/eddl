@@ -108,8 +108,10 @@ void Net::toCPU(int t){
     CompServ *cs=new CompServ(t, {}, {},0);
 
     for (int i = 0; i < snets.size(); i++) {
-      Xs[i].clear();
-      Ys[i].clear();
+        for (unsigned int j = 0; j < Xs[i].size(); ++j) delete Xs[i][j];
+        for (unsigned int j = 0; j < Ys[i].size(); ++j) delete Ys[i][j];
+        Xs[i].clear();
+        Ys[i].clear();
     }
 
     snets.clear();
@@ -121,8 +123,10 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
     CompServ *cs=new CompServ(0, g, {},lsb,mem);
 
     for (int i = 0; i < snets.size(); i++) {
-      Xs[i].clear();
-      Ys[i].clear();
+        for (unsigned int j = 0; j < Xs[i].size(); ++j) delete Xs[i][j];
+        for (unsigned int j = 0; j < Ys[i].size(); ++j) delete Ys[i][j];
+        Xs[i].clear();
+        Ys[i].clear();
     }
 
     snets.clear();
@@ -409,6 +413,8 @@ void Net::resize(int b)
       layers[j]->resize(batch_size);
   
   for(i=0; i<c; i++) {
+    for (unsigned int j = 0; j < Xs[i].size(); ++j) delete Xs[i][j];
+    for (unsigned int j = 0; j < Ys[i].size(); ++j) delete Ys[i][j];
     Xs[i].clear();
     Ys[i].clear();
 

@@ -118,7 +118,9 @@ void Tensor::updateDevice(int dev){
 }
 
 void Tensor::updateShape(const vector<int> &new_shape){
-    this->shape = vector<int>(new_shape);
+    // this->shape = vector<int>(new_shape);
+    this->shape.clear();
+    for (int _ : new_shape) this->shape.push_back(_);
     this->ndim = this->shape.size();
 }
 
@@ -142,21 +144,28 @@ void Tensor::updateStrides() {
 
 void Tensor::deleteData(){
     // Carefpdal, you can't know is a pointer is allocated
-    if (isshared) return;
+    if (isshared) {
+        printf("Tensor::deleteData(): NOT released %ld bytes\n", this->size*sizeof(float));
+
+        if (/*this->isCPU() && this->ndim == 2 &&*/ this->ptr2 != nullptr) {
+            delete this->ptr2;
+            this->ptr2 = nullptr;
+            printf("Tensor::deleteData(): released Eigen pointer\n");
+        }
+        return;
+    }
 
     if(this->ptr != nullptr){
         if (this->isCPU()) {
             // Delete eigen matrix
-            if (this->ndim == 2){
+            if (/*this->ndim == 2 &&*/ this->ptr2 != nullptr){
                 delete this->ptr2; //double free or corruption (out)
-                delete[] this->ptr;
                 this->ptr2 = nullptr;
-                this->ptr = nullptr;  // Redundant
-            }else{
-                delete[] this->ptr;
-                this->ptr = nullptr;  // Redundant
             }
+            delete[] this->ptr;
+            this->ptr = nullptr;
 
+            printf("Tensor::deleteData(): released %ld bytes\n", this->size*sizeof(float));
         }
 #ifdef cGPU
         else if (this->isGPU())
@@ -178,16 +187,32 @@ void Tensor::deleteData(){
     }
 }
 
-void Tensor::updateData(float *fptr, void *fptr2,bool setshared){
+void Tensor::updateData(float *fptr, void *fptr2, bool setshared){
     // TODO: What if the new_pointer is the same?
     // Solved with setshared for reshape_
+    bool was_shared = isshared;
     isshared=false;
     if (this->isCPU()) {
         // If null => Reserve memory
         // else => point to data
-        if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::updateData"); }
-        else { this->ptr = fptr; isshared=setshared;};
+        if (fptr==nullptr) {
+            if (false == was_shared && this->ptr != nullptr) delete [] this->ptr;
+            this->ptr = get_fmem(this->size,"Tensor::updateData");
+        } else {
+            this->ptr = fptr; isshared=setshared;
+        };
 
+        if (fptr==nullptr) {
+            printf("Tensor::updateData(): reserved %ld bytes\n", this->size*sizeof(float));
+        } else {
+            printf("Tensor::updateData(): assigned %ld bytes\n", this->size*sizeof(float));
+        }
+        printf("Tensor::updateData(): isshared = %d \n", isshared);
+
+        if (this->ptr2 != nullptr) {
+            delete this->ptr2;
+            this->ptr2 = nullptr;
+        }
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
         if (this->ndim == 2){
@@ -274,9 +299,12 @@ void Tensor::updateData(float *fptr, void *fptr2,bool setshared){
           printf("  end of changes: fptr %p tensor id %d ptr %p fpga_ptr %p size %d fpga_size %d fptr2 %p)\n", fptr, this->fpga_tensor_id, this->ptr, this->fpga_ptr, this->size, this->fpga_size, fptr2);
           #endif
           this->ptr = fptr;
+          // isshared = setshared; should this apply in the case of FPGA?
         }
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
+        //
+        // 2021-01-27, the following three lines should not be here, could people in charge of FPGA code review it?
         if (this->ndim == 2) {
           this->ptr2= new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
         }
@@ -334,7 +362,7 @@ void Tensor::toGPU(int dev){
         this->device = dev;
         this->gpu_device = this->device - DEV_GPU;
 
-        float *cpu_ptr = ptr;
+        float *cpu_ptr = this->ptr;
         float *gpu_ptr = gpu_create_tensor(this->gpu_device, this->size);
 
         if (!initcuda[gpu_device]){
@@ -345,6 +373,10 @@ void Tensor::toGPU(int dev){
         this->ptr = gpu_ptr;
         gpu_copy_to_gpu(cpu_ptr, this);
         delete []cpu_ptr;
+        if (/*this->ndim == 2 &&*/ this->ptr2 != nullptr){
+            delete this->ptr2;
+            this->ptr2 = nullptr;
+        }
     }
     else if (this->isGPU())
     {
@@ -363,7 +395,7 @@ void Tensor::toFPGA(int dev){
         this->device = dev;
         this->fpga_device = this->device - DEV_FPGA;
 
-        float *cpu_ptr = ptr;
+        float *cpu_ptr =this->ptr;
 	cl::Buffer *fpga_ptr = fpga_create_tensor(this->fpga_device, this->size);
 
         if (!initfpga[fpga_device]){
