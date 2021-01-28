@@ -30,9 +30,9 @@ int main(int argc, char **argv) {
     int epochs = 10;
     int batch_size = 32;
 
-    int length=250;
-    int embdim=32;
-    int vocsize=2000;
+    int length = 250;
+    int embdim = 33;
+    int vocsize = 2000;
 
     // Define network
     layer in = Input({1}); //1 word
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     layer lE = RandomUniform(Embedding(l, vocsize, 1, embdim), -0.05, 0.05);
 
-    l = GRU(lE, 32);
+    l = GRU(lE, 37);
     l = ReLu(Dense(l, 256));
 
     layer out = Sigmoid(Dense(l, 1));

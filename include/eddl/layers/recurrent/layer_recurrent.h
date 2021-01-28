@@ -188,7 +188,7 @@ public:
 
     // Intermediate outputs of the cell
     Tensor *zn, *rn, *hn; // Gates outputs
-    Tensor *rn_hidden, *rn_hidden_2, *zn_hn, *not_zn, *hidden_not_zn; // Gates interoperations
+    Tensor *rn_hidden, *rn_hidden_2, *zn_hn, *one_minus_zn, *hidden_one_minus_zn; // Gates interoperations
 
     // Tensors for mask_zeros
     Tensor *mask;

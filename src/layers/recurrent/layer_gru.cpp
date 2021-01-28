@@ -206,20 +206,20 @@ void LGRU::forward() {
     /*
      * Compute h output of the cell: state_hidden = (1 - zn) * hidden_-1 + zn * hn
      */
-    hidden_not_zn = new Tensor({input->shape[0], units}, dev);
+    hidden_one_minus_zn = new Tensor({input->shape[0], units}, dev);
     if (parent.size() > 1) {
-        // hidden_not_zn = (1 - zn) * hidden_-1
-        not_zn = new Tensor({input->shape[0], units}, dev);
-        not_zn->fill_(1.0f);
-        Tensor::sub(not_zn, zn, not_zn);
-        Tensor::el_mult(not_zn, parent[1]->states[0], hidden_not_zn, 0);
+        // hidden_one_minus_zn = (1 - zn) * hidden_-1
+        one_minus_zn = new Tensor({input->shape[0], units}, dev);
+        one_minus_zn->fill_(1.0f);
+        Tensor::sub(one_minus_zn, zn, one_minus_zn);
+        Tensor::el_mult(one_minus_zn, parent[1]->states[0], hidden_one_minus_zn, 0);
     } else {
-        not_zn = nullptr;
-        hidden_not_zn->fill_(0.0);
+        one_minus_zn = nullptr;
+        hidden_one_minus_zn->fill_(0.0);
     }
     zn_hn = new Tensor({input->shape[0], units}, dev);
     Tensor::el_mult(zn, hn, zn_hn, 0); // zn_hn = zn * hn
-    Tensor::add(1.0, hidden_not_zn, 1.0, zn_hn, state_hidden, 0); // Final output value
+    Tensor::add(1.0, hidden_one_minus_zn, 1.0, zn_hn, state_hidden, 0); // Final output value
 
     if (mask_zeros) {
         Tensor::logical_not(mask, mask);
@@ -242,10 +242,10 @@ void LGRU::forward() {
         delete rn;
         delete hn;
         delete zn_hn;
-        delete hidden_not_zn;
+        delete hidden_one_minus_zn;
         delete rn_hidden;
         if (parent.size() > 1) {
-            delete not_zn;
+            delete one_minus_zn;
             delete rn_hidden_2;
         }
         if (mask_zeros) delete mask;
@@ -284,7 +284,8 @@ void LGRU::backward() {
         if (parent.size() > 1) {
             // rn_hidden = rn * h_hidden = $r_t * h_{t-1}$
             Tensor::mult2D(rn_hidden_2, 1, daux, 0, gWh_hidden, 1);
-            Tensor::mult2D(rn,          1, daux, 0, d2,         0);
+            //Tensor::mult2D(rn, 1, daux, 0, d2, 0);
+            Tensor::el_mult(daux, rn, d2, 0);
             Tensor::reduce_sum2D(d2, ghn_hidden_bias, 0, 1);
         }
         Tensor::reduce_sum2D(daux, ghn_bias, 0, 1);
@@ -293,10 +294,14 @@ void LGRU::backward() {
     Tensor::mult2D(daux, 0, Wh_x, 1, parent[0]->delta, 1);
     if (parent.size() > 1) {
         // rn = $r_t$
-        Tensor::mult2D(rn, 0, Wh_hidden, 1, d1, 0); // not sure of this
-        // daux * d1 is temporarely the delta for $h_{t-1}$
-        Tensor::el_mult(daux,  d1,     parent[1]->delta_states[0], 1);
-        Tensor::el_mult(delta, not_zn, parent[1]->delta_states[0], 1);
+        Tensor::el_mult(daux, rn, d1, 0); // d1 = delta * zn * tanh' * rn
+        Tensor::mult2D(d1, 0, Wh_hidden, 1, parent[1]->delta_states[0], 1);
+        //
+        Tensor::mult2D(parent[1]->states[0], 0, Wr_hidden, 1, d1, 0);
+        Tensor::mult2D(d1,                   0, Wh_hidden, 1, d2, 0);
+        d1->fill_(0.0f);
+        tensorNN::D_Sigmoid(daux, rn, d1); // d2 = delta * zn * tanh' * $\sigma'(net(r_t))$
+        Tensor::el_mult(d1, d2, parent[1]->delta_states[0], 1);
     }
 
     /*
@@ -318,13 +323,19 @@ void LGRU::backward() {
         // Update gradients
         // parent[0]->output = $x_t$
         Tensor::mult2D(parent[0]->output, 1, daux, 0, gWr_x, 1);
-        if (parent.size() > 1)
+        if (parent.size() > 1) {
             // parent[1]->states[0] is $h_{t-1}$
             Tensor::mult2D(parent[1]->states[0], 1, daux, 0, gWr_hidden, 1);
+        }
         Tensor::reduce_sum2D(daux, grn_bias, 0, 1);
     }
     // Propagate delta to parent
     Tensor::mult2D(daux, 0, Wr_x, 1, parent[0]->delta, 1);
+    /*
+    if (parent.size() > 1) {
+        *** there is no contribution to parant[1]->delta_states[0] here ***
+    }
+    */
 
     /*
      * z gate
@@ -345,13 +356,18 @@ void LGRU::backward() {
         // Update gradients
         // parent[0]->output is $x_t$
         Tensor::mult2D(parent[0]->output, 1, daux, 0, gWz_x, 1);
-        if (parent.size() > 1)
+        if (parent.size() > 1) {
             // parent[1]->states[0]: $h_{t-1}$
             Tensor::mult2D(parent[1]->states[0], 1, daux, 0, gWz_hidden, 1);
+        }
         Tensor::reduce_sum2D(daux, gzn_bias, 0, 1);
     }
     // Propagate delta to parent
     Tensor::mult2D(daux, 0, Wz_x, 1, parent[0]->delta, 1);
+    if (parent.size() > 1) {
+        Tensor::el_mult(delta, one_minus_zn, parent[1]->delta_states[0], 1);
+        Tensor::mult2D(daux, 0, Wz_hidden, 1, parent[1]->delta_states[0], 1);
+    }
 
     if (mask_zeros) {
         if (parent.size() > 1) {
@@ -375,11 +391,11 @@ void LGRU::backward() {
     delete rn;
     delete zn;
     delete hn;
-    delete hidden_not_zn;
+    delete hidden_one_minus_zn;
     delete zn_hn;
     delete rn_hidden;
     if (parent.size() > 1) {
-        delete not_zn;
+        delete one_minus_zn;
         delete rn_hidden_2;
     }
 }

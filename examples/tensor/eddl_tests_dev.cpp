@@ -42,6 +42,9 @@ int main(int argc, char **argv) {
 
    t2->print(2);
 
+   delete t1;
+   delete t2;
+
     cout << "Done!" << endl;
 
 }
