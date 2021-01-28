@@ -12,7 +12,7 @@ If you want to compile with CUDA support, install:
 
 - NVIDIA CUDA 9 or above
 
-Also, we highly recommend installing an Anaconda_ environment to manage external dependencies. You will get a high-quality BLAS library (MKL) and controlled dependency versions regardless of your system.
+Also, we highly recommend installing an Anaconda_ environment to manage the external dependencies. You will get a high-quality BLAS library (MKL) and controlled dependency versions regardless of your system.
 
 Once you have Anaconda_ installed, you can create and activate our
 environment by running the following commands **from the source directory**:
@@ -122,12 +122,8 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 Additional flags
 ^^^^^^^^^^^^^^^^
 
-<<<<<<< HEAD:docs/sphinx/source/installation/build-options.rst
-These flags can enable/disable features of the EDDL so that you can optimize and troubleshoot the compilation process (see: :doc:``troubleshoot``).
-=======
-These flags can enable/disable features of the EDDL so that you can optimized and
+These flags can enable/disable features of the EDDL so that you can optimize and
 troubleshoot the compilation process (see: :doc:`troubleshoot`).
->>>>>>> d97875b3161d3e7a9199d35079d57a7d4ce3c6fa:docs/sphinx/source/intro/build-options.rst
 
 
 - **Prefix path:** Semicolon-separated list of directories specifying installation prefixes to be searched by the ``find_package()``, ``find_program()``, ``find_library()``, ``find_file()``, and ``find_path()`` commands.
@@ -161,7 +157,7 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
 .. note::
 
-    On MacOS we recommend using ``clang`` to avoid problems with OpenMP
+    On MacOS we recommend to use ``clang`` to avoid problems with OpenMP
 
 
 - **CUDA compiler:** If cmake have problems finding your cuda compiler, try setting ``CMAKE_CUDA_COMPILER``, such as:
@@ -244,7 +240,7 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
     The flag ``BUILD_HCP`` needs to be disabled. If not, some tests might not pass due to numerical errors.
 
 
-- **Use local gtest:** Uses the local copy of the gtest repository as a fail-safe. Ignored if using superbuild.
+- **Use local gtest:** Uses the local copy of the gtest repository as fail-safe. Ignored if using superbuild.
 
 .. code:: bash
 
@@ -255,13 +251,8 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
     Enabled by default.
 
     Why this? Because the Google C++ Testing Framework uses conditional compilation for some things.
-<<<<<<< HEAD:docs/sphinx/source/installation/build-options.rst
-    Because of the C++ "One Definition Rule", gtest must be compiled with the same flags as
-    your C++ code under test. Therefore, to avoid or fix potential problems, we have provide you with
-=======
     Because of the C++ "One Definition Rule", gtest must be compiled with exactly the same flags as
     your C++ code under test. Therefore, to avoid or fix potential problems, we have provided you with
->>>>>>> d97875b3161d3e7a9199d35079d57a7d4ce3c6fa:docs/sphinx/source/intro/build-options.rst
     this flag in advance.
 
 - **Build examples:** To compile the examples, use the setting ``BUILD_EXAMPLES``, such as:
