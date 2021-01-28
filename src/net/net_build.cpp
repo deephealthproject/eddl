@@ -500,11 +500,6 @@ Layer * Net::getLayer(string lname)
   return nullptr;
 }
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 408c7ad5e27361ddb58c6248a9d97117bb528769
 void Net::enable_distributed(){
     for(Layer* l : layers)
         l->enable_distributed();
