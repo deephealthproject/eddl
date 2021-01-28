@@ -208,8 +208,4 @@ if(BUILD_PROTOBUF)
 	add_executable(onnx_nlp_machine_translation "onnx/nn/4_NLP/3_nlp_machine_translation.cpp")
 	target_link_libraries(onnx_nlp_machine_translation eddl)
 
-
-
-
->>>>>>> d97875b3161d3e7a9199d35079d57a7d4ce3c6fa
 endif()
