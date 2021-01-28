@@ -23,18 +23,6 @@
 
 
 
-ostream &operator<<(ostream &os, const vector<int> shape) {
-    int i;
-    os << "(";
-    for (i = 0; i < shape.size() - 1; ++i) {
-        os << shape[i];
-        os << "x";
-    }
-    os << shape[i] << ")";
-
-    return os;
-}
-
 /////////////////////////////////////////
 int isIn(Layer *l, vlayer vl, int &ind) {
     for (int i = 0; i < vl.size(); i++)
@@ -106,29 +94,44 @@ Net::Net(vlayer in, vlayer out):Net() {
 
 
 Net::~Net(){
+    // IF CPU : net = snets[0]
+    // IF GPU: net , snets[0]= clone on GPU
 
-    // clean inputs
-    for(int i=0; i<snets.size(); i++) {
-        for(int j=0;j<Xs[i].size();j++) {
-          delete Xs[i][j];   
-          delete Ys[i][j];
-        } 
+    // Clean inputs
+    for(int i=0; i<Xs->size(); i++) {
+        for(int j=0;j<Xs[i].size();j++)
+          delete Xs[i][j];
         Xs[i].clear();
+    }
+
+    // Clean targets
+    for(int i=0; i<Ys->size(); i++) {
+        for(int j=0;j<Ys[i].size();j++)
+          delete Ys[i][j];
         Ys[i].clear();
     }
-    
+
     // delete optimizer
-    for(int i=0;i<snets.size();i++)
-        if (snets[i]->optimizer!=nullptr)
+    for(int i=0;i<snets.size();i++){
+        if (snets[i]->optimizer!=nullptr){
             delete snets[i]->optimizer;
+        }
+    }
 
-    if (snets[0]!=this)
-        if (optimizer!=nullptr)
+    if (snets[0]!=this){
+        if (optimizer!=nullptr){
             delete optimizer;
+        }
+    }
 
+    // clean metrics and losses
+    // if (this->snets[0] != this) {
+        for (auto m : this->metrics) delete m;
+        this->metrics.clear();
+        for (auto m : this->losses) delete m;
+        this->losses.clear();
+    // }
 
-    // IF CPU : net = snets[0]   snets.push_back(this)
-    // IF GPU: net , snets[0]= clone en GPU
     // clean device mem
     for(int i=0;i<snets.size();i++){
       for(int j=0;j<snets[i]->layers.size();j++) {
@@ -138,7 +141,7 @@ Net::~Net(){
         }
       }
     }
- 
+
     // net running on device != CPU
     // clean also CPU mem
     if (snets[0]!=this){
@@ -146,9 +149,10 @@ Net::~Net(){
          delete layers[j];
       }
     }
-   
 
-    if (rnet!=nullptr) {delete rnet; rnet = nullptr;}
+    if (rnet!=nullptr) { delete rnet; rnet = nullptr;}
+
+    if (this->cs != nullptr) { delete this->cs; this->cs = nullptr; }
 }
 
 
@@ -164,37 +168,26 @@ int Net::inNet(Layer *l) {
 
 /////////////////////////////////////////
 void Net::walk(Layer *l,vlayer lout) {
-    // If this layer is not in the network, add it, as well as all its children (recursively)
+    if (l->orig!=nullptr) l->net=l->orig->net;
+    else l->net=this;
 
-    if (!inNet(l)) {
-        if (l->orig!=nullptr) l->net=l->orig->net;
-        else l->net=this;
+    if (!inNet(l))
+       layers.push_back(l);
 
-        layers.push_back(l);
-        int ind;
-        if (!isIn(l, lout, ind)) {
-          for (int i = 0; i < l->child.size(); i++)
-            walk(l->child[i],lout);
-        }
-
-    }
+    for (int i = 0; i < l->child.size(); i++)
+       walk(l->child[i],lout);
 }
+
 /////////////////////////////////////////
 void Net::walk_back(Layer *l) {
-    // If this layer is not in the network, add it, as well as all its children (recursively)
+    if (l->orig!=nullptr) l->net=l->orig->net;
+    else l->net=this;
 
-    if (!inNet(l)) {
-        //cout<<l->name<<"  BACK\n";
-        if (l->orig!=nullptr) l->net=l->orig->net;
-        else l->net=this;
-
+    if (!inNet(l))
         layers.push_back(l);
-    }
-    int p=l->parent.size();
-    if (l->isrecurrent) p=min(1,p);
-    for (int i = 0; i < p; i++)
-        walk_back(l->parent[i]);
 
+    for (int i = 0; i < l->parent.size(); i++)
+        walk_back(l->parent[i]);
 }
 
 
@@ -274,8 +267,11 @@ void Net::plot(string fname,string mode) {
 
     cmd = "dot -T " + type + " ./tmp.dot >" + "./" + fname;
 
-    system(cmd.c_str());
-
+    int rc = system(cmd.c_str());
+    if (rc != EXIT_SUCCESS) {
+        std::cerr << "Unable to run the following command" << std::endl << std::endl
+                << "   " << cmd << std::endl;
+    }
 }
 
 /////////////////////////////////////////

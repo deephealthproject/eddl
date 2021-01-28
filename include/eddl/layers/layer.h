@@ -67,6 +67,7 @@ public:
     int lin, lout;
     int delta_bp;
     bool detached;
+    bool do_deletes;
     unsigned int verbosity_level = 0;
 
     Layer(string name, int dev, int mem);

@@ -439,7 +439,8 @@ void LLSTM::backward() {
 Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
     LLSTM *n = new LLSTM(p, units, mask_zeros, bidirectional, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
-    n->isshared=true;
+    n->isshared = true;
+    n->do_deletes = false;
 
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
@@ -506,14 +507,12 @@ Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
     }
 
 
-
-    n->reg=reg;
-    n->init=init;
-
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     return n;
-
-
 }
 
 Layer *LLSTM::clone(int c, int bs, vector<Layer *> p, int todev) {

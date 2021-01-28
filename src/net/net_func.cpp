@@ -19,7 +19,6 @@
 #include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
 
-#define VERBOSE 0
 
 using namespace std;
 using namespace std::chrono;
@@ -47,101 +46,44 @@ void Net::do_reset_grads() {
 }
 
 void Net::do_forward() {
-  if (VERBOSE) {
-    cout<<"START FORWARD\n";
-  }
-  for (int i = 0; i < vfts.size(); i++) {
-    if (VERBOSE) {
-      cout << vfts[i]->name << " Shape: ";
-      for(int j=0;j<vfts[i]->parent.size();j++)
-      fprintf(stdout, "  %s In[%d,%s]:%f\n", vfts[i]->name.c_str(), j, vfts[i]->parent[j]->name.c_str(),vfts[i]->parent[j]->output->sum());
-    }
 
+  for (int i = 0; i < vfts.size(); i++)
     vfts[i]->forward();
-    if (VERBOSE) {
-      fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
-    }
-  }
-  if (VERBOSE) {
-    cout<<"END FORWARD\n";
-    getchar();
-  }
+
 }
 
 void Net::do_backward() {
-  if (VERBOSE) {
-    cout<<"START BACKWARD\n";
-  }
   for (int i = 0; i < vbts.size(); i++) {
-
     if (!vbts[i]->trainable) return;
 
-    if(this->verbosity_level >= 1){
-      std::cout << vbts[i]->name << std::endl;
-    }
-
-    // Reserve parent's delta (if reserved, ignored)
     vbts[i]->mem_delta_parent();
 
-    // Do backward
-    if (VERBOSE) {
-      cout << "backward "<<vbts[i]->name << " delta="<<vbts[i]->delta->sum()<<"\n";
-    }
+     vbts[i]->backward();
 
-    vbts[i]->backward();
-
-
-    // Delete this delta
     if(vbts[i]->mem_level) { vbts[i]->free_delta(); }
-  }
-  if (VERBOSE) {
-    cout<<"END BACKWARD\n";
-    getchar();
   }
 }
 
 void Net::do_delta() {
-  if (VERBOSE) {
-    cout<<"Delta\n";
-    getchar();
-  }
   for (int i = 0; i < lout.size(); i++) {
     lout[i]->mem_delta();
     if (losses.size()>=(i+1)) {
       losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
-      if (VERBOSE) cout<<"Delta: "<<lout[i]->name<<" delta:"<<lout[i]->delta->sum()<<"\n";
     }
-  }
-  if (VERBOSE) {
-    cout<<"Delta end\n";
-    getchar();
   }
 }
 
 void Net::do_compute_loss() {
-  if (VERBOSE) {
-    cout<<"Compute Loss\n";
-    getchar();
-  }
-
   int p = 0;
   for (int i = 0; i < lout.size(); i++, p += 2) {
     // loss value
     if (losses.size()>=(i+1)){
         fiterr[p] = losses[i]->value(lout[i]->target, lout[i]->output);
     }
-
     // metric value
-    if (metrics.size()>=(i+1)){
-        fiterr[p + 1] = metrics[i]->value(lout[i]->target, lout[i]->output);
+    if (this->metrics.size()>=(i+1)){
+        fiterr[p + 1] = this->metrics[i]->value(lout[i]->target, lout[i]->output);
     }
-
-
-  }
-
-  if (VERBOSE) {
-    cout<<"Compute Loss end\n";
-    getchar();
   }
 }
 
@@ -161,7 +103,6 @@ void Net::collect_acc_grads() {
 }
 
 void Net::sync_weights() {
-  //cout<<"\nSync weights...\n";
   for (int j = 0; j < layers.size(); j++)
   for (int k = 0; k < layers[j]->params.size(); k++) {
     // Taking average

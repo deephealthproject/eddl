@@ -82,6 +82,9 @@ target_link_libraries(nlp_sentiment_rnn eddl)
 add_executable(nlp_sentiment_lstm "nn/4_NLP/2_nlp_sentiment_lstm.cpp")
 target_link_libraries(nlp_sentiment_lstm eddl)
 
+add_executable(nlp_sentiment_gru "nn/4_NLP/2_nlp_sentiment_gru.cpp")
+target_link_libraries(nlp_sentiment_gru eddl)
+
 add_executable(nlp_machine_translation "nn/4_NLP/3_nlp_machine_translation.cpp")
 target_link_libraries(nlp_machine_translation eddl)
 

@@ -193,3 +193,16 @@ void cpu_conv2D_back(ConvolDescriptor *D)
   }// batch
     _profile(_CPU_CONV2D_BACK, 1);
 }
+
+
+void cpu_conv3D(ConvolDescriptor3D *D){
+
+}
+
+void cpu_conv3D_grad(ConvolDescriptor3D *D){
+
+}
+
+void cpu_conv3D_back(ConvolDescriptor3D *D){
+
+}

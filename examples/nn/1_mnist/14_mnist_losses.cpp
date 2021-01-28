@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 5;
+    int epochs = 1;
     int batch_size = 100;
 
 
@@ -145,8 +145,7 @@ int main(int argc, char **argv) {
     }
 
 
-
-
+  delete net;
 
 }
 

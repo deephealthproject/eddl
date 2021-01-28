@@ -187,8 +187,7 @@ void Tensor::reshape_(const vector<int> &new_shape){
     updateShape(final_shape);
     updateSize();
     updateStrides();
-    updateData(this->ptr,nullptr, isshared);  // Due to potential Eigen mapping when CPU and dim=2
-
+    updateData(this->ptr, nullptr, isshared);  // Due to potential Eigen mapping when CPU and dim=2
 }
 
 Tensor* Tensor::reshape(const vector<int> &new_shape){

@@ -104,6 +104,15 @@ void cpu_mpool2D_back(PoolDescriptor *D){
     _profile(_CPU_MPOOL2D_BACK, 1);
 }
 
+void cpu_mpool3D(PoolDescriptor3D *D){
+
+}
+
+void cpu_mpool3D_back(PoolDescriptor3D *D){
+
+}
+
+
 void cpu_avgpool2D(PoolDescriptor *D){
     _profile(_CPU_AVGPOOL2D, 0);
     int isize = D->ir*D->ic*D->iz;

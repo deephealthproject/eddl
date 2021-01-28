@@ -141,6 +141,10 @@ for (i = 0; i < inl; i++)
   for (j = 0; j < nout[i].size(); j++)
     noutl.push_back(nout[i][j]);
 
+  delete [] nin;
+  delete [] nlayers;
+  delete [] nout;
+
 Net *rnet=new Net(ninl, noutl);
 
 return rnet;
@@ -499,7 +503,7 @@ void Net::build_rnet(int inl,int outl) {
    for(i=0;i<losses.size();i++) lr.push_back(losses[i]->clone());
 
    vmetrics mr;
-   for(i=0;i<metrics.size();i++) mr.push_back(metrics[i]->clone());
+   for(i=0;i<this->metrics.size();i++) mr.push_back(this->metrics[i]->clone());
 
 
    rnet->build(optimizer->share(),lr,mr,cs->share(),false);

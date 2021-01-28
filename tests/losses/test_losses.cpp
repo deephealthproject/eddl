@@ -26,7 +26,7 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
 
     // Compute loss
     float value = loss.value(t1_y_true, t1_y_true_pred);
-    value /= (float)t1_y_true->shape[0];  // Why? b/c Batch normalization was removed
+    value /= (float)t1_y_true->shape[0];  // Why? b/c we don't normalize it (due to the print method)
     ASSERT_NEAR(value, 0.524911046f, 10e-4f);
 
 
@@ -34,6 +34,8 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
     Tensor* t1_delta = Tensor::zeros_like(t1_y_true);
     Tensor* t1_delta_ref = new Tensor({-1.4285f, 0.0, 0.0,
                                            0.0, -2.0000f, 0.0}, {2, 3});
+    t1_delta_ref->div_(t1_delta_ref->shape[0]);  // Why? b/c we normalize the delta a posteriori
+
     loss.delta(t1_y_true, t1_y_true_pred, t1_delta);
     ASSERT_TRUE(Tensor::equivalent(t1_delta_ref, t1_delta, 10e-4));
 
@@ -71,7 +73,7 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
     loss.delta(t_gpu_y_true, t_gpu_y_pred, t_gpu_delta);
 
     t_gpu_delta->toCPU();  // Send to CPU
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-3));
 
     // Deletes
     delete t_cpu_y_pred;
@@ -81,6 +83,7 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
     delete t_cpu_delta;
     delete t_gpu_delta;
 #endif
+
 }
 
 
@@ -93,13 +96,14 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
 
     // Compute loss
     float value = loss.value(t1_y_true, t1_y_true_pred);
-    value /= (float)t1_y_true->shape[0];  // Why? b/c Batch normalization was removed
+    value /= (float)t1_y_true->shape[0];  // Why? b/c we don't normalize it (due to the print method)
     ASSERT_NEAR(value, 0.4564, 10e-4f);
 
 
     // Compute delta
     Tensor* t1_delta = Tensor::zeros_like(t1_y_true);
-    Tensor* t1_delta_ref = new Tensor({-1.4285, -3.3333, -1.1111, 1.1111, -1.6666,}, {5, 1}); 
+    Tensor* t1_delta_ref = new Tensor({-1.4285, -3.3333, -1.1111, 1.1111, -1.6666,}, {5, 1});
+    t1_delta_ref->div_(t1_delta_ref->shape[0]);  // Why? b/c we normalize the delta a posteriori
     loss.delta(t1_y_true, t1_y_true_pred, t1_delta);
     ASSERT_TRUE(Tensor::equivalent(t1_delta_ref, t1_delta, 10e-4));
 
@@ -149,4 +153,5 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
     delete t_cpu_delta;
     delete t_gpu_delta;
 #endif
+
 }

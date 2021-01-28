@@ -82,15 +82,23 @@ namespace tensorNN{
     void D_Linear(Tensor *D, Tensor *I, Tensor *PD, float param);
 
 // ***** Deep Learning *****************************
-// Conv2D
+    // Conv2D
     void Conv2D(ConvolDescriptor *D);
     void Conv2D_grad(ConvolDescriptor *D);
     void Conv2D_back(ConvolDescriptor *D);
 
-// MaxPool
+    // Conv3D
+    void Conv3D(ConvolDescriptor3D *D);
+    void Conv3D_grad(ConvolDescriptor3D *D);
+    void Conv3D_back(ConvolDescriptor3D *D);
+
+    // MaxPool2D
     void MPool2D(PoolDescriptor *D);
     void MPool2D_back(PoolDescriptor *D);
 
+    // MaxPool3D
+    void MPool3D(PoolDescriptor3D *D);
+    void MPool3D_back(PoolDescriptor3D *D);
 
 // AvgPool
     void AvgPool2D(PoolDescriptor *D);

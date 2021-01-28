@@ -56,6 +56,22 @@ public:
     void resize(int batch) override;
 };
 
+/// Pool3D Layer
+class LPool3D : public LinLayer {
+public:
+    static int total_layers;
+    PoolDescriptor3D *pd;
+
+    // constructors
+    LPool3D(Layer *parent, PoolDescriptor3D *pd, string name, int dev, int mem);
+
+    ~LPool3D();
+
+    void mem_delta() override;
+
+    void resize(int batch) override;
+};
+
 /// MaxPool2D Layer
 class LMaxPool : public LPool {
 public:
@@ -108,6 +124,31 @@ public:
 
 };
 
+/// MaxPool3D Layer
+class LMaxPool3D : public LPool3D {
+public:
+
+    // constructors and clones
+    LMaxPool3D(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, const string& name, int dev, int mem);
+
+    LMaxPool3D(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, const string& name, int dev, int mem);
+
+    LMaxPool3D(Layer *parent, PoolDescriptor3D *cd, const string& name, int dev, int mem);
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    string plot(int c) override;
+
+};
 
 /// AveragePool2D Layer
 class LAveragePool : public LPool {

@@ -25,15 +25,17 @@ using namespace eddl;
 
 int main(int argc, char **argv) {
 
-    layer in  = Input({3, 256, 256});
-    layer l=in;
+    int size = 256/2;
 
-    l=MaxPool(ReLu(Conv(l,2,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,4,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,8,{3,3},{1,1})),{2,2});
-    l=MaxPool(ReLu(Conv(l,16,{3,3},{1,1})),{2,2});
-    l=GlobalAveragePool(l);
-    l = Flatten(l);
+    layer in  = Input({3, 10, size, size});
+    layer l=in;
+     // Conv3D expects (B,C,dim1,dim2,dim3)
+    l=MaxPool3D(ReLu(Conv3D(l,4,{1, 3, 3},{1, 1, 1}, "same")),{1, 2, 2}, {1, 2, 2}, "same");
+    l=MaxPool3D(ReLu(Conv3D(l,8,{1, 3, 3},{1, 1, 1}, "same")),{1, 2, 2}, {1, 2, 2}, "same");
+    l=MaxPool3D(ReLu(Conv3D(l,16,{1, 3, 3},{1, 1, 1}, "same")),{1, 2, 2}, {1, 2, 2}, "same");
+    l=GlobalMaxPool3D(l);
+    //l=Squeeze(l);
+    l = Reshape(l, {-1});
     l = LSTM(l, 128);
     l = Dense(l, 100);
     l = ReLu(l);
@@ -51,9 +53,13 @@ int main(int argc, char **argv) {
     plot(deepVO,"model.pdf","TB");
     summary(deepVO);
 
-    // 32 samples that are sequences of 10 RGB images of 256x256. Target 2 values per image, a sequence as well
-    Tensor* seqImages = Tensor::randu({32, 10, 3, 256, 256});
-    Tensor* seqLabels = Tensor::randu({32, 10, 2});
+    // Input: 32 samples that are sequences of 10  3D RGB images of 256x256. 
+    Tensor* seqImages = Tensor::randu({32, 10, 3, 10, size, size});
+    
+    // Target: A sequence of 7 samples of 2 values per image
+    Tensor* seqLabels = Tensor::randu({32, 7, 2});
+
+
     fit(deepVO, {seqImages}, {seqLabels}, 4, 10);
 
     return 0;

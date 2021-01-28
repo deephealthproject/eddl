@@ -39,12 +39,14 @@ Layer::Layer(string name, int dev, int mem) {
     isdecoder=false;
     distributed_training=false;
 
-    orig=nullptr;
-    net=nullptr;
+    this->do_deletes = true;
 
-    reg = nullptr;
-    //init=new IGlorotNormal(1234);
-    init=new IGlorotUniform(1234);  // Has problems with the drive dataset
+    this->orig = nullptr;
+    this->net = nullptr;
+
+    this->reg = nullptr;
+    // init = new IGlorotNormal(1234);
+    this->init = new IGlorotUniform(1234);  // Has problems with the drive dataset
 }
 
 Layer::~Layer(){
@@ -55,8 +57,10 @@ Layer::~Layer(){
 
 //    if (orig!=nullptr) delete this->orig;
 //    if (net!=nullptr) delete this->net;
-//    if (reg!=nullptr)  { delete this->reg;  this->reg = nullptr; }
-//    if (init!=nullptr) { delete this->init; this->init = nullptr; }
+    if (this->do_deletes) {
+        if (this->reg  != nullptr) { delete this->reg;  this->reg  = nullptr; }
+        if (this->init != nullptr) { delete this->init; this->init = nullptr; }
+    }
 
     //params if any
     if (!isshared){
@@ -114,13 +118,10 @@ void Layer::mem_delta_parent(){
 
 void Layer::mem_delta(){
     // Reserve space for the delta
-    if(this->delta == nullptr){
+    if(this->delta == nullptr)
         this->delta = Tensor::zeros(this->output->shape, this->output->device);
 
-        if(this->verbosity_level >= 2){
-            std::cout << "Booked delta for: " + this->name << std::endl;
-        }
-    }
+
 }
 
 void Layer::free_delta(){
