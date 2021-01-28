@@ -510,7 +510,7 @@ void Tensor::print(int precision, bool raw) {
 
         if(raw){
             // Print number
-            buffer << aux->ptr[i] << " ";
+            buffer << aux->ptr[i] << ", ";
 
         }else{
 
