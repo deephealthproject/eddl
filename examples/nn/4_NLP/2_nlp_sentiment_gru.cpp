@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_imdb_2000();
 
     // Settings
-    int epochs = 2;
+    int epochs = 10;
     int batch_size = 32;
 
     int length=250;

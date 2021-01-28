@@ -520,7 +520,6 @@ Layer *LLSTM::clone(int c, int bs, vector<Layer *> p, int todev) {
     n->orig = this;
 
     // TODO: Implement
-    assert(0);
 
     return n;
 }

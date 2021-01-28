@@ -178,17 +178,17 @@ public:
     Tensor *Wz_hidden, *Wz_x;
     Tensor *Wr_hidden, *Wr_x;
     Tensor *Wh_hidden, *Wh_x;
-    Tensor *zn_bias, *rn_bias, *hn_bias;
+    Tensor *zn_bias, *rn_bias, *hn_bias, *hn_hidden_bias;
 
     // Gradient tensors
     Tensor *gWz_hidden, *gWz_x;
     Tensor *gWr_hidden, *gWr_x;
     Tensor *gWh_hidden, *gWh_x;
-    Tensor *gzn_bias, *grn_bias, *ghn_bias;
+    Tensor *gzn_bias, *grn_bias, *ghn_bias, *ghn_hidden_bias;
 
     // Intermediate outputs of the cell
     Tensor *zn, *rn, *hn; // Gates outputs
-    Tensor *rn_hidden, *zn_hn, *not_zn, *hidden_not_zn; // Gates interoperations
+    Tensor *rn_hidden, *rn_hidden_2, *zn_hn, *not_zn, *hidden_not_zn; // Gates interoperations
 
     // Tensors for mask_zeros
     Tensor *mask;
