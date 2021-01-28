@@ -421,16 +421,12 @@ TEST(Conv2DTestSuite, conv2d_k2x2_s2x2_pad_valid_gpu)
     tensorNN::Conv2D(cd_cpu);
     tensorNN::Conv2D(cd_gpu);
     Tensor *cd_gpu_O = cd_gpu->O->clone(); cd_gpu_O->toCPU();  // Tensor::equivalent is only for CPU (at the moment)
-//    cd_cpu->O->print(2, true);
-//    cd_gpu->O->print(2, true);
     ASSERT_TRUE((bool) Tensor::equivalent(cd_cpu->O, cd_gpu_O, 10e-5f));
 
     // Backward
     tensorNN::Conv2D_back(cd_cpu);
     tensorNN::Conv2D_back(cd_gpu);
     Tensor *cd_gpu_ID = cd_gpu->ID->clone(); cd_gpu_ID->toCPU(); // Tensor::equivalent is only for CPU (at the moment)
-//    cd_cpu->ID->print(2, true);
-//    cd_gpu->ID->print(2, true);
     ASSERT_TRUE((bool) Tensor::equivalent(cd_cpu->ID, cd_gpu_ID, 10e-5f));
 }
 #endif
