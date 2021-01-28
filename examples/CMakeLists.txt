@@ -120,7 +120,6 @@ if(BUILD_PROTOBUF)
     add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
     target_link_libraries(onnx_import eddl)
 
-
 	# EXAMPLES: ONNX MNIST ****************************************************
 	add_executable(onnx_mnist_mlp "onnx/nn/1_mnist/1_mnist_mlp.cpp")
 	target_link_libraries(onnx_mnist_mlp eddl)
@@ -205,8 +204,5 @@ if(BUILD_PROTOBUF)
 
 	add_executable(onnx_nlp_machine_translation "onnx/nn/4_NLP/3_nlp_machine_translation.cpp")
 	target_link_libraries(onnx_nlp_machine_translation eddl)
-
-
-
 
 endif()
