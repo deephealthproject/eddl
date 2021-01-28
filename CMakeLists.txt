@@ -9,14 +9,9 @@ cmake_minimum_required(VERSION 3.9.2)
 option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
-<<<<<<< HEAD
-option(BUILD_HPC "Compile using agressive flags" OFF)
-option(BUILD_TESTS "Compile tests" ON)
 option(BUILD_DIST "Compile for a distributed execution" OFF)
-=======
 option(BUILD_HPC "Compile using aggressive flags" ON)
-option(BUILD_TESTS "Compile tests (HCP needs to be disabled)" ON)  # Disable HCP to pass tests (there are numerical errors)
->>>>>>> d97875b3161d3e7a9199d35079d57a7d4ce3c6fa
+option(BUILD_TESTS "Compile tests (HPC needs to be disabled)" ON)  # Disable HPC to pass tests (there are numerical errors)
 option(USE_LOCAL_GTEST "Use the local library to avoid problems derived from the 'One Definition Rule'" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_RUNTIME "Compile runtime" ON)
