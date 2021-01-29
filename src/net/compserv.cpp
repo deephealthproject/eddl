@@ -26,6 +26,7 @@ CompServ::CompServ(int t, const vector<int> g, const vector<int> &f, int lsb, in
     type = "local";
     isshared = false;
 
+    threads_arg = t;
     if (t == -1) local_threads = std::thread::hardware_concurrency();  // Avoid eigen dependency
     else local_threads = t;
 

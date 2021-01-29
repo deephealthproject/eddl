@@ -118,7 +118,10 @@ if(BUILD_PROTOBUF)
     target_link_libraries(onnx_export eddl)
 
     add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
-    target_link_libraries(onnx_import eddl)
+		target_link_libraries(onnx_import eddl)
+
+    add_executable(utils_serialization "onnx/4_utils_serialization.cpp")
+    target_link_libraries(utils_serialization eddl)
 
 	# EXAMPLES: ONNX MNIST ****************************************************
 	add_executable(onnx_mnist_mlp "onnx/nn/1_mnist/1_mnist_mlp.cpp")

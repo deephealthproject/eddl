@@ -9,7 +9,10 @@
 #include "eddl/layers/operators/layer_operators.h"
 #include "eddl/layers/pool/layer_pool.h"
 #include "eddl/layers/recurrent/layer_recurrent.h"
+#include "eddl/net/compserv.h"
 #include "eddl/net/net.h"
+#include "eddl/optimizers/optim.h"
+#include <cstddef>
 #include <map>
 #include <string>
 #include <vector>
@@ -26,6 +29,9 @@ enum LOG_LEVEL {
 // Importing module
 //------------------------------------------------------------------------------
 
+// Net loaders
+//-------------
+
 /**
  * @brief Imports ONNX Net from file
  *
@@ -36,16 +42,38 @@ enum LOG_LEVEL {
  *
  * @return Net
  */
-Net *import_net_from_onnx_file(std::string path, int mem = 0, int log_level = LOG_LEVEL::INFO);
+Net *import_net_from_onnx_file(string path, int mem = 0, int log_level = LOG_LEVEL::INFO);
 
 Net *import_net_from_onnx_pointer(void *serialized_model, size_t model_size, int mem = 0);
 
-Net *import_net_from_onnx_string(std::string *model_string, int mem = 0);
+Net *import_net_from_onnx_string(string *model_string, int mem = 0);
+
+
+// Optimizer loaders
+//-------------------
+
+Optimizer *import_optimizer_from_onnx_file(string path);
+
+Optimizer *import_optimizer_from_onnx_pointer(void *serialized_optimizer, size_t optimizer_size);
+
+Optimizer *import_optimizer_from_onnx_string(string *optimizer_string);
+
+
+// Computing Service loaders
+//---------------------------
+
+CompServ *import_compserv_from_onnx_file(string path);
+
+CompServ *import_compserv_from_onnx_pointer(void *serialized_cs, size_t cs_size);
+
+CompServ *import_compserv_from_onnx_string(string *cs_string);
 
 
 // Exporting module
 //----------------------------------------------------------------------------------------
 
+// Net exporters
+//---------------
 /**
  * @brief Saves a model with the onnx format in the file path provided
  *
@@ -60,16 +88,36 @@ void save_net_to_onnx_file(Net *net, string path);
 size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gradients = false);
 
 // Returns a string containing the serialized model in Onnx
-std::string *serialize_net_to_onnx_string(Net *net, bool gradients = false);
+string *serialize_net_to_onnx_string(Net *net, bool gradients = false);
+
+
+// Optimizer exporters
+//---------------------
+
+void save_optimizer_to_onnx_file(Optimizer *optimizer, string path);
+
+size_t serialize_optimizer_to_onnx_pointer(Optimizer *optimizer, void *&serialized_optimizer);
+
+string *serialize_optimizer_to_onnx_string(Optimizer *optimizer);
+
+
+// Computing Service exporters
+//-----------------------------
+
+void save_compserv_to_onnx_file(CompServ *cs, string path);
+
+size_t serialize_compserv_to_onnx_pointer(CompServ *cs, void *&serialized_cs);
+
+string *serialize_compserv_to_onnx_string(CompServ *cs);
 
 
 // Distributed Module
 // ---------------------------------------------------------------------------------------
 
-void set_weights_from_onnx(Net *net, std::string *model_string);
+void set_weights_from_onnx(Net *net, string *model_string);
 void set_weights_from_onnx_pointer(Net *net, void *ptr_model, size_t model_size);
 
-void apply_grads_from_onnx(Net *net, std::string *model_string);
+void apply_grads_from_onnx(Net *net, string *model_string);
 void apply_grads_from_onnx_pointer(Net *net, void *ptr_onnx, size_t count);
 
 
