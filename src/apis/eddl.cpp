@@ -66,8 +66,8 @@ namespace eddl {
 
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
-        bool do_compserv_delete = false;
-        bool do_optimizer_delete = false;
+        bool do_compserv_delete = true;
+        bool do_optimizer_delete = true;
         if (cs == nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
             do_compserv_delete = true;
@@ -102,14 +102,14 @@ namespace eddl {
         }
 
         // Assign default computing service
-        bool do_compserv_delete = false;
+        bool do_compserv_delete = true;
         if (cs == nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
             do_compserv_delete = true;
         }
 
         // Assign default optimizer
-        bool do_optimizer_delete = false;
+        bool do_optimizer_delete = true;
         if (o == nullptr){
             o = new SGD(0.001,0.9);
             do_optimizer_delete = true;

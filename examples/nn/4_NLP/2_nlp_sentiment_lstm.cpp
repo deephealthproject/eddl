@@ -113,8 +113,7 @@ int main(int argc, char **argv) {
     delete x_test;
     delete y_test;
     delete net;
-    delete cs;
-    delete opt;
+
 
     return EXIT_SUCCESS;
 }

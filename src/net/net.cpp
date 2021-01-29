@@ -127,12 +127,10 @@ Net::~Net(){
     }
 
     // clean metrics and losses
-    // if (this->snets[0] != this) {
-        for (auto m : this->metrics) delete m;
-        this->metrics.clear();
-        for (auto m : this->losses) delete m;
-        this->losses.clear();
-    // }
+    for (auto m : this->metrics) delete m;
+    this->metrics.clear();
+    for (auto m : this->losses) delete m;
+    this->losses.clear();
 
     // clean device mem
     for(int i=0;i<snets.size();i++){
