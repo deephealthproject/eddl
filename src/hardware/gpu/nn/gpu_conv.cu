@@ -25,6 +25,35 @@
 void * shared_workspace=nullptr;
 size_t workspace_size=0;
 
+void my_get_fdescriptor(cudnnFilterDescriptor_t t, char * name){
+
+    cudnnDataType_t         dataType;
+    cudnnTensorFormat_t       format;
+    int                     n;
+    int                     c;
+    int                     h;
+    int                     w;
+    check_cudnn(cudnnGetFilter4dDescriptor(t, &dataType, &format, &n, &c, &h, &w));
+    std::cout<<name<<": ("<<dataType<<", "<<n<<", "<<c<<", "<<h<<", "<<w<<")"<<std::endl;
+}
+
+void my_get_descriptor(cudnnTensorDescriptor_t t, char * name){
+
+    cudnnDataType_t         dataType;
+    int                     n;
+    int                     c;
+    int                     h;
+    int                     w;
+    int                     nStride;
+    int                     cStride;
+    int                     hStride;
+    int                     wStride;
+    check_cudnn(cudnnGetTensor4dDescriptor(t, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride));
+    std::cout<<name<<": ("<<dataType<<", "<<n<<", "<<c<<", "<<h<<", "<<w<<", "<<nStride<<", "<<cStride<<", "<<hStride<<", "<<wStride<<")"<<std::endl;
+}
+
+
+
 int allocate_workspace(size_t size){
     if (size <= workspace_size){
         return 0;
@@ -126,8 +155,12 @@ void gpu_conv2D(ConvolDescriptor *D) {
       int aux_alg = 0;
       size_t size;
       do{
+  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error 2222 "<< cudnnGetErrorString(bbb) <<std::endl;
           D->fwd_algorithm = perfResults[aux_alg].algo;
-
+      //    std::cout<< "trying alg: "<<D->fwd_algorithm<<std::endl;
+      //    my_get_descriptor(D->xDesc,"xDesc");
+      //    my_get_descriptor(D->yDesc,"yDesc");
+      //    my_get_fdescriptor(D->wDesc,"wDesc");
           bbb =cudnnGetConvolutionForwardWorkspaceSize(D->cudnn_handle,D->xDesc, D->wDesc,
                                                               D->convolution_descriptor,  D->yDesc,
                                                               D->fwd_algorithm, &size);

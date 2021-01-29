@@ -79,7 +79,7 @@ void ConvolDescriptor::build(Tensor *A) {
     iz = A->shape[1];
     ir = A->shape[2];
     ic = A->shape[3];
-
+    
     if(this->padding=="custom"){  // Known padding
         // Compute output
         z = nk;
@@ -108,11 +108,11 @@ void ConvolDescriptor::build(Tensor *A) {
         // Set padding
         pad = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right
     }
-
     padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
     padcl = pad[2]; padcr = pad[3];  // cols: left-right
     //for(int i = 0; i< pad.size();i++)
     //std::cout<<"PADING "<< pad[i] <<std::endl;
+
     if ((r <= 0) || (c <= 0)) {
         cout<<"rows="<<r<<" cols"<<c<<endl;
         msg("Invalid output shape", "ConvolDescriptor::build");
@@ -182,18 +182,22 @@ void ConvolDescriptor::build(Tensor *A) {
                                     stride[0], stride[1],
                                     1,1,
                                     convolution_mode, data_type);
+   //std::cout<<"ConvDesc"<<pad[0]<<" "<<pad[2]<< " "<<stride[0]<<" "<< stride[1]<<" 1 1"<<std::endl;
    //Descriptor for Input data
    cudnnCreateTensorDescriptor(&xDesc);
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  in,iz,ir,ic);
+   //std::cout<<"xDesc"<<in<<" "<<iz<< " "<<ir<<" "<< ic<<std::endl;
    // Descriptor for kerneks
    //std::cout<<"xDesc ("<<in<<","<< iz<<","<< ir<<","<< ic << std::endl;
    cudnnCreateFilterDescriptor(&wDesc);
    cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
+   //std::cout<<"wDesc"<<nk<<" "<<kz<< " "<<kr<<" "<< kc<<std::endl;
    //std::cout<<"wDesc ("<<nk<<","<< kz<<","<< kr<<","<< kc << std::endl;
    // Descriptor for output
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
+   //std::cout<<"yDesc"<<in<<" "<<z<< " "<<r<<" "<< c<<std::endl;
    //std::cout<<"yDesc ("<<in<<","<< z<<","<< r<<","<< c << std::endl;
    //Descriptor for bias
    cudnnCreateTensorDescriptor(&bDesc);
