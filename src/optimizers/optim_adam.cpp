@@ -25,14 +25,15 @@ Adam::Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_dec
     this->amsgrad = amsgrad;
 
     t=0;
-
 }
 
-Adam::~Adam() { 
-    for(int i=0; i<mT.size(); i++){ delete mT[i]; }
-    for(int i=0; i<vT.size(); i++){ delete vT[i]; }
-    for(int i=0; i<mCap.size(); i++){ delete mCap[i]; }
-    for(int i=0; i<vCap.size(); i++){ delete vCap[i]; }
+Adam::~Adam() {
+    if (! this->isshared) {
+        for(int i=0; i<mT.size(); i++){ delete mT[i]; }
+        for(int i=0; i<vT.size(); i++){ delete vT[i]; }
+        for(int i=0; i<mCap.size(); i++){ delete mCap[i]; }
+        for(int i=0; i<vCap.size(); i++){ delete vCap[i]; }
+    }
 }
 
 void Adam::change(vector<float> p) {
@@ -43,7 +44,7 @@ void Adam::change(vector<float> p) {
 Optimizer *Adam::clone() {
     Adam *n=new Adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
     n->clip_val=clip_val;
-    
+
     return n;
 }
 Optimizer *Adam::share() {
@@ -54,7 +55,9 @@ Optimizer *Adam::share() {
     return n;
 }
 void Adam::setlayers(vlayer l) {
-    layers = l;
+    //layers = l;
+    layers.clear();
+    for (auto _ : l) layers.push_back(_);
 
     if (isshared) return;
 
@@ -101,7 +104,7 @@ void Adam::applygrads(int batch) {
             Tensor::add(-lr, mCap[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
 
             // Distributed training: Accumulation of gradients
-            if (layers[i]->acc_gradients.size() > 0) 
+            if (layers[i]->acc_gradients.size() > 0)
               Tensor::add(-lr, mCap[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
         }
     }

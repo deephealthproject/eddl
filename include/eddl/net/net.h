@@ -42,7 +42,7 @@ class Net {
 private:
     void make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
 
-    void set_compserv(CompServ *cs);
+    void set_compserv(CompServ *cs, bool do_compserv_delete);
 
 public:
     string name;
@@ -62,6 +62,7 @@ public:
 
     vector<int> devsel;
     CompServ *cs;
+    bool do_compserv_delete;
 
     vlayer layers;
     vlayer lin;
@@ -80,6 +81,7 @@ public:
     FILE *flog_ts;
 
     Optimizer *optimizer;
+    bool do_optimizer_delete;
     vector<Net *> snets;
     Net* rnet;
 
@@ -91,7 +93,10 @@ public:
     ~Net();
 
 
-    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);
+    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs,
+               bool initialize = true,
+               bool do_optimizer_delete = true,
+               bool do_compserv_delete = false);
     void toGPU(vector<int> g,int lsb,int mem);
     void toCPU(int t);
 
