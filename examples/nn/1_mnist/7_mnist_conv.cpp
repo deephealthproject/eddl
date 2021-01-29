@@ -55,9 +55,9 @@ int main(int argc, char **argv) {
           rmsprop(0.001), // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
 	  //CS_FPGA({1})
     );
 
@@ -80,4 +80,11 @@ int main(int argc, char **argv) {
     // Evaluate
     evaluate(net, {x_test}, {y_test});
 
+    delete x_train;
+    delete y_train;
+    delete x_test;
+    delete y_test;
+    delete net;
+
+    return EXIT_SUCCESS;
 }

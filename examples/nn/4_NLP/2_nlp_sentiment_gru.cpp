@@ -117,8 +117,8 @@ int main(int argc, char **argv) {
     delete x_test;
     delete y_test;
     delete net;
-    delete cs;
-    delete opt;
+    //delete cs; -- Net object is in charge of free the memory
+    //delete opt; -- Net object is in charge of free the memory
 
     return EXIT_SUCCESS;
 }

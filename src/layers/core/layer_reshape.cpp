@@ -82,6 +82,14 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
 }
 
 LReshape::~LReshape(){
+    if (output != nullptr) {
+        output->ptr = nullptr; // because the memory block of the tensor comes from the parent layer.
+        delete output;
+    }
+    if (delta != nullptr) {
+        delta->ptr = nullptr; // because the memory block of the tensor comes from the parent layer.
+        delete delta;
+    }
     output=delta=nullptr;
 }
 
