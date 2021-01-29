@@ -139,6 +139,7 @@ void ConvolDescriptor::build(Tensor *A) {
     }
 #ifdef cGPU
     else if (I->isGPU()) {
+#ifndef cCUDNN
         if (mem_level>1) {
             // Lowering
             gpuIB=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
@@ -149,6 +150,7 @@ void ConvolDescriptor::build(Tensor *A) {
             if (mem_level==0)
                 gpuOB=new Tensor(vector<int>{z,A->shape[0]*r*c}, I->device);
         }
+#endif
         // Tensor with variable shared ptr, delete create ptr
         gpuI=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpuI->ptr);
@@ -233,13 +235,15 @@ void ConvolDescriptor::resize(int b)
     }
 #ifdef cGPU
     else if (I->isGPU()) {
-        if (mem_level<2)
+#ifndef cCUDNN  
+      if (mem_level<2)
             gpuIB->resize(b*r*c);
         if (mem_level==0) {
             delete gpuOB;
             gpuOB=new Tensor(vector<int>{z,b*r*c}, I->device);
         }
-    }
+#endif
+    
 #ifdef cCUDNN
        //Descriptor for Input data
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
@@ -252,6 +256,7 @@ void ConvolDescriptor::resize(int b)
    //std::cout<<"yDesc ("<<O->shape[0]<<","<< O->shape[1]<<","<< O->shape[2]<<","<< O->shape[3] << std::endl;
 
 #endif
+} 
 #endif
 
 #ifdef cFPGA
