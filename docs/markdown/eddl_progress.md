@@ -187,7 +187,7 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | ONNX | Comments |
 | ------------- |------| -----| ------|---------|
-| GRU | 🔴️ | 🔴️ | 🔴️ | Gated Recurrent Unit - Cho et al. 2014. |
+| GRU | 🟢️️ | 🟢️️ | 🔴️ | Gated Recurrent Unit - Cho et al. 2014. |
 | LSTM | 🟢️️ | 🟢️️ | 🟢️️ | Long Short-Term Memory layer - Hochreiter 1997. |
 | RNN | 🟢️️ | 🟢️️ | 🔴️ | Fully-connected RNN where the output is to be fed back to input. |
 
