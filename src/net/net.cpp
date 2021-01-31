@@ -64,6 +64,8 @@ Net::Net() {
     isencoder=false;
     isrecurrent=false;
     decsize=1;
+    do_compserv_delete = true;
+    do_optimizer_delete = true;
 }
 
 Net::Net(vlayer in, vlayer out):Net() {
@@ -113,24 +115,22 @@ Net::~Net(){
 
     // delete optimizer
     for(int i=0;i<snets.size();i++){
-        if (snets[i]->optimizer!=nullptr){
+        if (snets[i]->optimizer!=nullptr && snets[i]->do_optimizer_delete){
             delete snets[i]->optimizer;
         }
     }
 
-    if (snets[0]!=this){
-        if (optimizer!=nullptr){
-            delete optimizer;
+    if (snets[0] != this){
+        if (this->optimizer != nullptr && this->do_optimizer_delete){
+            delete this->optimizer;
         }
     }
 
     // clean metrics and losses
-    // if (this->snets[0] != this) {
-        for (auto m : this->metrics) delete m;
-        this->metrics.clear();
-        for (auto m : this->losses) delete m;
-        this->losses.clear();
-    // }
+    for (auto m : this->metrics) delete m;
+    this->metrics.clear();
+    for (auto m : this->losses) delete m;
+    this->losses.clear();
 
     // clean device mem
     for(int i=0;i<snets.size();i++){
@@ -152,7 +152,10 @@ Net::~Net(){
 
     if (rnet!=nullptr) { delete rnet; rnet = nullptr;}
 
-    if (this->cs != nullptr) { delete this->cs; this->cs = nullptr; }
+    if (this->do_compserv_delete && this->cs != nullptr) {
+        delete this->cs;
+        this->cs = nullptr;
+    }
 }
 
 

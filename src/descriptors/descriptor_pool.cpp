@@ -91,8 +91,8 @@ void PoolDescriptor::build(Tensor *A) {
         msg("Invalid output shape", "PoolDescriptor::build");
     }
 
-    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-//    if (!mem_level) { D = new Tensor(O->shape, A->device); }
+    this->O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
+//    if (!mem_level) { D = new Tensor(this->O->shape, A->device); }
 
 
     // Careful with the "size++" not "useless loop"
@@ -103,9 +103,9 @@ void PoolDescriptor::build(Tensor *A) {
 }
 
 void PoolDescriptor::resize(int b) {
-  if (b == O->shape[0]) return;
+  if (b == this->O->shape[0]) return;
 
-  O->resize(b);
+  this->O->resize(b);
 //  if (!mem_level) { D->resize(b); }
 }
 

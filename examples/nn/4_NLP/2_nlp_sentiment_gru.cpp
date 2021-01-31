@@ -26,6 +26,13 @@ int main(int argc, char **argv) {
     // Download Imdb
     download_imdb_2000();
 
+    bool testing = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) {
+            testing = true;
+        }
+    }
+
     // Settings
     int epochs = 10;
     int batch_size = 32;
@@ -49,17 +56,21 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
-    optimizer opt=adam(0.001);
+    //optimizer opt = sgd(0.001);
+    //optimizer opt = rmsprop(0.001);
+    optimizer opt = adam(0.001);
     //opt->set_clip_val(0.01);
+
+    compserv cs = CS_CPU();
+    //compserv cs = CS_GPU({1}); // one GPU
+    //compserv cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
 
     // Build model
     build(net,
           opt, // Optimizer
           {"binary_cross_entropy"}, // Losses
           {"binary_accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
-          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          cs
     );
 
     // View model
@@ -78,16 +89,17 @@ int main(int argc, char **argv) {
     y_train->reshape_({y_train->shape[0], 1, 1}); //batch x timesteps x input_dim
     y_test->reshape_({y_test->shape[0], 1, 1}); //batch x timesteps x input_dim
 
-/*
-    Tensor* x_mini_train = x_train->select({"0:64", ":", ":"});
-    Tensor* y_mini_train = y_train->select({"0:64", ":", ":"});
-    Tensor* x_mini_test  = x_test->select({"0:64", ":", ":"});
-    Tensor* y_mini_test  = y_test->select({"0:64", ":", ":"});
-*/
     Tensor* x_mini_train = x_train;
     Tensor* y_mini_train = y_train;
     Tensor* x_mini_test  = x_test;
     Tensor* y_mini_test  = y_test;
+    if (testing) {
+        x_mini_train = x_train->select({"0:64", ":", ":"});
+        y_mini_train = y_train->select({"0:64", ":", ":"});
+        x_mini_test  = x_test->select({"0:64", ":", ":"});
+        y_mini_test  = y_test->select({"0:64", ":", ":"});
+        epochs = 2;
+    }
 
 
     // Train model
@@ -105,6 +117,8 @@ int main(int argc, char **argv) {
     delete x_test;
     delete y_test;
     delete net;
+    //delete cs; -- Net object is in charge of free the memory
+    //delete opt; -- Net object is in charge of free the memory
 
     return EXIT_SUCCESS;
 }

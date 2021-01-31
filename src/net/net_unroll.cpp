@@ -506,7 +506,7 @@ void Net::build_rnet(int inl,int outl) {
    for(i=0;i<this->metrics.size();i++) mr.push_back(this->metrics[i]->clone());
 
 
-   rnet->build(optimizer->share(),lr,mr,cs->share(),false);
+   rnet->build(optimizer->share(), lr, mr, cs->share(), false, true, true);
 
    rnet->plot("rmodel.pdf","LR");
    rnet->name="rnet";

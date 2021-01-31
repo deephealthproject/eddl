@@ -71,7 +71,21 @@ LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int m
 
 
 LConv1D::~LConv1D(){
-    delete cd;  
+    delete input_reshaped;
+    input_reshaped = nullptr;
+
+    // deleting cd->O later in this method can drive to double delete/free 
+    Tensor *O_temp = cd->O;
+
+    // deleting cd->D here can drive to double delete/free 
+    if (cd->D != nullptr) delete cd->D;
+    cd->D = nullptr;
+
+    delete cd;
+    cd = nullptr;
+
+    // TODO check where is the proper place to delete/free cd->O
+    if (O_temp != nullptr) delete O_temp;
 }
 
 // virtual
@@ -94,6 +108,7 @@ void LConv1D::mem_delta(){
         // Show delta with the output shape of the Conv1D
         delta = Tensor::zeros(output->shape, output->device);
         // Reshape delta for convol descriptor
+        if (cd->D != nullptr) delete cd->D;
         cd->D = new Tensor(cd->O->shape, delta);
 
         if(this->verbosity_level >= 2) {

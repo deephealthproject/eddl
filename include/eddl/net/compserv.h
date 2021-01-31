@@ -22,6 +22,7 @@ public:
     string type;
 
 
+    int threads_arg; // The value passed to the constructor
     int local_threads;
     vector<int> local_gpus;
     vector<int> local_fpgas;

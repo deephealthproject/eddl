@@ -116,7 +116,7 @@ void Net::toCPU(int t){
 
     snets.clear();
 
-    set_compserv(cs);
+    set_compserv(cs, true);
 }
 
 void Net::toGPU(vector<int> g,int lsb,int mem){
@@ -131,10 +131,11 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 
     snets.clear();
 
-    set_compserv(cs);
+    set_compserv(cs, true);
 }
 
-void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
+void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs,
+                bool initialize, bool do_optimizer_delete, bool do_compserv_delete){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 
   if (isbuild) return;
@@ -148,11 +149,11 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
   }
 
   make_graph(opt, lo, me, initialize);
+  this->do_optimizer_delete = do_optimizer_delete;
 
-  set_compserv(cs);
+  set_compserv(cs, do_compserv_delete);
 
   isbuild=true;
-
 }
 
 
@@ -179,8 +180,8 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
         layers[i]->verbosity_level = this->verbosity_level;
     }
     // set optimizer
-    optimizer = opt;
-    optimizer->setlayers(layers);
+    this->optimizer = opt;
+    this->optimizer->setlayers(layers);
 
     // set loss functions and create targets tensors
     if ((isdecoder)||(isencoder)) {
@@ -214,9 +215,10 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if(initialize) do_initialize();
 }
 
-void Net::set_compserv(CompServ *cs){
+void Net::set_compserv(CompServ *cs, bool do_compserv_delete){
     int todev;
-    this->cs=cs;
+    this->cs = cs;
+    this->do_compserv_delete = do_compserv_delete;
 
     mem_level=cs->mem_level;
     for(int i=0;i<layers.size();i++)

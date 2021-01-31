@@ -118,7 +118,10 @@ if(BUILD_PROTOBUF)
     target_link_libraries(onnx_export eddl)
 
     add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
-    target_link_libraries(onnx_import eddl)
+		target_link_libraries(onnx_import eddl)
+
+    add_executable(utils_serialization "onnx/4_utils_serialization.cpp")
+    target_link_libraries(utils_serialization eddl)
 
     add_executable(onnx_gradients "onnx/4_onnx_test_gradients.cpp")
     target_link_libraries(onnx_gradients eddl)

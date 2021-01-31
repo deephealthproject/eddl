@@ -66,14 +66,18 @@ namespace eddl {
 
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
+        bool do_compserv_delete = true;
+        bool do_optimizer_delete = true;
         if (cs == nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
+            do_compserv_delete = true;
         }
         if (o == nullptr){
             o = new SGD(0.001,0.9);
+            do_optimizer_delete = true;
         }
 
-        net->build(o, {}, {}, cs, init_weights);
+        net->build(o, {}, {}, cs, init_weights, do_optimizer_delete, do_compserv_delete);
     }
 
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs, bool init_weights){
@@ -98,11 +102,20 @@ namespace eddl {
         }
 
         // Assign default computing service
+        bool do_compserv_delete = true;
         if (cs == nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
+            do_compserv_delete = true;
         }
 
-        net->build(o, l, m, cs, init_weights);
+        // Assign default optimizer
+        bool do_optimizer_delete = true;
+        if (o == nullptr){
+            o = new SGD(0.001,0.9);
+            do_optimizer_delete = true;
+        }
+
+        net->build(o, l, m, cs, init_weights, do_optimizer_delete, do_compserv_delete);
 
         // do not free the objects pointed to by the elements of the following
         // vectors, but clean the internal data structure of these vectors
