@@ -133,13 +133,15 @@ void LLSTM::mem_delta(){
 }
 
 void LLSTM::free_delta(){
-    if (delta != nullptr){
+    if (this->delta != nullptr){
         // The Tensor destructor takes into account the device details
-        delete delta;
-        delta = nullptr;  // Ensure nullptr
+        delete this->delta;
+        this->delta = nullptr;  // Ensure nullptr
 
-        delete delta_c;
-        delta_c=nullptr;
+        delete this->delta_c;
+        this->delta_c = nullptr;
+
+        delta_states.clear();
 
         if(this->verbosity_level >= 2){
             std::cout << "Deleted delta for: " + this->name << std::endl;

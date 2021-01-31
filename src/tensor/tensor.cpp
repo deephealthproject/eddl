@@ -144,6 +144,7 @@ void Tensor::updateStrides() {
 
 void Tensor::deleteData(){
     // Carefpdal, you can't know is a pointer is allocated
+//fprintf(stderr, "control passed %s(%d) %p %p %p \n", __FILE__, __LINE__, this, this->ptr, this->ptr2);
     if (isshared) {
         if (/*this->isCPU() && this->ndim == 2 &&*/ this->ptr2 != nullptr) {
             delete this->ptr2;
@@ -221,7 +222,6 @@ void Tensor::updateData(float *fptr, void *fptr2, bool setshared){
         // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
         if (fptr == nullptr) { this->ptr = gpu_create_tensor(this->gpu_device, this->size); }
         else { this->ptr = fptr; isshared=setshared;}
-
     }
 #endif
 #ifdef cFPGA
@@ -361,7 +361,8 @@ void Tensor::toGPU(int dev){
 
         this->ptr = gpu_ptr;
         gpu_copy_to_gpu(cpu_ptr, this);
-        delete []cpu_ptr;
+        // delete [] cpu_ptr;
+        free(cpu_ptr); // because currently memory for tensor data is allocated by means of posix_memalign()
         if (/*this->ndim == 2 &&*/ this->ptr2 != nullptr){
             delete this->ptr2;
             this->ptr2 = nullptr;
