@@ -95,8 +95,8 @@ int main(int argc, char **argv) {
   int batch_size = 100;
   int num_classes = 10;
   // Define how to serialize the optimizer and compserv
-  int opt_serialization = SERIALIZE::STRING;
-  int cs_serialization = SERIALIZE::STRING;
+  int opt_serialization = SERIALIZE::PTR; // SERIALIZE::STRING;
+  int cs_serialization = SERIALIZE::PTR; // SERIALIZE::STRING;
 
   optimizer opt = adam(0.001);
   //compserv cs = CS_GPU({1}, "full_mem");
@@ -151,6 +151,7 @@ int main(int argc, char **argv) {
 
     opt2 = import_optimizer_from_onnx_pointer(opt_ptr, opt_size);
     cout << "Optimizer imported!" << endl;
+    delete [] (char *)opt_ptr; // check how memory is allocated in serialize_optimizer_to_onnx_pointer()
   } break;
   case SERIALIZE::STRING: {
     string *opt_str = serialize_optimizer_to_onnx_string(opt);
@@ -158,6 +159,7 @@ int main(int argc, char **argv) {
 
     opt2 = import_optimizer_from_onnx_string(opt_str);
     cout << "Optimizer imported!" << endl;
+    delete opt_str;
   } break;
   default:
     cout << "\nThe optimizer serialization type is not valid!" << endl;
@@ -183,6 +185,7 @@ int main(int argc, char **argv) {
 
     cs2 = import_compserv_from_onnx_pointer(cs_ptr, cs_size);
     cout << "Compserv imported!" << endl;
+    delete [] (char *)cs_ptr; // check how memory is allocated in serialize_compserv_to_onnx_pointer()
   } break;
   case SERIALIZE::STRING: {
     string *cs_str = serialize_compserv_to_onnx_string(cs);
@@ -190,6 +193,7 @@ int main(int argc, char **argv) {
 
     cs2 = import_compserv_from_onnx_string(cs_str);
     cout << "Compserv imported!" << endl;
+    delete cs_str;
   } break;
   default:
     cout << "\nThe compserv serialization type is not valid!" << endl;
@@ -216,6 +220,13 @@ int main(int argc, char **argv) {
 
   // Evaluate
   evaluate(net2, {x_test}, {y_test}, batch_size);
+
+  delete x_train;
+  delete y_train;
+  delete x_test;
+  delete y_test;
+  delete net;
+  delete net2;
 
   return 0;
 }
