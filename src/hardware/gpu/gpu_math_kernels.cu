@@ -387,3 +387,68 @@ __global__ void gpu_minimum(float* A, float* B, float* C, long int size){
         C[thread_id_x] = min(A[thread_id_x], B[thread_id_x]);
     }
  }
+
+// new batchnorm implementation
+
+__global__ void gpu_batchnorm_forward_1(int b, int rc, int rcz, float *input, float *mean, float *variance)
+{
+    // for (int k = 0; k < rcz; k += batch_norm_block_size)
+    int k = blockIdx.x * batch_norm_block_size + threadIdx.x;
+    if (k < rcz) {
+        int j = k / rc;
+        float m = 0, v = 0;
+        for (int i = 0, p = k; i < b; i++, p += rcz) {
+            // for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
+            float x = input[p];
+            m += x;
+            v += x * x;
+        }
+        atomicAdd(mean + j, m);
+        atomicAdd(variance + j, v);
+    }
+}
+
+__global__ void gpu_batchnorm_forward_2(int z, float inv_N, float *mean, float *variance, float momentum, float *global_mean, float *global_variance, float epsilon)
+{
+    // for (int j = 0; j < z; j++) {
+    int j = blockIdx.x * batch_norm_block_size + threadIdx.x;
+    if (j < z) {
+        mean[j] = mean[j] * inv_N;
+        variance[j] = variance[j] * inv_N - mean[j] * mean[j];
+        // update global statistics
+        if (momentum != 0.0) {
+            global_mean[j] = momentum * global_mean[j] + (1.0 - momentum) * mean[j];
+            global_variance[j] = momentum * global_variance[j] + (1.0 - momentum) * variance[j];
+        }
+        variance[j] = 1.0 / sqrt(variance[j] + epsilon);
+    }
+}
+
+__global__ void gpu_batchnorm_forward_2b(int z, float *variance, float *global_variance, float epsilon)
+{
+    // for (int j = 0; j < z; j++) {
+    int j = blockIdx.x * batch_norm_block_size + threadIdx.x;
+    if (j < z) {
+        variance[j] = 1.0 / sqrt(global_variance[j] + epsilon);
+    }
+}
+
+__global__ void gpu_batchnorm_forward_3(int b, int rc, int rcz, float *input, float *mean, float *variance, float *affine_g, float *affine_b, float *opa, float *output)
+{
+    // for (int k = 0; k < rcz; k += batch_norm_block_size)
+    int k = blockIdx.x * batch_norm_block_size + threadIdx.x;
+    if (k < rcz) {
+        int j = k / rc;
+        float m = mean[j];
+        float v = variance[j];
+        for (int i = 0, p = k; i < b; i++, p += rcz) {
+            // for (int l = 0; l < batch_norm_block_size && k + l < rcz; l++, p++) {
+            float o = (input[p] - m) * v;
+            // affine transformation
+            if (affine_g != NULL) {
+                output[p] = opa[p] * affine_g[j] + affine_b[j];
+                opa[p] = input[p];
+            } else output[p] = o;
+        }
+    }
+}

@@ -700,3 +700,61 @@ float cpu_median(float *ptr, int size, int *map) {
     return median;
 }
 
+void cpu_batchnorm_forward(int b, int z, int rc,
+        float *input, float *output, float *opa,
+        float *global_mean, float *global_variance,
+        float *affine_g, float *affine_b,
+        float *mean, float *variance,
+        bool trmode, float epsilon, float momentum)
+{
+    const int block_size = 256;
+    int rcz = rc * z;
+    if (trmode) {
+        // compute mean and variance
+        for (int j = 0; j < z; j++) mean[j] = variance[j] = 0.0;
+        #pragma omp parallel for
+        for (int k = 0; k < rcz; k += block_size)
+            for (int i = 0; i < b; i++) {
+                int p = k + i * rcz;
+                for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
+                    int j = (k + l) / rc;
+                    mean[j] += input[p];
+                    variance[j] += input[p] * input[p];
+                }
+            }
+        float N = b * rc;
+        #pragma omp parallel for
+        for (int j = 0; j < z; j++) {
+            mean[j] = mean[j] / N;
+            variance[j] = variance[j] / N - mean[j] * mean[j];
+            // update global statistics
+            if (momentum != 0.0) {
+                global_mean[j] = momentum * global_mean[j] + (1.0 - momentum) * mean[j];
+                global_variance[j] = momentum * global_variance[j] + (1.0 - momentum) * variance[j];
+            }
+            variance[j] = sqrt(variance[j] + epsilon);
+        }
+    } else {
+        // just update variance
+        mean = global_mean;
+        #pragma omp parallel for
+        for (int j = 0; j < z; j++) {
+            variance[j] = sqrt(global_variance[j] + epsilon);
+        }
+    }
+    // normalization
+    #pragma omp parallel for
+    for (int k = 0; k < rcz; k += block_size)
+        for (int i = 0; i < b; i++) {
+            int p = k + i * rcz;
+            for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
+                int j = (k + l) / rc;
+                float o = (input[p] - mean[j]) / variance[j];
+                // affine transformation
+                if (affine_g != NULL) {
+                    opa[p] = o;
+                    output[p] = o * affine_g[j] + affine_b[j];
+                } else output[p] = o;
+            }
+        }
+}

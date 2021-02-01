@@ -15,6 +15,8 @@
 #include "eddl/layers/normalization/layer_normalization.h"
 #include "eddl/layers/reductions/layer_reductions.h"
 #include "eddl/layers/operators/layer_operators.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/hardware/gpu/gpu_hw.h"
 
 using namespace std;
 
@@ -100,76 +102,43 @@ void LBatchNorm::resize(int batch){
     }
 }
 
-void cpu_batchnorm_forward(int b, int z, int rc,
-        float *input, float *output, float *opa,
-        float *global_mean, float *global_variance,
-        float *affine_g, float *affine_b,
-        float *mean, float *variance,
-        bool trmode, float epsilon, float momentum)
-{
-    const int block_size = 256;
-    int rcz = rc * z;
-    if (trmode) {
-        // compute mean and variance
-        for (int j = 0; j < z; j++) mean[j] = variance[j] = 0.0;
-        for (int k = 0; k < rcz; k += block_size)
-            for (int i = 0; i < b; i++) {
-                int p = k + i * rcz;
-                for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
-                    int j = (k + l) / rc;
-                    mean[j] += input[p];
-                    variance[j] += input[p] * input[p];
-                }
-            }
-        float N = b * rc;
-        for (int j = 0; j < z; j++) {
-            mean[j] = mean[j] / N;
-            variance[j] = variance[j] / N - mean[j] * mean[j];
-            // update global statistics
-            if (momentum != 0.0) {
-                global_mean[j] = momentum * global_mean[j] + (1.0 - momentum) * mean[j];
-                global_variance[j] = momentum * global_variance[j] + (1.0 - momentum) * variance[j];
-            }
-            variance[j] = sqrt(variance[j] + epsilon);
-        }
-    } else {
-        // TODO
-    }
-    // normalization
-    for (int k = 0; k < rcz; k += block_size)
-        for (int i = 0; i < b; i++) {
-            int p = k + i * rcz;
-            for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
-                int j = (k + l) / rc;
-                float o = (input[p] - mean[j]) / variance[j];
-                // affine transformation
-                if (affine_g != NULL) {
-                    opa[p] = o;
-                    output[p] = o * affine_g[j] + affine_b[j];
-                } else output[p] = o;
-            }
-        }
-}
-
-float maxerror(int size, float *a, float *b)
-{
-    float maxerror = 0.0;
-    for (int i = 0; i < size; i++) {
-        float diff = fabs(a[i] - b[i]); // / fabs(a[i]);
-        if (diff > 1e-3) {
-            printf("[%d] %e %e\n", i, a[i], b[i]);
-        }
-        if (diff > maxerror) maxerror = diff;
-    }
-    return maxerror;
-}
-
 // Batchnorm works over 2D Tensors
 // Essentialy 4D Tensors are reshaped as 2D and
 // Permute 4D tensors and set N,M values.
 void LBatchNorm::forward() {
     // Input = Output = opa = {Batch,Channels,H,W} OR {Batch,Dim}
     // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
+
+    if (input->isCPU() || input->isGPU()) {
+
+        // new implementation for CPU / GPU
+        Tensor *opa_perm = input->clone();
+        if (input->isCPU()) {
+            cpu_batchnorm_forward(input->shape[0], input->shape[1],
+                input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
+                input->ptr, output->ptr, opa_perm->ptr,
+                mean->ptr, variance->ptr,
+                affine ? bn_g->ptr : NULL,
+                affine ? bn_b->ptr : NULL,
+                bn_mean->ptr, bn_var->ptr, mode == TRMODE, epsilon, momentum);
+        } else {
+            gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],
+                input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
+                input->ptr, output->ptr, opa_perm->ptr,
+                mean->ptr, variance->ptr,
+                affine ? bn_g->ptr : NULL,
+                affine ? bn_b->ptr : NULL,
+                bn_mean->ptr, bn_var->ptr, mode == TRMODE, epsilon, momentum);
+        }
+        if (input->ndim == 4) {
+            tensorNN::permute_channels_last(opa_perm, opa);
+            int M = input->shape[1];
+            int N = input->shape[0] * input->shape[2] * input->shape[3];
+            opa->reshape_({N, M});
+        } else Tensor::copy(opa_perm, opa);
+        delete opa_perm;
+
+    } else {
 
     int M,N;
     int b,z,r,c,d;
@@ -191,16 +160,6 @@ void LBatchNorm::forward() {
         tensorNN::permute_channels_last(input,in);
         in->reshape_({N,M});
         opa->reshape_({N,M});
-    }
-
-    float *global_mean, *global_variance;
-    if (input->isCPU()) {
-        global_mean = new float[M];
-        global_variance = new float[M];
-        for (int j = 0; j < M; j++) {
-            global_mean[j] = mean->ptr[j];
-            global_variance[j] = variance->ptr[j];
-        }
     }
 
     BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
@@ -228,34 +187,6 @@ void LBatchNorm::forward() {
 
     delete in;
 
-    if (input->isCPU()) { // new implementation for cpu
-        float *output2 = new float[N * M];
-        float *opa2 = new float[N * M];
-        Tensor *opa_perm = input->clone();
-        if (input->ndim == 4) tensorNN::permute_channels_first(opa, opa_perm);
-        else Tensor::copy(opa, opa_perm);
-        float *mean2 = new float[M];
-        float *variance2 = new float[M];
-        cpu_batchnorm_forward(input->shape[0], input->shape[1],
-            input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
-            input->ptr, output2, opa2,
-            global_mean, global_variance,
-            affine ? bn_g->ptr : NULL,
-            affine ? bn_b->ptr : NULL,
-            mean2, variance2, mode == TRMODE, epsilon, momentum);
-        printf("M=%d N=%d ", M, N);
-        printf("Output %e ", maxerror(N * M, output2, output->ptr));
-        printf("Opa %e ", maxerror(N * M, opa2, opa_perm->ptr));
-        printf("Mean %e ", maxerror(M, mean2, bn_mean->ptr));
-        printf("Variance %e ", maxerror(M, variance2, bn_var->ptr));
-        printf("Gmean %e ", maxerror(M, global_mean, mean->ptr));
-        printf("Gvariance %e\n", maxerror(M, global_variance, variance->ptr));
-        delete output2;
-        delete mean2;
-        delete variance2;
-        delete opa2;
-        delete global_mean;
-        delete global_variance;
     }
 }
 
