@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     int batch_size = 32;
 
     int length=250;
-    int embdim=32;
+    int embdim=33;
     int vocsize= 2000;
 
     // Define network
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     layer lE = RandomUniform(Embedding(l, vocsize, 1,embdim),-0.05,0.05);
 
-    l = RNN(lE,32);
+    l = RNN(lE,37);
     l = ReLu(Dense(l,256));
 
 
@@ -87,4 +87,10 @@ int main(int argc, char **argv) {
 
     delete net;
 
+    delete x_train;
+    delete y_train;
+    delete x_test;
+    delete y_test;
+
+    return EXIT_SUCCESS;
 }
