@@ -60,8 +60,7 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
 ConvolDescriptor::~ConvolDescriptor(){
     // input, output, delta, params[], and gradients[], acc_gradients[] => deleted in ~Layer()
     if (O->isCPU()) {
-        //delete[] ptrI;
-        free(ptrI); // because get_fmem() now uses posix_memalign()
+        eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
     }
 #ifdef cGPU
     else if (O->isGPU()) {
@@ -208,8 +207,7 @@ void ConvolDescriptor::resize(int b)
     unsigned long int l_size =  (unsigned long)(b * r * c) * (unsigned long)(kr * kc * kz);
 
     if (I->isCPU()) {
-        //delete[] ptrI;
-        free(ptrI); // because get_fmem() now uses posix_memalign()
+        eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
         ptrI=get_fmem(l_size, "ConvolDescriptor::build");
 	   _profile_add_tensor(l_size);
     }
@@ -231,8 +229,7 @@ void ConvolDescriptor::resize(int b)
 	fpga_sizeI = l_size * sizeof(float);
         fpga_ptrI = fpga_create_memory(fpga_sizeI);
         // We do the same on the CPU side (for smooth cpuemu)
-	    //delete[] ptrI;
-        free(ptrI); // because get_fmem() now uses posix_memalign()
+        eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
         ptrI=get_fmem(l_size, "ConvolDescriptor::build");
     }
 #endif

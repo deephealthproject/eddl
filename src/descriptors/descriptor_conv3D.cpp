@@ -60,7 +60,7 @@ ConvolDescriptor3D::ConvolDescriptor3D(int filters, const vector<int> &ks, const
 ConvolDescriptor3D::~ConvolDescriptor3D(){
     // input, output, delta, params[], and gradients[], acc_gradients[] => deleted in ~Layer()
     if (O->isCPU()) {
-        delete[] ptrI;
+        eddl_free(ptrI);
     }
 #ifdef cGPU
     else if (O->isGPU()) {
@@ -226,7 +226,7 @@ void ConvolDescriptor3D::resize(int b)
     unsigned long int l_size =  (unsigned long)(b * d * r * c) * (unsigned long)(kz * kd * kr * kc);
 
     if (I->isCPU()) {
-        delete[] ptrI;
+        eddl_free(ptrI);
         ptrI=get_fmem(l_size, "ConvolDescriptor3D::build");
 	   _profile_add_tensor(l_size);
     }
@@ -248,7 +248,7 @@ void ConvolDescriptor3D::resize(int b)
 	fpga_sizeI = l_size * sizeof(float);
         fpga_ptrI = fpga_create_memory(fpga_sizeI);
         // We do the same on the CPU side (for smooth cpuemu)
-	delete[] ptrI;
+	    eddl_free(ptrI);
         ptrI=get_fmem(l_size, "ConvolDescriptor3D::build");
     }
 #endif

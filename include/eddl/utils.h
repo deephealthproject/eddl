@@ -18,6 +18,10 @@ using namespace std;
 
 void msg(const string& text, const string& title="");
 
+void * eddl_malloc(size_t size, const string & str_info = "");
+
+void eddl_free(void * ptr);
+
 float *get_fmem(unsigned long int size, const string &str);
 
 string bytes2human(unsigned long long int bytes, int decimals=2);

@@ -33,7 +33,7 @@ int * get_reduction_map(Tensor *A, vector<int> axis)
   if (axis.size()>=A->ndim)
     msg("axis must be lower than tensor dim","get_reduction_map");
 
-  redmap=(int *)malloc(A->size*sizeof(int));
+  redmap=(int *)eddl_malloc(A->size*sizeof(int));
 
   if (redmap==nullptr)
     msg("Not enough memory indexes","get_reduction_map");
@@ -88,7 +88,7 @@ int * get_reduction_map(Tensor *A, vector<int> axis)
 void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
 {
   int i,j;
-
+  bool map_was_null = false;
 
   if (B->ndim!=A->ndim-axis.size())
     msg("dims don't match in reduction","reduce");
@@ -105,8 +105,10 @@ void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
 
   PROFILING_HEADER_EXTERN(reduce);
 
-  if (map==nullptr)
-    map=get_reduction_map(A,axis);
+  if (map == nullptr) {
+    map = get_reduction_map(A, axis);
+    map_was_null = true;
+  }
 
   if (A->isCPU()) {
       cpu_reduce(A,B,mode,map);
@@ -121,6 +123,8 @@ void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
     fpga_reduce(A,B,mode,map);
   }
   #endif
+
+  eddl_free(map);
 
   PROFILING_FOOTER(reduce);
 }
