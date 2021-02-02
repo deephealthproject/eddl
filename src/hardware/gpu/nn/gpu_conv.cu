@@ -22,6 +22,7 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
 
+#ifdef cCUDNN
 void * shared_workspace=nullptr;
 size_t workspace_size=0;
 
@@ -64,7 +65,7 @@ int allocate_workspace(size_t size){
         return cudaMalloc((void **) &shared_workspace, size);
     }
 }
-
+#endif
 
 void gpu_im2col(ConvolDescriptor *D, int col2im){
   int device=D->I->gpu_device;
