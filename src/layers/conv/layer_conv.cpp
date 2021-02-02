@@ -104,6 +104,11 @@ void LConv::backward() {
     if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}
 }
 
+void LConv::initialize() {
+    init->apply(params[0]);  // Conv
+    params[1]->fill_(0.0f); // Bias
+}
+
 void LConv::update_weights(Tensor* w, Tensor* bias) {
     Tensor::copy( w, cd->K );
     if ( bias != nullptr ) Tensor::copy( bias, cd->bias );

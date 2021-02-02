@@ -57,6 +57,8 @@ public:
 
     void resize(int batch) override;
 
+    void initialize() override;
+
 	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
 
 	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
