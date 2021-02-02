@@ -37,7 +37,6 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     // Set default name
     if(name.empty()) this->name = "conv" + to_string(++total_layers);
 
-//    std::cout<<"STart de BUILD capa"<<this->name<<std::endl;
     input = parent->output;
     cd = D;
     cd->build(input);
@@ -60,7 +59,6 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
 
     parent->addchild(this);
     addparent(parent);
-  //  std::cout<<"Fin de BUILD capa"<<this->name<<std::endl;
 }
 
 
@@ -70,7 +68,6 @@ LConv::~LConv(){
 
 // virtual
 void LConv::resize(int batch){
-    //std::cout<<"RESIZEEEEEEE!"<<std::endl;
     cd->resize(batch);
 }
 

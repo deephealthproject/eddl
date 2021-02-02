@@ -106,6 +106,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
   cudaSetDevice(device);
   float alpha = 1.0f;
   float beta = 0.0f;
+
 #ifndef cCUDNN
   int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
@@ -140,31 +141,24 @@ void gpu_conv2D(ConvolDescriptor *D) {
   // FWD environment
   if (D->cudnn_env_init < 0){
       D->cudnn_env_init = 1;
+
       int requestedAlgoCount;
-      //check_cudnn(cudnnGetConvolutionForwardAlgorithmMaxCount(D->cudnn_handle, &requestedAlgoCount));
-      cudnnStatus_t bbb = cudnnGetConvolutionForwardAlgorithmMaxCount(
-              D->cudnn_handle, &requestedAlgoCount);
-  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error 1 "<< cudnnGetErrorString(bbb) <<std::endl;
+      check_cudnn(cudnnGetConvolutionForwardAlgorithmMaxCount( D->cudnn_handle, &requestedAlgoCount));
+
       int returnedAlgoCount;
       cudnnConvolutionFwdAlgoPerf_t * perfResults = new cudnnConvolutionFwdAlgoPerf_t [requestedAlgoCount];
-      //check_cudnn(cudnnFindConvolutionForwardAlgorithm( D->cudnn_handle, D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
-      //            requestedAlgoCount, &returnedAlgoCount, perfResults));
-      bbb = cudnnFindConvolutionForwardAlgorithm( D->cudnn_handle, D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
-                  requestedAlgoCount, &returnedAlgoCount, perfResults);
-  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error 2 "<< cudnnGetErrorString(bbb) <<std::endl;
+
+      check_cudnn(cudnnFindConvolutionForwardAlgorithm( D->cudnn_handle, D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
+                  requestedAlgoCount, &returnedAlgoCount, perfResults));
+
       int aux_alg = 0;
       size_t size;
       do{
-  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error 2222 "<< cudnnGetErrorString(bbb) <<std::endl;
           D->fwd_algorithm = perfResults[aux_alg].algo;
-      //    std::cout<< "trying alg: "<<D->fwd_algorithm<<std::endl;
-      //    my_get_descriptor(D->xDesc,"xDesc");
-      //    my_get_descriptor(D->yDesc,"yDesc");
-      //    my_get_fdescriptor(D->wDesc,"wDesc");
-          bbb =cudnnGetConvolutionForwardWorkspaceSize(D->cudnn_handle,D->xDesc, D->wDesc,
+
+          check_cudnn(cudnnGetConvolutionForwardWorkspaceSize(D->cudnn_handle,D->xDesc, D->wDesc,
                                                               D->convolution_descriptor,  D->yDesc,
-                                                              D->fwd_algorithm, &size);
-  if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error 3 "<< cudnnGetErrorString(bbb) <<std::endl;
+                                                              D->fwd_algorithm, &size));
           aux_alg++;
       }
       while(allocate_workspace(size));
@@ -173,60 +167,54 @@ void gpu_conv2D(ConvolDescriptor *D) {
   if (D->cudnn_conv_back_init < 0){
       D->cudnn_conv_back_init = 1;
        int requestedAlgoCount;
-      //check_cudnn(cudnnGetConvolutionForwardAlgorithmMaxCount(D->cudnn_handle, &requestedAlgoCount));
-      /////////////// FILTERS!!!
-      cudnnStatus_t bbb = cudnnGetConvolutionBackwardFilterAlgorithmMaxCount(
-              D->cudnn_handle, &requestedAlgoCount);
+
+      check_cudnn(cudnnGetConvolutionBackwardFilterAlgorithmMaxCount(
+              D->cudnn_handle, &requestedAlgoCount));
       int returnedAlgoCount;
       cudnnConvolutionBwdFilterAlgoPerf_t * perfResults = new cudnnConvolutionBwdFilterAlgoPerf_t [requestedAlgoCount];
 
-      bbb = cudnnFindConvolutionBackwardFilterAlgorithm(D->cudnn_handle, D->xDesc, D->yDesc,
+      check_cudnn(cudnnFindConvolutionBackwardFilterAlgorithm(D->cudnn_handle, D->xDesc, D->yDesc,
                                                         D->convolution_descriptor, D->wDesc, requestedAlgoCount,
-                                                        &returnedAlgoCount, perfResults);
-      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd 1 "<< cudnnGetErrorString(bbb) <<std::endl;
+                                                        &returnedAlgoCount, perfResults));
       int aux_alg = 0;
       size_t size;
       do{
           D->bwd_filter_algorithm = perfResults[aux_alg].algo;
 
-          bbb =cudnnGetConvolutionBackwardFilterWorkspaceSize(D->cudnn_handle,D->xDesc, D->yDesc,
+          check_cudnn(cudnnGetConvolutionBackwardFilterWorkspaceSize(D->cudnn_handle,D->xDesc, D->yDesc,
                                                               D->convolution_descriptor,  D->wDesc,
-                                                              D->bwd_filter_algorithm, &size);
-          if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd 2 "<< cudnnGetErrorString(bbb) <<std::endl;
+                                                              D->bwd_filter_algorithm, &size));
           aux_alg++;
       }
       while(allocate_workspace(size));
 
       //////////// DATA!!!!
       requestedAlgoCount = 0;
-     bbb = cudnnGetConvolutionBackwardDataAlgorithmMaxCount(D->cudnn_handle, &requestedAlgoCount);
+     check_cudnn(cudnnGetConvolutionBackwardDataAlgorithmMaxCount(D->cudnn_handle, &requestedAlgoCount));
      returnedAlgoCount=0;
       cudnnConvolutionBwdDataAlgoPerf_t * perfResults_d = new cudnnConvolutionBwdDataAlgoPerf_t [requestedAlgoCount];
 
-      bbb = cudnnFindConvolutionBackwardDataAlgorithm(D->cudnn_handle, D->wDesc, D->yDesc,
+      check_cudnn(cudnnFindConvolutionBackwardDataAlgorithm(D->cudnn_handle, D->wDesc, D->yDesc,
                                                         D->convolution_descriptor, D->xDesc, requestedAlgoCount,
-                                                        &returnedAlgoCount, perfResults_d);
-      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd 3 "<< cudnnGetErrorString(bbb) <<std::endl;
+                                                        &returnedAlgoCount, perfResults_d));
       aux_alg = 0;
        size=0;
       do{
           D->bwd_data_algorithm = perfResults_d[aux_alg].algo;
 
-          bbb =cudnnGetConvolutionBackwardDataWorkspaceSize(D->cudnn_handle,D->wDesc, D->yDesc,
+          check_cudnn(cudnnGetConvolutionBackwardDataWorkspaceSize(D->cudnn_handle,D->wDesc, D->yDesc,
                                                               D->convolution_descriptor,  D->xDesc,
-                                                              D->bwd_data_algorithm, &size);
-          if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd 4 "<< cudnnGetErrorString(bbb) <<std::endl;
+                                                              D->bwd_data_algorithm, &size));
           aux_alg++;
       }
       while(allocate_workspace(size));
 
   }
-  cudnnStatus_t aaa = cudnnConvolutionForward( D->cudnn_handle, &alpha, D->xDesc, D->I->ptr,
+  check_cudnn(cudnnConvolutionForward( D->cudnn_handle, &alpha, D->xDesc, D->I->ptr,
                                        D->wDesc, D->K->ptr,
                                        D->convolution_descriptor, D->fwd_algorithm,
                                        shared_workspace, workspace_size,
-                                       &beta, D->yDesc, D->O->ptr);
-  if(aaa != CUDNN_STATUS_SUCCESS) std::cout<<"Error en convolucion "<< cudnnGetErrorString(aaa) <<std::endl;
+                                       &beta, D->yDesc, D->O->ptr));
 #endif
   if (D->use_bias) {
 #ifndef cCUDNN
@@ -241,7 +229,6 @@ void gpu_conv2D(ConvolDescriptor *D) {
                                &alpha, D->yDesc, D->O->ptr));
 #endif
   }
-
 
 
 }
@@ -282,13 +269,12 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
     }
   }
 #else
-        cudnnStatus_t ddd = cudnnConvolutionBackwardFilter(D->cudnn_handle, &alpha,
+        check_cudnn(cudnnConvolutionBackwardFilter(D->cudnn_handle, &alpha,
                                       D->xDesc, D->I->ptr,
                                       D->yDesc, D->D->ptr, D->convolution_descriptor,
                                       D->bwd_filter_algorithm,
                                       shared_workspace, workspace_size,
-                                      &beta, D->wDesc, D->gK->ptr);
-  if(ddd != CUDNN_STATUS_SUCCESS) std::cout<<"Error en convolucion back filter"<< cudnnGetErrorString(ddd) <<std::endl;
+                                      &beta, D->wDesc, D->gK->ptr));
 
 #endif
   if (D->use_bias) {

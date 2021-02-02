@@ -110,17 +110,15 @@ void PoolDescriptor::build(Tensor *A) {
     horizontalPadding = padcl;
     verticalStride = sr;
     horizontalStride = sc;
-    // mode is initialized in each constructor.:w
+    // mode is initialized in each constructor.
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
 
     cudnnCreateTensorDescriptor(&xDesc);
-    cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  in,iz,ir,ic);
-    if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create pooling tensor descriptor "<< cudnnGetErrorString(bbb) <<std::endl;
     cudnnCreateTensorDescriptor(&yDesc);
-    bbb = cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
-    if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create pooling itensor descriptor 2"<< cudnnGetErrorString(bbb) <<std::endl;
+    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
 
 #endif
 
@@ -132,15 +130,11 @@ void PoolDescriptor::resize(int b) {
   O->resize(b);
 #ifdef cCUDNN
     #ifdef cCUDNN
-       //Descriptor for Input data
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  b,iz,ir,ic);
-   // Descriptor for kerneks
-   //std::cout<<"xDesc ("<<b<<","<< iz<<","<< ir<<","<< ic << std::endl;
-   // Descriptor for output
+
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
-   //std::cout<<"yDesc ("<<O->shape[0]<<","<< O->shape[1]<<","<< O->shape[2]<<","<< O->shape[3] << std::endl;
 
 #endif
 #endif

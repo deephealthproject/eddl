@@ -79,7 +79,7 @@ void ConvolDescriptor::build(Tensor *A) {
     iz = A->shape[1];
     ir = A->shape[2];
     ic = A->shape[3];
-    
+
     if(this->padding=="custom"){  // Known padding
         // Compute output
         z = nk;
@@ -91,6 +91,7 @@ void ConvolDescriptor::build(Tensor *A) {
 
     }else{  // Common padding (same/zeros)
         // Compute output
+
         z = nk;
 
         if (padding=="same,none") r = compute_output("same", ir, kr, sr);
@@ -102,16 +103,29 @@ void ConvolDescriptor::build(Tensor *A) {
         else c = compute_output(this->padding, ic, kc, sc);
 
         // Compute padding
+
         vector<int> padr = compute_padding(r, ir, kr, sr, this->padding,true);  // Order: [top, bottom]
         vector<int> padc = compute_padding(c, ic, kc, sc, this->padding,false);  // Order: [left, right]
-
-        // Set padding
         pad = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right
+
     }
+
     padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
     padcl = pad[2]; padcr = pad[3];  // cols: left-right
-    //for(int i = 0; i< pad.size();i++)
-    //std::cout<<"PADING "<< pad[i] <<std::endl;
+
+#ifdef cCUDNN
+    if (pad[0] != pad[1] || pad[2] != pad[3]){
+        std::cout<<"==============================================="<<std::endl;
+        std::cout<<"Error: padding not supported by cuDNN"<<std::endl;
+        std::cout<<"==============================================="<<std::endl;
+        for(int i = 0; i< pad.size();i++)
+           std::cout<<"PAD["<<i<<"]="<< pad[i] <<std::endl;
+        msg("cuDNN requires equal top-bottom or left-right padding");
+    }
+#endif
+
+
+
 
     if ((r <= 0) || (c <= 0)) {
         cout<<"rows="<<r<<" cols"<<c<<endl;
@@ -182,24 +196,18 @@ void ConvolDescriptor::build(Tensor *A) {
                                     stride[0], stride[1],
                                     1,1,
                                     convolution_mode, data_type);
-   //std::cout<<"ConvDesc"<<pad[0]<<" "<<pad[2]<< " "<<stride[0]<<" "<< stride[1]<<" 1 1"<<std::endl;
-   //Descriptor for Input data
+
+
    cudnnCreateTensorDescriptor(&xDesc);
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  in,iz,ir,ic);
-   //std::cout<<"xDesc"<<in<<" "<<iz<< " "<<ir<<" "<< ic<<std::endl;
-   // Descriptor for kerneks
-   //std::cout<<"xDesc ("<<in<<","<< iz<<","<< ir<<","<< ic << std::endl;
+
    cudnnCreateFilterDescriptor(&wDesc);
    cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
-   //std::cout<<"wDesc"<<nk<<" "<<kz<< " "<<kr<<" "<< kc<<std::endl;
-   //std::cout<<"wDesc ("<<nk<<","<< kz<<","<< kr<<","<< kc << std::endl;
-   // Descriptor for output
+
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
-   //std::cout<<"yDesc"<<in<<" "<<z<< " "<<r<<" "<< c<<std::endl;
-   //std::cout<<"yDesc ("<<in<<","<< z<<","<< r<<","<< c << std::endl;
-   //Descriptor for bias
+
    cudnnCreateTensorDescriptor(&bDesc);
    cudnnSetTensor4dDescriptor(bDesc, tensor_format, data_type, 1, nk,1,1);
    cudnn_env_init = -1;
@@ -249,15 +257,11 @@ void ConvolDescriptor::resize(int b)
 #endif
     
 #ifdef cCUDNN
-       //Descriptor for Input data
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  b,iz,ir,ic);
-   // Descriptor for kerneks
-   //std::cout<<"xDesc ("<<b<<","<< iz<<","<< ir<<","<< ic << std::endl;
-   // Descriptor for output
+
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
-   //std::cout<<"yDesc ("<<O->shape[0]<<","<< O->shape[1]<<","<< O->shape[2]<<","<< O->shape[3] << std::endl;
 
 #endif
 } 
