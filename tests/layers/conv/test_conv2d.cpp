@@ -106,7 +106,7 @@ TEST(Conv2DTestSuite, conv2d_custom)
     auto *ptr_bias = new float[2]{1.0, 0.0};
 
     // Operation
-    auto *cd = new ConvolDescriptor(2, {3, 3}, {2, 2}, "none", true);
+    auto *cd = new ConvolDescriptor(2, {3, 3}, {2, 2}, "none", 1, {1, 1}, true);
     cd->build(t_image);
     cd->K = new Tensor({2, 3, 3, 3}, ptr_kernels, DEV_CPU);
     cd->bias = new Tensor({2}, ptr_bias, DEV_CPU); //Tensor::zeros(cd->bias->getShape());
@@ -155,7 +155,7 @@ TEST(Conv2DTestSuite, conv2d_k2x2_s2x2_pad_valid)
     auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
-    auto *cd = new ConvolDescriptor(1, {2, 2}, {2, 2}, "valid", true);
+    auto *cd = new ConvolDescriptor(1, {2, 2}, {2, 2}, "valid", 1, {1, 1}, true);
     cd->build(t_image);
     cd->K = Tensor::ones(cd->K->getShape());
     cd->bias = Tensor::zeros(cd->bias->getShape());
@@ -200,7 +200,7 @@ TEST(Conv2DTestSuite, conv2d_k2x2_s2x2_pad_same)
     auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
-    auto *cd = new ConvolDescriptor(1, {2, 2}, {2, 2}, "same", true);
+    auto *cd = new ConvolDescriptor(1, {2, 2}, {2, 2}, "same", 1, {1, 1}, true);
     cd->build(t_image);
     cd->K = Tensor::ones(cd->K->getShape());
     cd->bias = Tensor::zeros(cd->bias->getShape());
@@ -244,7 +244,7 @@ TEST(Conv2DTestSuite, conv2d_k3x3_s1x1_pad_valid)
     auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
-    auto *cd = new ConvolDescriptor(1, {3, 3}, {1,1}, "valid", true);
+    auto *cd = new ConvolDescriptor(1, {3, 3}, {1,1}, "valid", 1, {1, 1}, true);
     cd->build(t_image);
     cd->K = Tensor::ones(cd->K->getShape());
     cd->bias = Tensor::zeros(cd->bias->getShape());
@@ -290,7 +290,7 @@ TEST(Conv2DTestSuite, conv2d_k3x3_s1x1_pad_same)
     auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
-    auto *cd = new ConvolDescriptor(1, {3, 3}, {1, 1}, "same", true);
+    auto *cd = new ConvolDescriptor(1, {3, 3}, {1, 1}, "same", 1, {1, 1}, true);
     cd->build(t_image);
     cd->K = Tensor::ones(cd->K->getShape());
     cd->bias = Tensor::zeros(cd->bias->getShape());
@@ -335,7 +335,7 @@ TEST(Conv2DTestSuite, conv2d_k3x3_s2x2_pad_valid)
     auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
-    auto *cd = new ConvolDescriptor(1, {3, 3}, {2, 2}, "valid", true);
+    auto *cd = new ConvolDescriptor(1, {3, 3}, {2, 2}, "valid", 1, {1, 1}, true);
     cd->build(t_image);
     cd->K = Tensor::ones(cd->K->getShape());
     cd->bias = Tensor::zeros(cd->bias->getShape());
@@ -378,7 +378,7 @@ TEST(Conv2DTestSuite, conv2d_k3x3_s2x2_pad_same){
     auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
-    auto *cd = new ConvolDescriptor(1, {3, 3}, {2, 2}, "same", true);
+    auto *cd = new ConvolDescriptor(1, {3, 3}, {2, 2}, "same", 1, {1, 1}, true);
     cd->build(t_image);
     cd->K = Tensor::ones(cd->K->getShape());
     cd->bias = Tensor::zeros(cd->bias->getShape());
@@ -402,7 +402,7 @@ TEST(Conv2DTestSuite, conv2d_k2x2_s2x2_pad_valid_gpu)
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     // CPU Operation
-    auto *cd_cpu = new ConvolDescriptor(1, {2, 2}, {2, 2}, "valid", true);
+    auto *cd_cpu = new ConvolDescriptor(1, {2, 2}, {2, 2}, "valid", 1, {1, 1}, true);
     cd_cpu->build(t_cpu);
     cd_cpu->K = Tensor::ones(cd_cpu->K->getShape());
     cd_cpu->bias = Tensor::zeros(cd_cpu->bias->getShape());
@@ -410,7 +410,7 @@ TEST(Conv2DTestSuite, conv2d_k2x2_s2x2_pad_valid_gpu)
     cd_cpu->D = Tensor::ones(cd_cpu->O->getShape());
 
     // GPU Operation
-    auto *cd_gpu = new ConvolDescriptor(1, {2, 2}, {2, 2}, "valid", true);
+    auto *cd_gpu = new ConvolDescriptor(1, {2, 2}, {2, 2}, "valid", 1, {1, 1}, true);
     cd_gpu->build(t_gpu);
     cd_gpu->K = Tensor::ones(cd_gpu->K->getShape(), t_gpu->device);
     cd_gpu->bias = Tensor::zeros(cd_gpu->bias->getShape(), t_gpu->device);
