@@ -969,8 +969,9 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
       // TODO: REVIEW!!!!
     int groups = 1;
     vector<int> dilation_rate = {1, 1};
-  convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, groups, dilation_rate, use_bias, mem);
-
+        //auto_pad_option == "custom";
+     convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, groups, dilation_rate, use_bias, mem);
+    //convol_descriptor->pad = pads;
 
       if (conv1d)
         actual_layer = new LConv1D(parent, convol_descriptor, name, dev, mem);
