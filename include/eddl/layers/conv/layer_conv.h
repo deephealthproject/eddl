@@ -32,17 +32,13 @@ public:
     ConvolDescriptor *cd;
 
     // constructors and clones
-    LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev, int mem);
-
-    LConv(Layer *parent, int filters, const vector<int> &ks, const vector<int> &st,const vector<int> &p, string name, int dev, int mem);
-
     LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
           int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
 
+    LConv(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
+
     // Destructor
     ~LConv();
-
-    LConv(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -85,17 +81,13 @@ public:
     ConvolDescriptor *cd;
 
     // constructors and clones
-    LConv1D(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev, int mem);
-
-    LConv1D(Layer *parent, int filters, const vector<int> &ks, const vector<int> &st,const vector<int> &p, string name, int dev, int mem);
-
     LConv1D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
           int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
 
+    LConv1D(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
+
     // Destructor
     ~LConv1D();
-
-    LConv1D(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

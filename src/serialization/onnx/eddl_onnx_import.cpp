@@ -965,14 +965,12 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
       filters = dims[0];
       string name = node->name();
       ConvolDescriptor *convol_descriptor;
-      if (!auto_pad)
-      {
-        kernel_shape.insert(kernel_shape.begin(), filters); // Add number of filters to kernel shape
-        convol_descriptor = new ConvolDescriptor(kernel_shape, strides, pads);
-        convol_descriptor->use_bias = use_bias;
-      }
-      else
-        convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, use_bias, mem);
+
+      // TODO: REVIEW!!!!
+    int groups = 1;
+    vector<int> dilation_rate = {1, 1};
+  convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, groups, dilation_rate, use_bias, mem);
+
 
       if (conv1d)
         actual_layer = new LConv1D(parent, convol_descriptor, name, dev, mem);
