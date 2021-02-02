@@ -27,11 +27,11 @@ int main(int argc, char **argv) {
     download_imdb_2000();
 
     // Settings
-    int epochs = 10;
+    int epochs = 1;
     int batch_size = 32;
 
     int length=250;
-    int embdim=32;
+    int embdim=33;
     int vocsize= 2000;
 
     // Define network
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     layer lE = RandomUniform(Embedding(l, vocsize, 1,embdim),-0.05,0.05);
 
-    l = RNN(lE,32);
+    l = RNN(lE,37);
     l = ReLu(Dense(l,256));
 
 
@@ -58,9 +58,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"binary_cross_entropy"}, // Losses
           {"binary_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-//          CS_CPU()
+          CS_CPU()
     );
 
     // View model
@@ -85,4 +85,12 @@ int main(int argc, char **argv) {
       evaluate(net,{x_test},{y_test});
     }
 
+    delete net;
+
+    delete x_train;
+    delete y_train;
+    delete x_test;
+    delete y_test;
+
+    return EXIT_SUCCESS;
 }

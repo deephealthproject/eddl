@@ -24,6 +24,12 @@ using namespace eddl;
 //////////////////////////////////
 
 int main(int argc, char **argv) {
+    bool testing = false;
+    bool use_cpu = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
 
     // Download mnist
     download_mnist();
@@ -47,16 +53,22 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU({1}, "low_mem"); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+        // cs = CS_FPGA({1});
+    }
+
     // Build model
     build(net,
           sgd(0.001, 0.9), // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
-          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
-	      //CS_FPGA({1})
-    );
+          cs);
 
     printf("after build\n");
 
@@ -70,6 +82,24 @@ int main(int argc, char **argv) {
     Tensor* y_train = Tensor::load("mnist_trY.bin");
     Tensor* x_test = Tensor::load("mnist_tsX.bin");
     Tensor* y_test = Tensor::load("mnist_tsY.bin");
+
+    if (testing) {
+        std::string _range_ = "0:" + std::to_string(2 * batch_size);
+        Tensor* x_mini_train = x_train->select({_range_, ":"});
+        Tensor* y_mini_train = y_train->select({_range_, ":"});
+        Tensor* x_mini_test  = x_test->select({_range_, ":"});
+        Tensor* y_mini_test  = y_test->select({_range_, ":"});
+
+        delete x_train;
+        delete y_train;
+        delete x_test;
+        delete y_test;
+
+        x_train = x_mini_train;
+        y_train = y_mini_train;
+        x_test  = x_mini_test;
+        y_test  = y_mini_test;
+    }
 
     Tensor* xbatch = new Tensor({batch_size, 784});
     Tensor* ybatch = new Tensor({batch_size, 10});
@@ -92,16 +122,13 @@ int main(int argc, char **argv) {
         next_batch({x_train,y_train},{xbatch,ybatch});
         train_batch(net, {xbatch}, {ybatch});
 
-        //OR:
-        //vector<int> indices = random_indices(batch_size, s[0]);
-        //train_batch(net, {x_train}, {y_train}, indices);
-
-//        print_loss(net,j);
-//        printf("\r");
-
+        print_loss(net,j);
+        printf("\r");
       }
       printf("\n");
     }
+    printf("\n");   
+
 
     // Print loss and metrics
     vector<float> losses1 = get_losses(net);
@@ -125,10 +152,12 @@ int main(int argc, char **argv) {
 
         eval_batch(net, {x_test}, {y_test}, indices);
 
-//        print_loss(net,j);
-//        printf("\r");
+        print_loss(net,j);
+        printf("\r");
 
       }
+
+    printf("\n");
 
     // Print loss and metrics
     vector<float> losses2 = get_losses(net);
@@ -151,7 +180,7 @@ int main(int argc, char **argv) {
 //      print_loss(net,j);
 //      printf("\r");
     }
-    printf("\n");
+    
 
 
     // Print loss and metrics
@@ -162,5 +191,14 @@ int main(int argc, char **argv) {
     }
     cout << endl;
 
+    delete xbatch;
+    delete ybatch;
 
+    delete x_train;
+    delete y_train;
+    delete x_test;
+    delete y_test;
+    delete net;
+    
+    return EXIT_SUCCESS;
 }

@@ -40,9 +40,9 @@ int isInorig(Layer *l, vlayer vl, int &ind);
 
 class Net {
 private:
-    void build(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
+    void make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
 
-    void set_compserv(CompServ *cs);
+    void set_compserv(CompServ *cs, bool do_compserv_delete);
 
 public:
     string name;
@@ -62,6 +62,7 @@ public:
 
     vector<int> devsel;
     CompServ *cs;
+    bool do_compserv_delete;
 
     vlayer layers;
     vlayer lin;
@@ -77,11 +78,13 @@ public:
     verr total_loss;
     verr total_metric;
     FILE *flog_tr;
+    bool has_to_close_flog_tr;
     FILE *flog_ts;
+    bool has_to_close_flog_ts;
 
     Optimizer *optimizer;
+    bool do_optimizer_delete;
     vector<Net *> snets;
-    vector<Net *> mnets;
     Net* rnet;
 
     vtensor Xs[MAX_THREADS];
@@ -89,11 +92,13 @@ public:
 
     Net();
     Net(vlayer in, vlayer out);
-    Net(vector <Net *> vnets);
     ~Net();
 
 
-    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);
+    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs,
+               bool initialize = true,
+               bool do_optimizer_delete = true,
+               bool do_compserv_delete = false);
     void toGPU(vector<int> g,int lsb,int mem);
     void toCPU(int t);
 
@@ -105,7 +110,6 @@ public:
     Net *unroll_enc_dec(int inl, int outl);
     Net *unroll_dec(int inl, int outl);
     void build_rnet(int inl,int outl);
-    Layer* getLayer(vlayer in);
     Layer* getLayer(string l);
     void removeLayer(string l);
     void setTrainable(string lanme, bool val);
@@ -153,7 +157,6 @@ public:
     void forward();
     void forward_recurrent(vector<Tensor*> tin);
     void reset_loss();
-    float get_metric( const string  layer_name, const string  metric_name );
     void print_loss(int b);
     void backward(vector<Tensor *> target);
     void backward(Layer* (*f)(Layer *),Layer *out);

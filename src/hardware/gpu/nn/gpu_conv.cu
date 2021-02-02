@@ -193,3 +193,16 @@ void gpu_conv2D_back(ConvolDescriptor *D){
 
 
 }
+
+
+void gpu_conv3D(ConvolDescriptor3D *D){
+
+}
+
+void gpu_conv3D_grad(ConvolDescriptor3D *D){
+
+}
+
+void gpu_conv3D_back(ConvolDescriptor3D *D){
+
+}

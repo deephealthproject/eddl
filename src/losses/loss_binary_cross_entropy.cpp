@@ -23,6 +23,7 @@ LBinaryCrossEntropy::LBinaryCrossEntropy() : Loss("binary_cross_entropy"){}
 
 void LBinaryCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
     tensorNN::d_binary_cross_entropy(T, Y, D);
+    D->div_(D->shape[0]);
 }
 
 float LBinaryCrossEntropy::value(Tensor *T, Tensor *Y) {

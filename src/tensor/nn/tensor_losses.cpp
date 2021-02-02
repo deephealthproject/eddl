@@ -23,6 +23,8 @@
 
 PROFILING_ENABLE_EXTERN(cent);
 
+#include <cmath>
+
 namespace tensorNN {
 
 
@@ -77,6 +79,7 @@ namespace tensorNN {
         return fpga_categorical_cross_entropy(y_true, y_pred);
     }
 #endif
+        return std::nanf("");
     }
 
     void d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
@@ -110,7 +113,6 @@ namespace tensorNN {
         if (!Tensor::sameShape(y_true, y_pred)) {
             msg("Incompatible dims", "TensorNN::binary_cross_entropy");
         }
-
         if (y_true->isCPU()) {
             return cpu_binary_cross_entropy(y_true, y_pred);
         }
@@ -125,6 +127,7 @@ namespace tensorNN {
         return fpga_full_cross_entropy(y_true, y_pred);
     }
 #endif
+        return std::nanf("");
     }
 
     void d_binary_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){

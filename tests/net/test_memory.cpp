@@ -240,84 +240,6 @@ TEST(NetTestSuite, net_delete_mnist_conv1D){
     ASSERT_TRUE(true);
 }
 
-TEST(NetTestSuite, net_delete_mnist_auto_encoder_merging){
-    // Define encoder
-    layer in = Input({784});
-    layer l = in;  // Aux var
-
-    l = Activation(Dense(l, 256), "relu");
-    l = Activation(Dense(l, 128), "relu");
-    layer out = Activation(Dense(l, 64), "relu");
-
-    model encoder = Model({in}, {out});
-
-    // Define decoder
-    in = Input({64});
-    l = Activation(Dense(in, 128), "relu");
-    l = Activation(Dense(l, 256), "relu");
-
-    out = Sigmoid(Dense(l, 784));
-
-    model decoder = Model({in}, {out});
-
-    // Merge both models into a new one
-    model net = Model({encoder,decoder});
-
-    // Build model
-    build(net,
-          adam(0.0001), // Optimizer
-          {"mse"}, // Losses
-          {"dice"}, // Metrics
-          CS_CPU()
-    );
-    delete net;
-
-    ASSERT_TRUE(true);
-}
-
-TEST(NetTestSuite, net_delete_mnist_siamese){
-    // ERROR => malloc_consolidate(): invalid chunk size
-    layer in1 = Input({784});
-    layer in2 = Input({784});
-
-    // base model
-    layer in = Input({784});
-    layer l = Activation(Dense(in, 256), "relu");
-    l = Activation(Dense(l, 128), "relu");
-
-    model enc=Model({in},{l});
-    setName(enc,"enc");
-
-    in = Input({128});
-    layer out = Activation(Dense(in, 64), "relu");
-
-    model dec=Model({in},{out});
-    setName(dec,"dec");
-
-    model base = Model({enc,dec});
-    setName(base,"base");
-
-    layer out1 = getLayer(base,{in1});
-    layer out2 = getLayer(base,{in2});
-
-    l=Diff(out1,out2);
-    l=ReLu(Dense(l,256));
-    layer outs=Sigmoid(Dense(l,784));
-
-    model siamese=Model({in1,in2},{outs});
-    setName(siamese,"siamese");
-
-    // Build model
-    build(siamese,
-          adam(0.0001), // Optimizer
-          {"dice"}, // Losses
-          {"dice"}, // Metrics
-          CS_CPU()
-    );
-    delete siamese;
-
-    ASSERT_TRUE(true);
-}
 
 
 // Auxiliary function for: net_delete_cifar_resnet50_da_bg
@@ -577,5 +499,5 @@ TEST(NetTestSuite, net_delete_nlp_sentiment_lstm){
 
 
 TEST(NetTestSuite, net_delete_nlp_machine_translation){
-  
+
 }

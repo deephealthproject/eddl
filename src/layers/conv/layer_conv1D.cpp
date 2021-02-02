@@ -35,7 +35,7 @@ LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int m
     // Check dev with tensor dev
 
     // Set default name
-    if(name.empty()) this->name = "conv1D" + to_string(++total_layers);
+    if(name.empty()) this->name = "conv1d" + to_string(++total_layers);
 
     input = parent->output;
 
@@ -71,7 +71,21 @@ LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int m
 
 
 LConv1D::~LConv1D(){
-//    delete cd;  // Just in case
+    delete input_reshaped;
+    input_reshaped = nullptr;
+
+    // deleting cd->O later in this method can drive to double delete/free 
+    Tensor *O_temp = cd->O;
+
+    // deleting cd->D here can drive to double delete/free 
+    if (cd->D != nullptr) delete cd->D;
+    cd->D = nullptr;
+
+    delete cd;
+    cd = nullptr;
+
+    // TODO check where is the proper place to delete/free cd->O
+    if (O_temp != nullptr) delete O_temp;
 }
 
 // virtual
@@ -94,6 +108,7 @@ void LConv1D::mem_delta(){
         // Show delta with the output shape of the Conv1D
         delta = Tensor::zeros(output->shape, output->device);
         // Reshape delta for convol descriptor
+        if (cd->D != nullptr) delete cd->D;
         cd->D = new Tensor(cd->O->shape, delta);
 
         if(this->verbosity_level >= 2) {
@@ -145,8 +160,9 @@ void LConv1D::apply_accumulated_gradients() {
 Layer *LConv1D::share(int c, int bs, vector<Layer *> p) {
     LConv1D *n = new LConv1D(p[0], cd->ksize, cd->stride, cd->pad,  "share_"+name, dev,mem_level);
     n->orig = this;
-    n->isshared=true;
+    n->isshared = true;
     n->trainable = trainable;
+    n->do_deletes = false;
 
     n->cd->use_bias=cd->use_bias;
 
@@ -182,9 +198,11 @@ Layer *LConv1D::share(int c, int bs, vector<Layer *> p) {
         n->acc_gradients.push_back(n->cd->acc_gK);
         n->acc_gradients.push_back(n->cd->acc_gbias);
     }
-
-    n->reg=reg;
-    n->init=init;
+    
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     return n;
 }
@@ -193,12 +211,15 @@ Layer *LConv1D::clone(int c, int bs, vector<Layer *> p, int todev) {
 
     LConv1D *n = new LConv1D(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
     n->trainable = trainable;
+    n->do_deletes = false;
 
     n->orig = this;
     n->cd->use_bias=cd->use_bias;
 
-    n->reg=reg;
-    n->init=init;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
 
     return n;

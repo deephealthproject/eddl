@@ -133,13 +133,15 @@ void LLSTM::mem_delta(){
 }
 
 void LLSTM::free_delta(){
-    if (delta != nullptr){
+    if (this->delta != nullptr){
         // The Tensor destructor takes into account the device details
-        delete delta;
-        delta = nullptr;  // Ensure nullptr
+        delete this->delta;
+        this->delta = nullptr;  // Ensure nullptr
 
-        delete delta_c;
-        delta_c=nullptr;
+        delete this->delta_c;
+        this->delta_c = nullptr;
+
+        delta_states.clear();
 
         if(this->verbosity_level >= 2){
             std::cout << "Deleted delta for: " + this->name << std::endl;
@@ -439,7 +441,8 @@ void LLSTM::backward() {
 Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
     LLSTM *n = new LLSTM(p, units, mask_zeros, bidirectional, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
-    n->isshared=true;
+    n->isshared = true;
+    n->do_deletes = false;
 
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
@@ -506,14 +509,12 @@ Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
     }
 
 
-
-    n->reg=reg;
-    n->init=init;
-
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     return n;
-
-
 }
 
 Layer *LLSTM::clone(int c, int bs, vector<Layer *> p, int todev) {

@@ -87,11 +87,10 @@ float *get_fmem(unsigned long int size, const string &str){
     // New calls your type constructor, Malloc not - Same for destructor
     // New is an operator, Malloc a function (slower)
     try{
-        ptr = new float[size];
+        //ptr = new float[size];
         //ptr=(float *)malloc(size*sizeof(float));
         //ptr=(float *)aligned_alloc(64, size*sizeof(float));
-        //posix_memalign((void **)&ptr, 64, size*sizeof(float));
-
+        posix_memalign((void **)&ptr, 64, size*sizeof(float));
     }
     catch (std::bad_alloc& badAlloc){
         error=true;
@@ -389,6 +388,51 @@ string get_parent_dir(const string& fname){
            : fname.substr(0, pos);
 }
 
+vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch){
+    int faxis = axis+(int)ignore_batch;
+    int lastdim = (int)(shape.size()-1);
+
+    // Check dimension bounds
+    if (faxis > lastdim) {
+        msg("Number of dimensions exceeded (" + to_string(axis) + " >= " + to_string((int)(shape.size()-(int)ignore_batch)) + ")", "compute_squeeze");
+    }else  if (faxis < -1){
+        msg("The axis must be greater or equal than zero; or -1 (special case)", "compute_squeeze");
+    }
+
+    // Remove single dimension entries from the array
+    vector<int> new_shape;
+
+    // Ignore batch if needed
+    if(ignore_batch){
+        new_shape.push_back(shape[0]);
+    }
+
+    for(int i=(int)ignore_batch; i<shape.size(); i++){
+        int dim = shape[i];
+
+        // If dimension is greater than 1 or batch is ignored
+        if((dim>1) || (i!=faxis && axis!=-1)){
+            new_shape.push_back(dim);
+        }
+    }
+
+    return new_shape;
+};
+
+vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch){
+    int faxis = axis+(int)ignore_batch;
+
+    // Check dimension bounds
+    if (faxis > shape.size()) {
+        msg("Number of dimensions exceeded (" + to_string(axis) + " >= " + to_string((int)(shape.size()-(int)ignore_batch)) + ")", "compute_unsqueeze");
+    }else  if (faxis < 0){
+        msg("The axis must be greater or equal than zero", "compute_unsqueeze");
+    }
+
+    vector<int> new_shape(shape);
+    new_shape.insert(new_shape.begin()+faxis, 1); // Add one dimension to the beginning
+    return new_shape;
+}
 
 WrappingMode getWrappingMode(string mode){
     if(mode == "constant"){

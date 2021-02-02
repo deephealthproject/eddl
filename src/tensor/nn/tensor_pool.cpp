@@ -23,6 +23,10 @@
 
 PROFILING_ENABLE_EXTERN(MPool2D);
 PROFILING_ENABLE_EXTERN(MPool2D_back);
+
+PROFILING_ENABLE_EXTERN(MPool3D);
+PROFILING_ENABLE_EXTERN(MPool3D_back);
+
 PROFILING_ENABLE_EXTERN(AvgPool2D);
 PROFILING_ENABLE_EXTERN(AvgPool2D_back);
 
@@ -93,6 +97,70 @@ namespace tensorNN {
         PROFILING_FOOTER(MPool2D_back);
     }
 
+
+    void MPool3D(PoolDescriptor3D *D) {
+        /////////////////////////////////////////////////////////////////////
+        //// MPool3D
+        //// Dimensions must be compatible
+        //// A is input 5D Tensor, batch_shape + (channels, pool_dim1, pool_dim2, pool_dim3)
+        //// D is a PoolDescriptor3D
+        /////////////////////////////////////////////////////////////////////
+        if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::MPool5D");
+
+//        PROFILING_HEADER(MPool3D);
+
+
+        if (D->I->isCPU()) {
+            cpu_mpool3D(D);
+        }
+#ifdef cGPU
+        else if (D->I->isGPU())
+        {
+            gpu_mpool3D(D);
+        }
+#endif
+#ifdef cFPGA
+            else if (D->I->isFPGA())
+      {
+        fpga_mpool3D(D);
+      }
+#endif
+
+
+//        PROFILING_FOOTER(MPool3D);
+    }
+
+    void MPool3D_back(PoolDescriptor3D *D) {
+        /////////////////////////////////////////////////////////////////////
+        //// MPool3D
+        //// Dimensions must be compatible
+        //// A is input 5D Tensor, batch_shape + (channels, pool_dim1, pool_dim2, pool_dim3)
+        //// D is a PoolDescriptor3D
+        /////////////////////////////////////////////////////////////////////
+        if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::MPool2D_back");
+
+//        PROFILING_HEADER(MPool3D_back);
+
+
+        if (D->I->isCPU()) {
+            cpu_mpool3D_back(D);
+        }
+#ifdef cGPU
+        else if (D->I->isGPU())
+        {
+            gpu_mpool3D_back(D);
+        }
+#endif
+#ifdef cFPGA
+            else if (D->I->isFPGA())
+      {
+        fpga_mpool3D_back(D);
+      }
+#endif
+
+
+//        PROFILING_FOOTER(MPool3D_back);
+    }
 
     void AvgPool2D(PoolDescriptor *D) {
         /////////////////////////////////////////////////////////////////////

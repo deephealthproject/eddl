@@ -23,18 +23,6 @@
 
 
 
-ostream &operator<<(ostream &os, const vector<int> shape) {
-    int i;
-    os << "(";
-    for (i = 0; i < shape.size() - 1; ++i) {
-        os << shape[i];
-        os << "x";
-    }
-    os << shape[i] << ")";
-
-    return os;
-}
-
 /////////////////////////////////////////
 int isIn(Layer *l, vlayer vl, int &ind) {
     for (int i = 0; i < vl.size(); i++)
@@ -69,19 +57,26 @@ Net::Net() {
     name="model";
     tr_batches=0;
     flog_tr=nullptr;
+    has_to_close_flog_tr = false;
     flog_ts=nullptr;
+    has_to_close_flog_ts = false;
+    trmode = TRMODE;
     rnet=nullptr;
     isbuild=false;
     isdecoder=false;
     isencoder=false;
     isrecurrent=false;
     decsize=1;
+    do_compserv_delete = true;
+    do_optimizer_delete = true;
 }
 
 Net::Net(vlayer in, vlayer out):Net() {
     // Set input/outlayer
-    lin = in;
-    lout = out;
+    //lin = in;
+    //lout = out;
+    for (auto _ : in) lin.push_back(_);
+    for (auto _ : out) lout.push_back(_);
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -104,69 +99,63 @@ Net::Net(vlayer in, vlayer out):Net() {
     build_randn_table();
 }
 
-Net::Net(vector <Net *> vnets):Net()
-{
-  int vsize=vnets.size();
-  int ind;
-
-  if (vsize<2) {
-    msg("Use at least two networks to concatenate","Net::Net");
-  }
-
-  for(int i=0;i<vnets[0]->lin.size();i++)
-    lin.push_back(vnets[0]->lin[i]);
-
-  for(int i=0;i<vnets[0]->layers.size();i++)
-    layers.push_back(vnets[0]->layers[i]);
-
-///
-  for(int i=0;i<vnets.size()-1;i++) {
-    if (vnets[i]->lout.size()!=vnets[i+1]->lin.size())
-      msg("out layers does not match in layers","Net");
-    for(int j=0;j<vnets[i+1]->layers.size();j++)
-        layers.push_back(vnets[i+1]->layers[j]);
-
-    for(int j=0;j<vnets[i]->lout.size();j++) {
-        vnets[i]->lout[j]->addchild(vnets[i+1]->lin[j]);
-        vnets[i+1]->lin[j]->addparent(vnets[i]->lout[j]);
-    }
-  }
-
-
-  for(int i=0;i<vnets[vsize-1]->lout.size();i++)
-    lout.push_back(vnets[vsize-1]->lout[i]);
-
-
-  for (int i = 0; i < lout.size(); i++) {
-    total_loss.push_back(0.0);
-    total_metric.push_back(0.0);
-    fiterr.push_back(0.0);
-    fiterr.push_back(0.0);
-  }
-
-  isrecurrent=false;
-  rnet=nullptr;
-
-  for(int i=0;i<vnets.size();i++)
-    mnets.push_back(vnets[i]);
-
-  build_randn_table();
-
-
-}
-
-
-
 
 Net::~Net(){
+    // IF CPU : net = snets[0]
+    // IF GPU: net , snets[0]= clone on GPU
 
-    if (mnets.size()) return;
+    if (this->has_to_close_flog_tr && this->flog_tr != nullptr) {
+        fclose(this->flog_tr);
+        this->flog_tr = nullptr;
+        this->has_to_close_flog_tr = false;
+    }
+    if (this->has_to_close_flog_ts && this->flog_ts != nullptr) {
+        fclose(this->flog_ts);
+        this->flog_ts = nullptr;
+        this->has_to_close_flog_ts = false;
+    }
 
+    // not necessary in theory, but valgrid reports "still reachable blocks"
+    this->total_loss.clear();
+    this->total_metric.clear();
+    this->fiterr.clear();
+    this->lin.clear();
+    this->lout.clear();
 
-    // IF CPU : net = snets[0]   snets.push_back(this)
+    // Clean inputs
+    for(int i=0; i<Xs->size(); i++) {
+        for(int j=0;j<Xs[i].size();j++)
+          delete Xs[i][j];
+        Xs[i].clear();
+    }
 
-   // IF GPU: net , snets[0]= clone en GPU
+    // Clean targets
+    for(int i=0; i<Ys->size(); i++) {
+        for(int j=0;j<Ys[i].size();j++)
+          delete Ys[i][j];
+        Ys[i].clear();
+    }
 
+    // delete optimizer
+    for(int i=0;i<snets.size();i++){
+        if (snets[i]->optimizer!=nullptr && snets[i]->do_optimizer_delete){
+            delete snets[i]->optimizer;
+        }
+    }
+
+    if (snets[0] != this){
+        if (this->optimizer != nullptr && this->do_optimizer_delete){
+            delete this->optimizer;
+        }
+    }
+
+    // clean metrics and losses
+    for (auto m : this->metrics) delete m;
+    this->metrics.clear();
+    for (auto m : this->losses) delete m;
+    this->losses.clear();
+
+    // clean device mem
     for(int i=0;i<snets.size();i++){
       for(int j=0;j<snets[i]->layers.size();j++) {
         if (snets[i]->layers[j]!=nullptr) {
@@ -176,15 +165,20 @@ Net::~Net(){
       }
     }
 
-    //TODO:
-    /*
-    if (GPU){
-      for(int j=0;j<layers.size();j++)
+    // net running on device != CPU
+    // clean also CPU mem
+    if (snets[0]!=this){
+      for(int j=0;j<layers.size();j++) {
          delete layers[j];
+      }
     }
-    */
 
-    if (rnet!=nullptr) {delete rnet; rnet = nullptr;}
+    if (rnet!=nullptr) { delete rnet; rnet = nullptr;}
+
+    if (this->do_compserv_delete && this->cs != nullptr) {
+        delete this->cs;
+        this->cs = nullptr;
+    }
 }
 
 
@@ -200,37 +194,26 @@ int Net::inNet(Layer *l) {
 
 /////////////////////////////////////////
 void Net::walk(Layer *l,vlayer lout) {
-    // If this layer is not in the network, add it, as well as all its children (recursively)
+    if (l->orig!=nullptr) l->net=l->orig->net;
+    else l->net=this;
 
-    if (!inNet(l)) {
-        if (l->orig!=nullptr) l->net=l->orig->net;
-        else l->net=this;
+    if (!inNet(l))
+       layers.push_back(l);
 
-        layers.push_back(l);
-        int ind;
-        if (!isIn(l, lout, ind)) {
-          for (int i = 0; i < l->child.size(); i++)
-            walk(l->child[i],lout);
-        }
-
-    }
+    for (int i = 0; i < l->child.size(); i++)
+       walk(l->child[i],lout);
 }
+
 /////////////////////////////////////////
 void Net::walk_back(Layer *l) {
-    // If this layer is not in the network, add it, as well as all its children (recursively)
+    if (l->orig!=nullptr) l->net=l->orig->net;
+    else l->net=this;
 
-    if (!inNet(l)) {
-        //cout<<l->name<<"  BACK\n";
-        if (l->orig!=nullptr) l->net=l->orig->net;
-        else l->net=this;
-
+    if (!inNet(l))
         layers.push_back(l);
-    }
-    int p=l->parent.size();
-    if (l->isrecurrent) p=min(1,p);
-    for (int i = 0; i < p; i++)
-        walk_back(l->parent[i]);
 
+    for (int i = 0; i < l->parent.size(); i++)
+        walk_back(l->parent[i]);
 }
 
 
@@ -310,8 +293,11 @@ void Net::plot(string fname,string mode) {
 
     cmd = "dot -T " + type + " ./tmp.dot >" + "./" + fname;
 
-    system(cmd.c_str());
-
+    int rc = system(cmd.c_str());
+    if (rc != EXIT_SUCCESS) {
+        std::cerr << "Unable to run the following command" << std::endl << std::endl
+                << "   " << cmd << std::endl;
+    }
 }
 
 /////////////////////////////////////////
@@ -320,11 +306,19 @@ void Net::setlogfile(string fname)
     string str=fname+"_tr.log";
     string sts=fname+"_ts.log";
 
-    flog_tr=fopen(str.c_str(),"wt");
-    if (flog_tr==nullptr) msg("error creating tr log file","Net.setlogfile");
+    this->flog_tr = fopen(str.c_str(),"wt");
+    if (this->flog_tr == nullptr) {
+        msg("error creating tr log file","Net.setlogfile");
+    } else {
+        this->has_to_close_flog_tr = true;
+    }
 
-    flog_ts=fopen(sts.c_str(),"wt");
-    if (flog_ts==nullptr) msg("error creating ts log file","Net.setlogfile");
+    this->flog_ts = fopen(sts.c_str(),"wt");
+    if (this->flog_ts == nullptr) {
+        msg("error creating ts log file","Net.setlogfile");
+    } else {
+        this->has_to_close_flog_ts = true;
+    }
 }
 
 

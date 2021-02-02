@@ -86,11 +86,13 @@ void PoolDescriptor::build(Tensor *A) {
     padcl = pad[2]; padcr = pad[3];  // cols: left-right
 
     if ((r <= 0) || (c <= 0)) {
+        if(r <= 0) { std::cerr << "'Rows' are reach 0 or less (" << r << ")" << std::endl; }
+        if(c <= 0) { std::cerr << "'Columns' are reach 0 or less (" << c << ")" << std::endl; }
         msg("Invalid output shape", "PoolDescriptor::build");
     }
 
-    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-//    if (!mem_level) { D = new Tensor(O->shape, A->device); }
+    this->O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
+//    if (!mem_level) { D = new Tensor(this->O->shape, A->device); }
 
 
     // Careful with the "size++" not "useless loop"
@@ -101,8 +103,60 @@ void PoolDescriptor::build(Tensor *A) {
 }
 
 void PoolDescriptor::resize(int b) {
-  if (b == O->shape[0]) return;
+  if (b == this->O->shape[0]) return;
 
-  O->resize(b);
+  this->O->resize(b);
 //  if (!mem_level) { D->resize(b); }
+}
+
+
+int PoolDescriptor::compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate){
+    if (padding=="same" || padding =="zeros") {
+        return std::ceil((float)input_size/(float)stride);
+
+    }else if(padding =="valid" || padding =="none"){
+        return std::ceil(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate)/(float)stride);
+
+    }else{
+      cout<<padding<<endl;
+        msg("Incorrect padding type", "ConvolDescriptor::compute_output");
+    }
+    return -1;
+}
+
+int PoolDescriptor::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
+    return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
+}
+
+vector<int> PoolDescriptor::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding, bool row){
+    // Padding order: [left, right] // [top, bottom]
+
+    if (padding=="same,none") {
+      if (row) padding="same";
+      else padding="none";
+    }
+    if (padding=="none,same") {
+      if (row) padding="none";
+      else padding="same";
+    }
+
+    if (padding=="same" || padding =="zeros") {
+        int pad = (output_size-1) * stride + kerkel_size - input_size;
+        pad = std::max(pad, 0);
+
+        // Ignore the padding if possible
+        int padl = pad/2;  // 1/2=0.5 => 0
+        int padr = pad - pad/2; // 1-1/2 = 1-0 => 1
+
+        return vector<int>({padl, padr});
+
+    }else if(padding =="valid" || padding =="none"){
+        return vector<int>({0, 0});
+    }
+    else{
+        cout<<padding<<endl;
+        msg("Incorrect padding type", "ConvolDescriptor::compute_padding");
+    }
+
+    return {-1};
 }

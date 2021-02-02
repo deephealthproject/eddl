@@ -19,7 +19,6 @@
 #include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
 
-#define VERBOSE 0
 
 using namespace std;
 using namespace std::chrono;
@@ -47,99 +46,44 @@ void Net::do_reset_grads() {
 }
 
 void Net::do_forward() {
-  if (VERBOSE) {
-    cout<<"START FORWARD\n";
-  }
-  for (int i = 0; i < vfts.size(); i++) {
-    if (VERBOSE) {
-      cout << vfts[i]->name << " Shape: ";
-      for(int j=0;j<vfts[i]->parent.size();j++)
-      fprintf(stdout, "  %s In[%d,%s]:%f\n", vfts[i]->name.c_str(), j, vfts[i]->parent[j]->name.c_str(),vfts[i]->parent[j]->output->sum());
-    }
 
+  for (int i = 0; i < vfts.size(); i++)
     vfts[i]->forward();
-    if (VERBOSE) {
-      fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
-    }
-  }
-  if (VERBOSE) {
-    cout<<"END FORWARD\n";
-    getchar();
-  }
+
 }
 
 void Net::do_backward() {
-  if (VERBOSE) {
-    cout<<"START BACKWARD\n";
-  }
   for (int i = 0; i < vbts.size(); i++) {
-
     if (!vbts[i]->trainable) return;
 
-    if(this->verbosity_level >= 1){
-      std::cout << vbts[i]->name << std::endl;
-    }
-
-    // Reserve parent's delta (if reserved, ignored)
     vbts[i]->mem_delta_parent();
 
-    // Do backward
-    if (VERBOSE) {
-      cout << "backward "<<vbts[i]->name << " delta="<<vbts[i]->delta->sum()<<"\n";
-    }
+     vbts[i]->backward();
 
-    vbts[i]->backward();
-
-
-    // Delete this delta
     if(vbts[i]->mem_level) { vbts[i]->free_delta(); }
-  }
-  if (VERBOSE) {
-    cout<<"END BACKWARD\n";
-    getchar();
   }
 }
 
 void Net::do_delta() {
-  if (VERBOSE) {
-    cout<<"Delta\n";
-    getchar();
-  }
   for (int i = 0; i < lout.size(); i++) {
     lout[i]->mem_delta();
     if (losses.size()>=(i+1)) {
       losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
-      if (VERBOSE) cout<<"Delta: "<<lout[i]->name<<" delta:"<<lout[i]->delta->sum()<<"\n";
     }
-  }
-  if (VERBOSE) {
-    cout<<"Delta end\n";
-    getchar();
   }
 }
 
 void Net::do_compute_loss() {
-  if (VERBOSE) {
-    cout<<"Compute Loss\n";
-    getchar();
-  }
-
   int p = 0;
   for (int i = 0; i < lout.size(); i++, p += 2) {
     // loss value
     if (losses.size()>=(i+1)){
         fiterr[p] = losses[i]->value(lout[i]->target, lout[i]->output);
     }
-
     // metric value
-    if (metrics.size()>=(i+1)){
-        fiterr[p + 1] = metrics[i]->value(lout[i]->target, lout[i]->output);
+    if (this->metrics.size()>=(i+1)){
+        fiterr[p + 1] = this->metrics[i]->value(lout[i]->target, lout[i]->output);
     }
-  }
-
-  if (VERBOSE) {
-    cout<<"Compute Loss end\n";
-    getchar();
   }
 }
 
@@ -149,7 +93,6 @@ void Net::do_applygrads() {
 
 
 void Net::sync_weights() {
-  //cout<<"\nSync weights...\n";
   for (int j = 0; j < layers.size(); j++)
   for (int k = 0; k < layers[j]->params.size(); k++) {
     // Taking average
@@ -216,6 +159,9 @@ void collectTensor(Layer *l,string tname, int p)
     Tensor::copy(sl->params[p],l->params[p]);
     else if (tname=="gradient")
     Tensor::copy(sl->gradients[p],l->gradients[p]);
+    else if (tname=="state")
+    Tensor::copy(sl->states[p],l->states[p]);
+
   }
 }
 
@@ -227,27 +173,28 @@ void distributeTensor(Layer *l,string tname, int p)
   if (sn->snets[0]->dev==DEV_CPU) return;
 
   int i,j,comp;
-
-  comp=sn->snets.size();
-
-  if (sn->batch_size<comp) {
-    msg("batch_size lower than computing service parallelism","distributeTensor");
-
-  }
-  int thread_batch_size=sn->batch_size / comp;
-
   vector<int> sind(sn->batch_size);
-  for(int k=0;k<sn->batch_size;k++) sind[k]=k;
+  int thread_batch_size;
+
+  if ((tname=="output")||(tname=="delta")) {
+    // output or deltas
+    // check batch_size and comp
+    comp=sn->snets.size();
+    if (sn->batch_size<comp) {
+      msg("batch_size lower than computing service parallelism","distributeTensor");
+    }
+    thread_batch_size=sn->batch_size / comp;
+    for(int k=0;k<sn->batch_size;k++) sind[k]=k;
+  }
 
 
   for(i=0;i<sn->snets.size();i++) {
     Layer *sl=nullptr;
-
     for(j=0;j<sn->snets[i]->layers.size();j++)
-    if (sn->snets[i]->layers[j]->orig==l) {
-      sl=sn->snets[i]->layers[j];
-      break;
-    }
+      if (sn->snets[i]->layers[j]->orig==l) {
+        sl=sn->snets[i]->layers[j];
+        break;
+      }
 
     if (sl==nullptr) {
       cout<<l->name<<"\n";
@@ -257,15 +204,20 @@ void distributeTensor(Layer *l,string tname, int p)
     int start = i * thread_batch_size;
     int end = start + sl->output->shape[0];
 
-    if (tname=="output")
+    if (tname=="output") {
       Tensor::select(l->output, sl->output, sind, start, end);
+    }
     else if (tname=="delta") {
       sl->mem_delta();
       Tensor::select(l->delta, sl->delta, sind, start, end);
     }
-    else if (tname=="param")
-    Tensor::copy(l->params[p],sl->params[p]);
-    else if (tname=="gradient")
-    Tensor::copy(l->gradients[p],sl->gradients[p]);
+    else if (tname=="param") {
+      cout<<"Distribute param "<<p<<" to device "<<i<<endl;
+      Tensor::copy(l->params[p],sl->params[p]);
+    }
+    else if (tname=="gradient") {
+      Tensor::copy(l->gradients[p],sl->gradients[p]);
+    }
   }
+
 }

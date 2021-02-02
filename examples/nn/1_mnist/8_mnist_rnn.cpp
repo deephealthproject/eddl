@@ -23,11 +23,18 @@ using namespace eddl;
 //////////////////////////////////
 
 int main(int argc, char **argv) {
+    bool testing = false;
+    bool use_cpu = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
+
     // Download mnist
     download_mnist();
 
     // Settings
-    int epochs = 5;
+    int epochs = 1;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -47,16 +54,23 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU({1}, "low_mem"); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+        // cs = CS_FPGA({1});
+    }
+
     // Build model
     build(net,
           rmsprop(0.001), // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
-          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
-	  //CS_FPGA({1})
-    );
+          cs);
+
 
     // View model
     summary(net);
@@ -74,6 +88,24 @@ int main(int argc, char **argv) {
     x_test->reshape_({10000,28,28});
     y_test->reshape_({10000,1,10});
 
+    if (testing) {
+        std::string _range_ = "0:" + std::to_string(2 * batch_size);
+        Tensor* x_mini_train = x_train->select({_range_, ":", ":"});
+        Tensor* y_mini_train = y_train->select({_range_, ":", ":"});
+        Tensor* x_mini_test  = x_test->select({_range_, ":", ":"});
+        Tensor* y_mini_test  = y_test->select({_range_, ":", ":"});
+
+        delete x_train;
+        delete y_train;
+        delete x_test;
+        delete y_test;
+
+        x_train = x_mini_train;
+        y_train = y_mini_train;
+        x_test  = x_mini_test;
+        y_test  = y_mini_test;
+    }
+
     // Preprocessing
     x_train->div_(255.0f);
     x_test->div_(255.0f);
@@ -85,7 +117,12 @@ int main(int argc, char **argv) {
       fit(net,{x_train}, {y_train}, batch_size, 1);
       evaluate(net, {x_test}, {y_test});
     }
-
-
-
+ 
+    delete x_train;
+    delete y_train;
+    delete x_test;
+    delete y_test;
+    delete net;
+    
+    return EXIT_SUCCESS;
 }

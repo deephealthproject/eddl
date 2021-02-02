@@ -35,7 +35,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     // Check dev with tensor dev
 
     // Set default name
-    if(name.empty()) this->name = "conv" + to_string(++total_layers);
+    if(name.empty()) this->name = "conv2d" + to_string(++total_layers);
 
     input = parent->output;
     cd = D;
@@ -63,7 +63,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
 
 
 LConv::~LConv(){
-//    delete cd;  // Just in case
+    delete cd;  
 }
 
 // virtual
@@ -132,6 +132,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     n->orig = this;
     n->isshared=true;
     n->trainable = trainable;
+    n->do_deletes = false;
 
     n->cd->use_bias=cd->use_bias;
 
@@ -168,8 +169,10 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
         n->acc_gradients.push_back(n->cd->acc_gbias);
     }
 
-    n->reg=reg;
-    n->init=init;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     return n;
 }
@@ -178,12 +181,15 @@ Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
 
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
     n->trainable = trainable;
+    n->do_deletes = false;
 
     n->orig = this;
-    n->cd->use_bias=cd->use_bias;
+    n->cd->use_bias = cd->use_bias;
 
-    n->reg=reg;
-    n->init=init;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     if (distributed_training)
         n->enable_distributed();

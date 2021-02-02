@@ -49,6 +49,9 @@ int main(int argc, char **argv) {
     t1->save(output + "original_modified.jpg");
     cout << "Image saved! (Original modified)" << endl;
 
+    delete t1;
+    delete t2;
+    delete t3;
 
     // ***************************************************
     // Perform more manipulations ************************
@@ -104,6 +107,8 @@ int main(int argc, char **argv) {
     t2->save(output + "example_cutout.jpg");
     cout << "Image saved! (cutout)" << endl;
 
+    delete t2;
+
     // Increase brightness
     t2 = t1->clone(); // Copy image for changes in-place
     t2->mult_(1.5);
@@ -111,4 +116,7 @@ int main(int argc, char **argv) {
     t2->save(output + "example_brightness.jpg");
     cout << "Image saved! (brightness)" << endl;
 
+    delete t1;
+    delete t2;
+    delete t3;
 }

@@ -62,10 +62,7 @@ namespace eddl {
       *  @return     Model instance
     */
     model Model(vlayer in, vlayer out);
-    model Model(vector<Net*> vnets);
     void setName(model m, string name);
-
-    layer getLayer(Net *net, vlayer in);
     layer getLayer(Net *net, string l);
     void removeLayer(Net *net, string l);
     void setTrainable(model net, string lanme, bool val);
@@ -88,7 +85,7 @@ namespace eddl {
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, bool init_weights=true);
 
     // Computing services
-    
+
     void toGPU(model net, vector<int> g, int lsb);
     void toGPU(model net, vector<int> g, string mem);
     /**
@@ -104,7 +101,7 @@ namespace eddl {
     void toGPU(model net, vector<int> g);
     void toGPU(model net, string mem);
     void toGPU(model net);
-    
+
     //void toGPU(model net, string mem);
     /**
       *  @brief Assign model operations to the CPU.
@@ -640,7 +637,7 @@ namespace eddl {
     */
     float compute_metric(loss L);
     /**
-      *  @brief Get Loss by its name.
+      *  @brief Get Loss object by its name.
       *
       *  @param type  Loss name/type
       *  @return     Selected Loss
@@ -665,7 +662,7 @@ namespace eddl {
     */
     loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
     /**
-      *  @brief Get Metric by its name.
+      *  @brief Get Metric object by its name.
       *
       *  @param type  Metric name/type
       *  @return     Selected Metric
@@ -872,7 +869,7 @@ namespace eddl {
     layer Tanh(layer parent, string name="");
 
     /**
-      *  @brief 2D Convolution layer.
+      *  @brief Convolution layer.
       *
       *  @param parent  Parent layer
       *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
@@ -910,7 +907,43 @@ namespace eddl {
 
 
     /**
-      *  @brief Pointwise convolution
+  *  @brief 2D Convolution layer.
+  *
+  *  @param parent  Parent layer
+  *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+  *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window
+  *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+  *  @param padding  One of "none", "valid" or "same"
+  *  @param use_bias  Boolean, whether the layer uses a bias vector
+  *  @param groups  Number of blocked connections from input channels to output channels
+  *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+  *  @param name  A name for the operation
+  *  @return     Convolution layer
+*/
+    layer Conv2D(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    /**
+    *  @brief 3D Convolution layer.
+    *
+    *  @param parent  Parent layer
+    *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+    *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window
+    *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+    *  @param padding  One of "none", "valid" or "same"
+    *  @param use_bias  Boolean, whether the layer uses a bias vector
+    *  @param groups  Number of blocked connections from input channels to output channels
+    *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+    *  @param name  A name for the operation
+    *  @return     Convolution layer
+    */
+    layer Conv3D(layer parent, int filters, const vector<int> &kernel_size,
+                 const vector<int> &strides = {1, 1, 1}, string padding = "same", bool use_bias = true,
+                 int groups = 1, const vector<int> &dilation_rate = {1, 1, 1}, string name = "");
+
+    /**
+      *  @brief Pointwise 2D convolution
       *
       *  @param parent  Parent layer
       *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
@@ -921,8 +954,12 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     Convolution layer
     */
-    layer PointwiseConv(layer parent, int filters, const vector<int> &strides = {1, 1}, bool use_bias = true,
+    layer PointwiseConv2D(layer parent, int filters, const vector<int> &strides = {1, 1}, bool use_bias = true,
                int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    // Legacy
+    layer PointwiseConv(layer parent, int filters, const vector<int> &strides = {1, 1}, bool use_bias = true,
+                        int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
     /**
       *  @brief Regular densely-connected NN layer.
@@ -970,6 +1007,9 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */
+    layer UpSampling2D(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
+
+    // Legacy
     layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
 
     /**
@@ -991,6 +1031,25 @@ namespace eddl {
     */
     layer Flatten(layer parent, string name = "");
 
+    /**
+      *  @brief Dimension of size one is removed at the specified position. (Batch dimension is ignored)
+      *
+      *  @param parent  Parent layer
+      *  @param  axis if given, the input will be squeezed only in this dimension. Else (-1), squeezes all
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Squeeze(layer parent, int axis=-1, string name = "");
+
+        /**
+      *  @brief Dimension of size one is inserted at the specified position. (Batch dimension is ignored)
+      *
+      *  @param parent  Parent layer
+      *  @param  axis if given, the input will be unsqueezed only in this dimension
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Unsqueeze(layer parent, int axis=0, string name = "");
 
     /**
       *  @brief Transposed convolution layer (sometimes called Deconvolution).
@@ -1009,10 +1068,15 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */
-    layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
+    layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
+    // Legacy
+    layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
+                  const vector<int> &output_padding, string padding = "same",
+                  const vector<int> &dilation_rate = {1, 1},
+                  const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
 
     /**
       *  @brief Turns positive integers (indexes) into dense vectors of fixed size. eg. [[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]
@@ -1747,33 +1811,6 @@ namespace eddl {
 
     // Pooling Layers
     /**
-      *  @brief Average pooling operation.
-      *
-      *  @param parent  Parent layer
-      *  @param pool_size  Size of the average pooling windows
-      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
-      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
-      *  @param name  A name for the operation
-      *  @return     The result after apply the average pooling operation over the parent layer
-    */
-    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");
-    /**
-      *  @brief Global Max pooling operation.
-      *
-      *  @param parent  Parent layer
-      *  @param name  A name for the operation
-      *  @return     The result after applying the global max pooling operation over the parent layer
-    */
-    layer GlobalMaxPool(layer parent, string name = "");
-    /**
-      *  @brief Global Average pooling operation.
-      *
-      *  @param parent  Parent layer
-      *  @param name  A name for the operation
-      *  @return     The result after applying the global average pooling operation over the parent layer
-    */
-    layer GlobalAveragePool(layer parent, string name = "");
-    /**
       *  @brief Max pooling operation.
       *
       *  @param parent  Parent layer
@@ -1783,10 +1820,10 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after applying the max pooling operation over the parent layer
     */
-    layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
+    layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
 
     /**
-      *  @brief Max 1D pooling operation.
+      *  @brief MaxPooling1D operation.
       *
       *  @param parent  Parent layer
       *  @param pool_size  Size of the max pooling windows
@@ -1797,6 +1834,151 @@ namespace eddl {
     */
     layer MaxPool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");
 
+    /**
+      *  @brief MaxPooling2D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the max pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after applying the max pooling operation over the parent layer
+    */
+    layer MaxPool2D(layer parent, vector<int> pool_size = {2, 2}, vector<int> strides = {2, 2}, string padding = "none", string name = "");
+
+    /**
+      *  @brief MaxPooling3D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the max pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after applying the max pooling operation over the parent layer
+    */
+    layer MaxPool3D(layer parent, vector<int> pool_size = {2, 2, 2}, vector<int> strides = {2, 2, 2}, string padding = "none", string name = "");
+
+    /**
+     *  @brief Average pooling operation.
+     *
+     *  @param parent  Parent layer
+     *  @param pool_size  Size of the average pooling windows
+     *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+     *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+     *  @param name  A name for the operation
+     *  @return     The result after apply the average pooling operation over the parent layer
+   */
+    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
+
+    /**
+      *  @brief AveragePooling1D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the average pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after apply the average pooling operation over the parent layer
+    */
+    layer AveragePool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");
+
+    /**
+      *  @brief AveragePooling2D operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the average pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+      *  @param name  A name for the operation
+      *  @return     The result after apply the average pooling operation over the parent layer
+    */
+    layer AveragePool2D(layer parent, vector<int> pool_size = {2, 2}, vector<int> strides = {2, 2}, string padding = "none", string name = "");
+
+    /**
+  *  @brief AveragePooling3D operation.
+  *
+  *  @param parent  Parent layer
+  *  @param pool_size  Size of the average pooling windows
+  *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+  *  @param padding  One of "none", "valid" or "same" (case-insensitive)
+  *  @param name  A name for the operation
+  *  @return     The result after apply the average pooling operation over the parent layer
+*/
+    layer AveragePool3D(layer parent, vector<int> pool_size = {2, 2, 2}, vector<int> strides = {2, 2, 2}, string padding = "none", string name = "");
+
+    /**
+      *  @brief GlobalMax pooling operation.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     The result after applying the global max pooling operation over the parent layer
+    */
+    layer GlobalMaxPool(layer parent, string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
+
+    /**
+    *  @brief GlobalMaxPooling1D operation.
+    *
+    *  @param parent  Parent layer
+    *  @param name  A name for the operation
+    *  @return     The result after applying the global max pooling operation over the parent layer
+*/
+    layer GlobalMaxPool1D(layer parent, string name = "");
+
+
+    /**
+        *  @brief GlobalMaxPooling2D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global max pooling operation over the parent layer
+    */
+    layer GlobalMaxPool2D(layer parent, string name = "");
+
+    /**
+        *  @brief GlobalMaxPooling3D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global max pooling operation over the parent layer
+    */
+    layer GlobalMaxPool3D(layer parent, string name = "");
+
+    /**
+      *  @brief GlobalAveragePooling operation.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     The result after applying the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool(layer parent, string name = ""); // TODO: Deprecated? Generic but not generic... (2D only)
+
+    /**
+        *  @brief GlobalAveragePooling1D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool1D(layer parent, string name = "");
+
+
+    /**
+        *  @brief GlobalAveragePooling2D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool2D(layer parent, string name = "");
+
+    /**
+        *  @brief GlobalAveragePooling3D operation.
+        *
+        *  @param parent  Parent layer
+        *  @param name  A name for the operation
+        *  @return     The result after applying the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool3D(layer parent, string name = "");
 
     // Recurrent Layers
 
@@ -1827,6 +2009,34 @@ namespace eddl {
 
     layer LSTM(vector<layer> parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
 
+    layer States(const vector<int> &shape, string name = "");
+
+    /**
+      *  @brief Upsampling layer.
+      *
+      *  @details
+      *   Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
+      *
+      *  @param parent  Parent layer
+      *  @param size  Vector of 2 integers. The upsampling factors for rows and columns
+      *  @param interpolation  A string, one of "nearest" or "bilinear"
+      *  @param name  A name for the operation
+      *  @return     Output layer after upsampling operation
+    */
+    /**
+      *  @brief Gated Recurrent Unit (GRU).
+      *
+      *  @param parent  Parent layer
+      *  @param units  Dimensionality of the output space
+      *  @param mask_zeros
+      *  @param bidirectional  Wether the RNN is bidirectional or not
+      *  @param name  A name for the operation
+      *  @return     The GRU layer
+    */
+    layer GRU(layer parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
+
+    layer GRU(vector<layer> parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
+
     layer GetStates(layer parent);
 
     void setDecoder(layer l);
@@ -1839,13 +2049,15 @@ namespace eddl {
     Tensor* getDelta(layer l1);
     Tensor* getParam(layer l1, int p);
     Tensor* getGradient(layer l1,int p);
+    Tensor* getState(layer l1,int p);
     vector<Tensor*> getParams(layer l1);
     vector<Tensor*> getGradients(layer l1);
+    vector<Tensor*> getStates(layer l1);
     void copyOutput(Layer *l1,Layer *l2);
     void copyDelta(Layer *l1,Layer *l2);
     void copyParam(Layer *l1,Layer *l2, int p=-1);
     void copyGradient(Layer *l1,Layer *l2, int p);
-
+    void distributeParams(Layer *l);
 
     ///////////////////////////////////////
     //  INITIALIZERS
@@ -2020,6 +2232,7 @@ namespace eddl {
     */
     void download_flickr();
 
-
+    // Auxiliary function
+    layer _expand3d_to_4d(layer parent, string name);
 }
 #endif

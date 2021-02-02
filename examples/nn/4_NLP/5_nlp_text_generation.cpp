@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     download_flickr();
 
     // Settings
-    int epochs = 0;
+    int epochs = 10;
     int batch_size = 24;
 
     int olength=20;
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     // Decoder
     layer ldecin = Input({outvs});
     layer ldec = ReduceArgMax(ldecin,{0});
-    ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
+    ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim,true),-0.05,0.05);
 
     ldec = Concat({ldec,lreshape});
 
@@ -120,9 +120,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({0,1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          //CS_CPU()
     );
 
     // View model
@@ -143,17 +143,24 @@ int main(int argc, char **argv) {
     y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x input_dim
     y_train->info();
 
+
+    //load(net,"img2text.bin","bin");
+
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net, {xtrain}, {y_train}, batch_size, 1);
     }
 
+    save(net,"img2text.bin","bin");
 
     /////////////////////////////////////////////
     // INFERENCE
     /////////////////////////////////////////////
 
 
+    cout<<"==================================\n";
+    cout<<"===         INFERENCE          ===\n";
+    cout<<"==================================\n";
 
 
     /////////////////////////////////////////////
@@ -170,7 +177,7 @@ int main(int argc, char **argv) {
           adam(0.001), // not relevant
           {"mse"}, // not relevant
           {"mse"}, // not relevant
-          CS_CPU() // CPU
+          CS_CPU(),false // CPU
     );
     summary(cnn);
     plot(cnn,"cnn.pdf");
@@ -202,20 +209,20 @@ int main(int argc, char **argv) {
 
     ldecin = Input({outvs});
     layer image = Input({512});
-    //layer lstates = States({2,512});
+    layer lstate = States({2,512});
 
     ldec = ReduceArgMax(ldecin,{0});
     ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
 
     ldec = Concat({ldec,image});
 
-    l = LSTM(ldec,512,true);
+    layer lstm = LSTM({ldec,lstate},512,true);
 
-    l->isrecurrent=false; // Important
+    lstm->isrecurrent=false; // Important
 
-    out = Softmax(Dense(l, outvs));
+    out = Softmax(Dense(lstm, outvs));
 
-    model decoder=Model({ldecin,image},{out});
+    model decoder=Model({ldecin,image,lstate},{out});
 
     // Build model
     build(decoder,
@@ -237,29 +244,34 @@ int main(int argc, char **argv) {
 
    ////// N-best for sample s
    int s=100; //sample 100
+   // three input tensors with batch_size=1 (one sentence)
    Tensor *treshape=timage->select({to_string(s),":"});
    Tensor *text=y_train->select({to_string(s),":",":"}); //1 x olength x outvs
-   Tensor *state=Tensor::zeros({512});
+   Tensor *state=Tensor::zeros({1,2,512}); // batch x num_states x dim_states
 
    for(int j=0;j<olength;j++) {
+     cout<<"Word:"<<j<<endl;
 
      Tensor *word;
      if (j==0) word=Tensor::zeros({1,outvs});
      else {
-       string n=to_string(j-1);
-       word=text->select({"0",n,":"});
-       word->reshape_({1,1,outvs});
+       word=text->select({"0",to_string(j-1),":"});
+       word->reshape_({1,outvs}); // batch=1
      }
 
-     //setState(lstate,state)
-     treshape->reshape_({1,512});
-
-     cout<<"forward"<<endl;
-     forward(decoder,(vtensor){word,treshape});
+     treshape->reshape_({1,512}); // batch=1
+     Tensor *state=Tensor::zeros({1,2,512}); // batch=1
+     
+     forward(decoder,(vtensor){word,treshape,state});
 
      Tensor *outword=getOutput(out);
-     //delete state;
-     //state=getState(lstate);
+
+     vector<Tensor*> vstates=getStates(lstm); 
+     for(int i=0;i<vstates.size();i++) {
+       state->set_select({":",to_string(i),":"},vstates[i]->reshape({1,1,512}));
+       delete vstates[i];
+     }
+     vstates.clear();
    }
 
 }

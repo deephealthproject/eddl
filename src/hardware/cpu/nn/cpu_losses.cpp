@@ -43,7 +43,7 @@ float cpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
     }
 
     // Compute mean
-    float mean_ce = -sum/(float)y_true->shape[0];
+    float mean_ce = -sum;//(float)y_true->shape[0];
     return mean_ce;
 }
 
@@ -66,7 +66,7 @@ float cpu_binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
     }
 
     // Compute mean
-    float mean_ce = -sum/(float)y_true->shape[0];
+    float mean_ce = -sum;//(float)y_true->shape[0];
     return mean_ce;
 }
 

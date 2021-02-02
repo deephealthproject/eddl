@@ -29,7 +29,7 @@ RMSProp::~RMSProp() {
     for(int i=0; i<gT1.size(); i++){ delete gT1[i]; gT1[i] = nullptr;}
 }
 
-void RMSProp::change(vector<float> &p) {
+void RMSProp::change(vector<float> p) {
   if (p.size()>0) lr = p[0];
   if (p.size()>1) rho = p[1];
   cout<<"Optimizer RMSProp set new lr="<<lr<<" rho="<<rho<<"\n";

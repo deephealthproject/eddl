@@ -33,6 +33,7 @@ public:
     Optimizer *orig;
 
     Optimizer();
+    virtual ~Optimizer();
 
     void set_clip_val(float v);
     void clip();
@@ -44,7 +45,7 @@ public:
     virtual Optimizer *clone() { return nullptr; }
     virtual Optimizer *share() { return nullptr; }
 
-    virtual void change(vector<float> &p) {}
+    virtual void change(vector<float> p) {}
 
 };
 
@@ -58,7 +59,7 @@ public:
     vtensor mT;
 
     explicit SGD(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
-    ~SGD();
+    virtual ~SGD();
 
     Optimizer *clone() override;
     Optimizer *share() override;
@@ -67,7 +68,7 @@ public:
 
     void applygrads(int batch) override;
 
-    void change(vector<float> &p) override;
+    void change(vector<float> p) override;
 };
 
 // ---- Adam ----
@@ -87,7 +88,7 @@ public:
     vtensor vCap;
 
     explicit Adam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f, bool amsgrad=false);
-    ~Adam();
+    virtual ~Adam();
 
     Optimizer *clone() override;
     Optimizer *share() override;
@@ -96,7 +97,7 @@ public:
 
     void applygrads(int batch) override;
 
-    void change(vector<float> &p) override;
+    void change(vector<float> p) override;
 };
 
 
@@ -111,7 +112,7 @@ public:
     vtensor mT;
 
     explicit AdaDelta(float lr=0.01f, float rho=0.95f, float epsilon=1e-8f, float weight_decay=0.0f);
-    ~AdaDelta();
+    virtual ~AdaDelta();
 
 //    Optimizer *clone();
 //
@@ -132,7 +133,7 @@ public:
     vtensor mT;
 
     explicit Adagrad(float lr=0.01f, float epsilon=1e-8f, float weight_decay=0.0f);
-    ~Adagrad();
+    virtual ~Adagrad();
 
 //    Optimizer *clone();
 //
@@ -155,7 +156,7 @@ public:
     vtensor mT;
 
     explicit Adamax(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f);
-    ~Adamax();
+    virtual ~Adamax();
 
 //    Optimizer *clone();
 //
@@ -179,7 +180,7 @@ public:
 
     explicit Nadam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float schedule_decay=0.004f);
 
-    ~Nadam();
+    virtual ~Nadam();
 
 //    Optimizer *clone();
 //
@@ -203,7 +204,7 @@ public:
 
     explicit RMSProp(float lr=0.01f, float rho=0.9f, float epsilon=1e-8f, float weight_decay=0.0f);
 
-    ~RMSProp();
+    virtual ~RMSProp();
 
     Optimizer *clone() override;
     Optimizer *share() override;
@@ -212,7 +213,7 @@ public:
 
     void applygrads(int batch) override;
 
-    void change(vector<float> &p) override;
+    void change(vector<float> p) override;
 };
 #endif
 

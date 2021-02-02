@@ -44,6 +44,13 @@ void gpu_mpool2D_back(PoolDescriptor *D){
     check_cuda(cudaDeviceSynchronize(),"gpu_mpool_back");
 }
 
+void gpu_mpool3D(PoolDescriptor3D *D){
+
+}
+
+void gpu_mpool3D_back(PoolDescriptor3D *D){
+
+}
 
 void gpu_avgpool2D(PoolDescriptor *D){
     int device=D->I->gpu_device;
