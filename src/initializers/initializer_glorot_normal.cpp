@@ -40,7 +40,7 @@ void IGlorotNormal::apply(Tensor* params)
       int rf=params->shape[2]*params->shape[3];
       int fin=rf*params->shape[1];
       int fout=rf*params->shape[0];
-      params->fill_rand_normal_(0.0f, ::sqrtf(2.0f / (float) (fin + fout)));
+      params->fill_rand_normal_(0.0f, ::sqrtf(1.0f / (float) (fin)), false);
     }
   else {
       params->fill_rand_signed_uniform_(0.1f);

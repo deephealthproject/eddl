@@ -45,7 +45,8 @@ Layer::Layer(string name, int dev, int mem) {
 
     this->reg = nullptr;
     // init = new IGlorotNormal(1234);
-    this->init = new IGlorotUniform(1234);  // Has problems with the drive dataset
+//    this->init = new IGlorotUniform(1234);  // Has problems with the drive dataset
+    this->init = new IGlorotNormal(1234);  // Has problems with the drive dataset
 }
 
 Layer::~Layer(){
