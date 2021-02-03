@@ -47,6 +47,28 @@ public:
     Tensor *gbn_b;
     Tensor *opa; //output pre-affine
 
+#ifdef cCUDNN
+
+      //BNSCALE = Gamma -> bn_g
+      //BNBIAS = BETA -> bn_b
+      cudnnHandle_t                    cudnn_handle;
+      cudnnBatchNormMode_t             bn_mode;
+      cudnnTensorDescriptor_t          xDesc;
+      cudnnTensorDescriptor_t          yDesc;
+      cudnnTensorDescriptor_t          bnScaleBiasMeanVarDesc;
+      double                           exponentialAverageFactor;
+      //mean void                            *resultRunningMean;
+      //var void                            *resultRunningVariance;
+      //double                           epsilon;
+      //bn_mean void                            *resultSaveMean,
+      //bn_var void                            *resultSaveInvVariance
+
+      //BNSCALE = gGamma -> gbn_g
+      //BNBIAS = gBETA -> gbn_b
+      cudnnDataType_t data_type;
+     cudnnTensorFormat_t tensor_format;
+#endif
+
     bool init;
     vector<int> shape;
 

@@ -19,7 +19,11 @@
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/utils.h"
+#ifdef cCUDNN
+#include <cudnn.h>
+extern cudnnHandle_t hdnn;
 
+#endif
 
 using namespace std;
 
@@ -69,7 +73,7 @@ public:
 
     int nk, kr, kc, kz;
     int sr, sc;
-    int ir, ic, iz;
+    int in, ir, ic, iz;
     int r, c, z;
     int padrt,padrb;
     int padcl,padcr;
@@ -113,6 +117,28 @@ public:
     Tensor *gpuK; // kernels
     Tensor *gpugK; // gradient kernels
     Tensor *gpuD; // Delta
+
+#ifdef cCUDNN
+    // Following cuDNN nomenclature
+    cudnnHandle_t cudnn_handle;
+    cudnnConvolutionMode_t convolution_mode;
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+
+    cudnnConvolutionFwdAlgo_t fwd_algorithm;
+    cudnnConvolutionBwdFilterAlgo_t bwd_filter_algorithm;
+    cudnnConvolutionBwdDataAlgo_t bwd_data_algorithm;
+    cudnnConvolutionDescriptor_t convolution_descriptor;
+    cudnnTensorDescriptor_t xDesc; //input. also dxDesc
+    cudnnFilterDescriptor_t wDesc; //kernels also dwDesc
+    cudnnTensorDescriptor_t yDesc; //output also dyDesc
+    cudnnTensorDescriptor_t bDesc; //bias, also dbias
+
+    int cudnn_env_init;
+    int cudnn_conv_back_init;
+#endif
+
+
 
 #ifdef cFPGA
     // FPGA implementation
@@ -230,6 +256,23 @@ public:
     Tensor *ID= nullptr;// Delta input map
     Tensor *D = nullptr; // Delta
     Tensor *O= nullptr; // Outputmap
+
+#ifdef cCUDNN
+    cudnnPoolingDescriptor_t    poolingDesc;
+    cudnnPoolingMode_t          mode;
+    cudnnNanPropagation_t       maxpoolingNanOpt;
+    int                         windowHeight;
+    int                         windowWidth;
+    int                         verticalPadding;
+    int                         horizontalPadding;
+    int                         verticalStride;
+    int                         horizontalStride;
+/* Heritage from convolution descriptor
+    cudnnHandle_t cudnn_handle;
+    cudnnTensorDescriptor_t xDesc; //input. also dxDesc
+    cudnnTensorDescriptor_t yDesc; //output also dyDesc
+*/
+#endif
 
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, const string& p, int mem=0);
 

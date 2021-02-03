@@ -16,7 +16,9 @@
 #include <curand.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
-
+#ifdef cCUDNN
+#include <cudnn.h>
+#endif
 //
 //#include <cstdio>
 //#include <cuda.h>
@@ -36,6 +38,9 @@ extern curandGenerator_t random_generator[64];
 void check_cublas(cublasStatus_t status, const char *f);
 
 void check_curand(curandStatus_t status, const char *f);
+#ifdef cCUDNN
+void check_cudnn(cudnnStatus_t status);
+#endif
 
 void check_cuda(cudaError_t err,const char *msg);
 void gpu_set_device(int device);

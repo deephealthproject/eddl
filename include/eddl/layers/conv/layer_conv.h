@@ -17,6 +17,9 @@
 #include "eddl/layers/layer.h"
 #include "eddl/regularizers/regularizer.h"
 
+
+
+
 #define TRMODE 1
 #define TSMODE 0
 
@@ -30,6 +33,7 @@ public:
 	bool distributed_training;
 
     ConvolDescriptor *cd;
+
 
     // constructors and clones
     LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,

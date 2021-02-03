@@ -66,7 +66,6 @@ LConv::~LConv(){
 // virtual
 void LConv::resize(int batch){
     cd->resize(batch);
-
 }
 
 void LConv::mem_delta(){

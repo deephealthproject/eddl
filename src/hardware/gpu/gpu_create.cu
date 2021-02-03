@@ -23,7 +23,6 @@
 void gpu_range(Tensor *A, float start, float step) {
     int device=A->gpu_device;
     cudaSetDevice(device);
-
     setDims(A);
 
     range<<<dimGrid,dimBlock>>>(A->ptr, start, step, A->size);

@@ -89,6 +89,7 @@ void ConvolDescriptor::build(Tensor *A) {
     sr = stride[0];
     sc = stride[1];
 
+    in = A->shape[0]; //batch size
     iz = A->shape[1];
     ir = A->shape[2];
     ic = A->shape[3];
@@ -126,6 +127,20 @@ void ConvolDescriptor::build(Tensor *A) {
     padrt = pads[0]; padrb = pads[1];  // rows: top-bottom
     padcl = pads[2]; padcr = pads[3];  // cols: left-right
 
+#ifdef cCUDNN
+    if (pad[0] != pad[1] || pad[2] != pad[3]){
+        std::cout<<"==============================================="<<std::endl;
+        std::cout<<"Error: padding not supported by cuDNN"<<std::endl;
+        std::cout<<"==============================================="<<std::endl;
+        for(int i = 0; i< pad.size();i++)
+           std::cout<<"PAD["<<i<<"]="<< pad[i] <<std::endl;
+        msg("cuDNN requires equal top-bottom or left-right padding");
+    }
+#endif
+
+
+
+
     if ((r <= 0) || (c <= 0)) {
         if(r <= 0) { std::cerr << "'Rows' are reach 0 or less (" << r << ")" << std::endl; }
         if(c <= 0) { std::cerr << "'Columns' are reach 0 or less (" << c << ")" << std::endl; }
@@ -150,6 +165,7 @@ void ConvolDescriptor::build(Tensor *A) {
     }
 #ifdef cGPU
     else if (I->isGPU()) {
+#ifndef cCUDNN
         if (mem_level>1) {
             // Lowering
             gpuIB=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
@@ -160,7 +176,7 @@ void ConvolDescriptor::build(Tensor *A) {
             if (mem_level==0)
                 gpuOB=new Tensor(vector<int>{z,A->shape[0]*r*c}, I->device);
         }
-
+#endif
         // Tensor with variable shared ptr, delete create ptr
         gpuI=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpuI->ptr);
@@ -178,6 +194,38 @@ void ConvolDescriptor::build(Tensor *A) {
         gpugK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpugK->ptr);
     }
+#ifdef cCUDNN
+    //CUDNN
+    cudnn_handle = hdnn;
+    convolution_mode = CUDNN_CONVOLUTION; //CUDNN_CROSS_CORRELATION
+    data_type = CUDNN_DATA_FLOAT;
+    tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
+
+    cudnnCreateConvolutionDescriptor(&convolution_descriptor);
+
+    cudnnSetConvolution2dDescriptor(convolution_descriptor,
+                                    pad[0], pad[2],
+                                    stride[0], stride[1],
+                                    1,1,
+                                    convolution_mode, data_type);
+
+
+   cudnnCreateTensorDescriptor(&xDesc);
+   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 in,iz,ir,ic);
+
+   cudnnCreateFilterDescriptor(&wDesc);
+   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
+
+   cudnnCreateTensorDescriptor(&yDesc);
+   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
+
+   cudnnCreateTensorDescriptor(&bDesc);
+   cudnnSetTensor4dDescriptor(bDesc, tensor_format, data_type, 1, nk,1,1);
+   cudnn_env_init = -1;
+   cudnn_conv_back_init = -1;
+
+#endif
 #endif
 
 #ifdef cFPGA
@@ -209,13 +257,24 @@ void ConvolDescriptor::resize(int b)
     }
 #ifdef cGPU
     else if (I->isGPU()) {
-        if (mem_level<2)
+#ifndef cCUDNN
+      if (mem_level<2)
             gpuIB->resize(b*r*c);
         if (mem_level==0) {
             delete gpuOB;
             gpuOB=new Tensor(vector<int>{z,b*r*c}, I->device);
         }
-    }
+#endif
+
+#ifdef cCUDNN
+   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 b,iz,ir,ic);
+
+   cudnnCreateTensorDescriptor(&yDesc);
+   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+
+#endif
+}
 #endif
 
 #ifdef cFPGA
