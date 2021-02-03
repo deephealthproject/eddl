@@ -102,14 +102,15 @@ void * eddl_malloc(size_t size, const string & str_info)
             //ptr=(float *)aligned_alloc(64, size*sizeof(float));
             rc = posix_memalign((void **)&ptr, alignment_block_size, size);
             error = (0 != rc);
+            errno = rc;
         }
         catch (std::bad_alloc & badAlloc) { error = true; }
     }
 
 #elif defined(EDDL_WINDOWS)
-
+    errno = 0;
     ptr = _aligned_malloc(size, alignment_block_size);
-    error = (nullptr == ptr || errno != 0);
+    error = (nullptr == ptr || errno != ENOMEM);
 #else
 #error "A proper configuration must define either EDDL_LINUX, EDDL_APPLE or EDDL_WINDOWS"
 #endif

@@ -120,9 +120,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          CS_GPU({0,1}) // one GPU
+          //CS_GPU({0,1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
     );
 
     // View model
@@ -262,7 +262,12 @@ int main(int argc, char **argv) {
      treshape->reshape_({1,512}); // batch=1
      Tensor *state=Tensor::zeros({1,2,512}); // batch=1
      
-     forward(decoder,(vtensor){word,treshape,state});
+     vtensor input;
+     input.push_back(word);
+     input.push_back(treshape);
+     input.push_back(state);
+     forward(decoder, input);
+     // forward(decoder,(vtensor){word,treshape,state});
 
      Tensor *outword=getOutput(out);
 
