@@ -172,7 +172,7 @@ public:
 
     int nk, kz, kd, kr, kc;  // nk=num filters, kz=kernel channels, kd=kernel depth, kr=kernel rows, kc=Kernel cols
     int sd, sr, sc;  // sd=stride depth, sr=stride rows, sc=stride cols
-    int iz, id, ir, ic;  // iz=input channels, id=input depth, ir=input rows, ic=input cols
+    int in, iz, id, ir, ic;  // in=input batches, iz=input channels, id=input depth, ir=input rows, ic=input cols
     int z, d, r, c;  // z=channels, d=depth, r=rows, c=cols
     int paddf,paddb;  // pad(ding) d(epth) + f(ront) / b(ack)
     int padrt,padrb; // pad(ding) r(ows) + t(op) / b(ottom)
@@ -244,7 +244,7 @@ public:
 
     int nk, kr, kc, kz;
     int sr, sc;
-    int ir, ic, iz;
+    int in, ir, ic, iz;
     int r, c, z;
     int padrt,padrb;
     int padcl,padcr;
