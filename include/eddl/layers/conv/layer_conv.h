@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -17,6 +17,9 @@
 #include "eddl/layers/layer.h"
 #include "eddl/regularizers/regularizer.h"
 
+
+
+
 #define TRMODE 1
 #define TSMODE 0
 
@@ -30,6 +33,7 @@ public:
 	bool distributed_training;
 
     ConvolDescriptor *cd;
+
 
     // constructors and clones
     LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,

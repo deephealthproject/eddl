@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -33,6 +33,14 @@ LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, const string& name, int dev
     D->indX = new Tensor(D->O->shape, dev);  // Is this needed here?
     D->indY = new Tensor(D->O->shape, dev);
 
+#ifdef cCUDNN
+    D->mode = CUDNN_POOLING_MAX;
+    D->maxpoolingNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+    cudnnStatus_t bbb = cudnnSetPooling2dDescriptor(D->poolingDesc, D->mode, D->maxpoolingNanOpt, D->windowHeight, D->windowWidth,
+    D->verticalPadding, D->horizontalPadding, D->verticalStride, D->horizontalStride);
+    if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create pooling descriptor "<< cudnnGetErrorString(bbb) <<std::endl;
+
+#endif
 }
 
 

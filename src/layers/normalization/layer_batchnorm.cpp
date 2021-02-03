@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -63,6 +63,38 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
         gradients.push_back(gbn_g);
         gradients.push_back(gbn_b);
     }
+#ifdef cCUDNN
+      cudnn_handle = hdnn;
+      data_type = CUDNN_DATA_FLOAT;
+      tensor_format = CUDNN_TENSOR_NCHW;
+      bn_mode =(input->ndim > 2) ? CUDNN_BATCHNORM_SPATIAL : CUDNN_BATCHNORM_PER_ACTIVATION;
+      cudnnCreateTensorDescriptor(&xDesc);
+      cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 input->shape[0],input->shape[1],
+                 (input->shape.size()>2) ? input->shape[2] : 1,
+                 (input->shape.size()>3) ? input->shape[3] : 1);
+      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor x "<< cudnnGetErrorString(bbb) <<std::endl;
+      cudnnCreateTensorDescriptor(&yDesc);
+      bbb = cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                 output->shape[0],output->shape[1],
+                 (output->shape.size()>2) ? output->shape[2] : 1,
+                 (output->shape.size()>3) ? output->shape[3] : 1);
+      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor y "<< cudnnGetErrorString(bbb) <<std::endl;
+      cudnnCreateTensorDescriptor(&bnScaleBiasMeanVarDesc);
+      if(bn_mode == CUDNN_BATCHNORM_SPATIAL){
+      bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
+                 1,output->shape[1],
+                 1, 1);
+      }
+      else{
+      bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
+                 1,output->shape[1],
+                 (output->shape.size()>2) ? output->shape[2] : 1,
+                 (output->shape.size()>3) ? output->shape[3] : 1);
+
+      }
+      exponentialAverageFactor = 1.0 - this->momentum;
+#endif
 
     // no trainable:
     params.push_back(mean);
@@ -97,6 +129,22 @@ void LBatchNorm::resize(int batch){
         opa->reshape_(output->getShape());
         output->resize(batch);
         opa->resize(batch);
+#ifdef cCUDNN
+        cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                                                       batch,input->shape[1],
+                                                       (input->shape.size()>2) ? input->shape[2] : 1,
+                                                       (input->shape.size()>3) ? input->shape[3] : 1);
+        if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor x "<< cudnnGetErrorString(bbb) <<std::endl;
+        bbb = cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                                         batch,output->shape[1],
+                                         (output->shape.size()>2) ? output->shape[2] : 1,
+                                         (output->shape.size()>3) ? output->shape[3] : 1);
+        if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor y "<< cudnnGetErrorString(bbb) <<std::endl;
+        /*bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
+                                         batch,output->shape[1],
+                                         (output->shape.size()>2) ? output->shape[2] : 1,
+                                         (output->shape.size()>3) ? output->shape[3] : 1);*/
+#endif
     }
 }
 
@@ -107,6 +155,7 @@ void LBatchNorm::forward() {
     // Input = Output = opa = {Batch,Channels,H,W} OR {Batch,Dim}
     // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
 
+#ifndef cCUDNN
     int M,N;
     int b,z,r,c,d;
     Tensor *in;
@@ -153,9 +202,24 @@ void LBatchNorm::forward() {
 
 
     delete in;
+#else
+    float alpha = 1.0;
+    float beta = 0.0;
+
+    cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(cudnn_handle, bn_mode, &alpha, &beta,
+                                                             xDesc, input->ptr, yDesc, output->ptr,
+                                                             bnScaleBiasMeanVarDesc, bn_g->ptr, bn_b->ptr,
+                                                             exponentialAverageFactor, mean->ptr, variance->ptr, epsilon,
+                                                             bn_mean->ptr, bn_var->ptr);
+    if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error fwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;
+#endif
+
 }
 
 void LBatchNorm::backward(){
+
+    //std::cout<<"BN layer BWD: "<< this->name <<std::endl;
+#ifndef cCUDNN
     int M,N;
     int b,z,r,c,d;
 
@@ -217,6 +281,20 @@ void LBatchNorm::backward(){
     else Tensor::inc(dp, parent[0]->delta);
 
     delete dp;
+#else
+      float alphaDataDiff = 1.0;
+      float betaDataDiff = 0.0;
+      float alphaParamDiff = 1.0;
+      float betaParamDiff = 0.0;
+
+
+      cudnnStatus_t nnn= cudnnBatchNormalizationBackward(cudnn_handle, bn_mode, &alphaDataDiff, &betaDataDiff,
+                                                         &alphaParamDiff, &betaParamDiff, xDesc, input->ptr,
+                                                         yDesc, delta->ptr, xDesc, parent[0]->delta->ptr,
+                                                         bnScaleBiasMeanVarDesc,bn_g->ptr, gbn_g->ptr, gbn_b->ptr,
+                                                         epsilon, bn_mean->ptr, bn_var->ptr);
+    if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;
+#endif
 
 }
 

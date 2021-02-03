@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -28,6 +28,14 @@ LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const ve
 
 LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
     if(name.empty()) this->name = "avgpool" + to_string(++total_layers);
+
+#ifdef cCUDNN
+    D->mode = CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING;
+    D->maxpoolingNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+
+    cudnnSetPooling2dDescriptor(D->poolingDesc, D->mode, D->maxpoolingNanOpt, D->windowHeight, D->windowWidth,
+    D->verticalPadding, D->horizontalPadding, D->verticalStride, D->horizontalStride);
+#endif
 }
 
 

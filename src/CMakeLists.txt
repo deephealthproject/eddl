@@ -1,9 +1,10 @@
-###########################################################################
+##########################################################################
 ################################ OPTIONS ##################################
 ###########################################################################
 
 # USER OPTIONS *******************************
-set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+#CUDNN option is CUDA+CUDNN
+set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA}") 
 option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
@@ -12,6 +13,7 @@ set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 # Initializations (Local's scope)
 SET(USE_OPENMP OFF)
 SET(USE_CUDA OFF)
+SET(USE_CUDNN OFF)
 SET(USE_FPGA OFF)
 
 # Device specific setup
@@ -19,6 +21,9 @@ string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
 elseif(${BUILD_TARGET} STREQUAL "GPU")
     SET(USE_CUDA ON) # Local's scope
+elseif(${BUILD_TARGET} STREQUAL "CUDNN")
+    SET(USE_CUDA ON) # Local's scope
+    SET(USE_CUDNN ON) # Local's scope
 elseif(${BUILD_TARGET} STREQUAL "FPGA")
     SET(USE_FPGA ON) # Local's scope
 else()
@@ -61,7 +66,7 @@ SET(ALL_FILES ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
 set(ONNX_FILES ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.h
                ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.cc)
 
-# CUDA
+# CUDA & CUDNN
 file(GLOB_RECURSE CUDA_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/gpu/*" *.{h, hpp})
 file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/gpu/*" *.{cu})
 
@@ -268,14 +273,17 @@ SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 
 
 # CUDA
-if(USE_CUDA)
+if(USE_CUDA OR USE_CUDNN)
     include(CheckLanguage)
     check_language(CUDA)
+  #  find_package(CUDNN)
     message(STATUS "CMAKE_CUDA_COMPILER: ${CMAKE_CUDA_COMPILER}")
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
+        if(USE_CUDNN)
+            add_definitions(-DcCUDNN)
+        endif()
         add_definitions(-DcGPU)
-
         # Add extra files
         target_sources(${PROJECT_NAME} PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
 
@@ -288,7 +296,11 @@ if(USE_CUDA)
 
         target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
         target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand)
-
+        if(USE_CUDNN)
+            target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDNN_INCLUDE_DIRECTORIES})
+            target_link_directories(${PROJECT_NAME} PRIVATE  ${CMAKE_CUDNN_INCLUDE_LIBS})
+            target_link_libraries(${PROJECT_NAME} PRIVATE cudnn)
+        endif()
         if(APPLE)
             # We need to add the path to the driver (libcuda.dylib) as an rpath,
             # so that the static cuda runtime can find it at runtime.
@@ -303,10 +315,14 @@ if(USE_CUDA)
         message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
         Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
         SET(BUILD_TARGET "CPU") # Local's scope
+        if(USE_CUDNN)
+            SET(USE_CUDNN OFF) # Local's scope (disable)
+        endif()
         SET(USE_CUDA OFF) # Local's scope (disable)
     endif()
 endif()
 SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
+SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 
 # FPGA
 if(USE_FPGA)
@@ -429,11 +445,15 @@ message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
 message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
 message(STATUS "-------------------------------------------" )
 message(STATUS "CUDA enabled: " ${USE_CUDA} )
-if(USE_CUDA)
+message(STATUS "CUDNN enabled: " ${USE_CUDNN} )
+if(USE_CUDA OR USE_CUDNN)
 message(STATUS "CUDA compiler: ${CMAKE_CUDA_COMPILER} | Version: ${CUDA_VERSION}")
 message(STATUS "CUDA host compiler: " ${CUDA_HOST_COMPILER})
 message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
 message(STATUS "CUDA toolkit: " ${CUDA_TOOLKIT_ROOT_DIR} )
+if (USE_CUDNN)
+message(STATUS "CUDNN toolkit: " ${CUDNN_ROOT_DIR} )
+endif()
 endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "FPGA enabled: " ${USE_FPGA} )

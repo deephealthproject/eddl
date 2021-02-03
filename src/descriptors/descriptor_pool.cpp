@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -58,6 +58,7 @@ void PoolDescriptor::build(Tensor *A) {
     sr = stride[0];
     sc = stride[1];
 
+    in = A->shape[0];
     iz = A->shape[1];
     ir = A->shape[2];
     ic = A->shape[3];
@@ -100,12 +101,45 @@ void PoolDescriptor::build(Tensor *A) {
     for(int k=0;k<iz;k++)
       for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
         for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
+
+#ifdef cCUDNN
+    cudnn_handle = hdnn;
+    cudnnCreatePoolingDescriptor(&poolingDesc);
+
+    windowHeight = kr;
+    windowWidth = kc;
+    verticalPadding = padrt;
+    horizontalPadding = padcl;
+    verticalStride = sr;
+    horizontalStride = sc;
+    // mode is initialized in each constructor.
+    data_type = CUDNN_DATA_FLOAT;
+    tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
+
+    cudnnCreateTensorDescriptor(&xDesc);
+    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 in,iz,ir,ic);
+    cudnnCreateTensorDescriptor(&yDesc);
+    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
+
+#endif
+
 }
 
 void PoolDescriptor::resize(int b) {
   if (b == this->O->shape[0]) return;
 
   this->O->resize(b);
+#ifdef cCUDNN
+    #ifdef cCUDNN
+   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 b,iz,ir,ic);
+
+   cudnnCreateTensorDescriptor(&yDesc);
+   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+
+#endif
+#endif
 //  if (!mem_level) { D->resize(b); }
 }
 

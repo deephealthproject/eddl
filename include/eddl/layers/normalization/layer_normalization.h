@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -46,6 +46,28 @@ public:
     Tensor *gbn_g;
     Tensor *gbn_b;
     Tensor *opa; //output pre-affine
+
+#ifdef cCUDNN
+
+      //BNSCALE = Gamma -> bn_g
+      //BNBIAS = BETA -> bn_b
+      cudnnHandle_t                    cudnn_handle;
+      cudnnBatchNormMode_t             bn_mode;
+      cudnnTensorDescriptor_t          xDesc;
+      cudnnTensorDescriptor_t          yDesc;
+      cudnnTensorDescriptor_t          bnScaleBiasMeanVarDesc;
+      double                           exponentialAverageFactor;
+      //mean void                            *resultRunningMean;
+      //var void                            *resultRunningVariance;
+      //double                           epsilon;
+      //bn_mean void                            *resultSaveMean,
+      //bn_var void                            *resultSaveInvVariance
+
+      //BNSCALE = gGamma -> gbn_g
+      //BNBIAS = gBETA -> gbn_b
+      cudnnDataType_t data_type;
+     cudnnTensorFormat_t tensor_format;
+#endif
 
     bool init;
     vector<int> shape;

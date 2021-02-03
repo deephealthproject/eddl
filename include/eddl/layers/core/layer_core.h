@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -161,7 +161,26 @@ public:
     string act;
     static int total_layers;
     vector<float> params;
+#ifdef cCUDNN
+    //Softmax
+    cudnnSoftmaxAlgorithm_t  algorithm;
+    cudnnSoftmaxMode_t  softmax_mode;
 
+    //Other Activations
+    cudnnActivationDescriptor_t activationDesc;
+    cudnnActivationMode_t mode;
+    cudnnNanPropagation_t reluNanOpt;
+    double coef;
+
+    //BOTH softmax and activations
+    cudnnHandle_t cudnn_handle;
+    cudnnTensorDescriptor_t    xDesc;
+    cudnnTensorDescriptor_t    yDesc;
+
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+
+#endif
     LActivation(Layer *parent, string act, vector<float> params, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -170,6 +189,10 @@ public:
 
     void save(std::ofstream &ofs, string format) override;
     void load(std::ifstream &ifs, string format) override;
+
+#ifdef cCUDNN
+    void resize(int batch) override;
+#endif
 
     void forward() override;
 
