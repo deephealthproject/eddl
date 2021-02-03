@@ -46,7 +46,7 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &kernel_size, 
     ksize.insert(ksize.begin(), 1, filters);
     stride = vector<int>(strides);
 
-    if (!(padding=="same" || padding =="none" || padding =="valid" || padding =="zeros" || padding=="same,none" || padding=="none,same")) {
+    if (!(padding == "custom" || padding=="same" || padding =="none" || padding =="valid" || padding =="zeros" || padding=="same,none" || padding=="none,same")) {
         msg("Incorrect padding type (" + padding + ")", "ConvolDescriptor::ConvolDescriptor");
     }
 }
