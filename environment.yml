@@ -9,7 +9,7 @@ dependencies:
   - protobuf==3.11.4
   - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
   - cudnn==8.0.5.39
-  - cudatoolkit==10.2.89
+  - cudatoolkit-dev==10.1.243
   - gtest
   - graphviz  # Build & Run
   - wget
