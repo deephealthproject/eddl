@@ -110,7 +110,7 @@ void * eddl_malloc(size_t size, const string & str_info)
 #elif defined(EDDL_WINDOWS)
     errno = 0;
     ptr = _aligned_malloc(size, alignment_block_size);
-    error = (nullptr == ptr || errno != ENOMEM);
+    error = (nullptr == ptr || errno == ENOMEM);
 #else
 #error "A proper configuration must define either EDDL_LINUX, EDDL_APPLE or EDDL_WINDOWS"
 #endif
@@ -796,7 +796,7 @@ void __show_profile() {
   PROFILING_PRINTF(fill_rand_uniform);
   PROFILING_PRINTF(fill_rand_signed_uniform);
   PROFILING_PRINTF(fill_rand_normal);
-  PROFILING_PRINTF(fill_rand_binary);  
+  PROFILING_PRINTF(fill_rand_binary);
   // comparison
   PROFILING_PRINTF(all);
   PROFILING_PRINTF(any);

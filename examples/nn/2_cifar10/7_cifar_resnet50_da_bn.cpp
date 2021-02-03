@@ -56,12 +56,18 @@ layer ResBlock(layer l, int filters,int half, int expand=0) {
 }
 
 int main(int argc, char **argv){
+  bool testing = false;
+  bool use_cpu = false;
+  for (int i = 1; i < argc; ++i) {
+      if (strcmp(argv[i], "--testing") == 0) testing = true;
+      else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+  }
 
   // download CIFAR data
   download_cifar10();
 
   // Settings
-  int epochs = 5;
+  int epochs = testing ? 2 : 5;
   int batch_size =16;
   int num_classes = 10;
 
@@ -100,16 +106,22 @@ int main(int argc, char **argv){
   // net define input and output layers list
   model net=Model({in},{out});
 
+  compserv cs = nullptr;
+  if (use_cpu) {
+      cs = CS_CPU();
+  } else {
+      cs = CS_GPU({1}); // one GPU
+      // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+      // cs = CS_CPU();
+      // cs = CS_FPGA({1});
+  }
 
   // Build model
   build(net,
 	adam(0.001), // Optimizer
     {"softmax_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1}) // one GPU
-    //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-    //CS_CPU()
-  );
+    cs);
 
   // plot the model
   plot(net,"model.pdf","TB");  // TB --> Top-Bottom mode for dot (graphviz)
@@ -129,6 +141,23 @@ int main(int argc, char **argv){
   Tensor* y_test = Tensor::load("cifar_tsY.bin");
   x_test->div_(255.0f);
 
+  if (testing) {
+      std::string _range_ = "0:" + std::to_string(2 * batch_size);
+      Tensor* x_mini_train = x_train->select({_range_, ":"});
+      Tensor* y_mini_train = y_train->select({_range_, ":"});
+      Tensor* x_mini_test  = x_test->select({_range_, ":"});
+      Tensor* y_mini_test  = y_test->select({_range_, ":"});
+
+      delete x_train;
+      delete y_train;
+      delete x_test;
+      delete y_test;
+
+      x_train = x_mini_train;
+      y_train = y_mini_train;
+      x_test  = x_mini_test;
+      y_test  = y_mini_test;
+  }
 
   float lr=0.001;
   for(int j=0;j<3;j++) {
@@ -145,4 +174,11 @@ int main(int argc, char **argv){
       evaluate(net,{x_test},{y_test});
     }
   }
+  delete x_train;
+  delete y_train;
+  delete x_test;
+  delete y_test;
+  delete net;
+
+  return EXIT_SUCCESS;
 }
