@@ -160,8 +160,7 @@ void Tensor::deleteData(){
                 delete this->ptr2; //double free or corruption (out)
                 this->ptr2 = nullptr;
             }
-            // delete[] this->ptr;
-            free(this->ptr); // because currently memory for tensor data is allocated by means of posix_memalign()
+            eddl_free(this->ptr); // because currently memory for tensor data is allocated by means of posix_memalign()
             this->ptr = nullptr;
         }
 #ifdef cGPU
@@ -193,7 +192,7 @@ void Tensor::updateData(float *fptr, void *fptr2, bool setshared){
         // If null => Reserve memory
         // else => point to data
         if (fptr==nullptr) {
-            if (false == was_shared && this->ptr != nullptr) delete [] this->ptr;
+            if (false == was_shared && this->ptr != nullptr) eddl_free(this->ptr);
             this->ptr = get_fmem(this->size,"Tensor::updateData");
         } else {
             this->ptr = fptr; isshared=setshared;
@@ -361,8 +360,7 @@ void Tensor::toGPU(int dev){
 
         this->ptr = gpu_ptr;
         gpu_copy_to_gpu(cpu_ptr, this);
-        // delete [] cpu_ptr;
-        free(cpu_ptr); // because currently memory for tensor data is allocated by means of posix_memalign()
+        eddl_free(cpu_ptr); // because currently memory for tensor data is allocated by means of posix_memalign()
         if (/*this->ndim == 2 &&*/ this->ptr2 != nullptr){
             delete this->ptr2;
             this->ptr2 = nullptr;

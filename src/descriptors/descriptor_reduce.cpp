@@ -26,7 +26,8 @@ MapReduceDescriptor::MapReduceDescriptor(Tensor *A,vector<int> axis)
 }
 
 MapReduceDescriptor::~MapReduceDescriptor(){
-  delete[] ind;
+  if (ind != nullptr) eddl_free(ind);
+  ind = nullptr;
 }
 
 ReduceDescriptor::ReduceDescriptor() {}
