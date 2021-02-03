@@ -25,43 +25,36 @@
 
 ConvolDescriptor::ConvolDescriptor() {}
 
-ConvolDescriptor::ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem) {
-    ksize = vector<int>(ks.begin(), ks.end());
-    stride = vector<int>(st.begin(), st.end());
-    pad = vector<int>(p.begin(), p.end());
-    mem_level=mem;
+ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
+                 int groups, const vector<int> &dilation_rate, bool use_bias, int mem){
+    if (kernel_size.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
+    if (strides.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
 
-    this->padding = "custom";
+    // Store stuff
+    this->filters = filters;
+    this->kernel_size = kernel_size;
+    this->strides = strides;
+    this->padding = padding;
+    this->groups = groups;
+    this->dilation_rate = dilation_rate;
+    this->use_bias=use_bias;
+    this->mem_level=mem;
 
-    if (ksize.size() != 3) msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor");
-    if (stride.size() != 2) msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
-}
-
-ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, const string& p, bool ub, int mem) {
-    if (ks.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
-    if (st.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
-
-    // Add filters to kernel_size
-    ksize = vector<int>(ks);
+    // Add filters to kernel_size (old)
+    ksize = vector<int>(kernel_size);
     ksize.insert(ksize.begin(), 1, filters);
-    stride = vector<int>(st.begin(), st.end());
-    use_bias=ub;
-    mem_level=mem;
+    stride = vector<int>(strides);
 
-    if (p=="same" || p =="none" || p =="valid" || p =="zeros" || p=="same,none" || p=="none,same") {
-        this->padding=p;
-    }else{
-        cout<<p<<endl;
-        msg("Incorrect padding type", "ConvolDescriptor::ConvolDescriptor");
+    if (!(padding=="same" || padding =="none" || padding =="valid" || padding =="zeros" || padding=="same,none" || padding=="none,same")) {
+        msg("Incorrect padding type (" + padding + ")", "ConvolDescriptor::ConvolDescriptor");
     }
-
 }
+
 
 ConvolDescriptor::~ConvolDescriptor(){
     // input, output, delta, params[], and gradients[], acc_gradients[] => deleted in ~Layer()
     if (O->isCPU()) {
-        //delete[] ptrI;
-        free(ptrI); // because get_fmem() now uses posix_memalign()
+        eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
     }
 #ifdef cGPU
     else if (O->isGPU()) {
@@ -208,8 +201,7 @@ void ConvolDescriptor::resize(int b)
     unsigned long int l_size =  (unsigned long)(b * r * c) * (unsigned long)(kr * kc * kz);
 
     if (I->isCPU()) {
-        //delete[] ptrI;
-        free(ptrI); // because get_fmem() now uses posix_memalign()
+        eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
         ptrI=get_fmem(l_size, "ConvolDescriptor::build");
 	   _profile_add_tensor(l_size);
     }
@@ -231,8 +223,7 @@ void ConvolDescriptor::resize(int b)
 	fpga_sizeI = l_size * sizeof(float);
         fpga_ptrI = fpga_create_memory(fpga_sizeI);
         // We do the same on the CPU side (for smooth cpuemu)
-	    //delete[] ptrI;
-        free(ptrI); // because get_fmem() now uses posix_memalign()
+        eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
         ptrI=get_fmem(l_size, "ConvolDescriptor::build");
     }
 #endif

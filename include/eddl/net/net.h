@@ -78,7 +78,9 @@ public:
     verr total_loss;
     verr total_metric;
     FILE *flog_tr;
+    bool has_to_close_flog_tr;
     FILE *flog_ts;
+    bool has_to_close_flog_ts;
 
     Optimizer *optimizer;
     bool do_optimizer_delete;

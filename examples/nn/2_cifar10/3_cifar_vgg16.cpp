@@ -44,9 +44,6 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
-  l = RandomCropScale(l, {0.8f, 1.0f});
-  l = RandomFlip(l,1);
-  l = RandomCutout(l, {0.1,0.3},{0.1,0.3});
 
   l=MaxPool(Block3_2(l,64));
   l=MaxPool(Block3_2(l,128));
@@ -65,12 +62,12 @@ int main(int argc, char **argv){
 
   // Build model
   build(net,
-    sgd(0.001, 0.9), // Optimizer
+    adam(0.001), // Optimizer
     {"softmax_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    //CS_GPU({1}) // one GPU
+    CS_GPU({1}) // one GPU
     //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-    CS_CPU()
+    //CS_CPU()
   );
 
 

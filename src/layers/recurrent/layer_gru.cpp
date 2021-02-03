@@ -122,6 +122,8 @@ void LGRU::free_delta() {
         delete delta;
         delta = nullptr;  // Ensure nullptr
 
+        delta_states.clear();
+
         if (this->verbosity_level >= 2) {
             std::cout << "Deleted delta for: " + this->name << std::endl;
         }

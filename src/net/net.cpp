@@ -57,7 +57,10 @@ Net::Net() {
     name="model";
     tr_batches=0;
     flog_tr=nullptr;
+    has_to_close_flog_tr = false;
     flog_ts=nullptr;
+    has_to_close_flog_ts = false;
+    trmode = TRMODE;
     rnet=nullptr;
     isbuild=false;
     isdecoder=false;
@@ -70,8 +73,10 @@ Net::Net() {
 
 Net::Net(vlayer in, vlayer out):Net() {
     // Set input/outlayer
-    lin = in;
-    lout = out;
+    //lin = in;
+    //lout = out;
+    for (auto _ : in) lin.push_back(_);
+    for (auto _ : out) lout.push_back(_);
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -98,6 +103,24 @@ Net::Net(vlayer in, vlayer out):Net() {
 Net::~Net(){
     // IF CPU : net = snets[0]
     // IF GPU: net , snets[0]= clone on GPU
+
+    if (this->has_to_close_flog_tr && this->flog_tr != nullptr) {
+        fclose(this->flog_tr);
+        this->flog_tr = nullptr;
+        this->has_to_close_flog_tr = false;
+    }
+    if (this->has_to_close_flog_ts && this->flog_ts != nullptr) {
+        fclose(this->flog_ts);
+        this->flog_ts = nullptr;
+        this->has_to_close_flog_ts = false;
+    }
+
+    // not necessary in theory, but valgrid reports "still reachable blocks"
+    this->total_loss.clear();
+    this->total_metric.clear();
+    this->fiterr.clear();
+    this->lin.clear();
+    this->lout.clear();
 
     // Clean inputs
     for(int i=0; i<Xs->size(); i++) {
@@ -283,11 +306,19 @@ void Net::setlogfile(string fname)
     string str=fname+"_tr.log";
     string sts=fname+"_ts.log";
 
-    flog_tr=fopen(str.c_str(),"wt");
-    if (flog_tr==nullptr) msg("error creating tr log file","Net.setlogfile");
+    this->flog_tr = fopen(str.c_str(),"wt");
+    if (this->flog_tr == nullptr) {
+        msg("error creating tr log file","Net.setlogfile");
+    } else {
+        this->has_to_close_flog_tr = true;
+    }
 
-    flog_ts=fopen(sts.c_str(),"wt");
-    if (flog_ts==nullptr) msg("error creating ts log file","Net.setlogfile");
+    this->flog_ts = fopen(sts.c_str(),"wt");
+    if (this->flog_ts == nullptr) {
+        msg("error creating ts log file","Net.setlogfile");
+    } else {
+        this->has_to_close_flog_ts = true;
+    }
 }
 
 

@@ -636,8 +636,10 @@ vector<float> Net::get_losses(){
         int p = 0;
 
         // Copy total_loss / fiterr (I don't know how it works but i don't like it...)
-        vector<float> tmp_total_error(total_loss);
-        vector<float> tmp_fiterr(fiterr);
+        vector<float> tmp_total_error; //(total_loss);
+        vector<float> tmp_fiterr; //(fiterr);
+        for (auto _ : total_loss) tmp_total_error.push_back(_);
+        for (auto _ : fiterr) tmp_fiterr.push_back(_);
 
         int length=decsize;
         for (int k = 0; k < lout.size(); k+=decsize) {
@@ -669,8 +671,10 @@ vector<float> Net::get_metrics(){
         int p = 0;
 
         // Copy total_loss / fiterr (I don't know how it works but i don't like it...)
-        vector<float> tmp_total_metrics(total_metric);
-        vector<float> tmp_fiterr(fiterr);
+        vector<float> tmp_total_metrics; //(total_metric);
+        vector<float> tmp_fiterr; //(fiterr);
+        for (auto _ : total_metric) tmp_total_metrics.push_back(_);
+        for (auto _ : fiterr) tmp_fiterr.push_back(_);
 
         int length=decsize;
         for (int k = 0; k < lout.size(); k+=decsize) {
@@ -683,7 +687,6 @@ vector<float> Net::get_metrics(){
             if (this->metrics.size()>=(k+1)) {
                 metrics_values.push_back( tmp_total_metrics[k] / (float)(length*inferenced_samples));
             }
-
         }
     }
 

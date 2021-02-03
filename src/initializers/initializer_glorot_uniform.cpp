@@ -54,7 +54,6 @@ void IGlorotUniform::apply(Tensor* params) {
         int fout=rf*params->shape[0];
 
         params->fill_rand_signed_uniform_(1.0);
-
         float limits=sqrtf(6.0f / (float)(fin+fout));
 
         params->mult_(limits);

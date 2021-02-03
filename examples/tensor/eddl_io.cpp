@@ -32,6 +32,8 @@ int main(int argc, char **argv) {
     t->print(1);
     t->print(0, true);
 
+    delete t;
+
     // Load image (formats accepted: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm)
     Tensor *t1 = Tensor::load(fname + "elephant.jpg");
     cout << "Tensor loaded! (image)" << endl;
@@ -121,4 +123,10 @@ int main(int argc, char **argv) {
     cout << "Tensor after loading from ptr" << endl;
     loaded_t7->info();
     loaded_t7->print();
+
+    delete t1;
+    delete t6;
+    delete t7;
+    delete loaded_t7;
+    free(serial_t7.first);
 }

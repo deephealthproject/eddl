@@ -66,7 +66,6 @@ public:
     vector<int> ksize;
     vector<int> stride;
     vector<int> pad; // {rows-top, rows-bottom, cols-left, cols-right}
-    string padding; // valid/none, same/zeros, custom
 
     int nk, kr, kc, kz;
     int sr, sc;
@@ -75,6 +74,15 @@ public:
     int padrt,padrb;
     int padcl,padcr;
     int size;  // Auxiliar var
+
+
+    // To store info...
+    int filters;
+    vector<int> kernel_size;
+    vector<int> strides;
+    string padding; // valid/none, same/zeros, custom
+    int groups = groups;
+    vector<int> dilation_rate;
     bool use_bias;
     int mem_level; // see CS
 
@@ -114,9 +122,8 @@ public:
 
     ConvolDescriptor();
 
-    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, const string& p, bool use_bias, int mem=0);
-
-    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
+    ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
+                     int groups, const vector<int> &dilation_rate, bool use_bias, int mem=0);
 
     ~ConvolDescriptor();
 
