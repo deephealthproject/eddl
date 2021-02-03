@@ -25,7 +25,7 @@
 
 ConvolDescriptor::ConvolDescriptor() {}
 
-ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
+ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
                  int groups, const vector<int> &dilation_rate, bool use_bias, int mem){
     if (kernel_size.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
     if (strides.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
@@ -34,7 +34,8 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &kernel_size, 
     this->filters = filters;
     this->kernel_size = kernel_size;
     this->strides = strides;
-    this->padding = padding;
+    this->padding = padding;  // none, same
+    this->pads = vector<int>(pads);  // (1,1,1,1)
     this->groups = groups;
     this->dilation_rate = dilation_rate;
     this->use_bias=use_bias;
@@ -96,10 +97,10 @@ void ConvolDescriptor::build(Tensor *A) {
     if(this->padding=="custom"){  // Known padding
         // Compute output
         z = nk;
-        vector<int>pr; pr.push_back(pad[0]);pr.push_back(pad[1]);
+        vector<int>pr; pr.push_back(pads[0]);pr.push_back(pads[1]);
         r = compute_output(pr, ir, kr, sr);
 
-        vector<int>pc; pc.push_back(pad[2]);pc.push_back(pad[3]);
+        vector<int>pc; pc.push_back(pads[2]);pc.push_back(pads[3]);
         c = compute_output(pc, ic, kc, sc);
 
     }else{  // Common padding (same/zeros)
@@ -119,11 +120,12 @@ void ConvolDescriptor::build(Tensor *A) {
         vector<int> padc = compute_padding(c, ic, kc, sc, this->padding,false);  // Order: [left, right]
 
         // Set padding
-        pad = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right
+        this->pads.clear();
+        this->pads = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right
     }
 
-    padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
-    padcl = pad[2]; padcr = pad[3];  // cols: left-right
+    padrt = pads[0]; padrb = pads[1];  // rows: top-bottom
+    padcl = pads[2]; padcr = pads[3];  // cols: left-right
 
     if ((r <= 0) || (c <= 0)) {
         if(r <= 0) { std::cerr << "'Rows' are reach 0 or less (" << r << ")" << std::endl; }

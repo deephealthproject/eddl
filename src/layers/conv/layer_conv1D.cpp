@@ -21,8 +21,8 @@ int LConv1D::total_layers = 0;
 
 // constructors and clones
 
-LConv1D::LConv1D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv1D(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, mem), name, dev, mem) {
+LConv1D::LConv1D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
+             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv1D(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, pads, groups, dilation_rate, use_bias, mem), name, dev, mem) {
 };
 
 LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
@@ -154,7 +154,7 @@ void LConv1D::apply_accumulated_gradients() {
 }
 
 Layer *LConv1D::share(int c, int bs, vector<Layer *> p) {
-    LConv1D *n = new LConv1D(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->groups, cd->dilation_rate, cd->use_bias,  "share_"+to_string(c) + this->name, this->dev, this->mem_level);
+    LConv1D *n = new LConv1D(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias,  "share_"+to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
     n->isshared = true;
     n->trainable = trainable;
@@ -202,7 +202,7 @@ Layer *LConv1D::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LConv1D::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LConv1D *n = new LConv1D(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->groups, cd->dilation_rate, cd->use_bias,  this->name, todev, this->mem_level);
+    LConv1D *n = new LConv1D(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias,  this->name, todev, this->mem_level);
     n->trainable = trainable;
     n->do_deletes = false;
 

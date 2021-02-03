@@ -65,7 +65,7 @@ class ConvolDescriptor {
 public:
     vector<int> ksize;
     vector<int> stride;
-    vector<int> pad; // {rows-top, rows-bottom, cols-left, cols-right}
+    vector<int> pads; // {rows-top, rows-bottom, cols-left, cols-right}
 
     int nk, kr, kc, kz;
     int sr, sc;
@@ -122,7 +122,7 @@ public:
 
     ConvolDescriptor();
 
-    ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
+    ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
                      int groups, const vector<int> &dilation_rate, bool use_bias, int mem=0);
 
     ~ConvolDescriptor();

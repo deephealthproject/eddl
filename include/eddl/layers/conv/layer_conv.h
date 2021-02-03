@@ -32,7 +32,7 @@ public:
     ConvolDescriptor *cd;
 
     // constructors and clones
-    LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
+    LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
           int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
 
     LConv(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
@@ -81,7 +81,7 @@ public:
     ConvolDescriptor *cd;
 
     // constructors and clones
-    LConv1D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
+    LConv1D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
           int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
 
     LConv1D(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);

@@ -964,19 +964,19 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
 
       filters = dims[0];
       string name = node->name();
-      ConvolDescriptor *convol_descriptor;
+      ConvolDescriptor *cd;
 
       // TODO: REVIEW!!!!
     int groups = 1;
     vector<int> dilation_rate = {1, 1};
         //auto_pad_option == "custom";
-     convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, groups, dilation_rate, use_bias, mem);
-    //convol_descriptor->pad = pads;
+        //cd->pad = pads;
+        cd = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, pads, groups, dilation_rate, use_bias, mem);
 
       if (conv1d)
-        actual_layer = new LConv1D(parent, convol_descriptor, name, dev, mem);
+        actual_layer = new LConv1D(parent, cd, name, dev, mem);
       else
-        actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
+        actual_layer = new LConv(parent, cd, name, dev, mem);
 
       if (use_bias)
       {
@@ -985,11 +985,11 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
         vector<int> bias_shape;
         bias_shape.push_back(bias->size());
         Tensor *bias_tensor = new Tensor(bias_shape, NEW_FROM_VECTOR_PTR(bias), dev);
-        Tensor::copy(bias_tensor, convol_descriptor->bias);
+        Tensor::copy(bias_tensor, cd->bias);
         delete bias_tensor;
       }
       Tensor *weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
-      Tensor::copy(weights_tensor, convol_descriptor->K);
+      Tensor::copy(weights_tensor, cd->K);
       delete weights_tensor;
     }
     break;
@@ -1528,21 +1528,21 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
         LDense *dense;
         if ((conv = dynamic_cast<LConv *>(parents[0])))
         {
-          ConvolDescriptor *convol_descriptor = conv->cd;
+          ConvolDescriptor *cd = conv->cd;
           string bias_name = node->input(index_parameter);
           vector<float> *bias = &(map_init_values[bias_name]);
           vector<int> bias_shape;
           bias_shape.push_back(bias->size());
           Tensor *bias_tensor = new Tensor(bias_shape, NEW_FROM_VECTOR_PTR(bias), dev);
-          if (!convol_descriptor->use_bias)
+          if (!cd->use_bias)
           {
-            convol_descriptor->use_bias = true; // We need to enable the bias
-            Tensor::copy(bias_tensor, convol_descriptor->bias);
+            cd->use_bias = true; // We need to enable the bias
+            Tensor::copy(bias_tensor, cd->bias);
           }
           else
           {
-            Tensor *auxiliar_tensor = Tensor::add(convol_descriptor->bias, bias_tensor);
-            Tensor::copy(auxiliar_tensor, convol_descriptor->bias);
+            Tensor *auxiliar_tensor = Tensor::add(cd->bias, bias_tensor);
+            Tensor::copy(auxiliar_tensor, cd->bias);
             delete auxiliar_tensor;
           }
           delete bias_tensor;
