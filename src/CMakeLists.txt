@@ -274,31 +274,37 @@ SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 
 # CUDA
 if(USE_CUDA OR USE_CUDNN)
+    # Check if cuda is available
     include(CheckLanguage)
     check_language(CUDA)
-  #  find_package(CUDNN)
-    message(STATUS "CMAKE_CUDA_COMPILER: ${CMAKE_CUDA_COMPILER}")
+
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
+        find_package(CUDAToolkit)
         if(USE_CUDNN)
             add_definitions(-DcCUDNN)
         endif()
         add_definitions(-DcGPU)
-        # Add extra files
-        target_sources(${PROJECT_NAME} PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
+
+        # Set standard CUDA variables
+        if(NOT DEFINED CMAKE_CUDA_STANDARD)
+            set(CMAKE_CUDA_STANDARD 11)
+            set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+        endif()
 
         # Target properties
         set_target_properties(${PROJECT_NAME} PROPERTIES
                 CUDA_SEPARABLE_COMPILATION ON
                 CUDA_RESOLVE_DEVICE_SYMBOLS ON
-                #CUDA_SEPARABLE_COMPILATION ON
                 )
 
+        # Add extra files
+        target_sources(${PROJECT_NAME} PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
         target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
         target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand)
         if(USE_CUDNN)
             target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDNN_INCLUDE_DIRECTORIES})
-            target_link_directories(${PROJECT_NAME} PRIVATE  ${CMAKE_CUDNN_INCLUDE_LIBS})
+            target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDNN_INCLUDE_LIBS})
             target_link_libraries(${PROJECT_NAME} PRIVATE cudnn)
         endif()
         if(APPLE)
@@ -315,9 +321,7 @@ if(USE_CUDA OR USE_CUDNN)
         message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
         Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
         SET(BUILD_TARGET "CPU") # Local's scope
-        if(USE_CUDNN)
-            SET(USE_CUDNN OFF) # Local's scope (disable)
-        endif()
+        SET(USE_CUDNN OFF) # Local's scope (disable)
         SET(USE_CUDA OFF) # Local's scope (disable)
     endif()
 endif()
@@ -445,15 +449,14 @@ message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
 message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
 message(STATUS "-------------------------------------------" )
 message(STATUS "CUDA enabled: " ${USE_CUDA} )
-message(STATUS "CUDNN enabled: " ${USE_CUDNN} )
-if(USE_CUDA OR USE_CUDNN)
-message(STATUS "CUDA compiler: ${CMAKE_CUDA_COMPILER} | Version: ${CUDA_VERSION}")
+if(USE_CUDA)
+message(STATUS "CUDA compiler: ${CMAKE_CUDA_COMPILER} | Version: ${CMAKE_CUDA_COMPILER_VERSION}")
 message(STATUS "CUDA host compiler: " ${CUDA_HOST_COMPILER})
-message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
-message(STATUS "CUDA toolkit: " ${CUDA_TOOLKIT_ROOT_DIR} )
+endif()
+message(STATUS "-------------------------------------------" )
+message(STATUS "CUDNN enabled: " ${USE_CUDNN} )
 if (USE_CUDNN)
 message(STATUS "CUDNN toolkit: " ${CUDNN_ROOT_DIR} )
-endif()
 endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "FPGA enabled: " ${USE_FPGA} )
