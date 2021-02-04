@@ -233,17 +233,4 @@ void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 // Legacy
 int cpu_equal2(Tensor *A, Tensor *B, float epsilon);
 
-// new batchnorm implementation
-void cpu_batchnorm_forward(int b, int z, int rc,
-        float *input, float *output, float *opa,
-        float *global_mean, float *global_variance,
-        float *affine_g, float *affine_b,
-        float *mean, float *variance,
-        bool trmode, float epsilon, float momentum);
-
-void cpu_batchnorm_backward(int b, int z, int rc,
-        float *delta, float *opa, float *pdelta, float *gbn_g,
-        float *gbn_b, float *bn_g, float *variance,
-        float *mean1, float *mean2);
-
 #endif //EDDL_CPU_TENSOR_H

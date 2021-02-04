@@ -15,8 +15,6 @@
 #include "eddl/layers/normalization/layer_normalization.h"
 #include "eddl/layers/reductions/layer_reductions.h"
 #include "eddl/layers/operators/layer_operators.h"
-#include "eddl/hardware/cpu/cpu_tensor.h"
-#include "eddl/hardware/gpu/gpu_hw.h"
 
 using namespace std;
 
@@ -162,24 +160,15 @@ void LBatchNorm::forward() {
     // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
 
 #ifndef cCUDNN
+#ifndef BATCHNORM_ORIG
     // new implementation for CPU / GPU
-    if (input->isCPU()) {
-        cpu_batchnorm_forward(input->shape[0], input->shape[1],
-            input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
-            input->ptr, output->ptr, opa->ptr,
-            mean->ptr, variance->ptr,
-            affine ? bn_g->ptr : NULL,
-            affine ? bn_b->ptr : NULL,
-            bn_mean->ptr, bn_var->ptr, mode == TRMODE, epsilon, momentum);
-    } else if (input->isGPU()) {
-        gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],
-            input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
-            input->ptr, output->ptr, opa->ptr,
-            mean->ptr, variance->ptr,
-            affine ? bn_g->ptr : NULL,
-            affine ? bn_b->ptr : NULL,
-            bn_mean->ptr, bn_var->ptr, mode == TRMODE, epsilon, momentum);
-    } else {
+    if (input->isCPU() || input->isGPU()) {
+        tensorNN::BatchNormForward(input, output, opa, mean, variance,
+                affine ? bn_g : NULL, affine ? bn_b : NULL,
+                bn_mean, bn_var, mode == TRMODE, epsilon, momentum);
+    } else
+#endif
+    {
 
     int M,N;
     int b,z,r,c,d;
@@ -246,22 +235,15 @@ void LBatchNorm::forward() {
 void LBatchNorm::backward(){
     //std::cout<<"BN layer BWD: "<< this->name <<std::endl;
 #ifndef cCUDNN
+#ifndef BATCHNORM_ORIG
     // new implementation for CPU / GPU
-    if (delta->isCPU()) {
-        cpu_batchnorm_backward(delta->shape[0], delta->shape[1],
-            delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
-            delta->ptr, opa->ptr, parent[0]->delta->ptr,
-            affine ? gbn_g->ptr : NULL,
-            affine ? gbn_b->ptr : NULL, affine ? bn_g->ptr : NULL,
-            bn_var->ptr, work1->ptr, work2->ptr);
-    } else if (delta->isGPU()) {
-        gpu_batchnorm_backward(delta->gpu_device, delta->shape[0], delta->shape[1],
-            delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
-            delta->ptr, opa->ptr, parent[0]->delta->ptr,
-            affine ? gbn_g->ptr : NULL,
-            affine ? gbn_b->ptr : NULL, affine ? bn_g->ptr : NULL,
-            bn_var->ptr, work1->ptr, work2->ptr);
-    } else {
+    if (input->isCPU() || input->isGPU()) {
+        tensorNN::BatchNormBackward(delta, opa, parent[0]->delta,
+            affine ? gbn_g : NULL, affine ? gbn_b : NULL, affine ? bn_g : NULL,
+            bn_var, work1, work2);
+    } else
+#endif
+    {
 
     int M,N;
     int b,z,r,c,d;

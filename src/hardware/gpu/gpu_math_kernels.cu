@@ -421,19 +421,10 @@ __global__ void gpu_batchnorm_forward_2(int z, float inv_N, float *mean, float *
                 global_mean[j] = momentum * global_mean[j] + (1.0 - momentum) * mean[j];
                 global_variance[j] = momentum * global_variance[j] + (1.0 - momentum) * variance[j];
             }
-            variance[j] = 1.0 / sqrt(variance[j] + epsilon);
+            variance[j] = 1.0f / sqrt(variance[j] + epsilon);
         } else {
-            variance[j] = 1.0 / sqrt(global_variance[j] + epsilon);
+            variance[j] = 1.0f / sqrt(global_variance[j] + epsilon);
         }
-    }
-}
-
-__global__ void gpu_batchnorm_forward_2b(int z, float *variance, float *global_variance, float epsilon)
-{
-    // for (int j = 0; j < z; j++) {
-    int j = blockIdx.x * batch_norm_block_size + threadIdx.x;
-    if (j < z) {
-        variance[j] = 1.0 / sqrt(global_variance[j] + epsilon);
     }
 }
 
