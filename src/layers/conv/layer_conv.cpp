@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -21,12 +21,9 @@ int LConv::total_layers = 0;
 
 // constructors and clones
 
-LConv::LConv(Layer *parent, const vector<int> &ks, const vector<int> &st,
-             const vector<int> &p, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(ks, st, p, mem), name, dev, mem) {}
-
-LConv::LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, use_bias, mem), name, dev, mem) {
-    // TODO: Implement (Fix initialization)
+LConv::LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
+             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) :
+             LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, pads, groups, dilation_rate, use_bias, mem), name, dev, mem) {
 };
 
 LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
@@ -69,7 +66,6 @@ LConv::~LConv(){
 // virtual
 void LConv::resize(int batch){
     cd->resize(batch);
-
 }
 
 void LConv::mem_delta(){
@@ -104,6 +100,11 @@ void LConv::backward() {
     if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}
 }
 
+void LConv::initialize() {
+    init->apply(params[0]);  // Conv
+    params[1]->fill_(0.0f); // Bias
+}
+
 void LConv::update_weights(Tensor* w, Tensor* bias) {
     Tensor::copy( w, cd->K );
     if ( bias != nullptr ) Tensor::copy( bias, cd->bias );
@@ -128,16 +129,14 @@ void LConv::apply_accumulated_gradients() {
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
-    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  "share_"+to_string(c)+this->name, dev,mem_level);
+    LConv *n = new LConv(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias,  "share_"+to_string(c) + this->name, this->dev, this->mem_level);
+
     n->orig = this;
     n->isshared=true;
     n->trainable = trainable;
     n->do_deletes = false;
 
-    n->cd->use_bias=cd->use_bias;
-
     //share params
-
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
     n->params.clear();
 
@@ -178,13 +177,11 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
-
-    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
+    LConv *n = new LConv(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias,  this->name, todev, this->mem_level);
     n->trainable = trainable;
     n->do_deletes = false;
 
     n->orig = this;
-    n->cd->use_bias = cd->use_bias;
 
     if (n->reg != nullptr) delete n->reg;
     n->reg = reg;

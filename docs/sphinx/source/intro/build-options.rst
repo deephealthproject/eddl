@@ -1,10 +1,10 @@
 .. _build-configuration:
 
 Build and configuration
-=======================
+=========================
 
 External dependencies
----------------------
+-----------------------
 
 To build EDDL you will need a ``C++11 compiler``
 
@@ -30,46 +30,44 @@ You can also update your environment with:
 
 If you decide to manually install these dependencies in your system (make sure they are at standard paths):
 
-.. code::
+.. code:: yaml
 
     - cmake>=3.9.2
-    - eigen>=3.3.7
-    - protobuf
-    - libprotobuf  # We need to avoid problems with paths
-    - zlib
-    - cudatoolkit
+    - eigen==3.3.7
+    - protobuf==3.11.4
+    - libprotobuf==3.11.4
+    - cudnn==8.0.5.39
+    - cudatoolkit-dev==10.1.243
     - gtest
-    - graphviz  # Build & Run
+    - graphviz
     - wget
-    - doxygen  # Docs
+    - doxygen
     - python
     - pip
     - pip:
-    - sphinx==3.2.1
-    - sphinx_rtd_theme==0.5.0
-    - sphinx-tabs==1.3.0
-    - breathe==4.22.1
-
+        - sphinx==3.2.1
+        - sphinx_rtd_theme==0.5.0
+        - sphinx-tabs==1.3.0
+        - breathe==4.22.1
 
 .. note::
 
-    When using ``apt-get``, the installed version of the package depends on the distro version (by default).
-    This is important to known, because for instance, in Ubuntu 18.04 ``apt-get install libeigen3-dev``
-    installs Eigen 3.3.4-4, when the EDDL needs Eigen 3.3.7.
+    - You can double-check your dependency and versions using this reference `conda list` file: Requirements_
+    - When using ``apt-get``, the installed version of the package depends on the distro version (by default). This is important to known, because for instance, on Ubuntu 18.04 ``apt-get install libeigen3-dev`` installs Eigen 3.3.4-4, when the EDDL needs Eigen 3.3.7.
 
 
 Build and optimization
-----------------------
+------------------------
 
 Build
-^^^^^
+^^^^^^
 
 To build the EDDL, you will need a recent version of cmake. Then, run the following commands from the source directory:
 
-.. code::
+.. code:: bash
 
-    mkdir build
-    cd build
+    mkdir build/
+    cd build/
     cmake ..
     make install
 
@@ -79,10 +77,10 @@ To build the EDDL, you will need a recent version of cmake. Then, run the follow
 
 
 Backend support
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
-You can choose the hardware for which the EDDL will be compiled. By default it is compile for ``GPU``, and if it is
-not found (or CUDA), it is automatically disabled so that it can run of CPU (although a cmake message will be prompted).
+You can choose the hardware for which the EDDL will be compiled. By default it is compiled for ``GPU`` but if it is not
+not found (or CUDA), the EDDL will automatically fallback to CPU.
 
 - **CPU support:** If you want to compile it for CPU, use the following cmake option:
 
@@ -92,10 +90,10 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 
 .. note::
 
-    Backup option for when there is no GPU, or CUDA is not found.
+    Backup option when cuDNN or CUDA is not found
 
 
-- **GPU (CUDA) support:** If you have CUDA installed, the EDDL will automatically be compiled for GPU. Additionally, you can force it's use with the following cmake option:
+- **GPU (CUDA) support:** If you want to compile it for GPU (CUDA), use the following cmake option:
 
 .. code:: bash
 
@@ -103,23 +101,28 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 
 .. note::
 
-    Default option with fallback to CPU
+    Fallback to CPU
 
+- **GPU (cuDNN) support:** If you want to compile it for GPU (cuDNN), use the following cmake option:
 
-- **FPGA support:** If available, you can build EDDL with FPGA support using the following cmake option:
+.. code:: bash
+
+    -DBUILD_TARGET=CUDNN
+
+.. note::
+
+    Enabled by default. If cuDNN is not installed, we will fallback to GPU (CUDA), or to CPU if CUDA is not installed.
+
+- **FPGA support:** If you want to compile it for FPGA, use the following cmake option:
 
 .. code:: bash
 
     -DBUILD_TARGET=FPGA
 
 
-.. note::
-
-    Not yet implemented
-
 
 Additional flags
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 These flags can enable/disable features of the EDDL so that you can optimized and
 troubleshoot the compilation process (see: :doc:`troubleshoot`).
@@ -302,3 +305,4 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
 .. _Anaconda: https://docs.conda.io/en/latest/miniconda.html
 .. _Eigen3: http://eigen.tuxfamily.org/index.php?title=Main_Page
+.. _Requirements: https://github.com/deephealthproject/eddl/blob/develop/docs/markdown/bundle/requirements.txt

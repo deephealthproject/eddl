@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -17,6 +17,10 @@
 using namespace std;
 
 void msg(const string& text, const string& title="");
+
+void * eddl_malloc(size_t size, const string & str_info = "");
+
+void eddl_free(void * ptr);
 
 float *get_fmem(unsigned long int size, const string &str);
 

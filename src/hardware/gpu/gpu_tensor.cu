@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -35,6 +35,10 @@ cublasHandle_t hcublas[64];
 curandGenerator_t random_generator[64];
 cublasStatus_t bstatus;
 curandStatus_t rstatus;
+#ifdef cCUDNN
+cudnnStatus_t dstatus;
+cudnnHandle_t hdnn;
+#endif
 
 static const char *_curandGetErrorEnum(curandStatus_t error){
     switch (error)
@@ -107,7 +111,18 @@ void check_cuda(cudaError_t err,const char *msg)
 
 }
 
+#ifdef cCUDNN
 
+void check_cudnn(cudnnStatus_t status)
+{
+    if (status != CUDNN_STATUS_SUCCESS)
+    {
+        std::string text = "error in cudnn execution in " + std::string(cudnnGetErrorString(status)) + " | (check_cudnn)";
+        throw std::runtime_error(text);
+    }
+}
+
+#endif
 void gpu_set_device(int device)
 {
     cudaSetDevice(device);
@@ -173,8 +188,17 @@ void gpu_init(int device)
         throw std::runtime_error(text);
     }
     fprintf(stderr,"CuRand initialized on GPU device %d, %s\n",device,prop.name);
+#ifdef cCUDNN
+    // CUDNN
+    dstatus=cudnnCreate(&hdnn);
+    if (dstatus != CUDNN_STATUS_SUCCESS) {
+        std::string text = "problem in cudnn create (gpu_init)";
+        throw std::runtime_error(text);
+    }
 
+    fprintf(stderr,"CuDNN initialized on GPU device %d, %s\n",device,prop.name);
 
+#endif
 
 }
 
