@@ -116,11 +116,10 @@ void LBatchNorm::forward() {
     if (input->isCPU() || input->isGPU()) {
 
         // new implementation for CPU / GPU
-        Tensor *opa_perm = input->clone();
         if (input->isCPU()) {
             cpu_batchnorm_forward(input->shape[0], input->shape[1],
                 input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
-                input->ptr, output->ptr, opa_perm->ptr,
+                input->ptr, output->ptr, opa->ptr,
                 mean->ptr, variance->ptr,
                 affine ? bn_g->ptr : NULL,
                 affine ? bn_b->ptr : NULL,
@@ -128,19 +127,12 @@ void LBatchNorm::forward() {
         } else {
             gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],
                 input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
-                input->ptr, output->ptr, opa_perm->ptr,
+                input->ptr, output->ptr, opa->ptr,
                 mean->ptr, variance->ptr,
                 affine ? bn_g->ptr : NULL,
                 affine ? bn_b->ptr : NULL,
                 bn_mean->ptr, bn_var->ptr, mode == TRMODE, epsilon, momentum);
         }
-        if (input->ndim == 4) {
-            tensorNN::permute_channels_last(opa_perm, opa);
-            int M = input->shape[1];
-            int N = input->shape[0] * input->shape[2] * input->shape[3];
-            opa->reshape_({N, M});
-        } else Tensor::copy(opa_perm, opa);
-        delete opa_perm;
 
     } else {
 
@@ -194,28 +186,29 @@ void LBatchNorm::forward() {
     }
 }
 
-void check_error(Tensor *a_gpu, Tensor *b_gpu)
-{
-    Tensor *a = new Tensor(a_gpu->shape, DEV_CPU);
-    Tensor *b = new Tensor(b_gpu->shape, DEV_CPU);
-    Tensor::copy(a_gpu, a);
-    Tensor::copy(b_gpu, b);
-    float maxerr = 0.0;
-    int maxpos = 0;
-    for (int i = 0; i < a->size; i++) {
-        float d = fabs(a->ptr[i] - b->ptr[i]);
-        if (fabs(a->ptr[i]) > 1e-7) d = d / fabs(a->ptr[i]);
-        if (d > maxerr) {
-            maxerr = d;
-            maxpos = i;
-        }
-    }
-    printf("%e %e %e\n", maxerr, a->ptr[maxpos], b->ptr[maxpos]);
-    delete a;
-    delete b;
-}
-
 void LBatchNorm::backward(){
+
+    if (delta->isCPU() || delta->isGPU()) {
+
+        // new implementation for CPU / GPU
+        if (delta->isCPU()) {
+            cpu_batchnorm_backward(delta->shape[0], delta->shape[1],
+                delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
+                delta->ptr, opa->ptr, parent[0]->delta->ptr,
+                affine ? gbn_g->ptr : NULL,
+                affine ? gbn_b->ptr : NULL, affine ? bn_g->ptr : NULL,
+                bn_var->ptr, work1->ptr, work2->ptr);
+        } else if (delta->isGPU()) {
+            gpu_batchnorm_backward(delta->gpu_device, delta->shape[0], delta->shape[1],
+                delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
+                delta->ptr, opa->ptr, parent[0]->delta->ptr,
+                affine ? gbn_g->ptr : NULL,
+                affine ? gbn_b->ptr : NULL, affine ? bn_g->ptr : NULL,
+                bn_var->ptr, work1->ptr, work2->ptr);
+        }
+
+    } else {
+
     int M,N;
     int b,z,r,c,d;
 
@@ -242,30 +235,6 @@ void LBatchNorm::backward(){
 
         dp->reshape_({N,M});
 
-    }
-
-    Tensor *delta2 = delta->clone();
-    Tensor *pdelta2 = parent[0]->delta->clone();
-    Tensor *opa2 = delta->clone();
-    Tensor *gbn_g2 = gbn_g->clone();
-    Tensor *gbn_b2 = gbn_b->clone();
-    if (input->ndim == 4) {
-        tensorNN::permute_channels_first(opa, opa2);
-    } else {
-        Tensor::copy(opa, opa2);
-    }
-    if (delta->isCPU()) {
-        cpu_batchnorm_backward(delta->shape[0], delta->shape[1],
-            delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
-            delta2->ptr, opa2->ptr, pdelta2->ptr,
-            affine ? gbn_g2->ptr : NULL, affine ? gbn_b2->ptr : NULL, affine ? bn_g->ptr : NULL,
-            bn_var->ptr, work1->ptr, work2->ptr);
-    } else if (delta->isGPU()) {
-        gpu_batchnorm_backward(delta->gpu_device, delta->shape[0], delta->shape[1],
-            delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
-            delta2->ptr, opa2->ptr, pdelta2->ptr,
-            affine ? gbn_g2->ptr : NULL, affine ? gbn_b2->ptr : NULL, affine ? bn_g->ptr : NULL,
-            bn_var->ptr, work1->ptr, work2->ptr);
     }
 
     // Affine
@@ -300,22 +269,9 @@ void LBatchNorm::backward(){
     }
     else Tensor::inc(dp, parent[0]->delta);
 
-    // printf("gbn_g: "); check_error(gbn_g, gbn_g2);
-    // printf("gbn_b: "); check_error(gbn_b, gbn_b2);
-    /* if (input->ndim==4) {
-        printf("delta: "); check_error(delta, delta2);
-    } else {
-        printf("delta: "); check_error(dp, delta2);
-    } */
-    printf("pdelta: "); check_error(parent[0]->delta, pdelta2);
-    delete delta2;
-    delete pdelta2;
-    delete opa2;
-    delete gbn_g2;
-    delete gbn_b2;
-
     delete dp;
 
+    }
 }
 
 
