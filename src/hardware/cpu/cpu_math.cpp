@@ -759,7 +759,7 @@ void cpu_batchnorm_forward(int b, int z, int rc,
         }
 }
 
-void cpu_batchnorm_backward(int b, int z, int rc, float *delta, float *opa, float *gbn_g, float *gbn_b, float *bn_g, float *variance, float *mean1, float *mean2)
+void cpu_batchnorm_backward(int b, int z, int rc, float *delta, float *opa, float *pdelta, float *gbn_g, float *gbn_b, float *bn_g, float *variance, float *mean1, float *mean2)
 {
     const int block_size = 256;
     int rcz = rc * z;
@@ -812,9 +812,11 @@ void cpu_batchnorm_backward(int b, int z, int rc, float *delta, float *opa, floa
             int p = k + i * rcz;
             for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
                 int j = (k + l) / rc;
-                opa[p] = opa[p] * mean1[j] + mean2[j]; // step 3 & 5
-                delta[p] -= opa[p]; // step 6
-                delta[p] /= variance[j]; // step 7
+                // opa[p] = opa[p] * mean1[j] + mean2[j]; // step 3 & 5
+                // delta[p] -= opa[p]; // step 6
+                // delta[p] /= variance[j]; // step 7
+                // pdelta[p] += delta[p];
+                pdelta[p] += (delta[p] - (opa[p] * mean1[j] + mean2[j])) / variance[j];
             }
         }
 }

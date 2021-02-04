@@ -952,13 +952,13 @@ void gpu_batchnorm_forward(int gpu_device, int b, int z, int rc,
         // normalization
         gpu_batchnorm_forward_3<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, input, mean, variance, affine_g, affine_b, opa, output);
     } else {
-        gpu_batchnorm_forward_2b<<<num_blocks_z, batch_norm_block_size>>>(z, variance, global_variance, epsilon);
+        gpu_batchnorm_forward_2<<<num_blocks_z, batch_norm_block_size>>>(z, 1.0 / (b * rc), NULL, variance, momentum, NULL, global_variance, epsilon);
         // normalization
         gpu_batchnorm_forward_3<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, input, mean, variance, affine_g, affine_b, opa, output);
     }
 }
 
-void gpu_batchnorm_backward(int gpu_device, int b, int z, int rc, float *delta, float *opa, float *gbn_g, float *gbn_b, float *bn_g, float *variance, float *mean1, float *mean2)
+void gpu_batchnorm_backward(int gpu_device, int b, int z, int rc, float *delta, float *opa, float *pdelta, float *gbn_g, float *gbn_b, float *bn_g, float *variance, float *mean1, float *mean2)
 {
     cudaSetDevice(gpu_device);
     int rcz = rc * z;
@@ -970,14 +970,14 @@ void gpu_batchnorm_backward(int gpu_device, int b, int z, int rc, float *delta, 
     // for (int j = 0; j < z; j++) mean1[j] = mean2[j] = 0.0;
     check_cuda(cudaMemset(mean1, 0, z * sizeof(float)), "gpu_batchnorm_backward");
     check_cuda(cudaMemset(mean2, 0, z * sizeof(float)), "gpu_batchnorm_backward");
-    if (bn_g != NULL) { // affine
+    if (bn_g != NULL) {
         // compute mean
         gpu_batchnorm_backward_1<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, delta, opa, bn_g, mean1, mean2);
         gpu_batchnorm_backward_2<<<num_blocks_z, batch_norm_block_size>>>(z, 1.0 / (b * rc), mean1, mean2, gbn_g, gbn_b, bn_g);
     } else {
         // compute mean
-        gpu_batchnorm_backward_1b<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, delta, opa, mean1, mean2);
-        gpu_batchnorm_backward_2b<<<num_blocks_z, batch_norm_block_size>>>(z, 1.0 / (b * rc), mean1, mean2);
+        gpu_batchnorm_backward_1<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, delta, opa, NULL, mean1, mean2);
+        gpu_batchnorm_backward_2<<<num_blocks_z, batch_norm_block_size>>>(z, 1.0 / (b * rc), mean1, mean2, NULL, NULL, NULL);
     }
-    gpu_batchnorm_backward_3<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, delta, opa, mean1, mean2, variance);
+    gpu_batchnorm_backward_3<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, delta, opa, pdelta, mean1, mean2, variance);
 }

@@ -250,7 +250,7 @@ void gpu_batchnorm_forward(int gpu_device, int b, int z, int rc,
         bool trmode, float epsilon, float momentum);
 
 void gpu_batchnorm_backward(int gpu_device, int b, int z, int rc,
-        float *delta, float *opa, float *gbn_g, float *gbn_b,
+        float *delta, float *opa, float *pdelta, float *gbn_g, float *gbn_b,
         float *bn_g, float *variance, float *mean1, float *mean2);
 
 #endif //EDDL_GPU_HW_H

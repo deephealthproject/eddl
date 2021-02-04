@@ -413,14 +413,18 @@ __global__ void gpu_batchnorm_forward_2(int z, float inv_N, float *mean, float *
     // for (int j = 0; j < z; j++) {
     int j = blockIdx.x * batch_norm_block_size + threadIdx.x;
     if (j < z) {
-        mean[j] *= inv_N;
-        variance[j] = variance[j] * inv_N - mean[j] * mean[j];
-        // update global statistics
-        if (momentum != 0.0) {
-            global_mean[j] = momentum * global_mean[j] + (1.0 - momentum) * mean[j];
-            global_variance[j] = momentum * global_variance[j] + (1.0 - momentum) * variance[j];
+        if (mean != NULL) {
+            mean[j] *= inv_N;
+            variance[j] = variance[j] * inv_N - mean[j] * mean[j];
+            // update global statistics
+            if (momentum != 0.0) {
+                global_mean[j] = momentum * global_mean[j] + (1.0 - momentum) * mean[j];
+                global_variance[j] = momentum * global_variance[j] + (1.0 - momentum) * variance[j];
+            }
+            variance[j] = 1.0 / sqrt(variance[j] + epsilon);
+        } else {
+            variance[j] = 1.0 / sqrt(global_variance[j] + epsilon);
         }
-        variance[j] = 1.0 / sqrt(variance[j] + epsilon);
     }
 }
 
@@ -462,9 +466,9 @@ __global__ void gpu_batchnorm_backward_1(int b, int rc, int rcz, float *delta, f
         float m1 = 0, m2 = 0;
         for (int i = 0, p = k; i < b; i++, p += rcz) {
             // for (int l = 0; l < batch_norm_block_size && k + l < rcz; l++, p++) {
-            m1 += delta[p] * opa[p];
-            m2 += delta[p];
-            delta[p] *= bn_g[j];
+            m1 += delta[p] * opa[p]; // step 1 & 2
+            m2 += delta[p]; // step 4
+            if (bn_g != NULL) delta[p] *= bn_g[j]; // affine
         }
         atomicAdd(mean1 + j, m1);
         atomicAdd(mean2 + j, m2);
@@ -476,55 +480,33 @@ __global__ void gpu_batchnorm_backward_2(int z, float inv_N, float *mean1, float
     // for (int j = 0; j < z; j++) {
     int j = blockIdx.x * batch_norm_block_size + threadIdx.x;
     if (j < z) {
-        float m1 = mean1[j] * inv_N;
-        float m2 = mean2[j] * inv_N;
-        gbn_g[j] += m1;
-        gbn_b[j] += m2;
-        mean1[j] = m1 * bn_g[j];
-        mean2[j] = m2 * bn_g[j];
-    }
-}
-
-__global__ void gpu_batchnorm_backward_1b(int b, int rc, int rcz, float *delta, float *opa, float *mean1, float *mean2)
-{
-    // for (int k = 0; k < rcz; k += batch_norm_block_size)
-    int k = blockIdx.x * batch_norm_block_size + threadIdx.x;
-    if (k < rcz) {
-        int j = k / rc;
-        float m1 = 0, m2 = 0;
-        for (int i = 0, p = k; i < b; i++, p += rcz) {
-            // for (int l = 0; l < batch_norm_block_size && k + l < rcz; l++, p++) {
-            m1 += delta[p] * opa[p]; // step 1 & 2
-            m2 += delta[p]; // step 4
+        if (bn_g != NULL) { // affine
+            float m1 = mean1[j] * inv_N;
+            float m2 = mean2[j] * inv_N;
+            gbn_g[j] += m1;
+            gbn_b[j] += m2;
+            mean1[j] = m1 * bn_g[j];
+            mean2[j] = m2 * bn_g[j];
+        } else {
+            mean1[j] *= inv_N;
+            mean2[j] *= inv_N;
         }
-        atomicAdd(mean1 + j, m1);
-        atomicAdd(mean2 + j, m2);
     }
 }
 
-__global__ void gpu_batchnorm_backward_2b(int z, float inv_N, float *mean1, float *mean2)
-{
-    // for (int j = 0; j < z; j++) {
-    int j = blockIdx.x * batch_norm_block_size + threadIdx.x;
-    if (j < z) {
-        mean1[j] *= inv_N;
-        mean2[j] *= inv_N;
-    }
-}
-
-__global__ void gpu_batchnorm_backward_3(int b, int rc, int rcz, float *delta, float *opa, float *mean1, float *mean2, float *variance)
+__global__ void gpu_batchnorm_backward_3(int b, int rc, int rcz, float *delta, float *opa, float *pdelta, float *mean1, float *mean2, float *variance)
 {
     // for (int k = 0; k < rcz; k += batch_norm_block_size)
     int k = blockIdx.x * batch_norm_block_size + threadIdx.x;
     if (k < rcz) {
         int j = k / rc;
-        float m1 = 0, m2 = 0;
         for (int i = 0, p = k; i < b; i++, p += rcz) {
             // for (int l = 0; l < batch_norm_block_size && k + l < rcz; l++, p++) {
             float o = opa[p] * mean1[j] + mean2[j]; // step 3 & 5
-            opa[p] = o;
+            // opa[p] = o;
             float d = delta[p] - o; // step 6
-            delta[p] = d / variance[j]; // step 7
+            // delta[p] = d / variance[j]; // step 7
+            pdelta[p] += d / variance[j];
         }
     }
 }
