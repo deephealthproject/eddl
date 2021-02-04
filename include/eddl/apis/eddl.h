@@ -426,7 +426,7 @@ namespace eddl {
       *  @param bs  Batch size (size [100])
       *  @return     (void) Evaluates the model
     */
-    void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int bs=100);
+    void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int bs=-1);
 
     /**
       *  @brief Performs a prediction with input data
