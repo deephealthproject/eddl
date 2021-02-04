@@ -124,16 +124,31 @@ void ConvolDescriptor::build(Tensor *A) {
         this->pads = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right
     }
 
+#ifdef cCUDNN
+       if(pads[0] != pads[1] || pads[2] != pads[3]){
+        std::cout<<"==============================================="<<std::endl;
+        std::cout<<"Warning: padding not supported by cuDNN"<<std::endl;
+        std::cout<<"EDDL does not support non-symmetryc padding with cuDNN"<<std::endl;
+        std::cout<<"It will be modified so maybe this model crashes"<<std::endl;
+        std::cout<<"Please, check it"<<std::endl;
+        std::cout<<"==============================================="<<std::endl;
+    }
+       if (pads[0] != pads[1]){pads[0] = pads[1];}
+       if (pads[2] != pads[3]){ pads[2] = pads[3];}
+#endif
+
+
+
     padrt = pads[0]; padrb = pads[1];  // rows: top-bottom
     padcl = pads[2]; padcr = pads[3];  // cols: left-right
 
 #ifdef cCUDNN
-    if (pad[0] != pad[1] || pad[2] != pad[3]){
+    if (pads[0] != pads[1] || pads[2] != pads[3]){
         std::cout<<"==============================================="<<std::endl;
         std::cout<<"Error: padding not supported by cuDNN"<<std::endl;
         std::cout<<"==============================================="<<std::endl;
-        for(int i = 0; i< pad.size();i++)
-           std::cout<<"PAD["<<i<<"]="<< pad[i] <<std::endl;
+        for(int i = 0; i< pads.size();i++)
+           std::cout<<"PADS["<<i<<"]="<< pads[i] <<std::endl;
         msg("cuDNN requires equal top-bottom or left-right padding");
     }
 #endif
@@ -204,7 +219,7 @@ void ConvolDescriptor::build(Tensor *A) {
     cudnnCreateConvolutionDescriptor(&convolution_descriptor);
 
     cudnnSetConvolution2dDescriptor(convolution_descriptor,
-                                    pad[0], pad[2],
+                                    pads[0], pads[2],
                                     stride[0], stride[1],
                                     1,1,
                                     convolution_mode, data_type);
