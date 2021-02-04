@@ -87,13 +87,13 @@ On Unix platforms, from the source directory:
             cd eddl/
 
             # Install dependencies
-            conda env create -f environment.yml
+            conda env create -f environment-cpu.yml  # -cpu, -gpu, -cudnn
             conda activate eddl
 
             # Build and install
             mkdir build
             cd build
-            cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+            cmake .. #-DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
             make install
 
     .. tab:: MacOS
@@ -105,13 +105,13 @@ On Unix platforms, from the source directory:
             cd eddl/
 
             # Install dependencies
-            conda env create -f environment.yml
+            conda env create -f environment-cpu.yml  # -cpu, -gpu, -cudnn
             conda activate eddl
 
             # Build and install
             mkdir build
             cd build
-            cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+            cmake .. #-DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
 
             make install
 
