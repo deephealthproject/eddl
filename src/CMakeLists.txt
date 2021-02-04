@@ -280,7 +280,7 @@ if(USE_CUDA OR USE_CUDNN)
 
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
-        find_package(CUDAToolkit)
+
         if(USE_CUDNN)
             add_definitions(-DcCUDNN)
         endif()
