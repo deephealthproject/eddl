@@ -267,11 +267,12 @@ public:
     int                         horizontalPadding;
     int                         verticalStride;
     int                         horizontalStride;
-/* Heritage from convolution descriptor
     cudnnHandle_t cudnn_handle;
     cudnnTensorDescriptor_t xDesc; //input. also dxDesc
     cudnnTensorDescriptor_t yDesc; //output also dyDesc
-*/
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+
 #endif
 
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, const string& p, int mem=0);
