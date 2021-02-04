@@ -398,7 +398,7 @@ __global__ void gpu_batchnorm_forward_1(int b, int rc, int rcz, float *input, fl
         int j = k / rc;
         float m = 0, v = 0;
         for (int i = 0, p = k; i < b; i++, p += rcz) {
-            // for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
+            // for (int l = 0; l < batch_norm_block_size && k + l < rcz; l++, p++) {
             float x = input[p];
             m += x;
             v += x * x;
@@ -413,7 +413,7 @@ __global__ void gpu_batchnorm_forward_2(int z, float inv_N, float *mean, float *
     // for (int j = 0; j < z; j++) {
     int j = blockIdx.x * batch_norm_block_size + threadIdx.x;
     if (j < z) {
-        mean[j] = mean[j] * inv_N;
+        mean[j] *= inv_N;
         variance[j] = variance[j] * inv_N - mean[j] * mean[j];
         // update global statistics
         if (momentum != 0.0) {
@@ -449,6 +449,82 @@ __global__ void gpu_batchnorm_forward_3(int b, int rc, int rcz, float *input, fl
                 output[p] = opa[p] * affine_g[j] + affine_b[j];
                 opa[p] = input[p];
             } else output[p] = o;
+        }
+    }
+}
+
+__global__ void gpu_batchnorm_backward_1(int b, int rc, int rcz, float *delta, float *opa, float *bn_g, float *mean1, float *mean2)
+{
+    // for (int k = 0; k < rcz; k += batch_norm_block_size)
+    int k = blockIdx.x * batch_norm_block_size + threadIdx.x;
+    if (k < rcz) {
+        int j = k / rc;
+        float m1 = 0, m2 = 0;
+        for (int i = 0, p = k; i < b; i++, p += rcz) {
+            // for (int l = 0; l < batch_norm_block_size && k + l < rcz; l++, p++) {
+            m1 += delta[p] * opa[p];
+            m2 += delta[p];
+            delta[p] *= bn_g[j];
+        }
+        atomicAdd(mean1 + j, m1);
+        atomicAdd(mean2 + j, m2);
+    }
+}
+
+__global__ void gpu_batchnorm_backward_2(int z, float inv_N, float *mean1, float *mean2, float *gbn_g, float *gbn_b, float *bn_g)
+{
+    // for (int j = 0; j < z; j++) {
+    int j = blockIdx.x * batch_norm_block_size + threadIdx.x;
+    if (j < z) {
+        float m1 = mean1[j] * inv_N;
+        float m2 = mean2[j] * inv_N;
+        gbn_g[j] += m1;
+        gbn_b[j] += m2;
+        mean1[j] = m1 * bn_g[j];
+        mean2[j] = m2 * bn_g[j];
+    }
+}
+
+__global__ void gpu_batchnorm_backward_1b(int b, int rc, int rcz, float *delta, float *opa, float *mean1, float *mean2)
+{
+    // for (int k = 0; k < rcz; k += batch_norm_block_size)
+    int k = blockIdx.x * batch_norm_block_size + threadIdx.x;
+    if (k < rcz) {
+        int j = k / rc;
+        float m1 = 0, m2 = 0;
+        for (int i = 0, p = k; i < b; i++, p += rcz) {
+            // for (int l = 0; l < batch_norm_block_size && k + l < rcz; l++, p++) {
+            m1 += delta[p] * opa[p]; // step 1 & 2
+            m2 += delta[p]; // step 4
+        }
+        atomicAdd(mean1 + j, m1);
+        atomicAdd(mean2 + j, m2);
+    }
+}
+
+__global__ void gpu_batchnorm_backward_2b(int z, float inv_N, float *mean1, float *mean2)
+{
+    // for (int j = 0; j < z; j++) {
+    int j = blockIdx.x * batch_norm_block_size + threadIdx.x;
+    if (j < z) {
+        mean1[j] *= inv_N;
+        mean2[j] *= inv_N;
+    }
+}
+
+__global__ void gpu_batchnorm_backward_3(int b, int rc, int rcz, float *delta, float *opa, float *mean1, float *mean2, float *variance)
+{
+    // for (int k = 0; k < rcz; k += batch_norm_block_size)
+    int k = blockIdx.x * batch_norm_block_size + threadIdx.x;
+    if (k < rcz) {
+        int j = k / rc;
+        float m1 = 0, m2 = 0;
+        for (int i = 0, p = k; i < b; i++, p += rcz) {
+            // for (int l = 0; l < batch_norm_block_size && k + l < rcz; l++, p++) {
+            float o = opa[p] * mean1[j] + mean2[j]; // step 3 & 5
+            opa[p] = o;
+            float d = delta[p] - o; // step 6
+            delta[p] = d / variance[j]; // step 7
         }
     }
 }

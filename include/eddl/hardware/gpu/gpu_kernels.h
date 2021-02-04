@@ -202,4 +202,10 @@ __global__ void gpu_batchnorm_forward_2(int z, float inv_N, float *mean, float *
 __global__ void gpu_batchnorm_forward_2b(int z, float *variance, float *global_variance, float epsilon);
 __global__ void gpu_batchnorm_forward_3(int b, int rc, int rcz, float *input, float *mean, float *variance, float *affine_g, float *affine_b, float *opa, float *output);
 
+__global__ void gpu_batchnorm_backward_1(int b, int rc, int rcz, float *delta, float *opa, float *bn_g, float *mean1, float *mean2);
+__global__ void gpu_batchnorm_backward_2(int z, float inv_N, float *mean1, float *mean2, float *gbn_g, float *gbn_b, float *bn_g);
+__global__ void gpu_batchnorm_backward_1b(int b, int rc, int rcz, float *delta, float *opa, float *mean1, float *mean2);
+__global__ void gpu_batchnorm_backward_2b(int z, float inv_N, float *mean1, float *mean2);
+__global__ void gpu_batchnorm_backward_3(int b, int rc, int rcz, float *delta, float *opa, float *mean1, float *mean2, float *variance);
+
 #endif

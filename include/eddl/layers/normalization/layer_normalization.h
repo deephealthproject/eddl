@@ -46,6 +46,7 @@ public:
     Tensor *gbn_g;
     Tensor *gbn_b;
     Tensor *opa; //output pre-affine
+    Tensor *work1, *work2; // workspace for backward
 
     bool init;
     vector<int> shape;

@@ -42,6 +42,8 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     output=new Tensor(input->getShape(),dev);
     opa=new Tensor(input->getShape(),dev);
+    work1 = new Tensor(shape, dev);
+    work2 = new Tensor(shape, dev);
 
     mean=new Tensor(shape,dev);
     mean->fill_(0.0);
@@ -78,6 +80,8 @@ LBatchNorm::~LBatchNorm(){
     delete bn_mean;
     delete bn_var;
     delete opa; //output pre-affine
+    delete work1;
+    delete work2;
 }
 
 // override functions:
@@ -190,6 +194,27 @@ void LBatchNorm::forward() {
     }
 }
 
+void check_error(Tensor *a_gpu, Tensor *b_gpu)
+{
+    Tensor *a = new Tensor(a_gpu->shape, DEV_CPU);
+    Tensor *b = new Tensor(b_gpu->shape, DEV_CPU);
+    Tensor::copy(a_gpu, a);
+    Tensor::copy(b_gpu, b);
+    float maxerr = 0.0;
+    int maxpos = 0;
+    for (int i = 0; i < a->size; i++) {
+        float d = fabs(a->ptr[i] - b->ptr[i]);
+        if (fabs(a->ptr[i]) > 1e-7) d = d / fabs(a->ptr[i]);
+        if (d > maxerr) {
+            maxerr = d;
+            maxpos = i;
+        }
+    }
+    printf("%e %e %e\n", maxerr, a->ptr[maxpos], b->ptr[maxpos]);
+    delete a;
+    delete b;
+}
+
 void LBatchNorm::backward(){
     int M,N;
     int b,z,r,c,d;
@@ -217,6 +242,29 @@ void LBatchNorm::backward(){
 
         dp->reshape_({N,M});
 
+    }
+
+    Tensor *delta2 = delta->clone();
+    Tensor *opa2 = delta->clone();
+    Tensor *gbn_g2 = gbn_g->clone();
+    Tensor *gbn_b2 = gbn_b->clone();
+    if (input->ndim == 4) {
+        tensorNN::permute_channels_first(opa, opa2);
+    } else {
+        Tensor::copy(opa, opa2);
+    }
+    if (delta->isCPU()) {
+        cpu_batchnorm_backward(delta->shape[0], delta->shape[1],
+            delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
+            delta2->ptr, opa2->ptr, affine ? gbn_g2->ptr : NULL,
+            affine ? gbn_b2->ptr : NULL, affine ? bn_g->ptr : NULL,
+            bn_var->ptr, work1->ptr, work2->ptr);
+    } else if (delta->isGPU()) {
+        gpu_batchnorm_backward(delta->gpu_device, delta->shape[0], delta->shape[1],
+            delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
+            delta2->ptr, opa2->ptr, affine ? gbn_g2->ptr : NULL,
+            affine ? gbn_b2->ptr : NULL, affine ? bn_g->ptr : NULL,
+            bn_var->ptr, work1->ptr, work2->ptr);
     }
 
     // Affine
@@ -250,6 +298,18 @@ void LBatchNorm::backward(){
         Tensor::inc(delta, parent[0]->delta);
     }
     else Tensor::inc(dp, parent[0]->delta);
+
+    // printf("gbn_g: "); check_error(gbn_g, gbn_g2);
+    // printf("gbn_b: "); check_error(gbn_b, gbn_b2);
+    if (input->ndim==4) {
+        printf("delta: "); check_error(delta, delta2);
+    } else {
+        printf("delta: "); check_error(dp, delta2);
+    }
+    delete delta2;
+    delete opa2;
+    delete gbn_g2;
+    delete gbn_b2;
 
     delete dp;
 

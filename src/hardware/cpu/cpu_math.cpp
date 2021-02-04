@@ -758,3 +758,63 @@ void cpu_batchnorm_forward(int b, int z, int rc,
             }
         }
 }
+
+void cpu_batchnorm_backward(int b, int z, int rc, float *delta, float *opa, float *gbn_g, float *gbn_b, float *bn_g, float *variance, float *mean1, float *mean2)
+{
+    const int block_size = 256;
+    int rcz = rc * z;
+    float N = b * rc;
+    if (bn_g != NULL) { // affine
+        // compute mean
+        for (int j = 0; j < z; j++) mean1[j] = mean2[j] = 0.0;
+        #pragma omp parallel for
+        for (int k = 0; k < rcz; k += block_size)
+            for (int i = 0; i < b; i++) {
+                int p = k + i * rcz;
+                for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
+                    int j = (k + l) / rc;
+                    mean1[j] += delta[p] * opa[p];
+                    mean2[j] += delta[p];
+                    delta[p] *= bn_g[j];
+                }
+            }
+        #pragma omp parallel for
+        for (int j = 0; j < z; j++) {
+            mean1[j] /= N;
+            mean2[j] /= N;
+            gbn_g[j] += mean1[j];
+            gbn_b[j] += mean2[j];
+            mean1[j] *= bn_g[j];
+            mean2[j] *= bn_g[j];
+        }
+    } else {
+        // compute mean
+        for (int j = 0; j < z; j++) mean1[j] = mean2[j] = 0.0;
+        #pragma omp parallel for
+        for (int k = 0; k < rcz; k += block_size)
+            for (int i = 0; i < b; i++) {
+                int p = k + i * rcz;
+                for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
+                    int j = (k + l) / rc;
+                    mean1[j] += delta[p] * opa[p]; // step 1 & 2
+                    mean2[j] += delta[p]; // step 4
+                }
+            }
+        #pragma omp parallel for
+        for (int j = 0; j < z; j++) {
+            mean1[j] /= N;
+            mean2[j] /= N;
+        }
+    }
+    #pragma omp parallel for
+    for (int k = 0; k < rcz; k += block_size)
+        for (int i = 0; i < b; i++) {
+            int p = k + i * rcz;
+            for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
+                int j = (k + l) / rc;
+                opa[p] = opa[p] * mean1[j] + mean2[j]; // step 3 & 5
+                delta[p] -= opa[p]; // step 6
+                delta[p] /= variance[j]; // step 7
+            }
+        }
+}
