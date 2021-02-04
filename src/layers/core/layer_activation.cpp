@@ -38,7 +38,6 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
     //BOTH softmax and activations
     //cudnn_handle = hdnn[dev];
-    cout<<"Init dev: "<<dev<<endl;
     cudnnCreateTensorDescriptor(&xDesc);
     cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  input->shape[0], input->shape[1],

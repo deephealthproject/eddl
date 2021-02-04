@@ -223,7 +223,7 @@ void LBatchNorm::forward() {
     float alpha = 1.0;
     float beta = 0.0;
 
-    cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(/*cudnn_handle*/hdnn[input->device], bn_mode, &alpha, &beta,
+    cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(/*cudnn_handle*/hdnn[input->gpu_device], bn_mode, &alpha, &beta,
                                                              xDesc, input->ptr, yDesc, output->ptr,
                                                              bnScaleBiasMeanVarDesc, bn_g->ptr, bn_b->ptr,
                                                              exponentialAverageFactor, mean->ptr, variance->ptr, epsilon,
@@ -318,7 +318,7 @@ void LBatchNorm::backward(){
       float betaParamDiff = 0.0;
 
 
-      cudnnStatus_t nnn= cudnnBatchNormalizationBackward(/*cudnn_handle*/hdnn[input->device], bn_mode, &alphaDataDiff, &betaDataDiff,
+      cudnnStatus_t nnn= cudnnBatchNormalizationBackward(/*cudnn_handle*/hdnn[input->gpu_device], bn_mode, &alphaDataDiff, &betaDataDiff,
                                                          &alphaParamDiff, &betaParamDiff, xDesc, input->ptr,
                                                          yDesc, delta->ptr, xDesc, parent[0]->delta->ptr,
                                                          bnScaleBiasMeanVarDesc,bn_g->ptr, gbn_g->ptr, gbn_b->ptr,
