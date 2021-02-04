@@ -40,6 +40,8 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     output=new Tensor(input->getShape(),dev);
     opa=new Tensor(input->getShape(),dev);
+    work1 = new Tensor(shape, dev);
+    work2 = new Tensor(shape, dev);
 
     mean=new Tensor(shape,dev);
     mean->fill_(0.0);
@@ -108,6 +110,8 @@ LBatchNorm::~LBatchNorm(){
     delete bn_mean;
     delete bn_var;
     delete opa; //output pre-affine
+    delete work1;
+    delete work2;
 }
 
 // override functions:
@@ -156,6 +160,16 @@ void LBatchNorm::forward() {
     // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
 
 #ifndef cCUDNN
+#ifndef BATCHNORM_ORIG
+    // new implementation for CPU / GPU
+    if (input->isCPU() || input->isGPU()) {
+        tensorNN::BatchNormForward(input, output, opa, mean, variance,
+                affine ? bn_g : NULL, affine ? bn_b : NULL,
+                bn_mean, bn_var, mode == TRMODE, epsilon, momentum);
+    } else
+#endif
+    {
+
     int M,N;
     int b,z,r,c,d;
     Tensor *in;
@@ -202,6 +216,9 @@ void LBatchNorm::forward() {
 
 
     delete in;
+
+    }
+
 #else
     float alpha = 1.0;
     float beta = 0.0;
@@ -220,6 +237,16 @@ void LBatchNorm::backward(){
 
     //std::cout<<"BN layer BWD: "<< this->name <<std::endl;
 #ifndef cCUDNN
+#ifndef BATCHNORM_ORIG
+    // new implementation for CPU / GPU
+    if (input->isCPU() || input->isGPU()) {
+        tensorNN::BatchNormBackward(delta, opa, parent[0]->delta,
+            affine ? gbn_g : NULL, affine ? gbn_b : NULL, affine ? bn_g : NULL,
+            bn_var, work1, work2);
+    } else
+#endif
+    {
+
     int M,N;
     int b,z,r,c,d;
 
@@ -281,6 +308,9 @@ void LBatchNorm::backward(){
     else Tensor::inc(dp, parent[0]->delta);
 
     delete dp;
+
+    }
+
 #else
       float alphaDataDiff = 1.0;
       float betaDataDiff = 0.0;
