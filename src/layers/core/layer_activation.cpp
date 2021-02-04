@@ -37,7 +37,8 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
     //BOTH softmax and activations
-    cudnn_handle = hdnn;
+    //cudnn_handle = hdnn[dev];
+    cout<<"Init dev: "<<dev<<endl;
     cudnnCreateTensorDescriptor(&xDesc);
     cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  input->shape[0], input->shape[1],
@@ -145,15 +146,16 @@ void LActivation::forward(){
     float alpha = 1.0f;
     float beta = 0.0f;
     if(act == "softmax"){
-        cudnnStatus_t st = cudnnSoftmaxForward(cudnn_handle, algorithm, softmax_mode,
+        cudnnStatus_t st = cudnnSoftmaxForward(hdnn[this->input->gpu_device], algorithm, softmax_mode,
                                                 &alpha, xDesc, this->input->ptr,
                             &beta, yDesc, this->output->ptr);
         if( st != CUDNN_STATUS_SUCCESS) std::cout<<"SOFTMAX: " <<cudnnGetErrorString(st)<<std::endl;
     }
     else{
-        cudnnStatus_t st = cudnnActivationForward(cudnn_handle, activationDesc, &alpha, xDesc, this->input->ptr,
+        cudnnStatus_t st = cudnnActivationForward(hdnn[this->input->gpu_device],
+                                                                  activationDesc, &alpha, xDesc, this->input->ptr,
                                &beta, yDesc, this->output->ptr);
-        if( st != CUDNN_STATUS_SUCCESS) std::cout<<"ACT: " <<cudnnGetErrorString(st)<<std::endl;
+        if( st != CUDNN_STATUS_SUCCESS) std::cout<<"ACT: " <<cudnnGetErrorString(st)<<" device: "<<this->input->gpu_device<<std::endl;
     }
 #else
     if (act == "relu"){
@@ -274,14 +276,14 @@ void LActivation::backward(){
         float alpha = 1.0f;
        float beta = 0.0f;
        if (act == "softmax"){
-            cudnnStatus_t st = cudnnSoftmaxBackward(this->cudnn_handle, this->algorithm, this->softmax_mode,
+            cudnnStatus_t st = cudnnSoftmaxBackward(hdnn[this->input->gpu_device], this->algorithm, this->softmax_mode,
                                                      &alpha, this->yDesc, this->output->ptr,
                                                      this->yDesc, this->delta->ptr,
                                                      &beta, this->xDesc, this->parent[0]->delta->ptr);
             if( st != CUDNN_STATUS_SUCCESS) std::cout<<"SOFT_BACK: " <<cudnnGetErrorString(st)<<std::endl;
         }
         else{
-             cudnnStatus_t st = cudnnActivationBackward(this->cudnn_handle, this->activationDesc,
+             cudnnStatus_t st = cudnnActivationBackward(hdnn[this->input->gpu_device], this->activationDesc,
                                                          &alpha, this->yDesc, this->output->ptr,
                                                          this->yDesc, this->delta->ptr,
                                                          this->xDesc, this->input->ptr, &beta,

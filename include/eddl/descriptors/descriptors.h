@@ -21,7 +21,7 @@
 #include "eddl/utils.h"
 #ifdef cCUDNN
 #include <cudnn.h>
-extern cudnnHandle_t hdnn;
+extern cudnnHandle_t hdnn[64];
 
 #endif
 
@@ -136,6 +136,9 @@ public:
 
     int cudnn_env_init;
     int cudnn_conv_back_init;
+
+    //int cudnn_env_init;
+    //int cudnn_conv_back_init;
 #endif
 
 

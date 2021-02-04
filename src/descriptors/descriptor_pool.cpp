@@ -103,7 +103,8 @@ void PoolDescriptor::build(Tensor *A) {
         for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
 
 #ifdef cCUDNN
-    cudnn_handle = hdnn;
+    cudnn_handle = hdnn[A->device];
+        cout<<"Pooldevice: "<<A->gpu_device<<endl;
     cudnnCreatePoolingDescriptor(&poolingDesc);
 
     windowHeight = kr;
