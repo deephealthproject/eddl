@@ -130,6 +130,7 @@ namespace tensorNN {
                 bn_b != NULL ? bn_b->ptr : NULL,
                 bn_mean->ptr, bn_var->ptr, trmode, epsilon, momentum);
         } else {
+#ifdef cGPU
             gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],
                 input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
                 input->ptr, output->ptr, opa->ptr,
@@ -137,6 +138,7 @@ namespace tensorNN {
                 bn_g != NULL ? bn_g->ptr : NULL,
                 bn_b != NULL ? bn_b->ptr : NULL,
                 bn_mean->ptr, bn_var->ptr, trmode, epsilon, momentum);
+#endif
         }
     }
 
@@ -153,6 +155,7 @@ namespace tensorNN {
                 bn_g != NULL ? bn_g->ptr : NULL,
                 bn_var->ptr, work1->ptr, work2->ptr);
         } else  {
+#ifdef cGPU
             gpu_batchnorm_backward(delta->gpu_device, delta->shape[0], delta->shape[1],
                 delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
                 delta->ptr, opa->ptr, pdelta->ptr,
@@ -160,6 +163,7 @@ namespace tensorNN {
                 gbn_b != NULL ? gbn_b->ptr : NULL,
                 bn_g != NULL ? bn_g->ptr : NULL,
                 bn_var->ptr, work1->ptr, work2->ptr);
+#endif
         }
     }
 
