@@ -230,9 +230,11 @@ void LBatchNorm::forward() {
                                                              bn_mean->ptr, bn_var->ptr);
     if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error fwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;
 #endif
+
 }
 
 void LBatchNorm::backward(){
+
     //std::cout<<"BN layer BWD: "<< this->name <<std::endl;
 #ifndef cCUDNN
 #ifndef BATCHNORM_ORIG
@@ -308,6 +310,7 @@ void LBatchNorm::backward(){
     delete dp;
 
     }
+
 #else
       float alphaDataDiff = 1.0;
       float betaDataDiff = 0.0;
@@ -322,6 +325,7 @@ void LBatchNorm::backward(){
                                                          epsilon, bn_mean->ptr, bn_var->ptr);
     if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;
 #endif
+
 }
 
 
