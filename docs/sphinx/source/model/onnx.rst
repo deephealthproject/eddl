@@ -19,7 +19,7 @@ Example:
 Import from file
 -----------------
 
-.. doxygenfunction:: import_net_from_onnx_file(std::string path, int mem = 0)
+.. doxygenfunction:: import_net_from_onnx_file(std::string path, int mem = 0, int log_level)
 
 Example:
 

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -27,7 +27,7 @@ LMaxPool1D::LMaxPool1D(Layer *parent, const vector<int> &pool_size, const vector
 LMaxPool1D::LMaxPool1D(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, const string& name, int dev, int mem) : LMaxPool1D(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
 LMaxPool1D::LMaxPool1D(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem) : LPool1D(parent, D, name, dev, mem) {
-    if(name.empty()) this->name = "maxpool1D" + to_string(++total_layers);
+    if(name.empty()) this->name = "maxpool1d" + to_string(++total_layers);
 
     // Params
     D->indX = new Tensor(D->O->shape, dev);  // Is this needed here?

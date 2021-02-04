@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -100,8 +100,9 @@ void LDense::apply_accumulated_gradients() {
 Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     LDense *n = new LDense(p[0], ndim, use_bias, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
-    n->isshared=true;
+    n->isshared = true;
     n->trainable = trainable;
+    n->do_deletes = false;
 
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
@@ -134,8 +135,10 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     n->gradients.push_back(n->gW);
     if (use_bias) n->gradients.push_back(n->gbias);
 
-    n->reg=reg;
-    n->init=init;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     return n;
 }
@@ -144,8 +147,13 @@ Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDense *n = new LDense(p[0], ndim, use_bias,  "clone_" + name, todev, this->mem_level);
     n->orig = this;
     n->trainable = trainable;
-    n->reg=reg;
-    n->init=init;
+    n->do_deletes = false;
+
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
+
     if (distributed_training)
         n->enable_distributed();
 

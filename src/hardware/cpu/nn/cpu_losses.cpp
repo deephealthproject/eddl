@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -43,7 +43,7 @@ float cpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
     }
 
     // Compute mean
-    float mean_ce = -sum/(float)y_true->shape[0];
+    float mean_ce = -sum;//(float)y_true->shape[0];
     return mean_ce;
 }
 
@@ -66,7 +66,7 @@ float cpu_binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
     }
 
     // Compute mean
-    float mean_ce = -sum/(float)y_true->shape[0];
+    float mean_ce = -sum;//(float)y_true->shape[0];
     return mean_ce;
 }
 

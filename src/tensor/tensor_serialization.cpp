@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -111,12 +111,16 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
         ifs.seekg(start_offset*sizeof(float), std::ifstream::cur);
     }
 
+    auto *t1 = new Tensor(r_shape, DEV_CPU);
+    ifs.read(reinterpret_cast<char*>(t1->ptr), n_read * sizeof(float));
     // Load content (row-major)
+    /*
     auto *r_ptr = new float[r_size];
     ifs.read(reinterpret_cast<char*>(r_ptr), n_read * sizeof(float));
 
     // Return new tensor
     auto *t1 = new Tensor(r_shape, r_ptr, DEV_CPU);
+    */
 //    t1->info();
     return t1;
 }
@@ -142,18 +146,21 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
         // Set number of channels to read
         unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, STBI_default);
 
+        Tensor * temp = new Tensor({t_height, t_width, t_channels}, DEV_CPU);
+
         // Cast pointer
         // Data in row-major
         t_size = t_width * t_height * t_channels;
-        auto *t_data = new float[t_size];
+        //auto *t_data = new float[t_size];
+        float *t_data = temp->ptr;
         for (int i = 0; i < t_size; i++) { t_data[i] = (float) pixels[i]; }
 
         // Free image
         stbi_image_free(pixels);
 
         // Re-order components. Data received as HxWxC, and has to be presented as CxHxW
-        t = new Tensor({t_height, t_width, t_channels}, t_data, DEV_CPU);
-        t = Tensor::permute(t, {2, 0, 1});
+        t = Tensor::permute(temp, {2, 0, 1});
+        delete temp;
 
     } catch(const std::bad_array_new_length &e) {
         msg("There was an error opening the image", "Tensor::load_from_img");
@@ -234,10 +241,10 @@ Tensor* Tensor::load_from_ptr(void * src) {
         total_size *= shape[i];
 
     // Read float data
-    float * data = new float[total_size];
-    memcpy(data, aux_ptr, total_size * sizeof(float));
+    Tensor * t = new Tensor(shape, DEV_CPU);
+    memcpy(t->ptr, aux_ptr, total_size * sizeof(float));
 
-    return new Tensor(shape, data, DEV_CPU);
+    return t;
 }
 
 
@@ -458,7 +465,7 @@ std::pair<void*, size_t> Tensor::save2ptr() {
 
     // Reserve memory for: ndims value, shape vector and tensor float data
     size_t needed_mem = sizeof(int) + (aux_tensor->shape.size() * sizeof(int)) + (aux_tensor->size * sizeof(float));
-    void * dest = malloc(needed_mem);
+    float * dest = get_fmem(needed_mem, "save2ptr()");
     char * aux_ptr = (char*) dest;
 
     // Store the number of dimensions

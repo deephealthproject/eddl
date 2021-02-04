@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -21,12 +21,8 @@ int LConv1D::total_layers = 0;
 
 // constructors and clones
 
-LConv1D::LConv1D(Layer *parent, const vector<int> &ks, const vector<int> &st,
-             const vector<int> &p, string name, int dev, int mem) : LConv1D(parent, new ConvolDescriptor(ks, st, p, mem), name, dev, mem) {}
-
-LConv1D::LConv1D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv1D(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, use_bias, mem), name, dev, mem) {
-    // TODO: Implement (Fix initialization)
+LConv1D::LConv1D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
+             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv1D(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, pads, groups, dilation_rate, use_bias, mem), name, dev, mem) {
 };
 
 LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
@@ -35,7 +31,7 @@ LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int m
     // Check dev with tensor dev
 
     // Set default name
-    if(name.empty()) this->name = "conv1D" + to_string(++total_layers);
+    if(name.empty()) this->name = "conv1d" + to_string(++total_layers);
 
     input = parent->output;
 
@@ -71,7 +67,21 @@ LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int m
 
 
 LConv1D::~LConv1D(){
-//    delete cd;  // Just in case
+    delete input_reshaped;
+    input_reshaped = nullptr;
+
+    // deleting cd->O later in this method can drive to double delete/free 
+    Tensor *O_temp = cd->O;
+
+    // deleting cd->D here can drive to double delete/free 
+    if (cd->D != nullptr) delete cd->D;
+    cd->D = nullptr;
+
+    delete cd;
+    cd = nullptr;
+
+    // TODO check where is the proper place to delete/free cd->O
+    if (O_temp != nullptr) delete O_temp;
 }
 
 // virtual
@@ -94,6 +104,7 @@ void LConv1D::mem_delta(){
         // Show delta with the output shape of the Conv1D
         delta = Tensor::zeros(output->shape, output->device);
         // Reshape delta for convol descriptor
+        if (cd->D != nullptr) delete cd->D;
         cd->D = new Tensor(cd->O->shape, delta);
 
         if(this->verbosity_level >= 2) {
@@ -143,15 +154,13 @@ void LConv1D::apply_accumulated_gradients() {
 }
 
 Layer *LConv1D::share(int c, int bs, vector<Layer *> p) {
-    LConv1D *n = new LConv1D(p[0], cd->ksize, cd->stride, cd->pad,  "share_"+name, dev,mem_level);
+    LConv1D *n = new LConv1D(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias,  "share_"+to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
-    n->isshared=true;
+    n->isshared = true;
     n->trainable = trainable;
-
-    n->cd->use_bias=cd->use_bias;
+    n->do_deletes = false;
 
     //share params
-
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
     n->params.clear();
 
@@ -182,23 +191,27 @@ Layer *LConv1D::share(int c, int bs, vector<Layer *> p) {
         n->acc_gradients.push_back(n->cd->acc_gK);
         n->acc_gradients.push_back(n->cd->acc_gbias);
     }
-
-    n->reg=reg;
-    n->init=init;
+    
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     return n;
 }
 
 Layer *LConv1D::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LConv1D *n = new LConv1D(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
+    LConv1D *n = new LConv1D(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias,  this->name, todev, this->mem_level);
     n->trainable = trainable;
+    n->do_deletes = false;
 
     n->orig = this;
-    n->cd->use_bias=cd->use_bias;
 
-    n->reg=reg;
-    n->init=init;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
 
     return n;

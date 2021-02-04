@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -88,10 +88,12 @@ int main(int argc, char **argv) {
     cout << "Test: Array contents 2 ********************" << endl;
     cout << endl;
 
+    delete t1;
     t1 = Tensor::ones({3, 3}); t1->print();
     cout << "All? " << Tensor::all(t1) << endl;
     cout << endl;
 
+    delete t1;
     t1 = Tensor::zeros({3, 3}); t1->print();
     cout << "Any? " << Tensor::any(t1) << endl;
     cout << endl;
@@ -104,11 +106,13 @@ int main(int argc, char **argv) {
     cout << endl;
 
     cout << "New Tensor 1: ********************" << endl;
+    delete t1;
     t1 = Tensor::range(1.0, 25.0f, 1);
     t1->reshape_(shape); t1->print();
     cout << endl;
 
     cout << "New Tensor 2: ********************" << endl;
+    delete t2;
     t2 = Tensor::range(1.0, 25.0f, 1);
     t2->reshape_(shape); t2->print();
     cout << endl;
@@ -177,5 +181,7 @@ int main(int argc, char **argv) {
     Tensor::logical_xor(t1, t2, t3); t3->print();
     cout << endl;
 
-
+    delete t1;
+    delete t2;
+    delete t3;
 }

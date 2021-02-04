@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -60,23 +60,15 @@ int main(int argc, char **argv) {
     layer enc = LSTM(lE,128,true);  // mask_zeros=true
     layer cps=GetStates(enc);
 
-    model encoder=Model({in},{});
-    build(encoder);
-    plot(encoder, "encoder.pdf");
-
     // Decoder
     layer ldin=Input({outvs});
     layer ld = ReduceArgMax(ldin,{0});
     ld = RandomUniform(Embedding(ld, outvs, 1,embedding),-0.05,0.05);
 
-    // copy states from encoder
+    // input from embedding and
+    // state from encoder
     l = LSTM({ld,cps},128);
     layer out = Softmax(Dense(l, outvs));
-
-    model decoder=Model({ldin},{out});
-    build(decoder,adam(0.001),{"softmax_cross_entropy"},{"accuracy"},CS_CPU());
-
-    plot(decoder, "decoder.pdf");
 
     setDecoder(ldin);
 
@@ -91,9 +83,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          //CS_CPU()
     );
 
 
@@ -114,7 +106,6 @@ int main(int argc, char **argv) {
     y_test->reshape_({y_test->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
 
     // Train model
-
     Tensor* ybatch = new Tensor({batch_size, olength,outvs});
     next_batch({y_train},{ybatch});
 
@@ -122,8 +113,6 @@ int main(int argc, char **argv) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
     }
 
-   delete net;
-
-
+    delete net;
 
 }

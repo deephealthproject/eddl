@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -81,14 +81,23 @@ int cpu_accuracy(Tensor *A, Tensor *B);
 int cpu_bin_accuracy(Tensor *A, Tensor *B);
 
 
-// Conv
+// Conv2D
 void cpu_conv2D(ConvolDescriptor *D);
 void cpu_conv2D_grad(ConvolDescriptor *D);
 void cpu_conv2D_back(ConvolDescriptor *D);
 
-// MaxPool
+// Conv3D
+void cpu_conv3D(ConvolDescriptor3D *D);
+void cpu_conv3D_grad(ConvolDescriptor3D *D);
+void cpu_conv3D_back(ConvolDescriptor3D *D);
+
+// MaxPool2D
 void cpu_mpool2D(PoolDescriptor*D);
 void cpu_mpool2D_back(PoolDescriptor *D);
+
+// MaxPool3D
+void cpu_mpool3D(PoolDescriptor3D *D);
+void cpu_mpool3D_back(PoolDescriptor3D *D);
 
 // AvgPool
 void cpu_avgpool2D(PoolDescriptor*D);

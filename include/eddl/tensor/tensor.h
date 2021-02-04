@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -136,7 +136,7 @@ public:
     *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
     *  @return a tensor
     */
-    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=0);
+    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=nullptr);
 
     /**
     *  @brief Construct an uninitialized tensor
@@ -171,7 +171,7 @@ public:
     void updateShape(const vector<int> &new_shape);
     void updateSize();
     void updateStrides();
-    void updateData(float* ptr, void *ptr2=NULL,bool setshared=true);
+    void updateData(float* ptr, void *ptr2=nullptr, bool setshared=true);
     void deleteData();
 
     /**

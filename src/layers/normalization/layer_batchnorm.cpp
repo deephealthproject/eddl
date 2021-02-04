@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -67,6 +67,38 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
         gradients.push_back(gbn_g);
         gradients.push_back(gbn_b);
     }
+#ifdef cCUDNN
+      cudnn_handle = hdnn;
+      data_type = CUDNN_DATA_FLOAT;
+      tensor_format = CUDNN_TENSOR_NCHW;
+      bn_mode =(input->ndim > 2) ? CUDNN_BATCHNORM_SPATIAL : CUDNN_BATCHNORM_PER_ACTIVATION;
+      cudnnCreateTensorDescriptor(&xDesc);
+      cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 input->shape[0],input->shape[1],
+                 (input->shape.size()>2) ? input->shape[2] : 1,
+                 (input->shape.size()>3) ? input->shape[3] : 1);
+      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor x "<< cudnnGetErrorString(bbb) <<std::endl;
+      cudnnCreateTensorDescriptor(&yDesc);
+      bbb = cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                 output->shape[0],output->shape[1],
+                 (output->shape.size()>2) ? output->shape[2] : 1,
+                 (output->shape.size()>3) ? output->shape[3] : 1);
+      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor y "<< cudnnGetErrorString(bbb) <<std::endl;
+      cudnnCreateTensorDescriptor(&bnScaleBiasMeanVarDesc);
+      if(bn_mode == CUDNN_BATCHNORM_SPATIAL){
+      bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
+                 1,output->shape[1],
+                 1, 1);
+      }
+      else{
+      bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
+                 1,output->shape[1],
+                 (output->shape.size()>2) ? output->shape[2] : 1,
+                 (output->shape.size()>3) ? output->shape[3] : 1);
+
+      }
+      exponentialAverageFactor = 1.0 - this->momentum;
+#endif
 
     // no trainable:
     params.push_back(mean);
@@ -103,6 +135,22 @@ void LBatchNorm::resize(int batch){
         opa->reshape_(output->getShape());
         output->resize(batch);
         opa->resize(batch);
+#ifdef cCUDNN
+        cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                                                       batch,input->shape[1],
+                                                       (input->shape.size()>2) ? input->shape[2] : 1,
+                                                       (input->shape.size()>3) ? input->shape[3] : 1);
+        if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor x "<< cudnnGetErrorString(bbb) <<std::endl;
+        bbb = cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                                         batch,output->shape[1],
+                                         (output->shape.size()>2) ? output->shape[2] : 1,
+                                         (output->shape.size()>3) ? output->shape[3] : 1);
+        if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor y "<< cudnnGetErrorString(bbb) <<std::endl;
+        /*bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
+                                         batch,output->shape[1],
+                                         (output->shape.size()>2) ? output->shape[2] : 1,
+                                         (output->shape.size()>3) ? output->shape[3] : 1);*/
+#endif
     }
 }
 
@@ -113,27 +161,24 @@ void LBatchNorm::forward() {
     // Input = Output = opa = {Batch,Channels,H,W} OR {Batch,Dim}
     // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
 
-    if (input->isCPU() || input->isGPU()) {
-
-        // new implementation for CPU / GPU
-        if (input->isCPU()) {
-            cpu_batchnorm_forward(input->shape[0], input->shape[1],
-                input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
-                input->ptr, output->ptr, opa->ptr,
-                mean->ptr, variance->ptr,
-                affine ? bn_g->ptr : NULL,
-                affine ? bn_b->ptr : NULL,
-                bn_mean->ptr, bn_var->ptr, mode == TRMODE, epsilon, momentum);
-        } else {
-            gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],
-                input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
-                input->ptr, output->ptr, opa->ptr,
-                mean->ptr, variance->ptr,
-                affine ? bn_g->ptr : NULL,
-                affine ? bn_b->ptr : NULL,
-                bn_mean->ptr, bn_var->ptr, mode == TRMODE, epsilon, momentum);
-        }
-
+#ifndef cCUDNN
+    // new implementation for CPU / GPU
+    if (input->isCPU()) {
+        cpu_batchnorm_forward(input->shape[0], input->shape[1],
+            input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
+            input->ptr, output->ptr, opa->ptr,
+            mean->ptr, variance->ptr,
+            affine ? bn_g->ptr : NULL,
+            affine ? bn_b->ptr : NULL,
+            bn_mean->ptr, bn_var->ptr, mode == TRMODE, epsilon, momentum);
+    } else if (input->isGPU()) {
+        gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],
+            input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
+            input->ptr, output->ptr, opa->ptr,
+            mean->ptr, variance->ptr,
+            affine ? bn_g->ptr : NULL,
+            affine ? bn_b->ptr : NULL,
+            bn_mean->ptr, bn_var->ptr, mode == TRMODE, epsilon, momentum);
     } else {
 
     int M,N;
@@ -184,29 +229,38 @@ void LBatchNorm::forward() {
     delete in;
 
     }
+
+#else
+    float alpha = 1.0;
+    float beta = 0.0;
+
+    cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(cudnn_handle, bn_mode, &alpha, &beta,
+                                                             xDesc, input->ptr, yDesc, output->ptr,
+                                                             bnScaleBiasMeanVarDesc, bn_g->ptr, bn_b->ptr,
+                                                             exponentialAverageFactor, mean->ptr, variance->ptr, epsilon,
+                                                             bn_mean->ptr, bn_var->ptr);
+    if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error fwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;
+#endif
 }
 
 void LBatchNorm::backward(){
-
-    if (delta->isCPU() || delta->isGPU()) {
-
-        // new implementation for CPU / GPU
-        if (delta->isCPU()) {
-            cpu_batchnorm_backward(delta->shape[0], delta->shape[1],
-                delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
-                delta->ptr, opa->ptr, parent[0]->delta->ptr,
-                affine ? gbn_g->ptr : NULL,
-                affine ? gbn_b->ptr : NULL, affine ? bn_g->ptr : NULL,
-                bn_var->ptr, work1->ptr, work2->ptr);
-        } else if (delta->isGPU()) {
-            gpu_batchnorm_backward(delta->gpu_device, delta->shape[0], delta->shape[1],
-                delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
-                delta->ptr, opa->ptr, parent[0]->delta->ptr,
-                affine ? gbn_g->ptr : NULL,
-                affine ? gbn_b->ptr : NULL, affine ? bn_g->ptr : NULL,
-                bn_var->ptr, work1->ptr, work2->ptr);
-        }
-
+    //std::cout<<"BN layer BWD: "<< this->name <<std::endl;
+#ifndef cCUDNN
+    // new implementation for CPU / GPU
+    if (delta->isCPU()) {
+        cpu_batchnorm_backward(delta->shape[0], delta->shape[1],
+            delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
+            delta->ptr, opa->ptr, parent[0]->delta->ptr,
+            affine ? gbn_g->ptr : NULL,
+            affine ? gbn_b->ptr : NULL, affine ? bn_g->ptr : NULL,
+            bn_var->ptr, work1->ptr, work2->ptr);
+    } else if (delta->isGPU()) {
+        gpu_batchnorm_backward(delta->gpu_device, delta->shape[0], delta->shape[1],
+            delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
+            delta->ptr, opa->ptr, parent[0]->delta->ptr,
+            affine ? gbn_g->ptr : NULL,
+            affine ? gbn_b->ptr : NULL, affine ? bn_g->ptr : NULL,
+            bn_var->ptr, work1->ptr, work2->ptr);
     } else {
 
     int M,N;
@@ -272,6 +326,20 @@ void LBatchNorm::backward(){
     delete dp;
 
     }
+#else
+      float alphaDataDiff = 1.0;
+      float betaDataDiff = 0.0;
+      float alphaParamDiff = 1.0;
+      float betaParamDiff = 0.0;
+
+
+      cudnnStatus_t nnn= cudnnBatchNormalizationBackward(cudnn_handle, bn_mode, &alphaDataDiff, &betaDataDiff,
+                                                         &alphaParamDiff, &betaParamDiff, xDesc, input->ptr,
+                                                         yDesc, delta->ptr, xDesc, parent[0]->delta->ptr,
+                                                         bnScaleBiasMeanVarDesc,bn_g->ptr, gbn_g->ptr, gbn_b->ptr,
+                                                         epsilon, bn_mean->ptr, bn_var->ptr);
+    if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;
+#endif
 }
 
 

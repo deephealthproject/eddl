@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -66,45 +66,82 @@ void msg(const string& text, const string& title) {
     throw std::runtime_error("RuntimeError: " + title);
 }
 
+void * eddl_malloc(size_t size, const string & str_info)
+{
+    constexpr size_t alignment_block_size = 64;
 
-float *get_fmem(unsigned long int size, const string &str){
     // Careful with memory overcommitment:
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
     // TODO: This function does not work properly (...but it does, at least most of the time -for linux and mac-)
-    float* ptr = nullptr;
+    void * ptr = nullptr;
     bool error = false;
+    int rc = -1;
 
 
+#if defined(EDDL_LINUX) || defined(EDDL_APPLE)
     // Check if free memory is bigger than requested
-    unsigned long freemem = get_free_mem();
-    if (size*sizeof(float) > freemem) {
-        error=true;
+    /* get_free_mem() is not actually necessary,
+       memory allocating system calls set the 'errno' variable
+       to indicate which was the error when trying to allocate
+       the CPU memory
+
+    unsigned long int freemem = get_free_mem();
+    error = (size > freemem);
+    */
+
+    if (! error) {
+
+        // New vs Malloc *******************
+        // New is the C++ way of doing it
+        // New is type-safe, Malloc is not
+        // New calls your type constructor, Malloc not - Same for destructor
+        // New is an operator, Malloc a function (slower)
+        try {
+            //ptr = new float[size];
+            //ptr=(float *)malloc(size*sizeof(float));
+            //ptr=(float *)aligned_alloc(64, size*sizeof(float));
+            rc = posix_memalign((void **)&ptr, alignment_block_size, size);
+            error = (0 != rc);
+            errno = rc;
+        }
+        catch (std::bad_alloc & badAlloc) { error = true; }
     }
 
-    // New vs Malloc *******************
-    // New is the C++ way of doing it
-    // New is type-safe, Malloc is not
-    // New calls your type constructor, Malloc not - Same for destructor
-    // New is an operator, Malloc a function (slower)
-    try{
-        ptr = new float[size];
-        //ptr=(float *)malloc(size*sizeof(float));
-        //ptr=(float *)aligned_alloc(64, size*sizeof(float));
-        //posix_memalign((void **)&ptr, 64, size*sizeof(float));
-
-    }
-    catch (std::bad_alloc& badAlloc){
-        error=true;
-    }
+#elif defined(EDDL_WINDOWS)
+    errno = 0;
+    ptr = _aligned_malloc(size, alignment_block_size);
+    error = (nullptr == ptr || errno == ENOMEM);
+#else
+#error "A proper configuration must define either EDDL_LINUX, EDDL_APPLE or EDDL_WINDOWS"
+#endif
 
     // Check for errors
     // Not enough free memory
-    if (error) {
-        delete[] ptr;
-        throw std::runtime_error("Error allocating " + string(bytes2human(size * sizeof(float))) + " in " + string(str));
+    if (error || ptr == nullptr) {
+        if (ptr != nullptr) eddl_free(ptr);
+        //throw std::runtime_error("Error allocating " + string(bytes2human(size * sizeof(float))) + " in " + string(str));
+        throw std::runtime_error("Error " + std::to_string(errno)
+                                + " allocating " + string(bytes2human(size, 0)) + " bytes at "
+                                + string(__FILE__) + "(" + std::to_string(__LINE__) + ") " + str_info);
     }
 
     return ptr;
+}
+
+void eddl_free(void * ptr)
+{
+#if defined(EDDL_LINUX) || defined(EDDL_APPLE)
+    free(ptr);
+#elif defined(EDDL_WINDOWS)
+    _aligned_free(ptr);
+#else
+#error "A proper configuration must define either EDDL_LINUX, EDDL_APPLE or EDDL_WINDOWS"
+#endif
+}
+
+float *get_fmem(unsigned long int size, const string &str)
+{
+    return (float *)eddl_malloc(size * sizeof(float), str);
 }
 
 
@@ -389,6 +426,51 @@ string get_parent_dir(const string& fname){
            : fname.substr(0, pos);
 }
 
+vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch){
+    int faxis = axis+(int)ignore_batch;
+    int lastdim = (int)(shape.size()-1);
+
+    // Check dimension bounds
+    if (faxis > lastdim) {
+        msg("Number of dimensions exceeded (" + to_string(axis) + " >= " + to_string((int)(shape.size()-(int)ignore_batch)) + ")", "compute_squeeze");
+    }else  if (faxis < -1){
+        msg("The axis must be greater or equal than zero; or -1 (special case)", "compute_squeeze");
+    }
+
+    // Remove single dimension entries from the array
+    vector<int> new_shape;
+
+    // Ignore batch if needed
+    if(ignore_batch){
+        new_shape.push_back(shape[0]);
+    }
+
+    for(int i=(int)ignore_batch; i<shape.size(); i++){
+        int dim = shape[i];
+
+        // If dimension is greater than 1 or batch is ignored
+        if((dim>1) || (i!=faxis && axis!=-1)){
+            new_shape.push_back(dim);
+        }
+    }
+
+    return new_shape;
+};
+
+vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch){
+    int faxis = axis+(int)ignore_batch;
+
+    // Check dimension bounds
+    if (faxis > shape.size()) {
+        msg("Number of dimensions exceeded (" + to_string(axis) + " >= " + to_string((int)(shape.size()-(int)ignore_batch)) + ")", "compute_unsqueeze");
+    }else  if (faxis < 0){
+        msg("The axis must be greater or equal than zero", "compute_unsqueeze");
+    }
+
+    vector<int> new_shape(shape);
+    new_shape.insert(new_shape.begin()+faxis, 1); // Add one dimension to the beginning
+    return new_shape;
+}
 
 WrappingMode getWrappingMode(string mode){
     if(mode == "constant"){
@@ -714,7 +796,7 @@ void __show_profile() {
   PROFILING_PRINTF(fill_rand_uniform);
   PROFILING_PRINTF(fill_rand_signed_uniform);
   PROFILING_PRINTF(fill_rand_normal);
-  PROFILING_PRINTF(fill_rand_binary);  
+  PROFILING_PRINTF(fill_rand_binary);
   // comparison
   PROFILING_PRINTF(all);
   PROFILING_PRINTF(any);

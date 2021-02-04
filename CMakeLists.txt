@@ -10,7 +10,7 @@ option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
 option(BUILD_HPC "Compile using aggressive flags" ON)
-option(BUILD_TESTS "Compile tests (HCP needs to be disabled)" ON)  # Disable HCP to pass tests (there are numerical errors)
+option(BUILD_TESTS "Compile tests (HPC needs to be disabled)" ON)  # Disable HPC to pass tests (there are numerical errors)
 option(USE_LOCAL_GTEST "Use the local library to avoid problems derived from the 'One Definition Rule'" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
@@ -64,7 +64,7 @@ if(BUILD_SUPERBUILD)
     add_subdirectory(cmake)
 endif()
 # This is executed at compilation time: "make"
-PROJECT(eddl VERSION 0.8 LANGUAGES CXX)
+PROJECT(eddl VERSION 0.9 LANGUAGES CXX)
 
 
 # SET C++ COMPILER STANDARD

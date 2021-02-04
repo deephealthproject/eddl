@@ -8,8 +8,8 @@ dependencies:
   - eigen==3.3.7
   - protobuf==3.11.4
   - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
-  - zlib
-  - cudatoolkit
+  - cudnn==8.0.5.39
+  - cudatoolkit-dev==10.1.243
   - gtest
   - graphviz  # Build & Run
   - wget

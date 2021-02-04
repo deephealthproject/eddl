@@ -1,0 +1,171 @@
+/*
+* EDDL Library - European Distributed Deep Learning Library.
+* Version: 0.9
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: November 2020
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* All rights reserved
+*/
+
+
+#include "eddl/descriptors/descriptors.h"
+#include <cmath>
+
+
+PoolDescriptor3D::PoolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem) {
+    ksize = vector<int>(ks.begin(), ks.end());
+    stride = vector<int>(st.begin(), st.end());
+    pad = vector<int>(p.begin(), p.end());
+    mem_level=mem;
+
+    this->padding = "custom";
+
+    if (ksize.size() != 3) msg("Pooling Kernels must have 3 dimensions", "PoolDescriptor3D::PoolDescriptor3D");
+    if (stride.size() != 3) msg("Strides must have 3 dimensions", "PoolDescriptor3D::PoolDescriptor3D");
+    //if (pad.size() != 3) msg("Padding must have 3 dimensions", "PoolDescriptor3D::PoolDescriptor3D");
+
+}
+
+PoolDescriptor3D::PoolDescriptor3D(const vector<int> &ks, const vector<int> &st, const string& p, int mem) {
+    if (ks.size() != 3) msg("Pooling Kernels must have 3 dimensions", "PoolDescriptor3D::PoolDescriptor3D");
+    if (st.size() != 3) msg("Strides must have 3 dimensions", "PoolDescriptor3D::PoolDescriptor3D");
+
+    ksize = ks;
+    stride = st;
+    mem_level=mem;
+
+    if (p=="same" || p =="none" || p =="valid" || p =="zeros") {
+        this->padding=p;
+    }else{
+        msg("Incorrect padding type", "PoolDescriptor3D::PoolDescriptor3D");
+    }
+}
+
+
+PoolDescriptor3D::~PoolDescriptor3D(){
+    delete indX;
+    delete indY;
+}
+
+void PoolDescriptor3D::build(Tensor *A) {
+    if (A->ndim != 5) msg("Tensors are not 5D", "PoolDescriptor3D::build");
+
+    I = A;
+
+    kd = ksize[0];
+    kr = ksize[1];
+    kc = ksize[2];
+
+    sd = stride[0];
+    sr = stride[1];
+    sc = stride[2];
+
+    iz = A->shape[1];
+    id = A->shape[2];
+    ir = A->shape[3];
+    ic = A->shape[4];
+
+    if(this->padding=="custom"){  // Known padding
+        // Compute output
+        z = iz;
+        d = compute_output(this->pad, id, kd, sd);
+        r = compute_output(this->pad, ir, kr, sr);
+        c = compute_output(this->pad, ic, kc, sc);
+
+    }else{  // Common padding (same/zeros)
+        // Compute output
+        z = iz;
+        d = compute_output(this->padding, id, kd, sd);
+        r = compute_output(this->padding, ir, kr, sr);
+        c = compute_output(this->padding, ic, kc, sc);
+
+        // Compute padding
+        vector<int> padd = compute_padding(d, id, kd, sd, this->padding,true);  // Order: [front, back]
+        vector<int> padr = compute_padding(r, ir, kr, sr, this->padding,true);  // Order: [top, bottom]
+        vector<int> padc = compute_padding(c, ic, kc, sc, this->padding,false);  // Order: [left, right]
+
+        // Set padding
+        pad = {padd[0], padd[1], padr[0], padr[1], padc[0], padc[1]};  // (front, back), (top, bottom), (left, right)
+    }
+
+    paddf = pad[0]; paddb = pad[1];  // depth: front-top
+    padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
+    padcl = pad[2]; padcr = pad[3];  // cols: left-right
+
+    if ((d <= 0) || (r <= 0) || (c <= 0)) {
+        if(d <= 0) { std::cerr << "'Depth' are reach 0 or less (" << d << ")" << std::endl; }
+        if(r <= 0) { std::cerr << "'Rows' are reach 0 or less (" << r << ")" << std::endl; }
+        if(c <= 0) { std::cerr << "'Columns' are reach 0 or less (" << c << ")" << std::endl; }
+        msg("Invalid output shape", "PoolDescriptor3D::build");
+    }
+
+    O = new Tensor(vector<int>{A->shape[0], z, d, r, c}, A->device);
+//    if (!mem_level) { D = new Tensor(O->shape, A->device); }
+
+
+    // Careful with the "size++" not "useless loop"
+    size=0;
+    for(int k=0;k<iz;k++)
+      for(int w=-paddf;w<=id+paddb-kd;w+=sd)
+          for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
+            for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
+}
+
+void PoolDescriptor3D::resize(int b) {
+  if (b == O->shape[0]) return;
+
+  O->resize(b);
+//  if (!mem_level) { D->resize(b); }
+}
+
+
+int PoolDescriptor3D::compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate){
+    if (padding=="same" || padding =="zeros") {
+        return std::ceil((float)input_size/(float)stride);
+
+    }else if(padding =="valid" || padding =="none"){
+        return std::ceil(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate)/(float)stride);
+
+    }else{
+      cout<<padding<<endl;
+        msg("Incorrect padding type", "ConvolDescriptor::compute_output");
+    }
+    return -1;
+}
+
+int PoolDescriptor3D::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
+    return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
+}
+
+vector<int> PoolDescriptor3D::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding, bool row){
+    // Padding order: [left, right] // [top, bottom]
+
+    if (padding=="same,none") {
+      if (row) padding="same";
+      else padding="none";
+    }
+    if (padding=="none,same") {
+      if (row) padding="none";
+      else padding="same";
+    }
+
+    if (padding=="same" || padding =="zeros") {
+        int pad = (output_size-1) * stride + kerkel_size - input_size;
+        pad = std::max(pad, 0);
+
+        // Ignore the padding if possible
+        int padl = pad/2;  // 1/2=0.5 => 0
+        int padr = pad - pad/2; // 1-1/2 = 1-0 => 1
+
+        return vector<int>({padl, padr});
+
+    }else if(padding =="valid" || padding =="none"){
+        return vector<int>({0, 0});
+    }
+    else{
+        cout<<padding<<endl;
+        msg("Incorrect padding type", "ConvolDescriptor::compute_padding");
+    }
+
+    return {-1};
+}
