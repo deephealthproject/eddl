@@ -118,6 +118,14 @@ namespace tensorNN{
     void permute_channels_first(Tensor *A,Tensor *B);
     void permute_batch_last(Tensor *A,Tensor *B);
     void permute_batch_first(Tensor *A,Tensor *B);
+    void BatchNormForward(Tensor *input, Tensor *output, Tensor *opa,
+            Tensor *global_mean, Tensor *global_variance,
+            Tensor *affine_g, Tensor *affine_b,
+            Tensor *mean, Tensor *variance,
+            bool trmode, float epsilon, float momentum);
+    void BatchNormBackward(Tensor *delta, Tensor *opa, Tensor *pdelta, Tensor *gbn_g,
+            Tensor *gbn_b, Tensor *bn_g, Tensor *variance,
+            Tensor *work1, Tensor *work2);
 
 }
 

@@ -117,4 +117,16 @@ void cpu_permute_channels_first(Tensor *A,Tensor *B);
 void cpu_permute_channels_last(Tensor *A,Tensor *B);
 void cpu_permute_batch_first(Tensor *A,Tensor *B);
 void cpu_permute_batch_last(Tensor *A,Tensor *B);
+// new batchnorm implementation
+void cpu_batchnorm_forward(int b, int z, int rc,
+        float *input, float *output, float *opa,
+        float *global_mean, float *global_variance,
+        float *affine_g, float *affine_b,
+        float *mean, float *variance,
+        bool trmode, float epsilon, float momentum);
+
+void cpu_batchnorm_backward(int b, int z, int rc,
+        float *delta, float *opa, float *pdelta, float *gbn_g,
+        float *gbn_b, float *bn_g, float *variance,
+        float *mean1, float *mean2);
 #endif //EDDL_CPU_TENSOR_NN_H
