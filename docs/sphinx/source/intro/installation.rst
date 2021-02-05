@@ -93,7 +93,7 @@ On Unix platforms, from the source directory:
             # Build and install
             mkdir build
             cd build
-            cmake .. #-DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+            cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX  # -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda
             make install
 
     .. tab:: MacOS
@@ -111,7 +111,7 @@ On Unix platforms, from the source directory:
             # Build and install
             mkdir build
             cd build
-            cmake .. #-DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+            cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
 
             make install
 
@@ -120,8 +120,10 @@ See the :doc:`build-options` section for more details about cmake options.
 
 .. note::
 
-    You can ignore ``-DCMAKE_INSTALL_PREFIX`` and ``-DCMAKE_INSTALL_PREFIX`` to use their default values,
-    or if you prefer it, you can specificy your environment like ``-DCMAKE_PREFIX_PATH=$CONDA_PREFIX``.
+    You can ignore ``-DCMAKE_PREFIX_PATH`` and ``-DCMAKE_INSTALL_PREFIX`` but it is a google practice to use them
+    in order to avoid path conflicts.
+
+    To use a specific CUDA version type: ``-DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda``
 
     If you want to distribute the resulting shared library, you should use the flag
     ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.
