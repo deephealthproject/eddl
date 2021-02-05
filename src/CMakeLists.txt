@@ -58,9 +58,11 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 file(GLOB_RECURSE PUBLIC_HEADERS "${PROJECT_SOURCE_DIR}/include/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
+
 # Remove dependent files of protobuf
-list(FILTER CPP_HEADERS EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb*")
-list(FILTER CPP_SOURCES EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb*")
+list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/serialization/onnx/onnx.pb*")
+list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/serialization/onnx/onnx.pb*")
+
 
 SET(ALL_FILES ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
 
