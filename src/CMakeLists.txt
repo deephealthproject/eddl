@@ -39,15 +39,15 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 ###########################################################################
 
 
-# NVCC (CUDA 10) needs GCC versions to be less or equal than 8  (GCC < 9.0;)
-#if (USE_CUDA)
-#    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-#        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
-#            message(WARNING "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8.
-#            Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
-#        endif()
-#    endif()
-#endif()
+# NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
+if (USE_CUDA OR USE_CUDNN)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
+            message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8.
+            Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
+        endif()
+    endif()
+endif()
 
 
 ###########################################################################
@@ -208,6 +208,7 @@ if(USE_CUDA OR USE_CUDNN)
 
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
+#        find_package(CUDAToolkit)
 
         if(USE_CUDNN)
             add_definitions(-DcCUDNN)
@@ -229,12 +230,20 @@ if(USE_CUDA OR USE_CUDNN)
         # Add source files
         target_sources(${PROJECT_NAME} PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
 
+        # Set default paths
+        if(CUDA_TOOLKIT_ROOT_DIR)
+            SET(CUDA_TOOLKIT_INCLUDE_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/include")
+            SET(CUDA_TOOLKIT_LINK_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/lib")
+            SET(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
+            SET(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
+        endif()
+
         # Includes and library links
-        target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+        target_include_directories(${PROJECT_NAME} PRIVATE ${CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+        target_link_directories(${PROJECT_NAME} PRIVATE ${CUDA_TOOLKIT_LINK_DIRECTORIES})
+
         target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand)
         if(USE_CUDNN)
-            target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDNN_INCLUDE_DIRECTORIES})
-            target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDNN_INCLUDE_LIBS})
             target_link_libraries(${PROJECT_NAME} PRIVATE cudnn)
         endif()
 
@@ -388,17 +397,15 @@ endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "CUDA enabled: " ${USE_CUDA} )
 if(USE_CUDA)
-    message(STATUS "CUDA compiler: ${CMAKE_CUDA_COMPILER} | Version: ${CMAKE_CUDA_COMPILER_VERSION}")
-    message(STATUS "CUDA host compiler: " ${CUDA_HOST_COMPILER})
-    message(STATUS "CUDA toolkit include directories: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+    message(STATUS "CUDA toolkit root dir: " ${CUDA_TOOLKIT_ROOT_DIR})
+    message(STATUS "CUDA toolkit include directories: " ${CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+    message(STATUS "CUDA toolkit link directories: " ${CUDA_TOOLKIT_LINK_DIRECTORIES})
     message(STATUS "CUDA toolkit implicit link directories: " ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+    message(STATUS "CUDA compiler: ${CMAKE_CUDA_COMPILER} | Version: ${CMAKE_CUDA_COMPILER_VERSION}")
+    message(STATUS "CUDA host compiler: " ${CMAKE_CUDA_HOST_COMPILER})
 endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "CUDNN enabled: " ${USE_CUDNN} )
-if (USE_CUDNN)
-    message(STATUS "CUDNN include directories: " ${CMAKE_CUDNN_INCLUDE_DIRECTORIES} )
-    message(STATUS "CUDNN include libs: " ${CMAKE_CUDNN_INCLUDE_LIBS} )
-endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "FPGA enabled: " ${USE_FPGA} )
 if(USE_FPGA)
@@ -410,10 +417,6 @@ message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
 message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
-#message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
-#message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
-#message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
-#message(STATUS "-------------------------------------------" )
 message(STATUS "Use Protobuf: " ${BUILD_PROTOBUF} )
 if(BUILD_PROTOBUF)
     message(STATUS "Protobuf dir: " ${Protobuf_DIR} )
