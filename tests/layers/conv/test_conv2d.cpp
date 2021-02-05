@@ -120,7 +120,6 @@ TEST(Conv2DTestSuite, conv2d_custom)
 
     // Forward
     tensorNN::Conv2D(cd);
-//    cd->O->toCPU(); cd->O->print(1, true);
     ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, cd->O, 10e-5f));
 
     // Backward
