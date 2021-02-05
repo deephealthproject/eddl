@@ -43,7 +43,7 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 if (USE_CUDA OR USE_CUDNN)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
-            message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8.
+            message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8 (DETECTED: ${CMAKE_CXX_COMPILER_VERSION}).
             Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
         endif()
     endif()
@@ -231,13 +231,13 @@ if(USE_CUDA OR USE_CUDNN)
         target_sources(${PROJECT_NAME} PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
 
         # Set default paths
-        if(NOT CUDA_TOOLKIT_ROOT_DIR)
-            SET(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_PREFIX_PATH}")
+        if(CUDA_TOOLKIT_ROOT_DIR AND UNIX)
+#            SET(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_PREFIX_PATH}")
+            SET(CUDA_TOOLKIT_INCLUDE_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/include")
+            SET(CUDA_TOOLKIT_LINK_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/lib")
+            SET(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
+            SET(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
         endif()
-        SET(CUDA_TOOLKIT_INCLUDE_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/include")
-        SET(CUDA_TOOLKIT_LINK_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/lib")
-        SET(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
-        SET(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
 
         # Includes and library links
         target_include_directories(${PROJECT_NAME} PRIVATE ${CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
