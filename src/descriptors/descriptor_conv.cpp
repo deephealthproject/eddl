@@ -58,6 +58,7 @@ ConvolDescriptor::~ConvolDescriptor(){
         eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
     }
 #ifdef cGPU
+#ifndef cCUDNN
     else if (O->isGPU()) {
 
         if (mem_level>1) {
@@ -71,6 +72,7 @@ ConvolDescriptor::~ConvolDescriptor(){
                 delete gpuOB;
         }
     }
+#endif
 #endif
 
 }
