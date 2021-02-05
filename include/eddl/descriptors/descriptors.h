@@ -22,7 +22,6 @@
 #ifdef cCUDNN
 #include <cudnn.h>
 extern cudnnHandle_t hdnn[64];
-
 #endif
 
 using namespace std;

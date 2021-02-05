@@ -28,6 +28,10 @@ endif()
 # Find tests (recursively, from here)
 file(GLOB_RECURSE CPP_TESTS_FILES "${PROJECT_SOURCE_DIR}/*" *.{h, cpp})
 
+if(NOT BUILD_PROTOBUF)
+    list(FILTER CPP_TESTS_FILES EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/onnx/*")
+endif()
+
 # Build test and target libraries
 add_executable(unit_tests ${CPP_TESTS_FILES})
 target_include_directories(unit_tests PUBLIC $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>)  # TODO: Why build interface?
@@ -69,11 +73,3 @@ message(STATUS "GTest library dirs: " ${GTEST_LIBRARIES_DIRS} )
 message(STATUS "GTest libraries: " ${GTEST_BOTH_LIBRARIES} )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
-if(USE_CUDA OR USE_CUDNN)
-    message(STATUS "CUDA compiler: " ${CMAKE_CUDA_COMPILER})
-    message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
-    message(STATUS "CUDA toolkit: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} )
-if(USE_CUDNN)
-    message(STATUS "CUDNN toolkit: " ${CMAKE_CUDNN_TOOLKIT_INCLUDE_DIRECTORIES} )
-endif()
-endif()
