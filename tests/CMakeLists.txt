@@ -29,7 +29,7 @@ endif()
 file(GLOB_RECURSE CPP_TESTS_FILES "${PROJECT_SOURCE_DIR}/*" *.{h, cpp})
 
 if(NOT BUILD_PROTOBUF)
-    list(FILTER CPP_TESTS_FILES EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/onnx/*")
+    list(FILTER CPP_TESTS_FILES EXCLUDE REGEX ".*/onnx/*")
 endif()
 
 # Build test and target libraries
