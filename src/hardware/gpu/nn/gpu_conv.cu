@@ -23,8 +23,8 @@
 #include "eddl/descriptors/descriptors.h"
 
 #ifdef cCUDNN
-void * shared_workspace=nullptr;
-size_t workspace_size=0;
+void * shared_workspace[8]; //={nullptr,nullptr.nullptr,nullptr,nullptr,nullptr,nullptr,nullptr};
+size_t workspace_size[8]={0,0,0,0,0,0,0,0};
 
 void my_get_fdescriptor(cudnnFilterDescriptor_t t, char * name){
 
@@ -55,14 +55,14 @@ void my_get_descriptor(cudnnTensorDescriptor_t t, char * name){
 
 
 
-int allocate_workspace(size_t size){
-    if (size <= workspace_size){
+int allocate_workspace(size_t size, int dev){
+    if (size <= workspace_size[dev]){
         return 0;
     }
     else {
-        workspace_size = size;
-        cudaFree(shared_workspace);
-        return cudaMalloc((void **) &shared_workspace, size);
+        workspace_size[dev] = size;
+        cudaFree(shared_workspace[dev]);
+        return cudaMalloc((void **) &shared_workspace[dev], size);
     }
 }
 #endif
@@ -149,10 +149,10 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
       int returnedAlgoCount;
       cudnnConvolutionFwdAlgoPerf_t * perfResults = new cudnnConvolutionFwdAlgoPerf_t [requestedAlgoCount];
-
+          
       check_cudnn(cudnnFindConvolutionForwardAlgorithm( hdnn[device]/*D->cudnn_handle*/, D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
                   requestedAlgoCount, &returnedAlgoCount, perfResults),"cudnnFindConvolutionForwardAlgorithm",__FILE__);
-
+      
       int aux_alg = 0;
       size_t size;
       do{
@@ -164,7 +164,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
 							"cudnnGetConvolutionForwardWorkspaceSize",__FILE__);
           aux_alg++;
       }
-      while(allocate_workspace(size));
+      while(allocate_workspace(size,device));
   }
   //BWD environment
   if (D->cudnn_conv_back_init < 0){
@@ -189,7 +189,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
                                                               D->bwd_filter_algorithm, &size),"cudnnGetConvolutionBackwardFilterWorkspaceSize",__FILE__);
           aux_alg++;
       }
-      while(allocate_workspace(size));
+      while(allocate_workspace(size,device));
 
       //////////// DATA!!!!
       requestedAlgoCount = 0;
@@ -210,13 +210,13 @@ void gpu_conv2D(ConvolDescriptor *D) {
                                                               D->bwd_data_algorithm, &size),"cudnnGetConvolutionBackwardDataWorkspaceSize",__FILE__);
           aux_alg++;
       }
-      while(allocate_workspace(size));
+      while(allocate_workspace(size,device));
 
   }
   check_cudnn(cudnnConvolutionForward( hdnn[device], &alpha, D->xDesc, D->I->ptr,
                                        D->wDesc, D->K->ptr,
                                        D->convolution_descriptor, D->fwd_algorithm,
-                                       shared_workspace, workspace_size,
+                                       shared_workspace[device], workspace_size[device],
                                        &beta, D->yDesc, D->O->ptr),"cudnnConvolutionForward",__FILE__);
 #endif
   if (D->use_bias) {
@@ -276,7 +276,7 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
                                       D->xDesc, D->I->ptr,
                                       D->yDesc, D->D->ptr, D->convolution_descriptor,
                                       D->bwd_filter_algorithm,
-                                      shared_workspace, workspace_size,
+                                      shared_workspace[device], workspace_size[device],
                                       &beta, D->wDesc, D->gK->ptr),"cudnnConvolutionBackwardFilter",__FILE__);
 
 #endif
@@ -342,7 +342,7 @@ void gpu_conv2D_back(ConvolDescriptor *D){
     check_cudnn(cudnnConvolutionBackwardData(hdnn[device], &alpha, D->wDesc, D->K->ptr,
                                              D->yDesc, D->D->ptr,
                                              D->convolution_descriptor, D->bwd_data_algorithm,
-                                             shared_workspace, workspace_size,
+                                             shared_workspace[device], workspace_size[device],
                                              &beta, D->xDesc, D->ID->ptr),"cudnnConvolutionBackwardData",__FILE__);
 #endif
 
