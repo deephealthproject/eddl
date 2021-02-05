@@ -151,10 +151,9 @@ void LActivation::forward(){
         if( st != CUDNN_STATUS_SUCCESS) std::cout<<"SOFTMAX: " <<cudnnGetErrorString(st)<<std::endl;
     }
     else{
-        cudnnStatus_t st = cudnnActivationForward(hdnn[this->input->gpu_device],
-                                                                  activationDesc, &alpha, xDesc, this->input->ptr,
+        cudnnStatus_t st = cudnnActivationForward(hdnn[this->input->gpu_device], activationDesc, &alpha, xDesc, this->input->ptr,
                                &beta, yDesc, this->output->ptr);
-        if( st != CUDNN_STATUS_SUCCESS) std::cout<<"ACT: " <<cudnnGetErrorString(st)<<" device: "<<this->input->gpu_device<<std::endl;
+        if( st != CUDNN_STATUS_SUCCESS) std::cout<<"ACT: " <<cudnnGetErrorString(st)<<std::endl;
     }
 #else
     if (act == "relu"){
@@ -275,14 +274,14 @@ void LActivation::backward(){
         float alpha = 1.0f;
        float beta = 0.0f;
        if (act == "softmax"){
-            cudnnStatus_t st = cudnnSoftmaxBackward(hdnn[this->input->gpu_device], this->algorithm, this->softmax_mode,
+            cudnnStatus_t st = cudnnSoftmaxBackward(hdnn[this->output->gpu_device], this->algorithm, this->softmax_mode,
                                                      &alpha, this->yDesc, this->output->ptr,
                                                      this->yDesc, this->delta->ptr,
                                                      &beta, this->xDesc, this->parent[0]->delta->ptr);
             if( st != CUDNN_STATUS_SUCCESS) std::cout<<"SOFT_BACK: " <<cudnnGetErrorString(st)<<std::endl;
         }
         else{
-             cudnnStatus_t st = cudnnActivationBackward(hdnn[this->input->gpu_device], this->activationDesc,
+             cudnnStatus_t st = cudnnActivationBackward(hdnn[this->output->gpu_device], this->activationDesc,
                                                          &alpha, this->yDesc, this->output->ptr,
                                                          this->yDesc, this->delta->ptr,
                                                          this->xDesc, this->input->ptr, &beta,

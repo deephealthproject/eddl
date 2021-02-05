@@ -136,9 +136,6 @@ public:
 
     int cudnn_env_init;
     int cudnn_conv_back_init;
-
-    //int cudnn_env_init;
-    //int cudnn_conv_back_init;
 #endif
 
 

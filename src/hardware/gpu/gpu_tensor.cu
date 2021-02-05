@@ -113,12 +113,11 @@ void check_cuda(cudaError_t err,const char *msg)
 
 #ifdef cCUDNN
 
-void check_cudnn(cudnnStatus_t status ,const char *msg="")
+void check_cudnn(cudnnStatus_t status)
 {
     if (status != CUDNN_STATUS_SUCCESS)
     {
-        std::string error_type = cudnnGetErrorString(status);
-        std::string text = "[CUDNN ERROR]: " + error_type + " ("+ std::to_string(status) + ") raised in " + std::string(msg) + " | (check_cudnn)";
+        std::string text = "error in cudnn execution in " + std::string(cudnnGetErrorString(status)) + " | (check_cudnn)";
         throw std::runtime_error(text);
     }
 }

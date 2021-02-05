@@ -39,7 +39,7 @@ void check_cublas(cublasStatus_t status, const char *f);
 
 void check_curand(curandStatus_t status, const char *f);
 #ifdef cCUDNN
-void check_cudnn(cudnnStatus_t status,const char *msg);
+void check_cudnn(cudnnStatus_t status);
 #endif
 
 void check_cuda(cudaError_t err,const char *msg);
