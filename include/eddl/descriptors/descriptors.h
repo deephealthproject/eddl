@@ -84,7 +84,7 @@ public:
     vector<int> kernel_size;
     vector<int> strides;
     string padding; // valid/none, same/zeros, custom
-    int groups = groups;
+    int groups;
     vector<int> dilation_rate;
     bool use_bias;
     int mem_level; // see CS
