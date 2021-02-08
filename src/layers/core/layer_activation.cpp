@@ -149,7 +149,8 @@ void LActivation::forward(){
                             &beta, yDesc, this->output->ptr);
         if( st != CUDNN_STATUS_SUCCESS) std::cout<<"SOFTMAX: " <<cudnnGetErrorString(st)<<std::endl;
 
-    }else if (act == "leaky_relu"){
+    }
+    else if (act == "leaky_relu"){
         float alp = this->params[0];
         tensorNN::LeakyReLu(this->input, this->output, alp);
     }

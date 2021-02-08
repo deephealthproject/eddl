@@ -52,25 +52,29 @@ layer UNetWithPadding(layer x)
     x5 = MaxPool(x4, { 2,2 }, { 2,2 });
     x5 = LeakyReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x5 = LeakyReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
-    x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 2,2 }, { 1, 1 }, "same");
+    x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 3,3 }, { 1, 1 }, "same");
+    //x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 2,2 }, { 1, 1 }, "same");
 
     if (USE_CONCAT) x4 = Concat({x4,x5});
     else x4 = Sum(x4,x5);
     x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
-    x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 2,2 }, { 1, 1 }, "same");
+    x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 3,3 }, { 1, 1 }, "same");
+    //x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 2,2 }, { 1, 1 }, "same");
 
     if (USE_CONCAT) x3 = Concat({x3,x4});
     else x3 = Sum(x3,x4);
     x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
     x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
-    x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 2,2 }, { 1, 1 }, "same");
+    //x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 2,2 }, { 1, 1 }, "same");
+    x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 3,3 }, { 1, 1 }, "same");
 
     if (USE_CONCAT) x2 = Concat({x2,x3});
     else x2 = Sum(x2,x3);
     x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
     x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
-    x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 2,2 }, { 1, 1 }, "same");
+    //x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 2,2 }, { 1, 1 }, "same");
+    x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 3,3 }, { 1, 1 }, "same");
 
     if (USE_CONCAT) x = Concat({x,x2});
     else x = Sum(x,x2);

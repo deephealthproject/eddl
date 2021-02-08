@@ -150,7 +150,6 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
       int returnedAlgoCount;
       cudnnConvolutionFwdAlgoPerf_t * perfResults = new cudnnConvolutionFwdAlgoPerf_t [requestedAlgoCount];
-          
       check_cudnn(cudnnFindConvolutionForwardAlgorithm( hdnn[device], D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
                   requestedAlgoCount, &returnedAlgoCount, perfResults),"cudnnFindConvolutionForwardAlgorithm",__FILE__);
       
@@ -158,7 +157,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
       size_t size;
       do{
           D->fwd_algorithm = perfResults[aux_alg].algo;
-
+          
           check_cudnn(cudnnGetConvolutionForwardWorkspaceSize(hdnn[device],D->xDesc, D->wDesc,
                                                               D->convolution_descriptor,  D->yDesc,
                                                               D->fwd_algorithm, &size),
