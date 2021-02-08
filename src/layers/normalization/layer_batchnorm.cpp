@@ -66,7 +66,6 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
         gradients.push_back(gbn_b);
     }
 #ifdef cCUDNN
-      //cudnn_handle = hdnn;
       data_type = CUDNN_DATA_FLOAT;
       tensor_format = CUDNN_TENSOR_NCHW;
       bn_mode =(input->ndim > 2) ? CUDNN_BATCHNORM_SPATIAL : CUDNN_BATCHNORM_PER_ACTIVATION;
@@ -144,10 +143,7 @@ void LBatchNorm::resize(int batch){
                                          (output->shape.size()>2) ? output->shape[2] : 1,
                                          (output->shape.size()>3) ? output->shape[3] : 1);
         if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor y "<< cudnnGetErrorString(bbb) <<std::endl;
-        /*bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
-                                         batch,output->shape[1],
-                                         (output->shape.size()>2) ? output->shape[2] : 1,
-                                         (output->shape.size()>3) ? output->shape[3] : 1);*/
+
 #endif
     }
 }
@@ -223,7 +219,7 @@ void LBatchNorm::forward() {
     float alpha = 1.0;
     float beta = 0.0;
 
-    cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(/*cudnn_handle*/hdnn[input->gpu_device], bn_mode, &alpha, &beta,
+    cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(hdnn[input->gpu_device], bn_mode, &alpha, &beta,
                                                              xDesc, input->ptr, yDesc, output->ptr,
                                                              bnScaleBiasMeanVarDesc, bn_g->ptr, bn_b->ptr,
                                                              exponentialAverageFactor, mean->ptr, variance->ptr, epsilon,
@@ -318,7 +314,7 @@ void LBatchNorm::backward(){
       float betaParamDiff = 0.0;
 
 
-      cudnnStatus_t nnn= cudnnBatchNormalizationBackward(/*cudnn_handle*/hdnn[input->gpu_device], bn_mode, &alphaDataDiff, &betaDataDiff, &alphaParamDiff, &betaParamDiff, xDesc, input->ptr,
+      cudnnStatus_t nnn= cudnnBatchNormalizationBackward(hdnn[input->gpu_device], bn_mode, &alphaDataDiff, &betaDataDiff, &alphaParamDiff, &betaParamDiff, xDesc, input->ptr,
                                                          yDesc, delta->ptr, xDesc, parent[0]->delta->ptr,
                                                          bnScaleBiasMeanVarDesc,bn_g->ptr, gbn_g->ptr, gbn_b->ptr,
                                                          epsilon, bn_mean->ptr, bn_var->ptr);

@@ -213,7 +213,6 @@ void ConvolDescriptor::build(Tensor *A) {
     }
 #ifdef cCUDNN
     //CUDNN
-    //cudnn_handle = hdnn[I->gpu_device];
     convolution_mode = CUDNN_CONVOLUTION; //CUDNN_CROSS_CORRELATION
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC

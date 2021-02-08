@@ -119,7 +119,6 @@ public:
 
 #ifdef cCUDNN
     // Following cuDNN nomenclature
-    cudnnHandle_t cudnn_handle;
     cudnnConvolutionMode_t convolution_mode;
     cudnnDataType_t data_type;
     cudnnTensorFormat_t tensor_format;
@@ -266,7 +265,6 @@ public:
     int                         horizontalPadding;
     int                         verticalStride;
     int                         horizontalStride;
-    cudnnHandle_t cudnn_handle;
     cudnnTensorDescriptor_t xDesc; //input. also dxDesc
     cudnnTensorDescriptor_t yDesc; //output also dyDesc
     cudnnDataType_t data_type;

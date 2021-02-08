@@ -23,8 +23,9 @@
 #include "eddl/descriptors/descriptors.h"
 
 #ifdef cCUDNN
-void * shared_workspace[8]; //={nullptr,nullptr.nullptr,nullptr,nullptr,nullptr,nullptr,nullptr};
-size_t workspace_size[8]={0,0,0,0,0,0,0,0};
+#define cuDNN_GPUS 8
+void * shared_workspace[cuDNN_GPUS]; 
+size_t workspace_size[cuDNN_GPUS]={0,0,0,0,0,0,0,0};
 
 void my_get_fdescriptor(cudnnFilterDescriptor_t t, char * name){
 
@@ -144,13 +145,13 @@ void gpu_conv2D(ConvolDescriptor *D) {
       D->cudnn_env_init = 1;
 
       int requestedAlgoCount;
-      check_cudnn(cudnnGetConvolutionForwardAlgorithmMaxCount( hdnn[device]/*D->cudnn_handle*/, &requestedAlgoCount),
+      check_cudnn(cudnnGetConvolutionForwardAlgorithmMaxCount( hdnn[device], &requestedAlgoCount),
 								"cudnnGetConvolutionForwardAlgorithmMaxCount",__FILE__);
 
       int returnedAlgoCount;
       cudnnConvolutionFwdAlgoPerf_t * perfResults = new cudnnConvolutionFwdAlgoPerf_t [requestedAlgoCount];
           
-      check_cudnn(cudnnFindConvolutionForwardAlgorithm( hdnn[device]/*D->cudnn_handle*/, D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
+      check_cudnn(cudnnFindConvolutionForwardAlgorithm( hdnn[device], D->xDesc, D->wDesc, D->convolution_descriptor, D->yDesc,
                   requestedAlgoCount, &returnedAlgoCount, perfResults),"cudnnFindConvolutionForwardAlgorithm",__FILE__);
       
       int aux_alg = 0;
@@ -172,11 +173,11 @@ void gpu_conv2D(ConvolDescriptor *D) {
        int requestedAlgoCount;
 
       check_cudnn(cudnnGetConvolutionBackwardFilterAlgorithmMaxCount(
-              hdnn[device] /*D->cudnn_handle*/, &requestedAlgoCount),"cudnnGetConvolutionBackwardFilterAlgorithmMaxCount",__FILE__);
+              hdnn[device], &requestedAlgoCount),"cudnnGetConvolutionBackwardFilterAlgorithmMaxCount",__FILE__);
       int returnedAlgoCount;
       cudnnConvolutionBwdFilterAlgoPerf_t * perfResults = new cudnnConvolutionBwdFilterAlgoPerf_t [requestedAlgoCount];
 
-      check_cudnn(cudnnFindConvolutionBackwardFilterAlgorithm(hdnn[device] /*D->cudnn_handle*/, D->xDesc, D->yDesc,
+      check_cudnn(cudnnFindConvolutionBackwardFilterAlgorithm(hdnn[device], D->xDesc, D->yDesc,
                                                         D->convolution_descriptor, D->wDesc, requestedAlgoCount,
                                                         &returnedAlgoCount, perfResults),"cudnnFindConvolutionBackwardFilterAlgorithm",__FILE__);
       int aux_alg = 0;
@@ -338,7 +339,7 @@ void gpu_conv2D_back(ConvolDescriptor *D){
   }
 #else
     float alpha = 1.0f;
-    float beta = 0.0;// ADRIAN1.0f;
+    float beta = 0.0f;
     check_cudnn(cudnnConvolutionBackwardData(hdnn[device], &alpha, D->wDesc, D->K->ptr,
                                              D->yDesc, D->D->ptr,
                                              D->convolution_descriptor, D->bwd_data_algorithm,
