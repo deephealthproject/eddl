@@ -173,7 +173,6 @@ public:
     double coef;
 
     //BOTH softmax and activations
-    cudnnHandle_t cudnn_handle;
     cudnnTensorDescriptor_t    xDesc;
     cudnnTensorDescriptor_t    yDesc;
 

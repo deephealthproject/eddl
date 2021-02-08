@@ -261,11 +261,9 @@ I usually have to set additional flags in order to make CLion able to run the ED
 .. code:: bash
 
     -DBUILD_TARGET=GPU
-    -DCMAKE_C_COMPILER=/usr/bin/gcc-8
-    -DCMAKE_CXX_COMPILER=/usr/bin/g++-8
-    -DCMAKE_CUDA_COMPILER=/usr/bin/nvcc
-    -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-8
-    -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-11.1
+    -DCMAKE_C_COMPILER=/usr/bin/gcc-7
+    -DCMAKE_CXX_COMPILER=/usr/bin/g++-7
+    -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda
 
 If you want to run it using the conda environment, add:
 
@@ -275,5 +273,5 @@ If you want to run it using the conda environment, add:
     -DCMAKE_PREFIX_PATH=/path/to/dir
 
     # Note:
-    To get the path, activate the environment a type:
+    To get the path, activate the environment and type:
     echo $CONDA_PREFIX

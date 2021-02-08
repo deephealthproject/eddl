@@ -159,7 +159,7 @@ else()
     
     set(Protobuf_ROOT "${EP_BASE_DIR}/protobuf" PARENT_SCOPE)
     set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include" PARENT_SCOPE)
-    set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/protobuf/lib")  # TODO: Fix. Sometimes is /lib, and others /lib64
+    set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/protobuf/lib64" "${EP_BASE_DIR}/protobuf/lib")  # TODO: Fix. Sometimes is /lib, and others /lib64
     set(Protobuf_LIBRARIES_DIRS ${Protobuf_LIBRARIES_DIRS} PARENT_SCOPE)
     # set(Protobuf_LIBRARIES "protobuf" PARENT_SCOPE)
     set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc" PARENT_SCOPE)
@@ -168,7 +168,7 @@ else()
         SET(Protobuf_LIBRARY_DEBUG "${Protobuf_LIBRARIES_DIRS}/libprotobufd.lib" PARENT_SCOPE)
         SET(Protobuf_LIBRARY_RELEASE "${Protobuf_LIBRARIES_DIRS}/libprotobuf.lib" PARENT_SCOPE)
     elseif(UNIX)
-        SET(Protobuf_LIBRARIES "${Protobuf_LIBRARIES_DIRS}/libprotobuf.a" PARENT_SCOPE)
+        SET(Protobuf_LIBRARIES "libprotobuf.a" PARENT_SCOPE)
     endif()
 endif()
 add_custom_target(protobuf_files 

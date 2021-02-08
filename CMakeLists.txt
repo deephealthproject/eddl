@@ -22,24 +22,10 @@ if(WIN32)
 endif()
 
 ###########################################################################
-############################### WARNINGS ##################################
-###########################################################################
-
-# Issues with HPC and logic functions
-if(BUILD_HPC)
-    message(WARNING "[WARNING] The 'BUILD_HPC' flag is enabled and might not work on a different CPU.
-If you intend to compile the library for different CPUs (or for a docker image), you should disable it: '-D BUILD_HPC=OFF'. This happens because it makes use of native compiling flags.")
-endif()
-
-# Issues with HPC and logic functions
-if(BUILD_TESTS AND BUILD_HPC)
-    message(WARNING "[WARNING] Some logic functions are not compatible with the 'BUILD_HPC' flag.
-If you're unit testing, or using one of these logic functions: isfinite(), isinf(), isnan(), isposinf(), isneginf(); then we recommend you to disable the HPC flag: '-D BUILD_HPC=OFF' to obtain the expected results.")
-endif()
-
-###########################################################################
 ################################# BUILD ###################################
 ###########################################################################
+
+set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON)
 
 # Set a default build type if none was specified
 set(default_build_type "Release")
@@ -190,3 +176,21 @@ install(
         "${PROJECT_BINARY_DIR}/cmake/eddl/EDDLConfigVersion.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/eddl"
         COMPONENT devel)
+
+
+
+###########################################################################
+############################### WARNINGS ##################################
+###########################################################################
+
+# Issues with HPC and logic functions
+if(BUILD_HPC)
+    message(WARNING "[WARNING] The 'BUILD_HPC' flag is enabled and might not work on a different CPU.
+If you intend to compile the library for different CPUs (or for a docker image), you should disable it: '-D BUILD_HPC=OFF'. This happens because it makes use of native compiling flags.")
+endif()
+
+# Issues with HPC and logic functions
+if(BUILD_TESTS AND BUILD_HPC)
+    message(WARNING "[WARNING] Some logic functions are not compatible with the 'BUILD_HPC' flag.
+If you're unit testing, or using one of these logic functions: isfinite(), isinf(), isnan(), isposinf(), isneginf(); then we recommend you to disable the HPC flag: '-D BUILD_HPC=OFF' to obtain the expected results.")
+endif()

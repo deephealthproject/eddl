@@ -37,7 +37,7 @@ cublasStatus_t bstatus;
 curandStatus_t rstatus;
 #ifdef cCUDNN
 cudnnStatus_t dstatus;
-cudnnHandle_t hdnn;
+cudnnHandle_t hdnn[64];
 #endif
 
 static const char *_curandGetErrorEnum(curandStatus_t error){
@@ -113,11 +113,12 @@ void check_cuda(cudaError_t err,const char *msg)
 
 #ifdef cCUDNN
 
-void check_cudnn(cudnnStatus_t status)
+void check_cudnn(cudnnStatus_t status, const char *msg, const char *file)
 {
     if (status != CUDNN_STATUS_SUCCESS)
     {
-        std::string text = "error in cudnn execution in " + std::string(cudnnGetErrorString(status)) + " | (check_cudnn)";
+        std::string error_type = cudnnGetErrorString(status);
+        std::string text = "[CUDNN ERROR]: " + error_type + " ("+ std::to_string(status) + ") raised in " + std::string(msg) + " at " + std::string(file) + " file | (check_cudnn)";
         throw std::runtime_error(text);
     }
 }
@@ -190,7 +191,7 @@ void gpu_init(int device)
     fprintf(stderr,"CuRand initialized on GPU device %d, %s\n",device,prop.name);
 #ifdef cCUDNN
     // CUDNN
-    dstatus=cudnnCreate(&hdnn);
+    dstatus=cudnnCreate(&hdnn[device]);
     if (dstatus != CUDNN_STATUS_SUCCESS) {
         std::string text = "problem in cudnn create (gpu_init)";
         throw std::runtime_error(text);

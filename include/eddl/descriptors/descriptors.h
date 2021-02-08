@@ -21,8 +21,7 @@
 #include "eddl/utils.h"
 #ifdef cCUDNN
 #include <cudnn.h>
-extern cudnnHandle_t hdnn;
-
+extern cudnnHandle_t hdnn[64];
 #endif
 
 using namespace std;
@@ -85,7 +84,7 @@ public:
     vector<int> kernel_size;
     vector<int> strides;
     string padding; // valid/none, same/zeros, custom
-    int groups = groups;
+    int groups;
     vector<int> dilation_rate;
     bool use_bias;
     int mem_level; // see CS
@@ -120,7 +119,6 @@ public:
 
 #ifdef cCUDNN
     // Following cuDNN nomenclature
-    cudnnHandle_t cudnn_handle;
     cudnnConvolutionMode_t convolution_mode;
     cudnnDataType_t data_type;
     cudnnTensorFormat_t tensor_format;
@@ -267,7 +265,6 @@ public:
     int                         horizontalPadding;
     int                         verticalStride;
     int                         horizontalStride;
-    cudnnHandle_t cudnn_handle;
     cudnnTensorDescriptor_t xDesc; //input. also dxDesc
     cudnnTensorDescriptor_t yDesc; //output also dyDesc
     cudnnDataType_t data_type;
