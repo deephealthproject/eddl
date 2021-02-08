@@ -25,6 +25,8 @@ endif()
 ################################# BUILD ###################################
 ###########################################################################
 
+set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON)
+
 # Set a default build type if none was specified
 set(default_build_type "Release")
 #if(EXISTS "${CMAKE_SOURCE_DIR}/.git")

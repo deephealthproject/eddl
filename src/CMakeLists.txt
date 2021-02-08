@@ -147,7 +147,7 @@ if(BUILD_PROTOBUF)
 
     # target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
-    # target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
+    target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
 
     if(MSVC)
         target_link_libraries(${PROJECT_NAME} PUBLIC
@@ -174,7 +174,7 @@ if(BUILD_OPENMP)
         # Tell CMake where to find the OpenMP libraries.
         get_filename_component(OpenMP_BIN_DIR ${CMAKE_CXX_COMPILER_AR} DIRECTORY)
         get_filename_component(OpenMP_DIR ${OpenMP_BIN_DIR} DIRECTORY)
-        target_link_directories(${PROJECT_NAME} PUBLIC ${OpenMP_DIR}/lib)
+        target_link_directories(${PROJECT_NAME} PUBLIC "${OpenMP_DIR}/lib64" "${OpenMP_DIR}/lib")
         target_link_libraries(${PROJECT_NAME} PUBLIC libomp libiomp5md)
     else()
 
@@ -234,7 +234,7 @@ if(USE_CUDA OR USE_CUDNN)
         if(CUDA_TOOLKIT_ROOT_DIR AND UNIX)
 #            SET(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_PREFIX_PATH}")
             SET(CUDA_TOOLKIT_INCLUDE_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/include")
-            SET(CUDA_TOOLKIT_LINK_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/lib")
+            SET(CUDA_TOOLKIT_LINK_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/lib" "${CUDA_TOOLKIT_ROOT_DIR}/lib64")
             SET(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
             SET(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
         endif()
