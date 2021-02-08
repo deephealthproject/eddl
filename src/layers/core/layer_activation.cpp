@@ -37,7 +37,6 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
     //BOTH softmax and activations
-    cudnn_handle = hdnn;
     cudnnCreateTensorDescriptor(&xDesc);
     cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  input->shape[0], input->shape[1],
@@ -65,7 +64,7 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
             reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
         }
         else if(this->act == "thresholded_relu"){
-            mode = CUDNN_ACTIVATION_CLIPPED_RELU;
+            mode = CUDNN_ACTIVATION_RELU;
             coef = this->params[0]; //threshold
             reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
         }
@@ -80,7 +79,7 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
             mode = CUDNN_ACTIVATION_IDENTITY;
         }
         else{
-            std:cout<<"Warning. "<<this->act<<" activation is not supported in CUDNN. A RELU will be executed." <<std::endl;
+            //std:cout<<"Warning. "<<this->act<<" activation is not supported in CUDNN. A RELU will be executed." <<std::endl;
             mode = CUDNN_ACTIVATION_RELU;
             coef = 0.0; //this->params[0]; //upper boud
             reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
@@ -145,13 +144,18 @@ void LActivation::forward(){
     float alpha = 1.0f;
     float beta = 0.0f;
     if(act == "softmax"){
-        cudnnStatus_t st = cudnnSoftmaxForward(cudnn_handle, algorithm, softmax_mode,
+        cudnnStatus_t st = cudnnSoftmaxForward(hdnn[this->input->gpu_device], algorithm, softmax_mode,
                                                 &alpha, xDesc, this->input->ptr,
                             &beta, yDesc, this->output->ptr);
         if( st != CUDNN_STATUS_SUCCESS) std::cout<<"SOFTMAX: " <<cudnnGetErrorString(st)<<std::endl;
+
+    }
+    else if (act == "leaky_relu"){
+        float alp = this->params[0];
+        tensorNN::LeakyReLu(this->input, this->output, alp);
     }
     else{
-        cudnnStatus_t st = cudnnActivationForward(cudnn_handle, activationDesc, &alpha, xDesc, this->input->ptr,
+        cudnnStatus_t st = cudnnActivationForward(hdnn[this->input->gpu_device], activationDesc, &alpha, xDesc, this->input->ptr,
                                &beta, yDesc, this->output->ptr);
         if( st != CUDNN_STATUS_SUCCESS) std::cout<<"ACT: " <<cudnnGetErrorString(st)<<std::endl;
     }
@@ -274,14 +278,19 @@ void LActivation::backward(){
         float alpha = 1.0f;
        float beta = 0.0f;
        if (act == "softmax"){
-            cudnnStatus_t st = cudnnSoftmaxBackward(this->cudnn_handle, this->algorithm, this->softmax_mode,
+            cudnnStatus_t st = cudnnSoftmaxBackward(hdnn[this->output->gpu_device], this->algorithm, this->softmax_mode,
                                                      &alpha, this->yDesc, this->output->ptr,
                                                      this->yDesc, this->delta->ptr,
                                                      &beta, this->xDesc, this->parent[0]->delta->ptr);
             if( st != CUDNN_STATUS_SUCCESS) std::cout<<"SOFT_BACK: " <<cudnnGetErrorString(st)<<std::endl;
+
+       }else if (act == "leaky_relu"){
+            float alp = this->params[0];
+            tensorNN::D_LeakyReLu(delta, input, parent[0]->delta, alp);
+
         }
         else{
-             cudnnStatus_t st = cudnnActivationBackward(this->cudnn_handle, this->activationDesc,
+             cudnnStatus_t st = cudnnActivationBackward(hdnn[this->output->gpu_device], this->activationDesc,
                                                          &alpha, this->yDesc, this->output->ptr,
                                                          this->yDesc, this->delta->ptr,
                                                          this->xDesc, this->input->ptr, &beta,

@@ -103,7 +103,6 @@ void PoolDescriptor::build(Tensor *A) {
         for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
 
 #ifdef cCUDNN
-    cudnn_handle = hdnn;
     cudnnCreatePoolingDescriptor(&poolingDesc);
 
     windowHeight = kr;

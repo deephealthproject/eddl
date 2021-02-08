@@ -58,6 +58,7 @@ ConvolDescriptor::~ConvolDescriptor(){
         eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
     }
 #ifdef cGPU
+#ifndef cCUDNN
     else if (O->isGPU()) {
 
         if (mem_level>1) {
@@ -71,6 +72,7 @@ ConvolDescriptor::~ConvolDescriptor(){
                 delete gpuOB;
         }
     }
+#endif
 #endif
 
 }
@@ -211,7 +213,6 @@ void ConvolDescriptor::build(Tensor *A) {
     }
 #ifdef cCUDNN
     //CUDNN
-    cudnn_handle = hdnn;
     convolution_mode = CUDNN_CONVOLUTION; //CUDNN_CROSS_CORRELATION
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
