@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -82,15 +82,23 @@ namespace tensorNN{
     void D_Linear(Tensor *D, Tensor *I, Tensor *PD, float param);
 
 // ***** Deep Learning *****************************
-// Conv2D
+    // Conv2D
     void Conv2D(ConvolDescriptor *D);
     void Conv2D_grad(ConvolDescriptor *D);
     void Conv2D_back(ConvolDescriptor *D);
 
-// MaxPool
+    // Conv3D
+    void Conv3D(ConvolDescriptor3D *D);
+    void Conv3D_grad(ConvolDescriptor3D *D);
+    void Conv3D_back(ConvolDescriptor3D *D);
+
+    // MaxPool2D
     void MPool2D(PoolDescriptor *D);
     void MPool2D_back(PoolDescriptor *D);
 
+    // MaxPool3D
+    void MPool3D(PoolDescriptor3D *D);
+    void MPool3D_back(PoolDescriptor3D *D);
 
 // AvgPool
     void AvgPool2D(PoolDescriptor *D);
@@ -110,6 +118,14 @@ namespace tensorNN{
     void permute_channels_first(Tensor *A,Tensor *B);
     void permute_batch_last(Tensor *A,Tensor *B);
     void permute_batch_first(Tensor *A,Tensor *B);
+    void BatchNormForward(Tensor *input, Tensor *output, Tensor *opa,
+            Tensor *global_mean, Tensor *global_variance,
+            Tensor *affine_g, Tensor *affine_b,
+            Tensor *mean, Tensor *variance,
+            bool trmode, float epsilon, float momentum);
+    void BatchNormBackward(Tensor *delta, Tensor *opa, Tensor *pdelta, Tensor *gbn_g,
+            Tensor *gbn_b, Tensor *bn_g, Tensor *variance,
+            Tensor *work1, Tensor *work2);
 
 }
 

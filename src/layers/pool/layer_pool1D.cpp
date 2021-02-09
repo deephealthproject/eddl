@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -24,30 +24,43 @@ LPool1D::LPool1D(Layer *parent, PoolDescriptor *D, string name, int dev, int mem
     if (parent->output->ndim != 3) msg("LPool1D only works over 3D tensors", "LPool1D::LPool1D");
     if(name.empty()) this->name = "pool1D" + to_string(++total_layers);
 
-    input = parent->output;
+    this->input = parent->output;
 
     // Reshape the 2D input to a 3D tensor
-    vector<int> in_shape = input->getShape();
+    vector<int> in_shape = this->input->getShape();
     in_shape.push_back(1);
-    input_reshaped = new Tensor(in_shape, input);
+    this->input_reshaped = new Tensor(in_shape, this->input);
 
-    pd = D;
-    pd->build(input_reshaped);
+    this->pd = D;
+    this->pd->build(input_reshaped);
 
     // Reshape the 3D output from conv to a 2D tensor
-    vector<int> out_shape = pd->O->getShape();
+    vector<int> out_shape = this->pd->O->getShape();
     out_shape.pop_back();
-    output = new Tensor(out_shape, pd->O);
+    this->output = new Tensor(out_shape, this->pd->O);
 
-//  delta = pd->D;
-//  pd->ID = parent->delta;
+//  this->delta = this->pd->D;
+//  this->pd->ID = parent->delta;
 
     parent->addchild(this);
     addparent(parent);
 }
 
 LPool1D::~LPool1D(){
-//    delete pd;
+
+    // deleting pd->O here can provoque double delete/free problems
+    if (this->pd->O != nullptr) delete this->pd->O;
+    this->pd->O = nullptr;
+
+    // deleting pd->D here can provoque double delete/free problems
+    if (this->pd->D != nullptr) delete this->pd->D;
+    this->pd->D = nullptr;
+
+    delete this->pd;
+    this->pd = nullptr;
+
+    if (this->input_reshaped != nullptr) delete this->input_reshaped;
+    this->input_reshaped = nullptr;
 }
 
 void LPool1D::mem_delta(){

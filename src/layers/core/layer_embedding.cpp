@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -64,7 +64,6 @@ LEmbedding::LEmbedding(Layer *parent, int vocsize, int length, int dim, bool mas
 
     parent->addchild(this);
     addparent(parent);
-
 }
 
 LEmbedding::~LEmbedding(){
@@ -120,7 +119,7 @@ void LEmbedding::backward()
 
      delta->reshape_({b,length*dim});
 
-     if(reg!= nullptr) {reg->apply(E);}
+     if (reg != nullptr) { reg->apply(E); }
    }
 }
 
@@ -130,33 +129,44 @@ void LEmbedding::backward()
 Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
     LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim, mask_zeros, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
-    n->isshared=true;
-    n->trainable = trainable;
+    n->isshared = true;
+    n->trainable = this->trainable;
+    n->do_deletes = false;
 
 
     //share params
     delete n->params[0];
+    // for (auto _ : n->params) delete _; -- to replace previous line
     delete n->gradients[0];
+    // for (auto _ : n->gradients) delete _; -- to replace previous line
     n->params.clear();
     n->gradients.clear();
 
-    n->E = E;
-    n->gE = gE;
+    n->E = this->E;
+    n->gE = this->gE;
 
-    n->params.push_back(E);
-    n->gradients.push_back(gE);
+    n->params.push_back(this->E);
+    n->gradients.push_back(this->gE);
 
-    n->reg=reg;
-    n->init=init;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
+
     return n;
 }
 
 Layer *LEmbedding::clone(int c, int bs, vector<Layer *> p, int todev) {
     LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim, mask_zeros, "clone_"+to_string(c)+this->name, todev, this->mem_level);
     n->orig = this;
-    n->trainable = trainable;
-    n->reg=reg;
-    n->init=init;
+    n->trainable = this->trainable;
+    n->do_deletes = false;
+
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = this->reg;
+
+    if (n->init != nullptr) delete n->init;
+    n->init = this->init;
 
     return n;
 }

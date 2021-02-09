@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -60,15 +60,6 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
     // Choose format
     if (format=="bin") {
         return Tensor::load_from_bin(ifs, 0, -1);
-    } else if(format=="onnx"){
-        return Tensor::load_from_onnx(ifs);
-    } else if(format=="csv" || format=="tsv" || format=="txt"){
-        msg("Format deprecated in favor of python: *.'" + format + "'", "Tensor::load");
-//        char delimiter;
-//        if (format=="csv") {delimiter = ','; }
-//        else if (format=="tsv") {delimiter = '\t'; }
-//        else { delimiter = ' '; }
-//        return Tensor::load_from_txt(ifs, delimiter, 0);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load"); // Exits
     }
@@ -111,25 +102,20 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
         ifs.seekg(start_offset*sizeof(float), std::ifstream::cur);
     }
 
+    auto *t1 = new Tensor(r_shape, DEV_CPU);
+    ifs.read(reinterpret_cast<char*>(t1->ptr), n_read * sizeof(float));
     // Load content (row-major)
+    /*
     auto *r_ptr = new float[r_size];
     ifs.read(reinterpret_cast<char*>(r_ptr), n_read * sizeof(float));
 
     // Return new tensor
     auto *t1 = new Tensor(r_shape, r_ptr, DEV_CPU);
+    */
 //    t1->info();
     return t1;
 }
 
-
-
-
-Tensor* Tensor::load_from_onnx(std::ifstream &ifs){
-    msg("Not implemented", "Tensor::load_from_onnx");
-
-    // Return new tensor
-    return new Tensor();
-};
 
 
 Tensor* Tensor::load_from_img(const string &filename, const string &format){
@@ -142,18 +128,21 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
         // Set number of channels to read
         unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, STBI_default);
 
+        Tensor * temp = new Tensor({t_height, t_width, t_channels}, DEV_CPU);
+
         // Cast pointer
         // Data in row-major
         t_size = t_width * t_height * t_channels;
-        auto *t_data = new float[t_size];
+        //auto *t_data = new float[t_size];
+        float *t_data = temp->ptr;
         for (int i = 0; i < t_size; i++) { t_data[i] = (float) pixels[i]; }
 
         // Free image
         stbi_image_free(pixels);
 
         // Re-order components. Data received as HxWxC, and has to be presented as CxHxW
-        t = new Tensor({t_height, t_width, t_channels}, t_data, DEV_CPU);
-        t = Tensor::permute(t, {2, 0, 1});
+        t = Tensor::permute(temp, {2, 0, 1});
+        delete temp;
 
     } catch(const std::bad_array_new_length &e) {
         msg("There was an error opening the image", "Tensor::load_from_img");
@@ -161,60 +150,6 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
 
     return t;
 }
-
-//Tensor* Tensor::load_from_txt(std::ifstream &ifs, char delimiter, int headerRows){
-//    Tensor* t = nullptr;
-//    string line;
-//    vector<float> values;
-//
-//    try {
-//        CSVIterator it(ifs, delimiter);
-//        headerRows = headerRows>=0 ? headerRows : 0;  // Avoid things like -3
-//
-//        int rows = 0;
-//        int cols = it->size();
-//
-//        // Parse lines
-//        for(int i=0; it != CSVIterator(); ++it, ++i){
-//            if((i+1)>headerRows){
-//                rows++;  // Increment rows
-//                for(int j = 0; j < cols; j++){
-//                    float cell = std::stof((*it)[j]);
-//                    values.push_back(cell);
-//                }
-//            }else{
-//                // If header is present, consume one line
-//                // cout << "Ignoring row #" << (i+1) << " as header" << endl;
-//            }
-//        }
-//
-//        // Create tensor
-//        t = new Tensor({rows, cols});
-//        std::copy(std::begin(values), std::end(values), t->ptr);
-//
-//    } catch(const std::bad_array_new_length &e) {
-//        msg("There was an error opening the file", "Tensor::load_from_txt");
-//    }
-//
-//    return t;
-//}
-//
-//Tensor* Tensor::load_from_txt(const string& filename, const char delimiter, int headerRows){
-//    Tensor *t = nullptr;
-//
-//    // Check if file exists (open file stream)
-//    std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary);
-//    if (!ifs.good()){
-//        throw std::runtime_error(std::string("File not found. Check the file name and try again (Tensor::load)"));
-//    }
-//
-//    // Load tensor
-//    t = Tensor::load_from_txt(ifs, delimiter, headerRows);
-//
-//    // Close file stream and return tensor
-//    ifs.close();
-//    return t;
-//}
 
 Tensor* Tensor::load_from_ptr(void * src) {
     char * aux_ptr = (char*) src;
@@ -230,14 +165,15 @@ Tensor* Tensor::load_from_ptr(void * src) {
 
     // Compute the number of values of data
     int total_size = 1;
-    for(int i=0; i < ndim; i++)
+    for(int i=0; i < ndim; i++){
         total_size *= shape[i];
+    }
 
     // Read float data
-    float * data = new float[total_size];
-    memcpy(data, aux_ptr, total_size * sizeof(float));
+    Tensor * t = new Tensor(shape, DEV_CPU);
+    memcpy(t->ptr, aux_ptr, total_size * sizeof(float));
 
-    return new Tensor(shape, data, DEV_CPU);
+    return t;
 }
 
 
@@ -279,7 +215,7 @@ void Tensor::save(const string& filename, string format) {
 
     if(format=="png" || format=="bmp" || format=="tga" || format=="jpg" || format=="jpeg" || format=="hdr") { // Images
         save2img(filename, format);
-    }else if(format=="bin" || format=="onnx" || format=="csv" || format=="tsv" || format=="txt"){
+    }else if(format=="bin" || format=="csv" || format=="tsv" || format=="txt"){
         // Open file stream, save tensor and close filesteam
         std::ofstream ofs(filename, std::ios::out | std::ios::binary);
         Tensor::savefs(ofs, format);
@@ -300,8 +236,6 @@ void Tensor::savefs(std::ofstream &ofs, string format) {
     // Choose format
     if(format=="bin") {
         save2bin(ofs);
-    } else if(format=="onnx"){
-        save2onnx(ofs);
     } else if(format=="csv" || format=="tsv" || format=="txt"){
         char delimiter;
         if (format=="csv") {delimiter = ','; }
@@ -325,11 +259,6 @@ void Tensor::save2bin(std::ofstream &ofs){
     // Save content (row-major)
     ofs.write(reinterpret_cast<const char *>(this->ptr), this->size * sizeof(float));
 }
-
-void Tensor::save2onnx(std::ofstream &ofs){
-    msg("Not implemented", "Tensor::save2onnx");
-};
-
 
 void Tensor::save2img(const string& filename, string format){
     if (this->ndim < 2 || this->ndim > 4){
@@ -458,7 +387,7 @@ std::pair<void*, size_t> Tensor::save2ptr() {
 
     // Reserve memory for: ndims value, shape vector and tensor float data
     size_t needed_mem = sizeof(int) + (aux_tensor->shape.size() * sizeof(int)) + (aux_tensor->size * sizeof(float));
-    void * dest = malloc(needed_mem);
+    float * dest = get_fmem(needed_mem, "save2ptr()");
     char * aux_ptr = (char*) dest;
 
     // Store the number of dimensions

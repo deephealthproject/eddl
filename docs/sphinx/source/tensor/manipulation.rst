@@ -278,7 +278,7 @@ Changing number of dimensions
 squeeze
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::squeeze
+.. doxygenfunction:: Tensor::squeeze(Tensor *A, int axis = -1)
 
 .. code-block:: c++
 
@@ -305,7 +305,7 @@ squeeze
 unsqueeze
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::unsqueeze
+.. doxygenfunction:: Tensor::unsqueeze(Tensor *A, int axis = 0)
 
 .. code-block:: c++
 

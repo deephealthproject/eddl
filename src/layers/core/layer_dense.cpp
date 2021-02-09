@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -100,8 +100,9 @@ void LDense::apply_accumulated_gradients() {
 Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     LDense *n = new LDense(p[0], ndim, use_bias, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
-    n->isshared=true;
+    n->isshared = true;
     n->trainable = trainable;
+    n->do_deletes = false;
 
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
@@ -111,8 +112,14 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     if (use_bias) n->bias = params[1];
 
     if ( distributed_training ) {
+        n->acc_gradients.clear();
+
         n->acc_gW = this->acc_gradients[0];
-        if ( use_bias ) n->acc_gbias = this->acc_gradients[1];
+        n->acc_gradients.push_back(n->acc_gW);
+        if ( use_bias ) {
+            n->acc_gbias = this->acc_gradients[1];
+            n->acc_gradients.push_back(n->acc_gbias);
+        }
     }
 
     n->params.push_back(n->W);
@@ -128,8 +135,10 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     n->gradients.push_back(n->gW);
     if (use_bias) n->gradients.push_back(n->gbias);
 
-    n->reg=reg;
-    n->init=init;
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
 
     return n;
 }
@@ -138,8 +147,15 @@ Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDense *n = new LDense(p[0], ndim, use_bias,  "clone_" + name, todev, this->mem_level);
     n->orig = this;
     n->trainable = trainable;
-    n->reg=reg;
-    n->init=init;
+    n->do_deletes = false;
+
+    if (n->reg != nullptr) delete n->reg;
+    n->reg = reg;
+    if (n->init != nullptr) delete n->init;
+    n->init = init;
+
+    if (distributed_training)
+        n->enable_distributed();
 
     return n;
 }
@@ -161,16 +177,14 @@ void LDense::reset_name_counter(){
 void LDense::enable_distributed(){
     distributed_training = true;
 
-    if ( distributed_training ) {
-        // Tensors with the accumulation of the gradients
-        acc_gW = new Tensor(vector<int>{input->shape[1], ndim}, dev);
-        acc_gW->fill_(0.0);
-        acc_gradients.push_back(acc_gW);
+    // Tensors with the accumulation of the gradients
+    acc_gW = new Tensor(vector<int>{input->shape[1], ndim}, dev);
+    acc_gW->fill_(0.0);
+    acc_gradients.push_back(acc_gW);
 
-        if (use_bias) {
-            acc_gbias = new Tensor(vector<int>{ndim}, dev);
-            acc_gbias->fill_(0.0);
-            acc_gradients.push_back(acc_gbias);
-        }
+    if (use_bias) {
+        acc_gbias = new Tensor(vector<int>{ndim}, dev);
+        acc_gbias->fill_(0.0);
+        acc_gradients.push_back(acc_gbias);
     }
 }

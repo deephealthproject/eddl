@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -192,4 +192,17 @@ void cpu_conv2D_back(ConvolDescriptor *D)
 
   }// batch
     _profile(_CPU_CONV2D_BACK, 1);
+}
+
+
+void cpu_conv3D(ConvolDescriptor3D *D){
+
+}
+
+void cpu_conv3D_grad(ConvolDescriptor3D *D){
+
+}
+
+void cpu_conv3D_back(ConvolDescriptor3D *D){
+
 }

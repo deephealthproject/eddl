@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -69,7 +69,7 @@ float gpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
     // Reduce sum and compute mean
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
     float sum_ce = thrust::reduce(dev_ptr, dev_ptr + n_batches);
-    float mean_ce = -sum_ce/(float)n_batches;  // Mean
+    float mean_ce = -sum_ce;//(float)n_batches;  // Mean
 
     // Delete tmp array
     check_cuda(cudaFree(sum_array), "create temp array");
@@ -111,7 +111,7 @@ float gpu_binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
     // Reduce sum and compute mean
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
     float sum_ce = thrust::reduce(dev_ptr, dev_ptr + n_batches);
-    float mean_ce = -sum_ce/(float)n_batches;  // Mean
+    float mean_ce = -sum_ce;//(float)n_batches;  // Mean
 
     // Delete tmp array
     check_cuda(cudaFree(sum_array), "create temp array");

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -26,14 +26,14 @@ using namespace eddl;
 // l2_loss
 layer mse_loss(vector<layer> in)
 {
-  layer diff=Diff(in[0],in[1]);
+  layer diff=Sub(in[0],in[1]);
   return Mult(diff,diff);
 }
 
 // l1_loss
 layer l1_loss(vector<layer> in)
 {
-  return Abs(Diff(in[0],in[1]));
+  return Abs(Sub(in[0],in[1]));
 }
 
 
@@ -41,31 +41,37 @@ layer l1_loss(vector<layer> in)
 layer dice_loss_img(vector<layer> in)
 {
   layer num=Mult(2,ReduceSum(Mult(in[0],in[1]),{0,1,2}));
-  layer den=ReduceSum(Sum(in[0],in[1]),{0,1,2});
+  layer den=ReduceSum(Add(in[0],in[1]),{0,1,2});
 
-  return Diff(1.0,Div(num,den));
+  return Sub(1.0,Div(num,den));
 }
 
 // Dice loss pixel-level
 layer dice_loss_pixel(vector<layer> in)
 {
   layer num=Mult(2,ReduceSum(Mult(in[0],in[1]),{0}));
-  layer den=ReduceSum(Sum(in[0],in[1]),{0});
+  layer den=ReduceSum(Add(in[0],in[1]),{0});
 
-  num=Sum(num,1);
-  den=Sum(den,1);
+  num=Add(num,1);
+  den=Add(den,1);
 
-  return Diff(1.0,Div(num,den));
+  return Sub(1.0,Div(num,den));
 }
 
 int main(int argc, char **argv) {
+    bool testing = false;
+    bool use_cpu = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
     int i,j;
 
     // Download dataset
     download_mnist();
 
     // Settings
-    int epochs = 5;
+    int epochs = 1;
     int batch_size = 100;
 
 
@@ -80,20 +86,35 @@ int main(int argc, char **argv) {
     l = ReLu(Conv(l,8,{3,3}));
     layer out = Sigmoid(Conv(l,1,{3,3}));
     model net = Model({in}, {});
+
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU({1}, "low_mem"); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+        // cs = CS_FPGA({1});
+    }
     // Build model
     build(net,
           adam(0.001), // Optimizer
           {}, // Losses
           {}, // Metrics
-          CS_GPU({1}) // one GPU
-          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
-	  //CS_FPGA({1})
-    );
+          cs);
 
     summary(net);
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
+
+    if (testing) {
+        std::string _range_ = "0:" + std::to_string(2 * batch_size);
+        Tensor* x_mini_train = x_train->select({_range_, ":"});
+
+        delete x_train;
+
+        x_train = x_mini_train;
+    }
 
     // Preprocessing
     x_train->div_(255.0f);
@@ -144,11 +165,14 @@ int main(int argc, char **argv) {
 
     }
 
+    delete dicep;
+    delete dicei;
+    delete mse;
 
+    delete batch;
 
-
-
+    delete x_train;
+    delete net;
+    
+    return EXIT_SUCCESS;
 }
-
-
-///////////

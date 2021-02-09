@@ -11,7 +11,6 @@ Constructor
 Example:
 
 .. code-block:: c++
-   :linenos:
 
     layer in1 = Input({3,32,32});
     layer in2 = Input({1,32,32});
@@ -34,7 +33,6 @@ Build
 Example:
 
 .. code-block:: c++
-   :linenos:
 
     ...
     model net=Model({in},{out});
@@ -56,7 +54,6 @@ Summary
 Example:
 
 .. code-block:: c++
-   :linenos:
 
     ...
     model net=Model({in},{out});
@@ -99,7 +96,6 @@ Plot
 Example:
 
 .. code-block:: c++
-   :linenos:
 
     ...
     model net=Model({in},{out});
@@ -121,7 +117,6 @@ Load
 Example:
 
 .. code-block:: c++
-   :linenos:
 
     ...
     model net = Model({in}, {out});
@@ -150,7 +145,6 @@ Save
 Example:
 
 .. code-block:: c++
-   :linenos:
 
     ...
     model net = Model({in}, {out});
@@ -179,7 +173,6 @@ Learning rate (on the fly)
 Example:
 
 .. code-block:: c++
-   :linenos:
 
     ...
     model net = Model({in}, {out});
@@ -204,7 +197,6 @@ Logging
 Example:
 
 .. code-block:: c++
-   :linenos:
 
     model net = Model({in}, {out});
 
@@ -229,27 +221,22 @@ Move the model to a specific device
 Example:
 
 .. code-block:: c++
-   :linenos:
 
     toCPU(net);
 
-.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, int lsb)
+.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, int lsb, string mem)
 
 Example:
 
 .. code-block:: c++
-   :linenos:
-
+    
     
     toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
+    
+    // Other ways
+    toGPU(net,{1},"low_mem"); // Model synchronization every batch
+    toGPU(net,{1}); // Model synchronization every batch and full_mem mode
+    toGPU(net, "low_mem"); // Model synchronization every batch and use of all available GPUs
+    toGPU(net); // Model synchronization every batch, use of all available GPUs, and full_mem mode
 
 
-.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, string mem)
-
-.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, int lsb, string mem)
-
-.. doxygenfunction:: eddl::toGPU(model net, vector<int> g)
-
-.. doxygenfunction:: eddl::toGPU(model net, string mem)
-
-.. doxygenfunction:: eddl::toGPU(model net)

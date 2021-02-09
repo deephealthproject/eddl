@@ -1,18 +1,24 @@
 .. _build-configuration:
 
 Build and configuration
-=======================
+=========================
 
 External dependencies
----------------------
+-----------------------
 
 To build EDDL you will need a ``C++11 compiler``
 
 If you want to compile with CUDA support, install:
 
-- NVIDIA CUDA 9 or above
+- NVIDIA CUDA 10 or above
+- cuDNN to accelerate primitives (optional)
 
-Also, we highly recommend installing an Anaconda_ environment to manage the external dependencies. You will get a high-quality BLAS library (MKL) and controlled dependency versions regardless of your system.
+.. note::
+
+    CUDA 10 and 11 does not support GCC versions later than 8.
+    *(Ubuntu 20.04 comes with GCC 9.3.0 by default)*
+
+Also, we highly recommend installing an Anaconda_ environment to manage the external dependencies. You will get controlled dependency versions regardless of your system.
 
 Once you have Anaconda_ installed, you can create and activate our
 environment by running the following commands **from the source directory**:
@@ -30,46 +36,44 @@ You can also update your environment with:
 
 If you decide to manually install these dependencies in your system (make sure they are at standard paths):
 
-.. code::
+.. code:: yaml
 
     - cmake>=3.9.2
-    - eigen>=3.3.7
-    - protobuf
-    - libprotobuf  # We need to avoid problems with paths
-    - zlib
-    - cudatoolkit
+    - eigen==3.3.7
+    - protobuf==3.11.4
+    - libprotobuf==3.11.4
+    - cudnn==8.0.5.39
+    - cudatoolkit-dev==10.1.243
     - gtest
-    - graphviz  # Build & Run
+    - graphviz
     - wget
-    - doxygen  # Docs
+    - doxygen
     - python
     - pip
     - pip:
-    - sphinx==3.2.1
-    - sphinx_rtd_theme==0.5.0
-    - sphinx-tabs==1.3.0
-    - breathe==4.22.1
-
+        - sphinx==3.2.1
+        - sphinx_rtd_theme==0.5.0
+        - sphinx-tabs==1.3.0
+        - breathe==4.22.1
 
 .. note::
 
-    When using ``apt-get``, the installed version of the package depends on the distro version (by default).
-    This is important to known, because for instance, in Ubuntu 18.04 ``apt-get install libeigen3-dev``
-    installs Eigen 3.3.4-4, when the EDDL needs Eigen 3.3.7.
+    - You can double-check your dependency and versions using this reference `conda list` file: Requirements_
+    - When using ``apt-get``, the installed version of the package depends on the distro version (by default). This is important to known, because for instance, on Ubuntu 18.04 ``apt-get install libeigen3-dev`` installs Eigen 3.3.4-4, when the EDDL needs Eigen 3.3.7.
 
 
 Build and optimization
-----------------------
+------------------------
 
 Build
-^^^^^
+^^^^^^
 
 To build the EDDL, you will need a recent version of cmake. Then, run the following commands from the source directory:
 
-.. code::
+.. code:: bash
 
-    mkdir build
-    cd build
+    mkdir build/
+    cd build/
     cmake ..
     make install
 
@@ -79,10 +83,10 @@ To build the EDDL, you will need a recent version of cmake. Then, run the follow
 
 
 Backend support
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
-You can choose the hardware for which the EDDL will be compiled. By default it is compile for ``GPU``, and if it is
-not found (or CUDA), it is automatically disabled so that it can run of CPU (although a cmake message will be prompted).
+You can choose the hardware for which the EDDL will be compiled. By default it is compiled for ``GPU`` but if it is not
+not found (or CUDA), the EDDL will automatically fallback to CPU.
 
 - **CPU support:** If you want to compile it for CPU, use the following cmake option:
 
@@ -92,10 +96,10 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 
 .. note::
 
-    Backup option for when there is no GPU, or CUDA is not found.
+    Backup option when cuDNN or CUDA is not found
 
 
-- **GPU (CUDA) support:** If you have CUDA installed, the EDDL will automatically be compiled for GPU. Additionally, you can force it's use with the following cmake option:
+- **GPU (CUDA) support:** If you want to compile it for GPU (CUDA), use the following cmake option:
 
 .. code:: bash
 
@@ -103,23 +107,32 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 
 .. note::
 
-    Default option with fallback to CPU
+    Fallback to CPU.
+    To use a specific CUDA version you only need to specify the NVCC location: ``-DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc``
 
 
-- **FPGA support:** If available, you can build EDDL with FPGA support using the following cmake option:
+- **GPU (cuDNN) support:** If you want to compile it for GPU (cuDNN), use the following cmake option:
+
+.. code:: bash
+
+    -DBUILD_TARGET=CUDNN
+
+.. note::
+
+    Enabled by default. If cuDNN is not installed, we will fallback to GPU (CUDA), or to CPU if CUDA is not installed.
+    To use a specific CUDA version you only need to specify the NVCC location: ``-DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc``
+
+
+- **FPGA support:** If you want to compile it for FPGA, use the following cmake option:
 
 .. code:: bash
 
     -DBUILD_TARGET=FPGA
 
 
-.. note::
-
-    Not yet implemented
-
 
 Additional flags
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 These flags can enable/disable features of the EDDL so that you can optimized and
 troubleshoot the compilation process (see: :doc:`troubleshoot`).
@@ -148,18 +161,19 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
     If using conda, get the path by activating the environment, and typing ``echo $CONDA_PREFIX``
 
 
-- **C++ compiler:** If you have problems with the default g++ compiler, try setting ``EIGEN3_INCLUDE_DIR``, such as:
+- **C/C++ compiler:**
 
 .. code:: bash
 
     -DCMAKE_CXX_COMPILER=/path/to/c++compiler  # /usr/bin/g++-8
+    -DCMAKE_C_COMPILER=/path/to/c compiler  # /usr/bin/gcc-8
 
 .. note::
 
-    On MacOS we recommend to use ``clang`` to avoid problems with OpenMP
+    The default compiler in MacOS has problems with OpenMP. We recommend to install either ``gcc``  or ``clang`` using brew.
 
 
-- **CUDA compiler:** If cmake have problems finding your cuda compiler, try setting ``CMAKE_CUDA_COMPILER``, such as:
+- **CUDA compiler:**
 
 .. code:: bash
 
@@ -167,24 +181,18 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
 .. note::
 
-    You can also create a symbolic link: (unix) ``sudo ln -s usr/local/cuda-{VERSION} /usr/local/cuda``
+    This flag is needed to known which CUDA Toolkit/cuDNN the user wants to use. By default cmake looks in the ``PATH``.
 
 
-- **CUDA host compiler:** If cmake have problems finding your cuda host compiler, try setting ``CMAKE_CUDA_COMPILER``, such as:
+- **CUDA host compiler:**
 
 .. code:: bash
 
-    -DCMAKE_CUDA_HOST_COMPILER=/path/to/cuda compiler  # /usr/bin/g++-8
+    -DCMAKE_CUDA_HOST_COMPILER=/path/to/host compiler  # /usr/bin/g++-8
 
 .. note::
 
     You can also create a symbolic link: (unix) ``sudo ln -s usr/local/cuda-{VERSION} /usr/local/cuda``
-
-- **CUDA Toolkit:** If CMake is unable to find CUDA automatically, try setting ``CUDA_TOOLKIT_ROOT_DIR``, such as:
-
-.. code:: bash
-
-    -DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda   # /usr/local/cuda-11.1
 
 
 - **Eigen3:** At the core of many numerical operations, we use Eigen3_. If CMake is unable to find Eigen3 automatically, try setting ``Eigen3_DIR``, such as:
@@ -202,7 +210,9 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
 .. note::
 
-    Enabled by default
+    Enabled by default.
+    The default compiler in MacOS has problems with OpenMP. We recommend to install either ``gcc``  or ``clang`` using brew.
+
 
 - **Use HPC:** To enable/disabled HPC flags, use the setting ``BUILD_HPC``, such as:
 
@@ -239,21 +249,6 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
     The flag ``BUILD_HCP`` needs to be disabled. If not, some tests might not pass due to numerical errors.
 
 
-- **Use local gtest:** Uses the local copy of the gtest repository as fail-safe. Ignored if using superbuild.
-
-.. code:: bash
-
-    -DUSE_LOCAL_GTEST=ON
-
-.. note::
-
-    Enabled by default.
-
-    Why this? Because the Google C++ Testing Framework uses conditional compilation for some things.
-    Because of the C++ "One Definition Rule", gtest must be compiled with exactly the same flags as
-    your C++ code under test. Therefore, to avoid or fix potential problems, we have provided you with
-    this flag in advance.
-
 - **Build examples:** To compile the examples, use the setting ``BUILD_EXAMPLES``, such as:
 
 .. code:: bash
@@ -265,18 +260,7 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
     Enabled by default
 
 
-- **Build tests:** To compile the tests, use the setting ``BUILD_TESTS``, such as:
-
-.. code:: bash
-
-    -DBUILD_TESTS=ON
-
-.. note::
-
-    Enabled by default
-
-
-- **Build shared library:** To compile the EDDL as a shared library, use the setting ``BUILD_SHARED_LIBS``, such as:
+- **Build shared library:** To compile the EDDL as a shared library:
 
 .. code:: bash
 
@@ -286,7 +270,7 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
     Enabled by default
 
-- **Superbuild:** To let the EDDL manage its dependencies automatically, use the setting ``BUILD_SUPERBUILD``:
+- **Superbuild:** To let the EDDL manage its dependencies automatically:
 
 .. code:: bash
 
@@ -302,3 +286,4 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
 .. _Anaconda: https://docs.conda.io/en/latest/miniconda.html
 .. _Eigen3: http://eigen.tuxfamily.org/index.php?title=Main_Page
+.. _Requirements: https://github.com/deephealthproject/eddl/blob/develop/docs/markdown/bundle/requirements.txt

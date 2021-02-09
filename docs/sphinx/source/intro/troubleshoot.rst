@@ -220,12 +220,21 @@ The solution is to simply use a GNU C++ compiler with a version lower or equal t
 .. code:: bash
 
     // Exporting these aliases to .bashrc
-    export CC=gcc-8
-    export CXX=g++-8
+    export CC=gcc-7
+    export CXX=g++-7
 
     // Or creating a symbolic link to the CUDA GCC
-    sudo ln -s /usr/bin/gcc-8 /usr/local/cuda/bin/gcc
-    sudo ln -s /usr/bin/g++-8 /usr/local/cuda/bin/g++
+    sudo ln -s /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
+    sudo ln -s /usr/bin/g++-7 /usr/local/cuda/bin/g++
+
+    // ..or set the following flags on the cmake command
+    cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
+    -DBUILD_TARGET=CUDNN \
+    -DCMAKE_C_COMPILER=/usr/bin/gcc-7 \
+    -DCMAKE_CXX_COMPILER=/usr/bin/g++-7 \
+    -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
+    -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-7 \
+
 
 
 Anyway, it is convenient to check which is the maximum GCC version that your CUDA supports.
@@ -260,12 +269,10 @@ I usually have to set additional flags in order to make CLion able to run the ED
 
 .. code:: bash
 
-    -DBUILD_TARGET=GPU
-    -DCMAKE_C_COMPILER=/usr/bin/gcc-8
-    -DCMAKE_CXX_COMPILER=/usr/bin/g++-8
-    -DCMAKE_CUDA_COMPILER=/usr/bin/nvcc
-    -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-8
-    -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-11.1
+    -DBUILD_TARGET=CUDNN
+    -DCMAKE_C_COMPILER=/usr/bin/gcc-7
+    -DCMAKE_CXX_COMPILER=/usr/bin/g++-7
+    -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
 
 If you want to run it using the conda environment, add:
 
@@ -275,5 +282,5 @@ If you want to run it using the conda environment, add:
     -DCMAKE_PREFIX_PATH=/path/to/dir
 
     # Note:
-    To get the path, activate the environment a type:
+    To get the path, activate the environment and type:
     echo $CONDA_PREFIX

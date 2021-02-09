@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     download_flickr();
 
     // Settings
-    int epochs = 100;
+    int epochs = 10;
     int batch_size = 24;
 
     int olength=20;
@@ -74,8 +74,8 @@ int main(int argc, char **argv) {
     int embdim=32;
 
     // Define network
-    layer in = Input({3,256,256}); //Image
-    layer l = in;
+    layer image_in = Input({3,256,256}); //Image
+    layer l = image_in;
 
     l=ReLu(Conv(l,64,{3,3},{2,2}));
 
@@ -93,19 +93,23 @@ int main(int argc, char **argv) {
 
     l=GlobalAveragePool(l);
 
-    l=Reshape(l,{-1});
+    layer lreshape=Reshape(l,{-1});
+
 
     // Decoder
-    layer ldec = Input({outvs});
-    ldec = ReduceArgMax(ldec,{0});
-    ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
-    l = Decoder(LSTM(ldec,512,true),l,"concat");
+    layer ldecin = Input({outvs});
+    layer ldec = ReduceArgMax(ldecin,{0});
+    ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim,true),-0.05,0.05);
+
+    ldec = Concat({ldec,lreshape});
+
+    l = LSTM(ldec,512,true);
 
     layer out = Softmax(Dense(l, outvs));
 
-    model net = Model({in}, {out});
+    setDecoder(ldecin);
 
-    // dot from graphviz should be installed:
+    model net = Model({image_in}, {out});
     plot(net, "model.pdf");
 
     optimizer opt=adam(0.001);
@@ -116,13 +120,15 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({0,1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-//          CS_CPU()
+          CS_CPU()
     );
 
     // View model
     summary(net);
+
+
 
     // Load dataset
     Tensor *x_train=Tensor::load("flickr_trX.bin","bin");
@@ -137,12 +143,140 @@ int main(int argc, char **argv) {
     y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x input_dim
     y_train->info();
 
+
+    //load(net,"img2text.bin","bin");
+
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net, {xtrain}, {y_train}, batch_size, 1);
     }
 
+    save(net,"img2text.bin","bin");
+
+    /////////////////////////////////////////////
+    // INFERENCE
+    /////////////////////////////////////////////
 
 
+    cout<<"==================================\n";
+    cout<<"===         INFERENCE          ===\n";
+    cout<<"==================================\n";
+
+
+    /////////////////////////////////////////////
+    /// Get all the reshapes of the images
+    /// Only use the CNN
+    /////////////////////////////////////////////
+
+    Tensor *timage=new Tensor({x_train->shape[0], 512}); //images reshape
+
+    model cnn=Model({image_in},{lreshape});
+
+
+    build(cnn,
+          adam(0.001), // not relevant
+          {"mse"}, // not relevant
+          {"mse"}, // not relevant
+          CS_CPU(),false // CPU
+    );
+    summary(cnn);
+    plot(cnn,"cnn.pdf");
+
+    // forward images
+    Tensor* xbatch = new Tensor({batch_size,3,256,256});
+
+    int numbatches=x_train->shape[0]/batch_size;
+    for(int j=0;j<1;j++)  {
+        cout<<"batch "<<j<<endl;
+
+        next_batch({x_train},{xbatch});
+        forward(cnn,{xbatch});
+
+        Tensor* ybatch=getOutput(lreshape);
+
+        string sample=to_string(j*batch_size)+":"+to_string((j+1)*batch_size);
+        timage->set_select({sample,":"},ybatch);
+
+
+        delete ybatch;
+    }
+
+
+
+    /////////////////////////////////////////////
+    /// Create Decoder non recurrent for n-best
+    /////////////////////////////////////////////
+
+    ldecin = Input({outvs});
+    layer image = Input({512});
+    layer lstate = States({2,512});
+
+    ldec = ReduceArgMax(ldecin,{0});
+    ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
+
+    ldec = Concat({ldec,image});
+
+    layer lstm = LSTM({ldec,lstate},512,true);
+
+    lstm->isrecurrent=false; // Important
+
+    out = Softmax(Dense(lstm, outvs));
+
+    model decoder=Model({ldecin,image,lstate},{out});
+
+    // Build model
+    build(decoder,
+          adam(0.001), // not relevant
+          {"softmax_cross_entropy"}, // not relevant
+          {"accuracy"}, // not relevant
+          CS_CPU() // CPU
+    );
+
+    // View model
+    summary(decoder);
+    plot(decoder, "decoder.pdf");
+
+    // Copy params from trained net
+    copyParam(getLayer(net,"LSTM1"),getLayer(decoder,"LSTM2"));
+    copyParam(getLayer(net,"dense1"),getLayer(decoder,"dense2"));
+    copyParam(getLayer(net,"embedding1"),getLayer(decoder,"embedding2"));
+
+
+   ////// N-best for sample s
+   int s=100; //sample 100
+   // three input tensors with batch_size=1 (one sentence)
+   Tensor *treshape=timage->select({to_string(s),":"});
+   Tensor *text=y_train->select({to_string(s),":",":"}); //1 x olength x outvs
+   Tensor *state=Tensor::zeros({1,2,512}); // batch x num_states x dim_states
+
+   for(int j=0;j<olength;j++) {
+     cout<<"Word:"<<j<<endl;
+
+     Tensor *word;
+     if (j==0) word=Tensor::zeros({1,outvs});
+     else {
+       word=text->select({"0",to_string(j-1),":"});
+       word->reshape_({1,outvs}); // batch=1
+     }
+
+     treshape->reshape_({1,512}); // batch=1
+     Tensor *state=Tensor::zeros({1,2,512}); // batch=1
+     
+     vtensor input;
+     input.push_back(word);
+     input.push_back(treshape);
+     input.push_back(state);
+     forward(decoder, input);
+     // forward(decoder,(vtensor){word,treshape,state});
+
+     Tensor *outword=getOutput(out);
+
+     vector<Tensor*> vstates=getStates(lstm); 
+     for(int i=0;i<vstates.size();i++) {
+       state->set_select({":",to_string(i),":"},vstates[i]->reshape({1,1,512}));
+       delete vstates[i];
+     }
+     vstates.clear();
+   }
 
 }

@@ -5,9 +5,10 @@ Losses
 
 
 Mean Squared Error
-------------------
+--------------------
 
 Aliases: ``mean_squared_error`` and ``mse``.
+
 Creates a criterion that measures the mean squared error (squared L2 norm) between each element in the input
 
 Example:
@@ -22,6 +23,7 @@ Binary Cross-Entropy
 --------------------------
 
 Aliases: ``binary_cross_entropy``, and ``bce``.
+
 Creates a criterion that measures the Binary Cross Entropy between the target and the output. Values are encoded as
 the probability of the positive class.
 
@@ -33,9 +35,10 @@ Example:
 
 
 Categorical Cross-Entropy
---------------------------
+---------------------------
 
 Aliases: ``categorical_cross_entropy``, ``cce``, ``cross_entropy``, and ``ce``.
+
 Creates a criterion that measures the Categorical Cross Entropy between the target and the output.  Values are encoded as
 vector of probabilities that sum is equal to one.
 
@@ -47,7 +50,7 @@ Example:
 
 
 Softmax Cross-Entropy
--------------------
+-----------------------
 
 Aliases: ``softmax_cross_entropy``, ``soft_cross_entropy``, and ``sce``.
 

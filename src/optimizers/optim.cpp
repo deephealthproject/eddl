@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -19,6 +19,9 @@ using namespace std;
 Optimizer::Optimizer() {
   isshared=false;
   clip_val=-1;
+}
+
+Optimizer::~Optimizer() {
 }
 
 void Optimizer::set_clip_val(float v)
