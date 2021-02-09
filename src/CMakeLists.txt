@@ -195,6 +195,15 @@ if(USE_CUDA OR USE_CUDNN)
     include(CheckLanguage)
     check_language(CUDA)
 
+    # Set default paths
+    if(CUDA_TOOLKIT_ROOT_DIR AND UNIX)
+        #            SET(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_PREFIX_PATH}")
+        SET(CUDA_TOOLKIT_INCLUDE_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/include")
+        SET(CUDA_TOOLKIT_LINK_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/lib" "${CUDA_TOOLKIT_ROOT_DIR}/lib64")
+        SET(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
+        SET(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
+    endif()
+
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
 #        find_package(CUDAToolkit)
@@ -226,15 +235,6 @@ if(USE_CUDA OR USE_CUDNN)
 
         # Add source files
         target_sources(${PROJECT_NAME} PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
-
-        # Set default paths
-        if(CUDA_TOOLKIT_ROOT_DIR AND UNIX)
-#            SET(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_PREFIX_PATH}")
-            SET(CUDA_TOOLKIT_INCLUDE_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/include")
-            SET(CUDA_TOOLKIT_LINK_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/lib" "${CUDA_TOOLKIT_ROOT_DIR}/lib64")
-            SET(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
-            SET(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
-        endif()
 
         # Includes and library links
         target_include_directories(${PROJECT_NAME} PRIVATE ${CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
