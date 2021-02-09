@@ -95,6 +95,11 @@ void LConv1D::resize(int batch){
     output->resize(batch, cd->O->ptr);
 }
 
+void LConv1D::initialize() {
+    init->apply(params[0]);  // Conv
+    params[1]->fill_(0.0f); // Bias
+}
+
 void LConv1D::mem_delta(){
     if(this->delta == nullptr) {
         // Reserve parent's delta
