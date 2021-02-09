@@ -116,12 +116,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only libra
 if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
     # Link library
-    if(DEFINED Protobuf_DIR AND DEFINED Protobuf_LIBRARIES_DIRS AND DEFINED Protobuf_LIBRARIES)
-        #        message(STATUS "Using specific Protobuf")
-    else()
-        #        message(STATUS "Searching for Protobuf in the system...")
+    if(NOT Protobuf_ROOT)
         find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
-        #        message(STATUS "Protobuf found! (system)")
 
         # Check if Protobuf was really found
         if(NOT Protobuf_FOUND)
@@ -134,17 +130,16 @@ if(BUILD_PROTOBUF)
     # Add extra files
     target_sources(${PROJECT_NAME} PRIVATE ${ONNX_FILES})
 
-    # target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
+    # Add includes
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
-    target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
 
-    if(MSVC)
-        target_link_libraries(${PROJECT_NAME} PUBLIC
-                optimized ${Protobuf_LIBRARY_RELEASE}
-                debug ${Protobuf_LIBRARY_DEBUG})
-    else()
-        target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES})
-    endif()
+    # Find libraries (need absolute paths)
+    find_library(Protobuf_LIBRARY protobuf HINTS ${Protobuf_ROOT})
+#    find_library(Protobuf_LIBRARY_DEBUG protobufd HINTS ${Protobuf_ROOT})
+#    find_library(Protobuf_LIBRARY_RELEASE protobuf HINTS ${Protobuf_ROOT})
+
+    # Add libraries
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
 
     # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
     # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
@@ -160,16 +155,21 @@ if(BUILD_OPENMP)
     if (WIN32 AND CMAKE_RC_COMPILER STREQUAL "llvm-rc")
         set(OpenMP_CXX_FLAGS "-Xclang -fopenmp")
         set(OpenMP_C_FLAGS "-Xclang -fopenmp")
+
         # Tell CMake where to find the OpenMP libraries.
         get_filename_component(OpenMP_BIN_DIR ${CMAKE_CXX_COMPILER_AR} DIRECTORY)
         get_filename_component(OpenMP_DIR ${OpenMP_BIN_DIR} DIRECTORY)
-        target_link_directories(${PROJECT_NAME} PUBLIC "${OpenMP_DIR}/lib64" "${OpenMP_DIR}/lib")
+        target_link_directories(${PROJECT_NAME} PUBLIC "${OpenMP_DIR}/lib")  # "The command will apply only to targets created after it is called."
         target_link_libraries(${PROJECT_NAME} PUBLIC libomp libiomp5md)
-    else()
 
+#        find_library(OMP_LIBRARY libomp)
+#        find_library(OMP5MD_LIBRARY libiomp5md)
+#        target_link_libraries(${PROJECT_NAME} PUBLIC ${OMP_LIBRARY} ${OMP5MD_LIBRARY})
+
+    else()
         find_package(OpenMP)
         if(OpenMP_CXX_FOUND)
-
+            # OpenMP added through a flag (OpenMP_CXX_FLAGS=="-fopenmp")
             SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
             SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
@@ -190,23 +190,14 @@ SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 
 
 # CUDA
-if(USE_CUDA OR USE_CUDNN)
+if(USE_CUDA)
     # Check if cuda is available
     include(CheckLanguage)
     check_language(CUDA)
 
-    # Set default paths
-    if(CUDA_TOOLKIT_ROOT_DIR AND UNIX)
-        #            SET(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_PREFIX_PATH}")
-        SET(CUDA_TOOLKIT_INCLUDE_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/include")
-        SET(CUDA_TOOLKIT_LINK_DIRECTORIES "${CUDA_TOOLKIT_ROOT_DIR}/lib" "${CUDA_TOOLKIT_ROOT_DIR}/lib64")
-        SET(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
-        SET(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
-    endif()
-
-    if(CMAKE_CUDA_COMPILER)
+    if (CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
-#        find_package(CUDAToolkit)
+        find_package(CUDAToolkit)
 
         # NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
         if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -236,13 +227,18 @@ if(USE_CUDA OR USE_CUDNN)
         # Add source files
         target_sources(${PROJECT_NAME} PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
 
-        # Includes and library links
-        target_include_directories(${PROJECT_NAME} PRIVATE ${CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-        target_link_directories(${PROJECT_NAME} PRIVATE ${CUDA_TOOLKIT_LINK_DIRECTORIES})
+        # Add includes
+        target_include_directories(${PROJECT_NAME} PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
 
-        target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand)
+#        # Find libraries (need absolute paths)
+#        find_library(CUBLAS_LIBRARY cublas HINTS ${CUDA_TOOLKIT_ROOT_DIR})
+#        find_library(CUDART_LIBRARY cudart HINTS ${CUDA_TOOLKIT_ROOT_DIR})
+#        find_library(CURAND_LIBRARY curand HINTS ${CUDA_TOOLKIT_ROOT_DIR})
+#        target_link_libraries(${PROJECT_NAME} PRIVATE ${CUBLAS_LIBRARY} ${CUDART_LIBRARY} ${CURAND_LIBRARY})
+        target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cublas CUDA::cudart CUDA::curand)
         if(USE_CUDNN)
-            target_link_libraries(${PROJECT_NAME} PRIVATE cudnn)
+            find_library(CUDNN_LIBRARY cudnn HINTS ${CUDAToolkit_LIBRARY_DIR})
+            target_link_libraries(${PROJECT_NAME} PRIVATE ${CUDNN_LIBRARY})
         endif()
 
         if(APPLE)
@@ -300,20 +296,6 @@ SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
 ###########################################################################
 ################################## WINDOWS ################################
 ###########################################################################
-
-#if(WIN32)  (Not used anymore)
-#   # Threads *************************************************************
-#   if(PTHREADS_INSTALL_PATH STREQUAL "")
-#       message(ERROR ": Pthreads install path must be specified under Windows")
-#   endif()
-#   target_link_libraries(${PROJECT_NAME} PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib
-#           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib
-#           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib)
-#   target_link_libraries(${PROJECT_NAME} PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib
-#           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib
-#           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib)
-#   target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PTHREADS_INSTALL_PATH}/include>)
-#endif()
 
 # Microsoft Visual C++ - set static/dynamic runtime
 if(MSVC)
@@ -395,15 +377,20 @@ endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "CUDA enabled: " ${USE_CUDA} )
 if(USE_CUDA)
-    message(STATUS "CUDA toolkit root dir: " ${CUDA_TOOLKIT_ROOT_DIR})
-    message(STATUS "CUDA toolkit include directories: " ${CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-    message(STATUS "CUDA toolkit link directories: " ${CUDA_TOOLKIT_LINK_DIRECTORIES})
+    message(STATUS "CUDA toolkit root dir: ${CUDAToolkit_LIBRARY_ROOT}")
+    message(STATUS "CUDA toolkit include dir: ${CUDAToolkit_INCLUDE_DIRS}")
+    message(STATUS "CUDA toolkit include dir (targets): ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
+    message(STATUS "CUDA toolkit library dir: ${CUDAToolkit_LIBRARY_DIR}")
+    message(STATUS "CUDA NVCC executable: ${CUDAToolkit_NVCC_EXECUTABLE}")
     message(STATUS "CUDA toolkit implicit link directories: " ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
     message(STATUS "CUDA compiler: ${CMAKE_CUDA_COMPILER} | Version: ${CMAKE_CUDA_COMPILER_VERSION}")
     message(STATUS "CUDA host compiler: " ${CMAKE_CUDA_HOST_COMPILER})
 endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "CUDNN enabled: " ${USE_CUDNN} )
+if(USE_CUDNN)
+    message(STATUS "CuDNN libraries: ${CUDNN_LIBRARY}")
+endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "FPGA enabled: " ${USE_FPGA} )
 if(USE_FPGA)
@@ -412,14 +399,16 @@ if(USE_FPGA)
     message(STATUS "OpenCL libraries: " ${OpenCL_LIBRARIES} )
 endif()
 message(STATUS "-------------------------------------------" )
-message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
+message(STATUS "Eigen3 root dir: " ${Eigen3_DIR} )
 message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "Use Protobuf: " ${BUILD_PROTOBUF} )
 if(BUILD_PROTOBUF)
-    message(STATUS "Protobuf dir: " ${Protobuf_DIR} )
-    message(STATUS "Protobuf include: " ${Protobuf_INCLUDE_DIRS} )
-    message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARIES} )
+    message(STATUS "Protobuf root dir: " ${Protobuf_ROOT} )
+    message(STATUS "Protobuf include dirs: " ${Protobuf_INCLUDE_DIRS} )
+    message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARY} )
+#    message(STATUS "Protobuf libraries (debug): " ${Protobuf_LIBRARY_DEBUG} )
+#    message(STATUS "Protobuf libraries (release): " ${Protobuf_LIBRARY_RELEASE} )
     message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
 endif()
 #if(WIN32)

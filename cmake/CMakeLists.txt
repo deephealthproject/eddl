@@ -89,9 +89,6 @@ else()
     # Set variables
     SET(GTEST_ROOT "${EP_BASE_DIR}/googletest" PARENT_SCOPE)
     SET(GTEST_INCLUDE_DIRS "${EP_BASE_DIR}/googletest/include" PARENT_SCOPE)
-    SET(GTEST_LIBRARIES_DIRS "${EP_BASE_DIR}/googletest/lib" PARENT_SCOPE)
-    SET(GTEST_BOTH_LIBRARIES "gtest;gtest_main" PARENT_SCOPE)
-    SET(GTEST_BOTH_LIBRARIES_D "gtestd;gtest_maind" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: GTEST...DONE")
 
@@ -112,33 +109,6 @@ endif()
 message(STATUS "Subproject: EIGEN...DONE")
 
 
-#############
-###  ZLIB  ##
-#############
-# NOT USED *****************************************************
-#message(STATUS "Subproject: ZLIB...")
-#if(USE_SYSTEM_ZLIB)
-#    find_package(ZLIB REQUIRED)
-#else()
-#    # Download and unpack ZLIB at configure time
-#    foreach(config ${config_types})
-#        CONF_PACKAGE(zlib ${config} "")
-#        BUILD_PACKAGE(zlib ${config})
-#    endforeach()
-#    # Set variables
-#    SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
-#    SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
-#    SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib")
-#    SET(ZLIB_LIBRARIES_DIRS ${ZLIB_LIBRARIES_DIRS} PARENT_SCOPE)
-#    if(WIN32)
-#        SET(ZLIB_LIBRARIES "${ZLIB_LIBRARIES_DIRS}/zlibstatic.lib" PARENT_SCOPE)
-#    elseif(UNIX)
-#        SET(ZLIB_LIBRARIES "${ZLIB_LIBRARIES_DIRS}/libz.a" PARENT_SCOPE)
-#    endif()
-#endif()
-#message(STATUS "Subproject: ZLIB...DONE")
-
-
 ################
 ##  PROTOBUF  ##
 ################
@@ -150,26 +120,10 @@ else()
         CONF_PACKAGE(protobuf ${config} @ONLY)
         BUILD_PACKAGE(protobuf ${config})
     endforeach()
-    # Set Protobuf_DIR  variable
-    if (WIN32)
-        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/cmake" PARENT_SCOPE)
-    else()
-        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/lib/cmake/protobuf" PARENT_SCOPE)
-    endif()
     
     set(Protobuf_ROOT "${EP_BASE_DIR}/protobuf" PARENT_SCOPE)
     set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include" PARENT_SCOPE)
-    set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/protobuf/lib64" "${EP_BASE_DIR}/protobuf/lib")  # TODO: Fix. Sometimes is /lib, and others /lib64
-    set(Protobuf_LIBRARIES_DIRS ${Protobuf_LIBRARIES_DIRS} PARENT_SCOPE)
-    # set(Protobuf_LIBRARIES "protobuf" PARENT_SCOPE)
     set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc" PARENT_SCOPE)
-    if(WIN32)
-        SET(Protobuf_LIBRARIES "libprotobuf.lib" PARENT_SCOPE)
-        SET(Protobuf_LIBRARY_DEBUG "libprotobufd.lib" PARENT_SCOPE)
-        SET(Protobuf_LIBRARY_RELEASE "libprotobuf.lib" PARENT_SCOPE)
-    elseif(UNIX)
-        SET(Protobuf_LIBRARIES "libprotobuf.a" PARENT_SCOPE)
-    endif()
 endif()
 add_custom_target(protobuf_files 
 	protoc --cpp_out=../src/serialization/onnx ../src/serialization/onnx/onnx.proto
