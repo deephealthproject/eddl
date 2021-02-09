@@ -171,7 +171,7 @@ endif()
 #            -DZLIB_LIBRARIES:PATH=${ZLIB_LIBRARIES}
 #            -DZLIB_LIBRARIES_DIRS:PATH=${ZLIB_LIBRARIES_DIRS}
 #
-#            -DProtobuf_DIR:PATH=${Protobuf_DIR}  # Problems
+#            -DProtobuf_ROOT:PATH=${Protobuf_ROOT}  # Problems
 #            -DProtobuf_INCLUDE_DIRS:PATH=${Protobuf_INCLUDE_DIRS}
 #            -DProtobuf_LIBRARIES:PATH=${Protobuf_LIBRARIES}
 #            -DProtobuf_LIBRARIES_DIRS:PATH=${Protobuf_LIBRARIES_DIRS}
@@ -198,7 +198,7 @@ endif()
 #message(STATUS "Zlib libraries: " ${ZLIB_LIBRARIES})
 #message(STATUS "-------------------------------------------" )
 #message(STATUS "Use system Protobuf: " ${USE_SYSTEM_PROTOBUF} )
-#message(STATUS "Protobuf dir: " ${Protobuf_DIR})
+#message(STATUS "Protobuf dir: " ${Protobuf_ROOT})
 #message(STATUS "Protobuf include dirs: " ${Protobuf_INCLUDE_DIRS})
 #message(STATUS "Protobuf libraries dirs: " ${Protobuf_LIBRARIES_DIRS})
 #message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARIES})

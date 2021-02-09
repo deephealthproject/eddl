@@ -26,7 +26,7 @@ if(USE_OPENMP)
 endif()
 
 # CUDA
-if(USE_CUDA OR USE_CUDNN)
+if(USE_CUDA)
     enable_language(CUDA)
 endif()
 
@@ -41,22 +41,16 @@ if(USE_SUPERBUILD)
         SET(Eigen3_DIR @Eigen3_DIR@) # Modified in a subdirectory
         list(APPEND CMAKE_PREFIX_PATH ${Eigen3_DIR})
     endif()
-#    if(NOT USE_SYSTEM_ZLIB)
-#        SET(ZLIB_ROOT_PATH @ZLIB_ROOT@) # Modified in a subdirectory
-#        SET(ZLIB_BIN @ZLIB_BIN@) # Modified in a subdirectory
-#        list(APPEND CMAKE_PREFIX_PATH ${ZLIB_BIN} ${ZLIB_ROOT_PATH})
-#    endif()
 endif()
     
 # Core dependencies
 find_dependency(Eigen3 REQUIRED NO_MODULE)
-#find_dependency(ZLIB REQUIRED)
 
 # Protobuf
 if(USE_PROTOBUF)
     if(USE_SUPERBUILD AND NOT USE_SYSTEM_PROTOBUF)
-        SET(Protobuf_DIR @Protobuf_DIR@) # Modified in a subdirectory
-        find_dependency(Protobuf CONFIG REQUIRED HINTS ${Protobuf_DIR})
+        SET(Protobuf_ROOT @Protobuf_ROOT@) # Modified in a subdirectory
+        find_dependency(Protobuf CONFIG REQUIRED HINTS ${Protobuf_ROOT})
     else()
         find_dependency(Protobuf REQUIRED)
     endif()

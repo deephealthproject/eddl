@@ -117,7 +117,7 @@ if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
     # Link library
     if(NOT Protobuf_ROOT)
-        find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
+        find_package(Protobuf REQUIRED)  # Problems with: Protobuf_ROOT
 
         # Check if Protobuf was really found
         if(NOT Protobuf_FOUND)
