@@ -208,8 +208,8 @@ void LGRU::forward() {
      *       because n_t_hidden is h_{t-1} * Un_h.T + bias_n_t_hidden
      */
     n_t = new Tensor({input->shape[0], units}, dev);
-    Tensor::mult2D(parent[0]->output, 0, Wn_x, 0, n_t, 0); // x * Wh_x
     n_t_hidden = new Tensor({input->shape[0], units}, dev);
+    Tensor::mult2D(parent[0]->output, 0, Wn_x, 0, n_t, 0); // x * Wh_x
     if (parent.size() > 1) {
         Tensor::mult2D(parent[1]->states[0], 0, Un_h, 0, n_t_hidden, 0);
     } else {
@@ -293,7 +293,7 @@ void LGRU::backward() {
             Tensor::el_mult(r_t, parent[1]->states[0], d2, 0);
             Tensor::mult2D(d2, 1, daux, 0, gUn_h, 1);
             ////
-            Tensor::el_mult(daux, r_t, d2, 0); // not sure of this
+            Tensor::el_mult(daux, r_t, d2, 0); // d2 is delta * (1 - z_t) * tanh'(n_t) * r_t
             Tensor::reduce_sum2D(d2, g_bias_n_t_hidden, 0, 1);
         }
         Tensor::reduce_sum2D(daux, g_bias_n_t, 0, 1);
@@ -302,21 +302,8 @@ void LGRU::backward() {
     // here daux must be delta * (1 - z_t) * tanh'(n_t)
     Tensor::mult2D(daux, 0, Wn_x, 1, parent[0]->delta, 1); // delta * (1 - z_t) * tanh'(n_t) * Wn_x
     if (parent.size() > 1) {
-        Tensor::mult2D(parent[1]->states[0], 0, Un_h, 0, d1, 0); // should Un_h be transposed?
-    } else
-        d1->fill_(0.0);
-    // here daux must be delta * (1 - z_t) * tanh'(n_t)
-    Tensor::sum2D_rowwise(d1, bias_n_t_hidden, d1);
-    d2->fill_(0.0);
-    tensorNN::D_Sigmoid(d1, r_t, d2);
-    // d2 is now sigmoid'(r_t) * (Un_h * h_{t-1} + bias_n_t_hidden)
-    Tensor::el_mult(daux, d2, d1, 0);
-    // d1 is now delta * (1 - z_t) * tanh'(n_t) * sigmoid'(r_t) * (Un_h * h_{t-1} + bias_n_t_hidden)
-    Tensor::mult2D(d1, 0, Wr_x, 1, parent[0]->delta, 1);
-    if (parent.size() > 1) {
-        Tensor::mult2D(d2,  0, Ur_h, 1, d1, 0); // should Ur_h be transposed?
-        Tensor::mult2D(r_t, 0, Un_h, 1, d1, 1); // should Un_h be transposed?
-        Tensor::el_mult(daux, d1, parent[1]->delta_states[0], 1);
+        Tensor::el_mult(daux, r_t, d1, 0); // d1 is now delta * (1 - z_t) * tanh'(n_t) * r_t
+        Tensor::mult2D(d1, 0, Un_h, 1, parent[1]->delta_states[0], 1); 
     }
 
     /*
@@ -328,7 +315,7 @@ void LGRU::backward() {
     Tensor::el_mult(daux, n_t_hidden, d1, 0);
     d2->fill_(0.0);
     tensorNN::D_Sigmoid(d1, r_t, d2);
-    // now d2 is delta * (1 - z_t) * tanh'(n_t) * (U_n * h_{t-1} + bias_n_t_hidden)
+    // now d2 is delta * (1 - z_t) * tanh'(n_t) * (U_n * h_{t-1} + bias_n_t_hidden) * sigmoid'(r_t)
     //
     if (trainable) {
         Tensor::mult2D(parent[0]->output, 1, d2, 0, gWr_x, 1);
@@ -339,12 +326,10 @@ void LGRU::backward() {
     }
 
     // Propagate delta to parent
-    /*
-    *** there is no contribution to parent[0]->delta here ***
+    Tensor::mult2D(d2, 0, Wr_x, 1, parent[0]->delta, 1);
     if (parent.size() > 1) {
-        *** there is no contribution to parent[1]->delta_states[0] here ***
+        Tensor::mult2D(d2,  0, Ur_h, 1, parent[1]->delta_states[0], 1);
     }
-    */
 
     /*
      * z gate
