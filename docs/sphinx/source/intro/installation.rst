@@ -103,9 +103,14 @@ You can also install ``EDDL`` from source with cmake.
             conda activate eddl
 
             # Build and install
+            # CUDA 10/11 does not support gcc 9 or later
             mkdir build
             cd build
-            cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX  # -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+            cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
+            # -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
+            # -DCMAKE_C_COMPILER=$(which gcc-7) \
+            # -DCMAKE_CXX_COMPILER=$(which g++-7) \
+
             make install
 
     .. tab:: MacOS
