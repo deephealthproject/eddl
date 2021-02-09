@@ -11,7 +11,7 @@ To build EDDL you will need a ``C++11 compiler``
 If you want to compile with CUDA support, install:
 
 - NVIDIA CUDA 10 or above
-- cuDNN to accelerate primitives (optional)
+- NVIDIA cuDNN to accelerate primitives (optional)
 
 .. note::
 
@@ -25,14 +25,14 @@ environment by running the following commands **from the source directory**:
 
 .. code:: bash
 
-    conda env create -f environment.yml
+    conda env create -f environment-cpu.yml  # -cpu, -gpu, -cudnn
     conda activate eddl
 
 You can also update your environment with:
 
 .. code:: bash
 
-    conda env update -f environment.yml
+    conda env update -f environment-cpu.yml  # -cpu, -gpu, -cudnn
 
 If you decide to manually install these dependencies in your system (make sure they are at standard paths):
 
