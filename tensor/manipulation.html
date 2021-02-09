@@ -626,13 +626,11 @@
 <span id="_CPPv3N6Tensor8swapaxisEii"></span><span id="_CPPv2N6Tensor8swapaxisEii"></span><span id="Tensor::swapaxis__i.i"></span><span class="target" id="class_tensor_1a8f0ff1b73d3d6b1be0b148da89d3dedf"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">swapaxis</code><span class="sig-paren">(</span>int <em>axis1</em>, int <em>axis2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8swapaxisEii" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Interchange two axes of an array. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>axis2 Second axis. </p>
-</dd>
 <dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">axis1</span></code>: First axis. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">destination</span></code>: Destination position for the original axis. These must also be unique </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis2</span></code>: Destination position for the original axis. These must also be unique </p></li>
 </ul>
 </dd>
 </dl>
@@ -660,16 +658,22 @@
 <h2>Changing number of dimensions<a class="headerlink" href="#changing-number-of-dimensions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="squeeze">
 <h3>squeeze<a class="headerlink" href="#squeeze" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::squeeze” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7squeezeEP6Tensori">
+<span id="_CPPv3N6Tensor7squeezeEP6Tensori"></span><span id="_CPPv2N6Tensor7squeezeEP6Tensori"></span><span id="Tensor::squeeze__TensorP.i"></span><span class="target" id="class_tensor_1a6e2c907a74cf4f84af5feee902f2ccca"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">squeeze</code><span class="sig-paren">(</span>Tensor *<em>A</em>, int <em>axis</em> = -1<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7squeezeEP6Tensori" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove all the dimensions of size 1 from the vector. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Output tensor where the squeeze is stored. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: if given, the input will be squeezed only in this dimension. Else (-1), squeezes all dimensions of size 1 </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">squeeze</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="nb">int</span> <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">squeeze</span><span class="p">(</span><span class="nb">int</span> <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">});</span>
 <span class="c1">// ndim:          4</span>
 <span class="c1">// shape:         (1, 3, 4, 1)</span>
@@ -692,16 +696,22 @@ Potential matches:
 </div>
 <div class="section" id="unsqueeze">
 <h3>unsqueeze<a class="headerlink" href="#unsqueeze" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::unsqueeze” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor9unsqueezeEP6Tensori">
+<span id="_CPPv3N6Tensor9unsqueezeEP6Tensori"></span><span id="_CPPv2N6Tensor9unsqueezeEP6Tensori"></span><span id="Tensor::unsqueeze__TensorP.i"></span><span class="target" id="class_tensor_1a619936a93475f9ded01f10ebac0654f5"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">unsqueeze</code><span class="sig-paren">(</span>Tensor *<em>A</em>, int <em>axis</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9unsqueezeEP6Tensori" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a new tensor with a dimension of size one inserted at the specified position. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the result </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Output tensor where the unsqueeze is stored. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: the index at which to insert the singleton dimension. Default: axis=0 </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="nb">int</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">unsqueeze</span><span class="p">(</span><span class="nb">int</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
 <span class="c1">// ndim:          3</span>
 <span class="c1">// shape:         (2, 3, 4)</span>
@@ -724,7 +734,7 @@ Potential matches:
 <h2>Joining arrays<a class="headerlink" href="#joining-arrays" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6concatE6vectorIP6TensorEjP6Tensor">
-<span id="_CPPv3N6Tensor6concatE6vectorIP6TensorEjP6Tensor"></span><span id="_CPPv2N6Tensor6concatE6vectorIP6TensorEjP6Tensor"></span><span id="Tensor::concat__vector:TensorP:.unsigned-i.TensorP"></span><span class="target" id="class_tensor_1a174851077818d169be9564ac146f0200"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">concat</code><span class="sig-paren">(</span>vector&lt;Tensor*&gt; <em>A</em>, unsigned int <em>axis</em> = 0, Tensor *<em>output</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6concatE6vectorIP6TensorEjP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6Tensor6concatE6vectorIP6TensorEjP6Tensor"></span><span id="_CPPv2N6Tensor6concatE6vectorIP6TensorEjP6Tensor"></span><span id="Tensor::concat__vector:TensorP:.unsigned-i.TensorP"></span><span class="target" id="class_tensor_1a6a995b97e9d7e371c66138fb6b36d148"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">concat</code><span class="sig-paren">(</span>vector&lt;Tensor*&gt; <em>A</em>, unsigned int <em>axis</em> = 0, Tensor *<em>output</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6concatE6vectorIP6TensorEjP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <p>Example:</p>

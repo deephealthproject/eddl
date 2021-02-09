@@ -10,9 +10,8 @@ L1
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    layer L1(layer l,float l1);
+   l = L1(l, 0.0001);
 
 
 L2
@@ -23,9 +22,8 @@ L2
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    layer L2(layer l,float l2);
+   l = L2(l, 0.0001);
 
 
 L1L2
@@ -36,7 +34,6 @@ L1L2
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    layer L1L2(layer l,float l1,float l2);
+   l = L1(l, 0.00001, 0.0001);
 

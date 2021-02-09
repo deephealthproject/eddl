@@ -308,7 +308,22 @@ brew install eddl
 <div class="section" id="from-source-with-cmake">
 <h2>From source with cmake<a class="headerlink" href="#from-source-with-cmake" title="Permalink to this headline">¶</a></h2>
 <p>You can also install <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> from source with cmake.</p>
-<p>On Unix platforms, from the source directory:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Requirements:</strong></p>
+<ul>
+<li><p>C++ compiler</p></li>
+<li><p>Anaconda or CMake <em>(if using</em> <code class="docutils literal notranslate"><span class="pre">-D</span> <span class="pre">BUILD_SUPERBUILD=ON</span></code> <em>)</em></p></li>
+<li><p>[Optional] CUDA Toolkit 10 or later (to compile for GPU)</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>These versions do not support GCC versions later than 8</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>[Optional] cuDNN to speed up training</p></li>
+</ul>
+</div>
 <div class="sphinx-tabs docutils container">
 <div class="ui top attached tabular menu sphinx-menu docutils container">
 <div class="active item sphinx-data-tab-1-0 docutils container">
@@ -328,13 +343,20 @@ git clone https://github.com/deephealthproject/eddl.git
 <span class="nb">cd</span> eddl/
 
 <span class="c1"># Install dependencies</span>
-conda env create -f environment.yml
+conda env create -f environment-cpu.yml  <span class="c1"># -cpu, -gpu, -cudnn</span>
 conda activate eddl
 
 <span class="c1"># Build and install</span>
 mkdir build
 <span class="nb">cd</span> build
 cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
+
+<span class="c1"># [GPU ONLY] CUDA 10/11 does not support gcc versions later than 8.</span>
+<span class="c1"># You *might* need to add these flags:</span>
+<span class="c1"># -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \</span>
+<span class="c1"># -DCMAKE_C_COMPILER=$(which gcc-7) \</span>
+<span class="c1"># -DCMAKE_CXX_COMPILER=$(which g++-7) \</span>
+
 make install
 </pre></div>
 </div>
@@ -345,7 +367,7 @@ git clone https://github.com/deephealthproject/eddl.git
 <span class="nb">cd</span> eddl/
 
 <span class="c1"># Install dependencies</span>
-conda env create -f environment.yml
+conda env create -f environment-cpu.yml  <span class="c1"># -cpu, -gpu, -cudnn</span>
 conda activate eddl
 
 <span class="c1"># Build and install</span>
@@ -361,10 +383,21 @@ make install
 <p>See the <a class="reference internal" href="build-options.html"><span class="doc">Build and configuration</span></a> section for more details about cmake options.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can ignore <code class="docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX</span></code> and <code class="docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX</span></code> to use their default values,
-or if you prefer it, you can specificy your environment like <code class="docutils literal notranslate"><span class="pre">-DCMAKE_PREFIX_PATH=$CONDA_PREFIX</span></code>.</p>
-<p>If you want to distribute the resulting shared library, you should use the flag
+<p>1. You can ignore <code class="docutils literal notranslate"><span class="pre">-DCMAKE_PREFIX_PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX</span></code> but it is a good practice to use them
+in order to avoid path conflicts.</p>
+<p>2. To use a specific CUDA version you only need to specify the NVCC location:
+<code class="docutils literal notranslate"><span class="pre">-DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc</span></code></p>
+<p>3. CUDA 10 and 11 does not support GCC versions later than 8.
+<em>(Ubuntu 20.04 comes with GCC 9.3.0 by default, so you might need to force a lower version
+with:</em> <code class="docutils literal notranslate"><span class="pre">-DCMAKE_CXX_COMPILER</span></code>)</p>
+<p>4. If you want to distribute the resulting shared library, you should use the flag
 <code class="docutils literal notranslate"><span class="pre">-DBUILD_SUPERBUILD=ON</span></code> so that we can make specific tunings to our dependencies.</p>
+<ol class="arabic simple" start="5">
+<li><p>If you don’t want to install <a class="reference external" href="https://www.anaconda.com/">Anaconda</a>, you can compile it using:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake .. -DBUILD_SUPERBUILD<span class="o">=</span>ON -DBUILD_TARGET<span class="o">=</span>CUDNN -DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc -DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7<span class="sb">``</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="including-eddl-in-your-project">

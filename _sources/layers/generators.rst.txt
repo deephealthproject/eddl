@@ -6,7 +6,7 @@ Gaussian Generator
 
 .. doxygenfunction:: GaussGenerator
 
-Generates a gaussian noise output (typically used for GANs)
+
 
 Example:
 
@@ -21,7 +21,9 @@ Uniform Generator
 
 .. doxygenfunction:: UniformGenerator
 
-Generates a uniform noise output (typically used for GANs)
 
 
 
+.. code-block:: c++
+
+   layer gin = UniformGenerator(3.0, 10.0, {3, 32, 32});

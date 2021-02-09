@@ -247,11 +247,11 @@
 <span id="_CPPv3N4eddl2L1E5layerf"></span><span id="_CPPv2N4eddl2L1E5layerf"></span><span id="eddl::L1__layer.float"></span><span class="target" id="namespaceeddl_1a5b9c11ecdec8b148b74d1ab289c3f67c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">L1</code><span class="sig-paren">(</span>layer <em>l</em>, float <em>l1</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl2L1E5layerf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Regularizer for L1 regularization. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The layer l regularized. </p>
+<dt><strong>Return</strong></dt><dd><p>The layer <code class="docutils literal notranslate"><span class="pre">l</span></code> regularized </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to regularize. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: L1 regularization factor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to regularize </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: L1 regularization factor </p></li>
 </ul>
 </dd>
 </dl>
@@ -259,9 +259,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">L1</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span><span class="kt">float</span> <span class="n">l1</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">L1</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="l2">
 <h2>L2<a class="headerlink" href="#l2" title="Permalink to this headline">¶</a></h2>
@@ -270,11 +270,11 @@
 <span id="_CPPv3N4eddl2L2E5layerf"></span><span id="_CPPv2N4eddl2L2E5layerf"></span><span id="eddl::L2__layer.float"></span><span class="target" id="namespaceeddl_1a0215510827c4347a783333b6b148562f"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">L2</code><span class="sig-paren">(</span>layer <em>l</em>, float <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl2L2E5layerf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Regularizer for L2 regularization. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The layer l regularized. </p>
+<dt><strong>Return</strong></dt><dd><p>The layer <code class="docutils literal notranslate"><span class="pre">l</span></code> regularized </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to regularize. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: L2 regularization factor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to regularize </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: L2 regularization factor </p></li>
 </ul>
 </dd>
 </dl>
@@ -282,23 +282,23 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">L2</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span><span class="kt">float</span> <span class="n">l2</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">L2</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="l1l2">
 <h2>L1L2<a class="headerlink" href="#l1l2" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4L1L2E5layerff">
 <span id="_CPPv3N4eddl4L1L2E5layerff"></span><span id="_CPPv2N4eddl4L1L2E5layerff"></span><span id="eddl::L1L2__layer.float.float"></span><span class="target" id="namespaceeddl_1ada1fb3e2a96b5c887ee75aef7422cfe3"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">L1L2</code><span class="sig-paren">(</span>layer <em>l</em>, float <em>l1</em>, float <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4L1L2E5layerff" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Regularizer for L1 and L2 regularization.. </p>
+<dd><p>Regularizer for L1 and L2 regularization. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The layer l regularized. </p>
+<dt><strong>Return</strong></dt><dd><p>The layer <code class="docutils literal notranslate"><span class="pre">l</span></code> regularized </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to regularize. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: L1 regularization factor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: L2 regularization factor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to regularize </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: L1 regularization factor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l2</span></code>: L2 regularization factor </p></li>
 </ul>
 </dd>
 </dl>
@@ -306,9 +306,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">L1L2</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span><span class="kt">float</span> <span class="n">l1</span><span class="p">,</span><span class="kt">float</span> <span class="n">l2</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">L1</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.00001</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 </div>
 

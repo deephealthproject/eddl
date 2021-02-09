@@ -322,7 +322,7 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl12CenteredCropE5layer6vectorIiEbf6string">
 <span id="_CPPv3N4eddl12CenteredCropE5layer6vectorIiEbf6string"></span><span id="_CPPv2N4eddl12CenteredCropE5layer6vectorIiEbf6string"></span><span id="eddl::CenteredCrop__layer.vector:i:.b.float.string"></span><span class="target" id="namespaceeddl_1a98041d0a78f0c9925dd3cfbc12e82d66"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CenteredCrop</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>size</em>, bool <em>reshape</em> = true, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12CenteredCropE5layer6vectorIiEbf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Crops the given image at the center with size (width, height). </p>
+<dd><p>Crops the given image at the center with size <code class="docutils literal notranslate"><span class="pre">(width,</span> <span class="pre">height)</span></code>. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Output of center crop transformation </p>
 </dd>
@@ -384,7 +384,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">from_coords</span></code>: Vector (top, left) coordinates </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">to_coords</span></code>: Vector (bottom, right) coordinates </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirrror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirror”, “reflect”, “wrap”, “original”) </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the rotated image, it is used for all channels respectively </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
@@ -453,7 +453,7 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl9GrayscaleE5layer6string">
 <span id="_CPPv3N4eddl9GrayscaleE5layer6string"></span><span id="_CPPv2N4eddl9GrayscaleE5layer6string"></span><span id="eddl::Grayscale__layer.string"></span><span class="target" id="namespaceeddl_1a1430da4391416d07e33fb08d434f111a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Grayscale</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9GrayscaleE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Convert image to grayscale.. </p>
+<dd><p>Convert image to grayscale. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Output of grayscale transformation </p>
 </dd>
@@ -500,13 +500,13 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3PadE5layer6vectorIiEf6string">
 <span id="_CPPv3N4eddl3PadE5layer6vectorIiEf6string"></span><span id="_CPPv2N4eddl3PadE5layer6vectorIiEf6string"></span><span id="eddl::Pad__layer.vector:i:.float.string"></span><span class="target" id="namespaceeddl_1a8ee0a3efb874bdd24325fee8108750b6"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Pad</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>padding</em>, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3PadE5layer6vectorIiEf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Pad the given image on all sides with the given “pad” value.. </p>
+<dd><p>Pad the given image on all sides with the given <code class="docutils literal notranslate"><span class="pre">pad</span></code> value. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Padded image </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: Padding on each border. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: Padding on each border </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: pads with a constant value </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
@@ -534,8 +534,8 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">angle</span></code>: In degrees counter clockwise order </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">offset_center</span></code>: Optional center of rotation. Default is the center of the image </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirrror”, “reflect”, “wrap”, “original”) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the rotated image, it is used for all channels respectively. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the rotated image, it is used for all channels respectively </p></li>
 </ul>
 </dd>
 </dl>
@@ -560,8 +560,8 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">new_shape</span></code>: Vector with layer/images desired new shape </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">reshape</span></code>: If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale&lt;100%: scale + padding; scale &gt;100%: crop + scale) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirrror”, “reflect”, “wrap”, “original”) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively </p></li>
 </ul>
 </dd>
 </dl>
@@ -585,8 +585,8 @@
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">shift</span></code>: Vector of maximum absolute fraction for horizontal and vertical translations </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirrror”, “reflect”, “wrap”, “original”) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively </p></li>
 </ul>
 </dd>
 </dl>

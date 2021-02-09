@@ -245,7 +245,7 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7getLossE6string">
 <span id="_CPPv3N4eddl7getLossE6string"></span><span id="_CPPv2N4eddl7getLossE6string"></span><span id="eddl::getLoss__string"></span><span class="target" id="namespaceeddl_1a5018e1a632a81ff9cc8fdc689b3bac0f"></span>Loss *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getLoss</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7getLossE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get Loss by its name. </p>
+<dd><p>Get Loss object by its name. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Selected Loss </p>
 </dd>
@@ -259,8 +259,8 @@
 
 <div class="section" id="mean-squared-error">
 <h2>Mean Squared Error<a class="headerlink" href="#mean-squared-error" title="Permalink to this headline">¶</a></h2>
-<p>Aliases: <code class="docutils literal notranslate"><span class="pre">mean_squared_error</span></code> and <code class="docutils literal notranslate"><span class="pre">mse</span></code>.
-Creates a criterion that measures the mean squared error (squared L2 norm) between each element in the input</p>
+<p>Aliases: <code class="docutils literal notranslate"><span class="pre">mean_squared_error</span></code> and <code class="docutils literal notranslate"><span class="pre">mse</span></code>.</p>
+<p>Creates a criterion that measures the mean squared error (squared L2 norm) between each element in the input</p>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span> <span class="o">=</span> <span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;mean_squared_error&quot;</span><span class="p">);</span>
 </pre></div>
@@ -268,8 +268,8 @@ Creates a criterion that measures the mean squared error (squared L2 norm) betwe
 </div>
 <div class="section" id="binary-cross-entropy">
 <h2>Binary Cross-Entropy<a class="headerlink" href="#binary-cross-entropy" title="Permalink to this headline">¶</a></h2>
-<p>Aliases: <code class="docutils literal notranslate"><span class="pre">binary_cross_entropy</span></code>, and <code class="docutils literal notranslate"><span class="pre">bce</span></code>.
-Creates a criterion that measures the Binary Cross Entropy between the target and the output. Values are encoded as
+<p>Aliases: <code class="docutils literal notranslate"><span class="pre">binary_cross_entropy</span></code>, and <code class="docutils literal notranslate"><span class="pre">bce</span></code>.</p>
+<p>Creates a criterion that measures the Binary Cross Entropy between the target and the output. Values are encoded as
 the probability of the positive class.</p>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span> <span class="o">=</span> <span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;binary_cross_entropy&quot;</span><span class="p">);</span>
@@ -278,8 +278,8 @@ the probability of the positive class.</p>
 </div>
 <div class="section" id="categorical-cross-entropy">
 <h2>Categorical Cross-Entropy<a class="headerlink" href="#categorical-cross-entropy" title="Permalink to this headline">¶</a></h2>
-<p>Aliases: <code class="docutils literal notranslate"><span class="pre">categorical_cross_entropy</span></code>, <code class="docutils literal notranslate"><span class="pre">cce</span></code>, <code class="docutils literal notranslate"><span class="pre">cross_entropy</span></code>, and <code class="docutils literal notranslate"><span class="pre">ce</span></code>.
-Creates a criterion that measures the Categorical Cross Entropy between the target and the output.  Values are encoded as
+<p>Aliases: <code class="docutils literal notranslate"><span class="pre">categorical_cross_entropy</span></code>, <code class="docutils literal notranslate"><span class="pre">cce</span></code>, <code class="docutils literal notranslate"><span class="pre">cross_entropy</span></code>, and <code class="docutils literal notranslate"><span class="pre">ce</span></code>.</p>
+<p>Creates a criterion that measures the Categorical Cross Entropy between the target and the output.  Values are encoded as
 vector of probabilities that sum is equal to one.</p>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span> <span class="o">=</span> <span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;categorical_cross_entropy&quot;</span><span class="p">);</span>

@@ -251,10 +251,9 @@
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">units</span></code>: dimensionality of the output space. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">num_layers</span></code>: Number of RNN layers </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: whether the layer uses a bias vector. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dropout</span></code>: Fraction of the units to drop for the linear transformation of the inputs. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">units</span></code>: Dimensionality of the output space </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">activation</span></code>: Name of the activation function </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Whether the layer uses a bias vector </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">bidirectional</span></code>: Wether the RNN is bidirectional or not. </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
@@ -263,6 +262,11 @@
 </p>
 </dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">RNN</span><span class="p">(</span><span class="n">lE</span><span class="p">,</span><span class="mi">32</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>You can check a full example on <a class="reference internal" href="../usage/advanced.html"><span class="doc">Advanced models</span></a>.</p>
 </div>
 <div class="section" id="gru">
 <h2>GRU<a class="headerlink" href="#gru" title="Permalink to this headline">¶</a></h2>
@@ -284,11 +288,9 @@
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">units</span></code>: dimensionality of the output space. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">num_layers</span></code>: Number of RNN layers </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: whether the layer uses a bias vector. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dropout</span></code>: Fraction of the units to drop for the linear transformation of the inputs. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bidirectional</span></code>: Wether the RNN is bidirectional or not. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">units</span></code>: Dimensionality of the output space </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mask_zeros</span></code>: </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bidirectional</span></code>: Wether the RNN is bidirectional or not </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
 </dd>
@@ -296,6 +298,16 @@
 </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl4LSTME6vectorI5layerEibb6string">
+<span id="_CPPv3N4eddl4LSTME6vectorI5layerEibb6string"></span><span id="_CPPv2N4eddl4LSTME6vectorI5layerEibb6string"></span><span id="eddl::LSTM__vector:layer:.i.b.b.string"></span><span class="target" id="namespaceeddl_1abea61a86507e251cb46335b10ddc7af0"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LSTM</code><span class="sig-paren">(</span>vector&lt;layer&gt; <em>parent</em>, int <em>units</em>, bool <em>mask_zeros</em>, bool <em>bidirectional</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4LSTME6vectorI5layerEibb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="n">lE</span><span class="p">,</span><span class="mi">32</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>You can check a full example on <a class="reference internal" href="../usage/advanced.html"><span class="doc">Advanced models</span></a>.</p>
 </div>
 </div>
 

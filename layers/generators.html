@@ -244,9 +244,20 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl14GaussGeneratorEff6vectorIiE">
 <span id="_CPPv3N4eddl14GaussGeneratorEff6vectorIiE"></span><span id="_CPPv2N4eddl14GaussGeneratorEff6vectorIiE"></span><span id="eddl::GaussGenerator__float.float.vector:i:"></span><span class="target" id="namespaceeddl_1aa91b52e4c1e22113bf409c5fb19ab56c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GaussGenerator</code><span class="sig-paren">(</span>float <em>mean</em>, float <em>stdev</em>, vector&lt;int&gt; <em>size</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14GaussGeneratorEff6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Generates a gaussian noise output (typically used for GANs) with the specified mean and standard deviation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A layer that generates tensors with the specified gaussian distribution. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mean</span></code>: Mean of the gaussian distribution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stdev</span></code>: Standard deviation of the gaussian distribution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: Shape of the output tensor of the layer </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
-<p>Generates a gaussian noise output (typically used for GANs)</p>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">gin</span> <span class="o">=</span> <span class="n">GaussGenerator</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">});</span>
 </pre></div>
@@ -257,9 +268,23 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl16UniformGeneratorEff6vectorIiE">
 <span id="_CPPv3N4eddl16UniformGeneratorEff6vectorIiE"></span><span id="_CPPv2N4eddl16UniformGeneratorEff6vectorIiE"></span><span id="eddl::UniformGenerator__float.float.vector:i:"></span><span class="target" id="namespaceeddl_1a58db34938439ecac9cce1dcfc19ef99c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">UniformGenerator</code><span class="sig-paren">(</span>float <em>low</em>, float <em>high</em>, vector&lt;int&gt; <em>size</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl16UniformGeneratorEff6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Generates a uniform noise output (typically used for GANs) with the specified lower and upper bound values. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A layer that generates tensors with the specified uniform distribution. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">low</span></code>: Lower bound of the uniform distribution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">high</span></code>: Upper bound of the uniform distribution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: Shape of the output tensor of the layer </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
-<p>Generates a uniform noise output (typically used for GANs)</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">gin</span> <span class="o">=</span> <span class="n">UniformGenerator</span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">});</span>
+</pre></div>
+</div>
 </div>
 </div>
 

@@ -269,9 +269,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GlorotNormal</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span><span class="kt">int</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">GlorotNormal</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="glorotuniform">
 <h2>GlorotUniform<a class="headerlink" href="#glorotuniform" title="Permalink to this headline">¶</a></h2>
@@ -293,9 +293,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GlorotUniform</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span><span class="kt">int</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">GlorotUniform</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="randomnormal">
 <h2>RandomNormal<a class="headerlink" href="#randomnormal" title="Permalink to this headline">¶</a></h2>
@@ -318,9 +318,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">RandomNormal</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="kt">float</span> <span class="n">m</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="kt">float</span> <span class="n">s</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">RandomNormal</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="randomuniform">
 <h2>RandomUniform<a class="headerlink" href="#randomuniform" title="Permalink to this headline">¶</a></h2>
@@ -333,8 +333,8 @@
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to initialize </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Mean of the normal distribution to draw samples </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">s</span></code>: Standard deviation of the normal distribution to draw samples </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code>: lower bound of the uniform distribution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max</span></code>: upper bount of the uniform distribution </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">seed</span></code>: Used to seed the random generator </p></li>
 </ul>
 </dd>
@@ -343,9 +343,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">RandomUniform</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="kt">float</span> <span class="n">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="kt">float</span> <span class="n">max</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">RandomUniform</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">-0.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="constant">
 <h2>Constant<a class="headerlink" href="#constant" title="Permalink to this headline">¶</a></h2>
@@ -366,9 +366,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Constant</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="o">=</span><span class="mf">0.1</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="heuniform">
 <h2>HeUniform<a class="headerlink" href="#heuniform" title="Permalink to this headline">¶</a></h2>
@@ -390,9 +390,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">HeUniform</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="kt">int</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">HeUniform</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="henormal">
 <h2>HeNormal<a class="headerlink" href="#henormal" title="Permalink to this headline">¶</a></h2>
@@ -414,9 +414,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="n">HeNormal</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span><span class="kt">int</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">HeNormal</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 </div>
 

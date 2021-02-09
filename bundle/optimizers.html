@@ -268,7 +268,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">adadelta</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rho</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">adadelta</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.000001</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -297,7 +297,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">adam</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_1</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_2</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.000001</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="kt">bool</span> <span class="n">amsgrad</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">adam</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -325,7 +325,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">adagrad</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">adagrad</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.000001</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -353,7 +353,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">adamax</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_2</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">adamax</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">,</span> <span class="mf">0.000001</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -381,7 +381,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">nadam</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_2</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kt">float</span> <span class="n">schedule_decay</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">nadam</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">,</span> <span class="mf">0.0000001</span><span class="p">,</span> <span class="mf">0.004</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -409,7 +409,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">rmsprop</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rho</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -435,7 +435,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">sgd</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span> <span class="o">=</span> <span class="mf">0.01f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">nesterov</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">sgd</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

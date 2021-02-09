@@ -243,7 +243,7 @@
 <h2>Save to file<a class="headerlink" href="#save-to-file" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv421save_net_to_onnx_fileP3Net6string">
-<span id="_CPPv321save_net_to_onnx_fileP3Net6string"></span><span id="_CPPv221save_net_to_onnx_fileP3Net6string"></span><span id="save_net_to_onnx_file__NetP.string"></span><span class="target" id="src_2serialization_2onnx_2eddl__onnx_8h_1a8f247d66e3528791b986284eb208e449"></span>void <code class="sig-name descname">save_net_to_onnx_file</code><span class="sig-paren">(</span>Net *<em>net</em>, string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421save_net_to_onnx_fileP3Net6string" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv321save_net_to_onnx_fileP3Net6string"></span><span id="_CPPv221save_net_to_onnx_fileP3Net6string"></span><span id="save_net_to_onnx_file__NetP.string"></span><span class="target" id="eddl__onnx_8h_1a8f247d66e3528791b986284eb208e449"></span>void <code class="sig-name descname">save_net_to_onnx_file</code><span class="sig-paren">(</span>Net *<em>net</em>, string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421save_net_to_onnx_fileP3Net6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Saves a model with the onnx format in the file path provided. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>(void) </p>
@@ -265,15 +265,16 @@
 <div class="section" id="import-from-file">
 <h2>Import from file<a class="headerlink" href="#import-from-file" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv425import_net_from_onnx_fileNSt6stringEi">
-<span id="_CPPv325import_net_from_onnx_fileNSt6stringEi"></span><span id="_CPPv225import_net_from_onnx_fileNSt6stringEi"></span><span id="import_net_from_onnx_file__ss.i"></span><span class="target" id="src_2serialization_2onnx_2eddl__onnx_8h_1a10914fc0d5452d18468ae6c2aecb4d73"></span>Net *<code class="sig-name descname">import_net_from_onnx_file</code><span class="sig-paren">(</span>std::string <em>path</em>, int <em>mem</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425import_net_from_onnx_fileNSt6stringEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv425import_net_from_onnx_file6stringii">
+<span id="_CPPv325import_net_from_onnx_file6stringii"></span><span id="_CPPv225import_net_from_onnx_file6stringii"></span><span id="import_net_from_onnx_file__string.i.i"></span><span class="target" id="eddl__onnx_8h_1a4dca66f63ce0878101e1e0260043b6b6"></span>Net *<code class="sig-name descname">import_net_from_onnx_file</code><span class="sig-paren">(</span>string <em>path</em>, int <em>mem</em> = 0, int <em>log_level</em> = LOG_LEVEL::INFO<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425import_net_from_onnx_file6stringii" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Imports ONNX Net from file. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Net </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Path to the file where the net in ONNX format is saved </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: (default 0)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: (default 0) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">log_level</span></code>: Available: LOG_LEVEL::{TRACE, DEBUG, INFO, WARN, ERROR, NO_LOGS}. (default LOG_LEVEL::INFO)</p></li>
 </ul>
 </dd>
 </dl>

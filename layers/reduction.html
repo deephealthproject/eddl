@@ -245,11 +245,22 @@
 <div class="section" id="reducemean">
 <h2>ReduceMean<a class="headerlink" href="#reducemean" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl10ReduceMeanE5layerK6vectorIiEb">
-<span id="_CPPv3N4eddl10ReduceMeanE5layerK6vectorIiEb"></span><span id="_CPPv2N4eddl10ReduceMeanE5layerK6vectorIiEb"></span><span id="eddl::ReduceMean__layer.vector:i:C.b"></span><span class="target" id="namespaceeddl_1ab254402d18556248bdfa30fb0353f1ad"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ReduceMean</code><span class="sig-paren">(</span>layer <em>l</em>, <em class="property">const</em> vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10ReduceMeanE5layerK6vectorIiEb" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt id="_CPPv4N4eddl10ReduceMeanE5layer6vectorIiEb">
+<span id="_CPPv3N4eddl10ReduceMeanE5layer6vectorIiEb"></span><span id="_CPPv2N4eddl10ReduceMeanE5layer6vectorIiEb"></span><span id="eddl::ReduceMean__layer.vector:i:.b"></span><span class="target" id="namespaceeddl_1a5b2e00fbf25a490408305197a65f88d4"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ReduceMean</code><span class="sig-paren">(</span>layer <em>l</em>, vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10ReduceMeanE5layer6vectorIiEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Computes the mean of the elements over the given axis. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A ReduceMean Layer. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Axis where to perform the reduction </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keepdims</span></code>: Boolean flag to indicate if original dimensions must be preserved </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
-<p>Reduced mean</p>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ReduceMean</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">1</span><span class="p">},</span> <span class="nb">true</span><span class="p">);</span>
 </pre></div>
@@ -258,20 +269,46 @@
 <div class="section" id="reducevar">
 <h2>ReduceVar<a class="headerlink" href="#reducevar" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl9ReduceVarE5layerK6vectorIiEb">
-<span id="_CPPv3N4eddl9ReduceVarE5layerK6vectorIiEb"></span><span id="_CPPv2N4eddl9ReduceVarE5layerK6vectorIiEb"></span><span id="eddl::ReduceVar__layer.vector:i:C.b"></span><span class="target" id="namespaceeddl_1a0cf669c748cb43383c2de7d581cfc9d0"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ReduceVar</code><span class="sig-paren">(</span>layer <em>l</em>, <em class="property">const</em> vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9ReduceVarE5layerK6vectorIiEb" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt id="_CPPv4N4eddl9ReduceVarE5layer6vectorIiEb">
+<span id="_CPPv3N4eddl9ReduceVarE5layer6vectorIiEb"></span><span id="_CPPv2N4eddl9ReduceVarE5layer6vectorIiEb"></span><span id="eddl::ReduceVar__layer.vector:i:.b"></span><span class="target" id="namespaceeddl_1a62fbf7c6bbc76811e5db75628775c13a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ReduceVar</code><span class="sig-paren">(</span>layer <em>l</em>, vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9ReduceVarE5layer6vectorIiEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Computes the variance of the elements over the given axis. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A ReduceVar Layer. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Axis where to perform the reduction </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keepdims</span></code>: Boolean flag to indicate if original dimensions must be preserved </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
-<p>Reduced variance</p>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ReduceVar</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">1</span><span class="p">},</span> <span class="nb">true</span><span class="p">);</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="reducesum">
 <h2>ReduceSum<a class="headerlink" href="#reducesum" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl9ReduceSumE5layerK6vectorIiEb">
-<span id="_CPPv3N4eddl9ReduceSumE5layerK6vectorIiEb"></span><span id="_CPPv2N4eddl9ReduceSumE5layerK6vectorIiEb"></span><span id="eddl::ReduceSum__layer.vector:i:C.b"></span><span class="target" id="namespaceeddl_1a65445891be18977a6fbb1ed5c725e39c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ReduceSum</code><span class="sig-paren">(</span>layer <em>l</em>, <em class="property">const</em> vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9ReduceSumE5layerK6vectorIiEb" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt id="_CPPv4N4eddl9ReduceSumE5layer6vectorIiEb">
+<span id="_CPPv3N4eddl9ReduceSumE5layer6vectorIiEb"></span><span id="_CPPv2N4eddl9ReduceSumE5layer6vectorIiEb"></span><span id="eddl::ReduceSum__layer.vector:i:.b"></span><span class="target" id="namespaceeddl_1a8d6a6fa1344cc304ea208baee85fde9c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ReduceSum</code><span class="sig-paren">(</span>layer <em>l</em>, vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9ReduceSumE5layer6vectorIiEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Computes the sum of the elements over the given axis. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A ReduceSum Layer. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Axis where to perform the reduction </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keepdims</span></code>: Boolean flag to indicate if original dimensions must be preserved </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
-<p>Reduced sum</p>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ReduceSum</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">1</span><span class="p">},</span> <span class="nb">true</span><span class="p">);</span>
 </pre></div>
@@ -280,11 +317,22 @@
 <div class="section" id="reducemax">
 <h2>ReduceMax<a class="headerlink" href="#reducemax" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl9ReduceMaxE5layerK6vectorIiEb">
-<span id="_CPPv3N4eddl9ReduceMaxE5layerK6vectorIiEb"></span><span id="_CPPv2N4eddl9ReduceMaxE5layerK6vectorIiEb"></span><span id="eddl::ReduceMax__layer.vector:i:C.b"></span><span class="target" id="namespaceeddl_1ae2d553e62bbe33101326e7ca18bc262b"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ReduceMax</code><span class="sig-paren">(</span>layer <em>l</em>, <em class="property">const</em> vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9ReduceMaxE5layerK6vectorIiEb" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt id="_CPPv4N4eddl9ReduceMaxE5layer6vectorIiEb">
+<span id="_CPPv3N4eddl9ReduceMaxE5layer6vectorIiEb"></span><span id="_CPPv2N4eddl9ReduceMaxE5layer6vectorIiEb"></span><span id="eddl::ReduceMax__layer.vector:i:.b"></span><span class="target" id="namespaceeddl_1ab71fa15f71a878e7604474e2894de801"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ReduceMax</code><span class="sig-paren">(</span>layer <em>l</em>, vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9ReduceMaxE5layer6vectorIiEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Computes the maximum of the elements over the given axis. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A ReduceMax Layer. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Axis where to perform the reduction </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keepdims</span></code>: Boolean flag to indicate if original dimensions must be preserved </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
-<p>Reduced max</p>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ReduceMax</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">1</span><span class="p">},</span> <span class="nb">true</span><span class="p">);</span>
 </pre></div>
@@ -293,11 +341,22 @@
 <div class="section" id="reducemin">
 <h2>ReduceMin<a class="headerlink" href="#reducemin" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl9ReduceMinE5layerK6vectorIiEb">
-<span id="_CPPv3N4eddl9ReduceMinE5layerK6vectorIiEb"></span><span id="_CPPv2N4eddl9ReduceMinE5layerK6vectorIiEb"></span><span id="eddl::ReduceMin__layer.vector:i:C.b"></span><span class="target" id="namespaceeddl_1ab304d75c8ac8b7652fb1916952e8dce2"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ReduceMin</code><span class="sig-paren">(</span>layer <em>l</em>, <em class="property">const</em> vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9ReduceMinE5layerK6vectorIiEb" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt id="_CPPv4N4eddl9ReduceMinE5layer6vectorIiEb">
+<span id="_CPPv3N4eddl9ReduceMinE5layer6vectorIiEb"></span><span id="_CPPv2N4eddl9ReduceMinE5layer6vectorIiEb"></span><span id="eddl::ReduceMin__layer.vector:i:.b"></span><span class="target" id="namespaceeddl_1a7b071d25e84b2eace0f4ed4a9af2e86d"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ReduceMin</code><span class="sig-paren">(</span>layer <em>l</em>, vector&lt;int&gt; <em>axis</em>, bool <em>keepdims</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9ReduceMinE5layer6vectorIiEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Computes the minimum of the elements over the given axis. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A ReduceMin Layer. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Axis where to perform the reduction </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keepdims</span></code>: Boolean flag to indicate if original dimensions must be preserved </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
-<p>Reduced min</p>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ReduceMin</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">1</span><span class="p">},</span> <span class="nb">true</span><span class="p">);</span>
 </pre></div>

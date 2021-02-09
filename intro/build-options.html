@@ -249,9 +249,15 @@
 <p>To build EDDL you will need a <code class="docutils literal notranslate"><span class="pre">C++11</span> <span class="pre">compiler</span></code></p>
 <p>If you want to compile with CUDA support, install:</p>
 <ul class="simple">
-<li><p>NVIDIA CUDA 9 or above</p></li>
+<li><p>NVIDIA CUDA 10 or above</p></li>
+<li><p>cuDNN to accelerate primitives (optional)</p></li>
 </ul>
-<p>Also, we highly recommend installing an <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Anaconda</a> environment to manage the external dependencies. You will get a high-quality BLAS library (MKL) and controlled dependency versions regardless of your system.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CUDA 10 and 11 does not support GCC versions later than 8.
+<em>(Ubuntu 20.04 comes with GCC 9.3.0 by default)</em></p>
+</div>
+<p>Also, we highly recommend installing an <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Anaconda</a> environment to manage the external dependencies. You will get controlled dependency versions regardless of your system.</p>
 <p>Once you have <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Anaconda</a> installed, you can create and activate our
 environment by running the following commands <strong>from the source directory</strong>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -f environment.yml
@@ -263,30 +269,31 @@ conda activate eddl
 </pre></div>
 </div>
 <p>If you decide to manually install these dependencies in your system (make sure they are at standard paths):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">cmake</span><span class="o">&gt;=</span><span class="mf">3.9</span><span class="o">.</span><span class="mi">2</span>
-<span class="o">-</span> <span class="n">eigen</span><span class="o">&gt;=</span><span class="mf">3.3</span><span class="o">.</span><span class="mi">7</span>
-<span class="o">-</span> <span class="n">protobuf</span>
-<span class="o">-</span> <span class="n">libprotobuf</span>  <span class="c1"># We need to avoid problems with paths</span>
-<span class="o">-</span> <span class="n">zlib</span>
-<span class="o">-</span> <span class="n">cudatoolkit</span>
-<span class="o">-</span> <span class="n">gtest</span>
-<span class="o">-</span> <span class="n">graphviz</span>  <span class="c1"># Build &amp; Run</span>
-<span class="o">-</span> <span class="n">wget</span>
-<span class="o">-</span> <span class="n">doxygen</span>  <span class="c1"># Docs</span>
-<span class="o">-</span> <span class="n">python</span>
-<span class="o">-</span> <span class="n">pip</span>
-<span class="o">-</span> <span class="n">pip</span><span class="p">:</span>
-<span class="o">-</span> <span class="n">sphinx</span><span class="o">==</span><span class="mf">3.2</span><span class="o">.</span><span class="mi">1</span>
-<span class="o">-</span> <span class="n">sphinx_rtd_theme</span><span class="o">==</span><span class="mf">0.5</span><span class="o">.</span><span class="mi">0</span>
-<span class="o">-</span> <span class="n">sphinx</span><span class="o">-</span><span class="n">tabs</span><span class="o">==</span><span class="mf">1.3</span><span class="o">.</span><span class="mi">0</span>
-<span class="o">-</span> <span class="n">breathe</span><span class="o">==</span><span class="mf">4.22</span><span class="o">.</span><span class="mi">1</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cmake&gt;=3.9.2</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">eigen==3.3.7</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">protobuf==3.11.4</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">libprotobuf==3.11.4</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cudnn==8.0.5.39</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cudatoolkit-dev==10.1.243</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gtest</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">graphviz</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">wget</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">doxygen</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip</span>
+<span class="p p-Indicator">-</span> <span class="nt">pip</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sphinx==3.2.1</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sphinx_rtd_theme==0.5.0</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sphinx-tabs==1.3.0</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">breathe==4.22.1</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>When using <code class="docutils literal notranslate"><span class="pre">apt-get</span></code>, the installed version of the package depends on the distro version (by default).
-This is important to known, because for instance, in Ubuntu 18.04 <code class="docutils literal notranslate"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">libeigen3-dev</span></code>
-installs Eigen 3.3.4-4, when the EDDL needs Eigen 3.3.7.</p>
+<ul class="simple">
+<li><p>You can double-check your dependency and versions using this reference <cite>conda list</cite> file: <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/develop/docs/markdown/bundle/requirements.txt">Requirements</a></p></li>
+<li><p>When using <code class="docutils literal notranslate"><span class="pre">apt-get</span></code>, the installed version of the package depends on the distro version (by default). This is important to known, because for instance, on Ubuntu 18.04 <code class="docutils literal notranslate"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">libeigen3-dev</span></code> installs Eigen 3.3.4-4, when the EDDL needs Eigen 3.3.7.</p></li>
+</ul>
 </div>
 </div>
 <div class="section" id="build-and-optimization">
@@ -294,10 +301,10 @@ installs Eigen 3.3.4-4, when the EDDL needs Eigen 3.3.7.</p>
 <div class="section" id="build">
 <h3>Build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h3>
 <p>To build the EDDL, you will need a recent version of cmake. Then, run the following commands from the source directory:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">build</span>
-<span class="n">cd</span> <span class="n">build</span>
-<span class="n">cmake</span> <span class="o">..</span>
-<span class="n">make</span> <span class="n">install</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build/
+<span class="nb">cd</span> build/
+cmake ..
+make install
 </pre></div>
 </div>
 <div class="admonition note">
@@ -307,8 +314,8 @@ installs Eigen 3.3.4-4, when the EDDL needs Eigen 3.3.7.</p>
 </div>
 <div class="section" id="backend-support">
 <h3>Backend support<a class="headerlink" href="#backend-support" title="Permalink to this headline">¶</a></h3>
-<p>You can choose the hardware for which the EDDL will be compiled. By default it is compile for <code class="docutils literal notranslate"><span class="pre">GPU</span></code>, and if it is
-not found (or CUDA), it is automatically disabled so that it can run of CPU (although a cmake message will be prompted).</p>
+<p>You can choose the hardware for which the EDDL will be compiled. By default it is compiled for <code class="docutils literal notranslate"><span class="pre">GPU</span></code> but if it is not
+not found (or CUDA), the EDDL will automatically fallback to CPU.</p>
 <ul class="simple">
 <li><p><strong>CPU support:</strong> If you want to compile it for CPU, use the following cmake option:</p></li>
 </ul>
@@ -317,27 +324,35 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Backup option for when there is no GPU, or CUDA is not found.</p>
+<p>Backup option when cuDNN or CUDA is not found</p>
 </div>
 <ul class="simple">
-<li><p><strong>GPU (CUDA) support:</strong> If you have CUDA installed, the EDDL will automatically be compiled for GPU. Additionally, you can force it’s use with the following cmake option:</p></li>
+<li><p><strong>GPU (CUDA) support:</strong> If you want to compile it for GPU (CUDA), use the following cmake option:</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_TARGET<span class="o">=</span>GPU
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Default option with fallback to CPU</p>
+<p>Fallback to CPU.
+To use a specific CUDA version you only need to specify the NVCC location: <code class="docutils literal notranslate"><span class="pre">-DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc</span></code></p>
 </div>
 <ul class="simple">
-<li><p><strong>FPGA support:</strong> If available, you can build EDDL with FPGA support using the following cmake option:</p></li>
+<li><p><strong>GPU (cuDNN) support:</strong> If you want to compile it for GPU (cuDNN), use the following cmake option:</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_TARGET<span class="o">=</span>FPGA
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_TARGET<span class="o">=</span>CUDNN
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Not yet implemented</p>
+<p>Enabled by default. If cuDNN is not installed, we will fallback to GPU (CUDA), or to CPU if CUDA is not installed.
+To use a specific CUDA version you only need to specify the NVCC location: <code class="docutils literal notranslate"><span class="pre">-DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc</span></code></p>
+</div>
+<ul class="simple">
+<li><p><strong>FPGA support:</strong> If you want to compile it for FPGA, use the following cmake option:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_TARGET<span class="o">=</span>FPGA
+</pre></div>
 </div>
 </div>
 <div class="section" id="additional-flags">
@@ -366,40 +381,35 @@ troubleshoot the compilation process (see: <a class="reference internal" href="t
 If using conda, get the path by activating the environment, and typing <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">$CONDA_PREFIX</span></code></p>
 </div>
 <ul class="simple">
-<li><p><strong>C++ compiler:</strong> If you have problems with the default g++ compiler, try setting <code class="docutils literal notranslate"><span class="pre">EIGEN3_INCLUDE_DIR</span></code>, such as:</p></li>
+<li><p><strong>C/C++ compiler:</strong></p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CXX_COMPILER<span class="o">=</span>/path/to/c++compiler  <span class="c1"># /usr/bin/g++-8</span>
+-DCMAKE_C_COMPILER<span class="o">=</span>/path/to/c compiler  <span class="c1"># /usr/bin/gcc-8</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>On MacOS we recommend to use <code class="docutils literal notranslate"><span class="pre">clang</span></code> to avoid problems with OpenMP</p>
+<p>The default compiler in MacOS has problems with OpenMP. We recommend to install either <code class="docutils literal notranslate"><span class="pre">gcc</span></code>  or <code class="docutils literal notranslate"><span class="pre">clang</span></code> using brew.</p>
 </div>
 <ul class="simple">
-<li><p><strong>CUDA compiler:</strong> If cmake have problems finding your cuda compiler, try setting <code class="docutils literal notranslate"><span class="pre">CMAKE_CUDA_COMPILER</span></code>, such as:</p></li>
+<li><p><strong>CUDA compiler:</strong></p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CUDA_COMPILER<span class="o">=</span>/path/to/cuda compiler  <span class="c1">#/usr/bin/nvcc</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can also create a symbolic link: (unix) <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">ln</span> <span class="pre">-s</span> <span class="pre">usr/local/cuda-{VERSION}</span> <span class="pre">/usr/local/cuda</span></code></p>
+<p>This flag is needed to known which CUDA Toolkit/cuDNN the user wants to use. By default cmake looks in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
 </div>
 <ul class="simple">
-<li><p><strong>CUDA host compiler:</strong> If cmake have problems finding your cuda host compiler, try setting <code class="docutils literal notranslate"><span class="pre">CMAKE_CUDA_COMPILER</span></code>, such as:</p></li>
+<li><p><strong>CUDA host compiler:</strong></p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CUDA_HOST_COMPILER<span class="o">=</span>/path/to/cuda compiler  <span class="c1"># /usr/bin/g++-8</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CUDA_HOST_COMPILER<span class="o">=</span>/path/to/host compiler  <span class="c1"># /usr/bin/g++-8</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>You can also create a symbolic link: (unix) <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">ln</span> <span class="pre">-s</span> <span class="pre">usr/local/cuda-{VERSION}</span> <span class="pre">/usr/local/cuda</span></code></p>
-</div>
-<ul class="simple">
-<li><p><strong>CUDA Toolkit:</strong> If CMake is unable to find CUDA automatically, try setting <code class="docutils literal notranslate"><span class="pre">CUDA_TOOLKIT_ROOT_DIR</span></code>, such as:</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCUDA_TOOLKIT_ROOT_DIR<span class="o">=</span>/path/to/cuda   <span class="c1"># /usr/local/cuda-11.1</span>
-</pre></div>
 </div>
 <ul class="simple">
 <li><p><strong>Eigen3:</strong> At the core of many numerical operations, we use <a class="reference external" href="http://eigen.tuxfamily.org/index.php?title=Main_Page">Eigen3</a>. If CMake is unable to find Eigen3 automatically, try setting <code class="docutils literal notranslate"><span class="pre">Eigen3_DIR</span></code>, such as:</p></li>
@@ -415,7 +425,8 @@ If using conda, get the path by activating the environment, and typing <code cla
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Enabled by default</p>
+<p>Enabled by default.
+The default compiler in MacOS has problems with OpenMP. We recommend to install either <code class="docutils literal notranslate"><span class="pre">gcc</span></code>  or <code class="docutils literal notranslate"><span class="pre">clang</span></code> using brew.</p>
 </div>
 <ul class="simple">
 <li><p><strong>Use HPC:</strong> To enable/disabled HPC flags, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_HPC</span></code>, such as:</p></li>
@@ -451,20 +462,6 @@ that might cause some units tests to fail due to numerical errors (minor deviati
 The flag <code class="docutils literal notranslate"><span class="pre">BUILD_HCP</span></code> needs to be disabled. If not, some tests might not pass due to numerical errors.</p>
 </div>
 <ul class="simple">
-<li><p><strong>Use local gtest:</strong> Uses the local copy of the gtest repository as fail-safe. Ignored if using superbuild.</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DUSE_LOCAL_GTEST<span class="o">=</span>ON
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Enabled by default.</p>
-<p>Why this? Because the Google C++ Testing Framework uses conditional compilation for some things.
-Because of the C++ “One Definition Rule”, gtest must be compiled with exactly the same flags as
-your C++ code under test. Therefore, to avoid or fix potential problems, we have provided you with
-this flag in advance.</p>
-</div>
-<ul class="simple">
 <li><p><strong>Build examples:</strong> To compile the examples, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_EXAMPLES</span></code>, such as:</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_EXAMPLES<span class="o">=</span>ON
@@ -475,17 +472,7 @@ this flag in advance.</p>
 <p>Enabled by default</p>
 </div>
 <ul class="simple">
-<li><p><strong>Build tests:</strong> To compile the tests, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_TESTS</span></code>, such as:</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_TESTS<span class="o">=</span>ON
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Enabled by default</p>
-</div>
-<ul class="simple">
-<li><p><strong>Build shared library:</strong> To compile the EDDL as a shared library, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_SHARED_LIBS</span></code>, such as:</p></li>
+<li><p><strong>Build shared library:</strong> To compile the EDDL as a shared library:</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_SHARED_LIBS<span class="o">=</span>ON
 </pre></div>
@@ -495,7 +482,7 @@ this flag in advance.</p>
 <p>Enabled by default</p>
 </div>
 <ul class="simple">
-<li><p><strong>Superbuild:</strong> To let the EDDL manage its dependencies automatically, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_SUPERBUILD</span></code>:</p></li>
+<li><p><strong>Superbuild:</strong> To let the EDDL manage its dependencies automatically:</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_SUPERBUILD<span class="o">=</span>ON
 </pre></div>

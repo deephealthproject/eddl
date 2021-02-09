@@ -117,7 +117,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Convolutions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#conv1d">Conv1D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#conv2d">Conv2D</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pointwise-convolution">Pointwise Convolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conv3d">Conv3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pointwise-convolution-2d">Pointwise Convolution 2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#d-upsampling">2D Upsampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convolutional-transpose">Convolutional Transpose</a></li>
 </ul>
@@ -254,10 +255,10 @@
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: Vector of 1 integers, specifying the height and width of the 2D convolution window. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: Vector of 1 integers, specifying the height and width of the 2D convolution window </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Vector of 1 integers, specifying the strides of the convolution along the height and width </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “none”, “valid” or “same” </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code>: Number of blocked connections from input channels to output channels </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: Vector of 1 integers, specifying the dilation rate to use for dilated convolution </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
@@ -268,15 +269,15 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">});</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="conv2d">
 <h2>Conv2D<a class="headerlink" href="#conv2d" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl4ConvE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string">
-<span id="_CPPv3N4eddl4ConvE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl4ConvE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="eddl::Conv__layer.i.vector:i:CR.vector:i:CR.string.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1a33316d05c2d6a103568dc4d49ab10e81"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Conv</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, string <em>padding</em> = &quot;same&quot;, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4ConvE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N4eddl6Conv2DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string">
+<span id="_CPPv3N4eddl6Conv2DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl6Conv2DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="eddl::Conv2D__layer.i.vector:i:CR.vector:i:CR.string.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1affbcb8cd32fae965f6d8620dbcee7e5e"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Conv2D</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, string <em>padding</em> = &quot;same&quot;, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6Conv2DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>2D Convolution layer. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Convolution layer </p>
@@ -284,10 +285,10 @@
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: Vector of 2 integers, specifying the height and width of the 2D convolution window. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: Vector of 2 integers, specifying the height and width of the 2D convolution window </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Vector of 2 integers, specifying the strides of the convolution along the height and width </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “none”, “valid” or “same” </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code>: Number of blocked connections from input channels to output channels </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: Vector of 2 integers, specifying the dilation rate to use for dilated convolution </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
@@ -298,16 +299,46 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="pointwise-convolution">
-<h2>Pointwise Convolution<a class="headerlink" href="#pointwise-convolution" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="conv3d">
+<h2>Conv3D<a class="headerlink" href="#conv3d" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl13PointwiseConvE5layeriRK6vectorIiEbiRK6vectorIiE6string">
-<span id="_CPPv3N4eddl13PointwiseConvE5layeriRK6vectorIiEbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl13PointwiseConvE5layeriRK6vectorIiEbiRK6vectorIiE6string"></span><span id="eddl::PointwiseConv__layer.i.vector:i:CR.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1a4ca0c85796cef4ba1fde360339dd9d55"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">PointwiseConv</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl13PointwiseConvE5layeriRK6vectorIiEbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Pointwise convolution. </p>
+<dt id="_CPPv4N4eddl6Conv3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string">
+<span id="_CPPv3N4eddl6Conv3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl6Conv3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="eddl::Conv3D__layer.i.vector:i:CR.vector:i:CR.string.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1a5721267bdc59733cf5f205ea7387d8f0"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Conv3D</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1, 1}, string <em>padding</em> = &quot;same&quot;, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6Conv3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>3D Convolution layer. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Convolution layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: Vector of 2 integers, specifying the height and width of the 2D convolution window </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Vector of 2 integers, specifying the strides of the convolution along the height and width </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “none”, “valid” or “same” </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code>: Number of blocked connections from input channels to output channels </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: Vector of 2 integers, specifying the dilation rate to use for dilated convolution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Work in progress</strong>. Not yet implemented.</p>
+</div>
+</div>
+<div class="section" id="pointwise-convolution-2d">
+<h2>Pointwise Convolution 2D<a class="headerlink" href="#pointwise-convolution-2d" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl15PointwiseConv2DE5layeriRK6vectorIiEbiRK6vectorIiE6string">
+<span id="_CPPv3N4eddl15PointwiseConv2DE5layeriRK6vectorIiEbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl15PointwiseConv2DE5layeriRK6vectorIiEbiRK6vectorIiE6string"></span><span id="eddl::PointwiseConv2D__layer.i.vector:i:CR.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1acf765936e109370e8e6c14c30879d4fa"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">PointwiseConv2D</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl15PointwiseConv2DE5layeriRK6vectorIiEbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Pointwise 2D convolution. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Convolution layer </p>
 </dd>
@@ -315,7 +346,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Vector of 2 integers, specifying the strides of the convolution along the height and width </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code>: Number of blocked connections from input channels to output channels </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: Vector of 2 integers, specifying the dilation rate to use for dilated convolution </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
@@ -326,15 +357,15 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">PointwiseConv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">PointwiseConv2D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="d-upsampling">
 <h2>2D Upsampling<a class="headerlink" href="#d-upsampling" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl10UpSamplingE5layerRK6vectorIiE6string6string">
-<span id="_CPPv3N4eddl10UpSamplingE5layerRK6vectorIiE6string6string"></span><span id="_CPPv2N4eddl10UpSamplingE5layerRK6vectorIiE6string6string"></span><span id="eddl::UpSampling__layer.vector:i:CR.string.string"></span><span class="target" id="namespaceeddl_1ad41b26a319f9f9b471742050aa9a92ea"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">UpSampling</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>size</em>, string <em>interpolation</em> = &quot;nearest&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10UpSamplingE5layerRK6vectorIiE6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N4eddl12UpSampling2DE5layerRK6vectorIiE6string6string">
+<span id="_CPPv3N4eddl12UpSampling2DE5layerRK6vectorIiE6string6string"></span><span id="_CPPv2N4eddl12UpSampling2DE5layerRK6vectorIiE6string6string"></span><span id="eddl::UpSampling2D__layer.vector:i:CR.string.string"></span><span class="target" id="namespaceeddl_1adff6c2bedae54264b004a6cbc15c95d3"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">UpSampling2D</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>size</em>, string <em>interpolation</em> = &quot;nearest&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12UpSampling2DE5layerRK6vectorIiE6string6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Upsampling layer. </p>
 <p>Identical to the <code class="docutils literal notranslate"><span class="pre">scale</span></code> transformation, the only difference is that <code class="docutils literal notranslate"><span class="pre">upsampling</span></code> repeats its rows/columns <em>n</em> times, while scaling uses a proportion.</p>
 <p><dl class="simple">
@@ -343,7 +374,7 @@
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: Vector of 2 integers. The upsampling factors for rows and columns </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">interpolation</span></code>: A string, one of nearest or bilinear </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interpolation</span></code>: A string, one of “nearest” or “bilinear” </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
 </dd>
@@ -356,15 +387,15 @@
 <p>In future versions this function will call <code class="docutils literal notranslate"><span class="pre">scale</span></code> instead of <code class="docutils literal notranslate"><span class="pre">repeat</span></code></p>
 </div>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">UpSampling</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">UpSampling2D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="convolutional-transpose">
 <h2>Convolutional Transpose<a class="headerlink" href="#convolutional-transpose" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl5ConvTE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string">
-<span id="_CPPv3N4eddl5ConvTE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string"></span><span id="_CPPv2N4eddl5ConvTE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string"></span><span id="eddl::ConvT__layer.i.vector:i:CR.vector:i:CR.string.vector:i:CR.vector:i:CR.b.string"></span><span class="target" id="namespaceeddl_1a6edb080aca0f0791fd8ab86205a3b063"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ConvT</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>output_padding</em>, string <em>padding</em> = &quot;same&quot;, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, bool <em>use_bias</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ConvTE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string">
+<span id="_CPPv3N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string"></span><span id="_CPPv2N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string"></span><span id="eddl::ConvT2D__layer.i.vector:i:CR.vector:i:CR.string.vector:i:CR.vector:i:CR.b.string"></span><span class="target" id="namespaceeddl_1a54715a91e808e82da09fac8e201add38"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ConvT2D</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>output_padding</em>, string <em>padding</em> = &quot;same&quot;, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, bool <em>use_bias</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Transposed convolution layer (sometimes called Deconvolution). </p>
 <p>The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.</p>
 <p><dl class="simple">
@@ -372,14 +403,14 @@
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: the dimensionality of the output space (i.e. the number of output filters in the convolution). </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: the height and width of the 2D convolution window. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">output_padding</span></code>: the amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: one of “valid” or “same” </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: the dilation rate to use for dilated convolution. Spacing between kernel elements. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: the strides of the convolution along the height and width. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: The dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: The height and width of the 2D convolution window </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_padding</span></code>: The amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “valid” or “same” </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: The dilation rate to use for dilated convolution. Spacing between kernel elements </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: The strides of the convolution along the height and width </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
 </dd>
 </dl>
@@ -388,8 +419,7 @@
 
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><strong>Not implemented yet</strong></p>
-<p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#convolutional-layers">https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#convolutional-layers</a></p>
+<p><strong>Work in progress</strong>. Not yet implemented.</p>
 </div>
 </div>
 </div>

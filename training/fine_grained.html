@@ -147,9 +147,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#clamp">clamp</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#compute-loss">compute_loss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#compute-metric">compute_metric</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#getloss">getLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#newloss">newloss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#getmetric">getMetric</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#newmetric">newmetric</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#detach">detach</a></li>
 </ul>
@@ -456,6 +454,10 @@
 </p>
 </dd></dl>
 
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">set_mode</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// Test model</span>
+<span class="n">set_mode</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// Train model</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="reset-loss">
 <h2>reset_loss<a class="headerlink" href="#reset-loss" title="Permalink to this headline">¶</a></h2>
@@ -467,7 +469,7 @@
 <dt><strong>Return</strong></dt><dd><p>(void) </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
 </ul>
 </dd>
 </dl>
@@ -481,42 +483,6 @@
 </div>
 <div class="section" id="forward">
 <h2>forward<a class="headerlink" href="#forward" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7forwardE5model6vectorIP5LayerE">
-<span id="_CPPv3N4eddl7forwardE5model6vectorIP5LayerE"></span><span id="_CPPv2N4eddl7forwardE5model6vectorIP5LayerE"></span><span id="eddl::forward__model.vector:LayerP:"></span><span class="target" id="namespaceeddl_1a3f899b918bb8d7fe9f6106e26fb7ec68"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>m</em>, vector&lt;Layer*&gt; <em>in</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7forwardE5model6vectorIP5LayerE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Computes the gradient of the model through the forward graph using the layers in the provided vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of Layer pointers </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7forwardE5model6vectorIP6TensorE">
-<span id="_CPPv3N4eddl7forwardE5model6vectorIP6TensorE"></span><span id="_CPPv2N4eddl7forwardE5model6vectorIP6TensorE"></span><span id="eddl::forward__model.vector:TensorP:"></span><span class="target" id="namespaceeddl_1af1abb92c8c91048165b16ff87bd79574"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>m</em>, vector&lt;Tensor*&gt; <em>in</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7forwardE5model6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Computes the gradient of the model through the forward graph using the tensors in the provided vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of Tensor pointers </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">forward</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">xbatch</span><span class="p">});</span>
-</pre></div>
-</div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7forwardE5model">
 <span id="_CPPv3N4eddl7forwardE5model"></span><span id="_CPPv2N4eddl7forwardE5model"></span><span id="eddl::forward__model"></span><span class="target" id="namespaceeddl_1af7baefaa6c899a70ca533c1daa64bd5c"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7forwardE5model" title="Permalink to this definition">¶</a><br /></dt>
@@ -532,22 +498,16 @@
 </p>
 </dd></dl>
 
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7forwardE5modeli">
-<span id="_CPPv3N4eddl7forwardE5modeli"></span><span id="_CPPv2N4eddl7forwardE5modeli"></span><span id="eddl::forward__model.i"></span><span class="target" id="namespaceeddl_1a9946d015753d049bbea7f3cda77fda2c"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>m</em>, int <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7forwardE5modeli" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Computes the gradient of the model through the forward graph and resizes the batch size of the model to <code class="docutils literal notranslate"><span class="pre">b</span></code>. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code>: New batch size </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">forward</span><span class="p">(</span><span class="n">net</span><span class="p">);</span>
 
+<span class="c1">//Other ways</span>
+
+<span class="n">forward</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">layers</span><span class="p">);</span> <span class="c1">// Using vector of layers ``layers``</span>
+<span class="n">forward</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">tensors</span><span class="p">);</span> <span class="c1">// Using vector of tensors ``tensors``</span>
+<span class="n">forward</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span> <span class="c1">// Forward resizing the batch size to 10</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="zerograds">
 <h2>zeroGrads<a class="headerlink" href="#zerograds" title="Permalink to this headline">¶</a></h2>
@@ -559,7 +519,7 @@
 <dt><strong>Return</strong></dt><dd><p>(void) </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
 </ul>
 </dd>
 </dl>
@@ -573,25 +533,6 @@
 </div>
 <div class="section" id="backward">
 <h2>backward<a class="headerlink" href="#backward" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl8backwardE5model6vectorIP6TensorE">
-<span id="_CPPv3N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="_CPPv2N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="eddl::backward__model.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a9deaeecde0f468cff06ca6d12fc98d11"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>model <em>m</em>, vector&lt;Tensor*&gt; <em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8backwardE5model6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Computes the gradient by passing its argument (1x1 unit tensor by default) through the backward graph. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">target</span></code>: Targets </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">backward</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">ybatch</span><span class="p">});</span>
-</pre></div>
-</div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl8backwardE5model">
 <span id="_CPPv3N4eddl8backwardE5model"></span><span id="_CPPv2N4eddl8backwardE5model"></span><span id="eddl::backward__model"></span><span class="target" id="namespaceeddl_1ac821a1edd54a2d188847071c769d524c"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>model <em>net</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8backwardE5model" title="Permalink to this definition">¶</a><br /></dt>
@@ -607,6 +548,30 @@
 </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl8backwardE5model6vectorIP6TensorE">
+<span id="_CPPv3N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="_CPPv2N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="eddl::backward__model.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a9deaeecde0f468cff06ca6d12fc98d11"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>model <em>m</em>, vector&lt;Tensor*&gt; <em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8backwardE5model6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Computes the gradient by passing its argument (1x1 unit tensor by default) through the backward graph. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">target</span></code>: Targets </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">backward</span><span class="p">(</span><span class="n">net</span><span class="p">);</span>
+
+<span class="c1">// Other ways</span>
+
+<span class="n">backward</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">target</span><span class="p">);</span> <span class="c1">// Using vector of tensors</span>
+<span class="n">backward</span><span class="p">(</span><span class="n">loss</span><span class="p">);</span> <span class="c1">// Computes gradients on the model associated to the loss object passed.</span>
+</pre></div>
+</div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl8backwardE4loss">
 <span id="_CPPv3N4eddl8backwardE4loss"></span><span id="_CPPv2N4eddl8backwardE4loss"></span><span id="eddl::backward__loss"></span><span class="target" id="namespaceeddl_1a5ada83693011dff18ecb06a1c9071f27"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>loss <em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8backwardE4loss" title="Permalink to this definition">¶</a><br /></dt>
@@ -655,7 +620,7 @@
 <dt><strong>Return</strong></dt><dd><p>(void) </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">batch</span></code>: Batch number </p></li>
 </ul>
 </dd>
@@ -687,8 +652,7 @@
 </p>
 </dd></dl>
 
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">clamp</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span><span class="kt">float</span> <span class="n">min</span><span class="p">,</span><span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">clamp</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">);</span> <span class="c1">// Clamps all the weights of the model between 0.5 and 0.7</span>
 </pre></div>
 </div>
 </div>
@@ -740,24 +704,18 @@
 </p>
 </dd></dl>
 
-</div>
-<div class="section" id="getloss">
-<h2>getLoss<a class="headerlink" href="#getloss" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl7getLossE6string">
-<span id="_CPPv3N4eddl7getLossE6string"></span><span id="_CPPv2N4eddl7getLossE6string"></span><span id="eddl::getLoss__string"></span><span class="target" id="namespaceeddl_1a5018e1a632a81ff9cc8fdc689b3bac0f"></span>Loss *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getLoss</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Get Loss by its name. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Selected Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: Loss name/type </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span> <span class="n">mse</span> <span class="o">=</span> <span class="n">newloss</span><span class="p">(</span><span class="n">mse_loss</span><span class="p">,</span> <span class="p">{</span><span class="n">out</span><span class="p">,</span> <span class="n">target</span><span class="p">},</span> <span class="s">&quot;mse_loss&quot;</span><span class="p">);</span>
+<span class="kt">float</span> <span class="n">my_loss</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
 
+<span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">num_batches</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">next_batch</span><span class="p">({</span><span class="n">x_train</span><span class="p">},{</span><span class="n">batch</span><span class="p">});</span>
+    <span class="n">zeroGrads</span><span class="p">(</span><span class="n">net</span><span class="p">);</span>
+    <span class="n">forward</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">batch</span><span class="p">});</span>
+    <span class="n">my_loss</span> <span class="o">+=</span> <span class="n">compute_metric</span><span class="p">(</span><span class="n">mse</span><span class="p">)</span><span class="o">/</span><span class="n">batch_size</span><span class="p">;</span>
+    <span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="newloss">
 <h2>newloss<a class="headerlink" href="#newloss" title="Permalink to this headline">¶</a></h2>
@@ -804,24 +762,6 @@
 <span class="n">loss</span> <span class="n">mse</span> <span class="o">=</span> <span class="n">newloss</span><span class="p">(</span><span class="n">mse_loss</span><span class="p">,</span> <span class="p">{</span><span class="n">out</span><span class="p">,</span> <span class="n">target</span><span class="p">},</span> <span class="s">&quot;mse_loss&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="getmetric">
-<h2>getMetric<a class="headerlink" href="#getmetric" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl9getMetricE6string">
-<span id="_CPPv3N4eddl9getMetricE6string"></span><span id="_CPPv2N4eddl9getMetricE6string"></span><span id="eddl::getMetric__string"></span><span class="target" id="namespaceeddl_1a476f62895d1b9c0fca0b4bd762df00d0"></span>Metric *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getMetric</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Get Metric by his name. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Selected Metric </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: Metric name/type </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
 </div>
 <div class="section" id="newmetric">
 <h2>newmetric<a class="headerlink" href="#newmetric" title="Permalink to this headline">¶</a></h2>

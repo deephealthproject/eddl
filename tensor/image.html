@@ -257,6 +257,10 @@
             
   <div class="section" id="image-operations">
 <h1>Image operations<a class="headerlink" href="#image-operations" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A practical example of the vast majority of the operations in this page are included in a working example in our <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/examples/tensor/eddl_image.cpp">GitHub respository</a></p>
+</div>
 <div class="section" id="transformations">
 <h2>Transformations<a class="headerlink" href="#transformations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="shift">
@@ -316,6 +320,7 @@
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">angle</span></code>: The rotation angle in degrees. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offset_center</span></code>: The center where to perform the rotation </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Must be one of the following:<ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Constant</span></code>: Input extended by the value in <code class="docutils literal notranslate"><span class="pre">cval</span></code> (v v v v | a b c d | v v v v)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">WrappingMode::Reflect</span></code>: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)</p></li>
@@ -681,6 +686,7 @@
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">height</span></code>: Height of the crop (must be smaller than the original image) </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">width</span></code>: Width of the crop (must be smaller than the original image) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cval</span></code>: </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">keep_size</span></code>: Keep original size </p></li>
 </ul>
 </dd>

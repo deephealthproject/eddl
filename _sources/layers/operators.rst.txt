@@ -19,34 +19,34 @@ Example:
 Subtraction
 ---------------
 
-.. doxygenfunction:: Diff(layer l1, layer l2)
+.. doxygenfunction:: Sub(layer l1, layer l2)
 
 Example:
 
 .. code-block:: c++
 
-   layer l = Diff(l1, l2); // l1 and l2 are layers with the same shape
+   layer l = Sub(l1, l2); // l1 and l2 are layers with the same shape
 
 
 
-.. doxygenfunction:: Diff(layer l1, float k)
-
-Example:
-
-.. code-block:: c++
-
-   l = Diff(l, 0.5);
-
-
-
-.. doxygenfunction:: Diff(float k, layer l1)
-
+.. doxygenfunction:: Sub(layer l1, float k)
 
 Example:
 
 .. code-block:: c++
 
-   l = Diff(0.5, l);
+   l = Sub(l, 0.5);
+
+
+
+.. doxygenfunction:: Sub(float k, layer l1)
+
+
+Example:
+
+.. code-block:: c++
+
+   l = Sub(0.5, l);
    
 
 
@@ -183,12 +183,18 @@ Power
 ---------------
 
 
-.. doxygenfunction:: Pow(layer l1, layer l2)
-
 .. doxygenfunction:: Pow(layer l1, float k)
 
 
+.. code-block:: c++
+   
+   layer l1 = GaussGenerator(0.0, 1, {3, 32, 32});
+   layer l2 = GaussGenerator(0.0, 1, {3, 32, 32});
 
+   layer l = Pow(l1, l2);
+
+   //We can use the constant version for raising a layer to a constant exponent
+   layer l = Pow(l1, 3) 
 
 
 Sqrt
@@ -211,32 +217,32 @@ Addition
 ---------------
 
 
-.. doxygenfunction:: Sum(layer l1, layer l2)
+.. doxygenfunction:: Add(layer l1, layer l2)
 
 Example:
 
 .. code-block:: c++
 
-   layer l = Sum(l1, l2); // l1 and l2 are layers with the same shape
+   layer l = Add(l1, l2); // l1 and l2 are layers with the same shape
 
 
 
-.. doxygenfunction:: Sum(layer l1, float k)
-
-Example:
-
-.. code-block:: c++
-
-   l = Sum(l, 0.5);
-
-
-
-.. doxygenfunction:: Sum(float k, layer l1)
+.. doxygenfunction:: Add(layer l1, float k)
 
 Example:
 
 .. code-block:: c++
 
-   l = Sum(0.5, l);
+   l = Add(l, 0.5);
+
+
+
+.. doxygenfunction:: Add(float k, layer l1)
+
+Example:
+
+.. code-block:: c++
+
+   l = Add(0.5, l);
 
 

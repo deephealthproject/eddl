@@ -256,7 +256,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">momentum</span></code>: Momentum for the moving mean and the moving variance </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Small float added to variance to avoid dividing by zero </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: A boolean value that when set to True, this module has learnable affine parameters </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: If True, this module has learnable affine parameters </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
 </dd>
@@ -275,7 +275,7 @@
 <dt id="_CPPv4N4eddl18LayerNormalizationE5layerfb6string">
 <span id="_CPPv3N4eddl18LayerNormalizationE5layerfb6string"></span><span id="_CPPv2N4eddl18LayerNormalizationE5layerfb6string"></span><span id="eddl::LayerNormalization__layer.float.b.string"></span><span class="target" id="namespaceeddl_1a602ada2bbfb60e2c6833432bffbdc784"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LayerNormalization</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>epsilon</em> = 0.00001f, bool <em>affine</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl18LayerNormalizationE5layerfb6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Layer normalization layer. </p>
-<p>Applies Layer Normalization over a input.</p>
+<p>Applies Layer Normalization over an input.</p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1607.06450">https://arxiv.org/abs/1607.06450</a></p>
 </dd>
@@ -284,7 +284,7 @@
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Value added to the denominator for numerical stability </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: A boolean value that when set to True, this module has learnable affine parameters </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: If True, this module has learnable affine parameters </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
 </dd>
@@ -313,7 +313,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code>: Number of groups in which the channels will be divided </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Value added to the denominator for numerical stability </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: A boolean value that when set to True, this module has learnable affine parameters </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: If True, this module has learnable affine parameters </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
 </dd>

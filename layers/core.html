@@ -115,6 +115,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#embedding">Embedding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reshape">Reshape</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#flatten">Flatten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#squeeze">Squeeze</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unsqueeze">Unsqueeze</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#input">Input</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dropout">Dropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#select">Select</a></li>
@@ -345,6 +347,62 @@
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Flatten</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="squeeze">
+<h2>Squeeze<a class="headerlink" href="#squeeze" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl7SqueezeE5layeri6string">
+<span id="_CPPv3N4eddl7SqueezeE5layeri6string"></span><span id="_CPPv2N4eddl7SqueezeE5layeri6string"></span><span id="eddl::Squeeze__layer.i.string"></span><span class="target" id="namespaceeddl_1a59612ead9fa06fd05efa7487dd2f0f81"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Squeeze</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>axis</em> = -1, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7SqueezeE5layeri6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Dimension of size one is removed at the specified position. (Batch dimension is ignored) </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of reshape operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: if given, the input will be squeezed only in this dimension. Else (-1), squeezes all </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Squeeze all dimensions (ignoring batch)</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Squeeze</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">-1</span><span class="p">);</span>  <span class="c1">// ([B,] 32, 1, 5, 1) =&gt; ([B,] 32, 5)</span>
+
+<span class="c1">// Squeeze specific dimension (ignoring batch)</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Squeeze</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>  <span class="c1">// ([B,] 32, 1, 5, 1) =&gt; ([B,] 32, 1, 5)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unsqueeze">
+<h2>Unsqueeze<a class="headerlink" href="#unsqueeze" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl9UnsqueezeE5layeri6string">
+<span id="_CPPv3N4eddl9UnsqueezeE5layeri6string"></span><span id="_CPPv2N4eddl9UnsqueezeE5layeri6string"></span><span id="eddl::Unsqueeze__layer.i.string"></span><span class="target" id="namespaceeddl_1abef163fbfbdc032d320e2913c312a388"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Unsqueeze</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>axis</em> = 0, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9UnsqueezeE5layeri6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Dimension of size one is inserted at the specified position. (Batch dimension is ignored) </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of reshape operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: if given, the input will be unsqueezed only in this dimension </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Unsqueeze dimension (ignoring batch)</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Unsqueeze</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>  <span class="c1">// ([B,] 5) =&gt; ([B,] 1, 5)</span>
+
+<span class="c1">// Unsqueeze dimension (ignoring batch)</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Unsqueeze</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>  <span class="c1">// ([B,] 5) =&gt; ([B,] 5, 1)</span>
 </pre></div>
 </div>
 </div>

@@ -433,12 +433,20 @@ ldconfig
 <p>It is because NVIDIA does not support all GNU compilers. Each new version of CUDA supports a different range of GNU compilers.
 The solution is to simply use a GNU C++ compiler with a version lower or equal to 8.x. You can do this by:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>// Exporting these aliases to .bashrc
-<span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>gcc-8
-<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>g++-8
+<span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>gcc-7
+<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>g++-7
 
 // Or creating a symbolic link to the CUDA GCC
-sudo ln -s /usr/bin/gcc-8 /usr/local/cuda/bin/gcc
-sudo ln -s /usr/bin/g++-8 /usr/local/cuda/bin/g++
+sudo ln -s /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
+sudo ln -s /usr/bin/g++-7 /usr/local/cuda/bin/g++
+
+// ..or <span class="nb">set</span> the following flags on the cmake <span class="nb">command</span>
+cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> <span class="se">\</span>
+-DBUILD_TARGET<span class="o">=</span>CUDNN <span class="se">\</span>
+-DCMAKE_C_COMPILER<span class="o">=</span>/usr/bin/gcc-7 <span class="se">\</span>
+-DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7 <span class="se">\</span>
+-DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc <span class="se">\</span>
+-DCMAKE_CUDA_HOST_COMPILER<span class="o">=</span>/usr/bin/g++-7 <span class="se">\</span>
 </pre></div>
 </div>
 <p>Anyway, it is convenient to check which is the maximum GCC version that your CUDA supports.</p>
@@ -450,12 +458,10 @@ sudo ln -s /usr/bin/g++-8 /usr/local/cuda/bin/g++
 <div class="section" id="clion">
 <h3>CLion<a class="headerlink" href="#clion" title="Permalink to this headline">¶</a></h3>
 <p>I usually have to set additional flags in order to make CLion able to run the EDDL smoothly:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_TARGET<span class="o">=</span>GPU
--DCMAKE_C_COMPILER<span class="o">=</span>/usr/bin/gcc-8
--DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-8
--DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/bin/nvcc
--DCMAKE_CUDA_HOST_COMPILER<span class="o">=</span>/usr/bin/g++-8
--DCUDA_TOOLKIT_ROOT_DIR<span class="o">=</span>/usr/local/cuda-11.1
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_TARGET<span class="o">=</span>CUDNN
+-DCMAKE_C_COMPILER<span class="o">=</span>/usr/bin/gcc-7
+-DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7
+-DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc
 </pre></div>
 </div>
 <p>If you want to run it using the conda environment, add:</p>
@@ -463,7 +469,7 @@ sudo ln -s /usr/bin/g++-8 /usr/local/cuda/bin/g++
 -DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/dir
 
 <span class="c1"># Note:</span>
-To get the path, activate the environment a type:
+To get the path, activate the environment and type:
 <span class="nb">echo</span> <span class="nv">$CONDA_PREFIX</span>
 </pre></div>
 </div>
