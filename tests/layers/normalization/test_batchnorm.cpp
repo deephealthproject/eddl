@@ -1,15 +1,15 @@
-#include <gtest/gtest.h>
-#include <string>
-
-#include "eddl/tensor/tensor.h"
-#include "eddl/tensor/nn/tensor_nn.h"
-#include "eddl/descriptors/descriptors.h"
-#include "eddl/layers/normalization/layer_normalization.h"
-
-using namespace std;
-
-
-TEST(NormalizationTestSuite, batchnorm){
+//#include <gtest/gtest.h>
+//#include <string>
+//
+//#include "eddl/tensor/tensor.h"
+//#include "eddl/tensor/nn/tensor_nn.h"
+//#include "eddl/descriptors/descriptors.h"
+//#include "eddl/layers/normalization/layer_normalization.h"
+//
+//using namespace std;
+//
+//
+//TEST(NormalizationTestSuite, batchnorm){
 //
 //    // Image
 //    auto *ptr_img = new float[1*3*5*5]{-0.66, 1.88, -0.09, 2.00, -1.26,
@@ -80,27 +80,15 @@ TEST(NormalizationTestSuite, batchnorm){
 ////
 ////
 ////
-////BN_forward(t_image, t_gamma, t_beta, t_mean, t_var,0.1f,10e-5, TRMODE);
-//
-//
-//// Andres
-//    tensorNN::BatchNormForward(t_image, t_output, t_opa,
-//                               t_mean_acc, t_var_acc,
-//                               t_gamma, t_beta,
-//                               t_mean, t_var, TRMODE==TRMODE, 1e-5, 0.1f);
-//
-//
-//    t_output->print(3);
-//
-//    cout << "Mean" << endl;
-//    t_mean_ref->print(3);
-//    t_mean->print(3);
-//
-//    cout << "Var" << endl;
-//    t_var_ref->print(3);
-//    t_var->print(3);
-//    ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd_ref, t_output, 10e-2f));
-//    ASSERT_TRUE((bool) Tensor::equivalent(t_mean_ref, t_mean, 10e-2f));
-//    ASSERT_TRUE((bool) Tensor::equivalent(t_var_ref, t_var, 10e-2f));
-    int asd = 33;
-}
+////    cout << "Mean" << endl;
+////    t_mean_ref->print(3);
+////    t_mean->print(3);
+////
+////    cout << "Var" << endl;
+////    t_var_ref->print(3);
+////    t_var->print(3);
+////    ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd_ref, t_output, 10e-2f));
+////    ASSERT_TRUE((bool) Tensor::equivalent(t_mean_ref, t_mean, 10e-2f));
+////    ASSERT_TRUE((bool) Tensor::equivalent(t_var_ref, t_var, 10e-2f));
+//    int asd = 33;
+//}
