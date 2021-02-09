@@ -39,17 +39,6 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 ###########################################################################
 
 
-# NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
-if (USE_CUDA OR USE_CUDNN)
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
-            message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8 (DETECTED: ${CMAKE_CXX_COMPILER_VERSION}).
-            Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
-        endif()
-    endif()
-endif()
-
-
 ###########################################################################
 ############################### GET FILES #################################
 ###########################################################################
@@ -209,6 +198,14 @@ if(USE_CUDA OR USE_CUDNN)
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
 #        find_package(CUDAToolkit)
+
+        # NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
+                message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8 (DETECTED: ${CMAKE_CXX_COMPILER_VERSION}).
+        Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
+            endif()
+        endif()
 
         if(USE_CUDNN)
             add_definitions(-DcCUDNN)
