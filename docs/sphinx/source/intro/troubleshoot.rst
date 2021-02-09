@@ -19,20 +19,21 @@ support AVX instructions.
 OpenMP
 ^^^^^^^^
 
-We have noticed several problems with default c++ compiler in Mac OS. If this is your case, we recommend you use
-the `clang` compiler. To do so, you can execute the following commands (or append them to ``.zprofile``):
+On MacOS, the Clang that comes with XCode doesn't support OpenMP. Therefore, we recommend you to install
+the GCC compile so that you can take advatange of OpenMP.
+*(Note: By default, GCC is just a symlink to Clang. more_)*
 
 .. code:: bash
 
-    export CC=/usr/local/opt/llvm/bin/clang
-    export CXX=/usr/local/opt/llvm/bin/clang++
-    export LDFLAGS="-L/usr/local/opt/llvm/lib"
-    export CPPFLAGS="-I/usr/local/opt/llvm/include"
+    # Install the real GCC
+    brew install gcc
 
-If this doesn't fix your problem, try updating CMake.
+    # Add flags to cmake
+    cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+    -DCMAKE_C_COMPILER=/usr/local/Cellar/gcc/10.2.0_3/bin/gcc-10
+    -DCMAKE_CXX_COMPILER=/usr/local/Cellar/gcc/10.2.0_3/bin/g++-10
 
 As a last resort, you can always disable OpenMP and use the EDDL by making use of the cmake flag ``-D BUILD_OPENMP=OFF``
-
 
 
 Undefined symbols for architecture x86_64
@@ -236,7 +237,6 @@ The solution is to simply use a GNU C++ compiler with a version lower or equal t
     -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-7 \
 
 
-
 Anyway, it is convenient to check which is the maximum GCC version that your CUDA supports.
 
 .. code: bash
@@ -284,3 +284,5 @@ If you want to run it using the conda environment, add:
     # Note:
     To get the path, activate the environment and type:
     echo $CONDA_PREFIX
+
+.. _more: https://stackoverflow.com/questions/39979836/using-openmp-with-c11-on-mac-os
