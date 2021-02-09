@@ -134,9 +134,9 @@ if(BUILD_PROTOBUF)
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
 
     # Find libraries (need absolute paths)
-    find_library(Protobuf_LIBRARY protobuf HINTS ${Protobuf_ROOT})
-#    find_library(Protobuf_LIBRARY_DEBUG protobufd HINTS ${Protobuf_ROOT})
-#    find_library(Protobuf_LIBRARY_RELEASE protobuf HINTS ${Protobuf_ROOT})
+    find_library(Protobuf_LIBRARY NAMES protobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(Protobuf_LIBRARY_DEBUG NAMES protobufd HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
 
     # Add libraries
     target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
