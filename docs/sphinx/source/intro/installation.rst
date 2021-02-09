@@ -73,7 +73,19 @@ From source with cmake
 
 You can also install ``EDDL`` from source with cmake.
 
-On Unix platforms, from the source directory:
+.. note::
+
+    **Requirements:**
+
+    * C++ compiler
+
+    * Anaconda or CMake *(if using* ``-D BUILD_SUPERBUILD=ON`` *)*
+
+    * [Optional] CUDA Toolkit 10 or later (to compile for GPU)
+
+       * These versions do not support GCC versions later than 8
+
+    * [Optional] cuDNN to speed up training
 
 
 .. tabs::
@@ -93,7 +105,7 @@ On Unix platforms, from the source directory:
             # Build and install
             mkdir build
             cd build
-            cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX  # -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda
+            cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX  # -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
             make install
 
     .. tab:: MacOS
@@ -120,13 +132,24 @@ See the :doc:`build-options` section for more details about cmake options.
 
 .. note::
 
-    You can ignore ``-DCMAKE_PREFIX_PATH`` and ``-DCMAKE_INSTALL_PREFIX`` but it is a google practice to use them
+    1. You can ignore ``-DCMAKE_PREFIX_PATH`` and ``-DCMAKE_INSTALL_PREFIX`` but it is a good practice to use them
     in order to avoid path conflicts.
 
-    To use a specific CUDA version type: ``-DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda``
+    2. To use a specific CUDA version you only need to specify the NVCC location:
+    ``-DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc``
 
-    If you want to distribute the resulting shared library, you should use the flag
+    3. CUDA 10 and 11 does not support GCC versions later than 8.
+    *(Ubuntu 20.04 comes with GCC 9.3.0 by default, so you might need to force a lower version
+    with:* ``-DCMAKE_CXX_COMPILER``)
+
+    4. If you want to distribute the resulting shared library, you should use the flag
     ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.
+
+    5. If you don't want to install Anaconda_, you can compile it using:
+
+    .. code:: bash
+
+        cmake .. -DBUILD_SUPERBUILD=ON -DBUILD_TARGET=CUDNN -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc -DCMAKE_CXX_COMPILER=/usr/bin/g++-7``
 
 
 Including EDDL in your project
