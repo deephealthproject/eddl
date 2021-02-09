@@ -441,8 +441,8 @@ __global__ void gpu_batchnorm_forward_3(int b, int rc, int rcz, float *input, fl
             float o = (input[p] - m) * v;
             // affine transformation
             if (affine_g != NULL) {
-                output[p] = opa[p] * affine_g[j] + affine_b[j];
-                opa[p] = input[p];
+                opa[p] = o;
+                output[p] = o * affine_g[j] + affine_b[j];
             } else output[p] = o;
         }
     }
@@ -496,8 +496,9 @@ __global__ void gpu_batchnorm_backward_3(int b, int rc, int rcz, float *delta, f
             float o = opa[p] * mean1[j] + mean2[j]; // step 3 & 5
             // opa[p] = o;
             float d = delta[p] - o; // step 6
-            // delta[p] = d / variance[j]; // step 7
-            pdelta[p] += d / variance[j];
+            d = d / variance[j]; // step 7
+            // delta[p] = d;
+            pdelta[p] += d;
         }
     }
 }
