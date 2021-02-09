@@ -301,10 +301,10 @@ void LGRU::backward() {
     // Propagate delta to parent
     // here daux must be delta * (1 - z_t) * tanh'(n_t)
     Tensor::mult2D(daux, 0, Wn_x, 1, parent[0]->delta, 1); // delta * (1 - z_t) * tanh'(n_t) * Wn_x
-    d1->fill_(0.0);
     if (parent.size() > 1) {
         Tensor::mult2D(parent[1]->states[0], 0, Un_h, 0, d1, 0); // should Un_h be transposed?
-    }
+    } else
+        d1->fill_(0.0);
     // here daux must be delta * (1 - z_t) * tanh'(n_t)
     Tensor::sum2D_rowwise(d1, bias_n_t_hidden, d1);
     d2->fill_(0.0);
