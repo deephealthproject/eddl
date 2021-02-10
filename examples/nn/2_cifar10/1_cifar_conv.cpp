@@ -41,7 +41,7 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = testing ? 2 : 100;
+  int epochs = testing ? 2 : 5;
   int batch_size = 100;
   int num_classes = 10;
 
@@ -70,7 +70,7 @@ int main(int argc, char **argv){
   if (use_cpu) {
       cs = CS_CPU();
   } else {
-      cs = CS_GPU({1,1}); // one GPU
+      cs = CS_GPU({1}); // one GPU
       // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
       // cs = CS_CPU();
       // cs = CS_FPGA({1});

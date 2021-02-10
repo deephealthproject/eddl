@@ -21,7 +21,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_SUPERBUILD=ON
+          cmake .. -DBUILD_SUPERBUILD=ON -DBUILD_HPC=OFF -DBUILD_TESTS=ON
           make
       - name: Test
         run: |

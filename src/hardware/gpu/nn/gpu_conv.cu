@@ -106,8 +106,6 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
   int device=D->I->gpu_device;
   cudaSetDevice(device);
-  float alpha = 1.0f;
-  float beta = 0.0f;
 
 #ifndef cCUDNN
   int osize=D->z*D->r*D->c;
@@ -141,6 +139,8 @@ void gpu_conv2D(ConvolDescriptor *D) {
   }
 #else
   // FWD environment
+  float alpha = 1.0f;
+  float beta = 0.0f;
   if (D->cudnn_env_init < 0){
       D->cudnn_env_init = 1;
 

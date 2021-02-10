@@ -175,20 +175,21 @@ public:
     Tensor *delta_hidden;
 
     // Weights and biases of gates: z, r, h
-    Tensor *Wz_hidden, *Wz_x;
-    Tensor *Wr_hidden, *Wr_x;
-    Tensor *Wh_hidden, *Wh_x;
-    Tensor *zn_bias, *rn_bias, *hn_bias, *hn_hidden_bias;
+    Tensor *Uz_h, *Wz_x;
+    Tensor *Ur_h, *Wr_x;
+    Tensor *Un_h, *Wn_x;
+    Tensor *bias_z_t, *bias_r_t, *bias_n_t, *bias_n_t_hidden;
 
     // Gradient tensors
-    Tensor *gWz_hidden, *gWz_x;
-    Tensor *gWr_hidden, *gWr_x;
-    Tensor *gWh_hidden, *gWh_x;
-    Tensor *gzn_bias, *grn_bias, *ghn_bias, *ghn_hidden_bias;
+    Tensor *gUz_h, *gWz_x;
+    Tensor *gUr_h, *gWr_x;
+    Tensor *gUn_h, *gWn_x;
+    Tensor *g_bias_z_t, *g_bias_r_t, *g_bias_n_t, *g_bias_n_t_hidden;
 
     // Intermediate outputs of the cell
-    Tensor *zn, *rn, *hn; // Gates outputs
-    Tensor *rn_hidden, *rn_hidden_2, *zn_hn, *one_minus_zn, *hidden_one_minus_zn; // Gates interoperations
+    Tensor *z_t, *r_t, *n_t; // Gates outputs
+    Tensor *n_t_hidden, *one_minus_z_t; // Gates interoperations
+    //Tensor *r_t_h_t_1; // Temporary tensors for back-propagation
 
     // Tensors for mask_zeros
     Tensor *mask;
