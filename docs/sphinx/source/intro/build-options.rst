@@ -270,6 +270,19 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
     Enabled by default
 
+- **Build target:** Specifies the build type on single-configuration generators.
+
+.. code:: bash
+
+    -DCMAKE_BUILD_TYPE=Release
+
+.. note::
+
+    "Release" by default.
+
+    Possible values are empty, Debug, Release, RelWithDebInfo, MinSizeRel,... (**Read more:** `here <https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html>`_)
+
+
 - **Superbuild:** To let the EDDL manage its dependencies automatically:
 
 .. code:: bash
@@ -282,6 +295,7 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
     If you want to distribute the resulting shared library, you should use the flag
     ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.
+
 
 
 .. _Anaconda: https://docs.conda.io/en/latest/miniconda.html
