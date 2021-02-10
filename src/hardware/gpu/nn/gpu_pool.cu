@@ -22,6 +22,7 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
 
+#ifdef cCUDNN
 void amy_get_fdescriptor(cudnnFilterDescriptor_t t, char * name){
 
     cudnnDataType_t         dataType;
@@ -49,7 +50,7 @@ void amy_get_descriptor(cudnnTensorDescriptor_t t, char * name){
     std::cout<<name<<": ("<<dataType<<", "<<n<<", "<<c<<", "<<h<<", "<<w<<", "<<nStride<<", "<<cStride<<", "<<hStride<<", "<<wStride<<")"<<std::endl;
 }
 
-
+#endif
 
 void gpu_mpool2D(PoolDescriptor *D){
     int device=D->I->gpu_device;
