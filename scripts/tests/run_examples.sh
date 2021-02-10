@@ -1,5 +1,12 @@
+#!/usr/bin/env bash
+
+echo "**********************************************************"
+echo "******************** RUNNING EXAMPLES ********************"
+echo "**********************************************************"
+
 BUILD_TARGET=$1
 EPOCHS=$2
+$BUILD_PATH=build
 
 ./$BUILD_PATH/bin/cifar_conv $BUILD_TARGET $EPOCHS --min-acc 0.3
 ./$BUILD_PATH/bin/cifar_conv_da $BUILD_TARGET $EPOCHS --min-acc 0.3

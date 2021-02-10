@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Build and install
 sudo apt-get install -y libgtest-dev
