@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+
+echo "***********************************************************"
+echo "************************ RUN TESTS ************************"
+echo "***********************************************************"
+
 # Download source code
 git clone https://github.com/deephealthproject/eddl.git
 cd eddl/
