@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -18,7 +18,8 @@
 
 //static float *RTable=nullptr;
 static float RTable[MAX_RTABLE];
-static int posTable=0;
+static int posTable = 0;
+static bool random_table_generated = false;
 
 // Default seed
 static std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -51,9 +52,9 @@ float slow_randn(float mean, float sd) {
 }
 
 void build_randn_table() {
-    if (RTable == nullptr) {
+    if (! random_table_generated ) {
+        random_table_generated = true;
         printf("Generating Random Table\n");
-        //RTable = get_fmem(MAX_RTABLE, "build_randn_table");
 
         for (int i = 0; i < MAX_RTABLE; i++)
             RTable[i] = gaussgen();

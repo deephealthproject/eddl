@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -102,14 +102,15 @@ void * eddl_malloc(size_t size, const string & str_info)
             //ptr=(float *)aligned_alloc(64, size*sizeof(float));
             rc = posix_memalign((void **)&ptr, alignment_block_size, size);
             error = (0 != rc);
+            errno = rc;
         }
         catch (std::bad_alloc & badAlloc) { error = true; }
     }
 
 #elif defined(EDDL_WINDOWS)
-
+    errno = 0;
     ptr = _aligned_malloc(size, alignment_block_size);
-    error = (nullptr == ptr || errno != 0);
+    error = (nullptr == ptr || errno == ENOMEM);
 #else
 #error "A proper configuration must define either EDDL_LINUX, EDDL_APPLE or EDDL_WINDOWS"
 #endif
@@ -502,8 +503,7 @@ WrappingMode getWrappingMode(string mode){
 }
 
 void show_deprecated_warning(const string& deprecated_name, const string& new_name, const string& type, const string& version){
-    std::cerr << "[DEPRECATION WARNING]:" << std::endl;
-    std::cerr << "The '" << deprecated_name << "' " << type << " will be deprecated in a " << version << " version";
+    std::cerr << "[DEPRECATION WARNING]: The '" << deprecated_name << "' " << type << " will be deprecated in a " << version << " version";
     if (!new_name.empty()) { std::cerr << " in favor of '" << new_name << "'"; }
     std::cerr << "." << std::endl;
 }
@@ -795,7 +795,7 @@ void __show_profile() {
   PROFILING_PRINTF(fill_rand_uniform);
   PROFILING_PRINTF(fill_rand_signed_uniform);
   PROFILING_PRINTF(fill_rand_normal);
-  PROFILING_PRINTF(fill_rand_binary);  
+  PROFILING_PRINTF(fill_rand_binary);
   // comparison
   PROFILING_PRINTF(all);
   PROFILING_PRINTF(any);

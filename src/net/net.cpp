@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -194,14 +194,34 @@ int Net::inNet(Layer *l) {
 
 /////////////////////////////////////////
 void Net::walk(Layer *l,vlayer lout) {
+    int ind;
+    
     if (l->orig!=nullptr) l->net=l->orig->net;
     else l->net=this;
 
     if (!inNet(l))
        layers.push_back(l);
 
+    if (isIn(l,lout,ind)) return; // cut recursivity for out layers
+
     for (int i = 0; i < l->child.size(); i++)
        walk(l->child[i],lout);
+
+/*
+    int ind;
+    
+    if (l->orig!=nullptr) l->net=l->orig->net;
+    else l->net=this;
+
+    if (isIn(l,lout,ind)) return; // cut recursivity for out layers
+
+    if (!inNet(l))
+       layers.push_back(l);
+
+    for (int i = 0; i < l->child.size(); i++)
+       walk(l->child[i],lout);
+*/
+
 }
 
 /////////////////////////////////////////

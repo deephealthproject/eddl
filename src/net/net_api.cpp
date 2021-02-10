@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -1247,7 +1247,7 @@ void Net::evaluate(vtensor tin, vtensor tout,int bs) {
     if (tout[i]->shape[0] != n)
     msg("different number of samples in output tensor", "Net.evaluate");
 
-    resize(bs);
+    if (bs!=-1) resize(bs);
 
     printf("Evaluate with batch size %d\n",batch_size);
 

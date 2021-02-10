@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -77,14 +77,12 @@ class Tensor {
 private:
     // Load methods
     static Tensor* load_from_bin(std::ifstream &ifs, int start_row, int end_row);
-    static Tensor* load_from_onnx(std::ifstream &ifs);
     static Tensor* load_from_img(const string &filename, const string &format);
 //    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);  // Deprecated
 //    static Tensor* load_from_txt(std::ifstream &ifs, char delimiter, int headerRows);  // Deprecated
 
     // Save methods
     void save2bin(std::ofstream &ofs);
-    void save2onnx(std::ofstream &ofs);
     void save2img(const string &filename, string format);
 //    void save2numpy(const string &filename, string format);
     void save2txt(std::ofstream &ofs, const char delimiter, const vector<string> &header);
@@ -262,7 +260,7 @@ public:
       *  @brief Load tensor from filestream.
       *
       *  @param ifs  Filestream
-      *  @param format    File format. Accepted formats are: bin, onnx, csv, tsv, txt.
+      *  @param format    File format. Accepted formats are: bin
       *  @return    Tensor
     */
     static Tensor* loadfs(std::ifstream &ifs, const string& format="");
@@ -313,7 +311,7 @@ public:
       *  @param ofs     Filestream.
       *  @param format    Format to use. The accepted formats are the following:
       *                     - Text: csv, tsv, txt
-      *                     - Other: bin, onnx
+      *                     - Other: bin
       *  @return    void
     */
     void savefs(std::ofstream &ofs, string format="");
@@ -3196,7 +3194,7 @@ template<typename T>
 /**
   *   @brief Load content from file to a tensor
   *   @param filename The file path.
-  *   @param format The format of the file. Supported image formats: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm, bin, onnx, npy, npz, csv, tsv, txt
+  *   @param format The format of the file. Supported image formats: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm, bin
   *   @return The initialized tensor
 */
 Tensor* Tensor::load(const string& filename, string format){
@@ -3216,14 +3214,8 @@ Tensor* Tensor::load(const string& filename, string format){
        format=="hdr" || format=="psd" || format=="tga" || format=="gif" ||
        format=="pic"  || format=="pgm"  || format=="ppm") { // Images
         t = Tensor::load_from_img(filename, format);
-    }else if(format=="bin" || format=="onnx"){
+    }else if(format=="bin"){
         t = Tensor::loadfs(ifs, format);
-    }else if(format=="npy" || format=="npz"){  // Deprecated
-        msg("Format deprecated in favor of python: *.'" + format + "'", "Tensor::load");
-//        t = Tensor::load_from_numpy<T>(filename, format);
-    }else if(format=="csv" || format=="tsv" || format=="txt"){  // Deprecated
-        msg("Format deprecated in favor of python: *.'" + format + "'", "Tensor::load");
-//        t = Tensor::loadfs(ifs, format);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load");
     }

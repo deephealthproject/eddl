@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -240,5 +240,17 @@ void gpu_total_sum(Tensor *A, float *tot);
 int* get_block_dim(int N, int blockSize);
 void copy_cpu2gpu(float* cpu_addresses, float* gpu_addresses, int size, bool delete_cpu);
 void gpu_initialize_rd(ReduceDescriptor2 *rd, Tensor *A, Tensor *B, bool reverse=false);
+
+// new batchnorm implementation
+void gpu_batchnorm_forward(int gpu_device, int b, int z, int rc,
+        float *input, float *output, float *opa,
+        float *global_mean, float *global_variance,
+        float *affine_g, float *affine_b,
+        float *mean, float *variance,
+        bool trmode, float epsilon, float momentum);
+
+void gpu_batchnorm_backward(int gpu_device, int b, int z, int rc,
+        float *delta, float *opa, float *pdelta, float *gbn_g, float *gbn_b,
+        float *bn_g, float *variance, float *mean1, float *mean2);
 
 #endif //EDDL_GPU_HW_H

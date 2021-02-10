@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -609,7 +609,7 @@ namespace eddl {
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding,  bool use_bias,
                int groups, const vector<int> &dilation_rate,string name){
-        return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+        return new LConv(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
     layer Conv1D(layer parent, int filters, vector<int> kernel_size,
@@ -617,13 +617,13 @@ namespace eddl {
                int groups, vector<int> dilation_rate,string name){
         kernel_size.push_back(1);
         strides.push_back(1);
-        return new LConv1D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+        return new LConv1D(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
     layer Conv2D(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding,  bool use_bias,
                int groups, const vector<int> &dilation_rate,string name){
-        return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+        return new LConv(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
     layer Conv3D(layer parent, int filters, const vector<int> &kernel_size,
@@ -636,14 +636,14 @@ namespace eddl {
     layer PointwiseConv(layer parent, int filters,
                           const vector<int> &strides, bool use_bias,
                           int groups, const vector<int> &dilation_rate,string name){
-        return new LConv(parent, filters, {1, 1}, strides, "none", groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+        return new LConv(parent, filters, {1, 1}, strides, "none", {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
 
     layer PointwiseConv2D(layer parent, int filters,
                const vector<int> &strides, bool use_bias,
                int groups, const vector<int> &dilation_rate,string name){
-        return new LConv(parent, filters, {1, 1}, strides, "none", groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+        return new LConv(parent, filters, {1, 1}, strides, "none", {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
     // Legacy

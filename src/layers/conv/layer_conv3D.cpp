@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -70,6 +70,11 @@ LConv3D::~LConv3D(){
 void LConv3D::resize(int batch){
     cd->resize(batch);
 
+}
+
+void LConv3D::initialize() {
+    init->apply(params[0]);  // Conv
+    params[1]->fill_(0.0f); // Bias
 }
 
 void LConv3D::mem_delta(){

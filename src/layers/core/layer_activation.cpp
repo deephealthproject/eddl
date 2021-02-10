@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -32,6 +32,69 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
     output = new Tensor(input->shape, dev);
     delta_bp = 0;
 
+#ifdef cCUDNN
+if(!output->isCPU()){
+    data_type = CUDNN_DATA_FLOAT;
+    tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
+    //BOTH softmax and activations
+    cudnnCreateTensorDescriptor(&xDesc);
+    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 input->shape[0], input->shape[1],
+                 (input->shape.size()> 2) ? input->shape[2]:1,
+                 (input->shape.size()> 3) ? input->shape[3]:1);
+    cudnnCreateTensorDescriptor(&yDesc);
+    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                 output->shape[0], output->shape[1],
+                 (output->shape.size()> 2) ? output->shape[2]:1,
+                 (output->shape.size()> 3) ? output->shape[3]:1);
+
+    if(this->act == "softmax"){
+        algorithm = CUDNN_SOFTMAX_ACCURATE;
+        softmax_mode = CUDNN_SOFTMAX_MODE_INSTANCE;
+
+    }
+    else{
+        cudnnCreateActivationDescriptor(&activationDesc);
+        reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+        coef = 0.0; //this->params[0]; //upper boud
+        if(this->act == "sigmoid"){
+            mode = CUDNN_ACTIVATION_SIGMOID;
+        }
+        else if(this->act == "relu"){
+            mode = CUDNN_ACTIVATION_RELU;
+            coef = 0.0; //this->params[0]; //upper boud
+            reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+        }
+        else if(this->act == "thresholded_relu"){
+            mode = CUDNN_ACTIVATION_RELU;
+            coef = this->params[0]; //threshold
+            reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+        }
+        else if(this->act == "tanh"){
+            mode = CUDNN_ACTIVATION_TANH;
+        }
+        else if(this->act == "elu"){
+            mode = CUDNN_ACTIVATION_ELU;
+            reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+        }
+        else if(this->act == "linear"){
+            mode = CUDNN_ACTIVATION_IDENTITY;
+        }
+        else{
+            //std:cout<<"Warning. "<<this->act<<" activation is not supported in CUDNN. A RELU will be executed." <<std::endl;
+            mode = CUDNN_ACTIVATION_RELU;
+            coef = 0.0; //this->params[0]; //upper boud
+            reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+        }
+
+        cudnnStatus_t st = cudnnSetActivationDescriptor( activationDesc, mode, reluNanOpt, coef);
+        if( st != CUDNN_STATUS_SUCCESS) std::cout<<"SetAct" <<cudnnGetErrorString(st)<<std::endl;
+
+    }
+}
+else
+#endif
+    {
     // Softmax checks
     if(this->act=="softmax"){
         // Set default axis if none was specified
@@ -56,17 +119,67 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
             msg("The axis has to be a number from 0 to (number_of_dimensions - 1)", "LActivation::Softmax");
         }
     }
-
+}
     parent->addchild(this);
     addparent(parent);
 }
+#ifdef cCUDNN
+void LActivation::resize(int batch){
 
+//  std::cout<<"Resize layer"<<this->name<<std::endl;
+    if (output!=nullptr) {output->resize(batch);}
+//   if(output->isCPU()){std::cout<<"out ES CPUUUU!!!"<<std::endl;}
+//else{std::cout<<"out ES GPU!"<<std::endl;} 
+//   if(input->isCPU()){std::cout<<"in ES CPUUUU!!!"<<std::endl;}
+//else{std::cout<<"in ES GPU!"<<std::endl;} 
+ // std::cout<<"Output shape="<<output->shape.size()<<std::endl;
+ // std::cout<<"Iutput shape="<<input->shape.size()<<std::endl;
+//}
+//else{std::cout<<"output is null"<<std::endl;}
+if (!output->isCPU()){ 
+   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 input->shape[0], input->shape[1],
+                 (input->shape.size()> 2) ? input->shape[2]:1,
+                 (input->shape.size()> 3) ? input->shape[3]:1);
+    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                 output->shape[0], output->shape[1],
+                 (output->shape.size()> 2) ? output->shape[2]:1,
+                 (output->shape.size()> 3) ? output->shape[3]:1);
+    //    if (delta!=nullptr) { if (!mem_level) delta->resize(batch); }
+}
+}
+#endif
 
 void LActivation::forward(){
 
+#ifdef cCUDNN
+
+if(!this->input->isCPU())
+{
+    float alpha = 1.0f;
+    float beta = 0.0f;
+    if(act == "softmax"){
+        cudnnStatus_t st = cudnnSoftmaxForward(hdnn[this->input->gpu_device], algorithm, softmax_mode,
+                                                &alpha, xDesc, this->input->ptr,
+                            &beta, yDesc, this->output->ptr);
+        if( st != CUDNN_STATUS_SUCCESS) std::cout<<"SOFTMAX: " <<cudnnGetErrorString(st)<<std::endl;
+
+    }
+    else if (act == "leaky_relu"){
+        float alp = this->params[0];
+        tensorNN::LeakyReLu(this->input, this->output, alp);
+    }
+    else{
+        cudnnStatus_t st = cudnnActivationForward(hdnn[this->input->gpu_device], activationDesc, &alpha, xDesc, this->input->ptr,
+                               &beta, yDesc, this->output->ptr);
+        if( st != CUDNN_STATUS_SUCCESS) std::cout<<"ACT: " <<cudnnGetErrorString(st)<<std::endl;
+    }    
+}
+else
+#endif
+   {
     if (act == "relu"){
         tensorNN::ReLu(this->input, this->output);
-
     }else if (act == "thresholded_relu"){
         float alpha = this->params[0];
         tensorNN::ThresholdedReLu(this->input, this->output, alpha);
@@ -116,13 +229,43 @@ void LActivation::forward(){
         float alpha = this->params[0];
         tensorNN::Linear(this->input, this->output, alpha);
     }
+  }
 }
 
 
 void LActivation::backward(){
+
     if (delta_bp){
         Tensor::inc(delta, parent[0]->delta);
     }else {
+#ifdef cCUDNN
+      if(!this->output->isCPU()){
+        float alpha = 1.0f;
+       float beta = 0.0f;
+       if (act == "softmax"){
+            cudnnStatus_t st = cudnnSoftmaxBackward(hdnn[this->output->gpu_device], this->algorithm, this->softmax_mode,
+                                                     &alpha, this->yDesc, this->output->ptr,
+                                                     this->yDesc, this->delta->ptr,
+                                                     &beta, this->xDesc, this->parent[0]->delta->ptr);
+            if( st != CUDNN_STATUS_SUCCESS) std::cout<<"SOFT_BACK: " <<cudnnGetErrorString(st)<<std::endl;
+
+       }else if (act == "leaky_relu"){
+            float alp = this->params[0];
+            tensorNN::D_LeakyReLu(delta, input, parent[0]->delta, alp);
+
+        }
+        else{
+             cudnnStatus_t st = cudnnActivationBackward(hdnn[this->output->gpu_device], this->activationDesc,
+                                                         &alpha, this->yDesc, this->output->ptr,
+                                                         this->yDesc, this->delta->ptr,
+                                                         this->xDesc, this->input->ptr, &beta,
+                                                         this->xDesc, this->parent[0]->delta->ptr);
+            if( st != CUDNN_STATUS_SUCCESS) std::cout<<"ACT_BACK: " <<cudnnGetErrorString(st)<<std::endl;
+        }
+   }
+  else
+#endif
+      {
         if (act == "relu"){
             tensorNN::D_ReLu(delta, input, parent[0]->delta);
 
@@ -175,6 +318,7 @@ void LActivation::backward(){
             float alpha = this->params[0];
             tensorNN::D_Linear(delta, input, parent[0]->delta, alpha);
         }
+      }
     }
 }
 

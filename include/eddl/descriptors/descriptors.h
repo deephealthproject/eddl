@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -19,7 +19,10 @@
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/utils.h"
-
+#ifdef cCUDNN
+#include <cudnn.h>
+extern cudnnHandle_t hdnn[64];
+#endif
 
 using namespace std;
 
@@ -65,11 +68,11 @@ class ConvolDescriptor {
 public:
     vector<int> ksize;
     vector<int> stride;
-    vector<int> pad; // {rows-top, rows-bottom, cols-left, cols-right}
+    vector<int> pads; // {rows-top, rows-bottom, cols-left, cols-right}
 
     int nk, kr, kc, kz;
     int sr, sc;
-    int ir, ic, iz;
+    int in, ir, ic, iz;
     int r, c, z;
     int padrt,padrb;
     int padcl,padcr;
@@ -81,7 +84,7 @@ public:
     vector<int> kernel_size;
     vector<int> strides;
     string padding; // valid/none, same/zeros, custom
-    int groups = groups;
+    int groups;
     vector<int> dilation_rate;
     bool use_bias;
     int mem_level; // see CS
@@ -114,6 +117,27 @@ public:
     Tensor *gpugK; // gradient kernels
     Tensor *gpuD; // Delta
 
+#ifdef cCUDNN
+    // Following cuDNN nomenclature
+    cudnnConvolutionMode_t convolution_mode;
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+
+    cudnnConvolutionFwdAlgo_t fwd_algorithm;
+    cudnnConvolutionBwdFilterAlgo_t bwd_filter_algorithm;
+    cudnnConvolutionBwdDataAlgo_t bwd_data_algorithm;
+    cudnnConvolutionDescriptor_t convolution_descriptor;
+    cudnnTensorDescriptor_t xDesc; //input. also dxDesc
+    cudnnFilterDescriptor_t wDesc; //kernels also dwDesc
+    cudnnTensorDescriptor_t yDesc; //output also dyDesc
+    cudnnTensorDescriptor_t bDesc; //bias, also dbias
+
+    int cudnn_env_init;
+    int cudnn_conv_back_init;
+#endif
+
+
+
 #ifdef cFPGA
     // FPGA implementation
     cl::Buffer *fpga_ptrI;
@@ -122,7 +146,7 @@ public:
 
     ConvolDescriptor();
 
-    ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
+    ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
                      int groups, const vector<int> &dilation_rate, bool use_bias, int mem=0);
 
     ~ConvolDescriptor();
@@ -146,7 +170,7 @@ public:
 
     int nk, kz, kd, kr, kc;  // nk=num filters, kz=kernel channels, kd=kernel depth, kr=kernel rows, kc=Kernel cols
     int sd, sr, sc;  // sd=stride depth, sr=stride rows, sc=stride cols
-    int iz, id, ir, ic;  // iz=input channels, id=input depth, ir=input rows, ic=input cols
+    int in, iz, id, ir, ic;  // in=input batches, iz=input channels, id=input depth, ir=input rows, ic=input cols
     int z, d, r, c;  // z=channels, d=depth, r=rows, c=cols
     int paddf,paddb;  // pad(ding) d(epth) + f(ront) / b(ack)
     int padrt,padrb; // pad(ding) r(ows) + t(op) / b(ottom)
@@ -218,7 +242,7 @@ public:
 
     int nk, kr, kc, kz;
     int sr, sc;
-    int ir, ic, iz;
+    int in, ir, ic, iz;
     int r, c, z;
     int padrt,padrb;
     int padcl,padcr;
@@ -230,6 +254,23 @@ public:
     Tensor *ID= nullptr;// Delta input map
     Tensor *D = nullptr; // Delta
     Tensor *O= nullptr; // Outputmap
+
+#ifdef cCUDNN
+    cudnnPoolingDescriptor_t    poolingDesc;
+    cudnnPoolingMode_t          mode;
+    cudnnNanPropagation_t       maxpoolingNanOpt;
+    int                         windowHeight;
+    int                         windowWidth;
+    int                         verticalPadding;
+    int                         horizontalPadding;
+    int                         verticalStride;
+    int                         horizontalStride;
+    cudnnTensorDescriptor_t xDesc; //input. also dxDesc
+    cudnnTensorDescriptor_t yDesc; //output also dyDesc
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+
+#endif
 
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, const string& p, int mem=0);
 

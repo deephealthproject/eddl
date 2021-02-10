@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.8
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -16,7 +16,9 @@
 #include <curand.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
-
+#ifdef cCUDNN
+#include <cudnn.h>
+#endif
 //
 //#include <cstdio>
 //#include <cuda.h>
@@ -36,6 +38,9 @@ extern curandGenerator_t random_generator[64];
 void check_cublas(cublasStatus_t status, const char *f);
 
 void check_curand(curandStatus_t status, const char *f);
+#ifdef cCUDNN
+void check_cudnn(cudnnStatus_t status, const char *m, const char *f);
+#endif
 
 void check_cuda(cudaError_t err,const char *msg);
 void gpu_set_device(int device);
