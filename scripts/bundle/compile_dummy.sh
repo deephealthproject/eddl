@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Set working path
 WORKPATH=/home/salvacarrion/Downloads/eddl_compiled/cpu_x86_64_shared__proto_openmp
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Variables
 PROTOBUF_VERSION=3.11.4

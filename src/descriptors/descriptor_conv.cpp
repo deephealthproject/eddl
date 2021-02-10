@@ -127,16 +127,13 @@ void ConvolDescriptor::build(Tensor *A) {
     }
 
 #ifdef cCUDNN
-       if(pads[0] != pads[1] || pads[2] != pads[3]){
-        std::cout<<"==============================================="<<std::endl;
-        std::cout<<"Warning: padding not supported by cuDNN"<<std::endl;
-        std::cout<<"EDDL does not support non-symmetryc padding with cuDNN"<<std::endl;
-        std::cout<<"It will be modified so maybe this model crashes"<<std::endl;
-        std::cout<<"Please, check it"<<std::endl;
-        std::cout<<"==============================================="<<std::endl;
-    }
-       if (pads[0] != pads[1]){pads[0] = pads[1];}
-       if (pads[2] != pads[3]){ pads[2] = pads[3];}
+       if(!A->isCPU()){
+           if(pads[0] != pads[1] || pads[2] != pads[3]){
+             std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
+           }
+           if (pads[0] != pads[1]){pads[0] = pads[1];}
+           if (pads[2] != pads[3]){ pads[2] = pads[3];}
+      }
 #endif
 
 
@@ -144,16 +141,6 @@ void ConvolDescriptor::build(Tensor *A) {
     padrt = pads[0]; padrb = pads[1];  // rows: top-bottom
     padcl = pads[2]; padcr = pads[3];  // cols: left-right
 
-#ifdef cCUDNN
-    if (pads[0] != pads[1] || pads[2] != pads[3]){
-        std::cout<<"==============================================="<<std::endl;
-        std::cout<<"Error: padding not supported by cuDNN"<<std::endl;
-        std::cout<<"==============================================="<<std::endl;
-        for(int i = 0; i< pads.size();i++)
-           std::cout<<"PADS["<<i<<"]="<< pads[i] <<std::endl;
-        msg("cuDNN requires equal top-bottom or left-right padding");
-    }
-#endif
 
 
 

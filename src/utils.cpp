@@ -503,8 +503,7 @@ WrappingMode getWrappingMode(string mode){
 }
 
 void show_deprecated_warning(const string& deprecated_name, const string& new_name, const string& type, const string& version){
-    std::cerr << "[DEPRECATION WARNING]:" << std::endl;
-    std::cerr << "The '" << deprecated_name << "' " << type << " will be deprecated in a " << version << " version";
+    std::cerr << "[DEPRECATION WARNING]: The '" << deprecated_name << "' " << type << " will be deprecated in a " << version << " version";
     if (!new_name.empty()) { std::cerr << " in favor of '" << new_name << "'"; }
     std::cerr << "." << std::endl;
 }
