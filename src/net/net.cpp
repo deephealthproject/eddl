@@ -206,6 +206,22 @@ void Net::walk(Layer *l,vlayer lout) {
 
     for (int i = 0; i < l->child.size(); i++)
        walk(l->child[i],lout);
+
+/*
+    int ind;
+    
+    if (l->orig!=nullptr) l->net=l->orig->net;
+    else l->net=this;
+
+    if (isIn(l,lout,ind)) return; // cut recursivity for out layers
+
+    if (!inNet(l))
+       layers.push_back(l);
+
+    for (int i = 0; i < l->child.size(); i++)
+       walk(l->child[i],lout);
+*/
+
 }
 
 /////////////////////////////////////////
