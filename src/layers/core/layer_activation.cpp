@@ -55,6 +55,8 @@ if(!output->isCPU()){
     }
     else{
         cudnnCreateActivationDescriptor(&activationDesc);
+        reluNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+        coef = 0.0; //this->params[0]; //upper boud
         if(this->act == "sigmoid"){
             mode = CUDNN_ACTIVATION_SIGMOID;
         }
@@ -123,8 +125,19 @@ else
 }
 #ifdef cCUDNN
 void LActivation::resize(int batch){
-    if (output!=nullptr) output->resize(batch);
-    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+
+//  std::cout<<"Resize layer"<<this->name<<std::endl;
+    if (output!=nullptr) {output->resize(batch);}
+//   if(output->isCPU()){std::cout<<"out ES CPUUUU!!!"<<std::endl;}
+//else{std::cout<<"out ES GPU!"<<std::endl;} 
+//   if(input->isCPU()){std::cout<<"in ES CPUUUU!!!"<<std::endl;}
+//else{std::cout<<"in ES GPU!"<<std::endl;} 
+ // std::cout<<"Output shape="<<output->shape.size()<<std::endl;
+ // std::cout<<"Iutput shape="<<input->shape.size()<<std::endl;
+//}
+//else{std::cout<<"output is null"<<std::endl;}
+if (!output->isCPU()){ 
+   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  input->shape[0], input->shape[1],
                  (input->shape.size()> 2) ? input->shape[2]:1,
                  (input->shape.size()> 3) ? input->shape[3]:1);
@@ -133,7 +146,7 @@ void LActivation::resize(int batch){
                  (output->shape.size()> 2) ? output->shape[2]:1,
                  (output->shape.size()> 3) ? output->shape[3]:1);
     //    if (delta!=nullptr) { if (!mem_level) delta->resize(batch); }
-
+}
 }
 #endif
 
