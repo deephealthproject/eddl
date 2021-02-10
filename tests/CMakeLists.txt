@@ -6,10 +6,10 @@ project(eddl-tests)
 enable_testing()
 if(GTEST_ROOT)
     # Find libraries (need absolute paths)
-    find_library(GTEST_LIBRARY gtest HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
-    find_library(GTEST_MAIN_LIBRARY gtest_main HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
-#    find_library(GTESTD_LIBRARY gtestd HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
-#    find_library(GTESTD_MAIN_LIBRARY gtest_maind HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTEST_LIBRARY NAMES gtest HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTEST_MAIN_LIBRARY NAMES gtest_main HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTESTD_LIBRARY NAMES gtestd HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTEST_MAIND_LIBRARY NAMES gtest_maind HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
 else()
     find_package(GTest REQUIRED)
 endif()
@@ -27,7 +27,10 @@ target_include_directories(unit_tests PUBLIC $<BUILD_INTERFACE:${GTEST_INCLUDE_D
 
 
 if(MSVC)
-    target_link_libraries(unit_tests PUBLIC eddl ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY})
+    target_link_libraries(unit_tests PUBLIC eddl 
+        optimized ${GTEST_LIBRARY} optimized ${GTEST_MAIN_LIBRARY}
+        debug ${GTESTD_LIBRARY} debug ${GTEST_MAIND_LIBRARY}
+    )
 else()
     find_package(Threads)
     target_link_libraries(unit_tests PUBLIC eddl ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
