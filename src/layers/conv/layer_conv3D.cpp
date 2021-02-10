@@ -72,6 +72,11 @@ void LConv3D::resize(int batch){
 
 }
 
+void LConv3D::initialize() {
+    init->apply(params[0]);  // Conv
+    params[1]->fill_(0.0f); // Bias
+}
+
 void LConv3D::mem_delta(){
     if(this->delta == nullptr) {
         // Reserve parent's delta

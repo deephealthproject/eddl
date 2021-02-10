@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
           rmsprop(0.001), // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          cs);
+           cs);
 
 
     // View model

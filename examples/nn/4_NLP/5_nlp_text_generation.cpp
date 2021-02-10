@@ -120,9 +120,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          //CS_GPU({0,1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          //CS_CPU()
     );
 
     // View model
@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
           adam(0.001), // not relevant
           {"mse"}, // not relevant
           {"mse"}, // not relevant
-          CS_CPU(),false // CPU
+          CS_GPU({1})//,false // CPU
     );
     summary(cnn);
     plot(cnn,"cnn.pdf");
@@ -229,7 +229,7 @@ int main(int argc, char **argv) {
           adam(0.001), // not relevant
           {"softmax_cross_entropy"}, // not relevant
           {"accuracy"}, // not relevant
-          CS_CPU() // CPU
+          CS_GPU({1}) // CPU
     );
 
     // View model
