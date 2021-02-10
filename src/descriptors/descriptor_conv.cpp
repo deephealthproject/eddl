@@ -127,11 +127,13 @@ void ConvolDescriptor::build(Tensor *A) {
     }
 
 #ifdef cCUDNN
-       if(pads[0] != pads[1] || pads[2] != pads[3]){
-        std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
-    }
-       if (pads[0] != pads[1]){pads[0] = pads[1];}
-       if (pads[2] != pads[3]){ pads[2] = pads[3];}
+       if(!A->isCPU()){
+           if(pads[0] != pads[1] || pads[2] != pads[3]){
+             std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
+           }
+           if (pads[0] != pads[1]){pads[0] = pads[1];}
+           if (pads[2] != pads[3]){ pads[2] = pads[3];}
+      }
 #endif
 
 
@@ -139,11 +141,6 @@ void ConvolDescriptor::build(Tensor *A) {
     padrt = pads[0]; padrb = pads[1];  // rows: top-bottom
     padcl = pads[2]; padcr = pads[3];  // cols: left-right
 
-#ifdef cCUDNN
-    if (pads[0] != pads[1] || pads[2] != pads[3]){
-        std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
-    }
-#endif
 
 
 
