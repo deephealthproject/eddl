@@ -274,15 +274,18 @@ support AVX instructions.</p>
 </div>
 <div class="section" id="openmp">
 <h3>OpenMP<a class="headerlink" href="#openmp" title="Permalink to this headline">¶</a></h3>
-<p>We have noticed several problems with default c++ compiler in Mac OS. If this is your case, we recommend you use
-the <cite>clang</cite> compiler. To do so, you can execute the following commands (or append them to <code class="docutils literal notranslate"><span class="pre">.zprofile</span></code>):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang
-<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang++
-<span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/llvm/lib&quot;</span>
-<span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
+<p>On MacOS, the Clang that comes with XCode doesn’t support OpenMP. Therefore, we recommend you to install
+the GCC compile so that you can take advatange of OpenMP.
+<em>(Note: By default, GCC is just a symlink to Clang. more_)</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the real GCC</span>
+brew install gcc
+
+<span class="c1"># Add flags to cmake</span>
+cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
+-DCMAKE_C_COMPILER<span class="o">=</span>/usr/local/Cellar/gcc/10.2.0_3/bin/gcc-10
+-DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/local/Cellar/gcc/10.2.0_3/bin/g++-10
 </pre></div>
 </div>
-<p>If this doesn’t fix your problem, try updating CMake.</p>
 <p>As a last resort, you can always disable OpenMP and use the EDDL by making use of the cmake flag <code class="docutils literal notranslate"><span class="pre">-D</span> <span class="pre">BUILD_OPENMP=OFF</span></code></p>
 </div>
 <div class="section" id="undefined-symbols-for-architecture-x86-64">
