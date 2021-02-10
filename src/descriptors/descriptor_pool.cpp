@@ -85,6 +85,22 @@ void PoolDescriptor::build(Tensor *A) {
 
     padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
     padcl = pad[2]; padcr = pad[3];  // cols: left-right
+#ifdef cCUDNN
+       if(pad[0] != pad[1] || pad[2] != pad[3]){
+        std::cout<<"==============================================="<<std::endl;
+        std::cout<<"Warning: padding not supported by cuDNN in Pool descriptor"<<std::endl;
+        std::cout<<"EDDL does not support non-symmetryc padding with cuDNN"<<std::endl;
+        std::cout<<"It will be modified so maybe this model crashes"<<std::endl;
+        std::cout<<"Please, check it"<<std::endl;
+        std::cout<<"==============================================="<<std::endl;
+    }
+       if (pad[0] != pad[1]){pad[0] = pad[1];}
+       if (pad[2] != pad[3]){ pad[2] = pad[3];}
+#endif
+
+
+
+
 
     if ((r <= 0) || (c <= 0)) {
         if(r <= 0) { std::cerr << "'Rows' are reach 0 or less (" << r << ")" << std::endl; }
@@ -111,6 +127,7 @@ void PoolDescriptor::build(Tensor *A) {
     horizontalPadding = padcl;
     verticalStride = sr;
     horizontalStride = sc;
+    //std::cout<<kr<<", "<<kc<<","<<padrt<<", "<<padcl<<", "<<sr<<", "<<sc<<std::endl;
     // mode is initialized in each constructor.
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
