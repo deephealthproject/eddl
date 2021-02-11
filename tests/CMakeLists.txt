@@ -49,7 +49,7 @@ if (USE_FPGA)
 endif()
 
 
-# CUDA (TEMP)
+# CUDA (TEMP! We shouldn't need this)
 if(USE_CUDA)
     # Check if cuda is available
     include(CheckLanguage)
