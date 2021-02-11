@@ -19,6 +19,14 @@
 #include <eddl/distributed/multicast_receiver.h>
 #include <eddl/distributed/eddl_packet.h>
 
+#if !defined(MSG_NOSIGNAL)
+#   if defined(__APPLE__)
+#       define MSG_NOSIGNAL 0
+#   else
+#       error "MSG_NOSIGNAL is not defined this should be fixed!"
+#   endif
+#endif
+
 namespace eddl {
 
 
@@ -38,6 +46,14 @@ MulticastReceiver::MulticastReceiver(eddl_queue & input_queue,
     int reuse=1;
     if (setsockopt(socket_fd_in, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(reuse)) < 0)
         throw std::runtime_error(err_msg("socket cannot be set to allow multiple instances to receive copies of multicast datagrams."));
+
+#if defined(__APPLE__)
+    {
+        int set = 1;
+        if (setsockopt(socket_fd_in, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int)) < 0)
+            throw std::runtime_error(err_msg("cannot unset SIGPIPE. " + std::to_string(errno) + ":" + strerror(errno)));
+    }
+#endif
 
     this->port_number_in = distributed_environment.get_udp_data_port();
 
@@ -62,6 +78,14 @@ MulticastReceiver::MulticastReceiver(eddl_queue & input_queue,
     socket_fd_out = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_fd_out < 0)
         throw std::runtime_error(err_msg("output socket cannot be created."));
+
+#if defined(__APPLE__)
+    {
+        int set = 1;
+        if (setsockopt(socket_fd_out, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int)) < 0)
+            throw std::runtime_error(err_msg("cannot unset SIGPIPE. " + std::to_string(errno) + ":" + strerror(errno)));
+    }
+#endif
 
     this->port_number_out = distributed_environment.get_udp_ack_port();
 
