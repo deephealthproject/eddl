@@ -33,6 +33,10 @@ CompServ::CompServ(int t, const vector<int> g, const vector<int> &f, int lsb, in
     for (auto _ : g) this->local_gpus.push_back(_);
     for (auto _ : f) this->local_fpgas.push_back(_);
 
+    if (local_fpgas.size()>0) hw="FPGA";
+    else if (local_gpus.size()>0) hw="GPU";
+    else hw="CPU";
+
     this->lsb = lsb;
 
     if (lsb < 0) {
