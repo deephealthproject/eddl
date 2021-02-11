@@ -148,6 +148,8 @@ public:
     void reset_accumulated_gradients();
     void apply_accumulated_gradients();
 
+    void collect_acc_grads();
+    void distribute_weights();
     void sync_weights();
 
     // API

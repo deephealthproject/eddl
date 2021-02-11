@@ -6,10 +6,10 @@ project(eddl-tests)
 enable_testing()
 if(GTEST_ROOT)
     # Find libraries (need absolute paths)
-    find_library(GTEST_LIBRARY gtest HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
-    find_library(GTEST_MAIN_LIBRARY gtest_main HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
-#    find_library(GTESTD_LIBRARY gtestd HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
-#    find_library(GTESTD_MAIN_LIBRARY gtest_maind HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTEST_LIBRARY NAMES gtest HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTEST_MAIN_LIBRARY NAMES gtest_main HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTESTD_LIBRARY NAMES gtestd HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTEST_MAIND_LIBRARY NAMES gtest_maind HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
 else()
     find_package(GTest REQUIRED)
 endif()
@@ -17,6 +17,7 @@ endif()
 # Find tests (recursively, from here)
 file(GLOB_RECURSE CPP_TESTS_FILES "${PROJECT_SOURCE_DIR}/*" *.{h, cpp})
 
+# Filter ONNX files if they are not needed
 if(NOT BUILD_PROTOBUF)
     list(FILTER CPP_TESTS_FILES EXCLUDE REGEX ".*/onnx/*")
 endif()
@@ -25,16 +26,30 @@ endif()
 add_executable(unit_tests ${CPP_TESTS_FILES})
 target_include_directories(unit_tests PUBLIC $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>)
 
-
+# Add libraries
 if(MSVC)
-    target_link_libraries(unit_tests PUBLIC eddl ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY})
+    target_link_libraries(unit_tests PUBLIC eddl 
+        optimized ${GTEST_LIBRARY} optimized ${GTEST_MAIN_LIBRARY}
+        debug ${GTESTD_LIBRARY} debug ${GTEST_MAIND_LIBRARY}
+    )
 else()
-    find_package(Threads)
+    find_package(Threads REQUIRED)
     target_link_libraries(unit_tests PUBLIC eddl ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 
-# CUDA
+if (USE_CUDA)
+    add_definitions(-DcGPU)
+endif()
+if(USE_CUDNN)
+    add_definitions(-DcCUDNN)
+endif()
+if (USE_FPGA)
+    add_definitions(-DcFPGA)
+endif()
+
+
+# CUDA (TEMP! We shouldn't need this)
 if(USE_CUDA)
     # Check if cuda is available
     include(CheckLanguage)
@@ -103,10 +118,6 @@ if(USE_CUDA)
     endif()
 endif()
 
-
-if (USE_FPGA)
-    add_definitions(-DcFPGA)
-endif()
 
 # Add test
 add_test(NAME unit_tests COMMAND unit_tests)

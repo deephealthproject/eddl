@@ -21,7 +21,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G "Visual Studio 16 2019" -A x64 -DBUILD_SUPERBUILD=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TARGET=CPU -DBUILD_HPC=OFF -DBUILD_TESTS=ON -DBUILD_DIST=OFF ..
+        cmake -G "Visual Studio 16 2019" -A x64 -DBUILD_SUPERBUILD=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TARGET=CPU -DBUILD_HPC=OFF -DBUILD_TESTS=ON -DBUILD_DIST=OFF -DBUILD_RUNTIME=OFF ..
       shell: cmd
     - name: Build
       run: cmake --build build --config Release
