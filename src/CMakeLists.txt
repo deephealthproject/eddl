@@ -65,9 +65,6 @@ if(NOT BUILD_DIST)
     list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/distributed/*")
     list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/distributed/*")
 endif()
-if(NOT BUILD_RUNTIME)
-    list(FILTER PUBLIC_HEADERS EXCLUDE REGEX ".*/runtime/*")
-endif()
 
 SET(ALL_FILES ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
 
