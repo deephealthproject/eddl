@@ -52,7 +52,7 @@ int main(int argc, char **argv){
 
   // network
   
-  int times=500;
+  int times=10;
 
   //CPU
   for(int i=0;i<times;i++) {
@@ -89,7 +89,12 @@ int main(int argc, char **argv){
       {"softmax_cross_entropy"}, // Losses
       {"categorical_accuracy"}, // Metrics
       cs);
-
+      
+    // Load dataset
+    Tensor *x_train=Tensor::zeros({10,3,32,32}); 
+    Tensor *y_train=Tensor::zeros({10,10}); 
+    
+    fit(net, {x_train}, {y_train}, 10, 1);
   
     delete net;
   }
@@ -129,7 +134,13 @@ int main(int argc, char **argv){
       {"softmax_cross_entropy"}, // Losses
       {"categorical_accuracy"}, // Metrics
       cs);
-  
+   
+    // Load dataset
+    Tensor *x_train=Tensor::zeros({10,3,32,32}); 
+    Tensor *y_train=Tensor::zeros({10,10}); 
+    
+    fit(net, {x_train}, {y_train}, 10, 1);
+
     delete net;
   }
 
