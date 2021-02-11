@@ -8,7 +8,7 @@ set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPG
 option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
-set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
+set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA)
 
 # Initializations (Local's scope)
 SET(USE_OPENMP OFF)
@@ -132,9 +132,9 @@ if(BUILD_PROTOBUF)
     # Link library
     if(Protobuf_ROOT)
         # Find libraries (need absolute paths)
-        find_library(Protobuf_LIBRARY NAMES protobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
-        find_library(Protobuf_LIBRARY_DEBUG NAMES protobufd HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
-        find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+        find_library(Protobuf_LIBRARY NAMES protobuf libprotobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+        find_library(Protobuf_LIBRARY_DEBUG NAMES protobufd libprotobufd HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+        find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf libprotobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
     else()
         find_package(Protobuf)  # Problems with: Protobuf_ROOT
 
@@ -153,7 +153,11 @@ if(BUILD_PROTOBUF)
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
 
     # Add libraries
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
+    if(MSVC)
+        target_link_libraries(${PROJECT_NAME} PUBLIC optimized ${Protobuf_LIBRARY} debug ${Protobuf_LIBRARY_DEBUG})
+    else()
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
+    endif()
 
     # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
     # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
