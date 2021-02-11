@@ -86,11 +86,13 @@ void PoolDescriptor::build(Tensor *A) {
     padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
     padcl = pad[2]; padcr = pad[3];  // cols: left-right
 #ifdef cCUDNN
-       if(pad[0] != pad[1] || pad[2] != pad[3]){
-        std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;           
-    }
-       if (pad[0] != pad[1]){pad[0] = pad[1];}
-       if (pad[2] != pad[3]){ pad[2] = pad[3];}
+       if(!A->isCPU()){
+           if(pad[0] != pad[1] || pad[2] != pad[3]){
+               std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;           
+           }
+           if (pad[0] != pad[1]){pad[0] = pad[1];}
+           if (pad[2] != pad[3]){ pad[2] = pad[3];}
+      }
 #endif
 
 
