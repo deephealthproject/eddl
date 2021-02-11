@@ -134,7 +134,7 @@ not found (or CUDA), the EDDL will automatically fallback to CPU.
 Additional flags
 ^^^^^^^^^^^^^^^^^
 
-These flags can enable/disable features of the EDDL so that you can optimized and
+These flags can enable/disable features of the EDDL so that you can optimize and
 troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
 
@@ -296,6 +296,15 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
     If you want to distribute the resulting shared library, you should use the flag
     ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.
 
+- **Build distributed:** To let the EDDL work in a distributed mode, use the setting ``BUILD_DIST``:
+
+.. code:: bash
+
+    -DBUILD_DIST=ON
+
+.. note::
+
+    Enabled by default.
 
 
 .. _Anaconda: https://docs.conda.io/en/latest/miniconda.html

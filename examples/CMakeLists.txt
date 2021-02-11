@@ -123,6 +123,9 @@ if(BUILD_PROTOBUF)
     add_executable(utils_serialization "onnx/4_utils_serialization.cpp")
     target_link_libraries(utils_serialization eddl)
 
+    add_executable(onnx_gradients "onnx/4_onnx_test_gradients.cpp")
+    target_link_libraries(onnx_gradients eddl)
+
 	# EXAMPLES: ONNX MNIST ****************************************************
 	add_executable(onnx_mnist_mlp "onnx/nn/1_mnist/1_mnist_mlp.cpp")
 	target_link_libraries(onnx_mnist_mlp eddl)
