@@ -47,20 +47,7 @@ LPool1D::LPool1D(Layer *parent, PoolDescriptor *D, string name, int dev, int mem
 }
 
 LPool1D::~LPool1D(){
-
-    // deleting pd->O here can provoque double delete/free problems
-    if (this->pd->O != nullptr) delete this->pd->O;
-    this->pd->O = nullptr;
-
-    // deleting pd->D here can provoque double delete/free problems
-    if (this->pd->D != nullptr) delete this->pd->D;
-    this->pd->D = nullptr;
-
-    delete this->pd;
-    this->pd = nullptr;
-
-    if (this->input_reshaped != nullptr) delete this->input_reshaped;
-    this->input_reshaped = nullptr;
+    delete pd;
 }
 
 void LPool1D::mem_delta(){

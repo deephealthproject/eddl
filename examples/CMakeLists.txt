@@ -213,5 +213,7 @@ if(BUILD_PROTOBUF)
 	target_link_libraries(test1 eddl)
 	add_executable(test2 "test_internals/test2.cpp")
 	target_link_libraries(test2 eddl)
+	add_executable(test3 "test_internals/test3.cpp")
+	target_link_libraries(test3 eddl)
 
 endif()
