@@ -60,7 +60,7 @@ float gpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
 
     float *sum_array;
     check_cuda(cudaMalloc((void**)&(sum_array), n_batches*sizeof(float)),"create temp array");
-    check_cuda(cudaMemset(sum_array, 0, sizeof(float));
+    check_cuda(cudaMemset(sum_array, 0, sizeof(float)), "memset");
     check_cuda(cudaDeviceSynchronize(), "create");
 
     // Calculate derivative of Softmax
@@ -70,7 +70,7 @@ float gpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
     // Reduce sum and compute mean
     // thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
     float sum_ce; // = thrust::reduce(dev_ptr, dev_ptr + n_batches);
-    check_cuda(cudaMemcpy(&sum_ce, sum_array, sizeof(float), cudaMemcpyDeviceToHost);
+    check_cuda(cudaMemcpy(&sum_ce, sum_array, sizeof(float), cudaMemcpyDeviceToHost), "memcpy");
     float mean_ce = -sum_ce;//(float)n_batches;  // Mean
 
     // Delete tmp array
@@ -104,7 +104,7 @@ float gpu_binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
 
     float *sum_array;
     check_cuda(cudaMalloc((void**)&(sum_array), n_batches*sizeof(float)),"create temp array");
-    check_cuda(cudaMemset(sum_array, 0, sizeof(float));
+    check_cuda(cudaMemset(sum_array, 0, sizeof(float)), "memset");
     check_cuda(cudaDeviceSynchronize(), "create");
 
     // Calculate derivative of Softmax
@@ -114,7 +114,7 @@ float gpu_binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
     // Reduce sum and compute mean
     // thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
     float sum_ce; // = thrust::reduce(dev_ptr, dev_ptr + n_batches);
-    check_cuda(cudaMemcpy(&sum_ce, sum_array, sizeof(float), cudaMemcpyDeviceToHost);
+    check_cuda(cudaMemcpy(&sum_ce, sum_array, sizeof(float), cudaMemcpyDeviceToHost), "memcpy");
     float mean_ce = -sum_ce;//(float)n_batches;  // Mean
 
     // Delete tmp array
