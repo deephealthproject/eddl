@@ -17,8 +17,13 @@ endif()
 # Find tests (recursively, from here)
 file(GLOB_RECURSE CPP_TESTS_FILES "${PROJECT_SOURCE_DIR}/*" *.{h, cpp})
 
+# Filter problemas files if they are not needed
 if(NOT BUILD_PROTOBUF)
     list(FILTER CPP_TESTS_FILES EXCLUDE REGEX ".*/onnx/*")
+endif()
+
+if(NOT BUILD_DIST)
+    list(FILTER CPP_TESTS_FILES EXCLUDE REGEX ".*/distributed/*")
 endif()
 
 # Build test and target libraries
