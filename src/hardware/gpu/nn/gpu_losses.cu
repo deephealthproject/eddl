@@ -13,7 +13,7 @@
 #include <cublas_v2.h>
 
 //#include <thrust/transform.h>
-#include <thrust/reduce.h>
+/* #include <thrust/reduce.h>
 #include <thrust/functional.h>
 #include <thrust/extrema.h>
 #include <thrust/device_vector.h>
@@ -23,7 +23,7 @@
 #include <thrust/generate.h>
 #include <thrust/sort.h>
 #include <thrust/sequence.h>
-#include <thrust/copy.h>
+#include <thrust/copy.h> */
 
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn_kernels.h"
@@ -60,6 +60,7 @@ float gpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
 
     float *sum_array;
     check_cuda(cudaMalloc((void**)&(sum_array), n_batches*sizeof(float)),"create temp array");
+    check_cuda(cudaMemset(sum_array, 0, sizeof(float));
     check_cuda(cudaDeviceSynchronize(), "create");
 
     // Calculate derivative of Softmax
@@ -67,8 +68,9 @@ float gpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
     check_cuda(cudaDeviceSynchronize(),"gpu_categorical_cross_entropy");
 
     // Reduce sum and compute mean
-    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
-    float sum_ce = thrust::reduce(dev_ptr, dev_ptr + n_batches);
+    // thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
+    float sum_ce; // = thrust::reduce(dev_ptr, dev_ptr + n_batches);
+    check_cuda(cudaMemcpy(&sum_ce, sum_array, sizeof(float), cudaMemcpyDeviceToHost);
     float mean_ce = -sum_ce;//(float)n_batches;  // Mean
 
     // Delete tmp array
@@ -102,6 +104,7 @@ float gpu_binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
 
     float *sum_array;
     check_cuda(cudaMalloc((void**)&(sum_array), n_batches*sizeof(float)),"create temp array");
+    check_cuda(cudaMemset(sum_array, 0, sizeof(float));
     check_cuda(cudaDeviceSynchronize(), "create");
 
     // Calculate derivative of Softmax
@@ -109,8 +112,9 @@ float gpu_binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
     check_cuda(cudaDeviceSynchronize(),"gpu_binary_cross_entropy");
 
     // Reduce sum and compute mean
-    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
-    float sum_ce = thrust::reduce(dev_ptr, dev_ptr + n_batches);
+    // thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(sum_array);
+    float sum_ce; // = thrust::reduce(dev_ptr, dev_ptr + n_batches);
+    check_cuda(cudaMemcpy(&sum_ce, sum_array, sizeof(float), cudaMemcpyDeviceToHost);
     float mean_ce = -sum_ce;//(float)n_batches;  // Mean
 
     // Delete tmp array
