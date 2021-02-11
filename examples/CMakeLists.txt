@@ -101,6 +101,8 @@ target_link_libraries(nlp_text_generation eddl)
   target_link_libraries(test2 eddl)
   add_executable(test3 "test_internals/test3.cpp")
   target_link_libraries(test3 eddl)
+  add_executable(test4 "test_internals/test4.cpp")
+  target_link_libraries(test4 eddl)
 
 
 # EXAMPLES: Tensor ****************************************************
