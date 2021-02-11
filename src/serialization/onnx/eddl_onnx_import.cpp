@@ -75,6 +75,8 @@ enum ONNX_LAYERS
   ADD,              // OPSET: 13, 7
   MAT_MUL,          // OPSET: 13, 9, 1 (Only for MatMul+Add Dense layer)
   LSTM,             // OPSET: 7, 1
+  GRU,              // OPSET: 7, 3, 1
+  RNN,              // OPSET: 7, 1
   IDENTITY,         // We skip this layer when found
   GATHER,           // OPSET: 13, 11, 1
   CAST,             // We skip this layer when found
@@ -208,6 +210,8 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["MatMul"] = ONNX_LAYERS::MAT_MUL;
 
   map_layers["LSTM"] = ONNX_LAYERS::LSTM;
+  map_layers["GRU"] = ONNX_LAYERS::GRU;
+  map_layers["RNN"] = ONNX_LAYERS::RNN;
   map_layers["Identity"] = ONNX_LAYERS::IDENTITY;
   map_layers["Gather"] = ONNX_LAYERS::GATHER;
   map_layers["Cast"] = ONNX_LAYERS::CAST;
@@ -502,6 +506,7 @@ Net *import_net_from_onnx_file(std::string path, int mem, int log_level)
       cerr << "Failed to parse model." << endl;
       //return;
     }
+    input.close();
   }
   return build_net_onnx(model, mem, log_level);
 }
@@ -560,7 +565,9 @@ Layer *get_model_input_layer(Layer *l)
 bool node_is_recurrent(onnx::NodeProto *node, map<string, ONNX_LAYERS> &map_layers)
 {
   ONNX_LAYERS layer_type = map_layers[node->op_type()];
-  if (layer_type == ONNX_LAYERS::LSTM)
+  if (layer_type == ONNX_LAYERS::LSTM || 
+      layer_type == ONNX_LAYERS::GRU  ||
+      layer_type == ONNX_LAYERS::RNN)
     return true;
 
   return false;
@@ -879,12 +886,13 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
       int filters;
       vector<int> kernel_shape;
       vector<int> strides;
-      vector<int> pads;
-      string auto_pad_option = "";
-      bool auto_pad = false;
+      vector<int> pads = {};
+      string auto_pad_option = "custom";
       vector<float> *bias;
       bool use_bias = node->input_size() > 2;
       bool conv1d = false;
+      int groups = 1;
+      vector<int> dilation_rate = {1, 1};
 
       for (int j = 0; j < node->attribute_size(); j++)
       { // Set the attributes
@@ -892,14 +900,10 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
         string attr_name = attribute.name();
         if (!attr_name.compare("auto_pad"))
         {
-          auto_pad = true;
           if (!attribute.s().compare("NOTSET"))
-          {
-            auto_pad = false;
-            continue;
-          }
+            auto_pad_option = "custom";
           else if (!attribute.s().compare("VALID"))
-            auto_pad_option = "none";
+            auto_pad_option = "valid";
           else if (!attribute.s().compare("SAME_UPPER"))
             auto_pad_option = "same";
         }
@@ -964,14 +968,15 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
 
       filters = dims[0];
       string name = node->name();
-      ConvolDescriptor *cd;
-
-      // TODO: REVIEW!!!!
-    int groups = 1;
-    vector<int> dilation_rate = {1, 1};
-        //auto_pad_option == "custom";
-        //cd->pad = pads;
-        cd = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, pads, groups, dilation_rate, use_bias, mem);
+      ConvolDescriptor *cd = new ConvolDescriptor(filters, 
+                                                  kernel_shape, 
+                                                  strides, 
+                                                  auto_pad_option,
+                                                  pads, 
+                                                  groups, 
+                                                  dilation_rate, 
+                                                  use_bias, 
+                                                  mem);
 
       if (conv1d)
         actual_layer = new LConv1D(parent, cd, name, dev, mem);
@@ -2087,8 +2092,13 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
           clip = attribute.f();
         }
         else if (!attr_name.compare("direction"))
-        { // Not used yet in eddl but implemented. We default to forward
+        {
           direction = attribute.s();
+          if (direction.compare("forward")) 
+          {
+            msg("LSTM layer " + name + " is not forward direction. EDDL only supports one-directional LSTM",
+                "ONNX::ImportNet");
+          }
         }
         else if (!attr_name.compare("hidden_size"))
         {
@@ -2227,30 +2237,47 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
       delete recurrence_weights_cell_tensor;
       delete recurrence_weights_cell_g;
 
-      string biases_name = node->input(3); //Get weights and dims
-      vector<float> *biases = &(map_init_values[biases_name]);
-      vector<int> biases_dims = map_init_dims[biases_name];
+      /*
+       * Set bias values
+       */
       vector<int> bias_dims = {hidden_size};
-
+      // Vectors to store the imported weights
       vector<float> *bias_input = new vector<float>;
       vector<float> *bias_output = new vector<float>;
       vector<float> *bias_forget = new vector<float>;
       vector<float> *bias_cell = new vector<float>;
-
       vector<float> *bias_recurrence_input = new vector<float>;
       vector<float> *bias_recurrence_output = new vector<float>;
       vector<float> *bias_recurrence_forget = new vector<float>;
       vector<float> *bias_recurrence_cell = new vector<float>;
 
-      bias_input->assign(biases->begin() + hidden_size * 0, biases->begin() + hidden_size * 1);
-      bias_output->assign(biases->begin() + hidden_size * 1, biases->begin() + hidden_size * 2);
-      bias_forget->assign(biases->begin() + hidden_size * 2, biases->begin() + hidden_size * 3);
-      bias_cell->assign(biases->begin() + hidden_size * 3, biases->begin() + hidden_size * 4);
+      if (node->input_size() > 3) {
+        string biases_name = node->input(3); //Get weights and dims
+        vector<float> *biases = &(map_init_values[biases_name]);
 
-      bias_recurrence_input->assign(biases->begin() + hidden_size * 4, biases->begin() + hidden_size * 5);
-      bias_recurrence_output->assign(biases->begin() + hidden_size * 5, biases->begin() + hidden_size * 6);
-      bias_recurrence_forget->assign(biases->begin() + hidden_size * 6, biases->begin() + hidden_size * 7);
-      bias_recurrence_cell->assign(biases->begin() + hidden_size * 7, biases->begin() + hidden_size * 8);
+        bias_input->assign(biases->begin() + hidden_size * 0, biases->begin() + hidden_size * 1);
+        bias_output->assign(biases->begin() + hidden_size * 1, biases->begin() + hidden_size * 2);
+        bias_forget->assign(biases->begin() + hidden_size * 2, biases->begin() + hidden_size * 3);
+        bias_cell->assign(biases->begin() + hidden_size * 3, biases->begin() + hidden_size * 4);
+        bias_recurrence_input->assign(biases->begin() + hidden_size * 4, biases->begin() + hidden_size * 5);
+        bias_recurrence_output->assign(biases->begin() + hidden_size * 5, biases->begin() + hidden_size * 6);
+        bias_recurrence_forget->assign(biases->begin() + hidden_size * 6, biases->begin() + hidden_size * 7);
+        bias_recurrence_cell->assign(biases->begin() + hidden_size * 7, biases->begin() + hidden_size * 8);
+      } else {
+        // Set bias values to 0.0
+        //   Note: In EDDL we don't have use_bias option for LSTM so to achieve the same
+        //         result we set the bias values to 0.0
+        vector<float> zero_bias(hidden_size, 0.0);
+        bias_input->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_output->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_forget->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_cell->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_recurrence_input->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_recurrence_output->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_recurrence_forget->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_recurrence_cell->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+      }
+      
 
       Tensor *bias_input_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_input), dev);
       Tensor::copy(bias_input_tensor, lstm->inbias);
@@ -2297,6 +2324,449 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
       log_string("LSTM layer created", log_level, LOG_LEVEL::DEBUG);
     }
     break;
+
+    case ONNX_LAYERS::GRU:
+    {
+      log_string("GRU layer detected", log_level, LOG_LEVEL::DEBUG);
+      vector<float> activation_alpha; // Values for configuring some activations with extra parameters
+      vector<float> activation_beta;  // Values for configuring some activations with extra parameters
+      vector<string> activations;     // Activation functions in order for each gate
+      float clip = -1;                // Value for clipping
+      string direction = "";          // Forward, backward or reverse (Forward by default)
+      int hidden_size = -1;           // Number of neurons in the hidden layer
+
+      for (int j = 0; j < node->attribute_size(); j++)
+      { // Set the attributes
+        onnx::AttributeProto attribute = node->attribute(j);
+        string attr_name = attribute.name();
+        if (!attr_name.compare("activation_alpha"))
+        { // Not used yet in eddl but implemented
+          for (int h = 0; h < attribute.floats_size(); h++)
+          {
+            activation_alpha.push_back(attribute.floats(h));
+          }
+        }
+        else if (!attr_name.compare("activation_beta"))
+        { // Not used yet in eddl but implemented
+          for (int h = 0; h < attribute.floats_size(); h++)
+          {
+            activation_beta.push_back(attribute.floats(h));
+          }
+        }
+        else if (!attr_name.compare("activations"))
+        { // Not used yet in eddl but implemented. We default to Sigmoid, TanH
+          for (int h = 0; h < attribute.strings_size(); h++)
+          {
+            activations.push_back(attribute.strings(h));
+          }
+        }
+        else if (!attr_name.compare("clip"))
+        { // Not used yet in eddl but implemented
+          clip = attribute.f();
+        }
+        else if (!attr_name.compare("direction"))
+        {
+          direction = attribute.s();
+          if (direction.compare("forward")) 
+          {
+            msg("GRU layer " + name + " is not forward direction. EDDL only supports one-directional GRU", "ONNX::ImportNet");
+          }
+        }
+        else if (!attr_name.compare("hidden_size"))
+        {
+          hidden_size = attribute.i();
+        }
+        //else if (!attr_name.compare("linear_before_reset")) {}
+      }
+
+      if (hidden_size < 0)
+        msg("GRU layer " + name + " doesn't have the number of neurons.", "ONNX::ImportNet");
+
+      string parent_name = node->input(0); // Get parent
+      Layer *parent = output_node_map[parent_name];
+      vector<int> parent_shape = parent->output->shape;
+      vector<Layer *> parents = {parent};
+
+      /*
+       * Check if the layer is Decoder by checking if there is not a recurrent layer after this one. To avoid
+       * conflicts with the stacked GRU layers that are encoders.
+       */
+      bool is_decoder = node_is_decoder(node, input_node_map);
+
+      if (is_decoder)
+      {
+        log_string("The layer " + name + " is decoder", log_level, LOG_LEVEL::DEBUG);
+        // We have to create the copy states layer for the decoder
+        Layer *parent_hstate = output_node_map[node->input(5)]; // 5: hidden state
+        Layer *cps = new LCopyStates({parent_hstate}, "", dev, mem);
+        parents.push_back(cps); // Add the layer to the parents for the GRU
+      }
+
+      string weights_gates = node->input(1); // Get weights and dims
+      vector<float> *weights_g = &(map_init_values[weights_gates]);
+      vector<int> dims_g = map_init_dims[weights_gates];
+      int input_size = dims_g[2];
+
+      // Load input weights with shape [hidden_size, input_size]. After load we transpose
+      //    Note: EDDL input weights are of shape [input_size, hidden_size]
+      vector<int> dims_input_gru = {dims_g[1] / 3, input_size};
+
+      vector<float> *weights_z_g = new vector<float>;
+      vector<float> *weights_r_g = new vector<float>;
+      vector<float> *weights_n_g = new vector<float>;
+      int w_size = input_size * hidden_size;
+      weights_z_g->assign(weights_g->begin() + w_size * 0, weights_g->begin() + w_size * 1);
+      weights_r_g->assign(weights_g->begin() + w_size * 1, weights_g->begin() + w_size * 2);
+      weights_n_g->assign(weights_g->begin() + w_size * 2, weights_g->begin() + w_size * 3);
+
+      string recurrence_weights_gates = node->input(2); // Get weights and dims
+      vector<float> *recurrence_weights_g = &(map_init_values[recurrence_weights_gates]);
+      vector<int> recurrence_dims_g = map_init_dims[recurrence_weights_gates];
+
+      vector<int> dims_recurrent_gru = {recurrence_dims_g[2], recurrence_dims_g[2]};
+
+      vector<float> *recurrence_weights_z_g = new vector<float>;
+      vector<float> *recurrence_weights_r_g = new vector<float>;
+      vector<float> *recurrence_weights_n_g = new vector<float>;
+      w_size = hidden_size * hidden_size;
+      recurrence_weights_z_g->assign(recurrence_weights_g->begin() + w_size * 0, recurrence_weights_g->begin() + w_size * 1);
+      recurrence_weights_r_g->assign(recurrence_weights_g->begin() + w_size * 1, recurrence_weights_g->begin() + w_size * 2);
+      recurrence_weights_n_g->assign(recurrence_weights_g->begin() + w_size * 2, recurrence_weights_g->begin() + w_size * 3);
+
+      LGRU *gru = new LGRU(parents, hidden_size, 0, 0, name, dev, mem);
+
+      if (is_decoder)
+      {
+        // Set attribute for unrolling
+        gru->isdecoder = true;
+        set_decoder(gru->parent[0]);
+        // We also have to remove the input layer that feeds the decoder from the input layers of the model
+        // First we search the corresponding input layer for the decoder
+        Layer *dec_linput = get_model_input_layer(gru);
+        if (dec_linput != nullptr)
+          inputs2remove.push_back(dec_linput->name);
+        else
+          msg("Input layer for decoder " + name + " not found", "ONNX::ImportNet");
+      }
+
+      /*
+       * The Weights are permuted before copying them to the GRU layer (mismatch between ONNX standad and EDDL implementation)
+       */
+      Tensor *weights_z_tensor = new Tensor(dims_input_gru, NEW_FROM_VECTOR_PTR(weights_z_g), dev);
+      weights_z_tensor->permute_({1, 0});
+      Tensor::copy(weights_z_tensor, gru->Wz_x);
+      delete weights_z_tensor;
+      delete weights_z_g;
+
+      Tensor *weights_r_tensor = new Tensor(dims_input_gru, NEW_FROM_VECTOR_PTR(weights_r_g), dev);
+      weights_r_tensor->permute_({1, 0});
+      Tensor::copy(weights_r_tensor, gru->Wr_x);
+      delete weights_r_tensor;
+      delete weights_r_g;
+
+      Tensor *weights_n_tensor = new Tensor(dims_input_gru, NEW_FROM_VECTOR_PTR(weights_n_g), dev);
+      weights_n_tensor->permute_({1, 0});
+      Tensor::copy(weights_n_tensor, gru->Wn_x);
+      delete weights_n_tensor;
+      delete weights_n_g;
+
+      Tensor *recurrence_weights_z_tensor = new Tensor(dims_recurrent_gru, NEW_FROM_VECTOR_PTR(recurrence_weights_z_g), dev);
+      recurrence_weights_z_tensor->permute_({1, 0});
+      Tensor::copy(recurrence_weights_z_tensor, gru->Uz_h);
+      delete recurrence_weights_z_tensor;
+      delete recurrence_weights_z_g;
+
+      Tensor *recurrence_weights_r_tensor = new Tensor(dims_recurrent_gru, NEW_FROM_VECTOR_PTR(recurrence_weights_r_g), dev);
+      recurrence_weights_r_tensor->permute_({1, 0});
+      Tensor::copy(recurrence_weights_r_tensor, gru->Ur_h);
+      delete recurrence_weights_r_tensor;
+      delete recurrence_weights_r_g;
+
+      Tensor *recurrence_weights_n_tensor = new Tensor(dims_recurrent_gru, NEW_FROM_VECTOR_PTR(recurrence_weights_n_g), dev);
+      recurrence_weights_n_tensor->permute_({1, 0});
+      Tensor::copy(recurrence_weights_n_tensor, gru->Un_h);
+      delete recurrence_weights_n_tensor;
+      delete recurrence_weights_n_g;
+
+      /*
+       * Set bias values
+       */
+      vector<int> bias_dims = {hidden_size};
+      // Vectors to store the imported weights
+      vector<float> *bias_z = new vector<float>;
+      vector<float> *bias_r = new vector<float>;
+      vector<float> *bias_n = new vector<float>;
+      vector<float> *bias_recurrence_z = new vector<float>;
+      vector<float> *bias_recurrence_r = new vector<float>;
+      vector<float> *bias_recurrence_n = new vector<float>;
+
+      if (node->input_size() > 3) { // Check that we have bias
+        string biases_name = node->input(3);
+        vector<float> *biases = &(map_init_values[biases_name]);
+        // Forward bias (zrh)
+        bias_z->assign(biases->begin() + hidden_size * 0, biases->begin() + hidden_size * 1);
+        bias_r->assign(biases->begin() + hidden_size * 1, biases->begin() + hidden_size * 2);
+        bias_n->assign(biases->begin() + hidden_size * 2, biases->begin() + hidden_size * 3);
+        // Recurrent bias (zrh)
+        bias_recurrence_z->assign(biases->begin() + hidden_size * 3, biases->begin() + hidden_size * 4);
+        bias_recurrence_r->assign(biases->begin() + hidden_size * 4, biases->begin() + hidden_size * 5);
+        bias_recurrence_n->assign(biases->begin() + hidden_size * 5, biases->begin() + hidden_size * 6);
+      } else {
+        // Set bias values to 0.0
+        //   Note: In EDDL we don't have use_bias option for GRU so to achieve the same
+        //         result we set the bias values to 0.0
+        vector<float> zero_bias(hidden_size, 0.0);
+        bias_z->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_r->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_n->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_recurrence_z->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_recurrence_r->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+        bias_recurrence_n->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+      }
+
+      Tensor *bias_z_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_z), dev);
+      Tensor::copy(bias_z_tensor, gru->bias_z_t);
+      delete bias_z_tensor;
+      delete bias_z;
+
+      Tensor *bias_r_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_r), dev);
+      Tensor::copy(bias_r_tensor, gru->bias_r_t);
+      delete bias_r_tensor;
+      delete bias_r;
+
+      Tensor *bias_n_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_n), dev);
+      Tensor::copy(bias_n_tensor, gru->bias_n_t);
+      delete bias_n_tensor;
+      delete bias_n;
+
+      // Add the recurrent bias values for gates z and r
+      Tensor *bias_recurrence_z_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_z), dev);
+      Tensor::add(bias_recurrence_z_tensor, gru->bias_z_t, gru->bias_z_t);
+      delete bias_recurrence_z_tensor;
+      delete bias_recurrence_z;
+
+      Tensor *bias_recurrence_r_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_r), dev);
+      Tensor::add(bias_recurrence_r_tensor, gru->bias_r_t, gru->bias_r_t);
+      delete bias_recurrence_r_tensor;
+      delete bias_recurrence_r;
+
+      // The recurrent bias for h goes to its own tensor beacuse we need it for applying the linear transformation
+      // before the r gate. See "linear_before_reset" attribute in  https://github.com/onnx/onnx/blob/master/docs/Operators.md#GRU
+      Tensor *bias_recurrence_n_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_n), dev);
+      Tensor::copy(bias_recurrence_n_tensor, gru->bias_n_t_hidden);
+      delete bias_recurrence_n_tensor;
+      delete bias_recurrence_n;
+
+      actual_layer = gru;
+      log_string("GRU layer created", log_level, LOG_LEVEL::DEBUG);
+    }
+    break;
+
+    case ONNX_LAYERS::RNN:
+    {
+      log_string("RNN layer detected", log_level, LOG_LEVEL::DEBUG);
+      vector<float> activation_alpha; // Values for configuring some activations with extra parameters
+      vector<float> activation_beta;  // Values for configuring some activations with extra parameters
+      vector<string> activations;     // Activation functions in order for each gate
+      float clip = -1;                // Value for clipping
+      string direction = "";          // Forward, backward or reverse (Forward by default)
+      int hidden_size = -1;           // Number of neurons in the hidden layer
+      bool use_bias = node->input_size() > 3;
+
+      for (int j = 0; j < node->attribute_size(); j++)
+      { // Set the attributes
+        onnx::AttributeProto attribute = node->attribute(j);
+        string attr_name = attribute.name();
+        if (!attr_name.compare("activation_alpha"))
+        { // Not used yet in eddl but implemented
+          for (int h = 0; h < attribute.floats_size(); h++)
+          {
+            activation_alpha.push_back(attribute.floats(h));
+          }
+        }
+        else if (!attr_name.compare("activation_beta"))
+        { // Not used yet in eddl but implemented
+          for (int h = 0; h < attribute.floats_size(); h++)
+          {
+            activation_beta.push_back(attribute.floats(h));
+          }
+        }
+        else if (!attr_name.compare("activations"))
+        {
+          for (int h = 0; h < attribute.strings_size(); h++)
+          {
+            activations.push_back(attribute.strings(h));
+          }
+        }
+        else if (!attr_name.compare("clip"))
+        { // Not used yet in eddl but implemented
+          clip = attribute.f();
+        }
+        else if (!attr_name.compare("direction"))
+        {
+          direction = attribute.s();
+          if (direction.compare("forward")) 
+          {
+            msg("RNN layer " + name + " is not forward direction. EDDL only supports one-directional RNN", "ONNX::ImportNet");
+          }
+        }
+        else if (!attr_name.compare("hidden_size"))
+        {
+          hidden_size = attribute.i();
+        }
+        //else if (!attr_name.compare("linear_before_reset")) {}
+      }
+
+      // Take forward activation function
+      string activation;
+      if (activations.size() > 0) {
+        string forward_activation = activations[0];
+        if (forward_activation == "Relu")
+          activation = "relu";
+        else if (forward_activation == "Sigmoid")
+          activation = "sigmoid";
+        else if (forward_activation == "HardSigmoid") {
+          float epsilon = 1e-5;
+          float alpha = 0.2;
+          float beta = 0.5;
+          if (activation_alpha.size() > 0) alpha = activation_alpha[0]; 
+          if (activation_beta.size() > 0) beta = activation_beta[0]; 
+          bool is_not_valid = abs(alpha - 0.2) > epsilon;
+          is_not_valid |= abs(beta - 0.5) > epsilon;
+          // Check that is equivalent to our hard sigmoid implementation
+          if (is_not_valid) {
+            msg("The HardSigmoid activation function with alpha != 0.2 or beta != 0.5 is not supported for RNN.",
+                "ONNX::ImportNet");
+          } else {
+            activation = "hard_sigmoid";
+          }
+        } else if (forward_activation == "Tanh")
+          activation = "tanh";
+        else if (forward_activation == "Affine") {
+          float alpha = 1.0;
+          float beta = 0.0;
+          if (activation_alpha.size() > 0) alpha = activation_alpha[0]; 
+          if (activation_beta.size() > 0) beta = activation_beta[0]; 
+          // Check that is equivalent to linear activation function
+          if (alpha != 1.0 || beta != 0.0) {
+            msg("The Affine activation function with alpha != 1.0 or beta != 0.0 is not supported for RNN.",
+                "ONNX::ImportNet");
+          } else {
+            activation = "none";
+          }
+        } else
+          msg("Activation function \"" + forward_activation + "\" is not supported for RNN.",
+              "ONNX::ImportNet");
+      } else {
+        msg("RNN layer " + name + " doesn't provide an activation function.", 
+            "ONNX::ImportNet");
+      }
+
+      if (hidden_size < 0)
+        msg("RNN layer " + name + " doesn't have the number of neurons.", "ONNX::ImportNet");
+
+      string parent_name = node->input(0); // Get parent
+      Layer *parent = output_node_map[parent_name];
+      vector<int> parent_shape = parent->output->shape;
+      vector<Layer *> parents = {parent};
+
+      /*
+       * Check if the layer is Decoder by checking if there is not a recurrent layer after this one. To avoid
+       * conflicts with the stacked RNN layers that are encoders.
+       */
+      bool is_decoder = node_is_decoder(node, input_node_map);
+
+      if (is_decoder)
+      {
+        log_string("The layer " + name + " is decoder", log_level, LOG_LEVEL::DEBUG);
+        // We have to create the copy states layer for the decoder
+        Layer *parent_hstate = output_node_map[node->input(5)]; // 5: hidden state
+        Layer *cps = new LCopyStates({parent_hstate}, "", dev, mem);
+        parents.push_back(cps); // Add the layer to the parents for the RNN
+      }
+
+      string weights_gates = node->input(1); // Get weights and dims
+      vector<float> *weights_g = &(map_init_values[weights_gates]);
+      vector<int> dims_g = map_init_dims[weights_gates];
+      int input_size = dims_g[2];
+
+      // Load input weights with shape [hidden_size, input_size]. After load we transpose
+      //    Note: EDDL input weights are of shape [input_size, hidden_size]
+      vector<int> dims_input_gru = {dims_g[1], input_size};
+
+      vector<float> *weights_x = new vector<float>;
+      int w_size = input_size * hidden_size;
+      weights_x->assign(weights_g->begin() , weights_g->begin() + w_size);
+
+      string recurrence_weights_gates = node->input(2); // Get weights and dims
+      vector<float> *recurrence_weights_g = &(map_init_values[recurrence_weights_gates]);
+      vector<int> recurrence_dims_g = map_init_dims[recurrence_weights_gates];
+
+      vector<int> dims_recurrent_gru = {recurrence_dims_g[2], recurrence_dims_g[2]};
+
+      vector<float> *weights_h = new vector<float>;
+      w_size = hidden_size * hidden_size;
+      weights_h->assign(recurrence_weights_g->begin(), recurrence_weights_g->begin() + w_size);
+
+      LRNN *rnn = new LRNN(parents, hidden_size, activation, use_bias, false, name, dev, mem);
+
+      if (is_decoder)
+      {
+        // Set attribute for unrolling
+        rnn->isdecoder = true;
+        set_decoder(rnn->parent[0]);
+        // We also have to remove the input layer that feeds the decoder from the input layers of the model
+        // First we search the corresponding input layer for the decoder
+        Layer *dec_linput = get_model_input_layer(rnn);
+        if (dec_linput != nullptr)
+          inputs2remove.push_back(dec_linput->name);
+        else
+          msg("Input layer for decoder " + name + " not found", "ONNX::ImportNet");
+      }
+
+      /*
+       * The Weights are permuted before copying them to the RNN layer (mismatch between ONNX standad and EDDL implementation)
+       */
+      Tensor *weights_x_tensor = new Tensor(dims_input_gru, NEW_FROM_VECTOR_PTR(weights_x), dev);
+      weights_x_tensor->permute_({1, 0});
+      Tensor::copy(weights_x_tensor, rnn->Wx);
+      delete weights_x_tensor;
+      delete weights_x;
+
+      Tensor *weights_h_tensor = new Tensor(dims_recurrent_gru, NEW_FROM_VECTOR_PTR(weights_h), dev);
+      weights_h_tensor->permute_({1, 0});
+      Tensor::copy(weights_h_tensor, rnn->Wy);
+      delete weights_h_tensor;
+      delete weights_h;
+
+      if (use_bias) {
+        string biases_name = node->input(3);
+        vector<float> *biases = &(map_init_values[biases_name]);
+        vector<int> bias_dims = {hidden_size};
+
+        vector<float> *bias_x = new vector<float>;
+        vector<float> *bias_h = new vector<float>;
+
+        bias_x->assign(biases->begin() + hidden_size * 0, biases->begin() + hidden_size * 1);
+        bias_h->assign(biases->begin() + hidden_size * 1, biases->begin() + hidden_size * 2);
+
+        Tensor *bias_x_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_x), dev);
+        Tensor::copy(bias_x_tensor, rnn->bias);
+        delete bias_x_tensor;
+        delete bias_x;
+
+        // Add the recurrent bias values for gates z and r
+        Tensor *bias_h_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_h), dev);
+        Tensor::add(bias_h_tensor, rnn->bias, rnn->bias);
+        delete bias_h_tensor;
+        delete bias_h;
+      }
+
+      actual_layer = rnn;
+      log_string("RNN layer created", log_level, LOG_LEVEL::DEBUG);
+    }
+    break;
+
 
     case ONNX_LAYERS::IDENTITY:
     {
