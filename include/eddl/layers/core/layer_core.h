@@ -113,7 +113,6 @@ public:
     static int total_layers;
     int ndim;
     bool use_bias;  // TODO: Implement
-	bool distributed_training;
 
 	// Params
 	Tensor *W;

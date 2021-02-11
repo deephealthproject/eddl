@@ -18,11 +18,12 @@ jobs:
       - name: Install utilities
         run: |
           sudo apt-get install -y cmake wget graphviz
+          sudo apt-get install -y build-essential checkinstall zlib1g-dev libssl-dev  # Temp
       - name: Build
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_SUPERBUILD=ON -DBUILD_HPC=OFF -DBUILD_TESTS=ON -DBUILD_DIST=OFF
+          cmake .. -DBUILD_SUPERBUILD=ON -DBUILD_HPC=OFF -DBUILD_TESTS=ON -DBUILD_DIST=OFF -DBUILD_RUNTIME=OFF
           make
       - name: Test
         run: |

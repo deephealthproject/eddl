@@ -35,9 +35,16 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 
 
 ###########################################################################
-############################### SANITY CHECKS ##############################
+############################### SANITY CHECKS #############################
 ###########################################################################
 
+# Prefer static libraries
+# There are problems since not all static libraries have been compile with -fPIC
+#IF(WIN32)
+#    SET(CMAKE_FIND_LIBRARY_SUFFIXES .lib .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
+#ELSE(WIN32)
+#    SET(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
+#ENDIF(WIN32)
 
 ###########################################################################
 ############################### GET FILES #################################
@@ -52,6 +59,12 @@ file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/serialization/onnx/onnx.pb*")
 list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/serialization/onnx/onnx.pb*")
 
+# Remove problematic files if they are not needed
+if(NOT BUILD_DIST)
+    list(FILTER PUBLIC_HEADERS EXCLUDE REGEX ".*/src/distributed/*")
+    list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/distributed/*")
+    list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/distributed/*")
+endif()
 
 SET(ALL_FILES ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
 
@@ -73,6 +86,7 @@ SET(SPECIAL_FILES ${CUDA_HEADERS} ${CUDA_SOURCES} ${FPGA_HEADERS} ${FPGA_SOURCES
 FOREACH(item ${SPECIAL_FILES})
     LIST(REMOVE_ITEM ALL_FILES ${item})
 ENDFOREACH(item)
+
 
 
 ###########################################################################
@@ -114,8 +128,14 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only libra
 # ONNX files
 if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
+
     # Link library
-    if(NOT Protobuf_ROOT)
+    if(Protobuf_ROOT)
+        # Find libraries (need absolute paths)
+        find_library(Protobuf_LIBRARY NAMES protobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+        find_library(Protobuf_LIBRARY_DEBUG NAMES protobufd HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+        find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+    else()
         find_package(Protobuf)  # Problems with: Protobuf_ROOT
 
         # Check if Protobuf was really found
@@ -131,11 +151,6 @@ if(BUILD_PROTOBUF)
 
     # Add includes
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
-
-    # Find libraries (need absolute paths)
-    find_library(Protobuf_LIBRARY NAMES protobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
-    find_library(Protobuf_LIBRARY_DEBUG NAMES protobufd HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
-    find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
 
     # Add libraries
     target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
@@ -231,11 +246,7 @@ if(USE_CUDA)
         # Add includes
         target_include_directories(${PROJECT_NAME} PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
 
-#        # Find libraries (need absolute paths)
-#        find_library(CUBLAS_LIBRARY cublas HINTS ${CUDA_TOOLKIT_ROOT_DIR})
-#        find_library(CUDART_LIBRARY cudart HINTS ${CUDA_TOOLKIT_ROOT_DIR})
-#        find_library(CURAND_LIBRARY curand HINTS ${CUDA_TOOLKIT_ROOT_DIR})
-#        target_link_libraries(${PROJECT_NAME} PRIVATE ${CUBLAS_LIBRARY} ${CUDART_LIBRARY} ${CURAND_LIBRARY})
+        # Add libraries
         target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cublas CUDA::cudart CUDA::curand)
         if(USE_CUDNN)
             find_library(CUDNN_LIBRARY cudnn HINTS ${CUDAToolkit_LIBRARY_DIR})
@@ -398,7 +409,8 @@ message(STATUS "Build coverage: " ${BUILD_COVERAGE} )
 message(STATUS "Build sanitizers: " ${BUILD_SANITIZERS} )
 message(STATUS "Build HPC: " ${BUILD_HPC} )
 message(STATUS "Build distributed: " ${BUILD_DIST} )
-message(STATUS "Use superbuild: " ${BUILD_SUPERBUILD} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Find library suffixes: " ${CMAKE_FIND_LIBRARY_SUFFIXES} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER}) | Version: ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
