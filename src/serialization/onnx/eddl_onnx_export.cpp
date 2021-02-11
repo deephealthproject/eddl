@@ -171,6 +171,12 @@ void build_unsqueeze_node(string node_name, string input, string output, vector<
 // OPSET: 7, 1
 void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph);
 
+// OPSET: 7, 3, 1
+void build_gru_node(LGRU *layer, onnx::GraphProto *graph);
+
+// OPSET: 7, 1
+void build_rnn_node(LRNN *layer, onnx::GraphProto *graph);
+
 // OPSET: 13
 void build_resize_node(LScale *layer, onnx::GraphProto *graph);
 
@@ -244,6 +250,7 @@ void save_net_to_onnx_file(Net *net, string path)
   { // The serialization is automated by the protobuf library
     cerr << "Failed to write the model in onnx." << endl;
   }
+  ofs.close();
 }
 
 size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gradients)
@@ -327,7 +334,7 @@ void set_graph(onnx::ModelProto *model, Net *net, bool gradients)
   /*
    * We get all the input layers from the layers vector of the model
    * instead of taking them from net->lin. Beacause for the case of
-   * a recurrent net with decoder the input layer that is connected 
+   * a recurrent net with decoder the input layer that is connected
    * to the decoder is not added in the lin vector of the model.
    * With this way we ensure that we are taking all the input layers
    * of the model.
@@ -603,6 +610,14 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
   else if (LLSTM *t = dynamic_cast<LLSTM *>(layer))
   {
     build_lstm_node((LLSTM *)(MLayer *)layer, graph);
+  }
+  else if (LGRU *t = dynamic_cast<LGRU *>(layer))
+  {
+    build_gru_node((LGRU *)(MLayer *)layer, graph);
+  }
+  else if (LRNN *t = dynamic_cast<LRNN *>(layer))
+  {
+    build_rnn_node((LRNN *)(MLayer *)layer, graph);
   }
   else if (LCopyStates *t = dynamic_cast<LCopyStates *>(layer))
   {
@@ -1093,10 +1108,9 @@ void build_reshape_node(LReshape *layer, onnx::GraphProto *graph)
   target_shape_tensor->set_data_type(onnx::TensorProto::INT64);
   target_shape_tensor->add_dims(layer->ls.size());
   // Set the target shape
-  for (int i : layer->ls)
-  {
-    target_shape_tensor->add_int64_data(i);
-  }
+  target_shape_tensor->add_int64_data(-1); // For batch_size
+  for (int i = 1; i < layer->ls.size(); ++i)
+    target_shape_tensor->add_int64_data(layer->ls[i]);
 
   // Add an empty node to the graph
   onnx::NodeProto *node = graph->add_node();
@@ -1486,14 +1500,14 @@ void build_mul_node(LMult *layer, onnx::GraphProto *graph)
 }
 
 /*
-  void build_pow_node(LPow *layer, onnx::GraphProto *graph) 
+  void build_pow_node(LPow *layer, onnx::GraphProto *graph)
   {
     // Add an empty node to the graph
     onnx::NodeProto* node = graph->add_node();
     node->set_op_type("Pow");
     node->set_name(layer->name);
     // Set the inputs names of the node from the parents of the layer
-    for (Layer* parentl : layer->parent) 
+    for (Layer* parentl : layer->parent)
     {
       node->add_input(parentl->name);
     }
@@ -1907,6 +1921,13 @@ void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
   input_forget_attr->set_type(onnx::AttributeProto::INT);
   input_forget_attr->set_i(0); // To not couple the input and forget gates
 
+  // Warn if the layer uses mask zeros. Not supported in ONNX
+  if (layer->mask_zeros) {
+    cout << "[ONNX::Export] Warning: The LSTM layer " << layer->name << " has mask_zeros=true. "
+         << "This attribute is not supported in ONNX, so the model exported will not have this attribute."
+         << endl;
+  }
+
   // W input (weights for all the layers W[iofc])
   onnx::TensorProto *w = graph->add_initializer();
   w->set_name(layer->name + "_W");
@@ -1918,12 +1939,16 @@ void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
    */
   Tensor *Wix = layer->Wix->permute({1, 0});
   w->mutable_float_data()->Add(Wix->ptr, Wix->ptr + Wix->size); // i weights
+  delete Wix;
   Tensor *Wox = layer->Wox->permute({1, 0});
   w->mutable_float_data()->Add(Wox->ptr, Wox->ptr + Wox->size); // o weights
+  delete Wox;
   Tensor *Wfx = layer->Wfx->permute({1, 0});
   w->mutable_float_data()->Add(Wfx->ptr, Wfx->ptr + Wfx->size); // f weights
+  delete Wfx;
   Tensor *Wcx = layer->Wcx->permute({1, 0});
   w->mutable_float_data()->Add(Wcx->ptr, Wcx->ptr + Wcx->size); // c weights
+  delete Wcx;
 
   // R input (recurrent weights for all the layers W[iofc])
   onnx::TensorProto *r = graph->add_initializer();
@@ -1936,12 +1961,16 @@ void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
    */
   Tensor *Wih = layer->Wih->permute({1, 0});
   r->mutable_float_data()->Add(Wih->ptr, Wih->ptr + Wih->size); // i recurrent weights
+  delete Wih;
   Tensor *Woh = layer->Woh->permute({1, 0});
   r->mutable_float_data()->Add(Woh->ptr, Woh->ptr + Woh->size); // o recurrent weights
+  delete Woh;
   Tensor *Wfh = layer->Wfh->permute({1, 0});
   r->mutable_float_data()->Add(Wfh->ptr, Wfh->ptr + Wfh->size); // f recurrent weights
+  delete Wfh;
   Tensor *Wch = layer->Wch->permute({1, 0});
   r->mutable_float_data()->Add(Wch->ptr, Wch->ptr + Wch->size); // c recurrent weights
+  delete Wch;
 
   // B input (biases for all the layers)
   onnx::TensorProto *b = graph->add_initializer();
@@ -2001,6 +2030,328 @@ void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
         graph);
   }
 }
+
+void build_gru_node(LGRU *layer, onnx::GraphProto *graph)
+{
+  // Add an empty node to the graph
+  onnx::NodeProto *node = graph->add_node();
+  node->set_op_type("GRU");
+  node->set_name(layer->name);
+  // Set the input sequence of the GRU
+  node->add_input(layer->parent[0]->name);
+  node->add_input(layer->name + "_W");
+  node->add_input(layer->name + "_R");
+  node->add_input(layer->name + "_B");
+  node->add_input(""); // Empty str to skip the sequence_lens input
+  // Check if we have to copy states for a decoder GRU
+  if (layer->parent.size() > 1 && layer->isdecoder)
+  {
+    string l_copyStates_name = layer->parent[1]->name;
+    node->add_input(l_copyStates_name + "_h");
+  }
+
+  // Attr activation alpha (for GRU activation functions)
+  // Not used in EDDL
+  //onnx::AttributeProto* activation_alpha_attr = node->add_attribute();
+  //activation_alpha_attr->set_name( "activation_alpha" );
+  //activation_alpha_attr->set_type( onnx::AttributeProto::FLOATS );
+
+  // Attr activation beta
+  // Not used in EDDL
+  //onnx::AttributeProto* activation_beta_attr = node->add_attribute();
+  //activation_beta_attr->set_name( "activation_beta" );  // Not used in EDDL
+  //activation_beta_attr->set_type( onnx::AttributeProto::FLOATS );
+
+  // Attr activations
+  onnx::AttributeProto *activations_attr = node->add_attribute();
+  activations_attr->set_name("activations");
+  activations_attr->set_type(onnx::AttributeProto::STRINGS);
+  activations_attr->add_strings("Sigmoid"); // For gates z, r
+  activations_attr->add_strings("Tanh");    // For gate n
+
+  // Attr clip (cell clip threshold, [-threshold, +threshold])
+  // Not used in EDDL
+  //onnx::AttributeProto* hidden_size_attr = node->add_attribute();
+  //hidden_size_attr->set_name( "clip" );
+  //hidden_size_attr->set_type( onnx::AttributeProto::FLOAT );
+  //hidden_size_attr->set_i( /*?*/ );
+
+  // Attr direction
+  onnx::AttributeProto *direction_attr = node->add_attribute();
+  direction_attr->set_name("direction");
+  direction_attr->set_type(onnx::AttributeProto::STRING);
+  direction_attr->set_s("forward"); // Current implementation of GRU
+
+  // Attr hidden size
+  onnx::AttributeProto *hidden_size_attr = node->add_attribute();
+  hidden_size_attr->set_name("hidden_size");
+  hidden_size_attr->set_type(onnx::AttributeProto::INT);
+  hidden_size_attr->set_i(layer->units);
+
+  // Attr linear transformation before reset
+  onnx::AttributeProto *linear_trans_attr = node->add_attribute();
+  linear_trans_attr->set_name("linear_before_reset");
+  linear_trans_attr->set_type(onnx::AttributeProto::INT);
+  // We apply the linear transformation before the r gate.
+  // See "linear_before_reset" attribute in  https://github.com/onnx/onnx/blob/master/docs/Operators.md#GRU
+  linear_trans_attr->set_i(1);
+
+  // Warn if the layer uses mask zeros. Not supported in ONNX
+  if (layer->mask_zeros) {
+    cout << "[ONNX::Export] Warning: The GRU layer " << layer->name << " has mask_zeros=true. "
+         << "This attribute is not supported in ONNX, so the model exported will not have this attribute."
+         << endl;
+  }
+
+  // W input (weights for all the layers W[zrn])
+  onnx::TensorProto *w = graph->add_initializer();
+  w->set_name(layer->name + "_W");
+  w->set_data_type(onnx::TensorProto::FLOAT);
+  vector<int> w_dims{1, 3 * layer->units, layer->input->shape[1]}; // w_dims shape[0] = 1 beacuse is only forward
+  w->mutable_dims()->Add(w_dims.begin(), w_dims.end());            // Set the shape of the weights
+  /*
+   * The Weights are permuted before saving them (required by ONNX standad)
+   */
+  Tensor *Wz_x = layer->Wz_x->permute({1, 0});
+  w->mutable_float_data()->Add(Wz_x->ptr, Wz_x->ptr + Wz_x->size); // z weights
+  delete Wz_x;
+  Tensor *Wr_x = layer->Wr_x->permute({1, 0});
+  w->mutable_float_data()->Add(Wr_x->ptr, Wr_x->ptr + Wr_x->size); // r weights
+  delete Wr_x;
+  Tensor *Wn_x = layer->Wn_x->permute({1, 0});
+  w->mutable_float_data()->Add(Wn_x->ptr, Wn_x->ptr + Wn_x->size); // n weights
+  delete Wn_x;
+
+  // R input (recurrent weights for all the layers W[zrh])
+  onnx::TensorProto *r = graph->add_initializer();
+  r->set_name(layer->name + "_R");
+  r->set_data_type(onnx::TensorProto::FLOAT);
+  vector<int> r_dims{1, 3 * layer->units, layer->units}; // r_dims shape[0] = 1 beacuse is only forward
+  r->mutable_dims()->Add(r_dims.begin(), r_dims.end());  // Set the shape of the weights
+  /*
+   * The Weights are permuted before saving them (required by ONNX standad)
+   */
+  Tensor *Wz_hidden = layer->Uz_h->permute({1, 0});
+  r->mutable_float_data()->Add(Wz_hidden->ptr, Wz_hidden->ptr + Wz_hidden->size); // z recurrent weights
+  delete Wz_hidden;
+  Tensor *Wr_hidden = layer->Ur_h->permute({1, 0});
+  r->mutable_float_data()->Add(Wr_hidden->ptr, Wr_hidden->ptr + Wr_hidden->size); // r recurrent weights
+  delete Wr_hidden;
+  Tensor *Wn_hidden = layer->Un_h->permute({1, 0});
+  r->mutable_float_data()->Add(Wn_hidden->ptr, Wn_hidden->ptr + Wn_hidden->size); // n recurrent weights
+  delete Wn_hidden;
+
+  // B input (biases for all the layers)
+  onnx::TensorProto *b = graph->add_initializer();
+  b->set_name(layer->name + "_B");
+  b->set_data_type(onnx::TensorProto::FLOAT);
+  vector<int> b_dims{1, 6 * layer->units};              // b_dims shape[0] = 1 for weights in one directions
+  b->mutable_dims()->Add(b_dims.begin(), b_dims.end()); // Set the shape of the weights
+
+  b->mutable_float_data()->Add(layer->bias_z_t->ptr, layer->bias_z_t->ptr + layer->bias_z_t->size); // z bias
+  b->mutable_float_data()->Add(layer->bias_r_t->ptr, layer->bias_r_t->ptr + layer->bias_r_t->size); // r bias
+  b->mutable_float_data()->Add(layer->bias_n_t->ptr, layer->bias_n_t->ptr + layer->bias_n_t->size); // n bias
+
+  // Set recurrent forward biases to 0 for gates z and r
+  for (int i = 0; i < 2 * layer->units; ++i)
+    b->add_float_data(0.0);
+
+  // The recurrent bias for n is set. Because we need it for applying the linear transformation before the
+  // r gate. See "linear_before_reset" attribute in  https://github.com/onnx/onnx/blob/master/docs/Operators.md#GRU
+  b->mutable_float_data()->Add(layer->bias_n_t_hidden->ptr, layer->bias_n_t_hidden->ptr + layer->bias_n_t_hidden->size); // n recurrent bias
+
+  /* Set the outputs of the node to link with the other nodes
+   *   - In ONNX the GRU operator can have up to 2 outputs:
+   *       * Y -> [seq_len, num_directions, batch_size, hidden_size]
+   *       * Y_h (optional) -> [num_directions, batch_size, hidden_size]
+   *   - If the layer is encoder we select Y_h as output
+   *   - If the layer is encoder but there are more stacked GRU, we select Y as output
+   *   - If the layer is decoder we select Y as output
+   *
+   *   Note: To select the output of the GRU that the next layer in the graph takes as input
+   *         we have to set that output name to the layer name (layer->name)
+   */
+  node->add_output(layer->name + "_Y");
+  node->add_output(layer->name + "_Y_h");
+  if (layer->isdecoder || layer->child[0]->isrecurrent /*To detect stacked GRU*/)
+  {
+    // Squeeze: [seq_length, num_directions, batch_size, hidden_size] -> [seq_length, batch_size, hidden_size]
+    //   Note: The EDDL only supports one-directional GRU, so num_directions=1
+    build_squeeze_node(
+        layer->name + "_outputSqueeze", // node name
+        layer->name + "_Y",             // input name
+        layer->name,                    // Output name
+        {1},                            // axes to squeeze
+        graph);
+  }
+  else
+  { // is encoder
+    // Squeeze: [num_directions, batch_size, hidden_size] -> [batch_size, hidden_size]
+    //   Note: The EDDL only supports one-directional GRU, so num_directions=1
+    build_squeeze_node(
+        layer->name + "_outputSqueeze", // node name
+        layer->name + "_Y_h",           // input name
+        layer->name,                    // Output name
+        {0},                            // axes to squeeze
+        graph);
+  }
+}
+
+void build_rnn_node(LRNN *layer, onnx::GraphProto *graph)
+{
+  // Add an empty node to the graph
+  onnx::NodeProto *node = graph->add_node();
+  node->set_op_type("RNN");
+  node->set_name(layer->name);
+  // Set the input sequence of the RNN
+  node->add_input(layer->parent[0]->name);
+  node->add_input(layer->name + "_W");
+  node->add_input(layer->name + "_R");
+  if (layer->use_bias) node->add_input(layer->name + "_B");
+  else node->add_input("");
+  node->add_input(""); // Empty str to skip the sequence_lens input
+  // Check if we have to copy states for a decoder RNN
+  if (layer->parent.size() > 1 && layer->isdecoder)
+  {
+    string l_copyStates_name = layer->parent[1]->name;
+    node->add_input(l_copyStates_name + "_h");
+  }
+
+  // Attr activations
+  float alpha, beta; // optional auxiliary parameters
+  bool activation_with_params = false;
+  onnx::AttributeProto *activations_attr = node->add_attribute();
+  activations_attr->set_name("activations");
+  activations_attr->set_type(onnx::AttributeProto::STRINGS);
+  if (layer->activation == "relu")
+    activations_attr->add_strings("Relu");
+  else if (layer->activation == "sigmoid")
+    activations_attr->add_strings("Sigmoid");
+  else if (layer->activation == "hard_sigmoid") {
+    activations_attr->add_strings("HardSigmoid");
+    alpha = 0.2;
+    beta = 0.5;
+    activation_with_params = true;
+  } else if (layer->activation == "tanh")
+    activations_attr->add_strings("Tanh");
+  else if (layer->activation == "none") {
+    activations_attr->add_strings("Affine");
+    // Achieve linear activation: alpha * x + beta -> where alpha = 1.0 and beta = 0.0
+    alpha = 1.0;
+    beta = 0.0;
+    activation_with_params = true;
+  } else
+    msg("Activation not supported for RNN", "ONNX::ExportNet");
+
+  if (activation_with_params) {
+    // Auxiliary alpha attribute for the activation functions
+    onnx::AttributeProto* activation_alpha_attr = node->add_attribute();
+    activation_alpha_attr->set_name("activation_alpha");
+    activation_alpha_attr->set_type(onnx::AttributeProto::FLOATS);
+    activation_alpha_attr->add_floats(alpha);
+
+    // Auxiliary beta attribute for the activation functions
+    onnx::AttributeProto* activation_beta_attr = node->add_attribute();
+    activation_beta_attr->set_name("activation_beta");
+    activation_beta_attr->set_type(onnx::AttributeProto::FLOATS);
+    activation_beta_attr->add_floats(beta);
+  }
+
+  // Attr clip (cell clip threshold, [-threshold, +threshold])
+  // Not used in EDDL
+  //onnx::AttributeProto* hidden_size_attr = node->add_attribute();
+  //hidden_size_attr->set_name( "clip" );
+  //hidden_size_attr->set_type( onnx::AttributeProto::FLOAT );
+  //hidden_size_attr->set_i( /*?*/ );
+
+  // Attr direction
+  onnx::AttributeProto *direction_attr = node->add_attribute();
+  direction_attr->set_name("direction");
+  direction_attr->set_type(onnx::AttributeProto::STRING);
+  direction_attr->set_s("forward"); // Current implementation of RNN
+
+  // Attr hidden size
+  onnx::AttributeProto *hidden_size_attr = node->add_attribute();
+  hidden_size_attr->set_name("hidden_size");
+  hidden_size_attr->set_type(onnx::AttributeProto::INT);
+  hidden_size_attr->set_i(layer->units);
+
+  // Weights for input
+  onnx::TensorProto *w = graph->add_initializer();
+  w->set_name(layer->name + "_W");
+  w->set_data_type(onnx::TensorProto::FLOAT);
+  vector<int> w_dims{1, layer->units, layer->input->shape[1]}; // w_dims shape[0] = 1 beacuse is only forward
+  w->mutable_dims()->Add(w_dims.begin(), w_dims.end());        // Set the shape of the weights
+  /*
+   * The Weights are permuted before saving them (required by ONNX standad)
+   */
+  Tensor *Wx = layer->Wx->permute({1, 0});
+  w->mutable_float_data()->Add(Wx->ptr, Wx->ptr + Wx->size);
+  delete Wx;
+
+  // Recurrent weights
+  onnx::TensorProto *r = graph->add_initializer();
+  r->set_name(layer->name + "_R");
+  r->set_data_type(onnx::TensorProto::FLOAT);
+  vector<int> r_dims{1, layer->units, layer->units};     // r_dims shape[0] = 1 beacuse is only forward
+  r->mutable_dims()->Add(r_dims.begin(), r_dims.end());  // Set the shape of the weights
+  /*
+   * The Weights are permuted before saving them (required by ONNX standad)
+   */
+  Tensor *Wy = layer->Wy->permute({1, 0});
+  r->mutable_float_data()->Add(Wy->ptr, Wy->ptr + Wy->size);
+  delete Wy;
+
+  // Bias
+  if (layer->use_bias) {
+    onnx::TensorProto *b = graph->add_initializer();
+    b->set_name(layer->name + "_B");
+    b->set_data_type(onnx::TensorProto::FLOAT);
+    vector<int> b_dims{1, 2 * layer->units};              // b_dims shape[0] = 1 for weights in one directions
+    b->mutable_dims()->Add(b_dims.begin(), b_dims.end()); // Set the shape of the weights
+    b->mutable_float_data()->Add(layer->bias->ptr, layer->bias->ptr + layer->bias->size);
+    // Set recurrent biases to 0
+    for (int i = 0; i < layer->units; ++i)
+      b->add_float_data(0.0);
+  }
+
+  /* Set the outputs of the node to link with the other nodes
+   *   - In ONNX the LSTM operator can have up to 2 outputs:
+   *       * Y -> [seq_len, num_directions, batch_size, hidden_size]
+   *       * Y_h (optional) -> [num_directions, batch_size, hidden_size]
+   *   - If the layer is encoder we select Y_h as output
+   *   - If the layer is encoder but there are more stacked RNN, we select Y as output
+   *   - If the layer is decoder we select Y as output
+   *
+   *   Note: To select the output of the RNN that the next layer in the graph takes as input
+   *         we have to set that output name to the layer name (layer->name)
+   */
+  node->add_output(layer->name + "_Y");
+  node->add_output(layer->name + "_Y_h");
+  if (layer->isdecoder || layer->child[0]->isrecurrent /*To detect stacked RNN*/)
+  {
+    // Squeeze: [seq_length, num_directions, batch_size, hidden_size] -> [seq_length, batch_size, hidden_size]
+    //   Note: The EDDL only supports one-directional RNN, so num_directions=1
+    build_squeeze_node(
+        layer->name + "_outputSqueeze", // node name
+        layer->name + "_Y",             // input name
+        layer->name,                    // Output name
+        {1},                            // axes to squeeze
+        graph);
+  }
+  else
+  { // is encoder
+    // Squeeze: [num_directions, batch_size, hidden_size] -> [batch_size, hidden_size]
+    //   Note: The EDDL only supports one-directional RNN, so num_directions=1
+    build_squeeze_node(
+        layer->name + "_outputSqueeze", // node name
+        layer->name + "_Y_h",           // input name
+        layer->name,                    // Output name
+        {0},                            // axes to squeeze
+        graph);
+  }
+}
+
 
 void build_resize_node(LScale *layer, onnx::GraphProto *graph)
 {
@@ -2165,27 +2516,27 @@ void handle_copy_states(LCopyStates *layer, onnx::GraphProto *graph)
 {
   string parent_name = layer->parent[0]->name;
   string child_name = layer->child[0]->name;
-  // Check the type of the parent layer to copy the states
+
+  // Set the node to copy the hidden (h) state
+  string node_name = parent_name + "_to_" + child_name + "_CopyState_h";
+  string input_name = parent_name;
+  string output_name = layer->name + "_h";
+  /*
+   * Add an Unsqueeze layer to reshape the h state to the desired shape for LSTM.
+   *
+   *   Note: The h state coming from the previous LSTM has been squeezed, so we
+   *         have to unsqueeze it to get the desired shape for the decoder LSTM
+   */
+  build_unsqueeze_node(
+      layer->name + "_h_unsqueeze", // node name
+      input_name,                   // input name
+      output_name,                  // Output name
+      {0},                          // axes to squeeze
+      graph);
+
+  // Set the node to copy the cell (c) state in case of LSTM
   if (LLSTM *l = dynamic_cast<LLSTM *>(layer->parent[0]))
   {
-    // Set the node to copy the hidden (h) state
-    string node_name = parent_name + "_to_" + child_name + "_CopyState_h";
-    string input_name = parent_name;
-    string output_name = layer->name + "_h";
-    /* 
-     * Add an Unsqueeze layer to reshape the h state to the desired shape for LSTM.
-     *
-     *   Note: The h state coming from the previous LSTM has been squeezed, so we 
-     *         have to unsqueeze it to get the desired shape for the decoder LSTM
-     */
-    build_unsqueeze_node(
-        layer->name + "_h_unsqueeze", // node name
-        input_name,                   // input name
-        output_name,                  // Output name
-        {0},                          // axes to squeeze
-        graph);
-
-    // Set the node to copy the cell (c) state
     node_name = parent_name + "_to_" + child_name + "_CopyState_c";
     input_name = parent_name + "_Y_c";
     output_name = layer->name + "_c";
@@ -2225,9 +2576,9 @@ void prepare_recurrent_input(string input_name, string output_name, vector<int> 
 void prepare_recurrent_output(string input_name, string output_name, vector<int> output_shape, onnx::GraphProto *graph)
 {
   /*
-     * This functions takes a graph of a recurrent net and adds a transpose operator
-     * to fix the output shape from (seq_len, batch_size, out_shape) to (batch_size, seq_len, out_shape) 
-     */
+   * This functions takes a graph of a recurrent net and adds a transpose operator
+   * to fix the output shape from (seq_len, batch_size, out_shape) to (batch_size, seq_len, out_shape)
+   */
   // Add an empty node to the graph
   onnx::NodeProto *node = graph->add_node();
   node->set_op_type("Transpose");
@@ -2253,7 +2604,9 @@ void prepare_recurrent_output(string input_name, string output_name, vector<int>
 
 // End: Exporting Module
 //----------------------------------------------------------------------------------------
+
 #else
+
 void save_net_to_onnx_file(Net *net, string path)
 {
   cerr << "Not compiled for ONNX. Missing Protobuf" << endl;

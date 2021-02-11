@@ -16,12 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install utilities
-        run: sudo apt-get install -y cmake wget graphviz
+        run: |
+          sudo apt-get install -y cmake wget graphviz
       - name: Build
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_SUPERBUILD=ON -DBUILD_HPC=OFF -DBUILD_TESTS=ON
+          cmake .. -DBUILD_SUPERBUILD=ON -DBUILD_HPC=OFF -DBUILD_TESTS=ON -DBUILD_DIST=OFF
           make
       - name: Test
         run: |
