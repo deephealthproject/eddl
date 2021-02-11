@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.9.2)
+
+project(openssl-download NONE)
+
+# Set base dir
+SET(EP_BASE_DIR @EP_BASE_DIR@)
+SET(CMAKE_BUILD_TYPE @CMAKE_BUILD_TYPE@)
+
+include(ExternalProject)
+ExternalProject_Add(openssl
+		PREFIX openssl
+		GIT_REPOSITORY "https://github.com/openssl/openssl.git"
+		GIT_TAG "OpenSSL_1_1_1i"
+		SOURCE_DIR "${EP_BASE_DIR}/openssl-src"
+		BINARY_DIR "${EP_BASE_DIR}/openssl-build"
+        INSTALL_DIR "${EP_BASE_DIR}/openssl"
+		CONFIGURE_COMMAND sh ${EP_BASE_DIR}/openssl-src/config --prefix=${EP_BASE_DIR}/openssl
+		)
