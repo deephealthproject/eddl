@@ -25,31 +25,31 @@ environment by running the following commands **from the source directory**:
 
 .. code:: bash
 
-    conda env create -f environment-cpu.yml  # -cpu, -gpu, -cudnn
+    conda env create -f environment.yml
     conda activate eddl
 
 You can also update your environment with:
 
 .. code:: bash
 
-    conda env update -f environment-cpu.yml  # -cpu, -gpu, -cudnn
+    conda env update -f environment.yml
 
 If you decide to manually install these dependencies in your system (make sure they are at standard paths):
 
 .. code:: yaml
 
-    - cmake>=3.9.2
+    - cmake>=3.17.2
     - eigen==3.3.7
     - protobuf==3.11.4
-    - libprotobuf==3.11.4
-    - cudnn==8.0.5.39
-    - cudatoolkit-dev==10.1.243
-    - gtest
-    - graphviz
-    - wget
-    - doxygen
-    - python
-    - pip
+    - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
+    - zlib==1.2.11
+    - openssl==1.1.1i
+    - gtest==1.10.0
+    - graphviz==2.42.3  # Build & Run
+    - wget==1.20.1
+    - doxygen==1.9.1  # Docs
+    - python==3.8.6
+    - pip==21.0.1
     - pip:
         - sphinx==3.2.1
         - sphinx_rtd_theme==0.5.0
