@@ -17,7 +17,7 @@
 using namespace eddl;
 
 // Checking deletes, memory leaks
-// CNN decoder models, only GPU
+// CNN decoder models, CPU, GPU
 // In a separate terminal try
 // top/htop and nvidia-smi (GPU)
 // to check memory
@@ -42,11 +42,8 @@ layer ResBlock(layer l, int filters,int nconv,int half) {
 
 int main(int argc, char **argv){
 
-  // download CIFAR data
-  // download_cifar10();
-
-  // network
-  int times=100;
+  int times_cpu=5;
+  int times_gpu=100;
 
   int ilength=30;
   int olength=30;
@@ -55,7 +52,82 @@ int main(int argc, char **argv){
   int embedding=64;
 
   //CPU
-  for(int i=0;i<times;i++) {
+  for(int i=0;i<times_cpu;i++) {
+    cout<<"======================="<<endl;
+    cout<<"CPU "<<i<<endl;
+    cout<<"======================="<<endl;
+
+    int olength=20;
+    int outvs=2000;
+    int embdim=32;
+
+    // Define network
+    layer image_in = Input({3,256,256}); //Image
+    layer l = image_in;
+
+    l=ReLu(Conv(l,64,{3,3},{2,2}));
+
+    l=ResBlock(l, 64,2,1);//<<<-- output half size
+    l=ResBlock(l, 64,2,0);
+
+    l=ResBlock(l, 128,2,1);//<<<-- output half size
+    l=ResBlock(l, 128,2,0);
+
+    l=ResBlock(l, 256,2,1);//<<<-- output half size
+    l=ResBlock(l, 256,2,0);
+
+    l=ResBlock(l, 512,2,1);//<<<-- output half size
+    l=ResBlock(l, 512,2,0);
+
+    l=GlobalAveragePool(l);
+
+    layer lreshape=Reshape(l,{-1});
+
+
+    // Decoder
+    layer ldecin = Input({outvs});
+    layer ldec = ReduceArgMax(ldecin,{0});
+    ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim,true),-0.05,0.05);
+
+    ldec = Concat({ldec,lreshape});
+
+    l = LSTM(ldec,512,true);
+
+    layer out = Softmax(Dense(l, outvs));
+
+    setDecoder(ldecin);
+
+    model net = Model({image_in}, {out});
+    plot(net, "model.pdf");
+
+    optimizer opt=adam(0.001);
+    //opt->set_clip_val(0.01);
+
+    // Build model
+    build(net,
+          opt, // Optimizer
+          {"softmax_cross_entropy"}, // Losses
+          {"accuracy"}, // Metrics
+          CS_CPU()
+    );
+
+
+    // Load dataset
+    Tensor *x_train=Tensor::zeros({10,3,256,256}); //batch x input_dim
+    Tensor *y_train=Tensor::zeros({10,olength,outvs}); //batch x timesteps x ouput_dim
+
+    // to force unrolling
+    fit(net, {x_train}, {y_train}, 10, 1);
+
+
+    delete x_train;
+    delete y_train;
+    delete net;
+
+  }
+
+  //GPU
+  for(int i=0;i<times_gpu;i++) {
     cout<<"======================="<<endl;
     cout<<"GPU "<<i<<endl;
     cout<<"======================="<<endl;

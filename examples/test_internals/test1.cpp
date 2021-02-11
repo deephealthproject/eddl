@@ -47,15 +47,11 @@ layer ResBlock(layer l, int filters,int nconv,int half) {
 
 int main(int argc, char **argv){
 
-  // download CIFAR data
-  // download_cifar10();
-
-  // network
-
-  int times=100;
+  int times_cpu=100;
+  int times_gpu=100;
 
   //CPU
-  for(int i=0;i<times;i++) {
+  for(int i=0;i<times_cpu;i++) {
     cout<<"======================="<<endl;
     cout<<"CPU "<<i<<endl;
     cout<<"======================="<<endl;
@@ -103,7 +99,7 @@ int main(int argc, char **argv){
   }
 
   //GPU
-  for(int i=0;i<times;i++) {
+  for(int i=0;i<times_gpu;i++) {
     cout<<"======================="<<endl;
     cout<<"GPU "<<i<<endl;
     cout<<"======================="<<endl;
