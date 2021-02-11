@@ -200,7 +200,7 @@ if(BUILD_PROTOBUF)
 	add_executable(onnx_drive_seg "onnx/nn/3_drive/1_drive_seg.cpp")
 	target_link_libraries(onnx_drive_seg eddl)
 
-	# EXAMPLES: ONNX NLP ****************************************************
+# EXAMPLES: ONNX NLP ****************************************************
 
 	add_executable(onnx_nlp_sentiment_rnn "onnx/nn/4_NLP/1_nlp_sentiment_rnn.cpp")
 	target_link_libraries(onnx_nlp_sentiment_rnn eddl)
@@ -210,5 +210,11 @@ if(BUILD_PROTOBUF)
 
 	add_executable(onnx_nlp_machine_translation "onnx/nn/4_NLP/3_nlp_machine_translation.cpp")
 	target_link_libraries(onnx_nlp_machine_translation eddl)
+
+# TEST INTERNALS ****************************************************
+	add_executable(test1 "test_internals/test1.cpp")
+	target_link_libraries(test1 eddl)
+	add_executable(test2 "test_internals/test2.cpp")
+	target_link_libraries(test2 eddl)
 
 endif()

@@ -20,11 +20,12 @@ endif()
 # For development (ignore)
 option(USE_SYSTEM_GTEST "Use system dependency" OFF)
 option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
-option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
 option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
-if(WIN32)
-    option(USE_SYSTEM_PTHREADS "Use system dependency" OFF)
-endif()
+option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
+option(USE_SYSTEM_OPENSSL "Use system dependency" OFF)
+#if(WIN32)
+#    option(USE_SYSTEM_PTHREADS "Use system dependency" OFF)
+#endif()
 
 # Set variables
 set(EDDL_DEPENDENCIES)
@@ -73,14 +74,14 @@ if(CMAKE_GENERATOR MATCHES "Visual Studio")
     list(APPEND config_types ${CMAKE_BUILD_TYPE})
 endif()
 
-##############
-###  GTEST  ##
-##############
+#############
+##  GTEST  ##
+#############
 message(STATUS "Subproject: GTEST...")
 if(USE_SYSTEM_GTEST)
     find_package(GTest REQUIRED)
 else()
-    # Download and unpack googletest at configure time   
+    # Download and unpack googletest at configure time
     foreach(config ${config_types})
         CONF_PACKAGE(googletest ${config} "")
         BUILD_PACKAGE(googletest ${config})
@@ -120,30 +121,73 @@ else()
         CONF_PACKAGE(protobuf ${config} @ONLY)
         BUILD_PACKAGE(protobuf ${config})
     endforeach()
-    
+
     set(Protobuf_ROOT "${EP_BASE_DIR}/protobuf" PARENT_SCOPE)
     set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include" PARENT_SCOPE)
     set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc" PARENT_SCOPE)
 endif()
-add_custom_target(protobuf_files 
+add_custom_target(protobuf_files
 	protoc --cpp_out=../src/serialization/onnx ../src/serialization/onnx/onnx.proto
 	)
 message(STATUS "Subproject: Protobuf...DONE")
 
+
+# Only for distributed versions
+if(BUILD_DIST)
+
+    ############
+    ##  ZLIB  ##
+    ############
+    message(STATUS "Subproject: ZLIB...")
+    if(USE_SYSTEM_ZLIB)
+        find_package(ZLIB REQUIRED)
+    else()
+        # Download and unpack ZLIB at configure time
+        foreach(config ${config_types})
+            CONF_PACKAGE(zlib ${config} "")
+            BUILD_PACKAGE(zlib ${config})
+        endforeach()
+        # Set variables
+        SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
+        SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
+    endif()
+    message(STATUS "Subproject: ZLIB...DONE")
+
+
+    ###############
+    ##  OPENSSL  ##
+    ###############
+    message(STATUS "Subproject: OpenSSL...")
+    if(USE_SYSTEM_OPENSSL)
+        find_package(OpenSSL REQUIRED)
+    else()
+        # Download and unpack ZLIB at configure time
+        foreach(config ${config_types})
+            CONF_PACKAGE(openssl ${config} "")
+            BUILD_PACKAGE(openssl ${config})
+        endforeach()
+        # Set variables
+        SET(OPENSSL_ROOT_DIR "${EP_BASE_DIR}/openssl" PARENT_SCOPE)
+        SET(OPENSSL_INCLUDE_DIR "${EP_BASE_DIR}/openssl/include" PARENT_SCOPE)
+    endif()
+    message(STATUS "Subproject: OpenSSL...DONE")
+
+endif()
+
 ##################
 ##  PTHREADS4W  ##
 ##################
-if(WIN32)
-    if(USE_SYSTEM_PTHREADS)
-        set(PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of Pthreads under Windows (PTHREADS_ROOT env variable)" PARENT_SCOPE)
-    else()
-        # Download and unpack pthreads4w at configure time
-        CONF_PACKAGE(pthreads4w ${CMAKE_BUILD_TYPE} @ONLY)
-        BUILD_PACKAGE(pthreads4w ${CMAKE_BUILD_TYPE})
-        
-        set(PTHREADS_INSTALL_PATH "${EP_BASE_DIR}/PTHREADS-BUILT" PARENT_SCOPE)
-    endif()
-endif()
+#if(WIN32)
+#    if(USE_SYSTEM_PTHREADS)
+#        set(PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of Pthreads under Windows (PTHREADS_ROOT env variable)" PARENT_SCOPE)
+#    else()
+#        # Download and unpack pthreads4w at configure time
+#        CONF_PACKAGE(pthreads4w ${CMAKE_BUILD_TYPE} @ONLY)
+#        BUILD_PACKAGE(pthreads4w ${CMAKE_BUILD_TYPE})
+#
+#        set(PTHREADS_INSTALL_PATH "${EP_BASE_DIR}/PTHREADS-BUILT" PARENT_SCOPE)
+#    endif()
+#endif()
 
 ###############
 #####  EDDL  ##

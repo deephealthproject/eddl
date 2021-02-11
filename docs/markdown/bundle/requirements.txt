@@ -13,10 +13,7 @@ ca-certificates           2020.12.5            ha878542_0    conda-forge
 cairo                     1.16.0            h7979940_1007    conda-forge
 certifi                   2020.12.5        py38h578d9bd_1    conda-forge
 chardet                   4.0.0                    pypi_0    pypi
-cmake                     3.19.4               h4547794_0    conda-forge
-cudatoolkit               11.0.3               h15472ef_7    conda-forge
-cudatoolkit-dev           10.1.243             h516909a_3    conda-forge
-cudnn                     8.0.5.39             ha5ca753_1    conda-forge
+cmake                     3.19.4               h3020d66_1    conda-forge
 docutils                  0.16                     pypi_0    pypi
 doxygen                   1.9.1                hb166930_0    conda-forge
 eigen                     3.3.7             hc9558a2_1001    conda-forge
@@ -51,7 +48,7 @@ libedit                   3.1.20191231         he28a2e2_2    conda-forge
 libev                     4.33                 h516909a_1    conda-forge
 libffi                    3.3                  h58526e2_2    conda-forge
 libgcc-ng                 9.3.0               h2828fa1_18    conda-forge
-libglib                   2.66.4               h748fe8e_2    conda-forge
+libglib                   2.66.6               h1f3bc88_3    conda-forge
 libgomp                   9.3.0               h2828fa1_18    conda-forge
 libiconv                  1.16                 h516909a_0    conda-forge
 libidn2                   2.3.0                h516909a_0    conda-forge
