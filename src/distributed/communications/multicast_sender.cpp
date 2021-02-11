@@ -13,6 +13,14 @@
 #include <unistd.h>
 #include <iostream>
 
+#if !defined(MSG_NOSIGNAL)
+#   if defined(__APPLE__)
+#       define MSG_NOSIGNAL 0
+#   else
+#       error "MSG_NOSIGNAL is not defined this should be fixed!"
+#   endif
+#endif
+
 namespace eddl {
 
 MulticastSender::MulticastSender(std::vector<eddl_worker_node *> & workers,
@@ -37,6 +45,14 @@ MulticastSender::MulticastSender(std::vector<eddl_worker_node *> & workers,
                   // change this to adapt to the needs of federated machine learning
     if (setsockopt(socket_fd_out, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0)
         throw std::runtime_error(err_msg("cannot set multicast TTL. " + std::to_string(errno) + ":" + strerror(errno)));
+
+#if defined(__APPLE__)
+    {
+        int set = 1;
+        if (setsockopt(socket_fd_out, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int)) < 0)
+            throw std::runtime_error(err_msg("cannot unset SIGPIPE. " + std::to_string(errno) + ":" + strerror(errno)));
+    }
+#endif
 
     memset(&this->target_group_addr, 0, sizeof(this->target_group_addr));
     this->target_group_addr.sin_family = AF_INET;
@@ -64,6 +80,14 @@ MulticastSender::MulticastSender(std::vector<eddl_worker_node *> & workers,
     socket_fd_in = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_fd_in < 0)
         throw std::runtime_error(err_msg("input socket cannot be created."));
+
+#if defined(__APPLE__)
+    {
+        int set = 1;
+        if (setsockopt(socket_fd_in, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int)) < 0)
+            throw std::runtime_error(err_msg("cannot unset SIGPIPE. " + std::to_string(errno) + ":" + strerror(errno)));
+    }
+#endif
 
     struct sockaddr_in  host_addr;
     memset(&host_addr, 0, sizeof(host_addr));
@@ -139,7 +163,15 @@ void MulticastSender::stop()
     peer.sin_port = htons(distributed_environment.get_udp_ack_port());
     peer.sin_addr.s_addr = distributed_environment.get_my_s_addr();
     ssize_t l = sizeof(data);
-    ssize_t n = sendto(temp_socket, data, l, MSG_NOSIGNAL,
+#if defined(__APPLE__)
+    {
+        int set = 1;
+        if (setsockopt(temp_socket, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int)) < 0)
+            throw std::runtime_error(err_msg("cannot unset SIGPIPE. " + std::to_string(errno) + ":" + strerror(errno)));
+    }
+#endif
+    int flags = MSG_NOSIGNAL;
+    ssize_t n = sendto(temp_socket, data, l, flags,
                         (const struct sockaddr *)&peer, sizeof(peer));
     if (n != l)
         print_err_msg("failed to sent a stopping acknowledgement to myself.");
