@@ -188,7 +188,7 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
       decsize=lout.size()/lo.size();
       for(int i=0;i<decsize;i++)
         for(int j=0;j<lo.size();j++)
-           losses.push_back(lo[j]);
+           losses.push_back(lo[j]->clone());
     }
     else losses = vloss(lo);
 
@@ -200,7 +200,7 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if (isdecoder) {
       for(int i=0;i<decsize;i++)
         for(int j=0;j<me.size();j++)
-            this->metrics.push_back(me[j]);
+            this->metrics.push_back(me[j]->clone());
     } else {
         for(int j=0;j<me.size();j++)
             this->metrics.push_back(me[j]);

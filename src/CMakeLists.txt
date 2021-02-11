@@ -111,17 +111,16 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
 target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
-
 # ONNX files
 if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
     # Link library
     if(NOT Protobuf_ROOT)
-        find_package(Protobuf REQUIRED)  # Problems with: Protobuf_ROOT
+        find_package(Protobuf)  # Problems with: Protobuf_ROOT
 
         # Check if Protobuf was really found
         if(NOT Protobuf_FOUND)
-            message(FATAL_ERROR "Protobuf was found by CMake but its libraries or includes are missing.
+            message(FATAL_ERROR "Protobuf was found by CMake.
                     Use '-D BUILD_SUPERBUILD=ON', or try with a different Protobuf installation to fix this problem.
                     Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
         endif()
@@ -194,6 +193,8 @@ SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 
 # CUDA
 if(USE_CUDA)
+    cmake_minimum_required(VERSION 3.17.2)  # Due to CUDAToolkit
+
     # Check if cuda is available
     include(CheckLanguage)
     check_language(CUDA)
@@ -294,6 +295,40 @@ endif()
 SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
 
 
+if(BUILD_DIST)
+    # ZLIB
+    if(DEFINED ZLIB_ROOT AND DEFINED ZLIB_INCLUDE_DIRS)
+        find_library(ZLIB_LIBRARIES z HINTS ${ZLIB_ROOT} PATHS ${ZLIB_ROOT} PATH_SUFFIXES "lib" "lib64")
+    else()
+        find_package(ZLIB)
+
+        # Check if ZLIB was really found
+        if(NOT ZLIB_FOUND)
+            message(FATAL_ERROR "ZLIB was not found by CMake.
+                Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
+        endif()
+    endif()
+    target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES})
+
+    # OPENSSL
+    if(DEFINED OPENSSL_ROOT_DIR AND DEFINED OPENSSL_INCLUDE_DIR)
+        find_library(OPENSSL_SSL_LIBRARY ssl HINTS ${OPENSSL_ROOT_DIR} PATHS ${OPENSSL_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
+        find_library(OPENSSL_CRYPTO_LIBRARY crypto HINTS ${OPENSSL_ROOT_DIR} PATHS ${OPENSSL_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
+        SET(OPENSSL_LIBRARIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+    else()
+        find_package(OpenSSL)
+
+        # Check if ZLIB was really found
+        if(NOT OPENSSL_FOUND)
+            message(FATAL_ERROR "OpenSSL was not found by CMake.
+                Use '-D BUILD_SUPERBUILD=ON', or try with a different OpenSSL installation to fix this problem.")
+        endif()
+    endif()
+    target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENSSL_LIBRARIES})
+endif()
+
 ###########################################################################
 ################################## WINDOWS ################################
 ###########################################################################
@@ -326,6 +361,7 @@ if(MSVC)
         endif()
     endif()
 endif()
+
 
 ##########################################################################
 ############################ INSTALLATION ################################
@@ -362,6 +398,7 @@ message(STATUS "Build shared libs: " ${BUILD_SHARED_LIBS} )
 message(STATUS "Build coverage: " ${BUILD_COVERAGE} )
 message(STATUS "Build sanitizers: " ${BUILD_SANITIZERS} )
 message(STATUS "Build HPC: " ${BUILD_HPC} )
+message(STATUS "Build distributed: " ${BUILD_DIST} )
 message(STATUS "Use superbuild: " ${BUILD_SUPERBUILD} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER}) | Version: ${CMAKE_CXX_COMPILER_VERSION}")
@@ -412,11 +449,18 @@ if(BUILD_PROTOBUF)
 #    message(STATUS "Protobuf libraries (release): " ${Protobuf_LIBRARY_RELEASE} )
     message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
 endif()
-#if(WIN32)
-#message(STATUS "-------------------------------------------" )
-#message(STATUS "Pthreads dir: " ${PTHREADS_INSTALL_PATH} )
-#message(STATUS "Pthreads include: " ${PTHREADS_INSTALL_PATH}/include )
-#message(STATUS "Pthreads libraries: " ${PTHREADS_INSTALL_PATH}/lib )
-#endif()
+if(BUILD_DIST)
+    message(STATUS "-------------------------------------------" )
+    message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
+    message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
+    message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
+    message(STATUS "-------------------------------------------" )
+    message(STATUS "OpenSSL root: " ${OPENSSL_ROOT_DIR} )
+    message(STATUS "OpenSSL include: " ${OPENSSL_INCLUDE_DIR} )
+    message(STATUS "OpenSSL SSL library: " ${OPENSSL_SSL_LIBRARY} )
+    message(STATUS "OpenSSL crypto library: " ${OPENSSL_CRYPTO_LIBRARY} )
+    message(STATUS "OpenSSL version: " ${OPENSSL_VERSION} )
+endif()
+message(STATUS "-------------------------------------------" )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
