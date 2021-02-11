@@ -94,6 +94,14 @@ target_link_libraries(nlp_video_to_labels eddl)
 add_executable(nlp_text_generation "nn/4_NLP/5_nlp_text_generation.cpp")
 target_link_libraries(nlp_text_generation eddl)
 
+# TEST INTERNALS ****************************************************
+  add_executable(test1 "test_internals/test1.cpp")
+  target_link_libraries(test1 eddl)
+  add_executable(test2 "test_internals/test2.cpp")
+  target_link_libraries(test2 eddl)
+  add_executable(test3 "test_internals/test3.cpp")
+  target_link_libraries(test3 eddl)
+
 
 # EXAMPLES: Tensor ****************************************************
 add_executable(tensor_ops "tensor/eddl_ops.cpp")
@@ -200,6 +208,7 @@ if(BUILD_PROTOBUF)
 	add_executable(onnx_drive_seg "onnx/nn/3_drive/1_drive_seg.cpp")
 	target_link_libraries(onnx_drive_seg eddl)
 
+
 # EXAMPLES: ONNX NLP ****************************************************
 
 	add_executable(onnx_nlp_sentiment_rnn "onnx/nn/4_NLP/1_nlp_sentiment_rnn.cpp")
@@ -210,13 +219,5 @@ if(BUILD_PROTOBUF)
 
 	add_executable(onnx_nlp_machine_translation "onnx/nn/4_NLP/3_nlp_machine_translation.cpp")
 	target_link_libraries(onnx_nlp_machine_translation eddl)
-
-# TEST INTERNALS ****************************************************
-	add_executable(test1 "test_internals/test1.cpp")
-	target_link_libraries(test1 eddl)
-	add_executable(test2 "test_internals/test2.cpp")
-	target_link_libraries(test2 eddl)
-	add_executable(test3 "test_internals/test3.cpp")
-	target_link_libraries(test3 eddl)
 
 endif()

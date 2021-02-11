@@ -17,7 +17,7 @@
 using namespace eddl;
 
 // Checking deletes, memory leaks
-// CNN models, CPU and GPU 
+// CNN models, CPU and GPU
 // In a separate terminal try
 // top/htop and nvidia-smi (GPU)
 // to check memory
@@ -51,8 +51,8 @@ int main(int argc, char **argv){
   // download_cifar10();
 
   // network
-  
-  int times=10;
+
+  int times=100;
 
   //CPU
   for(int i=0;i<times;i++) {
@@ -86,19 +86,19 @@ int main(int argc, char **argv){
     model net=Model({in},{out});
 
     compserv cs = CS_CPU();
-      
+
     build(net,
       sgd(0.001, 0.9), // Optimizer
       {"softmax_cross_entropy"}, // Losses
       {"categorical_accuracy"}, // Metrics
       cs);
-      
+
     // Load dataset
-    Tensor *x_train=Tensor::zeros({10,3,32,32}); 
-    Tensor *y_train=Tensor::zeros({10,10}); 
-    
+    Tensor *x_train=Tensor::zeros({10,3,32,32});
+    Tensor *y_train=Tensor::zeros({10,10});
+
     fit(net, {x_train}, {y_train}, 10, 1);
-  
+
     delete net;
   }
 
@@ -134,17 +134,17 @@ int main(int argc, char **argv){
     model net=Model({in},{out});
 
     compserv cs = CS_GPU({1});
-      
+
     build(net,
       sgd(0.001, 0.9), // Optimizer
       {"softmax_cross_entropy"}, // Losses
       {"categorical_accuracy"}, // Metrics
       cs);
-   
+
     // Load dataset
-    Tensor *x_train=Tensor::zeros({10,3,32,32}); 
-    Tensor *y_train=Tensor::zeros({10,10}); 
-    
+    Tensor *x_train=Tensor::zeros({10,3,32,32});
+    Tensor *y_train=Tensor::zeros({10,10});
+
     fit(net, {x_train}, {y_train}, 10, 1);
 
     delete net;

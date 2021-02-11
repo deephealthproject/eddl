@@ -17,7 +17,7 @@
 using namespace eddl;
 
 // Checking deletes, memory leaks
-// CNN decoder models, only GPU 
+// CNN decoder models, only GPU
 // In a separate terminal try
 // top/htop and nvidia-smi (GPU)
 // to check memory
@@ -46,7 +46,7 @@ int main(int argc, char **argv){
   // download_cifar10();
 
   // network
-  int times=10;
+  int times=100;
 
   int ilength=30;
   int olength=30;
@@ -59,7 +59,7 @@ int main(int argc, char **argv){
     cout<<"======================="<<endl;
     cout<<"GPU "<<i<<endl;
     cout<<"======================="<<endl;
-  
+
     int olength=20;
     int outvs=2000;
     int embdim=32;
@@ -124,8 +124,8 @@ int main(int argc, char **argv){
 
 
     delete x_train;
-    delete y_train;  
+    delete y_train;
     delete net;
-  
+
   }
 }

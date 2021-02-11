@@ -17,7 +17,7 @@
 using namespace eddl;
 
 // Checking deletes, memory leaks
-// RNN models, CPU and GPU 
+// RNN models, CPU and GPU
 // In a separate terminal try
 // top/htop and nvidia-smi (GPU)
 // to check memory
@@ -28,7 +28,7 @@ int main(int argc, char **argv){
   // download_cifar10();
 
   // network
-  int times=10;
+  int times=100;
 
   int ilength=30;
   int olength=30;
@@ -83,7 +83,7 @@ int main(int argc, char **argv){
 
 
     delete x_train;
-    delete y_train;  
+    delete y_train;
     delete net;
   }
 
@@ -127,14 +127,14 @@ int main(int argc, char **argv){
       // Load dataset
     Tensor *x_train=Tensor::zeros({10,ilength,1}); //batch x timesteps x input_dim
     Tensor *y_train=Tensor::zeros({10,olength,outvs}); //batch x timesteps x ouput_dim
-    
+
 
     // to force unrolling
     fit(net, {x_train}, {y_train}, 10, 1);
 
 
     delete x_train;
-    delete y_train;  
+    delete y_train;
     delete net;
   }
 
