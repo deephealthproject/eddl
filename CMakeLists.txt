@@ -12,12 +12,13 @@ option(BUILD_OPENMP "Compile using OpenMP" ON)
 option(BUILD_HPC "Compile using aggressive flags" ON)
 option(BUILD_TESTS "Compile tests (HPC needs to be disabled)" OFF)  # Disable HPC to pass tests (there are numerical errors)
 option(BUILD_EXAMPLES "Compile examples" ON)
-option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 option(BUILD_SANITIZERS "Flag to compile with sanitizers information" OFF)
 
 if(WIN32)
-    option(BUILD_SHARED_LIBS "" OFF) # Prefer lib over dll in windows
+    option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" OFF)
+else()
+    option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 endif()
 
 ###########################################################################
