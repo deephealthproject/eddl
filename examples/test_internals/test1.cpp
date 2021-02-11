@@ -56,7 +56,10 @@ int main(int argc, char **argv){
 
   //CPU
   for(int i=0;i<times;i++) {
+    cout<<"======================="<<endl;
     cout<<"CPU "<<i<<endl;
+    cout<<"======================="<<endl;
+
 
     layer in=Input({3,32,32});
     layer l=in;
@@ -101,7 +104,10 @@ int main(int argc, char **argv){
 
   //GPU
   for(int i=0;i<times;i++) {
+    cout<<"======================="<<endl;
     cout<<"GPU "<<i<<endl;
+    cout<<"======================="<<endl;
+
 
     layer in=Input({3,32,32});
     layer l=in;
