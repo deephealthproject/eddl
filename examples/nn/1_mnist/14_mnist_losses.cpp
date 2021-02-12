@@ -154,7 +154,7 @@ int main(int argc, char **argv) {
         fflush(stdout);
 
         optimize(dicep);
-        //optimize({mse,dicep});
+        //optimize({dicei,mse});
 
 
         update(net);

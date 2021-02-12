@@ -68,6 +68,18 @@ CompServ * CompServ::share() {
 
   return n;
 }
+CompServ * CompServ::clone() {
+  CompServ *n = new CompServ();
+
+  n->type = this->type;
+  n->local_threads = this->local_threads;
+  for (auto _ : this->local_gpus) n->local_gpus.push_back(_);
+  for (auto _ : this->local_fpgas) n->local_fpgas.push_back(_);
+  n->lsb = this->lsb;
+  n->mem_level = this->mem_level;
+
+  return n;
+}
 
 
 // for Distributed

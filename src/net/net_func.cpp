@@ -68,7 +68,7 @@ void Net::do_delta() {
   for (int i = 0; i < lout.size(); i++) {
     lout[i]->mem_delta();
     if (losses.size()>=(i+1)) {
-      losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
+            losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
     }
   }
 }

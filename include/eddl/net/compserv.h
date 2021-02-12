@@ -42,7 +42,7 @@ public:
 
     CompServ();
     CompServ * share();
-
+    CompServ * clone(); 
     // for local
     CompServ(int threads, const vector<int> g, const vector<int> &f,int lsb=1, int mem=0);
 
