@@ -63,6 +63,8 @@ ConvolDescriptor3D::~ConvolDescriptor3D(){
         eddl_free(ptrI);
     }
 #ifdef cGPU
+#ifndef cCUDNN
+
     else if (O->isGPU()) {
 
         if (mem_level>1) {
@@ -76,6 +78,7 @@ ConvolDescriptor3D::~ConvolDescriptor3D(){
                 delete gpuOB;
         }
     }
+#endif
 #endif
 
 }
@@ -144,6 +147,19 @@ void ConvolDescriptor3D::build(Tensor *A) {
         pad = {padd[0], padd[1], padr[0], padr[1], padc[0], padc[1]};  // (front, back), (top, bottom), (left, right)
     }
 
+#ifdef cCUDNN
+       if(!A->isCPU()){
+           if(pad[0] != pad[1] || pad[2] != pad[3] || pad[4] != pad[5]){
+             std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
+           }
+           if (pad[0] != pad[1]){pad[0] = pad[1];}
+           if (pad[2] != pad[3]){ pad[2] = pad[3];}
+           if (pad[4] != pad[5]){ pad[4] = pad[5];}
+
+      }
+#endif
+
+
     paddf = pad[0]; paddb = pad[1];  // depth: front-top
     padrt = pad[1]; padrb = pad[2];  // rows: top-bottom
     padcl = pad[3]; padcr = pad[4];  // cols: left-right
@@ -173,6 +189,7 @@ void ConvolDescriptor3D::build(Tensor *A) {
     }
 #ifdef cGPU
     else if (I->isGPU()) {
+#ifndef cCUDNN
         if (mem_level>1) {
             // Lowering
             gpuIB=new Tensor(vector<int>{d*r*c,kz*kd*kc*kr}, I->device);
@@ -183,7 +200,7 @@ void ConvolDescriptor3D::build(Tensor *A) {
             if (mem_level==0)
                 gpuOB=new Tensor(vector<int>{z,A->shape[0]*d*r*c}, I->device);
         }
-
+#endif
         // Tensor with variable shared ptr, delete create ptr
         gpuI=new Tensor(vector<int>{d*r*c,kd*kz*kc*kr}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpuI->ptr);
@@ -201,6 +218,48 @@ void ConvolDescriptor3D::build(Tensor *A) {
         gpugK=new Tensor(vector<int>{z, kz*kd*kc*kr}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpugK->ptr);
     }
+#ifdef cCUDNN
+    //CUDNN
+    convolution_mode = CUDNN_CONVOLUTION; //CUDNN_CROSS_CORRELATION
+    data_type = CUDNN_DATA_FLOAT;
+    tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
+
+    cudnnCreateConvolutionDescriptor(&convolution_descriptor);
+    int padding[3] = {pad[0],pad[2],pad[4]};
+    int strides[3] ={sd,sr,sc};
+    int dilats[3] = {1,1,1};
+    cudnnSetConvolutionNdDescriptor(convolution_descriptor,3,
+                                    padding,
+                                    strides,
+                                    dilats,
+                                    convolution_mode, data_type);
+
+
+   cudnnCreateTensorDescriptor(&xDesc);
+   int dims[5] = {in, iz, id, ir, ic};
+   int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
+   cudnnSetTensorNdDescriptor(xDesc, /*tensor_format,*/ data_type,5,dims,str);
+
+   int ydims[5] = {in,z,d,r,c};
+   int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
+   cudnnCreateTensorDescriptor(&yDesc);
+   cudnnSetTensorNdDescriptor(yDesc,/* tensor_format,*/ data_type, 5, ydims, ystr);
+   
+   int bdims[5] = {1,z,1,1,1};
+   int bstr[5] = {z, 1, 1, 1, 1};
+   cudnnCreateTensorDescriptor(&bDesc);
+   cudnnSetTensorNdDescriptor(bDesc,/* tensor_format,*/ data_type, 5, bdims, bstr);
+   
+   int fdims[5] = {nk, kz, kd, kr, kc};
+  // int fstr[5] = {kz*kd*kr*kc,kd*kr*kc,kr*kc,kc,1};
+   cudnnCreateFilterDescriptor(&wDesc);
+   cudnnSetFilterNdDescriptor(wDesc, data_type, tensor_format, 5, fdims);
+
+   cudnn_env_init = -1;
+   cudnn_conv_back_init = -1;
+
+#endif
+
 #endif
 
 #ifdef cFPGA
@@ -232,12 +291,29 @@ void ConvolDescriptor3D::resize(int b)
     }
 #ifdef cGPU
     else if (I->isGPU()) {
+#ifndef cCUDNN
         if (mem_level<2)
             gpuIB->resize(b*d*r*c);
         if (mem_level==0) {
             delete gpuOB;
             gpuOB=new Tensor(vector<int>{z,b*d*r*c}, I->device);
         }
+#endif
+
+#ifdef cCUDNN
+   int dims[5] = {b, iz, id, ir, ic};
+   int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
+   cudnnSetTensorNdDescriptor(xDesc, /*tensor_format,*/ data_type,5,dims,str);
+
+   int ydims[5] = {b,z,d,r,c};
+   int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
+   cudnnSetTensorNdDescriptor(yDesc, /*tensor_format,*/ data_type, 5, ydims, ystr);
+
+   //cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+
+
+
+#endif
     }
 #endif
 
