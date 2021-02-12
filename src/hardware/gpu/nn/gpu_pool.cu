@@ -22,35 +22,6 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
 
-#ifdef cCUDNN
-void amy_get_fdescriptor(cudnnFilterDescriptor_t t, char * name){
-
-    cudnnDataType_t         dataType;
-    cudnnTensorFormat_t       format;
-    int                     n;
-    int                     c;
-    int                     h;
-    int                     w;
-    check_cudnn(cudnnGetFilter4dDescriptor(t, &dataType, &format, &n, &c, &h, &w), "cudnnGetFilter4dDescriptor", __FILE__);
-    std::cout<<name<<": ("<<dataType<<", "<<n<<", "<<c<<", "<<h<<", "<<w<<")"<<std::endl;
-}
-
-void amy_get_descriptor(cudnnTensorDescriptor_t t, char * name){
-
-    cudnnDataType_t         dataType;
-    int                     n;
-    int                     c;
-    int                     h;
-    int                     w;
-    int                     nStride;
-    int                     cStride;
-    int                     hStride;
-    int                     wStride;
-    check_cudnn(cudnnGetTensor4dDescriptor(t, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride),"cudnnGetTensor4dDescriptor", __FILE__);
-    std::cout<<name<<": ("<<dataType<<", "<<n<<", "<<c<<", "<<h<<", "<<w<<", "<<nStride<<", "<<cStride<<", "<<hStride<<", "<<wStride<<")"<<std::endl;
-}
-
-#endif
 
 void gpu_mpool2D(PoolDescriptor *D){
     int device=D->I->gpu_device;
@@ -63,8 +34,6 @@ void gpu_mpool2D(PoolDescriptor *D){
 #else
     float alpha=1.0;
     float beta=0.0;
-//    amy_get_descriptor(D->xDesc,"xDesc");
-//    amy_get_descriptor(D->yDesc,"yDesc");
     check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
                                     &alpha, D->xDesc, D->I->ptr,
                                     &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward",__FILE__);
@@ -98,8 +67,6 @@ int device=D->I->gpu_device;
 #ifdef cCUDNN
   float alpha=1.0;
     float beta=0.0;
-//    amy_get_descriptor(D->xDesc,"xDesc");
-//    amy_get_descriptor(D->yDesc,"yDesc");
     check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
                                     &alpha, D->xDesc, D->I->ptr,
                                     &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward",__FILE__);

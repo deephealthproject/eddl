@@ -27,35 +27,6 @@
 void * shared_workspace[cuDNN_GPUS]; 
 size_t workspace_size[cuDNN_GPUS]={0,0,0,0,0,0,0,0};
 
-void my_get_fdescriptor(cudnnFilterDescriptor_t t, char * name){
-
-    cudnnDataType_t         dataType;
-    cudnnTensorFormat_t       format;
-    int                     n;
-    int                     c;
-    int                     h;
-    int                     w;
-    check_cudnn(cudnnGetFilter4dDescriptor(t, &dataType, &format, &n, &c, &h, &w), "cudnnGetFilter4dDescriptor", __FILE__);
-    std::cout<<name<<": ("<<dataType<<", "<<n<<", "<<c<<", "<<h<<", "<<w<<")"<<std::endl;
-}
-
-void my_get_descriptor(cudnnTensorDescriptor_t t, char * name){
-
-    cudnnDataType_t         dataType;
-    int                     n;
-    int                     c;
-    int                     h;
-    int                     w;
-    int                     nStride;
-    int                     cStride;
-    int                     hStride;
-    int                     wStride;
-    check_cudnn(cudnnGetTensor4dDescriptor(t, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride),"cudnnGetTensor4dDescriptor", __FILE__);
-    std::cout<<name<<": ("<<dataType<<", "<<n<<", "<<c<<", "<<h<<", "<<w<<", "<<nStride<<", "<<cStride<<", "<<hStride<<", "<<wStride<<")"<<std::endl;
-}
-
-
-
 int allocate_workspace(size_t size, int dev){
     if (size <= workspace_size[dev]){
         return 0;
