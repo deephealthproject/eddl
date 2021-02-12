@@ -116,6 +116,7 @@ void PoolDescriptor::build(Tensor *A) {
         for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
 
 #ifdef cCUDNN
+    if(!this->O->isCPU()){
     cudnnCreatePoolingDescriptor(&poolingDesc);
 
     windowHeight = kr;
@@ -124,7 +125,6 @@ void PoolDescriptor::build(Tensor *A) {
     horizontalPadding = padcl;
     verticalStride = sr;
     horizontalStride = sc;
-    //std::cout<<kr<<", "<<kc<<","<<padrt<<", "<<padcl<<", "<<sr<<", "<<sc<<std::endl;
     // mode is initialized in each constructor.
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
@@ -134,7 +134,7 @@ void PoolDescriptor::build(Tensor *A) {
                  in,iz,ir,ic);
     cudnnCreateTensorDescriptor(&yDesc);
     cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
-
+}
 #endif
 
 }
