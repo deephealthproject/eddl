@@ -31,6 +31,16 @@ LMaxPool3D::LMaxPool3D(Layer *parent, PoolDescriptor3D *D, const string& name, i
     // Params
     D->indX = new Tensor(D->O->shape, dev);  // Is this needed here?
     D->indY = new Tensor(D->O->shape, dev);
+#ifdef cCUDNN
+   if(!D->I->isCPU()){
+
+    D->mode = CUDNN_POOLING_MAX;
+    D->maxpoolingNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+    cudnnStatus_t bbb = cudnnSetPoolingNdDescriptor(D->poolingDesc, D->mode, D->maxpoolingNanOpt, 3, D->cwindow,  D->cpadding,
+           D->cstride);
+    if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create pooling3D descriptor "<< cudnnGetErrorString(bbb) <<std::endl;
+}
+#endif
 
 }
 

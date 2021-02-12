@@ -314,7 +314,7 @@ public:
 
     int nk, kz, kd, kr, kc;  // nk=num filters, kz=kernel channels, kd=kernel depth, kr=kernel rows, kc=Kernel cols
     int sd, sr, sc;  // sd=stride depth, sr=stride rows, sc=stride cols
-    int iz, id, ir, ic;  // iz=input channels, id=input depth, ir=input rows, ic=input cols
+    int in, iz, id, ir, ic;  //in=batch size,  iz=input channels, id=input depth, ir=input rows, ic=input cols
     int z, d, r, c;  // z=channels, d=depth, r=rows, c=cols
     int paddf,paddb;  // pad(ding) d(epth) + f(ront) / b(ack)
     int padrt,padrb; // pad(ding) r(ows) + t(op) / b(ottom)
@@ -327,6 +327,24 @@ public:
     Tensor *ID= nullptr;// Delta input map
     Tensor *D = nullptr; // Delta
     Tensor *O= nullptr; // Outputmap
+
+#ifdef cCUDNN
+    cudnnPoolingDescriptor_t    poolingDesc;
+    cudnnPoolingMode_t          mode;
+    cudnnNanPropagation_t       maxpoolingNanOpt;
+    int cwindow[3];
+    int cpadding[3];
+    int cstride[3];
+    cudnnTensorDescriptor_t xDesc; //input. also dxDesc
+    cudnnTensorDescriptor_t yDesc; //output also dyDesc
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+
+#endif
+
+
+
+
 
     PoolDescriptor3D(const vector<int> &ks, const vector<int> &st, const string& p, int mem=0);
 

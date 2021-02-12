@@ -59,7 +59,8 @@ void PoolDescriptor3D::build(Tensor *A) {
     sd = stride[0];
     sr = stride[1];
     sc = stride[2];
-
+    
+    in = A->shape[0];
     iz = A->shape[1];
     id = A->shape[2];
     ir = A->shape[3];
@@ -91,6 +92,16 @@ void PoolDescriptor3D::build(Tensor *A) {
     paddf = pad[0]; paddb = pad[1];  // depth: front-top
     padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
     padcl = pad[2]; padcr = pad[3];  // cols: left-right
+#ifdef cCUDNN
+       if(!A->isCPU()){
+           if(pad[0] != pad[1] || pad[2] != pad[3] || pad[4] != pad[5]){
+               std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
+           }
+           if (pad[0] != pad[1]){pad[0] = pad[1];}
+           if (pad[2] != pad[3]){ pad[2] = pad[3];}
+           if (pad[4] != pad[5]){ pad[4] = pad[5];}
+      }
+#endif
 
     if ((d <= 0) || (r <= 0) || (c <= 0)) {
         if(d <= 0) { std::cerr << "'Depth' are reach 0 or less (" << d << ")" << std::endl; }
@@ -109,12 +120,63 @@ void PoolDescriptor3D::build(Tensor *A) {
       for(int w=-paddf;w<=id+paddb-kd;w+=sd)
           for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
             for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
+
+
+#ifdef cCUDNN
+    cudnnCreatePoolingDescriptor(&poolingDesc);
+
+    cwindow[0] = kd;
+    cwindow[1] = kr;
+    cwindow[2] = kc;
+    cpadding[0] = pad[0];
+    cpadding[1] = pad[1];
+    cpadding[2] = pad[2];
+    cstride[0] = sd;
+    cstride[1] = sr;
+    cstride[2] = sc;
+    //std::cout<<kr<<", "<<kc<<","<<padrt<<", "<<padcl<<", "<<sr<<", "<<sc<<std::endl;
+    // mode is initialized in each constructor.
+    data_type = CUDNN_DATA_FLOAT;
+    tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
+
+    cudnnCreateTensorDescriptor(&xDesc);
+   int dims[5] = {in, iz, id, ir, ic};
+   int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
+   cudnnSetTensorNdDescriptor(xDesc, /*tensor_format,*/ data_type,5,dims,str);
+
+   int ydims[5] = {in,z,d,r,c};
+   int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
+   cudnnCreateTensorDescriptor(&yDesc);
+   cudnnSetTensorNdDescriptor(yDesc,/* tensor_format,*/ data_type, 5, ydims, ystr);
+
+
+#endif
+
+
+
+
 }
 
 void PoolDescriptor3D::resize(int b) {
   if (b == O->shape[0]) return;
 
   O->resize(b);
+#ifdef cCUDNN
+  if(!I->isCPU()){
+   int dims[5] = {b, iz, id, ir, ic};
+   int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
+   cudnnSetTensorNdDescriptor(xDesc, /*tensor_format,*/ data_type,5,dims,str);
+
+   int ydims[5] = {b,z,d,r,c};
+   int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
+   cudnnSetTensorNdDescriptor(yDesc, /*tensor_format,*/ data_type, 5, ydims, ystr);
+
+   //cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+}
+
+
+#endif
+
 //  if (!mem_level) { D->resize(b); }
 }
 

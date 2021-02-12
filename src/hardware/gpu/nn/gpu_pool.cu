@@ -92,9 +92,33 @@ void gpu_mpool2D_back(PoolDescriptor *D){
 
 void gpu_mpool3D(PoolDescriptor3D *D){
 
+int device=D->I->gpu_device;
+    cudaSetDevice(device);
+
+#ifdef cCUDNN
+  float alpha=1.0;
+    float beta=0.0;
+//    amy_get_descriptor(D->xDesc,"xDesc");
+//    amy_get_descriptor(D->yDesc,"yDesc");
+    check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
+                                    &alpha, D->xDesc, D->I->ptr,
+                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward",__FILE__);
+#endif
+
 }
 
 void gpu_mpool3D_back(PoolDescriptor3D *D){
+int device=D->I->gpu_device;
+    cudaSetDevice(device);
+
+#ifdef cCUDNN
+  float alpha=1.0;
+    float beta=0.0;
+
+    check_cudnn(cudnnPoolingBackward(hdnn[device], D->poolingDesc, &alpha, D->yDesc, D->O->ptr,
+                                     D->yDesc, D->D->ptr, D->xDesc, D->I->ptr,
+                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward",__FILE__);
+#endif
 
 }
 
