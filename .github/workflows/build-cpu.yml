@@ -18,7 +18,7 @@ jobs:
       - name: Install utilities
         run: |
           sudo apt-get install -y cmake wget graphviz
-          sudo apt-get install -y build-essential checkinstall zlib1g-dev libssl-dev  # Temp
+          #sudo apt-get install -y build-essential checkinstall zlib1g-dev libcrypto++-dev libssl-dev
       - name: Build
         run: |
           mkdir build
