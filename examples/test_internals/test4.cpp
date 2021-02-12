@@ -24,8 +24,8 @@ using namespace eddl;
 
 int main(int argc, char **argv){
 
-  int times_cpu=100;
-  int times_gpu=100;
+  int times_cpu=10;
+  int times_gpu=10;
 
   //CPU
   for(int i=0;i<times_cpu;i++) {
@@ -33,7 +33,7 @@ int main(int argc, char **argv){
     cout<<"CPU "<<i<<endl;
     cout<<"======================="<<endl;
 
-    layer in  = Input({3, 10, 256, 256});
+    layer in  = Input({3, 10, 64, 64});
     layer l=in;
      // Conv3D expects (B,C,dim1,dim2,dim3)
     l=MaxPool3D(ReLu(Conv3D(l,4,{1, 3, 3},{1, 1, 1}, "same")),{1, 2, 2}, {1, 2, 2}, "same");
@@ -56,8 +56,8 @@ int main(int argc, char **argv){
           CS_CPU()
           );
 
-    // Input: 10 samples that are sequences of 10  3D RGB images of 256x256.
-    Tensor* x_train = Tensor::randu({10, 10, 3, 10, 256, 256});
+    // Input: 10 samples that are sequences of 10  3D RGB images of 64x64.
+    Tensor* x_train = Tensor::randu({10, 10, 3, 10, 64, 64});
 
     // Target: A sequence of 7 samples of 2 values per image
     Tensor* y_train = Tensor::randu({10, 7, 2});
@@ -78,7 +78,7 @@ int main(int argc, char **argv){
     cout<<"GPU "<<i<<endl;
     cout<<"======================="<<endl;
 
-    layer in  = Input({3, 10, 256, 256});
+    layer in  = Input({3, 10, 64, 64});
     layer l=in;
      // Conv3D expects (B,C,dim1,dim2,dim3)
     l=MaxPool3D(ReLu(Conv3D(l,4,{1, 3, 3},{1, 1, 1}, "same")),{1, 2, 2}, {1, 2, 2}, "same");
@@ -101,8 +101,8 @@ int main(int argc, char **argv){
           CS_GPU({1})
           );
 
-    // Input: 10 samples that are sequences of 10  3D RGB images of 256x256.
-    Tensor* x_train = Tensor::randu({10, 10, 3, 10, 256, 256});
+    // Input: 10 samples that are sequences of 10  3D RGB images of 64x64.
+    Tensor* x_train = Tensor::randu({10, 10, 3, 10, 64, 64});
 
     // Target: A sequence of 7 samples of 2 values per image
     Tensor* y_train = Tensor::randu({10, 7, 2});
