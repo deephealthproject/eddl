@@ -97,10 +97,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshoot</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#compilation">Compilation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#running-an-example">Running an example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#openmp">OpenMP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openmp-macos">OpenMP (MacOS)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#undefined-symbols-for-architecture-x86-64">Undefined symbols for architecture x86_64</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#macos-undefined-symbols-for-architecture-x86-64">(MacOS) Undefined symbols for architecture x86_64</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#memory">Memory</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#memory-optimization">Memory optimization</a></li>
 </ul>
@@ -272,10 +273,10 @@ haven’t changed the computing service used in the example. (e.g: It uses de GP
 <p>Also, if it is using CPU and the library has been compiled for CPU, it could be because your processor does not
 support AVX instructions.</p>
 </div>
-<div class="section" id="openmp">
-<h3>OpenMP<a class="headerlink" href="#openmp" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="openmp-macos">
+<h3>OpenMP (MacOS)<a class="headerlink" href="#openmp-macos" title="Permalink to this headline">¶</a></h3>
 <p>On MacOS, the Clang that comes with XCode doesn’t support OpenMP. Therefore, we recommend you to install
-the GCC compile so that you can take advatange of OpenMP.
+the GCC compile so that you can take advantange of OpenMP.
 <em>(Note: By default, GCC is just a symlink to Clang. more_)</em></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the real GCC</span>
 brew install gcc
@@ -290,7 +291,30 @@ cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREF
 </div>
 <div class="section" id="undefined-symbols-for-architecture-x86-64">
 <h3>Undefined symbols for architecture x86_64<a class="headerlink" href="#undefined-symbols-for-architecture-x86-64" title="Permalink to this headline">¶</a></h3>
-<p>This error might be due to the CMake cache or a conflict between compilers.</p>
+<p>If you cannot compile the EDDL using the distributed mode due to OpenSSL, you might try these things:</p>
+<p>First, make you you have OpenSSL installed:</p>
+<ul class="simple">
+<li><p>Ubuntu/Debian: <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">libcrypto++-dev</span> <span class="pre">libssl-dev</span></code></p></li>
+<li><p>MacOS: <code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">openssl</span></code></p></li>
+</ul>
+<p>If this does not work, check if the following paths are correctly setup:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># NOTE: This is a copy-paste from &quot;brew&quot;, but for linux should be quite similar.</span>
+
+If you need to have openssl@1.1 first <span class="k">in</span> your PATH run:
+  <span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;/usr/local/opt/openssl@1.1/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.zshrc
+
+For compilers to find openssl@1.1 you may need to set:
+  <span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/openssl@1.1/lib&quot;</span>
+  <span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/openssl@1.1/include&quot;</span>
+
+For pkg-config to find openssl@1.1 you may need to set:
+  <span class="nb">export</span> <span class="nv">PKG_CONFIG_PATH</span><span class="o">=</span><span class="s2">&quot;/usr/local/opt/openssl@1.1/lib/pkgconfig&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="macos-undefined-symbols-for-architecture-x86-64">
+<h2>(MacOS) Undefined symbols for architecture x86_64<a class="headerlink" href="#macos-undefined-symbols-for-architecture-x86-64" title="Permalink to this headline">¶</a></h2>
 <p>First, try deleting the <code class="docutils literal notranslate"><span class="pre">build/</span></code> folder and run <code class="docutils literal notranslate"><span class="pre">cmake</span></code> again. If this doesn’t work, try forcing a specific
 compiler either with the flag <code class="docutils literal notranslate"><span class="pre">-DCMAKE_CXX_COMPILER</span></code> or by exporting these variables to your environment:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># In MacOS we recommend CLang</span>
@@ -301,7 +325,6 @@ compiler either with the flag <code class="docutils literal notranslate"><span c
 <span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/llvm/lib&quot;</span>
 <span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
 </pre></div>
-</div>
 </div>
 </div>
 <div class="section" id="memory">

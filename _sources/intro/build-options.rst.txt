@@ -25,31 +25,31 @@ environment by running the following commands **from the source directory**:
 
 .. code:: bash
 
-    conda env create -f environment-cpu.yml  # -cpu, -gpu, -cudnn
+    conda env create -f environment.yml
     conda activate eddl
 
 You can also update your environment with:
 
 .. code:: bash
 
-    conda env update -f environment-cpu.yml  # -cpu, -gpu, -cudnn
+    conda env update -f environment.yml
 
 If you decide to manually install these dependencies in your system (make sure they are at standard paths):
 
 .. code:: yaml
 
-    - cmake>=3.9.2
+    - cmake>=3.17.2
     - eigen==3.3.7
     - protobuf==3.11.4
-    - libprotobuf==3.11.4
-    - cudnn==8.0.5.39
-    - cudatoolkit-dev==10.1.243
-    - gtest
-    - graphviz
-    - wget
-    - doxygen
-    - python
-    - pip
+    - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
+    - zlib==1.2.11
+    - openssl==1.1.1i
+    - gtest==1.10.0
+    - graphviz==2.42.3  # Build & Run
+    - wget==1.20.1
+    - doxygen==1.9.1  # Docs
+    - python==3.8.6
+    - pip==21.0.1
     - pip:
         - sphinx==3.2.1
         - sphinx_rtd_theme==0.5.0
@@ -134,7 +134,7 @@ not found (or CUDA), the EDDL will automatically fallback to CPU.
 Additional flags
 ^^^^^^^^^^^^^^^^^
 
-These flags can enable/disable features of the EDDL so that you can optimized and
+These flags can enable/disable features of the EDDL so that you can optimize and
 troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
 
@@ -181,8 +181,18 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
 .. note::
 
-    This flag is needed to known which CUDA Toolkit/cuDNN the user wants to use. By default cmake looks in the ``PATH``.
+    This flag is needed to known which CUDA Toolkit the user wants to use. By default cmake looks in the ``PATH``.
 
+- **CUDNN ROOT DIR:**
+
+.. code:: bash
+
+    --DCUDNN_ROOT_DIR=/path/to/cuda  #/usr/local/cuda
+
+.. note::
+
+    This flag is needed to known where to look for the cuDNN libraries. By default cuda is expected to be installed in
+    along with the CUDA toolkit.
 
 - **CUDA host compiler:**
 
@@ -296,6 +306,15 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
     If you want to distribute the resulting shared library, you should use the flag
     ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.
 
+- **Build distributed:** To let the EDDL work in a distributed mode, use the setting ``BUILD_DIST``:
+
+.. code:: bash
+
+    -DBUILD_DIST=ON
+
+.. note::
+
+    Enabled by default.
 
 
 .. _Anaconda: https://docs.conda.io/en/latest/miniconda.html

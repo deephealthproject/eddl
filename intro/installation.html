@@ -313,7 +313,7 @@ brew install eddl
 <p><strong>Requirements:</strong></p>
 <ul>
 <li><p>C++ compiler</p></li>
-<li><p>Anaconda or CMake <em>(if using</em> <code class="docutils literal notranslate"><span class="pre">-D</span> <span class="pre">BUILD_SUPERBUILD=ON</span></code> <em>)</em></p></li>
+<li><p>Anaconda</p></li>
 <li><p>[Optional] CUDA Toolkit 10 or later (to compile for GPU)</p>
 <blockquote>
 <div><ul class="simple">
@@ -343,7 +343,7 @@ git clone https://github.com/deephealthproject/eddl.git
 <span class="nb">cd</span> eddl/
 
 <span class="c1"># Install dependencies</span>
-conda env create -f environment-cpu.yml  <span class="c1"># -cpu, -gpu, -cudnn</span>
+conda env create -f environment.yml
 conda activate eddl
 
 <span class="c1"># Build and install</span>
@@ -367,7 +367,7 @@ git clone https://github.com/deephealthproject/eddl.git
 <span class="nb">cd</span> eddl/
 
 <span class="c1"># Install dependencies</span>
-conda env create -f environment-cpu.yml  <span class="c1"># -cpu, -gpu, -cudnn</span>
+conda env create -f environment.yml
 conda activate eddl
 
 <span class="c1"># Build and install</span>

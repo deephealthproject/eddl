@@ -260,27 +260,27 @@
 <p>Also, we highly recommend installing an <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Anaconda</a> environment to manage the external dependencies. You will get controlled dependency versions regardless of your system.</p>
 <p>Once you have <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Anaconda</a> installed, you can create and activate our
 environment by running the following commands <strong>from the source directory</strong>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -f environment-cpu.yml  <span class="c1"># -cpu, -gpu, -cudnn</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -f environment.yml
 conda activate eddl
 </pre></div>
 </div>
 <p>You can also update your environment with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env update -f environment-cpu.yml  <span class="c1"># -cpu, -gpu, -cudnn</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env update -f environment.yml
 </pre></div>
 </div>
 <p>If you decide to manually install these dependencies in your system (make sure they are at standard paths):</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cmake&gt;=3.9.2</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cmake&gt;=3.17.2</span>
 <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">eigen==3.3.7</span>
 <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">protobuf==3.11.4</span>
-<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">libprotobuf==3.11.4</span>
-<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cudnn==8.0.5.39</span>
-<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cudatoolkit-dev==10.1.243</span>
-<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gtest</span>
-<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">graphviz</span>
-<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">wget</span>
-<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">doxygen</span>
-<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
-<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">libprotobuf==3.11.4</span>  <span class="c1"># We need to avoid problems with paths (idk why)</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">zlib==1.2.11</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">openssl==1.1.1i</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gtest==1.10.0</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">graphviz==2.42.3</span>  <span class="c1"># Build &amp; Run</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">wget==1.20.1</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">doxygen==1.9.1</span>  <span class="c1"># Docs</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python==3.8.6</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip==21.0.1</span>
 <span class="p p-Indicator">-</span> <span class="nt">pip</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sphinx==3.2.1</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sphinx_rtd_theme==0.5.0</span>
@@ -357,7 +357,7 @@ To use a specific CUDA version you only need to specify the NVCC location: <code
 </div>
 <div class="section" id="additional-flags">
 <h3>Additional flags<a class="headerlink" href="#additional-flags" title="Permalink to this headline">¶</a></h3>
-<p>These flags can enable/disable features of the EDDL so that you can optimized and
+<p>These flags can enable/disable features of the EDDL so that you can optimize and
 troubleshoot the compilation process (see: <a class="reference internal" href="troubleshoot.html"><span class="doc">Troubleshoot</span></a>).</p>
 <ul class="simple">
 <li><p><strong>Prefix path:</strong> Semicolon-separated list of directories specifying installation prefixes to be searched by the <code class="docutils literal notranslate"><span class="pre">find_package()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_program()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_library()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_file()</span></code>, and <code class="docutils literal notranslate"><span class="pre">find_path()</span></code> commands.</p></li>
@@ -399,7 +399,18 @@ If using conda, get the path by activating the environment, and typing <code cla
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This flag is needed to known which CUDA Toolkit/cuDNN the user wants to use. By default cmake looks in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+<p>This flag is needed to known which CUDA Toolkit the user wants to use. By default cmake looks in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+</div>
+<ul class="simple">
+<li><p><strong>CUDNN ROOT DIR:</strong></p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--DCUDNN_ROOT_DIR<span class="o">=</span>/path/to/cuda  <span class="c1">#/usr/local/cuda</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This flag is needed to known where to look for the cuDNN libraries. By default cuda is expected to be installed in
+along with the CUDA toolkit.</p>
 </div>
 <ul class="simple">
 <li><p><strong>CUDA host compiler:</strong></p></li>
@@ -503,6 +514,16 @@ The flag <code class="docutils literal notranslate"><span class="pre">BUILD_HCP<
 <p>Disabled by default. If <code class="docutils literal notranslate"><span class="pre">OFF</span></code>, cmake will look at your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code></p>
 <p>If you want to distribute the resulting shared library, you should use the flag
 <code class="docutils literal notranslate"><span class="pre">-DBUILD_SUPERBUILD=ON</span></code> so that we can make specific tunings to our dependencies.</p>
+</div>
+<ul class="simple">
+<li><p><strong>Build distributed:</strong> To let the EDDL work in a distributed mode, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_DIST</span></code>:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_DIST<span class="o">=</span>ON
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Enabled by default.</p>
 </div>
 </div>
 </div>

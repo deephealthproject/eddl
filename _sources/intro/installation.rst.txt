@@ -79,7 +79,7 @@ You can also install ``EDDL`` from source with cmake.
 
     * C++ compiler
 
-    * Anaconda or CMake *(if using* ``-D BUILD_SUPERBUILD=ON`` *)*
+    * Anaconda
 
     * [Optional] CUDA Toolkit 10 or later (to compile for GPU)
 
@@ -99,7 +99,7 @@ You can also install ``EDDL`` from source with cmake.
             cd eddl/
 
             # Install dependencies
-            conda env create -f environment-cpu.yml  # -cpu, -gpu, -cudnn
+            conda env create -f environment.yml
             conda activate eddl
 
             # Build and install
@@ -124,7 +124,7 @@ You can also install ``EDDL`` from source with cmake.
             cd eddl/
 
             # Install dependencies
-            conda env create -f environment-cpu.yml  # -cpu, -gpu, -cudnn
+            conda env create -f environment.yml
             conda activate eddl
 
             # Build and install
