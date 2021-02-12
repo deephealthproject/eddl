@@ -32,6 +32,20 @@ LMaxPool1D::LMaxPool1D(Layer *parent, PoolDescriptor *D, const string& name, int
     // Params
     D->indX = new Tensor(D->O->shape, dev);  // Is this needed here?
     D->indY = new Tensor(D->O->shape, dev);
+
+#ifdef cCUDNN
+   if(!D->I->isCPU()){
+    D->mode = CUDNN_POOLING_MAX;
+    D->maxpoolingNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+//    std::cout<<"wH: "<<D->windowHeight<<" wW: " << D->windowWidth<<", vp: "<<D->verticalPadding<<",hp: " << D->horizontalPadding<<", vs" <<D->verticalStride<<", hS" <<D->horizontalStride<<std::endl;
+    cudnnStatus_t bbb = cudnnSetPooling2dDescriptor(D->poolingDesc, D->mode, D->maxpoolingNanOpt, D->windowHeight, D->windowWidth,
+    D->verticalPadding, D->horizontalPadding, D->verticalStride, D->horizontalStride);
+    if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create pooling descriptor "<< cudnnGetErrorString(bbb) <<std::endl;
+}
+#endif
+
+
+
 }
 
 

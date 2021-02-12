@@ -147,7 +147,6 @@ void PoolDescriptor::resize(int b) {
     if(!this->O->isCPU()){
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  b,iz,ir,ic);
-
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
 }
