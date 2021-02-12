@@ -41,17 +41,16 @@ int main(int argc, char **argv) {
     l = ReLu(l);
     l = Dense(l, 2);
     layer out = ReLu(l);
-    model deepVO = Model({in},{out});
+    model net = Model({in},{out});
 
-    build(deepVO,
+    build(net,
           adam(),
           {"mse"},
           {"mse"},
           CS_GPU({1})
-//          CS_CPU()
           );
-    plot(deepVO,"model.pdf","TB");
-    summary(deepVO);
+    plot(net,"model.pdf","LR");
+    summary(net);
 
     // Input: 32 samples that are sequences of 10  3D RGB images of 256x256. 
     Tensor* seqImages = Tensor::randu({32, 10, 3, 10, size, size});
@@ -59,8 +58,9 @@ int main(int argc, char **argv) {
     // Target: A sequence of 7 samples of 2 values per image
     Tensor* seqLabels = Tensor::randu({32, 7, 2});
 
+    fit(net, {seqImages}, {seqLabels}, 4, 10);
 
-    fit(deepVO, {seqImages}, {seqLabels}, 4, 10);
+    delete net;
 
     return 0;
 

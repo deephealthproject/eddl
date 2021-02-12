@@ -9,15 +9,18 @@ cmake_minimum_required(VERSION 3.9.2)
 option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
-option(BUILD_HPC "Compile using aggressive flags" ON)
+option(BUILD_HPC "Compile using aggressive flags for performance" ON)
 option(BUILD_TESTS "Compile tests (HPC needs to be disabled)" OFF)  # Disable HPC to pass tests (there are numerical errors)
 option(BUILD_EXAMPLES "Compile examples" ON)
-option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
+option(BUILD_DIST "Compile for a distributed execution" OFF)
+option(BUILD_RUNTIME "Compile runtime" OFF)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 option(BUILD_SANITIZERS "Flag to compile with sanitizers information" OFF)
 
 if(WIN32)
-    option(BUILD_SHARED_LIBS "" OFF) # Prefer lib over dll in windows
+    option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" OFF)
+else()
+    option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 endif()
 
 ###########################################################################
@@ -143,6 +146,11 @@ endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif(BUILD_EXAMPLES)
+
+# Build runtime
+if(BUILD_RUNTIME)
+    add_subdirectory(runtime)
+endif(BUILD_RUNTIME)
 
 
 ###########################################################################

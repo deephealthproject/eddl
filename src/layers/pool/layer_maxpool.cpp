@@ -34,12 +34,13 @@ LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, const string& name, int dev
     D->indY = new Tensor(D->O->shape, dev);
 
 #ifdef cCUDNN
+   if(!D->I->isCPU()){
     D->mode = CUDNN_POOLING_MAX;
     D->maxpoolingNanOpt = CUDNN_NOT_PROPAGATE_NAN;
     cudnnStatus_t bbb = cudnnSetPooling2dDescriptor(D->poolingDesc, D->mode, D->maxpoolingNanOpt, D->windowHeight, D->windowWidth,
     D->verticalPadding, D->horizontalPadding, D->verticalStride, D->horizontalStride);
     if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create pooling descriptor "<< cudnnGetErrorString(bbb) <<std::endl;
-
+}
 #endif
 }
 
@@ -60,7 +61,7 @@ void LMaxPool::backward() {
 }
 
 Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LMaxPool(p[0], this->pd, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LMaxPool(p[0], new PoolDescriptor(pd->ksize, pd->stride, pd->pad, pd->mem_level), "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

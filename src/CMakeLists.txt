@@ -8,7 +8,7 @@ set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPG
 option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
-set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
+set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA)
 
 # Initializations (Local's scope)
 SET(USE_OPENMP OFF)
@@ -35,9 +35,16 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 
 
 ###########################################################################
-############################### SANITY CHECKS ##############################
+############################### SANITY CHECKS #############################
 ###########################################################################
 
+# Prefer static libraries
+# There are problems since not all static libraries have been compile with -fPIC
+#IF(WIN32)
+#    SET(CMAKE_FIND_LIBRARY_SUFFIXES .lib .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
+#ELSE(WIN32)
+#    SET(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
+#ENDIF(WIN32)
 
 ###########################################################################
 ############################### GET FILES #################################
@@ -52,6 +59,12 @@ file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/serialization/onnx/onnx.pb*")
 list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/serialization/onnx/onnx.pb*")
 
+# Remove problematic files if they are not needed
+if(NOT BUILD_DIST)
+    list(FILTER PUBLIC_HEADERS EXCLUDE REGEX ".*/src/distributed/*")
+    list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/distributed/*")
+    list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/distributed/*")
+endif()
 
 SET(ALL_FILES ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
 
@@ -73,6 +86,7 @@ SET(SPECIAL_FILES ${CUDA_HEADERS} ${CUDA_SOURCES} ${FPGA_HEADERS} ${FPGA_SOURCES
 FOREACH(item ${SPECIAL_FILES})
     LIST(REMOVE_ITEM ALL_FILES ${item})
 ENDFOREACH(item)
+
 
 
 ###########################################################################
@@ -111,17 +125,22 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
 target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
-
 # ONNX files
 if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
+
     # Link library
-    if(NOT Protobuf_ROOT)
-        find_package(Protobuf REQUIRED)  # Problems with: Protobuf_ROOT
+    if(Protobuf_ROOT)
+        # Find libraries (need absolute paths)
+        find_library(Protobuf_LIBRARY NAMES protobuf libprotobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+        find_library(Protobuf_LIBRARY_DEBUG NAMES protobufd libprotobufd HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+        find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf libprotobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+    else()
+        find_package(Protobuf)  # Problems with: Protobuf_ROOT
 
         # Check if Protobuf was really found
         if(NOT Protobuf_FOUND)
-            message(FATAL_ERROR "Protobuf was found by CMake but its libraries or includes are missing.
+            message(FATAL_ERROR "Protobuf was found by CMake.
                     Use '-D BUILD_SUPERBUILD=ON', or try with a different Protobuf installation to fix this problem.
                     Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
         endif()
@@ -133,13 +152,12 @@ if(BUILD_PROTOBUF)
     # Add includes
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
 
-    # Find libraries (need absolute paths)
-    find_library(Protobuf_LIBRARY NAMES protobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
-    find_library(Protobuf_LIBRARY_DEBUG NAMES protobufd HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
-    find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
-
     # Add libraries
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
+    if(MSVC)
+        target_link_libraries(${PROJECT_NAME} PUBLIC optimized ${Protobuf_LIBRARY} debug ${Protobuf_LIBRARY_DEBUG})
+    else()
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
+    endif()
 
     # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
     # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
@@ -191,6 +209,8 @@ SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 
 # CUDA
 if(USE_CUDA)
+    cmake_minimum_required(VERSION 3.17.2)  # Due to CUDAToolkit
+
     # Check if cuda is available
     include(CheckLanguage)
     check_language(CUDA)
@@ -230,15 +250,27 @@ if(USE_CUDA)
         # Add includes
         target_include_directories(${PROJECT_NAME} PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
 
-#        # Find libraries (need absolute paths)
-#        find_library(CUBLAS_LIBRARY cublas HINTS ${CUDA_TOOLKIT_ROOT_DIR})
-#        find_library(CUDART_LIBRARY cudart HINTS ${CUDA_TOOLKIT_ROOT_DIR})
-#        find_library(CURAND_LIBRARY curand HINTS ${CUDA_TOOLKIT_ROOT_DIR})
-#        target_link_libraries(${PROJECT_NAME} PRIVATE ${CUBLAS_LIBRARY} ${CUDART_LIBRARY} ${CURAND_LIBRARY})
+        # Add libraries
         target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cublas CUDA::cudart CUDA::curand)
         if(USE_CUDNN)
-            find_library(CUDNN_LIBRARY cudnn HINTS ${CUDAToolkit_LIBRARY_DIR})
-            target_link_libraries(${PROJECT_NAME} PRIVATE ${CUDNN_LIBRARY})
+            if(CUDNN_ROOT_DIR)
+                SET(CUDNN_INCLUDE_DIRS ${CUDNN_ROOT_DIR}/include)
+                find_library(CUDNN_LIBRARY cudnn HINTS ${CUDNN_ROOT_DIR} PATHS ${CUDNN_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
+            else()
+                SET(CUDNN_INCLUDE_DIRS ${CUDAToolkit_INCLUDE_DIRS})
+                find_library(CUDNN_LIBRARY cudnn HINTS ${CUDAToolkit_LIBRARY_DIR} PATHS ${CUDAToolkit_LIBRARY_DIR})
+            endif()
+
+            # Check if the library has been found
+            if(CUDNN_LIBRARY)
+                target_include_directories(${PROJECT_NAME} PRIVATE ${CUDNN_INCLUDE_DIRS})
+                target_link_libraries(${PROJECT_NAME} PRIVATE ${CUDNN_LIBRARY})
+            else()
+                message(WARNING "[WARNING] CUDNN was not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=GPU')
+                Hint: Install CUDNN in the same path as the CUDA Toolkit, or specify the CUDNN path using this flag '-D CUDNN_ROOT_DIR=path'")
+                SET(BUILD_TARGET "GPU") # Local's scope
+                SET(USE_CUDNN OFF) # Local's scope (disable)
+            endif()
         endif()
 
         if(APPLE)
@@ -293,6 +325,40 @@ endif()
 SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
 
 
+if(BUILD_DIST)
+    # ZLIB
+    if(DEFINED ZLIB_ROOT AND DEFINED ZLIB_INCLUDE_DIRS)
+        find_library(ZLIB_LIBRARIES z HINTS ${ZLIB_ROOT} PATHS ${ZLIB_ROOT} PATH_SUFFIXES "lib" "lib64")
+    else()
+        find_package(ZLIB)
+
+        # Check if ZLIB was really found
+        if(NOT ZLIB_FOUND)
+            message(FATAL_ERROR "ZLIB was not found by CMake.
+                Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
+        endif()
+    endif()
+    target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES})
+
+    # OPENSSL
+    if(DEFINED OPENSSL_ROOT_DIR AND DEFINED OPENSSL_INCLUDE_DIR)
+        find_library(OPENSSL_SSL_LIBRARY ssl HINTS ${OPENSSL_ROOT_DIR} PATHS ${OPENSSL_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
+        find_library(OPENSSL_CRYPTO_LIBRARY crypto HINTS ${OPENSSL_ROOT_DIR} PATHS ${OPENSSL_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
+        SET(OPENSSL_LIBRARIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+    else()
+        find_package(OpenSSL)
+
+        # Check if ZLIB was really found
+        if(NOT OPENSSL_FOUND)
+            message(FATAL_ERROR "OpenSSL was not found by CMake.
+                Use '-D BUILD_SUPERBUILD=ON', or try with a different OpenSSL installation to fix this problem.")
+        endif()
+    endif()
+    target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENSSL_LIBRARIES})
+endif()
+
 ###########################################################################
 ################################## WINDOWS ################################
 ###########################################################################
@@ -325,6 +391,7 @@ if(MSVC)
         endif()
     endif()
 endif()
+
 
 ##########################################################################
 ############################ INSTALLATION ################################
@@ -361,7 +428,9 @@ message(STATUS "Build shared libs: " ${BUILD_SHARED_LIBS} )
 message(STATUS "Build coverage: " ${BUILD_COVERAGE} )
 message(STATUS "Build sanitizers: " ${BUILD_SANITIZERS} )
 message(STATUS "Build HPC: " ${BUILD_HPC} )
-message(STATUS "Use superbuild: " ${BUILD_SUPERBUILD} )
+message(STATUS "Build distributed: " ${BUILD_DIST} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Find library suffixes: " ${CMAKE_FIND_LIBRARY_SUFFIXES} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER}) | Version: ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
@@ -389,6 +458,8 @@ endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "CUDNN enabled: " ${USE_CUDNN} )
 if(USE_CUDNN)
+    message(STATUS "CuDNN root dir: ${CUDNN_ROOT_DIR}")
+    message(STATUS "CuDNN include dir: ${CUDNN_INCLUDE_DIRS}")
     message(STATUS "CuDNN libraries: ${CUDNN_LIBRARY}")
 endif()
 message(STATUS "-------------------------------------------" )
@@ -411,11 +482,18 @@ if(BUILD_PROTOBUF)
 #    message(STATUS "Protobuf libraries (release): " ${Protobuf_LIBRARY_RELEASE} )
     message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
 endif()
-#if(WIN32)
-#message(STATUS "-------------------------------------------" )
-#message(STATUS "Pthreads dir: " ${PTHREADS_INSTALL_PATH} )
-#message(STATUS "Pthreads include: " ${PTHREADS_INSTALL_PATH}/include )
-#message(STATUS "Pthreads libraries: " ${PTHREADS_INSTALL_PATH}/lib )
-#endif()
+if(BUILD_DIST)
+    message(STATUS "-------------------------------------------" )
+    message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
+    message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
+    message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
+    message(STATUS "-------------------------------------------" )
+    message(STATUS "OpenSSL root: " ${OPENSSL_ROOT_DIR} )
+    message(STATUS "OpenSSL include: " ${OPENSSL_INCLUDE_DIR} )
+    message(STATUS "OpenSSL SSL library: " ${OPENSSL_SSL_LIBRARY} )
+    message(STATUS "OpenSSL crypto library: " ${OPENSSL_CRYPTO_LIBRARY} )
+    message(STATUS "OpenSSL version: " ${OPENSSL_VERSION} )
+endif()
+message(STATUS "-------------------------------------------" )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )

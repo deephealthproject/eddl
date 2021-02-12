@@ -171,7 +171,6 @@ TEST(Conv2DTestSuite, conv2d_k2x2_s2x2_pad_valid)
 
 }
 
-
 TEST(Conv2DTestSuite, conv2d_k2x2_s2x2_pad_same)
 {
     // Image

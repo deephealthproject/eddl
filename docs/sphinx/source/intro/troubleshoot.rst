@@ -16,11 +16,11 @@ Also, if it is using CPU and the library has been compiled for CPU, it could be 
 support AVX instructions.
 
 
-OpenMP
-^^^^^^^^
+OpenMP (MacOS)
+^^^^^^^^^^^^^^^
 
 On MacOS, the Clang that comes with XCode doesn't support OpenMP. Therefore, we recommend you to install
-the GCC compile so that you can take advatange of OpenMP.
+the GCC compile so that you can take advantange of OpenMP.
 *(Note: By default, GCC is just a symlink to Clang. more_)*
 
 .. code:: bash
@@ -39,7 +39,32 @@ As a last resort, you can always disable OpenMP and use the EDDL by making use o
 Undefined symbols for architecture x86_64
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This error might be due to the CMake cache or a conflict between compilers.
+If you cannot compile the EDDL using the distributed mode due to OpenSSL, you might try these things:
+
+First, make you you have OpenSSL installed:
+
+- Ubuntu/Debian: ``sudo apt-get install libcrypto++-dev libssl-dev``
+- MacOS: ``brew install openssl``
+
+If this does not work, check if the following paths are correctly setup:
+
+.. code:: bash
+
+    # NOTE: This is a copy-paste from "brew", but for linux should be quite similar.
+
+    If you need to have openssl@1.1 first in your PATH run:
+      echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.zshrc
+
+    For compilers to find openssl@1.1 you may need to set:
+      export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+      export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+
+    For pkg-config to find openssl@1.1 you may need to set:
+      export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
+
+
+(MacOS) Undefined symbols for architecture x86_64
+--------------------------------------------------
 
 First, try deleting the ``build/`` folder and run ``cmake`` again. If this doesn't work, try forcing a specific
 compiler either with the flag ``-DCMAKE_CXX_COMPILER`` or by exporting these variables to your environment:

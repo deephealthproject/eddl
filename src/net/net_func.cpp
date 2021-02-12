@@ -68,7 +68,7 @@ void Net::do_delta() {
   for (int i = 0; i < lout.size(); i++) {
     lout[i]->mem_delta();
     if (losses.size()>=(i+1)) {
-      losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
+            losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
     }
   }
 }
@@ -91,6 +91,16 @@ void Net::do_applygrads() {
   optimizer->applygrads(batch_size);
 }
 
+void Net::collect_acc_grads() {
+  for (int j = 0; j < layers.size(); j++)
+    for (int k = 0; k < layers[j]->acc_gradients.size(); k++) {
+      // Taking average
+      layers[j]->acc_gradients[k]->fill_(0.0);
+      for (int i = 0; i < snets.size(); i++)
+        Tensor::inc(snets[i]->layers[j]->acc_gradients[k], layers[j]->acc_gradients[k]);
+      layers[j]->acc_gradients[k]->div_(snets.size());
+    }
+}
 
 void Net::sync_weights() {
   for (int j = 0; j < layers.size(); j++)

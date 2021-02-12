@@ -59,8 +59,8 @@ int main(int argc, char **argv) {
     optimizer opt=adam(0.001);
     //opt->set_clip_val(0.01);
 
-    compserv cs = CS_CPU();
-    //compserv cs = CS_GPU({1}); // one GPU
+    //compserv cs = CS_CPU();
+    compserv cs = CS_GPU({1}); // one GPU
     //compserv cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
 
     // Build model

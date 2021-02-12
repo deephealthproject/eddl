@@ -30,7 +30,6 @@ using namespace std;
 class LConv : public LinLayer {
 public:
     static int total_layers;
-	bool distributed_training;
 
     ConvolDescriptor *cd;
 

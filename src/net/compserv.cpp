@@ -33,6 +33,10 @@ CompServ::CompServ(int t, const vector<int> g, const vector<int> &f, int lsb, in
     for (auto _ : g) this->local_gpus.push_back(_);
     for (auto _ : f) this->local_fpgas.push_back(_);
 
+    if (local_fpgas.size()>0) hw="FPGA";
+    else if (local_gpus.size()>0) hw="GPU";
+    else hw="CPU";
+
     this->lsb = lsb;
 
     if (lsb < 0) {
@@ -60,6 +64,18 @@ CompServ * CompServ::share() {
   for (auto _ : this->local_fpgas) n->local_fpgas.push_back(_);
   n->lsb = this->lsb;
   n->isshared = true;
+  n->mem_level = this->mem_level;
+
+  return n;
+}
+CompServ * CompServ::clone() {
+  CompServ *n = new CompServ();
+
+  n->type = this->type;
+  n->local_threads = this->local_threads;
+  for (auto _ : this->local_gpus) n->local_gpus.push_back(_);
+  for (auto _ : this->local_fpgas) n->local_fpgas.push_back(_);
+  n->lsb = this->lsb;
   n->mem_level = this->mem_level;
 
   return n;
