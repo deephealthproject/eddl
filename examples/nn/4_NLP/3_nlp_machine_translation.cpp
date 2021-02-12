@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     download_eutrans();
 
     // Settings
-    int epochs = 10;
+    int epochs = 1;
     int batch_size = 32;
 
     int ilength=30;
