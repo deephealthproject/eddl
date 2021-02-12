@@ -35,9 +35,9 @@ layer ResBlock(layer l, int filters,int nconv,int half) {
     l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
 
   if (half)
-    return Sum(BatchNormalization(Conv(in,filters,{1,1},{2,2})),l);
+    return Add(BatchNormalization(Conv(in,filters,{1,1},{2,2})),l);
   else
-    return Sum(l,in);
+    return Add(l,in);
 }
 
 
@@ -132,16 +132,16 @@ int main(int argc, char **argv) {
 
     // Load dataset
     Tensor *x_train=Tensor::load("flickr_trX.bin","bin");
-    x_train->info(); //1000,256,256,3
+    //x_train->info(); //1000,256,256,3
 
     Tensor *xtrain=Tensor::permute(x_train,{0,3,1,2});//1000,3,256,256
 
     Tensor *y_train=Tensor::load("flickr_trY.bin","bin");
-    y_train->info();
+    //y_train->info();
 
     y_train=onehot(y_train,outvs);
     y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x input_dim
-    y_train->info();
+    //y_train->info();
 
 
     //load(net,"img2text.bin","bin");

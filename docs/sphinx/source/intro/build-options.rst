@@ -181,8 +181,18 @@ troubleshoot the compilation process (see: :doc:`troubleshoot`).
 
 .. note::
 
-    This flag is needed to known which CUDA Toolkit/cuDNN the user wants to use. By default cmake looks in the ``PATH``.
+    This flag is needed to known which CUDA Toolkit the user wants to use. By default cmake looks in the ``PATH``.
 
+- **CUDNN ROOT DIR:**
+
+.. code:: bash
+
+    --DCUDNN_ROOT_DIR=/path/to/cuda  #/usr/local/cuda
+
+.. note::
+
+    This flag is needed to known where to look for the cuDNN libraries. By default cuda is expected to be installed in
+    along with the CUDA toolkit.
 
 - **CUDA host compiler:**
 

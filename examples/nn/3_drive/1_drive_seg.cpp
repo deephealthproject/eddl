@@ -38,49 +38,45 @@ layer UNetWithPadding(layer x)
 
     int depth=32;
 
-    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
-    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = LeakyReLu(BatchNormalization(Conv(x, depth, { 3,3 }, { 1, 1 }, "same")));
+    x = LeakyReLu(BatchNormalization(Conv(x, depth, { 3,3 }, { 1, 1 }, "same")));
     x2 = MaxPool(x, { 2,2 }, { 2,2 });
-    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
-    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = LeakyReLu(BatchNormalization(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same")));
+    x2 = LeakyReLu(BatchNormalization(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same")));
     x3 = MaxPool(x2, { 2,2 }, { 2,2 });
-    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
-    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = LeakyReLu(BatchNormalization(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same")));
+    x3 = LeakyReLu(BatchNormalization(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same")));
     x4 = MaxPool(x3, { 2,2 }, { 2,2 });
-    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
-    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = LeakyReLu(BatchNormalization(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same")));
+    x4 = LeakyReLu(BatchNormalization(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same")));
     x5 = MaxPool(x4, { 2,2 }, { 2,2 });
-    x5 = LeakyReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
-    x5 = LeakyReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
-    x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 3,3 }, { 1, 1 }, "same");
-    //x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 2,2 }, { 1, 1 }, "same");
+    x5 = LeakyReLu(BatchNormalization(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same")));
+    x5 = LeakyReLu(BatchNormalization(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same")));
+    x5 = BatchNormalization(Conv(UpSampling(x5, { 2,2 }), 8*depth, { 3,3 }, { 1, 1 }, "same"));
 
     if (USE_CONCAT) x4 = Concat({x4,x5});
     else x4 = Sum(x4,x5);
-    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
-    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
-    x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 3,3 }, { 1, 1 }, "same");
-    //x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 2,2 }, { 1, 1 }, "same");
+    x4 = LeakyReLu(BatchNormalization(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same")));
+    x4 = LeakyReLu(BatchNormalization(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same")));
+    x4 = BatchNormalization(Conv(UpSampling(x4, { 2,2 }), 4*depth, { 3,3 }, { 1, 1 }, "same"));
 
     if (USE_CONCAT) x3 = Concat({x3,x4});
     else x3 = Sum(x3,x4);
-    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
-    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
-    //x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 2,2 }, { 1, 1 }, "same");
-    x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 3,3 }, { 1, 1 }, "same");
+    x3 = LeakyReLu(BatchNormalization(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same")));
+    x3 = LeakyReLu(BatchNormalization(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same")));
+    x3 = BatchNormalization(Conv(UpSampling(x3, { 2,2 }), 2*depth, { 3,3 }, { 1, 1 }, "same"));
 
     if (USE_CONCAT) x2 = Concat({x2,x3});
     else x2 = Sum(x2,x3);
-    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
-    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
-    //x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 2,2 }, { 1, 1 }, "same");
-    x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 3,3 }, { 1, 1 }, "same");
+    x2 = LeakyReLu(BatchNormalization(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same")));
+    x2 = LeakyReLu(BatchNormalization(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same")));
+    x2 = BatchNormalization(Conv(UpSampling(x2, { 2,2 }), depth, { 3,3 }, { 1, 1 }, "same"));
 
     if (USE_CONCAT) x = Concat({x,x2});
     else x = Sum(x,x2);
-    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
-    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
-    x = Conv(x, 1, { 1,1 });
+    x = LeakyReLu(BatchNormalization(Conv(x, depth, { 3,3 }, { 1, 1 }, "same")));
+    x = LeakyReLu(BatchNormalization(Conv(x, depth, { 3,3 }, { 1, 1 }, "same")));
+    x = BatchNormalization(Conv(x, 1, { 1,1 }));
 
     return x;
 }
@@ -93,15 +89,16 @@ int main(int argc, char **argv){
 
     // Settings
     int epochs = 100000;
-    int batch_size = 2;
+    int batch_size = 4;
 
     //////////////////////////////////////////////////////////////
     // Network for Data Augmentation
+    
     layer in1=Input({3,584,584});
     layer in2=Input({1,584,584});
 
     layer l=Concat({in1,in2});   // Cat image and mask
-    l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
+    //l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
     l= CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
     layer img=Select(l,{"0:3"}); // UnCat [0-2] image
     layer mask=Select(l,{"3"});  // UnCat [3] mask
@@ -112,7 +109,7 @@ int main(int argc, char **argv){
 
     // Build model for DA
     build(danet);
-    toGPU(danet,"low_mem");   // only in GPU 0 with low_mem setup
+    toGPU(danet,{1,1},10,"low_mem");   
     summary(danet);
 
     //////////////////////////////////////////////////////////////
@@ -121,28 +118,20 @@ int main(int argc, char **argv){
     layer out=Sigmoid(UNetWithPadding(in));
     model segnet=Model({in},{out});
     build(segnet,
-          adam(0.00001), // Optimizer
-          {"mse"}, // Losses
-          {"mse"}, // Metrics
-            CS_GPU({1}, "low_mem")
-//          CS_CPU(-1)
+        adam(0.001), // Optimizer
+        {"mse"}, // Losses
+        {"mse"}, // Metrics
+        CS_GPU({1,1}, 10, "low_mem")
     );
-    // Train on multi-gpu with sync weights every 100 batches:
-//  toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
     summary(segnet);
     plot(segnet,"segnet.pdf");
 
     //////////////////////////////////////////////////////////////
     // Load and preprocess training data
-    cout<<"Reading train numpy\n";
     Tensor* x_train = Tensor::load("drive_trX.bin");
-    x_train->info();
     x_train->div_(255.0f);
-    //permute
 
-    cout<<"Reading test numpy\n";
     Tensor* y_train = Tensor::load("drive_trY.bin");
-    y_train->info();
     y_train->div_(255.0f);
 
     Tensor* xbatch = new Tensor({batch_size,3,584,584});

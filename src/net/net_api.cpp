@@ -271,7 +271,6 @@ void Net::forward(vector<Tensor*> in)
       msg("size missmatch in list of tensors","Net.forward(vtensor)");
 
       if (batch_size!=in[0]->shape[0]) {
-        cout<<batch_size<<" "<<in[0]->shape[0]<<endl;
         resize(in[0]->shape[0]);
       }
 

@@ -16,11 +16,11 @@ Also, if it is using CPU and the library has been compiled for CPU, it could be 
 support AVX instructions.
 
 
-OpenMP
-^^^^^^^^
+OpenMP (MacOS)
+^^^^^^^^^^^^^^^
 
 On MacOS, the Clang that comes with XCode doesn't support OpenMP. Therefore, we recommend you to install
-the GCC compile so that you can take advatange of OpenMP.
+the GCC compile so that you can take advantange of OpenMP.
 *(Note: By default, GCC is just a symlink to Clang. more_)*
 
 .. code:: bash
