@@ -549,7 +549,6 @@ void Net::build_rnet(int inl,int outl) {
      }
    }
 
-
    rnet->flog_tr=flog_tr;
    rnet->flog_ts=flog_ts;
 

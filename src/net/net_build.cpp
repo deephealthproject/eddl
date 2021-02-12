@@ -189,8 +189,14 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
       for(int i=0;i<decsize;i++)
         for(int j=0;j<lo.size();j++)
            losses.push_back(lo[j]->clone());
+
+        for(auto _l_ : lo) delete _l_; // when cloned are no longer needed -- TO BE REVIEWED
+    } else {
+        // losses = vloss(lo); 
+        for(auto _l_ : losses) delete _l_;
+        losses.clear();
+        for(auto _l_ : lo) losses.push_back(_l_);
     }
-    else losses = vloss(lo);
 
     for (int i = 0; i < losses.size(); i++) {
         if (losses[i]->name == "softmax_cross_entropy") lout[i]->delta_bp = 1;
