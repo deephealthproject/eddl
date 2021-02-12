@@ -72,7 +72,7 @@ int main(int argc, char **argv){
 
   }
 
-  //CPU
+  //GPU
   for(int i=0;i<times_gpu;i++) {
     cout<<"======================="<<endl;
     cout<<"GPU "<<i<<endl;
