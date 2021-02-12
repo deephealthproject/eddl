@@ -156,7 +156,7 @@ See the :doc:`build-options` section for more details about cmake options.
 
     .. code:: bash
 
-        cmake .. -DBUILD_SUPERBUILD=ON -DBUILD_TARGET=CUDNN -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc -DCMAKE_CXX_COMPILER=/usr/bin/g++-7``
+        cmake .. -DBUILD_SUPERBUILD=ON -DBUILD_TARGET=CUDNN -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc -DCMAKE_CXX_COMPILER=/usr/bin/g++-7
 
 
 Including EDDL in your project
