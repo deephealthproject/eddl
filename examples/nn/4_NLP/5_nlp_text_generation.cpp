@@ -254,8 +254,6 @@ int main(int argc, char **argv) {
     layer image = Input({512});
     layer lstate = States({2,512});
 
-    fprintf(stderr, "%p %p\n", lstate, lstate->get_my_owner());
-
     ldec = ReduceArgMax(ldecin,{0});
     ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
 
@@ -267,9 +265,7 @@ int main(int argc, char **argv) {
 
     out = Softmax(Dense(lstm, outvs));
 
-    fprintf(stderr, "%p %p\n", lstate, lstate->get_my_owner());
     model decoder=Model({ldecin,image,lstate},{out});
-    fprintf(stderr, "%p %p\n", lstate, lstate->get_my_owner());
 
     cs = nullptr;
     if (use_cpu) {

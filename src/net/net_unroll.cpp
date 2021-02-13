@@ -157,191 +157,194 @@ return rnet;
 
 // Unroll Recurrent net
 Net* Net::unroll_enc_dec(int inl, int outl) {
-  int i, j, k, l;
+    int i, j, k, l;
 
-  vlayer *nlayers;
-  vlayer *nin;
-  vlayer *nout;
-  int ind;
-  vlayer par;
-  vector<bool> frnn;
-
-
-  cout<<"Recurrent net encoder input sequence length="<<inl<<", decoder output sequence length="<<outl<<endl;
-
-  // set vfts sort
-  layers.clear();
-  for(int i=0;i<vfts.size();i++)
-    layers.push_back(vfts[i]);
-
-  /*for(int i=0;i<layers.size();i++)
-     cout<<layers[i]->name<<endl;
-  cout<<endl;
-  */
-
-  // check if rnn is in forward path
-  for(i=0;i<layers.size();i++)
-    if (layers[i]->isrecurrent) frnn.push_back(true);
-    else frnn.push_back(check_rnn_forward(layers[i]));
-
-  /*for(int i=0;i<layers.size();i++)
-    if (frnn[i]) cout<<layers[i]->name<<"-->";
-    else cout<<layers[i]->name<<"X-->";
-  cout<<endl;
-*/
-
- // check decoder branch if any
-  for(i=0;i<layers.size();i++)
-    if (layers[i]->isdecoder) {frnn[i]=false;break;}
-
-  for(;i<layers.size();i++)
-    frnn[i]=false;
-
-  // set sort first frnn
-  vlayer lfrnn;
-  for(i=0;i<layers.size();i++)
-    if (frnn[i]) lfrnn.push_back(layers[i]);
-
-  for(i=0;i<layers.size();i++)
-    if (!frnn[i]) lfrnn.push_back(layers[i]);
+    vlayer *nlayers;
+    vlayer *nin;
+    vlayer *nout;
+    int ind;
+    vlayer par;
+    vector<bool> frnn;
 
 
-  layers.clear();
-  for(i=0;i<lfrnn.size();i++)
-    layers.push_back(lfrnn[i]);
+    cout<<"Recurrent net encoder input sequence length="<<inl<<", decoder output sequence length="<<outl<<endl;
 
-  // re-check frnn with the new sort
-  frnn.clear();
-  for(i=0;i<layers.size();i++) frnn.push_back(false);
+    // set vfts sort
+    layers.clear();
+    for(int i=0;i<vfts.size();i++)
+        layers.push_back(vfts[i]);
+
+    /*for(int i=0;i<layers.size();i++)
+      cout<<layers[i]->name<<endl;
+      cout<<endl;
+     */
+
+    // check if rnn is in forward path
+    for(i=0;i<layers.size();i++)
+        if (layers[i]->isrecurrent) frnn.push_back(true);
+        else frnn.push_back(check_rnn_forward(layers[i]));
+
+    /*for(int i=0;i<layers.size();i++)
+      if (frnn[i]) cout<<layers[i]->name<<"-->";
+      else cout<<layers[i]->name<<"X-->";
+      cout<<endl;
+     */
+
+    // check decoder branch if any
+    for(i=0;i<layers.size();i++)
+        if (layers[i]->isdecoder) {frnn[i]=false;break;}
+
+    for(;i<layers.size();i++)
+        frnn[i]=false;
+
+    // set sort first frnn
+    vlayer lfrnn;
+    for(i=0;i<layers.size();i++)
+        if (frnn[i]) lfrnn.push_back(layers[i]);
+
+    for(i=0;i<layers.size();i++)
+        if (!frnn[i]) lfrnn.push_back(layers[i]);
 
 
-  int encsize=0;
-  for(int i=0;i<layers.size();i++) {
-    if (layers[i]->isdecoder) break;
-    else {
-      encsize++;
-      if (layers[i]->isrecurrent) frnn[i]=true;
-      else frnn[i]=check_rnn_forward(layers[i]);
-    }
-  }
+    layers.clear();
+    for(i=0;i<lfrnn.size();i++)
+        layers.push_back(lfrnn[i]);
 
-  /*for(int i=0;i<layers.size();i++)
-    if (frnn[i]) cout<<layers[i]->name<<"-->";
-    else cout<<layers[i]->name<<"X-->";
-  cout<<endl;
-*/
-  // unroll inputs
-  nin=new vlayer[inl+outl];
-  nlayers=new vlayer[inl+outl];
-  nout=new vlayer[outl];
+    // re-check frnn with the new sort
+    frnn.clear();
+    for(i=0;i<layers.size();i++) frnn.push_back(false);
 
-  int size=inl+outl;
-  int top=0;
 
-  bool connected=false;
-  din.clear();
-  for (i = 0; i < size; i++) {
-
-    //encoder input layers
-    if (i<inl) {
-      for (j = 0; j < lin.size(); j++)  {
-        nin[i].push_back(lin[j]->share(i, batch_size, par));
-        nlayers[i].push_back(nin[i][j]);
-      }
-    }
-
-    // rest of layers
-    for (j = 0; j < layers.size(); j++) {
-      // Encoder unroll
-      if ((i<(inl+top))&&(frnn[j])) {
-        if (!isInorig(layers[j], nlayers[i], ind)) {
-          vlayer par;
-          for (l = 0; l < layers[j]->parent.size(); l++) {
-            if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
-            else par.push_back(nlayers[i][ind]);
-          }
-          if (l == layers[j]->parent.size()) {
-            if ((layers[j]->isrecurrent)&&(i>0)) {
-              par.push_back(nlayers[i-1][j]);
-              nlayers[i].push_back(layers[j]->share(i, batch_size, par));
-            }
-            else {
-              nlayers[i].push_back(layers[j]->share(i, batch_size, par));
-            }
-          }
-          else msg("Unexpected error","unroll");
+    int encsize=0;
+    for(int i=0;i<layers.size();i++) {
+        if (layers[i]->isdecoder) break;
+        else {
+            encsize++;
+            if (layers[i]->isrecurrent) frnn[i]=true;
+            else frnn[i]=check_rnn_forward(layers[i]);
         }
-      }
-      else if ((i>=(inl-top))&&(!frnn[j])) {
+    }
 
-          // End-Dec transition in case of decoder
-          if ((isdecoder)&&(layers[j]->lin==0)) {
-            vlayer par;
-            Layer *n=layers[j]->share(i-inl, batch_size, par);
-            nin[i].push_back(n);
-            din.push_back(n); // decoder inputs
-            nlayers[i].push_back(n);
-          }
-          else {
-            vlayer par;
-            for (l = 0; l < layers[j]->parent.size(); l++) {
-              if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
-              else par.push_back(nlayers[i][ind]);
+    /*for(int i=0;i<layers.size();i++)
+      if (frnn[i]) cout<<layers[i]->name<<"-->";
+      else cout<<layers[i]->name<<"X-->";
+      cout<<endl;
+     */
+    // unroll inputs
+    nin=new vlayer[inl+outl];
+    nlayers=new vlayer[inl+outl];
+    nout=new vlayer[outl];
+
+    int size=inl+outl;
+    int top=0;
+
+    bool connected=false;
+    din.clear();
+    for (i = 0; i < size; i++) {
+
+        //encoder input layers
+        if (i<inl) {
+            for (j = 0; j < lin.size(); j++)  {
+                nin[i].push_back(lin[j]->share(i, batch_size, par));
+                nlayers[i].push_back(nin[i][j]);
             }
+        }
 
-            if ((l == layers[j]->parent.size())||(layers[j]->isdecoder)) {
-              if ((layers[j]->isrecurrent)&&(i>0)) {
-                if (i==inl) {
-                  if (!connected) {
-                    int c=nlayers[i-1].size();
-                    par.push_back(nlayers[i-1][c-1]);
-                    connected=true; // end-dec connected
-                  }
+        // rest of layers
+        for (j = 0; j < layers.size(); j++) {
+            // Encoder unroll
+            if ((i<(inl+top))&&(frnn[j])) {
+                if (!isInorig(layers[j], nlayers[i], ind)) {
+                    vlayer par;
+                    for (l = 0; l < layers[j]->parent.size(); l++) {
+                        if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
+                        else par.push_back(nlayers[i][ind]);
+                    }
+                    if (l == layers[j]->parent.size()) {
+                        if ((layers[j]->isrecurrent)&&(i>0)) {
+                            par.push_back(nlayers[i-1][j]);
+                            nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+                        }
+                        else {
+                            nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+                        }
+                    }
+                    else msg("Unexpected error","unroll");
+                }
+            }
+            else if ((i>=(inl-top))&&(!frnn[j])) {
+
+                // End-Dec transition in case of decoder
+                if ((isdecoder)&&(layers[j]->lin==0)) {
+                    vlayer par;
+                    Layer *n=layers[j]->share(i-inl, batch_size, par);
+                    nin[i].push_back(n);
+                    din.push_back(n); // decoder inputs
+                    nlayers[i].push_back(n);
                 }
                 else {
-                  par.push_back(nlayers[i-1][nlayers[i].size()]);
+                    vlayer par;
+                    for (l = 0; l < layers[j]->parent.size(); l++) {
+                        if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
+                        else par.push_back(nlayers[i][ind]);
+                    }
+
+                    if ((l == layers[j]->parent.size())||(layers[j]->isdecoder)) {
+                        if ((layers[j]->isrecurrent)&&(i>0)) {
+                            if (i==inl) {
+                                if (!connected) {
+                                    int c=nlayers[i-1].size();
+                                    par.push_back(nlayers[i-1][c-1]);
+                                    connected=true; // end-dec connected
+                                }
+                            }
+                            else {
+                                par.push_back(nlayers[i-1][nlayers[i].size()]);
+                            }
+
+                            nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+
+                        }
+                        else {
+                            nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+                        }
+                    }
+                    else msg("Unexpected error","unroll");
                 }
-
-                nlayers[i].push_back(layers[j]->share(i, batch_size, par));
-
-              }
-              else {
-                nlayers[i].push_back(layers[j]->share(i, batch_size, par));
-              }
             }
-            else msg("Unexpected error","unroll");
-          }
-      }
-  }
+        }
 
-  // set output layers
-  if (i>=(inl-top)) {
-    for (j = 0; j < lout.size(); j++)
-      if (isInorig(lout[j], nlayers[i], ind))
-        nout[(i-inl)+top].push_back(nlayers[i][ind]);
-  }
+        // set output layers
+        if (i>=(inl-top)) {
+            for (j = 0; j < lout.size(); j++)
+                if (isInorig(lout[j], nlayers[i], ind))
+                    nout[(i-inl)+top].push_back(nlayers[i][ind]);
+        }
 
 
-}
+    }
 
-/////
-vlayer ninl;
-vlayer noutl;
-for (i = 0; i < inl+outl; i++)
-  for (j = 0; j < nin[i].size(); j++) {
-    ninl.push_back(nin[i][j]);
-  }
+    /////
+    vlayer ninl;
+    vlayer noutl;
+    for (i = 0; i < inl+outl; i++)
+        for (j = 0; j < nin[i].size(); j++) {
+            ninl.push_back(nin[i][j]);
+        }
 
-for (i = 0; i < outl; i++)
-  for (j = 0; j < nout[i].size(); j++)
-    noutl.push_back(nout[i][j]);
+    for (i = 0; i < outl; i++)
+        for (j = 0; j < nout[i].size(); j++)
+            noutl.push_back(nout[i][j]);
 
-Net *rnet=new Net(ninl, noutl);
+    Net *rnet=new Net(ninl, noutl);
 
-rnet->din=din;
+    rnet->din=din;
 
-return rnet;
+    delete [] nin;
+    delete [] nlayers;
+    delete [] nout;
 
+    return rnet;
 }
 
 

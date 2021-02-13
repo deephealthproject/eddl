@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 
     layer lE = RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05); // mask_zeros=true
     layer enc = LSTM(lE,128,true);  // mask_zeros=true
-    layer cps=GetStates(enc);
+    layer cps = GetStates(enc);
 
     // Decoder
     layer ldin=Input({outvs});
@@ -108,13 +108,19 @@ int main(int argc, char **argv) {
     // Load dataset
     Tensor *x_train=Tensor::load("eutrans_trX.bin","bin");
     Tensor *y_train=Tensor::load("eutrans_trY.bin","bin");
-    y_train=onehot(y_train,outvs);
+
+    Tensor *ytrain=y_train;
+    y_train=onehot(ytrain,outvs);
+
     x_train->reshape_({x_train->shape[0],ilength,1}); //batch x timesteps x input_dim
     y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
 
     Tensor *x_test=Tensor::load("eutrans_tsX.bin","bin");
     Tensor *y_test=Tensor::load("eutrans_tsY.bin","bin");
-    y_test=onehot(y_test,outvs);
+
+    Tensor *ytest=y_test;
+    y_test=onehot(ytest,outvs);
+
     x_test->reshape_({x_test->shape[0],ilength,1}); //batch x timesteps x input_dim
     y_test->reshape_({y_test->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
 
@@ -137,13 +143,16 @@ int main(int argc, char **argv) {
     }
 
     // Train model
-    Tensor* ybatch = new Tensor({batch_size, olength,outvs});
+    Tensor* ybatch = new Tensor({batch_size, olength, outvs});
     next_batch({y_train},{ybatch});
 
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
     }
 
+    delete ybatch;
+    delete ytest;
+    delete ytrain;
     delete net;
     delete x_train;
     delete x_test;

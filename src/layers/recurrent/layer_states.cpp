@@ -41,15 +41,6 @@ LStates::LStates(Tensor *in, string name, int dev, int mem): MLayer(name, dev, m
 
 }
 
-LStates::~LStates()
-{
-    for (auto _ : states) delete _;
-    states.clear();
-
-    for (auto _ : delta_states) delete _;
-    delta_states.clear();
-}
-
 void LStates::resize(int batch){
   input->resize(batch);
   for(int i=0;i<states.size();i++) {

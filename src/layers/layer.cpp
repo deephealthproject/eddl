@@ -53,7 +53,9 @@ Layer::Layer(string name, int dev, int mem) {
 
 Layer::~Layer(){
     // Note: nullptr are not really needed. However, I like to have this pointers pointing to "something" just in case
+    for (auto _ : this->states) if (_ != output) delete _;
     if (output != nullptr) { delete output; output = nullptr; }
+    this->states.clear();
     if (target != nullptr) { delete target; target = nullptr; }
 
     for (auto _ : this->delta_states) if (_ != delta) delete _;
