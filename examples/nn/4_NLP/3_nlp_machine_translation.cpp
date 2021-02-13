@@ -39,11 +39,18 @@ Tensor *onehot(Tensor *in, int vocs)
 // using EuTrans
 //////////////////////////////////
 int main(int argc, char **argv) {
+    bool testing = false;
+    bool use_cpu = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
+
     // Download EuTrans
     download_eutrans();
 
     // Settings
-    int epochs = 1;
+    int epochs = testing ? 1 : 5;
     int batch_size = 32;
 
     int ilength=30;
@@ -77,16 +84,22 @@ int main(int argc, char **argv) {
     plot(net, "model.pdf");
 
     optimizer opt=adam(0.01);
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        //cs = CS_GPU({1}, "low_mem"); // one GPU
+        cs = CS_GPU({1}); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+    }
 
     // Build model
     build(net,
           opt, // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
-          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
-    );
+          cs);
 
 
     // View model
@@ -105,6 +118,24 @@ int main(int argc, char **argv) {
     x_test->reshape_({x_test->shape[0],ilength,1}); //batch x timesteps x input_dim
     y_test->reshape_({y_test->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
 
+    if (testing) {
+        std::string _range_ = "0:" + std::to_string(3 * batch_size);
+        Tensor* x_mini_train = x_train->select({_range_, ":", ":"});
+        Tensor* y_mini_train = y_train->select({_range_, ":", ":"});
+        Tensor* x_mini_test  = x_test->select({_range_, ":", ":"});
+        Tensor* y_mini_test  = y_test->select({_range_, ":", ":"});
+
+        delete x_train;
+        delete y_train;
+        delete x_test;
+        delete y_test;
+
+        x_train = x_mini_train;
+        y_train = y_mini_train;
+        x_test  = x_mini_test;
+        y_test  = y_mini_test;
+    }
+
     // Train model
     Tensor* ybatch = new Tensor({batch_size, olength,outvs});
     next_batch({y_train},{ybatch});
@@ -114,5 +145,10 @@ int main(int argc, char **argv) {
     }
 
     delete net;
+    delete x_train;
+    delete x_test;
+    delete y_train;
+    delete y_test;
 
+    return EXIT_SUCCESS;
 }

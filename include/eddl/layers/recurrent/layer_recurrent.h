@@ -50,6 +50,8 @@ public:
 
     LStates(Tensor *in, string name, int dev, int mem);
 
+    ~LStates();
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;

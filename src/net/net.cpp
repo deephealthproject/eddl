@@ -75,8 +75,14 @@ Net::Net(vlayer in, vlayer out):Net() {
     // Set input/outlayer
     //lin = in;
     //lout = out;
-    for (auto _ : in) lin.push_back(_);
-    for (auto _ : out) lout.push_back(_);
+    for (auto l : in) {
+        lin.push_back(l);
+        l->set_my_owner(this);
+    }
+    for (auto l : out) {
+        lout.push_back(l);
+        l->set_my_owner(this);
+    }
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -125,14 +131,14 @@ Net::~Net(){
     // Clean inputs
     for(int i=0; i<Xs->size(); i++) {
         for(int j=0;j<Xs[i].size();j++)
-          delete Xs[i][j];
+            delete Xs[i][j];
         Xs[i].clear();
     }
 
     // Clean targets
     for(int i=0; i<Ys->size(); i++) {
         for(int j=0;j<Ys[i].size();j++)
-          delete Ys[i][j];
+            delete Ys[i][j];
         Ys[i].clear();
     }
 
@@ -157,20 +163,27 @@ Net::~Net(){
 
     // clean device mem
     for(int i=0;i<snets.size();i++){
-      for(int j=0;j<snets[i]->layers.size();j++) {
-        if (snets[i]->layers[j]!=nullptr) {
-          delete snets[i]->layers[j];
-          snets[i]->layers[j] = nullptr;
+        for(int j=0;j<snets[i]->layers.size();j++) {
+            if (snets[i]->layers[j]!=nullptr) {
+                // fprintf(stderr, "%s(%d) %d %d : %p %p %p %p\n", __FILE__, __LINE__, i, j, snets[i]->layers[j]->get_my_owner(), this, snets[i], rnet);
+                if (snets[i]->layers[j]->is_my_owner(this)) {
+                    delete snets[i]->layers[j];
+                    snets[i]->layers[j] = nullptr;
+                }
+            }
         }
-      }
     }
 
     // net running on device != CPU
     // clean also CPU mem
     if (snets[0]!=this){
-      for(int j=0;j<layers.size();j++) {
-         delete layers[j];
-      }
+        for(int j=0;j<layers.size();j++) {
+            // fprintf(stderr, "%s(%d) %d : %p %p\n", __FILE__, __LINE__, j, layers[j]->get_my_owner(), this);
+            if (layers[j]->is_my_owner(this)) {
+                delete layers[j];
+                layers[j] = nullptr;
+            }
+        }
     }
 
     if (rnet!=nullptr) { delete rnet; rnet = nullptr;}
@@ -199,8 +212,10 @@ void Net::walk(Layer *l,vlayer lout) {
     if (l->orig!=nullptr) l->net=l->orig->net;
     else l->net=this;
 
-    if (!inNet(l))
-       layers.push_back(l);
+    if (!inNet(l)) {
+        layers.push_back(l);
+        l->set_my_owner(this);
+    }
 
     if (isIn(l,lout,ind)) return; // cut recursivity for out layers
 
@@ -215,8 +230,10 @@ void Net::walk(Layer *l,vlayer lout) {
 
     if (isIn(l,lout,ind)) return; // cut recursivity for out layers
 
-    if (!inNet(l))
-       layers.push_back(l);
+    if (!inNet(l)) {
+        layers.push_back(l);
+        l->set_my_owner(this);
+    }
 
     for (int i = 0; i < l->child.size(); i++)
        walk(l->child[i],lout);
@@ -229,8 +246,10 @@ void Net::walk_back(Layer *l) {
     if (l->orig!=nullptr) l->net=l->orig->net;
     else l->net=this;
 
-    if (!inNet(l))
+    if (!inNet(l)) {
         layers.push_back(l);
+        l->set_my_owner(this);
+    }
 
     for (int i = 0; i < l->parent.size(); i++)
         walk_back(l->parent[i]);

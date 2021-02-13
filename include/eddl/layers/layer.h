@@ -30,6 +30,9 @@ using namespace std;
 class Net;
 
 class Layer {
+private:
+    void * my_owner;
+
 public:
     string name;
     Tensor *input;
@@ -129,6 +132,9 @@ public:
 
 	virtual void enable_distributed() {}
 
+    bool set_my_owner(void * net);
+    bool is_my_owner(void * net);
+    void * get_my_owner();
 };
 
 

@@ -190,7 +190,8 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
         for(int j=0;j<lo.size();j++)
            losses.push_back(lo[j]->clone());
 
-        for(auto _l_ : lo) delete _l_; // when cloned are no longer needed -- TO BE REVIEWED
+        for(auto _l_ : lo) delete _l_; // once cloned are no longer needed -- TO BE REVIEWED
+
     } else {
         // losses = vloss(lo); 
         for(auto _l_ : losses) delete _l_;
@@ -207,6 +208,9 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
       for(int i=0;i<decsize;i++)
         for(int j=0;j<me.size();j++)
             this->metrics.push_back(me[j]->clone());
+
+      for(auto _m_ : me) delete _m_; // once cloned are no longer needed -- TO BE REVIEWED
+
     } else {
         for(int j=0;j<me.size();j++)
             this->metrics.push_back(me[j]);

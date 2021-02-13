@@ -47,6 +47,8 @@ Layer::Layer(string name, int dev, int mem) {
     this->reg = nullptr;
     // init = new IGlorotNormal(1234);
     this->init = new IGlorotUniform(1234);  // Has problems with the drive dataset
+
+    this->my_owner = nullptr;
 }
 
 Layer::~Layer(){
@@ -245,6 +247,26 @@ void Layer::copy(Layer *l2){
     for(int i=0;i<params.size();i++){
         Tensor::copy(params[i],l2->params[i]);
     }
+}
+
+bool Layer::set_my_owner(void * net) 
+{
+    if (this->my_owner == nullptr) {
+        this->my_owner = net;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Layer::is_my_owner(void * net)
+{
+    return this->my_owner == net;
+}
+
+void * Layer::get_my_owner()
+{
+    return this->my_owner;
 }
 
 ////////////////////////////////////

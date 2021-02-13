@@ -352,6 +352,7 @@ namespace eddl {
     }
     vlayer forward(model net,vector<Layer*> in)
     {
+        net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
         net->reset();
         net->forward(in);
 
@@ -359,6 +360,7 @@ namespace eddl {
     }
     vlayer forward(model net,vector<Tensor*> in)
     {
+        net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
         net->reset();
         net->forward(in);
 
@@ -367,6 +369,7 @@ namespace eddl {
 
     vlayer forward(model net,int b)
     {
+        net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
         net->resize(b);
         net->reset();
         net->forward();
@@ -376,6 +379,7 @@ namespace eddl {
     }
     vlayer forward(model net)
     {
+        net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
         net->reset();
         net->forward();
 
