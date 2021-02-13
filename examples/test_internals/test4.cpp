@@ -25,7 +25,7 @@ using namespace eddl;
 int main(int argc, char **argv){
 
   int times_cpu=10;
-  int times_gpu=10;
+  int times_gpu=100;
 
   //CPU
   for(int i=0;i<times_cpu;i++) {
