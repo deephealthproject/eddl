@@ -95,6 +95,9 @@ int main(int argc, char **argv){
 
     fit(net, {x_train}, {y_train}, 10, 1);
 
+    delete x_train;
+    delete y_train;
+
     delete net;
   }
 
@@ -142,6 +145,9 @@ int main(int argc, char **argv){
     Tensor *y_train=Tensor::zeros({10,10});
 
     fit(net, {x_train}, {y_train}, 10, 1);
+
+    delete x_train;
+    delete y_train;
 
     delete net;
   }

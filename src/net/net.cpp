@@ -158,15 +158,15 @@ Net::~Net(){
     // clean metrics and losses
     for (auto m : this->metrics) delete m;
     this->metrics.clear();
-    for (auto m : this->losses) delete m;
+    for (auto l : this->losses) delete l;
     this->losses.clear();
 
     // clean device mem
     for(int i=0;i<snets.size();i++){
         for(int j=0;j<snets[i]->layers.size();j++) {
             if (snets[i]->layers[j]!=nullptr) {
-                // fprintf(stderr, "%s(%d) %d %d : %p %p %p %p\n", __FILE__, __LINE__, i, j, snets[i]->layers[j]->get_my_owner(), this, snets[i], rnet);
-                if (snets[i]->layers[j]->is_my_owner(this)) {
+                //fprintf(stderr, "%s(%d) %d %d : %p %p %p %p\n", __FILE__, __LINE__, i, j, snets[i]->layers[j]->get_my_owner(), this, snets[i], rnet);
+                if (snets[i]->layers[j]->is_my_owner(this)  ||  snets[i]->layers[j]->is_my_owner(snets[i])) {
                     delete snets[i]->layers[j];
                     snets[i]->layers[j] = nullptr;
                 }
@@ -178,7 +178,7 @@ Net::~Net(){
     // clean also CPU mem
     if (snets[0]!=this){
         for(int j=0;j<layers.size();j++) {
-            // fprintf(stderr, "%s(%d) %d : %p %p\n", __FILE__, __LINE__, j, layers[j]->get_my_owner(), this);
+            //fprintf(stderr, "%s(%d) %d : %p %p\n", __FILE__, __LINE__, j, layers[j]->get_my_owner(), this);
             if (layers[j]->is_my_owner(this)) {
                 delete layers[j];
                 layers[j] = nullptr;
