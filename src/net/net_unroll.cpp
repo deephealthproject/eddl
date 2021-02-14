@@ -55,6 +55,8 @@ Net* Net::unroll_enc(int inl, int outl) {
 
   cout<<"Recurrent net input sequence length="<<inl<<endl;
 
+  vlayer backup(layers);
+
   // set vfts sort
   layers.clear();
   for(int i=0;i<vfts.size();i++)
@@ -150,6 +152,10 @@ for (i = 0; i < inl; i++)
 
 Net *rnet=new Net(ninl, noutl);
 
+layers.clear();
+for(auto l:backup) layers.push_back(l);
+
+
 return rnet;
 
 }
@@ -168,6 +174,8 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
 
 
     cout<<"Recurrent net encoder input sequence length="<<inl<<", decoder output sequence length="<<outl<<endl;
+
+    vlayer backup(layers);
 
     // set vfts sort
     layers.clear();
@@ -344,6 +352,10 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
     delete [] nlayers;
     delete [] nout;
 
+    layers.clear();
+    for(auto l:backup) layers.push_back(l);
+
+
     return rnet;
 }
 
@@ -362,6 +374,9 @@ Net* Net::unroll_dec(int inl, int outl) {
     vector<bool> frnn;
 
     cout<<"Recurrent net output sequence length="<<outl<<endl;
+
+    vlayer backup(layers);
+
 
     // set vfts sort
     layers.clear();
@@ -458,6 +473,10 @@ Net* Net::unroll_dec(int inl, int outl) {
     delete [] nin;
     delete [] nlayers;
     delete [] nout;
+
+    layers.clear();
+    for(auto l:backup) layers.push_back(l);
+
 
     return rnet;
 }
