@@ -1573,7 +1573,8 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
           { // If dense already has a bias, we sum it in top of the bias
             log_string("The parent Dense already has a bias. Adding the parameters of the Add operator to the parent bias.", log_level, LOG_LEVEL::DEBUG);
             Tensor *add_to_bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
-            dense->bias = Tensor::add(dense->bias, add_to_bias);
+            Tensor::add(add_to_bias, dense->bias, dense->bias);
+            delete add_to_bias;
           }
           actual_layer = dense;
           break;
