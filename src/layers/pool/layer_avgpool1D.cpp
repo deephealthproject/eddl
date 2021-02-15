@@ -32,6 +32,18 @@ LAveragePool1D::LAveragePool1D(Layer *parent, PoolDescriptor *D, const string& n
     // Params
     D->indX = new Tensor(D->O->shape, dev);  // Is this needed here?
     D->indY = new Tensor(D->O->shape, dev);
+
+#ifdef cCUDNN
+if(!D->I->isCPU()){
+    D->mode = CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING;
+    D->maxpoolingNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+
+    cudnnStatus_t bbb =  cudnnSetPooling2dDescriptor(D->poolingDesc, D->mode, D->maxpoolingNanOpt, D->windowHeight, D->windowWidth,
+    D->verticalPadding, D->horizontalPadding, D->verticalStride, D->horizontalStride);
+   if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create avg pooling 1D descriptor "<< cudnnGetErrorString(bbb) <<std::endl;
+}
+#endif
+
 }
 
 
