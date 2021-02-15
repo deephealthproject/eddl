@@ -418,6 +418,8 @@ void gpu_conv3D_grad(ConvolDescriptor3D *D){
  int device=D->I->gpu_device;
   cudaSetDevice(device);
 #ifdef cCUDNN
+        float alpha = 1.0f;
+        float beta = 0.0f;
         check_cudnn(cudnnConvolutionBackwardFilter(hdnn[device], &alpha,
                                       D->xDesc, D->I->ptr,
                                       D->yDesc, D->D->ptr, D->convolution_descriptor,

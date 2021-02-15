@@ -66,21 +66,25 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
         gradients.push_back(gbn_b);
     }
 #ifdef cCUDNN
+     if(!input->isCPU()){
       data_type = CUDNN_DATA_FLOAT;
       tensor_format = CUDNN_TENSOR_NCHW;
       bn_mode =(input->ndim > 2) ? CUDNN_BATCHNORM_SPATIAL : CUDNN_BATCHNORM_PER_ACTIVATION;
+      
       cudnnCreateTensorDescriptor(&xDesc);
       cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  input->shape[0],input->shape[1],
                  (input->shape.size()>2) ? input->shape[2] : 1,
                  (input->shape.size()>3) ? input->shape[3] : 1);
       if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor x "<< cudnnGetErrorString(bbb) <<std::endl;
+      
       cudnnCreateTensorDescriptor(&yDesc);
       bbb = cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
                  output->shape[0],output->shape[1],
                  (output->shape.size()>2) ? output->shape[2] : 1,
                  (output->shape.size()>3) ? output->shape[3] : 1);
       if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor y "<< cudnnGetErrorString(bbb) <<std::endl;
+      
       cudnnCreateTensorDescriptor(&bnScaleBiasMeanVarDesc);
       if(bn_mode == CUDNN_BATCHNORM_SPATIAL){
       bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
@@ -95,6 +99,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
       }
       exponentialAverageFactor = 1.0 - this->momentum;
+   }
 #endif
 
     // no trainable:
@@ -133,6 +138,7 @@ void LBatchNorm::resize(int batch){
         output->resize(batch);
         opa->resize(batch);
 #ifdef cCUDNN
+        if(!input->isCPU()){
         cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                                                        batch,input->shape[1],
                                                        (input->shape.size()>2) ? input->shape[2] : 1,
@@ -143,7 +149,7 @@ void LBatchNorm::resize(int batch){
                                          (output->shape.size()>2) ? output->shape[2] : 1,
                                          (output->shape.size()>3) ? output->shape[3] : 1);
         if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor y "<< cudnnGetErrorString(bbb) <<std::endl;
-
+}
 #endif
     }
 }
