@@ -455,9 +455,7 @@ void Net::setTrainable(string lname, bool val)
     if (layers[i]->name==lname) {
       Layer *l=layers[i];
       l->setTrainable(val);
-      if (l->params.size()) 
-        cout<<l->name<<" trainable = "<<val<<endl;
-
+      
       for(int j=0;j<snets.size();j++) {
         for(int k=0;k<snets[j]->layers.size();k++)
           if (snets[j]->layers[k]->orig==l) {

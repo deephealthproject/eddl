@@ -103,6 +103,13 @@ Net::Net(vlayer in, vlayer out):Net() {
 
 
     build_randn_table();
+
+    // It is important that layers vector keep the forward sort
+    fts();
+    while (layers.size()) layers.pop_back();
+    for(auto l: vfts ) layers.push_back(l);
+    while (vfts.size()) vfts.pop_back();
+    
 }
 
 
@@ -216,28 +223,12 @@ void Net::walk(Layer *l,vlayer lout) {
         layers.push_back(l);
         l->set_my_owner(this);
     }
+    else return;
 
     if (isIn(l,lout,ind)) return; // cut recursivity for out layers
 
     for (int i = 0; i < l->child.size(); i++)
        walk(l->child[i],lout);
-
-/*
-    int ind;
-    
-    if (l->orig!=nullptr) l->net=l->orig->net;
-    else l->net=this;
-
-    if (isIn(l,lout,ind)) return; // cut recursivity for out layers
-
-    if (!inNet(l)) {
-        layers.push_back(l);
-        l->set_my_owner(this);
-    }
-
-    for (int i = 0; i < l->child.size(); i++)
-       walk(l->child[i],lout);
-*/
 
 }
 
@@ -250,6 +241,7 @@ void Net::walk_back(Layer *l) {
         layers.push_back(l);
         l->set_my_owner(this);
     }
+    else return;
 
     for (int i = 0; i < l->parent.size(); i++)
         walk_back(l->parent[i]);
