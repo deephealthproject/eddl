@@ -44,6 +44,20 @@ enum LOG_LEVEL {
  */
 Net *import_net_from_onnx_file(string path, int mem = 0, int log_level = LOG_LEVEL::INFO);
 
+/**
+ * @brief Imports ONNX Net from file and changes its input shape. Note that this function is 
+ *        for models with only one input layer, in other case it will fail.
+ *
+ * @param path Path to the file where the net in ONNX format is saved
+ * @param input_shape Shape of the input data (without batch dimension)
+ * @param mem (default 0)
+ * @param log_level Available: LOG_LEVEL::{TRACE, DEBUG, INFO, WARN, ERROR,
+ * NO_LOGS}. (default LOG_LEVEL::INFO)
+ *
+ * @return Net
+ */
+Net *import_net_from_onnx_file(string path, vector<int> input_shape, int mem = 0, int log_level = LOG_LEVEL::INFO);
+
 Net *import_net_from_onnx_pointer(void *serialized_model, size_t model_size, int mem = 0);
 
 Net *import_net_from_onnx_string(string *model_string, int mem = 0);

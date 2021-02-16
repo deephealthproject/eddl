@@ -136,6 +136,9 @@ if(BUILD_PROTOBUF)
     add_executable(onnx_gradients "onnx/4_onnx_test_gradients.cpp")
     target_link_libraries(onnx_gradients eddl)
 
+    add_executable(onnx_import_reshape "onnx/5_onnx_import_net_and_reshape.cpp")
+    target_link_libraries(onnx_import_reshape eddl)
+
 	# EXAMPLES: ONNX MNIST ****************************************************
 	add_executable(onnx_mnist_mlp "onnx/nn/1_mnist/1_mnist_mlp.cpp")
 	target_link_libraries(onnx_mnist_mlp eddl)
