@@ -34,20 +34,16 @@ int main(int argc, char **argv) {
     int num_classes = 10;
     vector<string> names;
 
-	string path("trained_model.onnx");
-	Net* net = import_net_from_onnx_file(path, DEV_CPU);
 
-    for(auto l:net->layers)
-       names.push_back(l->name);
+    Net* net=download_resnet18(true,{3, 32, 32});  
+    // true: remove last layers and set new top=flatten 
+    // new input_size {3,32,32} from {224,224,3}
 
-    removeLayer(net, "softmax15");
-    removeLayer(net, "dense2");
-
-    layer l=getLayer(net,"relu14");
+    layer l=getLayer(net,"top");
     layer out=Softmax(Dense(l,10,true,"newdense")); // true is for the bias.
 
     // create a new model from input output
-    layer in=getLayer(net,"input1");
+    layer in=getLayer(net,"input");
 
     net=Model({in},{out});
 
@@ -63,13 +59,11 @@ int main(int argc, char **argv) {
 
      // View model
     summary(net);
+  
 
     // force initialization of new layers
     initializeLayer(net,"newdense");
     
-	//Resize model
-	net->resize(batch_size); //Since we don't use "fit", we may need to resize the net manually to a desirable batch size
-
 
     // Load and preprocess training data
     Tensor* x_train = Tensor::load("cifar_trX.bin");
@@ -81,12 +75,18 @@ int main(int argc, char **argv) {
     Tensor* y_test = Tensor::load("cifar_tsY.bin");
     x_test->div_(255.0f);
   
+    
+    // names of layers pretrained
+    for(auto l:net->layers) 
+      if (l->name!="top") names.push_back(l->name);
+      else break;
+
   
     //Train few epochs frozen
     for(auto n:names)
       setTrainable(net,n,false);
 
-    fit(net,{x_train},{y_train},batch_size, 2);
+    fit(net,{x_train},{y_train},batch_size, 10);
 
     // unfreeze
     for(auto n:names)
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 
 
     // Evaluate
-    evaluate(net, {x_test}, {y_test});
+    evaluate(net, {x_test}, {y_test},100);
 
 	return 0;
 }
