@@ -13,6 +13,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <chrono>
 #include "eddl/net/net.h"
@@ -93,6 +94,9 @@ Net::Net(vlayer in, vlayer out):Net() {
     for (int i = 0; i < lout.size(); i++) {
         walk_back(lout[i]);
     }
+    
+    for(auto l:layersf) layers.push_back(l);
+    for(auto l:layersb) if (!inNet(l)) layers.push_back(l);
 
     for (int i = 0; i < lout.size(); i++) {
         total_loss.push_back(0.0);
@@ -210,17 +214,29 @@ int Net::inNet(Layer *l) {
     }
     return 0;
 }
-
-
+/////////////////////////////////////////
+int Net::inNetF(Layer *l) {
+    // Check if the layer l is in the network
+    for (int i = 0; i < layersf.size(); i++){
+        if (l == layersf[i]) return 1;
+    }
+    return 0;
+}
+/////////////////////////////////////////
+int Net::inNetB(Layer *l) {
+    // Check if the layer l is in the network
+    for (int i = 0; i < layersb.size(); i++){
+        if (l == layersb[i]) return 1;
+    }
+    return 0;
+}
 /////////////////////////////////////////
 void Net::walk(Layer *l,vlayer lout) {
     int ind;
-    
-    if (l->orig!=nullptr) l->net=l->orig->net;
-    else l->net=this;
 
-    if (!inNet(l)) {
-        layers.push_back(l);
+    if (!inNetF(l)) {
+        l->net=this;
+        layersf.push_back(l);
         l->set_my_owner(this);
     }
     else return;
@@ -234,12 +250,11 @@ void Net::walk(Layer *l,vlayer lout) {
 
 /////////////////////////////////////////
 void Net::walk_back(Layer *l) {
-    if (l->orig!=nullptr) l->net=l->orig->net;
-    else l->net=this;
-
-    if (!inNet(l)) {
-        layers.push_back(l);
+    
+    if (!inNetB(l)) {
+        layersb.push_back(l);
         l->set_my_owner(this);
+        l->net=this;
     }
     else return;
 
@@ -254,6 +269,10 @@ string Net::summary() {
     ss << "-------------------------------------------------------------------------------" << endl;
     ss << name << endl;
     ss << "-------------------------------------------------------------------------------" << endl;
+
+    int maxl=0;
+    for (auto & l : vfts) 
+      if (l->name.length() > maxl) maxl=l->name.length();
 
     int tot_size=0;
     for (auto & l : vfts) {
@@ -274,7 +293,7 @@ string Net::summary() {
           size+=p->size;
         tot_size+=size;
 
-        ss << setw(20) << left << l->name << "|  ";
+        ss << setw(maxl) << left << l->name << "|  ";
         ss << setw(20) << left << istr;
         ss << setw(5) << left << "=>";
         ss << setw(20) << left << ostr;

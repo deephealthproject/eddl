@@ -13,6 +13,7 @@
 
 #include "eddl/apis/eddl.h"
 
+#include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 using namespace eddl;
 
@@ -21,24 +22,6 @@ using namespace eddl;
 // Text generation
 // Only Decoder
 //////////////////////////////////
-
-layer ResBlock(layer l, int filters,int nconv,int half) {
-  layer in=l;
-
-  if (half)
-      l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{2,2})));
-  else
-      l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-
-
-  for(int i=0;i<nconv-1;i++)
-    l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-
-  if (half)
-    return Add(BatchNormalization(Conv(in,filters,{1,1},{2,2})),l);
-  else
-    return Add(l,in);
-}
 
 
 Tensor *onehot(Tensor *in, int vocs)
@@ -80,29 +63,16 @@ int main(int argc, char **argv) {
     int outvs=2000;
     int embdim=32;
 
-    // Define network
-    layer image_in = Input({3,256,256}); //Image
-    layer l = image_in;
+    model net=download_resnet18(true,{3, 256, 256});  
+    // true: remove last layers and set new top=flatten 
+    // new input_size {3,256,256} from {224,224,3}
 
-    l=ReLu(Conv(l,64,{3,3},{2,2}));
+    layer lreshape=getLayer(net,"top");
+    
+    // create a new model from input output
+    layer image_in=getLayer(net,"input");
 
-    l=ResBlock(l, 64,2,1);//<<<-- output half size
-    l=ResBlock(l, 64,2,0);
-
-    l=ResBlock(l, 128,2,1);//<<<-- output half size
-    l=ResBlock(l, 128,2,0);
-
-    l=ResBlock(l, 256,2,1);//<<<-- output half size
-    l=ResBlock(l, 256,2,0);
-
-    l=ResBlock(l, 512,2,1);//<<<-- output half size
-    l=ResBlock(l, 512,2,0);
-
-    l=GlobalAveragePool(l);
-
-    layer lreshape=Reshape(l,{-1});
-
-
+    
     // Decoder
     layer ldecin = Input({outvs});
     layer ldec = ReduceArgMax(ldecin,{0});
@@ -110,13 +80,14 @@ int main(int argc, char **argv) {
 
     ldec = Concat({ldec,lreshape});
 
-    l = LSTM(ldec,512,true);
+    layer l = LSTM(ldec,512,true);
 
     layer out = Softmax(Dense(l, outvs));
 
     setDecoder(ldecin);
 
-    model net = Model({image_in}, {out});
+    net = Model({image_in}, {out});
+
     plot(net, "model.pdf");
 
     optimizer opt=adam(0.001);
