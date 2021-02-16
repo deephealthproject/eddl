@@ -32,32 +32,7 @@ int main(int argc, char **argv) {
     int epochs = 1;
     int batch_size = 100;
     int num_classes = 10;
-    vector<string> names;
-
-/*
-    string path("resnet18.onnx");
-	  Net* net = import_net_from_onnx_file(path, DEV_CPU);
     
-    for(auto l:net->layers) 
-      cout<<l->name<<endl;
-
-    getchar();
-
-    // Build model
-    build(net,
-          adam(0.001), // Optimizer
-          {"softmax_cross_entropy"}, // Losses
-          {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}, "low_mem"), // one GPU
-          //CS_CPU(), // CPU with maximum threads availables
-		  false       // Parameter that indicates that the weights of the net must not be initialized to random values.
-    );
-
-     // View model
-    summary(net);
-    getchar();  
-    */
-
     Net* net=download_resnet18(true,{3, 32, 32});  
     // true: remove last layers and set new top=flatten 
     // new input_size {3,32,32} from {224,224,3}
@@ -99,11 +74,8 @@ int main(int argc, char **argv) {
     x_test->div_(255.0f);
   
 
-    for(int i=0;i<net->layers.size();i++) {
-      cout<<net->layers[i]->name<<"  "<<net->vfts[i]->name<<endl;
-    }
-
     // names of layers pretrained
+    vector<string> names;
     for(auto l:net->layers) { 
       if (l->name!="top") names.push_back(l->name);
       else break;
