@@ -1476,7 +1476,7 @@ namespace eddl {
 	    Net* net = import_net_from_onnx_file("vgg16.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
-        if (!top) {
+        if (top) {
             net->removeLayer("vgg0_dense2_fwd");
             net->removeLayer("vgg0_dropout1_fwd");
             net->removeLayer("vgg0_dense1_relu_fwd");
@@ -1501,7 +1501,7 @@ namespace eddl {
 	    Net* net = import_net_from_onnx_file("resnet18.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
-        if (!top) {
+        if (top) {
             net->removeLayer("resnetv15_dense0_fwd");
             Layer *l=getLayer(net,"flatten_170"); l->name="top";
 
@@ -1519,7 +1519,7 @@ namespace eddl {
 	    Net* net = import_net_from_onnx_file("resnet34.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
-        if (!top) {
+        if (top) {
             net->removeLayer("resnetv16_dense0_fwd");
             Layer *l=getLayer(net,"flatten_306"); l->name="top";
 
@@ -1537,7 +1537,7 @@ namespace eddl {
 	    Net* net = import_net_from_onnx_file("resnet50.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
-        if (!top) {
+        if (top) {
             net->removeLayer("resnetv17_dense0_fwd");
             Layer *l=getLayer(net,"flatten_473"); l->name="top";
 
@@ -1555,7 +1555,7 @@ namespace eddl {
 	    Net* net = import_net_from_onnx_file("resnet101.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
-        if (!top) {
+        if (top) {
             net->removeLayer("");
             Layer *l=getLayer(net,""); l->name="top";
 
@@ -1573,7 +1573,7 @@ namespace eddl {
 	    Net* net = import_net_from_onnx_file("resnet101.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
-        if (!top) {
+        if (top) {
             net->removeLayer("");
             Layer *l=getLayer(net,""); l->name="top";
 
