@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
     download_flickr();
 
     // Settings
-    int epochs = testing ? 2 : 10;
+    int epochs = testing ? 2 : 50;
     int batch_size = 24;
 
     int olength=20;
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
 
     plot(net, "model.pdf");
 
-    optimizer opt=adam(0.001);
+    optimizer opt=adam(0.01);
     //opt->set_clip_val(0.01);
     compserv cs = nullptr;
     if (use_cpu) {
@@ -151,9 +151,8 @@ int main(int argc, char **argv) {
     //load(net,"img2text.bin","bin");
 
     // Train model
-    for(int i=0;i<epochs;i++) {
-      fit(net, {xtrain}, {y_train}, batch_size, 1);
-    }
+    fit(net, {xtrain}, {y_train}, batch_size, epochs);
+    
 
     save(net,"img2text.bin","bin");
 
