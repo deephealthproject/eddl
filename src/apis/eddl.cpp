@@ -1491,10 +1491,10 @@ namespace eddl {
         
         return net;
     } 
-
+    
     Net* download_resnet18(bool top, vector<int> input_shape) 
     {
-        download_model("resnet18.onnx","bxff260tz5tu03o"); 
+        download_model("resnet18.onnx","re7jodd12srksd7"); 
     
         cout<<"Import ONNX..."<<endl;
 
