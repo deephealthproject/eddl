@@ -1470,10 +1470,15 @@ namespace eddl {
     Net* download_vgg16(bool top, vector<int> input_shape) 
     {
         download_model("vgg16.onnx","2ovxkt64y11c083"); 
+
+        Net *net;
     
         cout<<"Import ONNX..."<<endl;
-
-	    Net* net = import_net_from_onnx_file("vgg16.onnx", DEV_CPU);
+        
+        if (input_shape.size()) 
+	        net = import_net_from_onnx_file("vgg16.onnx", input_shape, DEV_CPU);
+        else  
+            net = import_net_from_onnx_file("vgg16.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
         if (top) {
@@ -1495,10 +1500,14 @@ namespace eddl {
     Net* download_resnet18(bool top, vector<int> input_shape) 
     {
         download_model("resnet18.onnx","re7jodd12srksd7"); 
-    
-        cout<<"Import ONNX..."<<endl;
+        Net *net;
 
-	    Net* net = import_net_from_onnx_file("resnet18.onnx", DEV_CPU);
+        cout<<"Import ONNX..."<<endl;
+        
+        if (input_shape.size())
+	        net = import_net_from_onnx_file("resnet18.onnx", input_shape, DEV_CPU);
+        else 
+            net = import_net_from_onnx_file("resnet18.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
         if (top) {
@@ -1513,10 +1522,13 @@ namespace eddl {
     Net* download_resnet34(bool top, vector<int> input_shape) 
     {
         download_model("resnet34.onnx","ikcaak0q2cee8k1"); 
-    
+        Net *net;
+
         cout<<"Import ONNX..."<<endl;
 
-	    Net* net = import_net_from_onnx_file("resnet34.onnx", DEV_CPU);
+	    if (input_shape.size()) 
+            net = import_net_from_onnx_file("resnet34.onnx", input_shape, DEV_CPU);
+        else net = import_net_from_onnx_file("resnet34.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
         if (top) {
@@ -1531,10 +1543,13 @@ namespace eddl {
     Net* download_resnet50(bool top, vector<int> input_shape) 
     {
         download_model("resnet50.onnx","hg4r3z8m6wsnwk3"); 
-    
-        cout<<"Import ONNX..."<<endl;
+        Net *net;
 
-	    Net* net = import_net_from_onnx_file("resnet50.onnx", DEV_CPU);
+        cout<<"Import ONNX..."<<endl;
+        
+        if (input_shape.size()) 
+	        net = import_net_from_onnx_file("resnet50.onnx", input_shape, DEV_CPU);
+        else net = import_net_from_onnx_file("resnet50.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
         if (top) {
@@ -1549,10 +1564,13 @@ namespace eddl {
     Net* download_resnet101(bool top, vector<int> input_shape) 
     {
         download_model("resnet101.onnx",""); 
-    
+        Net *net;
+
         cout<<"Import ONNX..."<<endl;
 
-	    Net* net = import_net_from_onnx_file("resnet101.onnx", DEV_CPU);
+        if (input_shape.size()) 
+	        net = import_net_from_onnx_file("resnet101.onnx", input_shape, DEV_CPU);
+        else net = import_net_from_onnx_file("resnet101.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
         if (top) {
@@ -1567,10 +1585,13 @@ namespace eddl {
     Net* download_resnet152(bool top, vector<int> input_shape) 
     {
         download_model("resnet101.onnx",""); 
-    
+        Net *net;
+
         cout<<"Import ONNX..."<<endl;
 
-	    Net* net = import_net_from_onnx_file("resnet101.onnx", DEV_CPU);
+        if (input_shape.size()) 
+	        net = import_net_from_onnx_file("resnet101.onnx", input_shape, DEV_CPU);
+        else net = import_net_from_onnx_file("resnet101.onnx", DEV_CPU);
 
         Layer *l=getLayer(net,"data"); l->name="input";
         if (top) {
