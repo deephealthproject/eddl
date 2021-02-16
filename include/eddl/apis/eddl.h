@@ -2177,6 +2177,16 @@ namespace eddl {
 
 
     ///////////////////////////////////////
+    // MODELS
+    ///////////////////////////////////////
+    void download_model(string name,string link);
+    Net* download_vgg16(bool top=true, vector<int> input_shape={});
+    Net* download_resnet18(bool top=true, vector<int> input_shape={});
+    Net* download_resnet34(bool top=true, vector<int> input_shape={}); 
+    Net* download_resnet50(bool top=true, vector<int> input_shape={}); 
+    Net* download_resnet101(bool top=true, vector<int> input_shape={});
+
+    ///////////////////////////////////////
     //  DATASETS
     ///////////////////////////////////////
     bool exist(string name);
