@@ -61,7 +61,7 @@ void LDense::backward() {
     if (trainable) {
         Tensor::mult2D(input, 1, delta, 0, gW, 1);
         if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
-    }
+    }//else {cout<<name<<" not trainable"<<endl;}
 
     //1: note that increment parent delta
     Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);

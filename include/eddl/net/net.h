@@ -112,6 +112,7 @@ public:
     void build_rnet(int inl,int outl);
     Layer* getLayer(string l);
     void removeLayer(string l);
+    void initializeLayer(string l);
     void setTrainable(string lanme, bool val);
 
 

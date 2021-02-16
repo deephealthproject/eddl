@@ -90,6 +90,7 @@ void LConv::forward() {
 void LConv::backward() {
     //get gradients with provided delta
     if (trainable) { tensorNN::Conv2D_grad(this->cd); }
+    //else {cout<<name<<" not trainable"<<endl;}
 
     // backprop delta
     if (this->parent.size()) {

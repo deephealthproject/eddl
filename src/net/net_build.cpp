@@ -110,8 +110,7 @@ void Net::toCPU(int t){
     for (int i = 0; i < snets.size(); i++) {
         for (unsigned int j = 0; j < Xs[i].size(); ++j) delete Xs[i][j];
         for (unsigned int j = 0; j < Ys[i].size(); ++j) delete Ys[i][j];
-        Xs[i].clear();
-        Ys[i].clear();
+        Xs[i].clear();        Ys[i].clear();
     }
 
     snets.clear();
@@ -140,14 +139,17 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs,
 
   if (isbuild) return;
 
-  cout<<"Building "<<name<<endl;
-
+  if (!initialize) {
+    cout<<"Building "<<name<<" without initialization\n";
+  }
+  else cout<<"Building "<<name<<endl;
+/*
   for(int i=0;i<layers.size();i++) {
     if (layers[i]->net!=this) {
-      layers[i]->net->build(opt->clone(),{},{},cs,true);
+      layers[i]->net->build(opt->clone(),{},{},cs,initialize);
     }
   }
-
+*/
   make_graph(opt, lo, me, initialize);
   this->do_optimizer_delete = do_optimizer_delete;
 
@@ -218,7 +220,9 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     // backward sort
     bts();
     // random params
-    if(initialize) do_initialize();
+    if(initialize) {
+      do_initialize();
+    }
 }
 
 void Net::set_compserv(CompServ *cs, bool do_compserv_delete){
@@ -387,7 +391,7 @@ void Net::split(int c, int todev) {
         snets[i]->name=cname;
         snets[i]->make_graph(optimizer->clone(), this->losses, this->metrics);
         if(onnx_pretrained){ //We need to copy the imported weights to each snet
-            //printf("Copying from CPU to GPU\n");
+            printf("Copying onnx params to devices\n");
             for(int i = 0; i < snets.size(); i++)
                 for(int j = 0; j < layers.size(); j++)
                     layers[j]->copy(snets[i]->layers[j]);
@@ -450,13 +454,14 @@ void Net::setTrainable(string lname, bool val)
   for(int i=0;i<layers.size();i++) {
     if (layers[i]->name==lname) {
       Layer *l=layers[i];
-      l->trainable=val;
+      l->setTrainable(val);
+      if (l->params.size()) 
+        cout<<l->name<<" trainable = "<<val<<endl;
 
       for(int j=0;j<snets.size();j++) {
         for(int k=0;k<snets[j]->layers.size();k++)
           if (snets[j]->layers[k]->orig==l) {
-            cout<<"Setting device layer "<<snets[j]->layers[k]->name<<" trainable="<<val<<endl;
-            snets[j]->layers[k]->trainable=val;
+            snets[j]->layers[k]->setTrainable(val);
           }
       }//snets
     }//if
@@ -494,8 +499,29 @@ void Net::removeLayer(string lname)
       return;
     }//if
   }// for layers
+  
 }
 
+void Net::initializeLayer(string lname)
+{
+  for(int i=0;i<layers.size();i++) {
+    if (layers[i]->name==lname) {
+      Layer *l=layers[i];
+      cout<<"Initialize "<<l->name<<endl;
+      l->initialize();
+      //initialize in devices:
+      if (snets[0]!=this)
+        for(auto n:snets) 
+          for(auto sl:n->layers)
+              if(sl->orig==l) {
+                cout<<"Initialize "<<l->name<<" on device"<<endl;
+                sl->initialize();
+              }
+        
+      break;
+    }//if
+  }// for layers
+}
 
 Layer * Net::getLayer(string lname)
 {

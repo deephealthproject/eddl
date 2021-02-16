@@ -65,6 +65,7 @@ namespace eddl {
     void setName(model m, string name);
     layer getLayer(Net *net, string l);
     void removeLayer(Net *net, string l);
+    void initializeLayer(Net *net, string l);
     void setTrainable(model net, string lanme, bool val);
 
     vector<vtensor> get_parameters(model net, bool deepcopy=false, bool tocpu=false);

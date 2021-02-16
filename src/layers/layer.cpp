@@ -161,7 +161,7 @@ void Layer::setTrainable(bool value){
 
 int Layer::get_trainable_params_count()
 {
-    return params.size();
+        return params.size();
 }
 
 void Layer::detach(Layer *l){
