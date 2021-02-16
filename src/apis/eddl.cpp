@@ -51,6 +51,11 @@ namespace eddl {
       net->removeLayer(lname);
     }
 
+    void initializeLayer(model net, string lname)
+    {
+      net->initializeLayer(lname);
+    }
+
     void setTrainable(model net, string lname, bool val)
     {
         net->setTrainable(lname,val);
