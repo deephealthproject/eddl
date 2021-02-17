@@ -94,6 +94,12 @@ target_link_libraries(nlp_video_to_labels eddl)
 add_executable(nlp_text_generation "nn/4_NLP/5_nlp_text_generation.cpp")
 target_link_libraries(nlp_text_generation eddl)
 
+# EXAMPLES: SYNTHETIC IMAGENET ****************************************************
+add_executable(synthetic_imagenet_vgg16 "nn/5_synthetic_imagenet/1_imagenet_vgg16.cpp")
+target_link_libraries(synthetic_imagenet_vgg16 eddl)
+add_executable(synthetic_imagenet_vgg16_bn "nn/5_synthetic_imagenet/2_imagenet_vgg16_bn.cpp")
+target_link_libraries(synthetic_imagenet_vgg16_bn eddl)
+
 # TEST INTERNALS ****************************************************
   add_executable(test1 "test_internals/test1.cpp")
   target_link_libraries(test1 eddl)
