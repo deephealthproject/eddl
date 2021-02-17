@@ -124,7 +124,7 @@ SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 ############################# DEFINITIONS ################################
 ##########################################################################
 
-if(USE_GPU)
+if(USE_CUDA)
     add_definitions(-DcGPU)
 endif()
 if(USE_CUDNN)
