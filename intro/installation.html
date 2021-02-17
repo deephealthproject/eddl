@@ -160,6 +160,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#fpga">FPGA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#serialization">Serialization</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Datasets</span></p>
 <ul>
@@ -395,7 +396,7 @@ with:</em> <code class="docutils literal notranslate"><span class="pre">-DCMAKE_
 <ol class="arabic simple" start="5">
 <li><p>If you don’t want to install <a class="reference external" href="https://www.anaconda.com/">Anaconda</a>, you can compile it using:</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake .. -DBUILD_SUPERBUILD<span class="o">=</span>ON -DBUILD_TARGET<span class="o">=</span>CUDNN -DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc -DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7<span class="sb">``</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake .. -DBUILD_SUPERBUILD<span class="o">=</span>ON -DBUILD_TARGET<span class="o">=</span>CUDNN -DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc -DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7
 </pre></div>
 </div>
 </div>

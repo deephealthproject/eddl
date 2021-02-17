@@ -72,3 +72,32 @@ COMPSS
     **Not implemented yet**
 
 
+Serialization
+==============
+A computing service configuration can be stored and loaded to create a
+new equivalent computing service. To do it we serialize the configuration
+using protocol buffers and the ONNX standard definition.
+
+Export to file
+------------------
+
+.. doxygenfunction:: save_compserv_to_onnx_file
+
+Example:
+
+.. code-block:: c++
+
+    compserv cs = CS_GPU({1});
+    save_compserv_to_onnx_file(cs, "my_cs.onnx");
+
+
+Import from file
+------------------
+
+.. doxygenfunction:: import_compserv_from_onnx_file
+
+Example:
+
+.. code-block:: c++
+
+    compserv cs = import_compserv_from_onnx_file("my_cs.onnx");

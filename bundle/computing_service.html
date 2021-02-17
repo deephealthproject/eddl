@@ -152,6 +152,11 @@
 <li class="toctree-l1"><a class="reference internal" href="#gpu">GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#fpga">FPGA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#compss">COMPSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#serialization">Serialization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#export-to-file">Export to file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-from-file">Import from file</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Datasets</span></p>
 <ul>
@@ -368,6 +373,58 @@ the code will be executed.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>
+</div>
+</div>
+<div class="section" id="serialization">
+<h1>Serialization<a class="headerlink" href="#serialization" title="Permalink to this headline">¶</a></h1>
+<p>A computing service configuration can be stored and loaded to create a
+new equivalent computing service. To do it we serialize the configuration
+using protocol buffers and the ONNX standard definition.</p>
+<div class="section" id="export-to-file">
+<h2>Export to file<a class="headerlink" href="#export-to-file" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv426save_compserv_to_onnx_fileP8CompServ6string">
+<span id="_CPPv326save_compserv_to_onnx_fileP8CompServ6string"></span><span id="_CPPv226save_compserv_to_onnx_fileP8CompServ6string"></span><span id="save_compserv_to_onnx_file__CompServP.string"></span><span class="target" id="eddl__onnx_8h_1aa7871688432833696ae148cef5991176"></span>void <code class="sig-name descname">save_compserv_to_onnx_file</code><span class="sig-paren">(</span>CompServ *<em>cs</em>, string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426save_compserv_to_onnx_fileP8CompServ6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Saves the configuration of a computing service using the ONNX format. It will contain the computing service type and configuration of devices. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cs</span></code>: CompServ to be saved </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Path to the file where the computing service configuration will be saved</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">compserv</span> <span class="n">cs</span> <span class="o">=</span> <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">});</span>
+<span class="n">save_compserv_to_onnx_file</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="s">&quot;my_cs.onnx&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="import-from-file">
+<h2>Import from file<a class="headerlink" href="#import-from-file" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv430import_compserv_from_onnx_file6string">
+<span id="_CPPv330import_compserv_from_onnx_file6string"></span><span id="_CPPv230import_compserv_from_onnx_file6string"></span><span id="import_compserv_from_onnx_file__string"></span><span class="target" id="eddl__onnx_8h_1ae1ddcd341b86c70c572a96257bd3b82b"></span>CompServ *<code class="sig-name descname">import_compserv_from_onnx_file</code><span class="sig-paren">(</span>string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430import_compserv_from_onnx_file6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Creates a CompServ from the definition provided in an ONNX file. The ONNX will provide the CompServ type and its configuration. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>CompServ* </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Path to the file where the CompServ configuration is saved</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">compserv</span> <span class="n">cs</span> <span class="o">=</span> <span class="n">import_compserv_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_cs.onnx&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
 </div>
 </div>
 

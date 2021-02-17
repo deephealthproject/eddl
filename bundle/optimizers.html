@@ -152,6 +152,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#nadam">Nadam</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#rmsprop">RMSProp</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sgd-stochastic-gradient-descent">SGD (Stochastic Gradient Descent)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#export-to-file">Export to file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-from-file">Import from file</a></li>
 </ul>
 </li>
 </ul>
@@ -161,6 +163,7 @@
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html#gpu">GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html#fpga">FPGA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html#compss">COMPSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="computing_service.html#serialization">Serialization</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Datasets</span></p>
 <ul>
@@ -436,6 +439,52 @@
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">sgd</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="export-to-file">
+<h2>Export to file<a class="headerlink" href="#export-to-file" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv427save_optimizer_to_onnx_fileP9Optimizer6string">
+<span id="_CPPv327save_optimizer_to_onnx_fileP9Optimizer6string"></span><span id="_CPPv227save_optimizer_to_onnx_fileP9Optimizer6string"></span><span id="save_optimizer_to_onnx_file__OptimizerP.string"></span><span class="target" id="eddl__onnx_8h_1a8c35a77229eed96288531b7c0746b102"></span>void <code class="sig-name descname">save_optimizer_to_onnx_file</code><span class="sig-paren">(</span>Optimizer *<em>optimizer</em>, string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427save_optimizer_to_onnx_fileP9Optimizer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Saves the configuration of an optimizer using the ONNX format. It will contain the Optimizer type and attributes like learning rate, momentum, weight decay, etc. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">optimizer</span></code>: Optimizer to be saved </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Path to the file where the Optimizer configuration will be saved</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="n">opt</span> <span class="o">=</span> <span class="n">sgd</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">);</span>
+<span class="n">save_optimizer_to_onnx_file</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="s">&quot;my_opt.onnx&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="import-from-file">
+<h2>Import from file<a class="headerlink" href="#import-from-file" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv431import_optimizer_from_onnx_file6string">
+<span id="_CPPv331import_optimizer_from_onnx_file6string"></span><span id="_CPPv231import_optimizer_from_onnx_file6string"></span><span id="import_optimizer_from_onnx_file__string"></span><span class="target" id="eddl__onnx_8h_1a9b58d4b7d4c1a4974602ca21659d3f63"></span>Optimizer *<code class="sig-name descname">import_optimizer_from_onnx_file</code><span class="sig-paren">(</span>string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431import_optimizer_from_onnx_file6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Creates an Optimizer from the definition provided in an ONNX file. The ONNX will provide the Optimizer type and its attributes. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Optimizer* </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Path to the file where the Optimizer configuration is saved</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="n">opt</span> <span class="o">=</span> <span class="n">import_optimizer_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_opt.onnx&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

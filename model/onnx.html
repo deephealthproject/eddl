@@ -156,6 +156,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#fpga">FPGA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#serialization">Serialization</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Datasets</span></p>
 <ul>
@@ -264,23 +265,16 @@
 </div>
 <div class="section" id="import-from-file">
 <h2>Import from file<a class="headerlink" href="#import-from-file" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv425import_net_from_onnx_file6stringii">
-<span id="_CPPv325import_net_from_onnx_file6stringii"></span><span id="_CPPv225import_net_from_onnx_file6stringii"></span><span id="import_net_from_onnx_file__string.i.i"></span><span class="target" id="eddl__onnx_8h_1a4dca66f63ce0878101e1e0260043b6b6"></span>Net *<code class="sig-name descname">import_net_from_onnx_file</code><span class="sig-paren">(</span>string <em>path</em>, int <em>mem</em> = 0, int <em>log_level</em> = LOG_LEVEL::INFO<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425import_net_from_onnx_file6stringii" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Imports ONNX Net from file. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Net </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Path to the file where the net in ONNX format is saved </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: (default 0) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">log_level</span></code>: Available: LOG_LEVEL::{TRACE, DEBUG, INFO, WARN, ERROR, NO_LOGS}. (default LOG_LEVEL::INFO)</p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “import_net_from_onnx_file” with arguments (std::string path, int mem = 0, int log_level) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Net</span> <span class="o">*</span><span class="n">import_net_from_onnx_file</span><span class="p">(</span><span class="n">string</span> <span class="n">path</span><span class="p">,</span> <span class="nb">int</span> <span class="n">mem</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">int</span> <span class="n">log_level</span> <span class="o">=</span> <span class="n">LOG_LEVEL</span><span class="p">::</span><span class="n">INFO</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Net</span> <span class="o">*</span><span class="n">import_net_from_onnx_file</span><span class="p">(</span><span class="n">string</span> <span class="n">path</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span> <span class="n">input_shape</span><span class="p">,</span> <span class="nb">int</span> <span class="n">mem</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">int</span> <span class="n">log_level</span> <span class="o">=</span> <span class="n">LOG_LEVEL</span><span class="p">::</span><span class="n">INFO</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Net</span><span class="o">*</span> <span class="n">net</span> <span class="o">=</span> <span class="n">import_net_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_model.onnx&quot;</span><span class="p">,</span> <span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
