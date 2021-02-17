@@ -14,11 +14,56 @@ Benchmarks for development.
 
 **Default flags:**
 
+**Version: v0.9**
+```
+Setup
+-------
+VERSION: v0.9
+TARGET: CUDNN
+CORES: 16
+EPOCHS: 5
+-- C++ flags:  -fopenmp
+-- C++ flags (release): -O3 -march=native -mtune=native -Ofast -msse -mfpmath=sse -ffast-math -ftree-vectorize
+-- C++ flags (debug): -O0 -g
+
+Training/Evaluation:
+--------------------
+Epoch 1
+Batch 500 softmax6 ( loss[softmax_cross_entropy]=1.6508 metric[categorical_accuracy]=0.3876 ) -- 0.0089 secs/batch
+4.4603 secs/epoch
+Evaluate test:
+Evaluate with batch size 100
+Batch 100 softmax6 ( loss[softmax_cross_entropy]=1.3260 metric[categorical_accuracy]=0.5300 ) -- 
+
+...
+
+Memory:
+--------
+   PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                          
+   4516 salvaca+  20   0   12,3g   1,8g 544700 R 350,0  11,7   0:13.12 cifar_conv                       
+  
+GPU Memory:
+Wed Feb 17 12:56:16 2021       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 460.32.03    Driver Version: 460.32.03    CUDA Version: 11.2     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 1070    On   | 00000000:09:00.0  On |                  N/A |
+| 49%   67C    P2   100W / 190W |   1939MiB /  8118MiB |     83%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+
+```
+
+**Version: v0.7**
 ```
 Setup
 -------
 VERSION: v0.7
-TARGET: CPU
+TARGET: GPU
 CORES: 16
 EPOCHS: 1
 C++ flags (release): -O3
@@ -47,7 +92,6 @@ GPU Memory:
 |   0  GeForce GTX 1070    Off  | 00000000:09:00.0  On |                  N/A |
 | 54%   71C    P2    76W / 190W |   1188MiB /  8118MiB |     71%      Default |
 +-------------------------------+----------------------+----------------------+
-
 ```
 
 #### CPU only
@@ -179,6 +223,46 @@ Process finished with exit code 139 (interrupted by signal 11: SIGSEGV)
 
 **Default flags:**
 
+**Version: v0.9**
+```
+Setup
+-------
+VERSION: v0.9
+TARGET: CUDNN
+CORES: 16
+EPOCHS: 1
+-- C++ flags:  -fopenmp
+-- C++ flags (release): -O3 -march=native -mtune=native -Ofast -msse -mfpmath=sse -ffast-math -ftree-vectorize
+-- C++ flags (debug): -O0 -g
+
+Training/Evaluation:
+--------------------
+1 epochs of 500 batches of size 100
+Epoch 1
+Batch 500 softmax5 ( loss[soft_cross_entropy]=0.274 metric[categorical_accuracy]=0.318 ) -- 0.014 secs/batch
+7.099 secs/epoch
+Evaluate test:
+Evaluate with batch size 100
+Batch 100 softmax5 ( loss[soft_cross_entropy]=0.230 metric[categorical_accuracy]=0.454 ) -- 
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+12366 salvaca+  20   0 11,137g 1,011g 191004 R  1562  6,5   0:28.25 cifar_conv                                                                                                                                                                                                                                                                               
+
+GPU Memory:
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 440.82       Driver Version: 440.82       CUDA Version: 10.2     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 1070    Off  | 00000000:09:00.0  On |                  N/A |
+| 58%   77C    P2    88W / 190W |   1369MiB /  8118MiB |     94%      Default |
++-------------------------------+----------------------+----------------------+
+```
+
+**Version: v0.7**
 ```
 Setup
 -------
@@ -213,8 +297,6 @@ GPU Memory:
 |   0  GeForce GTX 1070    Off  | 00000000:09:00.0  On |                  N/A |
 | 58%   77C    P2    88W / 190W |   1369MiB /  8118MiB |     94%      Default |
 +-------------------------------+----------------------+----------------------+
-
-
 ```
 
 
