@@ -29,13 +29,14 @@ EPOCHS: 5
 Training/Evaluation:
 --------------------
 Epoch 1
-Batch 500 softmax6 ( loss[softmax_cross_entropy]=1.6508 metric[categorical_accuracy]=0.3876 ) -- 0.0089 secs/batch
-4.4603 secs/epoch
-Evaluate test:
-Evaluate with batch size 100
-Batch 100 softmax6 ( loss[softmax_cross_entropy]=1.3260 metric[categorical_accuracy]=0.5300 ) -- 
-
-...
+Batch 300 softmax4 ( loss[softmax_cross_entropy]=0.2405 metric[categorical_accuracy]=0.9279 ) -- 0.0049 secs/batch
+1.4780 secs/epoch
+Epoch 2
+Batch 300 softmax4 ( loss[softmax_cross_entropy]=0.0799 metric[categorical_accuracy]=0.9760 ) -- 0.0043 secs/batch
+1.2766 secs/epoch
+Epoch 3
+Batch 300 softmax4 ( loss[softmax_cross_entropy]=0.0507 metric[categorical_accuracy]=0.9841 ) -- 0.0041 secs/batch
+1.2286 secs/epoch
 
 Memory:
 --------
@@ -98,6 +99,39 @@ GPU Memory:
 
 **Default flags:**
 
+
+**Version: v0.9**
+```
+Setup
+-------
+VERSION: v0.7
+TARGET: CPU
+CORES: 16
+EPOCHS: 5
+-- C++ flags:  -fopenmp
+-- C++ flags (release): -O3 -march=native -mtune=native -Ofast -msse -mfpmath=sse -ffast-math -ftree-vectorize
+-- C++ flags (debug): -O0 -g
+
+Training/Evaluation:
+--------------------
+Epoch 1
+Batch 300 softmax4 ( loss[softmax_cross_entropy]=0.2374 metric[categorical_accuracy]=0.9297 ) -- 0.0406 secs/batch
+12.1930 secs/epoch
+Epoch 2
+Batch 300 softmax4 ( loss[softmax_cross_entropy]=0.0790 metric[categorical_accuracy]=0.9764 ) -- 0.0337 secs/batch
+10.1122 secs/epoch
+Epoch 3
+Batch 300 softmax4 ( loss[softmax_cross_entropy]=0.0515 metric[categorical_accuracy]=0.9839 ) -- 0.0485 secs/batch
+14.5351 secs/epoch
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+ 309406 salvaca+  20   0  872076 318928  13228 R  1444   1,9  11:58.60 mnist_mlp                        
+
+```
+
+**Version: v0.7**
 ```
 Setup
 -------
@@ -237,13 +271,16 @@ EPOCHS: 1
 
 Training/Evaluation:
 --------------------
-1 epochs of 500 batches of size 100
+5 epochs of 500 batches of size 100
 Epoch 1
-Batch 500 softmax5 ( loss[soft_cross_entropy]=0.274 metric[categorical_accuracy]=0.318 ) -- 0.014 secs/batch
-7.099 secs/epoch
-Evaluate test:
-Evaluate with batch size 100
-Batch 100 softmax5 ( loss[soft_cross_entropy]=0.230 metric[categorical_accuracy]=0.454 ) -- 
+Batch 500 softmax6 ( loss[softmax_cross_entropy]=1.6524 metric[categorical_accuracy]=0.3853 ) -- 0.0074 secs/batch
+3.6942 secs/epoch
+Epoch 2
+Batch 500 softmax6 ( loss[softmax_cross_entropy]=1.1562 metric[categorical_accuracy]=0.5863 ) -- 0.0069 secs/batch
+3.4294 secs/epoch
+Epoch 3
+Batch 500 softmax6 ( loss[softmax_cross_entropy]=0.9170 metric[categorical_accuracy]=0.6756 ) -- 0.0067 secs/batch
+3.3702 secs/epoch
 
 Memory:
 --------
@@ -303,6 +340,42 @@ GPU Memory:
 #### CPU only
 
 **Default flags:**
+
+**Version: v0.9**
+```
+Setup
+-------
+VERSION: v0.7
+TARGET: CPU
+CORES: 16
+EPOCHS: 3
+-- C++ flags:  -fopenmp
+-- C++ flags (release): -O3 -march=native -mtune=native -Ofast -msse -mfpmath=sse -ffast-math -ftree-vectorize
+-- C++ flags (debug): -O0 -g
+
+Training/Evaluation:
+--------------------
+3 epochs of 500 batches of size 100
+Epoch 1
+Batch 500 softmax6 ( loss[softmax_cross_entropy]=1.6671 metric[categorical_accuracy]=0.3816 ) -- 0.1481 secs/batch
+74.0601 secs/epoch
+Epoch 2
+Batch 500 softmax6 ( loss[softmax_cross_entropy]=1.1738 metric[categorical_accuracy]=0.5817 ) -- 0.1678 secs/batch
+83.8880 secs/epoch
+Epoch 3
+Batch 500 softmax6 ( loss[softmax_cross_entropy]=0.9311 metric[categorical_accuracy]=0.6737 ) -- 0.1466 secs/batch
+73.3027 secs/epoch
+Evaluate with batch size 100
+Batch 100 softmax6 ( loss[softmax_cross_entropy]=0.9291 metric[categorical_accuracy]=0.6796 ) -- 
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+ 335469 salvaca+  20   0   10,4g   1,4g 127808 R  1406   9,2  32:51.72 cifar_conv                       
+
+```
+
+**Version: v0.7**
 
 ```
 Setup

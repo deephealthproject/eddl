@@ -31,7 +31,7 @@ layer Normalization(layer l)
 
 int main(int argc, char **argv){
     bool testing = false;
-    bool use_cpu = false;
+    bool use_cpu = true;
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -41,7 +41,7 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = testing ? 2 : 5;
+  int epochs = testing ? 2 : 3;
   int batch_size = 100;
   int num_classes = 10;
 
@@ -117,14 +117,20 @@ int main(int argc, char **argv){
       y_test  = y_mini_test;
   }
 
-  for(int i=0;i<epochs;i++) {
-    // training, list of input and output tensors, batch, epochs
-    fit(net,{x_train},{y_train},batch_size, 1);
+    // Train model
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
 
-    // Evaluate train
-    std::cout << "Evaluate test:" << std::endl;
-    evaluate(net,{x_test},{y_test});
-  }
+    // Evaluate
+    evaluate(net, {x_test}, {y_test});
+
+//  for(int i=0;i<epochs;i++) {
+//    // training, list of input and output tensors, batch, epochs
+//    fit(net,{x_train},{y_train},batch_size, 1);
+//
+//    // Evaluate train
+//    std::cout << "Evaluate test:" << std::endl;
+//    evaluate(net,{x_test},{y_test});
+//  }
 
   delete x_train;
   delete y_train;
