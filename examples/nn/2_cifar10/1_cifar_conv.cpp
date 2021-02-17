@@ -31,7 +31,7 @@ layer Normalization(layer l)
 
 int main(int argc, char **argv){
     bool testing = false;
-    bool use_cpu = true;
+    bool use_cpu = false;
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
