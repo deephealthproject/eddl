@@ -89,3 +89,26 @@ Example:
 
     opt = sgd(0.001);
 
+
+Export to file
+------------------
+
+.. doxygenfunction:: save_optimizer_to_onnx_file
+
+Example:
+
+.. code-block:: c++
+
+    optimizer opt = sgd(0.001, 0.9);
+    save_optimizer_to_onnx_file(opt, "my_opt.onnx");
+
+Import from file
+------------------
+
+.. doxygenfunction:: import_optimizer_from_onnx_file
+
+Example:
+
+.. code-block:: c++
+
+    optimizer opt = import_optimizer_from_onnx_file("my_opt.onnx");

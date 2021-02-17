@@ -227,11 +227,6 @@ if(USE_CUDA)
             endif()
         endif()
 
-        if(USE_CUDNN)
-            add_definitions(-DcCUDNN)
-        endif()
-        add_definitions(-DcGPU)
-
         # Set standard CUDA variables
         if(NOT DEFINED CMAKE_CUDA_STANDARD)
             set(CMAKE_CUDA_STANDARD 11)
@@ -294,11 +289,12 @@ endif()
 SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 
+
+
 # FPGA
 if(USE_FPGA)
     find_package(OpenCL)
     if (OpenCL_FOUND)
-        add_definitions(-DcFPGA)
 
         target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include}>")
         #target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:/opt/Xilinx/Vivado/2018.3/include)  # Is this cross-platform?
@@ -323,7 +319,6 @@ if(USE_FPGA)
     endif()
 endif()
 SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
-
 
 if(BUILD_DIST)
     # ZLIB
@@ -392,6 +387,19 @@ if(MSVC)
     endif()
 endif()
 
+##########################################################################
+############################# DEFINITIONS ################################
+##########################################################################
+
+if(USE_CUDA)
+    add_definitions(-DcGPU)
+endif()
+if(USE_CUDNN)
+    add_definitions(-DcCUDNN)
+endif()
+if(USE_FPGA)
+    add_definitions(-DcFPGA)
+endif()
 
 ##########################################################################
 ############################ INSTALLATION ################################

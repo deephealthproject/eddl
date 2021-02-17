@@ -23,18 +23,20 @@ using namespace eddl;
 //////////////////////////////////
 
 int main(int argc, char **argv) {
+
+    bool testing = false;
+    bool use_cpu = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
+
     // Download Imdb
     download_imdb_2000();
 
-    bool testing = false;
-    for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--testing") == 0) {
-            testing = true;
-        }
-    }
 
     // Settings
-    int epochs = 10;
+    int epochs = testing ? 2 : 10;
     int batch_size = 32;
 
     int length = 250;
@@ -61,9 +63,15 @@ int main(int argc, char **argv) {
     optimizer opt = adam(0.001);
     //opt->set_clip_val(0.01);
 
-    //compserv cs = CS_CPU();
-    compserv cs = CS_GPU({1}); // one GPU
-    //compserv cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        //cs = CS_GPU({1}, "low_mem"); // one GPU
+        cs = CS_GPU({1}, "full_mem"); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+    }
 
     // Build model
     build(net,

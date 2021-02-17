@@ -53,10 +53,11 @@ void LStates::resize(int batch){
 // virtual
 void LStates::forward() {
   for(int i=0;i<states.size();i++) {
-    Tensor *s=input->select({":",to_string(i),":"}); //batch x 1 x dim_states
-    s->reshape({input->shape[0],input->shape[2]});
-    Tensor::copy(s,states[i]);
-    delete s;
+    Tensor *s = input->select({":",to_string(i),":"}); //batch x 1 x dim_states
+    Tensor *s2 = s->reshape({input->shape[0],input->shape[2]});
+    Tensor::copy(s2,states[i]);
+    delete s2; // because reshape() returns a new Tensor object despite the contents is the same of s
+    delete s; // because select() returns a new Tensor object
   }   
 }
 

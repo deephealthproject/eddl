@@ -123,6 +123,7 @@ void PoolDescriptor3D::build(Tensor *A) {
 
 
 #ifdef cCUDNN
+    if(!O->isCPU()){
     cudnnCreatePoolingDescriptor(&poolingDesc);
 
     cwindow[0] = kd;
@@ -134,7 +135,6 @@ void PoolDescriptor3D::build(Tensor *A) {
     cstride[0] = sd;
     cstride[1] = sr;
     cstride[2] = sc;
-    //std::cout<<kr<<", "<<kc<<","<<padrt<<", "<<padcl<<", "<<sr<<", "<<sc<<std::endl;
     // mode is initialized in each constructor.
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
@@ -142,13 +142,13 @@ void PoolDescriptor3D::build(Tensor *A) {
     cudnnCreateTensorDescriptor(&xDesc);
    int dims[5] = {in, iz, id, ir, ic};
    int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
-   cudnnSetTensorNdDescriptor(xDesc, /*tensor_format,*/ data_type,5,dims,str);
+   cudnnSetTensorNdDescriptor(xDesc, data_type,5,dims,str);
 
    int ydims[5] = {in,z,d,r,c};
    int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
    cudnnCreateTensorDescriptor(&yDesc);
-   cudnnSetTensorNdDescriptor(yDesc,/* tensor_format,*/ data_type, 5, ydims, ystr);
-
+   cudnnSetTensorNdDescriptor(yDesc, data_type, 5, ydims, ystr);
+}
 
 #endif
 
@@ -162,16 +162,15 @@ void PoolDescriptor3D::resize(int b) {
 
   O->resize(b);
 #ifdef cCUDNN
-  if(!I->isCPU()){
+  if(!O->isCPU()){
    int dims[5] = {b, iz, id, ir, ic};
    int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
-   cudnnSetTensorNdDescriptor(xDesc, /*tensor_format,*/ data_type,5,dims,str);
+   cudnnSetTensorNdDescriptor(xDesc, data_type,5,dims,str);
 
    int ydims[5] = {b,z,d,r,c};
    int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
-   cudnnSetTensorNdDescriptor(yDesc, /*tensor_format,*/ data_type, 5, ydims, ystr);
+   cudnnSetTensorNdDescriptor(yDesc, data_type, 5, ydims, ystr);
 
-   //cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
 }
 
 

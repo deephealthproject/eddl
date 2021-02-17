@@ -65,6 +65,8 @@ public:
     bool do_compserv_delete;
 
     vlayer layers;
+    vlayer layersf;
+    vlayer layersb;
     vlayer lin;
     vlayer din;
     vlayer lout;
@@ -112,10 +114,13 @@ public:
     void build_rnet(int inl,int outl);
     Layer* getLayer(string l);
     void removeLayer(string l);
+    void initializeLayer(string l);
     void setTrainable(string lanme, bool val);
 
 
     int inNet(Layer *l);
+    int inNetF(Layer *l);
+    int inNetB(Layer *l);
     void walk(Layer *l,vlayer lout);
     void walk_back(Layer *l);
 

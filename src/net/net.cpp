@@ -13,6 +13,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <chrono>
 #include "eddl/net/net.h"
@@ -75,8 +76,14 @@ Net::Net(vlayer in, vlayer out):Net() {
     // Set input/outlayer
     //lin = in;
     //lout = out;
-    for (auto _ : in) lin.push_back(_);
-    for (auto _ : out) lout.push_back(_);
+    for (auto l : in) {
+        lin.push_back(l);
+        l->set_my_owner(this);
+    }
+    for (auto l : out) {
+        lout.push_back(l);
+        l->set_my_owner(this);
+    }
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -87,6 +94,9 @@ Net::Net(vlayer in, vlayer out):Net() {
     for (int i = 0; i < lout.size(); i++) {
         walk_back(lout[i]);
     }
+    
+    for(auto l:layersf) layers.push_back(l);
+    for(auto l:layersb) if (!inNet(l)) layers.push_back(l);
 
     for (int i = 0; i < lout.size(); i++) {
         total_loss.push_back(0.0);
@@ -97,6 +107,13 @@ Net::Net(vlayer in, vlayer out):Net() {
 
 
     build_randn_table();
+
+    // It is important that layers vector keep the forward sort
+    fts();
+    while (layers.size()) layers.pop_back();
+    for(auto l: vfts ) layers.push_back(l);
+    while (vfts.size()) vfts.pop_back();
+    
 }
 
 
@@ -125,14 +142,14 @@ Net::~Net(){
     // Clean inputs
     for(int i=0; i<Xs->size(); i++) {
         for(int j=0;j<Xs[i].size();j++)
-          delete Xs[i][j];
+            delete Xs[i][j];
         Xs[i].clear();
     }
 
     // Clean targets
     for(int i=0; i<Ys->size(); i++) {
         for(int j=0;j<Ys[i].size();j++)
-          delete Ys[i][j];
+            delete Ys[i][j];
         Ys[i].clear();
     }
 
@@ -152,25 +169,32 @@ Net::~Net(){
     // clean metrics and losses
     for (auto m : this->metrics) delete m;
     this->metrics.clear();
-    for (auto m : this->losses) delete m;
+    for (auto l : this->losses) delete l;
     this->losses.clear();
 
     // clean device mem
     for(int i=0;i<snets.size();i++){
-      for(int j=0;j<snets[i]->layers.size();j++) {
-        if (snets[i]->layers[j]!=nullptr) {
-          delete snets[i]->layers[j];
-          snets[i]->layers[j] = nullptr;
+        for(int j=0;j<snets[i]->layers.size();j++) {
+            if (snets[i]->layers[j]!=nullptr) {
+                //fprintf(stderr, "%s(%d) %d %d : %p %p %p %p\n", __FILE__, __LINE__, i, j, snets[i]->layers[j]->get_my_owner(), this, snets[i], rnet);
+                if (snets[i]->layers[j]->is_my_owner(this)  ||  snets[i]->layers[j]->is_my_owner(snets[i])) {
+                    delete snets[i]->layers[j];
+                    snets[i]->layers[j] = nullptr;
+                }
+            }
         }
-      }
     }
 
     // net running on device != CPU
     // clean also CPU mem
     if (snets[0]!=this){
-      for(int j=0;j<layers.size();j++) {
-         delete layers[j];
-      }
+        for(int j=0;j<layers.size();j++) {
+            //fprintf(stderr, "%s(%d) %d : %p %p\n", __FILE__, __LINE__, j, layers[j]->get_my_owner(), this);
+            if (layers[j]->is_my_owner(this)) {
+                delete layers[j];
+                layers[j] = nullptr;
+            }
+        }
     }
 
     if (rnet!=nullptr) { delete rnet; rnet = nullptr;}
@@ -190,47 +214,49 @@ int Net::inNet(Layer *l) {
     }
     return 0;
 }
-
-
+/////////////////////////////////////////
+int Net::inNetF(Layer *l) {
+    // Check if the layer l is in the network
+    for (int i = 0; i < layersf.size(); i++){
+        if (l == layersf[i]) return 1;
+    }
+    return 0;
+}
+/////////////////////////////////////////
+int Net::inNetB(Layer *l) {
+    // Check if the layer l is in the network
+    for (int i = 0; i < layersb.size(); i++){
+        if (l == layersb[i]) return 1;
+    }
+    return 0;
+}
 /////////////////////////////////////////
 void Net::walk(Layer *l,vlayer lout) {
     int ind;
-    
-    if (l->orig!=nullptr) l->net=l->orig->net;
-    else l->net=this;
 
-    if (!inNet(l))
-       layers.push_back(l);
+    if (!inNetF(l)) {
+        l->net=this;
+        layersf.push_back(l);
+        l->set_my_owner(this);
+    }
+    else return;
 
     if (isIn(l,lout,ind)) return; // cut recursivity for out layers
 
     for (int i = 0; i < l->child.size(); i++)
        walk(l->child[i],lout);
-
-/*
-    int ind;
-    
-    if (l->orig!=nullptr) l->net=l->orig->net;
-    else l->net=this;
-
-    if (isIn(l,lout,ind)) return; // cut recursivity for out layers
-
-    if (!inNet(l))
-       layers.push_back(l);
-
-    for (int i = 0; i < l->child.size(); i++)
-       walk(l->child[i],lout);
-*/
 
 }
 
 /////////////////////////////////////////
 void Net::walk_back(Layer *l) {
-    if (l->orig!=nullptr) l->net=l->orig->net;
-    else l->net=this;
-
-    if (!inNet(l))
-        layers.push_back(l);
+    
+    if (!inNetB(l)) {
+        layersb.push_back(l);
+        l->set_my_owner(this);
+        l->net=this;
+    }
+    else return;
 
     for (int i = 0; i < l->parent.size(); i++)
         walk_back(l->parent[i]);
@@ -243,6 +269,10 @@ string Net::summary() {
     ss << "-------------------------------------------------------------------------------" << endl;
     ss << name << endl;
     ss << "-------------------------------------------------------------------------------" << endl;
+
+    int maxl=0;
+    for (auto & l : vfts) 
+      if (l->name.length() > maxl) maxl=l->name.length();
 
     int tot_size=0;
     for (auto & l : vfts) {
@@ -263,7 +293,7 @@ string Net::summary() {
           size+=p->size;
         tot_size+=size;
 
-        ss << setw(20) << left << l->name << "|  ";
+        ss << setw(maxl) << left << l->name << "|  ";
         ss << setw(20) << left << istr;
         ss << setw(5) << left << "=>";
         ss << setw(20) << left << ostr;

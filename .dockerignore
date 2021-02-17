@@ -1,4 +1,5 @@
 .git/
 cmake-*/
-build/
+/[Bb]uild*
+_build/
 Dockerfile

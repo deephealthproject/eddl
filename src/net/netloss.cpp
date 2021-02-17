@@ -35,7 +35,7 @@ NetLoss::NetLoss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> 
     CompServ *cs=sn->cs->clone();
     cs->mem_level=0; //delta must stay to backward netinput layers
 
-    graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},cs);
+    graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},cs, true, true, true);
 
     cout<<"Loss graph:"<<name<<endl;
     cout<<graph->summary();
@@ -60,7 +60,7 @@ NetLoss::NetLoss(const std::function<Layer*(Layer*)>& f, Layer *in, string name)
     cs->mem_level=0; //delta must stay to backward netinput layers
 
 
-    graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},cs);
+    graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},cs, true, true, true);
 
     cout<<"Loss graph:"<<name<<endl;
     cout<<graph->summary();

@@ -138,3 +138,11 @@ cd protobuf/
 ./autogen.sh && ./configure && make
 sudo make install
 ```
+
+### Docker
+
+```
+cd eddl/
+docker build -f Dockerfile .
+
+```

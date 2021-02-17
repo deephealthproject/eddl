@@ -32,7 +32,7 @@ std::vector<int> vf2vi(const std::vector<float> &vf)
 #endif
 
 #if defined(cPROTO)
-Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level);
+Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, int log_level);
 #endif
 
 #if defined(cPROTO)
@@ -410,17 +410,34 @@ vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor, bool recurrent_net)
 
 // Converts one vector of TensorProto pointers (Input or output)
 // to one vector of eddl Tensor pointers.
-vector<Layer *> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, int mem, bool recurrent_net)
+vector<Layer *> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, vector<int> input_shape, int mem, bool recurrent_net)
 {
   vector<Layer *> io;
   onnx::TypeProto::Tensor tensor;
   int dev = DEV_CPU;
+  bool reshape_input = !input_shape.empty();
 
-  for (onnx::ValueInfoProto infoProto : io_onnx)
+  if (reshape_input) 
   {
-    tensor = infoProto.type().tensor_type();
-    string name = infoProto.name();
-    io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor, recurrent_net)), name, dev, mem));
+    if (io_onnx.size() > 1)
+      msg("The imported model has more than 1 input layer and the shape provided to reshape the model can only be applied"
+           "if the model has only one input layer.", "ONNX::ImportNet");
+    else
+    {
+      tensor = io_onnx[0].type().tensor_type();
+      string name = io_onnx[0].name();
+      input_shape.insert(input_shape.begin(), 1); // Add the batch dimension
+      io.push_back(new LInput(new Tensor(input_shape), name, dev, mem));
+    }
+  } 
+  else 
+  {
+    for (onnx::ValueInfoProto infoProto : io_onnx)
+    {
+      tensor = infoProto.type().tensor_type();
+      string name = infoProto.name();
+      io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor, recurrent_net)), name, dev, mem));
+    }
   }
 
   return io;
@@ -508,7 +525,33 @@ Net *import_net_from_onnx_file(std::string path, int mem, int log_level)
     }
     input.close();
   }
-  return build_net_onnx(model, mem, log_level);
+  return build_net_onnx(model, {}, mem, log_level);
+}
+
+// Imports a net stored in a onnx file
+Net *import_net_from_onnx_file(std::string path, vector<int> input_shape, int mem, int log_level)
+{
+  // Check if the path exists
+  if (!pathExists(path))
+  {
+    msg("The specified path does not exist: " + path, "ONNX::ImportNet");
+  }
+
+  // Verify that the version of the library that we linked against is
+  // compatible with the version of the headers we compiled against.
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+  onnx::ModelProto model;
+  {
+    // Read the existing net.
+    fstream input(path, ios::in | ios::binary);
+    if (!model.ParseFromIstream(&input))
+    {
+      cerr << "Failed to parse model." << endl;
+      //return;
+    }
+    input.close();
+  }
+  return build_net_onnx(model, input_shape, mem, log_level);
 }
 
 // Imports a net from a pointer passed as argument
@@ -526,7 +569,7 @@ Net *import_net_from_onnx_pointer(void *serialized_model, size_t size, int mem)
     else if (verbose >= 2)
       cout << "Model parsed succesfuly" << endl;
   }
-  return build_net_onnx(model, mem, LOG_LEVEL::INFO);
+  return build_net_onnx(model, {}, mem, LOG_LEVEL::INFO);
 }
 
 // Imports a net from a c++ string passed as argument.
@@ -544,7 +587,7 @@ Net *import_net_from_onnx_string(string *model_string, int mem)
     else if (verbose >= 2)
       cout << "Model parsed succesfuly" << endl;
   }
-  return build_net_onnx(model, mem, LOG_LEVEL::INFO);
+  return build_net_onnx(model, {}, mem, LOG_LEVEL::INFO);
 }
 
 Layer *get_model_input_layer(Layer *l)
@@ -644,7 +687,7 @@ bool check_recurrent_nodes(vector<onnx::NodeProto> nodes)
 }
 
 // Builds a eddl Net from an instance of the onnx container for model
-Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
+Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, int log_level)
 {
 
   long long int ir_version = model.ir_version();
@@ -669,7 +712,7 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
   if (recurrent_net)
     log_string("The net is recurrent", log_level, LOG_LEVEL::DEBUG);
 
-  vector<Layer *> inputs = parse_IO_tensors(inputs_onnx, mem, recurrent_net); // Parse ONNX inputs to EDDL inputs
+  vector<Layer *> inputs = parse_IO_tensors(inputs_onnx, input_shape, mem, recurrent_net); // Parse ONNX inputs to EDDL inputs
 
   vector<onnx::TensorProto> initializers = get_initializers(graph); // Retrieves the initializers from the graph.
   // The weights for the layers can be found in the initializers.
@@ -1573,7 +1616,8 @@ Net *build_net_onnx(onnx::ModelProto model, int mem, int log_level)
           { // If dense already has a bias, we sum it in top of the bias
             log_string("The parent Dense already has a bias. Adding the parameters of the Add operator to the parent bias.", log_level, LOG_LEVEL::DEBUG);
             Tensor *add_to_bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
-            dense->bias = Tensor::add(dense->bias, add_to_bias);
+            Tensor::add(add_to_bias, dense->bias, dense->bias);
+            delete add_to_bias;
           }
           actual_layer = dense;
           break;

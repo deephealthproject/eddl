@@ -47,7 +47,9 @@ LPool1D::LPool1D(Layer *parent, PoolDescriptor *D, string name, int dev, int mem
 }
 
 LPool1D::~LPool1D(){
-    delete pd;
+    delete this->pd->O; // TO BE REVIEWED
+    delete this->pd;
+    delete this->input_reshaped;
 }
 
 void LPool1D::mem_delta(){
@@ -57,7 +59,7 @@ void LPool1D::mem_delta(){
         pd->ID = parent[0]->delta;
 
         delta = Tensor::zeros(output->shape, output->device);
-        pd->D = new Tensor(pd->O->shape, delta);
+        pd->D = delta; // new Tensor(pd->O->shape, delta); TO BE REVIEWED
 
         if(this->verbosity_level >= 2) {
             std::cout << "Booked delta for: " + this->name << std::endl;

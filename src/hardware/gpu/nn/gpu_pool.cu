@@ -22,35 +22,6 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
 
-#ifdef cCUDNN
-void amy_get_fdescriptor(cudnnFilterDescriptor_t t, char * name){
-
-    cudnnDataType_t         dataType;
-    cudnnTensorFormat_t       format;
-    int                     n;
-    int                     c;
-    int                     h;
-    int                     w;
-    check_cudnn(cudnnGetFilter4dDescriptor(t, &dataType, &format, &n, &c, &h, &w), "cudnnGetFilter4dDescriptor", __FILE__);
-    std::cout<<name<<": ("<<dataType<<", "<<n<<", "<<c<<", "<<h<<", "<<w<<")"<<std::endl;
-}
-
-void amy_get_descriptor(cudnnTensorDescriptor_t t, char * name){
-
-    cudnnDataType_t         dataType;
-    int                     n;
-    int                     c;
-    int                     h;
-    int                     w;
-    int                     nStride;
-    int                     cStride;
-    int                     hStride;
-    int                     wStride;
-    check_cudnn(cudnnGetTensor4dDescriptor(t, &dataType, &n, &c, &h, &w, &nStride, &cStride, &hStride, &wStride),"cudnnGetTensor4dDescriptor", __FILE__);
-    std::cout<<name<<": ("<<dataType<<", "<<n<<", "<<c<<", "<<h<<", "<<w<<", "<<nStride<<", "<<cStride<<", "<<hStride<<", "<<wStride<<")"<<std::endl;
-}
-
-#endif
 
 void gpu_mpool2D(PoolDescriptor *D){
     int device=D->I->gpu_device;
@@ -63,11 +34,9 @@ void gpu_mpool2D(PoolDescriptor *D){
 #else
     float alpha=1.0;
     float beta=0.0;
-//    amy_get_descriptor(D->xDesc,"xDesc");
-//    amy_get_descriptor(D->yDesc,"yDesc");
     check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
                                     &alpha, D->xDesc, D->I->ptr,
-                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward",__FILE__);
+                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward MAX2D",__FILE__);
 #endif
 }
 
@@ -86,7 +55,7 @@ void gpu_mpool2D_back(PoolDescriptor *D){
 
     check_cudnn(cudnnPoolingBackward(hdnn[device], D->poolingDesc, &alpha, D->yDesc, D->O->ptr,
                                      D->yDesc, D->D->ptr, D->xDesc, D->I->ptr,
-                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward",__FILE__);
+                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward MAX2D",__FILE__);
 #endif
 }
 
@@ -98,11 +67,9 @@ int device=D->I->gpu_device;
 #ifdef cCUDNN
   float alpha=1.0;
     float beta=0.0;
-//    amy_get_descriptor(D->xDesc,"xDesc");
-//    amy_get_descriptor(D->yDesc,"yDesc");
     check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
                                     &alpha, D->xDesc, D->I->ptr,
-                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward",__FILE__);
+                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward MAX3D",__FILE__);
 #endif
 
 }
@@ -117,7 +84,7 @@ int device=D->I->gpu_device;
 
     check_cudnn(cudnnPoolingBackward(hdnn[device], D->poolingDesc, &alpha, D->yDesc, D->O->ptr,
                                      D->yDesc, D->D->ptr, D->xDesc, D->I->ptr,
-                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward",__FILE__);
+                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward MAX3D",__FILE__);
 #endif
 
 }
@@ -125,19 +92,36 @@ int device=D->I->gpu_device;
 void gpu_avgpool2D(PoolDescriptor *D){
     int device=D->I->gpu_device;
     cudaSetDevice(device);
-
+#ifndef cCUDNN
     setDims(D->O);
     avgpool2d<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0], D->ir,D->ic,D->iz,D->kr,D->kc,D->O->ptr,D->r,D->c,D->z, D->sr,D->sc,D->padrt,D->padrb,D->padcl,D->padcr);
 
     check_cuda(cudaDeviceSynchronize(),"gpu_avgpool");
+#else
+    float alpha=1.0;
+    float beta=0.0;
+    check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
+                                    &alpha, D->xDesc, D->I->ptr,
+                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward AVG2D",__FILE__);
+
+#endif
 }
 
 void gpu_avgpool2D_back(PoolDescriptor *D){
     int device=D->I->gpu_device;
     cudaSetDevice(device);
-
+#ifndef cCUDNN
     setDims(D->D)
     avgpool2d_back<<<dimGrid,dimBlock>>>(D->D->ptr, D->ID->ptr, D->I->shape[0], D->ir,D->ic,D->iz,D->kr,D->kc,D->O->ptr,D->r,D->c,D->z, D->sr,D->sc,D->padrt,D->padrb,D->padcl,D->padcr);
 
     check_cuda(cudaDeviceSynchronize(),"gpu_avgpool_back");
+#else
+    float alpha=1.0;
+    float beta=0.0;
+
+    check_cudnn(cudnnPoolingBackward(hdnn[device], D->poolingDesc, &alpha, D->yDesc, D->O->ptr,
+                                     D->yDesc, D->D->ptr, D->xDesc, D->I->ptr,
+                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward AVG2D",__FILE__);
+
+#endif
 }

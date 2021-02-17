@@ -25,6 +25,13 @@ using namespace eddl;
 
 int main(int argc, char **argv) {
 
+    bool testing = false;
+    bool use_cpu = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
+
     int size = 256/2;
 
     layer in  = Input({3, 10, size, size});
@@ -43,11 +50,21 @@ int main(int argc, char **argv) {
     layer out = ReLu(l);
     model net = Model({in},{out});
 
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        //cs = CS_GPU({1}, "low_mem"); // one GPU
+        cs = CS_GPU({1}); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+    }
+
     build(net,
           adam(),
           {"mse"},
           {"mse"},
-          CS_GPU({1})
+          cs
           );
     plot(net,"model.pdf","LR");
     summary(net);
@@ -58,11 +75,11 @@ int main(int argc, char **argv) {
     // Target: A sequence of 7 samples of 2 values per image
     Tensor* seqLabels = Tensor::randu({32, 7, 2});
 
-    fit(net, {seqImages}, {seqLabels}, 4, 10);
+    fit(net, {seqImages}, {seqLabels}, 4, testing ? 2 : 10);
 
     delete net;
+    delete seqImages;
+    delete seqLabels;
 
-    return 0;
-
-
+    return EXIT_SUCCESS;
 }

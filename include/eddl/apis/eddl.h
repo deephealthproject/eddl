@@ -65,6 +65,7 @@ namespace eddl {
     void setName(model m, string name);
     layer getLayer(Net *net, string l);
     void removeLayer(Net *net, string l);
+    void initializeLayer(Net *net, string l);
     void setTrainable(model net, string lanme, bool val);
 
     vector<vtensor> get_parameters(model net, bool deepcopy=false, bool tocpu=false);
@@ -2174,6 +2175,17 @@ namespace eddl {
     */
     layer L1L2(layer l,float l1,float l2);
 
+
+    ///////////////////////////////////////
+    // MODELS
+    ///////////////////////////////////////
+    void download_model(string name,string link);
+    Net* download_vgg16(bool top=true, vector<int> input_shape={});
+    Net* download_resnet18(bool top=true, vector<int> input_shape={});
+    Net* download_resnet34(bool top=true, vector<int> input_shape={}); 
+    Net* download_resnet50(bool top=true, vector<int> input_shape={}); 
+    Net* download_resnet101(bool top=true, vector<int> input_shape={});
+    Net* download_resnet152(bool top=true, vector<int> input_shape={});
 
     ///////////////////////////////////////
     //  DATASETS

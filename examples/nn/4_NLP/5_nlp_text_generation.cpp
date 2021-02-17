@@ -13,6 +13,7 @@
 
 #include "eddl/apis/eddl.h"
 
+#include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 using namespace eddl;
 
@@ -21,24 +22,6 @@ using namespace eddl;
 // Text generation
 // Only Decoder
 //////////////////////////////////
-
-layer ResBlock(layer l, int filters,int nconv,int half) {
-  layer in=l;
-
-  if (half)
-      l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{2,2})));
-  else
-      l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-
-
-  for(int i=0;i<nconv-1;i++)
-    l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-
-  if (half)
-    return Add(BatchNormalization(Conv(in,filters,{1,1},{2,2})),l);
-  else
-    return Add(l,in);
-}
 
 
 Tensor *onehot(Tensor *in, int vocs)
@@ -63,39 +46,33 @@ Tensor *onehot(Tensor *in, int vocs)
 
 int main(int argc, char **argv) {
 
+    bool testing = false;
+    bool use_cpu = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
+
     download_flickr();
 
     // Settings
-    int epochs = 10;
+    int epochs = testing ? 2 : 50;
     int batch_size = 24;
 
     int olength=20;
     int outvs=2000;
     int embdim=32;
 
-    // Define network
-    layer image_in = Input({3,256,256}); //Image
-    layer l = image_in;
+    model net=download_resnet18(true,{3, 256, 256});  
+    // true: remove last layers and set new top=flatten 
+    // new input_size {3,256,256} from {224,224,3}
 
-    l=ReLu(Conv(l,64,{3,3},{2,2}));
+    layer lreshape=getLayer(net,"top");
+    
+    // create a new model from input output
+    layer image_in=getLayer(net,"input");
 
-    l=ResBlock(l, 64,2,1);//<<<-- output half size
-    l=ResBlock(l, 64,2,0);
-
-    l=ResBlock(l, 128,2,1);//<<<-- output half size
-    l=ResBlock(l, 128,2,0);
-
-    l=ResBlock(l, 256,2,1);//<<<-- output half size
-    l=ResBlock(l, 256,2,0);
-
-    l=ResBlock(l, 512,2,1);//<<<-- output half size
-    l=ResBlock(l, 512,2,0);
-
-    l=GlobalAveragePool(l);
-
-    layer lreshape=Reshape(l,{-1});
-
-
+    
     // Decoder
     layer ldecin = Input({outvs});
     layer ldec = ReduceArgMax(ldecin,{0});
@@ -103,27 +80,34 @@ int main(int argc, char **argv) {
 
     ldec = Concat({ldec,lreshape});
 
-    l = LSTM(ldec,512,true);
+    layer l = LSTM(ldec,512,true);
 
     layer out = Softmax(Dense(l, outvs));
 
     setDecoder(ldecin);
 
-    model net = Model({image_in}, {out});
+    net = Model({image_in}, {out});
+
     plot(net, "model.pdf");
 
-    optimizer opt=adam(0.001);
+    optimizer opt=adam(0.01);
     //opt->set_clip_val(0.01);
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        //cs = CS_GPU({1}, "low_mem"); // one GPU
+        cs = CS_GPU({1}); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+    }
 
     // Build model
     build(net,
           opt, // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
-          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
-    );
+          cs);
 
     // View model
     summary(net);
@@ -134,12 +118,32 @@ int main(int argc, char **argv) {
     Tensor *x_train=Tensor::load("flickr_trX.bin","bin");
     //x_train->info(); //1000,256,256,3
 
-    Tensor *xtrain=Tensor::permute(x_train,{0,3,1,2});//1000,3,256,256
-
     Tensor *y_train=Tensor::load("flickr_trY.bin","bin");
     //y_train->info();
 
-    y_train=onehot(y_train,outvs);
+    if (testing) {
+        x_train->info();
+        y_train->info();
+        std::string _range_ = "0:" + std::to_string(2 * batch_size);
+        Tensor* x_mini_train = x_train->select({_range_, ":", ":", ":"});
+        Tensor* y_mini_train = y_train->select({_range_, ":"});
+        //Tensor* x_mini_test  = x_test->select({_range_, ":", ":", ":"});
+        //Tensor* y_mini_test  = y_test->select({_range_, ":"});
+
+        delete x_train;
+        delete y_train;
+        //delete x_test;
+        //delete y_test;
+
+        x_train = x_mini_train;
+        y_train = y_mini_train;
+        //x_test  = x_mini_test;
+        //y_test  = y_mini_test;
+    }
+
+    Tensor *xtrain = Tensor::permute(x_train,{0,3,1,2});//1000,3,256,256
+    Tensor *ytrain = y_train;
+    y_train=onehot(ytrain,outvs);
     y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x input_dim
     //y_train->info();
 
@@ -147,9 +151,8 @@ int main(int argc, char **argv) {
     //load(net,"img2text.bin","bin");
 
     // Train model
-    for(int i=0;i<epochs;i++) {
-      fit(net, {xtrain}, {y_train}, batch_size, 1);
-    }
+    fit(net, {xtrain}, {y_train}, batch_size, epochs);
+    
 
     save(net,"img2text.bin","bin");
 
@@ -172,12 +175,21 @@ int main(int argc, char **argv) {
 
     model cnn=Model({image_in},{lreshape});
 
+    cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        //cs = CS_GPU({1}, "low_mem"); // one GPU
+        cs = CS_GPU({1}); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+    }
 
     build(cnn,
           adam(0.001), // not relevant
           {"mse"}, // not relevant
           {"mse"}, // not relevant
-          CS_GPU({1})//,false // CPU
+          cs
     );
     summary(cnn);
     plot(cnn,"cnn.pdf");
@@ -200,6 +212,7 @@ int main(int argc, char **argv) {
 
         delete ybatch;
     }
+    delete xbatch;
 
 
 
@@ -224,12 +237,21 @@ int main(int argc, char **argv) {
 
     model decoder=Model({ldecin,image,lstate},{out});
 
+    cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        //cs = CS_GPU({1}, "low_mem"); // one GPU
+        cs = CS_GPU({1}); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+    }
     // Build model
     build(decoder,
           adam(0.001), // not relevant
           {"softmax_cross_entropy"}, // not relevant
           {"accuracy"}, // not relevant
-          CS_GPU({1}) // CPU
+          cs
     );
 
     // View model
@@ -243,11 +265,11 @@ int main(int argc, char **argv) {
 
 
    ////// N-best for sample s
-   int s=100; //sample 100
+   int s = testing ? 1 : 100; //sample 100
    // three input tensors with batch_size=1 (one sentence)
    Tensor *treshape=timage->select({to_string(s),":"});
    Tensor *text=y_train->select({to_string(s),":",":"}); //1 x olength x outvs
-   Tensor *state=Tensor::zeros({1,2,512}); // batch x num_states x dim_states
+   //Tensor *state=Tensor::zeros({1,2,512}); // batch x num_states x dim_states
 
    for(int j=0;j<olength;j++) {
      cout<<"Word:"<<j<<endl;
@@ -273,10 +295,30 @@ int main(int argc, char **argv) {
 
      vector<Tensor*> vstates=getStates(lstm); 
      for(int i=0;i<vstates.size();i++) {
-       state->set_select({":",to_string(i),":"},vstates[i]->reshape({1,1,512}));
+       Tensor * temp = vstates[i]->reshape({1,1,512});
+       state->set_select({":",to_string(i),":"}, temp);
+       delete temp;
        delete vstates[i];
      }
      vstates.clear();
+     delete state;
+     delete word;
+     delete outword;
    }
 
+    delete xtrain;
+    delete ytrain;
+    delete x_train;
+    delete y_train;
+
+    //delete lstate;
+    delete decoder;
+    delete cnn;
+    delete net;
+
+    delete timage;
+    delete treshape;
+    delete text;
+
+    return EXIT_SUCCESS;
 }

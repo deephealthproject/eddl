@@ -56,28 +56,13 @@ CompServ::CompServ(int t, const vector<int> g, const vector<int> &f, int lsb, in
 }
 
 CompServ * CompServ::share() {
-  CompServ *n = new CompServ();
-
-  n->type = this->type;
-  n->local_threads = this->local_threads;
-  for (auto _ : this->local_gpus) n->local_gpus.push_back(_);
-  for (auto _ : this->local_fpgas) n->local_fpgas.push_back(_);
-  n->lsb = this->lsb;
+  CompServ *n = new CompServ(threads_arg,local_gpus,local_fpgas,lsb,mem_level);
   n->isshared = true;
-  n->mem_level = this->mem_level;
-
   return n;
 }
 CompServ * CompServ::clone() {
-  CompServ *n = new CompServ();
-
-  n->type = this->type;
-  n->local_threads = this->local_threads;
-  for (auto _ : this->local_gpus) n->local_gpus.push_back(_);
-  for (auto _ : this->local_fpgas) n->local_fpgas.push_back(_);
-  n->lsb = this->lsb;
-  n->mem_level = this->mem_level;
-
+  
+  CompServ *n = new CompServ(threads_arg,local_gpus,local_fpgas,lsb,mem_level);
   return n;
 }
 
