@@ -38,17 +38,6 @@ else()
 endif()
 
 
-if (USE_CUDA)
-    add_definitions(-DcGPU)
-endif()
-if(USE_CUDNN)
-    add_definitions(-DcCUDNN)
-endif()
-if (USE_FPGA)
-    add_definitions(-DcFPGA)
-endif()
-
-
 # CUDA (TEMP! We shouldn't need this)
 if(USE_CUDA)
     # Check if cuda is available
@@ -66,11 +55,6 @@ if(USE_CUDA)
         Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
             endif()
         endif()
-
-        if(USE_CUDNN)
-            add_definitions(-DcCUDNN)
-        endif()
-        add_definitions(-DcGPU)
 
         # Set standard CUDA variables
         if(NOT DEFINED CMAKE_CUDA_STANDARD)
@@ -118,10 +102,31 @@ if(USE_CUDA)
     endif()
 endif()
 
+##########################################################################
+############################# DEFINITIONS ################################
+##########################################################################
+
+if(USE_GPU)
+    add_definitions(-DcGPU)
+endif()
+if(USE_CUDNN)
+    add_definitions(-DcCUDNN)
+endif()
+if(USE_FPGA)
+    add_definitions(-DcFPGA)
+endif()
+
+##########################################################################
+############################# EXECUTABLES ################################
+##########################################################################
 
 # Add test
 add_test(NAME unit_tests COMMAND unit_tests)
 
+
+##########################################################################
+############################### SUMMARY ##################################
+##########################################################################
 
 # SHOW OPTIONS
 message(STATUS "===========================================" )
