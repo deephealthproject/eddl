@@ -40,6 +40,8 @@ endif()
 
 # CUDA (TEMP! We shouldn't need this)
 if(USE_CUDA)
+    cmake_minimum_required(VERSION 3.17.2)  # Due to CUDAToolkit
+
     # Check if cuda is available
     include(CheckLanguage)
     check_language(CUDA)
@@ -74,15 +76,27 @@ if(USE_CUDA)
         # Add includes
         target_include_directories(unit_tests PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
 
-        #        # Find libraries (need absolute paths)
-        #        find_library(CUBLAS_LIBRARY cublas HINTS ${CUDA_TOOLKIT_ROOT_DIR})
-        #        find_library(CUDART_LIBRARY cudart HINTS ${CUDA_TOOLKIT_ROOT_DIR})
-        #        find_library(CURAND_LIBRARY curand HINTS ${CUDA_TOOLKIT_ROOT_DIR})
-        #        target_link_libraries(unit_tests PRIVATE ${CUBLAS_LIBRARY} ${CUDART_LIBRARY} ${CURAND_LIBRARY})
+        # Add libraries
         target_link_libraries(unit_tests PRIVATE CUDA::cublas CUDA::cudart CUDA::curand)
         if(USE_CUDNN)
-            find_library(CUDNN_LIBRARY cudnn HINTS ${CUDAToolkit_LIBRARY_DIR})
-            target_link_libraries(unit_tests PRIVATE ${CUDNN_LIBRARY})
+            if(CUDNN_ROOT_DIR)
+                SET(CUDNN_INCLUDE_DIRS ${CUDNN_ROOT_DIR}/include)
+                find_library(CUDNN_LIBRARY cudnn HINTS ${CUDNN_ROOT_DIR} PATHS ${CUDNN_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
+            else()
+                SET(CUDNN_INCLUDE_DIRS ${CUDAToolkit_INCLUDE_DIRS})
+                find_library(CUDNN_LIBRARY cudnn HINTS ${CUDAToolkit_LIBRARY_DIR} PATHS ${CUDAToolkit_LIBRARY_DIR})
+            endif()
+
+            # Check if the library has been found
+            if(CUDNN_LIBRARY)
+                target_include_directories(unit_tests PRIVATE ${CUDNN_INCLUDE_DIRS})
+                target_link_libraries(unit_tests PRIVATE ${CUDNN_LIBRARY})
+            else()
+                message(WARNING "[WARNING] CUDNN was not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=GPU')
+                Hint: Install CUDNN in the same path as the CUDA Toolkit, or specify the CUDNN path using this flag '-D CUDNN_ROOT_DIR=path'")
+                SET(BUILD_TARGET "GPU") # Local's scope
+                SET(USE_CUDNN OFF) # Local's scope (disable)
+            endif()
         endif()
 
         if(APPLE)
@@ -99,8 +113,12 @@ if(USE_CUDA)
         message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
         Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
         SET(BUILD_TARGET "CPU") # Local's scope
+        SET(USE_CUDNN OFF) # Local's scope (disable)
+        SET(USE_CUDA OFF) # Local's scope (disable)
     endif()
 endif()
+SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
+SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 
 ##########################################################################
 ############################# DEFINITIONS ################################
