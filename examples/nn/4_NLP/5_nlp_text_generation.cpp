@@ -86,6 +86,8 @@ int main(int argc, char **argv) {
 
     setDecoder(ldecin);
 
+    model old_net = net;
+
     net = Model({image_in}, {out});
 
     plot(net, "model.pdf");
@@ -111,7 +113,6 @@ int main(int argc, char **argv) {
 
     // View model
     summary(net);
-
 
 
     // Load dataset
@@ -315,6 +316,7 @@ int main(int argc, char **argv) {
     delete decoder;
     delete cnn;
     delete net;
+    delete old_net;
 
     delete timage;
     delete treshape;

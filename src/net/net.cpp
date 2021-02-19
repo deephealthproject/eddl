@@ -160,7 +160,7 @@ Net::~Net(){
         }
     }
 
-    if (snets[0] != this){
+    if (snets.size() == 0 || snets[0] != this){
         if (this->optimizer != nullptr && this->do_optimizer_delete){
             delete this->optimizer;
         }
@@ -187,7 +187,7 @@ Net::~Net(){
 
     // net running on device != CPU
     // clean also CPU mem
-    if (snets[0]!=this){
+    if (snets.size() == 0 || snets[0]!=this){
         for(int j=0;j<layers.size();j++) {
             //fprintf(stderr, "%s(%d) %d : %p %p\n", __FILE__, __LINE__, j, layers[j]->get_my_owner(), this);
             if (layers[j]->is_my_owner(this)) {
