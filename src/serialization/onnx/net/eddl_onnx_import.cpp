@@ -1,7 +1,10 @@
-#include "eddl/layers/operators/layer_operators.h"
-#include "eddl/serialization/onnx/eddl_onnx.h"
 #include <queue>
 #include <fstream>
+#include <map>
+#include <set>
+#include <algorithm>
+
+#include "eddl/serialization/onnx/eddl_onnx.h"
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/conv/layer_conv.h"
 #include "eddl/layers/normalization/layer_normalization.h"
@@ -9,11 +12,10 @@
 #include "eddl/layers/recurrent/layer_recurrent.h"
 #include "eddl/layers/reductions/layer_reductions.h"
 #include "eddl/layers/da/layer_da.h"
+#include "eddl/layers/operators/layer_operators.h"
+#include "eddl/layers/merge/layer_merge.h"
 #include "eddl/tensor/tensor.h"
 #include "eddl/utils.h"
-#include <map>
-#include <set>
-#include <algorithm>
 
 #define NEW_FROM_VECTOR_PTR(v) (copy((v)->begin(), (v)->end(), new float[(v)->size()]) - (v)->size())
 std::vector<int> vf2vi(const std::vector<float> &vf)
@@ -28,7 +30,7 @@ std::vector<int> vf2vi(const std::vector<float> &vf)
 }
 
 #if defined(cPROTO)
-#include "onnx.pb.h"
+#include "eddl/serialization/onnx/onnx.pb.h"
 #endif
 
 #if defined(cPROTO)
@@ -3534,7 +3536,13 @@ map<string, vector<Tensor *>> get_tensors_from_onnx(onnx::ModelProto model)
 }
 #else
 
-Net *import_net_from_onnx_file(std::string path)
+Net *import_net_from_onnx_file(std::string path, int mem, int log_level)
+{
+  cerr << "Not compiled for ONNX. Missing protobuf. Returning nullptr" << endl;
+  return nullptr;
+}
+
+Net *import_net_from_onnx_file(std::string path, vector<int> input_shape, int mem, int log_level)
 {
   cerr << "Not compiled for ONNX. Missing protobuf. Returning nullptr" << endl;
   return nullptr;

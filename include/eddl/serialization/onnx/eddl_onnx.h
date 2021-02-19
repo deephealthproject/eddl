@@ -1,31 +1,17 @@
 #ifndef EDDL_EDDL_ONNX_H
 #define EDDL_EDDL_ONNX_H
 
-#include "eddl/layers/conv/layer_conv.h"
-#include "eddl/layers/core/layer_core.h"
-#include "eddl/layers/layer.h"
-#include "eddl/layers/merge/layer_merge.h"
-#include "eddl/layers/normalization/layer_normalization.h"
-#include "eddl/layers/operators/layer_operators.h"
-#include "eddl/layers/pool/layer_pool.h"
-#include "eddl/layers/recurrent/layer_recurrent.h"
-#include "eddl/net/compserv.h"
-#include "eddl/net/net.h"
-#include "eddl/optimizers/optim.h"
 #include <cstddef>
 #include <map>
 #include <string>
 #include <vector>
 
-enum LOG_LEVEL {
-  TRACE = 0,
-  DEBUG = 1,
-  INFO = 2,
-  WARN = 3,
-  ERROR = 4,
-  NO_LOGS = 5
-};
+#include "eddl/serialization/onnx/utils_onnx.h"
+#include "eddl/net/compserv.h"
+#include "eddl/net/net.h"
+#include "eddl/optimizers/optim.h"
 
+//------------------------------------------------------------------------------
 // Importing module
 //------------------------------------------------------------------------------
 
@@ -99,6 +85,7 @@ CompServ *import_compserv_from_onnx_pointer(void *serialized_cs, size_t cs_size)
 CompServ *import_compserv_from_onnx_string(string *cs_string);
 
 
+//----------------------------------------------------------------------------------------
 // Exporting module
 //----------------------------------------------------------------------------------------
 
@@ -159,6 +146,7 @@ size_t serialize_compserv_to_onnx_pointer(CompServ *cs, void *&serialized_cs);
 string *serialize_compserv_to_onnx_string(CompServ *cs);
 
 
+// ---------------------------------------------------------------------------------------
 // Distributed Module
 // ---------------------------------------------------------------------------------------
 
