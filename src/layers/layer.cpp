@@ -48,7 +48,7 @@ Layer::Layer(string name, int dev, int mem) {
     // init = new IGlorotNormal(1234);
     this->init = new IGlorotUniform(1234);  // Has problems with the drive dataset
 
-    this->my_owner = nullptr;
+    this->reference_counter = 0; // accounts how many nets are referencing this layer
 }
 
 Layer::~Layer(){
@@ -251,24 +251,13 @@ void Layer::copy(Layer *l2){
     }
 }
 
-bool Layer::set_my_owner(void * net) 
+void Layer::increase_reference_counter()
 {
-    if (this->my_owner == nullptr) {
-        this->my_owner = net;
-        return true;
-    } else {
-        return false;
-    }
+    reference_counter++;
 }
-
-bool Layer::is_my_owner(void * net)
+int Layer::decrease_and_get_reference_counter()
 {
-    return this->my_owner == net;
-}
-
-void * Layer::get_my_owner()
-{
-    return this->my_owner;
+    return --reference_counter;
 }
 
 ////////////////////////////////////
