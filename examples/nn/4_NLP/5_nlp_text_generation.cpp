@@ -90,6 +90,8 @@ int main(int argc, char **argv) {
 
     net = Model({image_in}, {out});
 
+    delete old_net;
+
     plot(net, "model.pdf");
 
     optimizer opt=adam(0.01);
@@ -316,7 +318,6 @@ int main(int argc, char **argv) {
     delete decoder;
     delete cnn;
     delete net;
-    delete old_net;
 
     delete timage;
     delete treshape;
