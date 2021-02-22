@@ -599,10 +599,10 @@ void log_model_metadata(onnx::ModelProto& model, LOG_LEVEL log_level)
 }
 
 void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
-                           map<string, vector<float>> &map_init_values,
-                           map<string, onnx::NodeProto *> &constant_node_map,
-                           queue<onnx::NodeProto *> &nodeQueue,
-                           LOG_LEVEL log_level)
+                          map<string, vector<float>> &map_init_values,
+                          map<string, onnx::NodeProto *> &constant_node_map,
+                          queue<onnx::NodeProto *> &nodeQueue,
+                          LOG_LEVEL log_level)
 {
   for (int i = 0; i < nodes.size(); i++)
   {
@@ -630,82 +630,21 @@ void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
   }
 }
 
-// Builds a eddl Net from an instance of the onnx container for model
-Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LOG_LEVEL log_level)
+void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
+                        map<string, vector<float>> &map_init_values,
+                        map<string, vector<int>> &map_init_dims,
+                        map<string, vector<onnx::NodeProto *>> &input_node_map,
+                        map<string, Layer *> &output_node_map,
+                        map<string, onnx::NodeProto *> &constant_node_map,
+                        vector<string> &inputs2remove,
+                        bool recurrent_net,
+                        int mem,
+                        LOG_LEVEL log_level)
 {
-  log_model_metadata(model, log_level);
-  onnx::GraphProto graph = model.graph(); // Get the graph of the model.
-
-  vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); // Get input nodes data
-  vector<onnx::NodeProto> nodes = get_graph_nodes(graph); // Get the nodes (layers) of the model
-  bool recurrent_net = check_recurrent_nodes(nodes);
-  if (recurrent_net)
-    log_string("The net is recurrent", log_level, LOG_LEVEL::DEBUG);
-
-  /*
-   * The methodology is the following:
-   * We create three maps:
-   * map <string input, vector<onnx::NodeProto *> > input_node_map: The input will point towards the nodes that have this input
-   * map <string output, Layer* parent > output_node_map: To know from which (parent) node comes each input (The input is the output of the parent node)
-   * map <string input/output, bool> input_active_map: The outputs will be put inside a bool, where we will see if it is active or not.
-   * 
-   * The algorithm is the following:
-   *   1 - We check the inputs of each node.
-   *       For each input we insert the input string as a key and the Node(s) that use it as a value in the input_node_map.
-   *       If that input is already on use, we will append the node to the existing vector
-   *   2 - We check the outputs of each node. //NOT REQUIRED
-   *   For each output we insert the output string as a key and the Node that generates it as a value in the outputs_map //NOT REQUIRED
-   *   3 - When we add an input/output to the map, we also add it to the input_active_map as key, and the value will be false by default. If it is already there, we do nothing. //NOT REQUIRED
-   *   4 - Once we have constructed these maps, we create an empty queue of NodeProto
-   *   5 - For the input nodes in the graph, we create the EDDL layer and add the nodes that use its output(s) to the queue
-   *   6 - For each node (while the queue is not empty):
-   *     6.1 - Check if all its inputs nodes (not the ones in 'initializers') exist in output_node_map
-   *     6.2 - If they are not:  
-   *       continue
-   *     6.3 - Else:
-   *       Create the EDDL layer
-   *       Add the nodes that use its outputs to the queue
-   *
-   * To create each EDDL layer:
-   *   1 - Get its parent(s) by accessing to output_node_map using this node's input(s) as key(s)
-   *   2 - Get its weights from 'initializers'
-   *   3 - Create layer
-   * 
-   *   We need another map for storing the constant nodes, who are always active
-   *   We design this map as map<string, onnx::NodeProto> and called constant_node_map
-   */
-
-  // Parse ONNX inputs to EDDL inputs layers
-  vector<Layer *> inputs = parse_IO_tensors(inputs_onnx, input_shape, mem, recurrent_net);
-
-  // Get the initializers that store the layers weights and params
-  vector<onnx::TensorProto> initializers = get_initializers(graph);
-
-  // Create the main dictionaries to handle model parameters
-  map<string, vector<float>> map_init_values; // Key: Input Name - Value: Weights
-  map<string, vector<int>> map_init_dims;     // Key: Input Name - Value: Dims
-  get_initializers_maps(initializers, map_init_values, map_init_dims); // Fill the maps
-
-  // 1, 2 and 3: Initialize maps
-  map<string, vector<onnx::NodeProto *>> input_node_map = initialize_input_node_map(nodes);
-
-  // 4 and 5: Create queue of NodeProto
-  map<string, onnx::NodeProto *> constant_node_map = initialize_constant_nodes(nodes);
-
-  map<string, Layer *> output_node_map;
-  queue<onnx::NodeProto *> nodeQueue = process_inputs(inputs, inputs_onnx, input_node_map, output_node_map);
-
-  // Check if any node only has initializers and constant nodes as parameters, so we can process it right away
-  queue_constant_nodes(nodes, map_init_values, constant_node_map, nodeQueue, log_level);
-
-  /*
-   * In the case of models with recurrent decoders, we have to track the input layers of the decoder layers
-   * and avoid adding them to the input layers of the model
-   */
-  vector<string> inputs2remove = {};
-
   map<string, ONNX_LAYERS> map_layers = create_enum_map();
+
   // 6 - While the queue is not empty:
+  //   Note: Check build_net_onnx() for full algorithm description
   while (!nodeQueue.empty())
   {
     onnx::NodeProto *node = nodeQueue.front();
@@ -3115,11 +3054,98 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
     }
     nodeQueue.pop();
   }
-  vector<Layer *> input_layers;
-  bool valid_input;
+}
+
+// Builds a eddl Net from an instance of the onnx container for model
+Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LOG_LEVEL log_level)
+{
+  log_model_metadata(model, log_level);
+  onnx::GraphProto graph = model.graph(); // Get the graph of the model.
+
+  vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); // Get input nodes data
+  vector<onnx::NodeProto> nodes = get_graph_nodes(graph); // Get the nodes (layers) of the model
+  bool recurrent_net = check_recurrent_nodes(nodes);
+  if (recurrent_net)
+    log_string("The net is recurrent", log_level, LOG_LEVEL::DEBUG);
+
+  /*
+   * The methodology is the following:
+   * We create three maps:
+   * map <string input, vector<onnx::NodeProto *> > input_node_map: The input will point towards the nodes that have this input
+   * map <string output, Layer* parent > output_node_map: To know from which (parent) node comes each input (The input is the output of the parent node)
+   * map <string input/output, bool> input_active_map: The outputs will be put inside a bool, where we will see if it is active or not.
+   * 
+   * The algorithm is the following:
+   *   1 - We check the inputs of each node.
+   *       For each input we insert the input string as a key and the Node(s) that use it as a value in the input_node_map.
+   *       If that input is already on use, we will append the node to the existing vector
+   *   2 - We check the outputs of each node. //NOT REQUIRED
+   *   For each output we insert the output string as a key and the Node that generates it as a value in the outputs_map //NOT REQUIRED
+   *   3 - When we add an input/output to the map, we also add it to the input_active_map as key, and the value will be false by default. If it is already there, we do nothing. //NOT REQUIRED
+   *   4 - Once we have constructed these maps, we create an empty queue of NodeProto
+   *   5 - For the input nodes in the graph, we create the EDDL layer and add the nodes that use its output(s) to the queue
+   *   6 - For each node (while the queue is not empty):
+   *     6.1 - Check if all its inputs nodes (not the ones in 'initializers') exist in output_node_map
+   *     6.2 - If they are not:  
+   *       continue
+   *     6.3 - Else:
+   *       Create the EDDL layer
+   *       Add the nodes that use its outputs to the queue
+   *
+   * To create each EDDL layer:
+   *   1 - Get its parent(s) by accessing to output_node_map using this node's input(s) as key(s)
+   *   2 - Get its weights from 'initializers'
+   *   3 - Create layer
+   * 
+   *   We need another map for storing the constant nodes, who are always active
+   *   We design this map as map<string, onnx::NodeProto> and called constant_node_map
+   */
+
+  // Parse ONNX inputs to EDDL inputs layers
+  vector<Layer *> inputs = parse_IO_tensors(inputs_onnx, input_shape, mem, recurrent_net);
+
+  // Get the initializers that store the layers weights and params
+  vector<onnx::TensorProto> initializers = get_initializers(graph);
+
+  // Create the main dictionaries to handle model parameters
+  map<string, vector<float>> map_init_values; // Key: Input Name - Value: Weights
+  map<string, vector<int>> map_init_dims;     // Key: Input Name - Value: Dims
+  get_initializers_maps(initializers, map_init_values, map_init_dims); // Fill the maps
+
+  // 1, 2 and 3: Initialize maps
+  map<string, vector<onnx::NodeProto *>> input_node_map = initialize_input_node_map(nodes);
+
+  // 4 and 5: Create queue of NodeProto
+  map<string, onnx::NodeProto *> constant_node_map = initialize_constant_nodes(nodes);
+
+  map<string, Layer *> output_node_map;
+  queue<onnx::NodeProto *> nodeQueue = process_inputs(inputs, inputs_onnx, input_node_map, output_node_map);
+
+  // Check if any node only has initializers and constant nodes as parameters, so we can process it right away
+  queue_constant_nodes(nodes, map_init_values, constant_node_map, nodeQueue, log_level);
+
+  /*
+   * In the case of models with recurrent decoders, we have to track the input layers of the decoder layers
+   * and avoid adding them to the input layers of the model
+   */
+  vector<string> inputs2remove = {};
+
+  // 6: Process the node queue and create the model layers 
+  process_node_queue(nodeQueue,
+                     map_init_values,
+                     map_init_dims,
+                     input_node_map,
+                     output_node_map,
+                     constant_node_map,
+                     inputs2remove,
+                     recurrent_net,
+                     mem,
+                     log_level);
+
+  vector<Layer *> input_layers; // To store the final input layers
   for (Layer *layer : inputs)
   {
-    valid_input = true;
+    bool valid_input = true;
     // Check if we have to avoid setting the current input layer as an input for the model
     for (string lname : inputs2remove)
       if (lname.compare(layer->name) == 0)
@@ -3134,12 +3160,11 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
       input_layers.push_back(layer);
   }
 
+  // Get output layers of the model
   vector<string> output_names = get_outputs(graph);
   vector<Layer *> output_layers;
   for (int i = 0; i < output_names.size(); i++)
-  {
     output_layers.push_back(output_node_map[output_names[i]]);
-  }
 
   Net *imported_net = new Net(input_layers, output_layers);
 
