@@ -28,7 +28,7 @@
  *
  * @return Net
  */
-Net *import_net_from_onnx_file(string path, int mem = 0, int log_level = LOG_LEVEL::INFO);
+Net *import_net_from_onnx_file(string path, int mem = 0, LOG_LEVEL log_level = LOG_LEVEL::INFO);
 
 /**
  * @brief Imports ONNX Net from file and changes its input shape. Note that this function is 
@@ -42,7 +42,7 @@ Net *import_net_from_onnx_file(string path, int mem = 0, int log_level = LOG_LEV
  *
  * @return Net
  */
-Net *import_net_from_onnx_file(string path, vector<int> input_shape, int mem = 0, int log_level = LOG_LEVEL::INFO);
+Net *import_net_from_onnx_file(string path, vector<int> input_shape, int mem = 0, LOG_LEVEL log_level = LOG_LEVEL::INFO);
 
 Net *import_net_from_onnx_pointer(void *serialized_model, size_t model_size, int mem = 0);
 

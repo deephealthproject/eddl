@@ -1,6 +1,25 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/utils_onnx.h"
 
+void log_string(string log, LOG_LEVEL actual_log_level, LOG_LEVEL string_log_level)
+{
+  if (actual_log_level <= string_log_level)
+  {
+    cout << "[ONNX::LOG] " << log << endl;
+  }
+}
+
+std::vector<int> vf2vi(const std::vector<float> &vf)
+{
+  std::vector<int> vi;
+  vi.reserve(vf.size());
+  for (const auto &x : vf)
+  {
+    vi.emplace_back(static_cast<int>(x));
+  }
+  return vi;
+}
+
 void sync_snets_with_orig(Net *net, bool acc_gradients)
 {
   if (net->snets[0]->dev != DEV_CPU)
