@@ -109,6 +109,10 @@ void share_weights(Net *net);
 
 map<string, vector<Tensor *>> get_tensors_from_onnx(onnx::ModelProto model);
 
+void log_model_metadata(onnx::ModelProto& model, LOG_LEVEL log_level);
+
+Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LOG_LEVEL log_level);
+
 // Converts a raw onnx value tensor and writes it to a vector of that value type.
 template <class T>
 bool TryConvertingTensorRawValues(const onnx::TensorProto &onnx_tensor, vector<T> &field)
