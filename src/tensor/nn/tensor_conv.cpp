@@ -44,7 +44,23 @@ void Conv2D(ConvolDescriptor *D) {
 
 
     if (D->I->isCPU()) {
+#if 1
+        // cpu_conv2D(D);
+        cpu_new_conv2D(D, D->O->ptr);
+#else
+        int n = D->I->shape[0] * D->z*D->r*D->c;
+        float *output = new float[n];
+        cpu_new_conv2D(D, output);
         cpu_conv2D(D);
+        int pos = 0; float max = 0.0;
+        for (int i = 0; i < n; i++) {
+            float d = fabsf(output[i] - D->O->ptr[i]);
+            if (fabs(D->O->ptr[i]) > 1e-7) d = d / fabsf(D->O->ptr[i]);
+            if (d > max) { max = d; pos = i; }
+        }
+        printf("%e %e %e\n", max, output[pos], D->O->ptr[pos]);
+        delete output;
+#endif
     }
 #ifdef cGPU
     else if (D->I->isGPU())

@@ -126,6 +126,102 @@ void cpu_conv2D(ConvolDescriptor *D)
 
 }
 
+void cpu_new_conv2D(ConvolDescriptor *D, float *output)
+{
+  _profile(_CPU_CONV2D, 0);
+  int osize=D->z*D->r*D->c;
+  int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
+
+  float *ptrO= output; //D->O->ptr;
+  float *ptrI=D->ptrI;
+
+
+  // Map memory to Eigen
+  // Eigen::Map<Eigen::MatrixXf> matK=Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
+
+  #pragma omp parallel for
+  for(int b=0;b<D->I->shape[0];b++){
+
+    float *ptrO= output /*D->O->ptr*/ +(b*osize);
+    float *ptrI=D->ptrI+(b*isize);
+
+    // Eigen::Map<Eigen::MatrixXf> matI=Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
+    // Eigen::Map<Eigen::MatrixXf> matO=Eigen::Map<Eigen::MatrixXf>(ptrO,D->r*D->c,D->z);
+
+    // im2col(b,D,ptrI,0);
+    {
+        int pz,py,px,y,x;
+        int ksize=D->kr*D->kc;
+        int kr2=D->kr/2;
+        int kc2=D->kc/2;
+
+        if (kc2==0) kc2=-1;
+
+        int orsize=D->r*D->c;
+
+        int isize=D->ir*D->ic*D->iz;
+        int irsize=D->ir*D->ic;
+
+        py=-D->padrt;
+        px=-D->padcl;
+
+
+        for(int i=0;i<D->matI.rows();i++) {
+
+            for(int k=0;k<D->matI.cols();k++) {
+                pz=k/ksize;
+                y=py+(k%ksize)/D->kc;
+                x=px+(k%D->kc);
+
+                float p = get_pixel(b,x,y,pz,D,isize,irsize);
+                // ptrI[i + k * orsize] = p;
+                ptrI[k] = p;
+            }
+
+            for (int j = 0; j < D->z; j++) {
+                float a = 0;
+                for(int k=0;k<D->matI.cols();k++) {
+                    // a += p * D->K->ptr[k + j * D->kz*D->kr*D->kc];
+                    a += ptrI[k] * D->K->ptr[k + j * D->kz*D->kr*D->kc];
+                }
+                ptrO[i + j * D->r*D->c] = a;
+            }
+
+            px+=D->sc;
+            if (px>=D->ic+D->padcl-kc2-1) {
+                px=-D->padcl;
+                py+=D->sr;
+            }
+        }
+    }
+
+    // matO=matI*matK;
+    /* for (int i = 0; i < D->r*D->c; i++) {
+        for (int j = 0; j < D->z; j++) {
+            float a = 0;
+            for (int k = 0; k < D->kz*D->kr*D->kc; k++) {
+                a += ptrI[i + k * D->r*D->c] * D->K->ptr[k + j * D->kz*D->kr*D->kc];
+            }
+            ptrO[i + j * D->r*D->c] = a;
+        }
+    } */
+  }// batch
+
+  //bias
+  if (D->use_bias) {
+    #pragma omp parallel for
+    for(int b=0;b<D->O->shape[0];b++) {
+      float *ptrO= output /*D->O->ptr*/ +(b*osize);
+      for(int z=0;z<D->O->shape[1];z++)
+      for(int r=0;r<D->O->shape[2];r++)
+      for(int c=0;c<D->O->shape[3];c++,ptrO++)
+      (*ptrO)+=D->bias->ptr[z];
+    }
+  }
+    _profile(_CPU_CONV2D, 1);
+
+}
+
 void cpu_conv2D_grad(ConvolDescriptor *D)
 {
   _profile(_CPU_CONV2D_GRAD, 0);
