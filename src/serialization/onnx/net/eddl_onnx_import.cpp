@@ -17,7 +17,10 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/utils.h"
 
-#define NEW_FROM_VECTOR_PTR(v) (copy((v)->begin(), (v)->end(), new float[(v)->size()]) - (v)->size())
+// #define NEW_FROM_VECTOR_PTR(v) (copy((v)->begin(), (v)->end(), new float[(v)->size()]) - (v)->size()) -- this generates memory leaks
+#define COPY_FROM_VECTOR_PTR_TO_TENSOR(v, t) (copy((v)->begin(), (v)->end(), t->ptr))
+#define COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(v, ptr) (copy((v)->begin(), (v)->end(), ptr))
+
 std::vector<int> vf2vi(const std::vector<float> &vf)
 {
   std::vector<int> vi;
@@ -908,19 +911,23 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
 
       actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
 
-      Tensor *scale_tensor = new Tensor(scale_dims, NEW_FROM_VECTOR_PTR(scale_weights), dev);
+      Tensor *scale_tensor = new Tensor(scale_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(scale_weights, scale_tensor);
       Tensor::copy(scale_tensor, ((LBatchNorm *)(actual_layer))->bn_g);
       delete scale_tensor;
 
-      Tensor *bias_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_weights), dev);
+      Tensor *bias_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_weights, bias_tensor);
       Tensor::copy(bias_tensor, ((LBatchNorm *)(actual_layer))->bn_b);
       delete bias_tensor;
 
-      Tensor *mean_tensor = new Tensor(mean_dims, NEW_FROM_VECTOR_PTR(mean_weights), dev);
+      Tensor *mean_tensor = new Tensor(mean_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(mean_weights, mean_tensor);
       Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->mean);
       delete mean_tensor;
 
-      Tensor *variance_tensor = new Tensor(variance_dims, NEW_FROM_VECTOR_PTR(variance_weights), dev);
+      Tensor *variance_tensor = new Tensor(variance_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(variance_weights, variance_tensor);
       Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->variance);
       delete variance_tensor;
     }
@@ -1034,11 +1041,13 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
         bias = &(map_init_values[bias_name]);
         vector<int> bias_shape;
         bias_shape.push_back(bias->size());
-        Tensor *bias_tensor = new Tensor(bias_shape, NEW_FROM_VECTOR_PTR(bias), dev);
+        Tensor *bias_tensor = new Tensor(bias_shape, nullptr, dev);
+        COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, bias_tensor);
         Tensor::copy(bias_tensor, cd->bias);
         delete bias_tensor;
       }
-      Tensor *weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
+      Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
       Tensor::copy(weights_tensor, cd->K);
       delete weights_tensor;
     }
@@ -1112,7 +1121,8 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
       Tensor *input_size = parent->output;
       LDense *dense = new LDense(parent, neuronas, use_bias, name, dev, mem);
 
-      Tensor *weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
+      Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
 
       if (transB)
         weights_tensor->permute_({1, 0});
@@ -1123,7 +1133,8 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
         bias_name = node->input(2);
         bias = &(map_init_values[bias_name]);
         bias_dims = map_init_dims[bias_name];
-        Tensor *bias_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
+        Tensor *bias_tensor = new Tensor(bias_dims, nullptr, dev);
+        COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, bias_tensor);
         Tensor::copy(bias_tensor, dense->bias);
         delete bias_tensor;
       }
@@ -1583,7 +1594,8 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
           vector<float> *bias = &(map_init_values[bias_name]);
           vector<int> bias_shape;
           bias_shape.push_back(bias->size());
-          Tensor *bias_tensor = new Tensor(bias_shape, NEW_FROM_VECTOR_PTR(bias), dev);
+          Tensor *bias_tensor = new Tensor(bias_shape, nullptr, dev);
+          COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, bias_tensor);
           if (!cd->use_bias)
           {
             cd->use_bias = true; // We need to enable the bias
@@ -1609,7 +1621,8 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
           {
             log_string("Setting the bias values of the parent Dense to the Add parameters.", log_level, LOG_LEVEL::DEBUG);
             dense->use_bias = true;
-            dense->bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
+            dense->bias = new Tensor(bias_dims, nullptr, dev);
+            COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, dense->bias);
             dense->params.push_back(dense->bias);
             dense->gbias = new Tensor(bias_dims, dev);
             dense->gradients.push_back(dense->gbias);
@@ -1617,7 +1630,8 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
           else
           { // If dense already has a bias, we sum it in top of the bias
             log_string("The parent Dense already has a bias. Adding the parameters of the Add operator to the parent bias.", log_level, LOG_LEVEL::DEBUG);
-            Tensor *add_to_bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
+            Tensor *add_to_bias = new Tensor(bias_dims, nullptr, dev);
+            COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, add_to_bias);
             Tensor::add(add_to_bias, dense->bias, dense->bias);
             delete add_to_bias;
           }
@@ -1995,7 +2009,8 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
         Layer *parent = parents[1 - index_parameter];
         bool use_bias = false;
         LDense *dense = new LDense(parent, neuronas, use_bias, name, dev, mem);
-        Tensor *weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
+        Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
+        COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
         Tensor::copy(weights_tensor, dense->W);
         delete weights_tensor;
         actual_layer = dense;
@@ -2235,49 +2250,57 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
       /*
        * The Weights are permuted before copying them to the LSTM layer (mismatch between ONNX standad and EDDL implementation)
        */
-      Tensor *weights_input_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_input_g), dev);
+      Tensor *weights_input_tensor = new Tensor(dims_input_lstm, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_input_g, weights_input_tensor);
       weights_input_tensor->permute_({1, 0});
       Tensor::copy(weights_input_tensor, lstm->Wix);
       delete weights_input_tensor;
       delete weights_input_g;
 
-      Tensor *weights_output_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_output_g), dev);
+      Tensor *weights_output_tensor = new Tensor(dims_input_lstm, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_output_g, weights_output_tensor);
       weights_output_tensor->permute_({1, 0});
       Tensor::copy(weights_output_tensor, lstm->Wox);
       delete weights_output_tensor;
       delete weights_output_g;
 
-      Tensor *weights_forget_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_forget_g), dev);
+      Tensor *weights_forget_tensor = new Tensor(dims_input_lstm, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_forget_g, weights_forget_tensor);
       weights_forget_tensor->permute_({1, 0});
       Tensor::copy(weights_forget_tensor, lstm->Wfx);
       delete weights_forget_tensor;
       delete weights_forget_g;
 
-      Tensor *weights_cell_tensor = new Tensor(dims_input_lstm, NEW_FROM_VECTOR_PTR(weights_cell_g), dev);
+      Tensor *weights_cell_tensor = new Tensor(dims_input_lstm, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_cell_g, weights_cell_tensor);
       weights_cell_tensor->permute_({1, 0});
       Tensor::copy(weights_cell_tensor, lstm->Wcx);
       delete weights_cell_tensor;
       delete weights_cell_g;
 
-      Tensor *recurrence_weights_input_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_input_g), dev);
+      Tensor *recurrence_weights_input_tensor = new Tensor(dims_recurrent_lstm, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_input_g, recurrence_weights_input_tensor);
       recurrence_weights_input_tensor->permute_({1, 0});
       Tensor::copy(recurrence_weights_input_tensor, lstm->Wih);
       delete recurrence_weights_input_tensor;
       delete recurrence_weights_input_g;
 
-      Tensor *recurrence_weights_output_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_output_g), dev);
+      Tensor *recurrence_weights_output_tensor = new Tensor(dims_recurrent_lstm, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_output_g, recurrence_weights_output_tensor);
       recurrence_weights_output_tensor->permute_({1, 0});
       Tensor::copy(recurrence_weights_output_tensor, lstm->Woh);
       delete recurrence_weights_output_tensor;
       delete recurrence_weights_output_g;
 
-      Tensor *recurrence_weights_forget_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_forget_g), dev);
+      Tensor *recurrence_weights_forget_tensor = new Tensor(dims_recurrent_lstm, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_forget_g, recurrence_weights_forget_tensor);
       recurrence_weights_forget_tensor->permute_({1, 0});
       Tensor::copy(recurrence_weights_forget_tensor, lstm->Wfh);
       delete recurrence_weights_forget_tensor;
       delete recurrence_weights_forget_g;
 
-      Tensor *recurrence_weights_cell_tensor = new Tensor(dims_recurrent_lstm, NEW_FROM_VECTOR_PTR(recurrence_weights_cell_g), dev);
+      Tensor *recurrence_weights_cell_tensor = new Tensor(dims_recurrent_lstm, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_cell_g, recurrence_weights_cell_tensor);
       recurrence_weights_cell_tensor->permute_({1, 0});
       Tensor::copy(recurrence_weights_cell_tensor, lstm->Wch);
       delete recurrence_weights_cell_tensor;
@@ -2325,43 +2348,51 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
       }
       
 
-      Tensor *bias_input_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_input), dev);
+      Tensor *bias_input_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_input, bias_input_tensor);
       Tensor::copy(bias_input_tensor, lstm->inbias);
       delete bias_input_tensor;
       delete bias_input;
 
-      Tensor *bias_output_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_output), dev);
+      Tensor *bias_output_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_output, bias_output_tensor);
       Tensor::copy(bias_output_tensor, lstm->onbias);
       delete bias_output_tensor;
       delete bias_output;
 
-      Tensor *bias_forget_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_forget), dev);
+      Tensor *bias_forget_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_forget, bias_forget_tensor);
       Tensor::copy(bias_forget_tensor, lstm->fnbias);
       delete bias_forget_tensor;
       delete bias_forget;
 
-      Tensor *bias_cell_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_cell), dev);
+      Tensor *bias_cell_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_cell, bias_cell_tensor);
       Tensor::copy(bias_cell_tensor, lstm->cnbias);
       delete bias_cell_tensor;
       delete bias_cell;
 
       // Add the recurrent bias values
-      Tensor *bias_recurrence_input_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_input), dev);
+      Tensor *bias_recurrence_input_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_input, bias_recurrence_input_tensor);
       Tensor::add(bias_recurrence_input_tensor, lstm->inbias, lstm->inbias);
       delete bias_recurrence_input_tensor;
       delete bias_recurrence_input;
 
-      Tensor *bias_recurrence_output_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_output), dev);
+      Tensor *bias_recurrence_output_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_output, bias_recurrence_output_tensor);
       Tensor::add(bias_recurrence_output_tensor, lstm->onbias, lstm->onbias);
       delete bias_recurrence_output_tensor;
       delete bias_recurrence_output;
 
-      Tensor *bias_recurrence_forget_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_forget), dev);
+      Tensor *bias_recurrence_forget_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_forget, bias_recurrence_forget_tensor);
       Tensor::add(bias_recurrence_forget_tensor, lstm->fnbias, lstm->fnbias);
       delete bias_recurrence_forget_tensor;
       delete bias_recurrence_forget;
 
-      Tensor *bias_recurrence_cell_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_cell), dev);
+      Tensor *bias_recurrence_cell_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_cell, bias_recurrence_cell_tensor);
       Tensor::add(bias_recurrence_cell_tensor, lstm->cnbias, lstm->cnbias);
       delete bias_recurrence_cell_tensor;
       delete bias_recurrence_cell;
@@ -2498,37 +2529,43 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
       /*
        * The Weights are permuted before copying them to the GRU layer (mismatch between ONNX standad and EDDL implementation)
        */
-      Tensor *weights_z_tensor = new Tensor(dims_input_gru, NEW_FROM_VECTOR_PTR(weights_z_g), dev);
+      Tensor *weights_z_tensor = new Tensor(dims_input_gru, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_z_g, weights_z_tensor);
       weights_z_tensor->permute_({1, 0});
       Tensor::copy(weights_z_tensor, gru->Wz_x);
       delete weights_z_tensor;
       delete weights_z_g;
 
-      Tensor *weights_r_tensor = new Tensor(dims_input_gru, NEW_FROM_VECTOR_PTR(weights_r_g), dev);
+      Tensor *weights_r_tensor = new Tensor(dims_input_gru, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_r_g, weights_r_tensor);
       weights_r_tensor->permute_({1, 0});
       Tensor::copy(weights_r_tensor, gru->Wr_x);
       delete weights_r_tensor;
       delete weights_r_g;
 
-      Tensor *weights_n_tensor = new Tensor(dims_input_gru, NEW_FROM_VECTOR_PTR(weights_n_g), dev);
+      Tensor *weights_n_tensor = new Tensor(dims_input_gru, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_n_g, weights_n_tensor);
       weights_n_tensor->permute_({1, 0});
       Tensor::copy(weights_n_tensor, gru->Wn_x);
       delete weights_n_tensor;
       delete weights_n_g;
 
-      Tensor *recurrence_weights_z_tensor = new Tensor(dims_recurrent_gru, NEW_FROM_VECTOR_PTR(recurrence_weights_z_g), dev);
+      Tensor *recurrence_weights_z_tensor = new Tensor(dims_recurrent_gru, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_z_g, recurrence_weights_z_tensor);
       recurrence_weights_z_tensor->permute_({1, 0});
       Tensor::copy(recurrence_weights_z_tensor, gru->Uz_h);
       delete recurrence_weights_z_tensor;
       delete recurrence_weights_z_g;
 
-      Tensor *recurrence_weights_r_tensor = new Tensor(dims_recurrent_gru, NEW_FROM_VECTOR_PTR(recurrence_weights_r_g), dev);
+      Tensor *recurrence_weights_r_tensor = new Tensor(dims_recurrent_gru, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_r_g, recurrence_weights_r_tensor);
       recurrence_weights_r_tensor->permute_({1, 0});
       Tensor::copy(recurrence_weights_r_tensor, gru->Ur_h);
       delete recurrence_weights_r_tensor;
       delete recurrence_weights_r_g;
 
-      Tensor *recurrence_weights_n_tensor = new Tensor(dims_recurrent_gru, NEW_FROM_VECTOR_PTR(recurrence_weights_n_g), dev);
+      Tensor *recurrence_weights_n_tensor = new Tensor(dims_recurrent_gru, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_n_g, recurrence_weights_n_tensor);
       recurrence_weights_n_tensor->permute_({1, 0});
       Tensor::copy(recurrence_weights_n_tensor, gru->Un_h);
       delete recurrence_weights_n_tensor;
@@ -2570,35 +2607,41 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
         bias_recurrence_n->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
       }
 
-      Tensor *bias_z_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_z), dev);
+      Tensor *bias_z_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_z, bias_z_tensor);
       Tensor::copy(bias_z_tensor, gru->bias_z_t);
       delete bias_z_tensor;
       delete bias_z;
 
-      Tensor *bias_r_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_r), dev);
+      Tensor *bias_r_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_r, bias_r_tensor);
       Tensor::copy(bias_r_tensor, gru->bias_r_t);
       delete bias_r_tensor;
       delete bias_r;
 
-      Tensor *bias_n_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_n), dev);
+      Tensor *bias_n_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_n, bias_n_tensor);
       Tensor::copy(bias_n_tensor, gru->bias_n_t);
       delete bias_n_tensor;
       delete bias_n;
 
       // Add the recurrent bias values for gates z and r
-      Tensor *bias_recurrence_z_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_z), dev);
+      Tensor *bias_recurrence_z_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_z, bias_recurrence_z_tensor);
       Tensor::add(bias_recurrence_z_tensor, gru->bias_z_t, gru->bias_z_t);
       delete bias_recurrence_z_tensor;
       delete bias_recurrence_z;
 
-      Tensor *bias_recurrence_r_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_r), dev);
+      Tensor *bias_recurrence_r_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_r, bias_recurrence_r_tensor);
       Tensor::add(bias_recurrence_r_tensor, gru->bias_r_t, gru->bias_r_t);
       delete bias_recurrence_r_tensor;
       delete bias_recurrence_r;
 
       // The recurrent bias for h goes to its own tensor beacuse we need it for applying the linear transformation
       // before the r gate. See "linear_before_reset" attribute in  https://github.com/onnx/onnx/blob/master/docs/Operators.md#GRU
-      Tensor *bias_recurrence_n_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_recurrence_n), dev);
+      Tensor *bias_recurrence_n_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_n, bias_recurrence_n_tensor);
       Tensor::copy(bias_recurrence_n_tensor, gru->bias_n_t_hidden);
       delete bias_recurrence_n_tensor;
       delete bias_recurrence_n;
@@ -2773,13 +2816,15 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
       /*
        * The Weights are permuted before copying them to the RNN layer (mismatch between ONNX standad and EDDL implementation)
        */
-      Tensor *weights_x_tensor = new Tensor(dims_input_gru, NEW_FROM_VECTOR_PTR(weights_x), dev);
+      Tensor *weights_x_tensor = new Tensor(dims_input_gru, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_x, weights_x_tensor);
       weights_x_tensor->permute_({1, 0});
       Tensor::copy(weights_x_tensor, rnn->Wx);
       delete weights_x_tensor;
       delete weights_x;
 
-      Tensor *weights_h_tensor = new Tensor(dims_recurrent_gru, NEW_FROM_VECTOR_PTR(weights_h), dev);
+      Tensor *weights_h_tensor = new Tensor(dims_recurrent_gru, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_h, weights_h_tensor);
       weights_h_tensor->permute_({1, 0});
       Tensor::copy(weights_h_tensor, rnn->Wy);
       delete weights_h_tensor;
@@ -2796,13 +2841,15 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
         bias_x->assign(biases->begin() + hidden_size * 0, biases->begin() + hidden_size * 1);
         bias_h->assign(biases->begin() + hidden_size * 1, biases->begin() + hidden_size * 2);
 
-        Tensor *bias_x_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_x), dev);
+        Tensor *bias_x_tensor = new Tensor(bias_dims, nullptr, dev);
+        COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_x, bias_x_tensor);
         Tensor::copy(bias_x_tensor, rnn->bias);
         delete bias_x_tensor;
         delete bias_x;
 
         // Add the recurrent bias values for gates z and r
-        Tensor *bias_h_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_h), dev);
+        Tensor *bias_h_tensor = new Tensor(bias_dims, nullptr, dev);
+        COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_h, bias_h_tensor);
         Tensor::add(bias_h_tensor, rnn->bias, rnn->bias);
         delete bias_h_tensor;
         delete bias_h;
@@ -2855,7 +2902,8 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
       vector<int> parent_shape = parent->output->shape;
 
       LEmbedding *embedding = new LEmbedding(parent, dims[0], 1 /*parent_shape[1]*/, dims[1], 0, name, dev, mem);
-      Tensor *weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
+      Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
       Tensor::copy(weights_tensor, embedding->E);
 
       delete weights_tensor;
@@ -3134,13 +3182,16 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, in
       vector<int> new_shape = parent->getShape();
 
       string weights_name = node->input(2);
-      float *dim_scales = NEW_FROM_VECTOR_PTR(&(map_init_values[weights_name]));
+      float *dim_scales = new float [(&(map_init_values[weights_name]))->size()];
+      COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[weights_name]), dim_scales);
 
       // Compute new shape by scaling the parent output shape
       for (int i = 0; i < new_shape.size(); ++i)
       {
         new_shape[i] = new_shape[i] * dim_scales[i];
       }
+
+      delete [] dim_scales;
 
       actual_layer = new LScale(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
     }
@@ -3488,7 +3539,9 @@ map<string, vector<Tensor *>> get_tensors_from_onnx(onnx::ModelProto model)
       vector<float> *weights = &(map_init_values[weights_name]);
       vector<int> dims = map_init_dims[weights_name];
 
-      conv_tensors.push_back(new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev));
+      Tensor * temp = new Tensor(dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, temp);
+      conv_tensors.push_back(temp);
 
       if (node.input_size() > 2)
       { // This means we also have a bias
@@ -3496,7 +3549,9 @@ map<string, vector<Tensor *>> get_tensors_from_onnx(onnx::ModelProto model)
         vector<float> *bias = &(map_init_values[bias_name]);
         vector<int> bias_shape;
         bias_shape.push_back(bias->size());
-        conv_tensors.push_back(new Tensor(bias_shape, NEW_FROM_VECTOR_PTR(bias), dev));
+        temp = new Tensor(bias_shape, nullptr, dev);
+        COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, temp);
+        conv_tensors.push_back(temp);
       }
 
       tensors[name] = conv_tensors;
@@ -3511,14 +3566,18 @@ map<string, vector<Tensor *>> get_tensors_from_onnx(onnx::ModelProto model)
       vector<float> *weights = &(map_init_values[weights_name]);
       vector<int> dims = map_init_dims[weights_name];
 
-      dense_tensors.push_back(new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev));
+      Tensor * temp = new Tensor(dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, temp);
+      dense_tensors.push_back(temp);
 
       if (node.input_size() > 2)
       {
         string bias_name = node.input(2);
         vector<float> *bias = &(map_init_values[bias_name]);
         vector<int> bias_dims = map_init_dims[bias_name];
-        dense_tensors.push_back(new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev));
+        temp = new Tensor(bias_dims, nullptr, dev);
+        COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, temp);
+        dense_tensors.push_back(temp);
       }
 
       tensors[name] = dense_tensors;

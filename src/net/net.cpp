@@ -76,14 +76,8 @@ Net::Net(vlayer in, vlayer out):Net() {
     // Set input/outlayer
     //lin = in;
     //lout = out;
-    for (auto l : in) {
-        lin.push_back(l);
-        l->set_my_owner(this);
-    }
-    for (auto l : out) {
-        lout.push_back(l);
-        l->set_my_owner(this);
-    }
+    for (auto l : in) lin.push_back(l);
+    for (auto l : out) lout.push_back(l);
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -111,9 +105,11 @@ Net::Net(vlayer in, vlayer out):Net() {
     // It is important that layers vector keep the forward sort
     fts();
     while (layers.size()) layers.pop_back();
-    for(auto l: vfts ) layers.push_back(l);
+    for(auto l: vfts ) {
+        l->increase_reference_counter();
+        layers.push_back(l);
+    }
     while (vfts.size()) vfts.pop_back();
-    
 }
 
 
@@ -160,7 +156,7 @@ Net::~Net(){
         }
     }
 
-    if (snets[0] != this){
+    if (snets.size() == 0 || snets[0] != this){
         if (this->optimizer != nullptr && this->do_optimizer_delete){
             delete this->optimizer;
         }
@@ -176,24 +172,22 @@ Net::~Net(){
     for(int i=0;i<snets.size();i++){
         for(int j=0;j<snets[i]->layers.size();j++) {
             if (snets[i]->layers[j]!=nullptr) {
-                //fprintf(stderr, "%s(%d) %d %d : %p %p %p %p\n", __FILE__, __LINE__, i, j, snets[i]->layers[j]->get_my_owner(), this, snets[i], rnet);
-                if (snets[i]->layers[j]->is_my_owner(this)  ||  snets[i]->layers[j]->is_my_owner(snets[i])) {
+                if (snets[i]->layers[j]->decrease_and_get_reference_counter() == 0) {
                     delete snets[i]->layers[j];
-                    snets[i]->layers[j] = nullptr;
                 }
+                snets[i]->layers[j] = nullptr;
             }
         }
     }
 
     // net running on device != CPU
     // clean also CPU mem
-    if (snets[0]!=this){
+    if (snets.size() == 0 || snets[0]!=this){
         for(int j=0;j<layers.size();j++) {
-            //fprintf(stderr, "%s(%d) %d : %p %p\n", __FILE__, __LINE__, j, layers[j]->get_my_owner(), this);
-            if (layers[j]->is_my_owner(this)) {
+            if (layers[j]->decrease_and_get_reference_counter() == 0) {
                 delete layers[j];
-                layers[j] = nullptr;
             }
+            layers[j] = nullptr;
         }
     }
 
@@ -237,7 +231,6 @@ void Net::walk(Layer *l,vlayer lout) {
     if (!inNetF(l)) {
         l->net=this;
         layersf.push_back(l);
-        l->set_my_owner(this);
     }
     else return;
 
@@ -253,7 +246,6 @@ void Net::walk_back(Layer *l) {
     
     if (!inNetB(l)) {
         layersb.push_back(l);
-        l->set_my_owner(this);
         l->net=this;
     }
     else return;

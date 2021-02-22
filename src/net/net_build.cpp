@@ -479,6 +479,8 @@ void Net::removeLayer(string lname)
         for(int k=0;k<p->child.size();k++) {
           if (p->child[k]==l) {
             p->child.erase(p->child.begin() + k);
+            p->lout--;
+            break;
           }
         }//child
         // create new outputs from parents
@@ -489,7 +491,10 @@ void Net::removeLayer(string lname)
       //layers.erase(layers.begin() + i);
       for(int j=0;j<lout.size();j++) {
         cout<<lout[j]->name<<endl;
-        if (lout[j]->name==lname) lout.erase(lout.begin()+j);
+        if (lout[j]->name==lname) {
+            lout.erase(lout.begin()+j);
+            break;
+        }
       }
       // remove lname from list of layers
       layers.erase(layers.begin() + i);
