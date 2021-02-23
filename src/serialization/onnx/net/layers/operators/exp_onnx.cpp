@@ -1,6 +1,19 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/operators/exp_onnx.h"
 
+// ONNX import
+Layer* build_exp_layer(onnx::NodeProto *node,
+                       map<string, Layer *> &output_node_map,
+                       int dev,
+                       int mem)
+{
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LExp(parent, node->name(), dev, mem);
+}
+
+// ONNX export
 void build_exp_node(LExp *layer, onnx::GraphProto *graph)
 {
   // Add an empty node to the graph

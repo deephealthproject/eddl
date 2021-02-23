@@ -38,7 +38,7 @@ enum ONNX_LAYERS {
   SOFTSIGN,         // OPSET: 1
   CONCAT,           // OPSET: 13, 11, 4, 1
   ADD,              // OPSET: 13, 7
-  MAT_MUL,          // OPSET: 13, 9, 1 (Only for MatMul+Add Dense layer)
+  MAT_MUL,          // OPSET: 13, 9, 1
   LSTM,             // OPSET: 7, 1
   GRU,              // OPSET: 7, 3, 1
   RNN,              // OPSET: 7, 1

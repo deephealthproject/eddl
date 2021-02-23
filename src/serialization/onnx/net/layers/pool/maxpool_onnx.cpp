@@ -1,6 +1,102 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/pool/maxpool_onnx.h"
 
+// ONNX import
+Layer* build_maxpool_layer(onnx::NodeProto *node,
+                           map<string, Layer *> &output_node_map,
+                           int dev,
+                           int mem)
+{
+  int filters;
+  vector<int> kernel_shape;
+  vector<int> strides;
+  vector<int> pads(4, 0); // Default value. 4 zeros
+  bool explicit_padding = false;
+  int ceil_mode = 0;
+  vector<int> dilations;
+  int storage_order = 0;
+  bool pool1d = false;
+
+  for (int j = 0; j < node->attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("auto_pad"))
+    { // We dont know if it is implemented
+      if (!attribute.s().compare("NOTSET"))
+        continue;
+      // if(!attribute.s().compare("VALID")) explicit_padding=false;
+    }
+    //else if (!attr_name.compare("ceil_mode")) {
+    //}
+    //else if (!attr_name.compare("dilations")) {
+    //}
+    else if (!attr_name.compare("kernel_shape"))
+    {
+      for (int h = 0; h < attribute.ints_size(); h++)
+      {
+        kernel_shape.push_back(attribute.ints(h));
+      }
+      if (attribute.ints_size() == 1)
+        pool1d = true;
+    }
+    else if (!attr_name.compare("pads"))
+    {
+      explicit_padding = true;
+      for (int h = 0; h < attribute.ints_size(); h++)
+      {
+        pads[h] = attribute.ints(h);
+      }
+    }
+    //else if (!attr_name.compare("storage_order")) {
+    //}
+    else if (!attr_name.compare("strides"))
+    {
+      for (int h = 0; h < attribute.ints_size(); h++)
+      {
+        strides.push_back(attribute.ints(h));
+      }
+      if (attribute.ints_size() == 1)
+        pool1d = true;
+    }
+  }
+
+  string parent_name = node->input(0); // Get parent
+  Layer *parent = output_node_map[parent_name];
+  vector<int> parent_shape = parent->output->shape;
+
+  string name = node->name();
+
+  if (parent_shape.size() == 3)
+    pool1d = true;
+
+  if (pool1d)
+  {
+    strides.push_back(1);
+    kernel_shape.push_back(1);
+    return new LMaxPool1D(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+  }
+  else
+    return new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+}
+
+// ONNX import
+Layer* build_globalmaxpool_layer(onnx::NodeProto *node,
+                                 map<string, Layer *> &output_node_map,
+                                 int dev,
+                                 int mem)
+{
+  string parent_name = node->input(0); // Get parent
+  Layer *parent = output_node_map[parent_name];
+  vector<int> parent_shape = parent->output->shape;
+
+  int h = parent_shape[2];
+  int w = parent_shape[3];
+
+  return new LMaxPool(parent, {h, w}, {1, 1}, "none", "gpool", dev, mem);
+}
+
+// ONNX export
 void build_maxpool_node(LMaxPool *layer, onnx::GraphProto *graph)
 {
   // Add an empty node to the graph

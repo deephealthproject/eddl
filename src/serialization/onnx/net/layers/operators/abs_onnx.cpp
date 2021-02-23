@@ -1,6 +1,19 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/operators/abs_onnx.h"
 
+// ONNX import
+Layer* build_abs_layer(onnx::NodeProto *node,
+                       map<string, Layer *> &output_node_map,
+                       int dev,
+                       int mem)
+{
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LAbs(parent, node->name(), dev, mem);
+}
+
+// ONNX export
 void build_abs_node(LAbs *layer, onnx::GraphProto *graph)
 {
   // Add an empty node to the graph

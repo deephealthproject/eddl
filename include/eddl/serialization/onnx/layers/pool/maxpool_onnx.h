@@ -5,6 +5,22 @@
 #include "eddl/layers/pool/layer_pool.h"
 
 /*
+ * ONNX IMPORT
+ */
+
+// OPSET: 12, 11, 10, 8, 1
+Layer* build_maxpool_layer(onnx::NodeProto *node,
+                           map<string, Layer *> &output_node_map,
+                           int dev,
+                           int mem);
+
+// OPSET: 1
+Layer* build_globalmaxpool_layer(onnx::NodeProto *node,
+                                 map<string, Layer *> &output_node_map,
+                                 int dev,
+                                 int mem);
+
+/*
  * ONNX EXPORT
  */
 

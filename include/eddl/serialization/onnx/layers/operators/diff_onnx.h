@@ -5,6 +5,16 @@
 #include "eddl/layers/operators/layer_operators.h"
 
 /*
+ * ONNX IMPORT
+ */
+
+// OPSET: 13, 7
+Layer* build_diff_layer(onnx::NodeProto *node,
+                        map<string, Layer *> &output_node_map,
+                        int dev,
+                        int mem);
+
+/*
  * ONNX EXPORT
  */
 

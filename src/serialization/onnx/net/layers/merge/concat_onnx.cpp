@@ -1,6 +1,36 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/merge/concat_onnx.h"
 
+// ONNX import
+Layer* build_concat_layer(onnx::NodeProto *node,
+                          map<string, Layer *> &output_node_map,
+                          int dev,
+                          int mem)
+{
+  int axis = 1;
+  for (int j = 0; j < node->attribute_size(); j++)
+  {
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("axis"))
+    {
+      axis = attribute.i();
+    }
+    else
+      printf("Error with concat attributes. Attribute name is: %s\n", attr_name.c_str());
+  }
+  vector<Layer *> parents;
+  string parent_name;
+  for (int j = 0; j < node->input_size(); j++)
+  {
+    parent_name = node->input(j);
+    parents.push_back(output_node_map[parent_name]);
+  }
+
+  return new LConcat(parents, axis, node->name(), dev, mem);
+}
+
+// ONNX export
 void build_concat_node(LConcat *layer, onnx::GraphProto *graph)
 {
   // Add an empty node to the graph

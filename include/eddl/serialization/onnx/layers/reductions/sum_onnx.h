@@ -5,6 +5,16 @@
 #include "eddl/layers/reductions/layer_reductions.h"
 
 /*
+ * ONNX IMPORT
+ */
+
+// OPSET: 11, 1
+Layer* build_rsum_layer(onnx::NodeProto *node,
+                        map<string, Layer *> &output_node_map,
+                        int dev,
+                        int mem);
+
+/*
  * ONNX EXPORT
  */
 

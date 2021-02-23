@@ -5,6 +5,16 @@
 #include "eddl/layers/reductions/layer_reductions.h"
 
 /*
+ * ONNX IMPORT
+ */
+
+// OPSET: 13, 12, 11, 1
+Layer* build_rmax_layer(onnx::NodeProto *node,
+                        map<string, Layer *> &output_node_map,
+                        int dev,
+                        int mem);
+
+/*
  * ONNX EXPORT
  */
 
