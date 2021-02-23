@@ -31,7 +31,7 @@ class Net;
 
 class Layer {
 private:
-    void * my_owner;
+    int    reference_counter;
 
 public:
     string name;
@@ -132,9 +132,8 @@ public:
 
 	virtual void enable_distributed() {}
 
-    bool set_my_owner(void * net);
-    bool is_my_owner(void * net);
-    void * get_my_owner();
+    int decrease_and_get_reference_counter();
+    void increase_reference_counter(); 
 };
 
 
