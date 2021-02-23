@@ -34,9 +34,9 @@ You can use one of the following lines according to your needs:
 
         .. note::
 
-            - Platforms supported: Linux x86/x64 and MacOS
+            - Platforms supported: Linux and MacOS
 
-    .. tab:: GPU
+    .. tab:: GPU (CUDA)
 
         .. code:: bash
 
@@ -44,7 +44,17 @@ You can use one of the following lines according to your needs:
 
         .. note::
 
-            - Platforms supported: Linux x86/x64
+            - Platforms supported: Linux
+
+    .. tab:: GPU (cuDNN)
+
+        .. code:: bash
+
+            conda install -c deephealth eddl-cudnn
+
+        .. note::
+
+            - Platforms supported: Linux
 
 
 .. image:: ../_static/images/logos/homebrew.svg
