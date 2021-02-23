@@ -5,6 +5,18 @@
 #include "eddl/layers/normalization/layer_normalization.h"
 
 /*
+ * ONNX IMPORT
+ */
+
+// OPSET: 9
+Layer* build_batchnorm_layer(onnx::NodeProto *node,
+                             map<string, vector<float>> &map_init_values,
+                             map<string, vector<int>> &map_init_dims,
+                             map<string, Layer *> &output_node_map,
+                             int dev,
+                             int mem);
+
+/*
  * ONNX EXPORT
  */
 

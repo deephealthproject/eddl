@@ -13,6 +13,15 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/utils.h"
 
+#include "eddl/serialization/onnx/layers/core/dense_onnx.h"
+#include "eddl/serialization/onnx/layers/core/drop_onnx.h"
+#include "eddl/serialization/onnx/layers/core/reshape_onnx.h"
+#include "eddl/serialization/onnx/layers/core/activation_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/upsampling_onnx.h"
+#include "eddl/serialization/onnx/layers/pool/avgpool_onnx.h"
+#include "eddl/serialization/onnx/layers/normalization/batchnorm_onnx.h"
+
 // Gets the initializers from the onnx layer graph
 vector<onnx::TensorProto> get_initializers(onnx::GraphProto graph)
 {
@@ -142,116 +151,6 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["Resize"] = ONNX_LAYERS::RESIZE;
 
   return map_layers;
-}
-
-// Parses the values of the onnx tensor to a c++ vector of that type
-vector<float> parseTensorValues(onnx::TensorProto t)
-{
-  int data_type = t.data_type(); // Only works for non raw data for now
-  vector<float> values;
-  switch (data_type)
-  {
-  case onnx::TensorProto::FLOAT:
-    if (t.has_raw_data())
-    {
-      TryConvertingTensorRawValues(t, values);
-    }
-    else
-    {
-      for (int i = 0; i < t.float_data_size(); i++)
-      {
-        values.push_back(t.float_data(i));
-      }
-    }
-    break;
-  case onnx::TensorProto::UINT8:
-    for (int i = 0; i < t.int32_data_size(); i++)
-    {
-      values.push_back(t.int32_data(i));
-    }
-    break;
-  case onnx::TensorProto::INT8:
-    for (int i = 0; i < t.int32_data_size(); i++)
-    {
-      values.push_back(t.int32_data(i));
-    }
-    break;
-  case onnx::TensorProto::UINT16:
-    for (int i = 0; i < t.int32_data_size(); i++)
-    {
-      values.push_back(t.int32_data(i));
-    }
-    break;
-  case onnx::TensorProto::INT16:
-    for (int i = 0; i < t.int32_data_size(); i++)
-    {
-      values.push_back(t.int32_data(i));
-    }
-    break;
-  case onnx::TensorProto::INT32:
-    for (int i = 0; i < t.int32_data_size(); i++)
-    {
-      values.push_back(t.int32_data(i));
-    }
-    break;
-  case onnx::TensorProto::INT64:
-    if (t.has_raw_data())
-    {
-      vector<int64_t> aux_values; // Vector to read the int64 values
-      TryConvertingTensorRawValues(t, aux_values);
-      for (float i : aux_values) // Cast to float
-        values.push_back(i);
-    }
-    else
-    {
-      for (int i = 0; i < t.int64_data_size(); i++)
-      {
-        values.push_back(t.int64_data(i));
-      }
-    }
-    break;
-  case onnx::TensorProto::BOOL:
-    for (int i = 0; i < t.int32_data_size(); i++)
-    {
-      values.push_back(t.int32_data(i));
-    }
-    break;
-  case onnx::TensorProto::FLOAT16:
-    break;
-  case onnx::TensorProto::DOUBLE:
-    for (int i = 0; i < t.double_data_size(); i++)
-    {
-      values.push_back(t.double_data(i));
-    }
-    break;
-  case onnx::TensorProto::UINT32:
-    for (int i = 0; i < t.uint64_data_size(); i++)
-    {
-      values.push_back(t.uint64_data(i));
-    }
-    break;
-  case onnx::TensorProto::UINT64:
-    for (int i = 0; i < t.uint64_data_size(); i++)
-    {
-      values.push_back(t.uint64_data(i));
-    }
-    break;
-  // TODO
-  //case onnx::TensorProto::STRING:
-  //  break;
-  //case onnx::TensorProto::UNDEFINED:
-  //  break;
-  //case onnx::TensorProto::COMPLEX64:
-  //  break;
-  //case onnx::TensorProto::COMPLEX128:
-  //  break;
-  //case onnx::TensorProto::BFLOAT16:
-  //  break;
-  default:
-    cerr << "Vector type not recognized" << endl;
-    break;
-  }
-  return values;
 }
 
 // Creates two maps. Both have the name of the initializer node as key. 
@@ -710,675 +609,71 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
     switch (layer_type)
     {
     case ONNX_LAYERS::BATCHNORM:
-    {
-      double epsilon = 1e-05; // Default value
-      double momentum = 0.9;  // Default value
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("epsilon"))
-          epsilon = attribute.f();
-        if (!attr_name.compare("momentum"))
-          momentum = attribute.f();
-      }
-
-      string parent_name = node->input(0); // Get parent
-      Layer *parent = output_node_map[parent_name];
-      vector<int> parent_shape = parent->output->shape;
-
-      string scale_name = node->input(1); // Scale parameter
-      vector<float> *scale_weights = &(map_init_values[scale_name]);
-      vector<int> scale_dims = map_init_dims[scale_name];
-
-      string bias_name = node->input(2); // Bias parameter
-      vector<float> *bias_weights = &(map_init_values[bias_name]);
-      vector<int> bias_dims = map_init_dims[bias_name];
-
-      string mean_name = node->input(3); // Get weights and dims
-      vector<float> *mean_weights = &(map_init_values[mean_name]);
-      vector<int> mean_dims = map_init_dims[mean_name];
-
-      string variance_name = node->input(4); // Get weights and dims
-      vector<float> *variance_weights = &(map_init_values[variance_name]);
-      vector<int> variance_dims = map_init_dims[variance_name];
-
-      string name = node->name();
-
-      bool affine = true; // The ONNX operator description does not have an "affine" attribute. We have to assume that this will be allways true.
-
-      actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
-
-      Tensor *scale_tensor = new Tensor(scale_dims, nullptr, dev);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(scale_weights, scale_tensor);
-      Tensor::copy(scale_tensor, ((LBatchNorm *)(actual_layer))->bn_g);
-      delete scale_tensor;
-
-      Tensor *bias_tensor = new Tensor(bias_dims, nullptr, dev);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_weights, bias_tensor);
-      Tensor::copy(bias_tensor, ((LBatchNorm *)(actual_layer))->bn_b);
-      delete bias_tensor;
-
-      Tensor *mean_tensor = new Tensor(mean_dims, nullptr, dev);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(mean_weights, mean_tensor);
-      Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->mean);
-      delete mean_tensor;
-
-      Tensor *variance_tensor = new Tensor(variance_dims, nullptr, dev);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(variance_weights, variance_tensor);
-      Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->variance);
-      delete variance_tensor;
-    }
-    break;
-
+      actual_layer = build_batchnorm_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::CONV:
-    {
-      int filters;
-      vector<int> kernel_shape;
-      vector<int> strides;
-      vector<int> pads = {};
-      string auto_pad_option = "custom";
-      vector<float> *bias;
-      bool use_bias = node->input_size() > 2;
-      bool conv1d = false;
-      int groups = 1;
-      vector<int> dilation_rate = {1, 1};
-
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("auto_pad"))
-        {
-          if (!attribute.s().compare("NOTSET"))
-            auto_pad_option = "custom";
-          else if (!attribute.s().compare("VALID"))
-            auto_pad_option = "valid";
-          else if (!attribute.s().compare("SAME_UPPER"))
-            auto_pad_option = "same";
-        }
-        //else if (!attr_name.compare("dilations")) { It isn't implemented in eddl
-        //}
-        //else if (!attr_name.compare("group")) { It isn't implemented in eddl
-        //}
-        else if (!attr_name.compare("kernel_shape"))
-        {
-          for (int h = 0; h < attribute.ints_size(); h++)
-          {
-            kernel_shape.push_back(attribute.ints(h));
-          }
-          if (attribute.ints_size() == 1)
-          { // If is conv1D, we make the equivalent in conv2D
-            conv1d = true;
-          }
-        }
-        else if (!attr_name.compare("pads"))
-        {
-          for (int h = 0; h < attribute.ints_size(); h++)
-          {
-            pads.push_back(attribute.ints(h));
-          }
-          if (attribute.ints_size() == 4)
-            swap(pads[1], pads[2]);
-        }
-        else if (!attr_name.compare("strides"))
-        {
-          for (int h = 0; h < attribute.ints_size(); h++)
-          {
-            strides.push_back(attribute.ints(h));
-          }
-          if (attribute.ints_size() == 1)
-          { // If is conv1D, we make the equivalent in conv2D
-            conv1d = true;
-          }
-        }
-      }
-
-      string parent_name = node->input(0); // Get parent
-      Layer *parent = output_node_map[parent_name];
-      vector<int> parent_shape = parent->output->shape;
-
-      string weights_name = node->input(1); // Get weights and dims
-      vector<float> *weights = &(map_init_values[weights_name]);
-      vector<int> dims = map_init_dims[weights_name];
-
-      if (parent_shape.size() == 3)
-      {
-        conv1d = true;
-      }
-
-      if (conv1d)
-      {
-        strides.push_back(1);
-        kernel_shape.push_back(1);
-        dims.push_back(1);
-        pads.push_back(0);
-        pads.push_back(0);
-      }
-
-      filters = dims[0];
-      string name = node->name();
-      ConvolDescriptor *cd = new ConvolDescriptor(filters, 
-                                                  kernel_shape, 
-                                                  strides, 
-                                                  auto_pad_option,
-                                                  pads, 
-                                                  groups, 
-                                                  dilation_rate, 
-                                                  use_bias, 
-                                                  mem);
-
-      if (conv1d)
-        actual_layer = new LConv1D(parent, cd, name, dev, mem);
-      else
-        actual_layer = new LConv(parent, cd, name, dev, mem);
-
-      if (use_bias)
-      {
-        string bias_name = node->input(2);
-        bias = &(map_init_values[bias_name]);
-        vector<int> bias_shape;
-        bias_shape.push_back(bias->size());
-        Tensor *bias_tensor = new Tensor(bias_shape, nullptr, dev);
-        COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, bias_tensor);
-        Tensor::copy(bias_tensor, cd->bias);
-        delete bias_tensor;
-      }
-      Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
-      Tensor::copy(weights_tensor, cd->K);
-      delete weights_tensor;
-    }
-    break;
-
+      actual_layer = build_conv_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::DENSE:
-    {
-      log_string("Dense detected", log_level, LOG_LEVEL::DEBUG);
-      int ndim;
-      bool use_bias = false;
-      float alpha;
-      float beta;
-      int transA = 0;
-      int transB = 0;
-      vector<int> bias_dims;
-      vector<float> *bias;
-      for (int j = 0; j < node->attribute_size(); j++)
-      {
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("alpha"))
-        {
-          alpha = attribute.f();
-        }
-        else if (!attr_name.compare("beta"))
-        {
-          beta = attribute.f();
-        }
-        else if (!attr_name.compare("transA"))
-        {
-          transA = attribute.i();
-        }
-        else if (!attr_name.compare("transB"))
-        {
-          transB = attribute.i();
-        }
-      }
-
-      string parent_name;
-      Layer *parent;
-      string weights_name;
-      string bias_name;
-      vector<float> *weights;
-      vector<int> dims;
-
-      for (int i = 0; i < 2; i++)
-      {
-        string input = node->input(i);
-        if (!map_init_values.count(input))
-        { // parent
-          parent_name = node->input(0);
-          parent = output_node_map[input];
-        }
-        else
-        { // weights
-          weights_name = node->input(i);
-          weights = &(map_init_values[input]);
-          dims = map_init_dims[input];
-          ndim = dims.size();
-        }
-      }
-      use_bias = node->input_size() > 2;
-      int neuronas = 0;
-      if (transB)
-      {
-        neuronas = dims[0];
-      }
-      else
-        neuronas = dims[1];
-      string name = node->name();
-      Tensor *input_size = parent->output;
-      LDense *dense = new LDense(parent, neuronas, use_bias, name, dev, mem);
-
-      Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
-
-      if (transB)
-        weights_tensor->permute_({1, 0});
-      Tensor::copy(weights_tensor, dense->W);
-      delete weights_tensor;
-      if (use_bias)
-      {
-        bias_name = node->input(2);
-        bias = &(map_init_values[bias_name]);
-        bias_dims = map_init_dims[bias_name];
-        Tensor *bias_tensor = new Tensor(bias_dims, nullptr, dev);
-        COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, bias_tensor);
-        Tensor::copy(bias_tensor, dense->bias);
-        delete bias_tensor;
-      }
-      actual_layer = dense;
-    }
-    break;
-
+      actual_layer = build_dense_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
+      break;
     case ONNX_LAYERS::UPSAMPLING:
-    {
-      string interpolation_mode;
-      float batch_scale;
-      float channel_scale;
-      float height_scale;
-      float width_scale;
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("mode"))
-          interpolation_mode = attribute.s();
-      }
-
-      string parent_name = node->input(0); // Get parent
-      Layer *parent = output_node_map[parent_name];
-      vector<int> parent_shape = parent->output->shape;
-
-      string scales_name = node->input(1); // Get scales and dims
-      vector<float> *scales = &(map_init_values[scales_name]);
-      vector<int> scales_dims = map_init_dims[scales_name];
-
-      if (scales_dims[0] != 4)
-      {
-        cerr << "Dimensions of upsampling layer in onnx are wrong" << endl;
-      }
-      batch_scale = scales->at(0);
-      channel_scale = scales->at(1);
-      height_scale = scales->at(2);
-      width_scale = scales->at(3);
-
-      string name = node->name();
-      vector<int> size_vector;
-      size_vector.push_back((int)height_scale);
-      size_vector.push_back((int)width_scale);
-      actual_layer = new LUpSampling(parent, size_vector, interpolation_mode, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_upsampling_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::DROP:
-    {
-      float ratio = 0.5;
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("ratio"))
-          ratio = attribute.f();
-      }
-
-      string parent_name = node->input(0); // Get parent
-      Layer *parent = output_node_map[parent_name];
-      vector<int> parent_shape = parent->output->shape;
-
-      string name = node->name();
-      actual_layer = new LDropout(parent, ratio, true, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_dropout_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::AVGPOOL:
-    {
-      int filters;
-      vector<int> kernel_shape;
-      vector<int> strides;
-      vector<int> pads(4, 0); // Default value. 4 zeros
-      bool explicit_padding = false;
-      int ceil_mode = 0;
-      int count_include_pad = 0;
-      vector<int> dilations;
-      int storage_order = 0;
-
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("auto_pad"))
-        {
-          if (!attribute.s().compare("NOTSET"))
-            continue;
-          // if(!attribute.s().compare("VALID")) explicit_padding=false;
-        }
-        //else if (!attr_name.compare("ceil_mode")) { Not in EDDL
-        //}
-        //else if (!attr_name.compare("count_include_pad")) { Not in EDDL
-        //}
-        else if (!attr_name.compare("kernel_shape"))
-        {
-          for (int h = 0; h < attribute.ints_size(); h++)
-          {
-            kernel_shape.push_back(attribute.ints(h));
-          }
-        }
-        else if (!attr_name.compare("pads"))
-        {
-          explicit_padding = true;
-          for (int h = 0; h < 4; h++)
-          {
-            pads[h] = attribute.ints(h);
-          }
-        }
-        else if (!attr_name.compare("strides"))
-        {
-          for (int h = 0; h < attribute.ints_size(); h++)
-          {
-            strides.push_back(attribute.ints(h));
-          }
-        }
-      }
-
-      string parent_name = node->input(0); // Get parent
-      Layer *parent = output_node_map[parent_name];
-      vector<int> parent_shape = parent->output->shape;
-
-      string name = node->name();
-      actual_layer = new LAveragePool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_averagepool_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::GLOBAVGPOOL:
-    {
-      string parent_name = node->input(0); // Get parent
-      Layer *parent = output_node_map[parent_name];
-      vector<int> parent_shape = parent->output->shape;
-
-      int h = parent_shape[2];
-      int w = parent_shape[3];
-
-      actual_layer = new LAveragePool(parent, {h, w}, {1, 1}, "none", node->name(), dev, mem);
-    }
-    break;
+      actual_layer = build_globalaveragegpool_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::RESHAPE:
-    {
-      string shape_node_name = node->input(1);
-      vector<int> shape;
-      if (constant_node_map.count(shape_node_name))
-      {
-        onnx::NodeProto *shape_node = constant_node_map[shape_node_name];
-        onnx::AttributeProto shape_attribute = shape_node->attribute(0);
-        if (shape_attribute.name().compare("value"))
-        {
-          // This means an error ocurred, but don't know how to proceed then.
-          printf("An error ocurred when reading the shape of reshape\n");
-        }
-        onnx::TensorProto shape_tensor = shape_attribute.t();
-        shape = vf2vi(parseTensorValues(shape_tensor));
-      }
-      else
-      {
-        shape = vf2vi(map_init_values[shape_node_name]);
-      }
-      string name = node->name();
-      string parent_name = node->input(0);
-      if (output_node_map.count(parent_name))
-      {
-        shape[0] = 1; // Default batch size = 1
-        Layer *parent = output_node_map[parent_name];
-        actual_layer = new LReshape(parent, shape, name, dev, mem);
-      }
-      else if (map_init_values.count(parent_name))
-      { // This means it is a parameter and not a layer
-        for (int i = 0; i < node->output_size(); i++)
-        {
-          map_init_values[node->output(i)] = map_init_values[parent_name];
-          map_init_dims[node->output(i)] = shape;
-          vector<onnx::NodeProto *> child_nodes = input_node_map[node->output(i)];
-          for (onnx::NodeProto *child : child_nodes)
-          {
-            nodeQueue.push(child);
-          }
-        }
-        nodeQueue.pop();
-        continue; // We need to do the update of the queue here because we are not creating a true layer
-      }
-      else
-        cerr << "Uknown parent type for reshape" << endl;
-    }
-    break;
-
+      actual_layer = build_reshape_layer(node, constant_node_map, map_init_values, map_init_dims, input_node_map, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::FLATTEN:
-    {
-      string parent_name = node->input(0); // Get parent
-      Layer *parent = output_node_map[parent_name];
-
-      actual_layer = new LReshape(parent, {1, -1}, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_flatten_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::RELU:
-    {
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      actual_layer = new LActivation(parent, "relu", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_relu_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::SIGMOID:
-    {
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      actual_layer = new LActivation(parent, "sigmoid", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_sigmoid_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::HARD_SIGMOID:
-    {
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      actual_layer = new LActivation(parent, "hard_sigmoid", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_hard_sigmoid_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::TANH:
-    {
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      actual_layer = new LActivation(parent, "tanh", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_tanh_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::EXPONENTIAL:
-    {
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      actual_layer = new LActivation(parent, "exp", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_exponential_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::LINEAR:
-    {
-      float alpha;
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("alpha"))
-          alpha = attribute.f();
-      }
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      param.push_back(alpha);
-      actual_layer = new LActivation(parent, "linear", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_linear_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::LEAKY_RELU:
-    {
-      float alpha;
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("alpha"))
-          alpha = attribute.f();
-      }
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      param.push_back(alpha);
-      actual_layer = new LActivation(parent, "leaky_relu", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_leaky_relu_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::THRESHOLDED_RELU:
-    {
-      float alpha;
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("alpha"))
-          alpha = attribute.f();
-      }
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      param.push_back(alpha);
-      actual_layer = new LActivation(parent, "thresholded_relu", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_thresholded_relu_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::ELU:
-    {
-      float alpha;
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("alpha"))
-          alpha = attribute.f();
-      }
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      param.push_back(alpha);
-      actual_layer = new LActivation(parent, "elu", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_elu_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::SELU:
-    {
-      float alpha = 1.67326;
-      float gamma = 1.0507;
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("alpha"))
-          alpha = attribute.f();
-        if (!attr_name.compare("gamma"))
-          gamma = attribute.f();
-      }
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      param.push_back(alpha);
-      param.push_back(gamma);
-      actual_layer = new LActivation(parent, "selu", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_selu_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::SOFTSIGN:
-    {
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      actual_layer = new LActivation(parent, "softsign", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_softsign_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::SOFTPLUS:
-    {
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      string name = node->name();
-      vector<float> param;
-      actual_layer = new LActivation(parent, "softplus", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_softplus_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::SOFTMAX:
-    {
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-      int axis = 1;
-
-      for (int j = 0; j < node->attribute_size(); j++)
-      {
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("axis"))
-        {
-          axis = attribute.i(); // No use for it on eddl because it is not configurable
-        }
-        else
-          printf("Error with softmax attributes\n");
-      }
-
-      string name = node->name();
-      int parent_dims = parent->output->getShape().size();
-      if (axis < 0)                        // Check if the target axis is a negative index
-        axis = parent_dims + axis;         // Get the target axis index
-      if (axis < 0 || axis >= parent_dims) // Check for invalid axis index
-        msg("The target axis for Softmax is not valid: axis = " + to_string(axis), "ONNX::ImportNet");
-
-      vector<float> param = {(float)axis};
-      actual_layer = new LActivation(parent, "softmax", param, name, dev, mem);
-    }
-    break;
-
+      actual_layer = build_softmax_layer(node, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::CONCAT:
     {
       int axis = 1;
@@ -3044,7 +2339,8 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
 
     for (int i = 0; i < node->output_size(); i++)
     {
-      output_node_map[node->output(i)] = actual_layer;
+      if (actual_layer != nullptr)
+          output_node_map[node->output(i)] = actual_layer;
       // Add the childs of the created layer to the queue
       vector<onnx::NodeProto *> child_nodes = input_node_map[node->output(i)];
       for (onnx::NodeProto *child : child_nodes)

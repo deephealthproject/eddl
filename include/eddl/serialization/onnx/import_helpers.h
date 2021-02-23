@@ -77,8 +77,6 @@ queue<onnx::NodeProto *> process_inputs(vector<Layer *> *inputs,
 
 map<string, ONNX_LAYERS> create_enum_map();
 
-vector<float> parseTensorValues(onnx::TensorProto t);
-
 void get_initializers_maps(vector<onnx::TensorProto> tensors, 
                            map<string, vector<float>> &values_map, 
                            map<string, vector<int>> &dims_map);
@@ -112,26 +110,15 @@ map<string, vector<Tensor *>> get_tensors_from_onnx(onnx::ModelProto model);
 
 void log_model_metadata(onnx::ModelProto& model, LOG_LEVEL log_level);
 
+void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
+                          map<string, vector<float>> &map_init_values,
+                          map<string, onnx::NodeProto *> &constant_node_map,
+                          queue<onnx::NodeProto *> &nodeQueue,
+                          LOG_LEVEL log_level);
+
+ONNX_LAYERS get_layer_type(string layer_type_name, map<string, ONNX_LAYERS> &map_layers);
+
 Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LOG_LEVEL log_level);
-
-// Converts a raw onnx value tensor and writes it to a vector of that value type.
-template <class T>
-bool TryConvertingTensorRawValues(const onnx::TensorProto &onnx_tensor, vector<T> &field)
-{
-  if (!onnx_tensor.has_raw_data())
-    return false;
-
-  size_t raw_size = onnx_tensor.raw_data().size();
-  if (raw_size % sizeof(T) != 0)
-    return false;
-
-  size_t num_elements = raw_size / sizeof(T);
-  const void *src_ptr = static_cast<const void *>(onnx_tensor.raw_data().data());
-  field.resize(num_elements, 0);
-  void *target_ptr = static_cast<void *>(field.data());
-  memcpy(target_ptr, src_ptr, raw_size);
-  return true;
-}
 
 #endif // EDDL_IMPORT_HELPERS_H
 #endif // cPROTO

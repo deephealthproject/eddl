@@ -1,6 +1,30 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/core/drop_onnx.h"
 
+// ONNX import
+Layer* build_dropout_layer(onnx::NodeProto *node,
+                           map<string, Layer *> &output_node_map,
+                           int dev,
+                           int mem)
+{
+  float ratio = 0.5;
+  for (int j = 0; j < node->attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("ratio"))
+      ratio = attribute.f();
+  }
+
+  string parent_name = node->input(0); // Get parent
+  Layer *parent = output_node_map[parent_name];
+  vector<int> parent_shape = parent->output->shape;
+
+  string name = node->name();
+  return new LDropout(parent, ratio, true, name, dev, mem);
+}
+
+// ONNX export
 void build_dropout_node(LDropout *layer, onnx::GraphProto *graph)
 {
   // Add an empty node to the graph

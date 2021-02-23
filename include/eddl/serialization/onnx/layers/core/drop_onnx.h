@@ -9,6 +9,15 @@
  */
 
 // OPSET: 10, 7
+Layer* build_dropout_layer(onnx::NodeProto *node,
+                           map<string, Layer *> &output_node_map,
+                           int dev,
+                           int mem);
+/*
+ * ONNX EXPORT
+ */
+
+// OPSET: 10, 7
 void build_dropout_node(LDropout *layer, onnx::GraphProto *graph);
 
 #endif // EDDL_DROP_ONNX_H

@@ -1,6 +1,53 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/conv/upsampling_onnx.h"
 
+// ONNX import
+Layer* build_upsampling_layer(onnx::NodeProto *node,
+                              map<string, vector<float>> &map_init_values,
+                              map<string, vector<int>> &map_init_dims,
+                              map<string, Layer *> &output_node_map,
+                              int dev,
+                              int mem)
+{
+  string interpolation_mode;
+  float batch_scale;
+  float channel_scale;
+  float height_scale;
+  float width_scale;
+  for (int j = 0; j < node->attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("mode"))
+      interpolation_mode = attribute.s();
+  }
+
+  string parent_name = node->input(0); // Get parent
+  Layer *parent = output_node_map[parent_name];
+  vector<int> parent_shape = parent->output->shape;
+
+  string scales_name = node->input(1); // Get scales and dims
+  vector<float> *scales = &(map_init_values[scales_name]);
+  vector<int> scales_dims = map_init_dims[scales_name];
+
+  if (scales_dims[0] != 4)
+  {
+    cerr << "Dimensions of upsampling layer in onnx are wrong" << endl;
+  }
+  batch_scale = scales->at(0);
+  channel_scale = scales->at(1);
+  height_scale = scales->at(2);
+  width_scale = scales->at(3);
+
+  string name = node->name();
+  vector<int> size_vector;
+  size_vector.push_back((int)height_scale);
+  size_vector.push_back((int)width_scale);
+
+  return new LUpSampling(parent, size_vector, interpolation_mode, name, dev, mem);
+}
+
+// ONNX export
 void build_upsample_node(LUpSampling *layer, onnx::GraphProto *graph)
 {
   // Scales input for the upsample node

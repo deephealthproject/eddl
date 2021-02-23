@@ -1,6 +1,77 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/normalization/batchnorm_onnx.h"
+#include "eddl/serialization/onnx/utils_onnx.h"
 
+// ONNX import
+Layer* build_batchnorm_layer(onnx::NodeProto *node,
+                             map<string, vector<float>> &map_init_values,
+                             map<string, vector<int>> &map_init_dims,
+                             map<string, Layer *> &output_node_map,
+                             int dev,
+                             int mem)
+{
+  double epsilon = 1e-05; // Default value
+  double momentum = 0.9;  // Default value
+  for (int j = 0; j < node->attribute_size(); j++)
+  { // Set the attributes
+  onnx::AttributeProto attribute = node->attribute(j);
+  string attr_name = attribute.name();
+  if (!attr_name.compare("epsilon"))
+    epsilon = attribute.f();
+  if (!attr_name.compare("momentum"))
+    momentum = attribute.f();
+  }
+
+  string parent_name = node->input(0); // Get parent
+  Layer *parent = output_node_map[parent_name];
+  vector<int> parent_shape = parent->output->shape;
+
+  string scale_name = node->input(1); // Scale parameter
+  vector<float> *scale_weights = &(map_init_values[scale_name]);
+  vector<int> scale_dims = map_init_dims[scale_name];
+
+  string bias_name = node->input(2); // Bias parameter
+  vector<float> *bias_weights = &(map_init_values[bias_name]);
+  vector<int> bias_dims = map_init_dims[bias_name];
+
+  string mean_name = node->input(3); // Get weights and dims
+  vector<float> *mean_weights = &(map_init_values[mean_name]);
+  vector<int> mean_dims = map_init_dims[mean_name];
+
+  string variance_name = node->input(4); // Get weights and dims
+  vector<float> *variance_weights = &(map_init_values[variance_name]);
+  vector<int> variance_dims = map_init_dims[variance_name];
+
+  string name = node->name();
+
+  bool affine = true; // The ONNX operator description does not have an "affine" attribute. We have to assume that this will be allways true.
+
+  Layer *actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
+
+  Tensor *scale_tensor = new Tensor(scale_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(scale_weights, scale_tensor);
+  Tensor::copy(scale_tensor, ((LBatchNorm *)(actual_layer))->bn_g);
+  delete scale_tensor;
+
+  Tensor *bias_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_weights, bias_tensor);
+  Tensor::copy(bias_tensor, ((LBatchNorm *)(actual_layer))->bn_b);
+  delete bias_tensor;
+
+  Tensor *mean_tensor = new Tensor(mean_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(mean_weights, mean_tensor);
+  Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->mean);
+  delete mean_tensor;
+
+  Tensor *variance_tensor = new Tensor(variance_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(variance_weights, variance_tensor);
+  Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->variance);
+  delete variance_tensor;
+
+  return actual_layer;
+}
+
+// ONNX export
 void build_batchnorm_node(LBatchNorm *layer, onnx::GraphProto *graph)
 {
   // Add an empty node to the graph

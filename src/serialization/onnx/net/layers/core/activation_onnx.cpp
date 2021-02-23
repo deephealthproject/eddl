@@ -1,6 +1,219 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/core/activation_onnx.h"
 
+/*
+ * ONNX IMPORT
+ */
+
+Layer* build_relu_layer(onnx::NodeProto *node,
+                        map<string, Layer *> &output_node_map,
+                        int dev,
+                        int mem)
+{
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "relu", {}, node->name(), dev, mem);
+}
+
+Layer* build_sigmoid_layer(onnx::NodeProto *node,
+                           map<string, Layer *> &output_node_map,
+                           int dev,
+                           int mem)
+{
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "sigmoid", {}, node->name(), dev, mem);
+}
+
+Layer* build_hard_sigmoid_layer(onnx::NodeProto *node,
+                               map<string, Layer *> &output_node_map,
+                               int dev,
+                               int mem)
+{
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "hard_sigmoid", {}, node->name(), dev, mem);
+}
+
+Layer* build_tanh_layer(onnx::NodeProto *node,
+                        map<string, Layer *> &output_node_map,
+                        int dev,
+                        int mem)
+{
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "tanh", {}, node->name(), dev, mem);
+}
+
+Layer* build_exponential_layer(onnx::NodeProto *node,
+                               map<string, Layer *> &output_node_map,
+                               int dev,
+                               int mem)
+{
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "exp", {}, node->name(), dev, mem);
+}
+
+Layer* build_linear_layer(onnx::NodeProto *node,
+                          map<string, Layer *> &output_node_map,
+                          int dev,
+                          int mem)
+{
+  float alpha;
+  for (int j = 0; j < node->attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("alpha"))
+      alpha = attribute.f();
+  }
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "linear", {alpha}, node->name(), dev, mem);
+}
+
+Layer* build_leaky_relu_layer(onnx::NodeProto *node,
+                              map<string, Layer *> &output_node_map,
+                              int dev,
+                              int mem)
+{
+  float alpha;
+  for (int j = 0; j < node->attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("alpha"))
+      alpha = attribute.f();
+  }
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "leaky_relu", {alpha}, node->name(), dev, mem);
+}
+
+Layer* build_thresholded_relu_layer(onnx::NodeProto *node,
+                                    map<string, Layer *> &output_node_map,
+                                    int dev,
+                                    int mem)
+{
+      float alpha;
+      for (int j = 0; j < node->attribute_size(); j++)
+      { // Set the attributes
+        onnx::AttributeProto attribute = node->attribute(j);
+        string attr_name = attribute.name();
+        if (!attr_name.compare("alpha"))
+          alpha = attribute.f();
+      }
+      string parent_name = node->input(0);
+      Layer *parent = output_node_map[parent_name];
+
+      return new LActivation(parent, "thresholded_relu", {alpha}, node->name(), dev, mem);
+}
+
+Layer* build_elu_layer(onnx::NodeProto *node,
+                       map<string, Layer *> &output_node_map,
+                       int dev,
+                       int mem)
+{
+  float alpha;
+  for (int j = 0; j < node->attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("alpha"))
+      alpha = attribute.f();
+  }
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "elu", {alpha}, node->name(), dev, mem);
+}
+
+Layer* build_selu_layer(onnx::NodeProto *node,
+                       map<string, Layer *> &output_node_map,
+                       int dev,
+                       int mem)
+{
+  float alpha = 1.67326;
+  float gamma = 1.0507;
+  for (int j = 0; j < node->attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("alpha"))
+      alpha = attribute.f();
+    if (!attr_name.compare("gamma"))
+      gamma = attribute.f();
+  }
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "selu", {alpha, gamma}, node->name(), dev, mem);
+}
+
+Layer* build_softsign_layer(onnx::NodeProto *node,
+                            map<string, Layer *> &output_node_map,
+                            int dev,
+                            int mem)
+{
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "softsign", {}, node->name(), dev, mem);
+}
+
+Layer* build_softplus_layer(onnx::NodeProto *node,
+                            map<string, Layer *> &output_node_map,
+                            int dev,
+                            int mem)
+{
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+
+  return new LActivation(parent, "softplus", {}, node->name(), dev, mem);
+}
+
+Layer* build_softmax_layer(onnx::NodeProto *node,
+                           map<string, Layer *> &output_node_map,
+                           int dev,
+                           int mem)
+{
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+  int axis = 1;
+
+  for (int j = 0; j < node->attribute_size(); j++)
+  {
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("axis"))
+    {
+      axis = attribute.i(); // No use for it on eddl because it is not configurable
+    }
+    else
+      printf("Error with softmax attributes\n");
+  }
+
+  int parent_dims = parent->output->getShape().size();
+  if (axis < 0)                        // Check if the target axis is a negative index
+    axis = parent_dims + axis;         // Get the target axis index
+  if (axis < 0 || axis >= parent_dims) // Check for invalid axis index
+    msg("The target axis for Softmax is not valid: axis = " + to_string(axis), "ONNX::ImportNet");
+
+  return new LActivation(parent, "softmax", {static_cast<float>(axis)}, node->name(), dev, mem);
+}
+
+/*
+ * ONNX EXPORT
+ */
+
 void build_relu_node(LActivation *layer, onnx::GraphProto *graph)
 {
   // Add an empty node to the graph
