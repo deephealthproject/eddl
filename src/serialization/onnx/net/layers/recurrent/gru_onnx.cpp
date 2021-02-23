@@ -1,7 +1,267 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/recurrent/gru_onnx.h"
 #include "eddl/serialization/onnx/layers/core/squeeze_onnx.h"
+#include "eddl/serialization/onnx/import_helpers.h"
 
+// ONNX import
+Layer* build_gru_layer(onnx::NodeProto *node,
+                       map<string, vector<float>> &map_init_values,
+                       map<string, vector<int>> &map_init_dims,
+                       map<string, vector<onnx::NodeProto *>> &input_node_map,
+                       map<string, Layer *> &output_node_map,
+                       vector<string> &inputs2remove,
+                       LOG_LEVEL log_level,
+                       int dev,
+                       int mem)
+{
+  log_string("GRU layer detected", log_level, LOG_LEVEL::DEBUG);
+  string name = node->name();     // Name of the layer
+  vector<float> activation_alpha; // Values for configuring some activations with extra parameters
+  vector<float> activation_beta;  // Values for configuring some activations with extra parameters
+  vector<string> activations;     // Activation functions in order for each gate
+  float clip = -1;                // Value for clipping
+  string direction = "";          // Forward, backward or reverse (Forward by default)
+  int hidden_size = -1;           // Number of neurons in the hidden layer
+
+  for (int j = 0; j < node->attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("activation_alpha"))
+    { // Not used yet in eddl but implemented
+      for (int h = 0; h < attribute.floats_size(); h++)
+      {
+        activation_alpha.push_back(attribute.floats(h));
+      }
+    }
+    else if (!attr_name.compare("activation_beta"))
+    { // Not used yet in eddl but implemented
+      for (int h = 0; h < attribute.floats_size(); h++)
+      {
+        activation_beta.push_back(attribute.floats(h));
+      }
+    }
+    else if (!attr_name.compare("activations"))
+    { // Not used yet in eddl but implemented. We default to Sigmoid, TanH
+      for (int h = 0; h < attribute.strings_size(); h++)
+      {
+        activations.push_back(attribute.strings(h));
+      }
+    }
+    else if (!attr_name.compare("clip"))
+    { // Not used yet in eddl but implemented
+      clip = attribute.f();
+    }
+    else if (!attr_name.compare("direction"))
+    {
+      direction = attribute.s();
+      if (direction.compare("forward")) 
+      {
+        msg("GRU layer " + name + " is not forward direction. EDDL only supports one-directional GRU", "ONNX::ImportNet");
+      }
+    }
+    else if (!attr_name.compare("hidden_size"))
+    {
+      hidden_size = attribute.i();
+    }
+    //else if (!attr_name.compare("linear_before_reset")) {}
+  }
+
+  if (hidden_size < 0)
+    msg("GRU layer " + name + " doesn't have the number of neurons.", "ONNX::ImportNet");
+
+  string parent_name = node->input(0); // Get parent
+  Layer *parent = output_node_map[parent_name];
+  vector<int> parent_shape = parent->output->shape;
+  vector<Layer *> parents = {parent};
+
+  /*
+   * Check if the layer is Decoder by checking if there is not a recurrent layer after this one. To avoid
+   * conflicts with the stacked GRU layers that are encoders.
+   */
+  bool is_decoder = node_is_decoder(node, input_node_map);
+
+  if (is_decoder)
+  {
+    log_string("The layer " + name + " is decoder", log_level, LOG_LEVEL::DEBUG);
+    // We have to create the copy states layer for the decoder
+    Layer *parent_hstate = output_node_map[node->input(5)]; // 5: hidden state
+    Layer *cps = new LCopyStates({parent_hstate}, "", dev, mem);
+    parents.push_back(cps); // Add the layer to the parents for the GRU
+  }
+
+  string weights_gates = node->input(1); // Get weights and dims
+  vector<float> *weights_g = &(map_init_values[weights_gates]);
+  vector<int> dims_g = map_init_dims[weights_gates];
+  int input_size = dims_g[2];
+
+  // Load input weights with shape [hidden_size, input_size]. After load we transpose
+  //    Note: EDDL input weights are of shape [input_size, hidden_size]
+  vector<int> dims_input_gru = {dims_g[1] / 3, input_size};
+
+  vector<float> *weights_z_g = new vector<float>;
+  vector<float> *weights_r_g = new vector<float>;
+  vector<float> *weights_n_g = new vector<float>;
+  int w_size = input_size * hidden_size;
+  weights_z_g->assign(weights_g->begin() + w_size * 0, weights_g->begin() + w_size * 1);
+  weights_r_g->assign(weights_g->begin() + w_size * 1, weights_g->begin() + w_size * 2);
+  weights_n_g->assign(weights_g->begin() + w_size * 2, weights_g->begin() + w_size * 3);
+
+  string recurrence_weights_gates = node->input(2); // Get weights and dims
+  vector<float> *recurrence_weights_g = &(map_init_values[recurrence_weights_gates]);
+  vector<int> recurrence_dims_g = map_init_dims[recurrence_weights_gates];
+
+  vector<int> dims_recurrent_gru = {recurrence_dims_g[2], recurrence_dims_g[2]};
+
+  vector<float> *recurrence_weights_z_g = new vector<float>;
+  vector<float> *recurrence_weights_r_g = new vector<float>;
+  vector<float> *recurrence_weights_n_g = new vector<float>;
+  w_size = hidden_size * hidden_size;
+  recurrence_weights_z_g->assign(recurrence_weights_g->begin() + w_size * 0, recurrence_weights_g->begin() + w_size * 1);
+  recurrence_weights_r_g->assign(recurrence_weights_g->begin() + w_size * 1, recurrence_weights_g->begin() + w_size * 2);
+  recurrence_weights_n_g->assign(recurrence_weights_g->begin() + w_size * 2, recurrence_weights_g->begin() + w_size * 3);
+
+  LGRU *gru = new LGRU(parents, hidden_size, 0, 0, name, dev, mem);
+
+  if (is_decoder)
+  {
+    // Set attribute for unrolling
+    gru->isdecoder = true;
+    set_decoder(gru->parent[0]);
+    // We also have to remove the input layer that feeds the decoder from the input layers of the model
+    // First we search the corresponding input layer for the decoder
+    Layer *dec_linput = get_model_input_layer(gru);
+    if (dec_linput != nullptr)
+      inputs2remove.push_back(dec_linput->name);
+    else
+      msg("Input layer for decoder " + name + " not found", "ONNX::ImportNet");
+  }
+
+  /*
+   * The Weights are permuted before copying them to the GRU layer (mismatch between ONNX standad and EDDL implementation)
+   */
+  Tensor *weights_z_tensor = new Tensor(dims_input_gru, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_z_g, weights_z_tensor);
+  weights_z_tensor->permute_({1, 0});
+  Tensor::copy(weights_z_tensor, gru->Wz_x);
+  delete weights_z_tensor;
+  delete weights_z_g;
+
+  Tensor *weights_r_tensor = new Tensor(dims_input_gru, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_r_g, weights_r_tensor);
+  weights_r_tensor->permute_({1, 0});
+  Tensor::copy(weights_r_tensor, gru->Wr_x);
+  delete weights_r_tensor;
+  delete weights_r_g;
+
+  Tensor *weights_n_tensor = new Tensor(dims_input_gru, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_n_g, weights_n_tensor);
+  weights_n_tensor->permute_({1, 0});
+  Tensor::copy(weights_n_tensor, gru->Wn_x);
+  delete weights_n_tensor;
+  delete weights_n_g;
+
+  Tensor *recurrence_weights_z_tensor = new Tensor(dims_recurrent_gru, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_z_g, recurrence_weights_z_tensor);
+  recurrence_weights_z_tensor->permute_({1, 0});
+  Tensor::copy(recurrence_weights_z_tensor, gru->Uz_h);
+  delete recurrence_weights_z_tensor;
+  delete recurrence_weights_z_g;
+
+  Tensor *recurrence_weights_r_tensor = new Tensor(dims_recurrent_gru, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_r_g, recurrence_weights_r_tensor);
+  recurrence_weights_r_tensor->permute_({1, 0});
+  Tensor::copy(recurrence_weights_r_tensor, gru->Ur_h);
+  delete recurrence_weights_r_tensor;
+  delete recurrence_weights_r_g;
+
+  Tensor *recurrence_weights_n_tensor = new Tensor(dims_recurrent_gru, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_n_g, recurrence_weights_n_tensor);
+  recurrence_weights_n_tensor->permute_({1, 0});
+  Tensor::copy(recurrence_weights_n_tensor, gru->Un_h);
+  delete recurrence_weights_n_tensor;
+  delete recurrence_weights_n_g;
+
+  /*
+   * Set bias values
+   */
+  vector<int> bias_dims = {hidden_size};
+  // Vectors to store the imported weights
+  vector<float> *bias_z = new vector<float>;
+  vector<float> *bias_r = new vector<float>;
+  vector<float> *bias_n = new vector<float>;
+  vector<float> *bias_recurrence_z = new vector<float>;
+  vector<float> *bias_recurrence_r = new vector<float>;
+  vector<float> *bias_recurrence_n = new vector<float>;
+
+  if (node->input_size() > 3) { // Check that we have bias
+    string biases_name = node->input(3);
+    vector<float> *biases = &(map_init_values[biases_name]);
+    // Forward bias (zrh)
+    bias_z->assign(biases->begin() + hidden_size * 0, biases->begin() + hidden_size * 1);
+    bias_r->assign(biases->begin() + hidden_size * 1, biases->begin() + hidden_size * 2);
+    bias_n->assign(biases->begin() + hidden_size * 2, biases->begin() + hidden_size * 3);
+    // Recurrent bias (zrh)
+    bias_recurrence_z->assign(biases->begin() + hidden_size * 3, biases->begin() + hidden_size * 4);
+    bias_recurrence_r->assign(biases->begin() + hidden_size * 4, biases->begin() + hidden_size * 5);
+    bias_recurrence_n->assign(biases->begin() + hidden_size * 5, biases->begin() + hidden_size * 6);
+  } else {
+    // Set bias values to 0.0
+    //   Note: In EDDL we don't have use_bias option for GRU so to achieve the same
+    //         result we set the bias values to 0.0
+    vector<float> zero_bias(hidden_size, 0.0);
+    bias_z->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_r->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_n->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_recurrence_z->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_recurrence_r->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_recurrence_n->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+  }
+
+  Tensor *bias_z_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_z, bias_z_tensor);
+  Tensor::copy(bias_z_tensor, gru->bias_z_t);
+  delete bias_z_tensor;
+  delete bias_z;
+
+  Tensor *bias_r_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_r, bias_r_tensor);
+  Tensor::copy(bias_r_tensor, gru->bias_r_t);
+  delete bias_r_tensor;
+  delete bias_r;
+
+  Tensor *bias_n_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_n, bias_n_tensor);
+  Tensor::copy(bias_n_tensor, gru->bias_n_t);
+  delete bias_n_tensor;
+  delete bias_n;
+
+  // Add the recurrent bias values for gates z and r
+  Tensor *bias_recurrence_z_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_z, bias_recurrence_z_tensor);
+  Tensor::add(bias_recurrence_z_tensor, gru->bias_z_t, gru->bias_z_t);
+  delete bias_recurrence_z_tensor;
+  delete bias_recurrence_z;
+
+  Tensor *bias_recurrence_r_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_r, bias_recurrence_r_tensor);
+  Tensor::add(bias_recurrence_r_tensor, gru->bias_r_t, gru->bias_r_t);
+  delete bias_recurrence_r_tensor;
+  delete bias_recurrence_r;
+
+  // The recurrent bias for h goes to its own tensor beacuse we need it for applying the linear transformation
+  // before the r gate. See "linear_before_reset" attribute in  https://github.com/onnx/onnx/blob/master/docs/Operators.md#GRU
+  Tensor *bias_recurrence_n_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_n, bias_recurrence_n_tensor);
+  Tensor::copy(bias_recurrence_n_tensor, gru->bias_n_t_hidden);
+  delete bias_recurrence_n_tensor;
+  delete bias_recurrence_n;
+
+  log_string("GRU layer created", log_level, LOG_LEVEL::DEBUG);
+  return gru;
+}
+
+// ONNX export
 void build_gru_node(LGRU *layer, onnx::GraphProto *graph)
 {
   // Add an empty node to the graph
