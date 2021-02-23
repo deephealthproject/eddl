@@ -8,6 +8,7 @@
 #include "eddl/serialization/onnx/utils_onnx.h"
 
 enum ONNX_LAYERS {
+  NOT_SUPPORTED,    // To handle not supported nodes
   BATCHNORM,        // OPSET: 9
   CONV,             // OPSET: 11, 1
   DENSE,            // OPSET: 13, 11

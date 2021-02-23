@@ -630,6 +630,14 @@ void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
   }
 }
 
+ONNX_LAYERS get_layer_type(string layer_type_name, map<string, ONNX_LAYERS> &map_layers)
+{
+  if (map_layers.count(layer_type_name))
+    return map_layers[layer_type_name];
+  else
+    return ONNX_LAYERS::NOT_SUPPORTED;
+}
+
 void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
                         map<string, vector<float>> &map_init_values,
                         map<string, vector<int>> &map_init_dims,
@@ -653,29 +661,23 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
     // Look for inputs with empty ("") names that some libraries create, and delete them
     auto *inputs_list = node->mutable_input();
     for (auto i = inputs_list->begin(); i != inputs_list->end(); i++)
-      if ((*i).empty())
-        i = --inputs_list->erase(i);
+      if (i->empty())
+        i = --inputs_list->erase(i); // -- to compensate the iterator skip made by erase()
 
     // 6.1: Check all inputs are avaliable
     bool avaliable = true;
 
     for (int i = 0; i < node->input_size(); i++)
     {
-      string input = node->input(i);
-      if (map_init_values.count(input))
-      {
+      string input_name = node->input(i);
+      if (map_init_values.count(input_name))
         continue;
-      }
-      if (output_node_map.count(input))
-      {
+      if (output_node_map.count(input_name))
         continue;
-      }
-      if (constant_node_map.count(input))
-      {
+      if (constant_node_map.count(input_name))
         continue;
-      }
       avaliable = false;
-      log_string("Node " + node->name() + " is not avaliable yet. Missing input: " + input, log_level, LOG_LEVEL::DEBUG);
+      log_string("Node " + node->name() + " is not avaliable yet. Missing input: " + input_name, log_level, LOG_LEVEL::DEBUG);
       break;
     }
     string output_name = node->output(0);
@@ -694,22 +696,19 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
     }
 
     // 6.3
-    // Lets assume the maximum quantity of layer inputs a layer can have is 2
-    // vector<Layer *> parents; //Not required because inputs are ordered.
-    vector<float> weights;
-    vector<int> dims;
-    // We have to know which layer to create. For it, I suggest
-    // a map <String-Enumeration> for creating a switch, where
+    // We have to know which layer to create. For it, we use a
+    // map <key:string - val:Enum> for creating a switch, where
     // we call the constructor of that layer
-    string layer_type_name = node->op_type();
-    log_string("Node " + node->name() + " has operation type = " + layer_type_name, log_level, LOG_LEVEL::DEBUG);
-    ONNX_LAYERS layer_type = map_layers[layer_type_name];
     string name = node->name();
+    string layer_type_name = node->op_type();
+    log_string("Node " + name + " has operation type = " + layer_type_name, log_level, LOG_LEVEL::DEBUG);
+    ONNX_LAYERS layer_type = get_layer_type(layer_type_name, map_layers);
     int dev = DEV_CPU;
+    // Every case should create the corresponding layer and asign it to "actual_layer" variable
     Layer *actual_layer;
 
     switch (layer_type)
-    { // Every case should create the corresponding layer and asign it to "actual_layer" variable
+    {
     case ONNX_LAYERS::BATCHNORM:
     {
       double epsilon = 1e-05; // Default value
@@ -3037,7 +3036,7 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
     break;
 
     default:
-      log_string("FATAL: LAYER NOT RECOGNIZED WITH TYPE " + layer_type_name, log_level, LOG_LEVEL::ERROR);
+      log_string("Error: The ONNX node type " + layer_type_name + " is not supported!", log_level, LOG_LEVEL::ERROR);
       nodeQueue.pop();
       continue;
       break;
@@ -3046,13 +3045,13 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
     for (int i = 0; i < node->output_size(); i++)
     {
       output_node_map[node->output(i)] = actual_layer;
+      // Add the childs of the created layer to the queue
       vector<onnx::NodeProto *> child_nodes = input_node_map[node->output(i)];
       for (onnx::NodeProto *child : child_nodes)
-      {
         nodeQueue.push(child);
-      }
     }
-    nodeQueue.pop();
+
+    nodeQueue.pop();  // Pop the node we just processed
   }
 }
 
