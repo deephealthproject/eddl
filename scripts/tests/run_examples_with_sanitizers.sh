@@ -77,9 +77,63 @@ nlp_executables="${nlp_executables} nlp_sentiment_rnn"
 nlp_executables="${nlp_executables} nlp_text_generation"
 nlp_executables="${nlp_executables} nlp_video_to_labels"
 
+cifar10_executables=""
+cifar10_executables="${cifar10_executables} cifar_conv"
+cifar10_executables="${cifar10_executables} cifar_conv_da"
+cifar10_executables="${cifar10_executables} cifar_resnet"
+cifar10_executables="${cifar10_executables} cifar_resnet50_da_bn"
+cifar10_executables="${cifar10_executables} cifar_resnet_da_bn"
+cifar10_executables="${cifar10_executables} cifar_vgg16"
+cifar10_executables="${cifar10_executables} cifar_vgg16_bn"
+cifar10_executables="${cifar10_executables} cifar_vgg16_gn"
+
+segmentation_executables=""
+segmentation_executables="${segmentation_executables} drive_seg"
+
+synthetic_imagenet_executables=""
+synthetic_imagenet_executables="${synthetic_imagenet_executables} synthetic_imagenet_vgg16"
+synthetic_imagenet_executables="${synthetic_imagenet_executables} synthetic_imagenet_vgg16_bn"
+
+onnx_executables=""
+onnx_executables="${onnx_executables} onnx_pointer"
+#onnx_executables="${onnx_executables} onnx_export"
+#onnx_executables="${onnx_executables} onnx_import"
+#onnx_executables="${onnx_executables} onnx_import_reshape"
+#onnx_executables="${onnx_executables} onnx_gradients"
+#onnx_executables="${onnx_executables} onnx_cifar_conv"
+#onnx_executables="${onnx_executables} onnx_cifar_conv_da"
+#onnx_executables="${onnx_executables} onnx_cifar_resnet"
+#onnx_executables="${onnx_executables} onnx_cifar_resnet50_da_bn"
+#onnx_executables="${onnx_executables} onnx_cifar_resnet_da_bn"
+#onnx_executables="${onnx_executables} onnx_cifar_vgg16"
+#onnx_executables="${onnx_executables} onnx_cifar_vgg16_bn"
+#onnx_executables="${onnx_executables} onnx_cifar_vgg16_gn"
+#onnx_executables="${onnx_executables} onnx_mnist_auto_encoder"
+#onnx_executables="${onnx_executables} onnx_mnist_conv"
+#onnx_executables="${onnx_executables} onnx_mnist_conv1D"
+#onnx_executables="${onnx_executables} onnx_mnist_conv_dice"
+#onnx_executables="${onnx_executables} onnx_mnist_losses"
+#onnx_executables="${onnx_executables} onnx_mnist_mlp"
+#onnx_executables="${onnx_executables} onnx_mnist_mlp_da"
+#onnx_executables="${onnx_executables} onnx_mnist_mlp_func"
+#onnx_executables="${onnx_executables} onnx_mnist_mlp_initializers"
+#onnx_executables="${onnx_executables} onnx_mnist_mlp_regularizers"
+#onnx_executables="${onnx_executables} onnx_mnist_mlp_train_batch"
+#onnx_executables="${onnx_executables} onnx_mnist_rnn"
+#onnx_executables="${onnx_executables} onnx_mnist_rnn_func"
+#onnx_executables="${onnx_executables} onnx_nlp_machine_translation"
+#onnx_executables="${onnx_executables} onnx_nlp_sentiment_lstm"
+#onnx_executables="${onnx_executables} onnx_nlp_sentiment_rnn"
+#onnx_executables="${onnx_executables} onnx_drive_seg"
+
 parameters="--testing --cpu"
 
-for executable in ${mnist_executables} ${nlp_executables} # nlp_* cifar_* onnx_* drive_*
+for executable in   ${mnist_executables} \
+                    ${cifar10_executables} \
+                    ${nlp_executables} \
+                    ${segmentation_executables} \
+                    ${synthetic_imagenet_executables} \
+                    ${onnx_executables}
 do
     echo "###################################################################"
     echo "###################################################################"

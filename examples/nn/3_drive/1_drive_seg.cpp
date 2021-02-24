@@ -83,13 +83,19 @@ layer UNetWithPadding(layer x)
 
 
 int main(int argc, char **argv){
+    bool testing = false;
+    bool use_cpu = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
 
     // Download Dataset
     download_drive();
 
     // Settings
-    int epochs = 100000;
-    int batch_size = 4;
+    int epochs = testing ? 2 : 100000;
+    int batch_size = testing ? 1 : 4;
 
     //////////////////////////////////////////////////////////////
     // Network for Data Augmentation
@@ -109,9 +115,15 @@ int main(int argc, char **argv){
 
     // Build model for DA
     build(danet);
-    toGPU(danet,{1,1},10,"low_mem");   
+    if (! testing) toGPU(danet,{1,1},10,"low_mem");   
     summary(danet);
 
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU({1,1}, 100, "low_mem"); // two GPU with weight sync every 10 batches
+    }
     //////////////////////////////////////////////////////////////
     // Build SegNet
     layer in=Input({3,512,512});
@@ -121,7 +133,7 @@ int main(int argc, char **argv){
         adam(0.001), // Optimizer
         {"mse"}, // Losses
         {"mse"}, // Metrics
-        CS_GPU({1,1}, 10, "low_mem")
+        cs
     );
     summary(segnet);
     plot(segnet,"segnet.pdf");
@@ -140,7 +152,7 @@ int main(int argc, char **argv){
 
     //////////////////////////////////////////////////////////////
     // Training
-    int num_batches=1000;
+    int num_batches = testing ? 2 : 1000;
     for(int i=0;i<epochs;i++) {
         reset_loss(segnet);
         for(int j=0;j<num_batches;j++)  {
@@ -185,4 +197,14 @@ int main(int argc, char **argv){
         printf("\n");
     }
 
+    delete xbatch;
+    delete ybatch;
+
+    delete x_train;
+    delete y_train;
+
+    delete segnet;
+    delete danet;
+
+    return EXIT_SUCCESS;
 }
