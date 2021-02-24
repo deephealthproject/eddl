@@ -61,6 +61,17 @@ void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
                           queue<onnx::NodeProto *> &nodeQueue,
                           LOG_LEVEL log_level);
 
+void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
+                        map<string, vector<float>> &map_init_values,
+                        map<string, vector<int>> &map_init_dims,
+                        map<string, vector<onnx::NodeProto *>> &input_node_map,
+                        map<string, Layer *> &output_node_map,
+                        map<string, onnx::NodeProto *> &constant_node_map,
+                        vector<string> &inputs2remove,
+                        bool recurrent_net,
+                        int mem,
+                        LOG_LEVEL log_level);
+
 Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LOG_LEVEL log_level);
 
 #endif // EDDL_IMPORT_HELPERS_H
