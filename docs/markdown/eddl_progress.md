@@ -4,7 +4,7 @@
 | ----- |---------|
 |  🟢️   | Done |
 |  🔴️   | Todo |
-|  🔴️   | Not planned |
+|  ⚫️   | Not planned / Not supported |
 
 # Layers
 ---
@@ -34,7 +34,7 @@
 | HardSigmoid | 🟢️️ | 🟢️️ | 🟢️️ | Hard sigmoid activation function. |
 | LeakyReLu | 🟢️️ | 🟢️️ | 🟢️️ | Leaky version of a Rectified Linear Unit.  |
 | Linear | 🟢️️ | 🟢️️ | 🟢️️ (Custom Op) | Linear (i.e. identity) activation function.  |
-| PReLU | 🔴️ | 🔴️ | 🔴️ | Parametric Rectified Linear Unit.   |
+| PReLU | ⚫️️ | ⚫️ | ⚫️️ | Parametric Rectified Linear Unit.   |
 | ReLu | 🟢️️ | 🟢️️ | 🟢️️ | Rectified Linear Unit. |
 | Softmax | 🟢️️ | 🟢️️ | 🟢️️ | Softmax activation function. |
 | Selu |  🟢️️ | 🟢️️ | 🟢️️ | Scaled Exponential Linear Unit (SELU). |
@@ -51,7 +51,7 @@
 | ------------- |------| -----| ------|---------|
 | Conv1D | 🟢️️ | 🟢️️ | 🟢️️ | 1D convolution. |
 | Conv2D | 🟢️️ | 🟢️️ | 🟢️️ | 2D convolution. |
-| Conv3D | 🔴️ | 🔴️ | 🔴️ | 3D convolution. |
+| Conv3D | 🔴 | 🔴️ | 🔴️ | 3D convolution. |
 | Pointwise | 🟢️️ | 🟢️️ | 🟢️️ | 2D pointwise convolution. |
 | DepthwiseConv2D | 🔴️ | 🔴️ | 🔴️ | 2D depthsise convolution. |
 | TransposedConv2D | 🔴️ | 🔴️ | 🔴️ | Transposed convolution |
@@ -66,9 +66,9 @@ Deterministic transformations
 
 | Functionality | CPU | GPU | ONNX | Comments |
 | ------------- |------| -----| ------|---------|
-| Crop | 🟢️️ | 🟢️️ | 🔴️ | Crops the given image at `[(top, left), (bottom, right)]` |
-| CenteredCrop | 🟢️️ | 🟢️️ | 🔴️ | Crops the given image at the center with size (width, height)  |
-| ColorJitter | 🔴️ | 🔴️ | 🔴️ | Randomly change the brightness, contrast and saturation of an image. |
+| Crop | 🟢️️ | 🟢️️ | ⚫️️ | Crops the given image at `[(top, left), (bottom, right)]` |
+| CenteredCrop | 🟢️️ | 🟢️️ | ⚫️ | Crops the given image at the center with size (width, height)  |
+| ColorJitter | ⚫️ | ⚫️️ | ⚫️ | Randomly change the brightness, contrast and saturation of an image. |
 | CropScale | 🟢️️ | 🟢️️ | 🔴️ | Crop the given image at `[(top, left), (bottom, right)]` and scale it to the parent size |
 | Cutout | 🟢️️ | 🟢️️ | 🔴️ | Selects a rectangle region in an image at `[(top, left), (bottom, right)]` and erases its pixels using a constant value. |
 | Flip | 🟢️️ | 🟢️️ | 🔴️ | Flip the given image at `axis=n`. |
@@ -88,17 +88,17 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | ONNX | Comments |
 | ------------- |------| -----| ------|---------|
-| RandomAffine | 🔴️ | 🔴️ | 🔴️ | Random affine transformation of the image keeping center invariant: rotate+translate+scale+shear |
-| RandomCrop | 🟢️️ | 🟢️️ | 🔴️ | Crop the given image at a random location with size `[height, width]`  |
-| RandomCropScale | 🟢️️ | 🟢️️ | 🔴️ | Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size |
-| RandomCutout | 🟢️️ | 🟢️️ | 🔴️ | Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range `[(min_x, max_x), (min_y, max_y)]`, where these are relative values |
-| RandomFlip | 🟢️️ | 🟢️️ | 🔴️ | Flip the given image at `axis=n` randomly with a given probability. |
-| RandomGrayscale | 🔴 | 🔴 | 🔴️ | Randomly convert image to grayscale with a probability of p (default 0.1). |
-| RandomHorizontalFlip | 🟢️️ | 🟢️️ | 🔴️ | Horizontally flip the given image randomly with a given probability. |
-| RandomRotation | 🟢️️ | 🟢️️ | 🔴️ | Rotate the image randomly by an angle defined in a range `[a, b]`. |
-| RandomScale | 🟢️️ | 🟢️️ | 🔴️ | Resize the input image randomly by the size in a range `[a, b]` |
-| RandomShift | 🟢️️ | 🟢️️ | 🔴️ | Shift the input image randomly in range `[a, b]` |
-| RandomVerticalFlip | 🟢️️ | 🟢️️ | 🔴️ | Vertically flip the given image randomly with a given probability. |
+| RandomAffine | 🔴️ | ⚫️ | ⚫️ | Random affine transformation of the image keeping center invariant: rotate+translate+scale+shear |
+| RandomCrop | 🟢️️ | 🟢️️ | ⚫️ | Crop the given image at a random location with size `[height, width]`  |
+| RandomCropScale | 🟢️️ | 🟢️️ | ⚫️ | Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size |
+| RandomCutout | 🟢️️ | 🟢️️ | ⚫️ | Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range `[(min_x, max_x), (min_y, max_y)]`, where these are relative values |
+| RandomFlip | 🟢️️ | 🟢️️ | ⚫️ | Flip the given image at `axis=n` randomly with a given probability. |
+| RandomGrayscale | 🔴 | 🔴 | ⚫️ | Randomly convert image to grayscale with a probability of p (default 0.1). |
+| RandomHorizontalFlip | 🟢️️ | 🟢️️ | ⚫️ | Horizontally flip the given image randomly with a given probability. |
+| RandomRotation | 🟢️️ | 🟢️️ | ⚫️ | Rotate the image randomly by an angle defined in a range `[a, b]`. |
+| RandomScale | 🟢️️ | 🟢️️ | ⚫️ | Resize the input image randomly by the size in a range `[a, b]` |
+| RandomShift | 🟢️️ | 🟢️️ | ⚫️ | Shift the input image randomly in range `[a, b]` |
+| RandomVerticalFlip | 🟢️️ | 🟢️️ | ⚫️ | Vertically flip the given image randomly with a given probability. |
 
 
 ## Merge layers
