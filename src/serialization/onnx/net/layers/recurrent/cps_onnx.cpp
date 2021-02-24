@@ -1,7 +1,7 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/recurrent/cps_onnx.h"
 #include "eddl/serialization/onnx/layers/core/unsqueeze_onnx.h"
-#include "eddl/serialization/onnx/layers/onnx_helpers/export_helpers.h"
+#include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 
 void handle_copy_states(LCopyStates *layer, onnx::GraphProto *graph)
 {

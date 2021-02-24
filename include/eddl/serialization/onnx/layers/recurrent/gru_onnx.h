@@ -19,6 +19,7 @@ Layer* build_gru_layer(onnx::NodeProto *node,
                        LOG_LEVEL log_level,
                        int dev,
                        int mem);
+
 /*
  * ONNX EXPORT
  */

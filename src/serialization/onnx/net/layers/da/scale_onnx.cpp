@@ -1,6 +1,59 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/da/scale_onnx.h"
+#include "eddl/serialization/onnx/utils_onnx.h"
 
+// ONNX import
+Layer* build_scale_layer(onnx::NodeProto *node,
+                         map<string, vector<float>> &map_init_values,
+                         map<string, Layer *> &output_node_map,
+                         int dev,
+                         int mem)
+{
+      bool reshape_out = true;
+      string da_mode("nearest");
+      float constant = 0.0;
+
+      for (int j = 0; j < node->attribute_size(); j++)
+      { // Set the attributes
+        onnx::AttributeProto attribute = node->attribute(j);
+        string attr_name = attribute.name();
+        if (!attr_name.compare("coordinate_transformation_mode"))
+        {
+          if (attribute.s().compare("asymmetric"))
+          {
+            msg("In Resize operator, the coordinate transformation mode \"" + attribute.s() + "\" is not supported. It must be \"asymmetric\".", "ONNX::ImportNet");
+          }
+        }
+        if (!attr_name.compare("mode"))
+        {
+          if (attribute.s().compare("nearest"))
+          {
+            // ONNX only supports: "nearest", "linear" and "cubic".
+            msg("In Resize operator, the mode \"" + attribute.s() + "\" is not supported. It must be \"nearest\".", "ONNX::ImportNet");
+          }
+        }
+      }
+
+      string parent_name = node->input(0);
+      Layer *parent = output_node_map[parent_name];
+      vector<int> new_shape = parent->getShape();
+
+      string weights_name = node->input(2);
+      float *dim_scales = new float [(&(map_init_values[weights_name]))->size()];
+      COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[weights_name]), dim_scales);
+
+      // Compute new shape by scaling the parent output shape
+      for (int i = 0; i < new_shape.size(); ++i)
+      {
+        new_shape[i] = new_shape[i] * dim_scales[i];
+      }
+
+      delete [] dim_scales;
+
+      return new LScale(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, node->name(), DEV_CPU, 0);
+}
+
+// ONNX export
 void build_resize_node(LScale *layer, onnx::GraphProto *graph)
 {
   // Add an empty node to the graph

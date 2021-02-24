@@ -17,6 +17,9 @@
 #include "eddl/serialization/onnx/layers/core/drop_onnx.h"
 #include "eddl/serialization/onnx/layers/core/reshape_onnx.h"
 #include "eddl/serialization/onnx/layers/core/activation_onnx.h"
+#include "eddl/serialization/onnx/layers/core/squeeze_onnx.h"
+#include "eddl/serialization/onnx/layers/core/unsqueeze_onnx.h"
+#include "eddl/serialization/onnx/layers/core/permute_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/upsampling_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool_onnx.h"
@@ -40,6 +43,8 @@
 #include "eddl/serialization/onnx/layers/recurrent/lstm_onnx.h"
 #include "eddl/serialization/onnx/layers/recurrent/gru_onnx.h"
 #include "eddl/serialization/onnx/layers/recurrent/rnn_onnx.h"
+#include "eddl/serialization/onnx/layers/da/scale_onnx.h"
+#include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 
 // Gets the initializers from the onnx layer graph
 vector<onnx::TensorProto> get_initializers(onnx::GraphProto graph)
@@ -758,346 +763,31 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
       actual_layer = build_rnn_layer(node, map_init_values, map_init_dims, input_node_map, output_node_map, inputs2remove, log_level, dev, mem);
       break;
     case ONNX_LAYERS::IDENTITY:
-    {
-      log_string("Identity layer detected", log_level, LOG_LEVEL::DEBUG);
-      string parent_name;
-      parent_name = node->input(0);
-      actual_layer = output_node_map[parent_name];
-    }
-    break;
-
+      actual_layer = handle_identity_node(node, output_node_map, log_level, dev, mem);
+      break;
     case ONNX_LAYERS::CAST:
-    {
-      log_string("Cast layer detected", log_level, LOG_LEVEL::DEBUG);
-      string parent_name;
-      parent_name = node->input(0);
-      actual_layer = output_node_map[parent_name];
-    }
-    break;
-
+      actual_layer = handle_cast_node(node, output_node_map, log_level, dev, mem);
+      break;
     case ONNX_LAYERS::GATHER:
-    {
-      log_string("Gather layer detected", log_level, LOG_LEVEL::DEBUG);
-      int axis = 0; // Default value is 0
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("axis"))
-        {
-          axis = attribute.i();
-        }
-      }
-
-      string weights_name = node->input(0); // Get weights and dims
-      vector<float> *weights = &(map_init_values[weights_name]);
-      vector<int> dims = map_init_dims[weights_name];
-
-      string parent_name = node->input(1); // Get parent
-      Layer *parent = output_node_map[parent_name];
-      vector<int> parent_shape = parent->output->shape;
-
-      LEmbedding *embedding = new LEmbedding(parent, dims[0], 1 /*parent_shape[1]*/, dims[1], 0, name, dev, mem);
-      Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
-      Tensor::copy(weights_tensor, embedding->E);
-
-      delete weights_tensor;
-      actual_layer = embedding;
-    }
-    break;
-
+      actual_layer = handle_gather_node(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
+      break;
     case ONNX_LAYERS::SQUEEZE:
-    {
-      log_string("Squeeze layer detected", log_level, LOG_LEVEL::DEBUG);
-      vector<int> squeeze_axes;
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("axes"))
-        {
-          // Read the axes to squeeze
-          for (int h = 0; h < attribute.ints_size(); h++)
-          {
-            squeeze_axes.push_back(attribute.ints(h));
-          }
-        }
-      }
-
-      string parent_name;
-      parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-      vector<int> parent_out_shape = parent->output->getShape();
-      // Check if we are trying to squeeze the axis 0 or 1 with a recurrent parent node
-      //		- In ONNX, the output tensors of a recurrent operator have a dimension with the number of directions
-      // 			of the layer (1:onedirectional, 2:bidirectional). In the case of a onedirectional layer the axis must
-      // 			be squeezed. But for the creation of the EDDL model we don't need to do this operation, so we skip it.
-      for (int i = 0; i < squeeze_axes.size(); ++i)
-      {
-        if ((squeeze_axes[i] == 0 || squeeze_axes[i] == 1) && parent->isrecurrent)
-        {
-          log_string("Removing axes " + to_string(squeeze_axes[i]) + " from Squeeze operator. Operation not needed because the parent node is recurrent.",
-                     log_level,
-                     LOG_LEVEL::DEBUG);
-          squeeze_axes.erase(squeeze_axes.begin() + i); // We remove the axis to squeeze
-        }
-      }
-
-      // Check if all the axes are valid
-      bool valid_axes = true;
-      for (int ax : squeeze_axes)
-      {
-        if (ax >= parent_out_shape.size())
-        {
-          valid_axes = false;
-          break;
-        }
-      }
-
-      if (squeeze_axes.size() == 0)
-      {
-        log_string("Skiping squeeze operation. No axes to squeeze.", log_level, LOG_LEVEL::DEBUG);
-        actual_layer = output_node_map[parent_name];
-        break;
-      }
-      else if (!valid_axes)
-      {
-        log_string("Skiping squeeze operation. The axes to squeeze are not valid", log_level, LOG_LEVEL::DEBUG);
-        actual_layer = output_node_map[parent_name];
-        break;
-      }
-      else
-      { // There are axes to squeeze
-        vector<int> target_shape;
-        bool to_squeeze = false;
-        for (int parent_ax = 0; parent_ax < parent_out_shape.size(); ++parent_ax)
-        {
-          to_squeeze = false;
-          for (int target_ax : squeeze_axes)
-          {
-            if (parent_ax == target_ax)
-            {
-              if (parent_out_shape[parent_ax] == 1)
-              {
-                to_squeeze = true;
-                break;
-              }
-              else
-              {
-                log_string("Trying to squeeze an axis with value different than one. Skiping the operator.", log_level, LOG_LEVEL::WARN);
-                actual_layer = output_node_map[parent_name];
-                break;
-              }
-            }
-          }
-          if (!to_squeeze)
-            target_shape.push_back(parent_out_shape[parent_ax]);
-        }
-        actual_layer = new LReshape(parent, target_shape, name, dev, mem);
-        log_string("Squeeze (with Reshape) layer created", log_level, LOG_LEVEL::DEBUG);
-      }
-    }
-    break;
-
+      actual_layer = build_squeeze_layer(node, output_node_map, log_level, dev, mem);
+      break;
     case ONNX_LAYERS::UNSQUEEZE:
-    {
-      log_string("Unsqueeze layer detected", log_level, LOG_LEVEL::DEBUG);
-      vector<int> unsqueeze_axes;
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("axes"))
-        {
-          // Read the axes to squeeze
-          for (int h = 0; h < attribute.ints_size(); h++)
-          {
-            unsqueeze_axes.push_back(attribute.ints(h));
-          }
-        }
-      }
-
-      string parent_name;
-      parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-      vector<int> parent_out_shape = parent->output->getShape();
-      // Check if we are trying to unsqueeze the axis 0 with a recurrent parent node
-      // 		- In ONNX, the output of a recurrent encoder operator (the hidden state) has the number of directions
-      // 			(1:onedirectional, 2:bidirectional) in the axis 0, so in the case of onedirectional models this
-      // 			dimension is squeezed. And in the case of connecting the parent recurrent node to another one,
-      // 			a unsqueeze node is usually used to undo the previous squeeze operator. And to build the EDDl model
-      //			we don't need to create this ops, so we skip them.
-      for (int i = 0; i < unsqueeze_axes.size(); ++i)
-      {
-        if (unsqueeze_axes[i] == 0 && parent->isrecurrent)
-        {
-          log_string("Removing 0 axis from Unsqueeze operator. The parent node is recurrent.", log_level, LOG_LEVEL::DEBUG);
-          unsqueeze_axes.erase(unsqueeze_axes.begin() + i); // We remove the axis to squeeze
-        }
-      }
-
-      // Check if all the axes are valid
-      bool valid_axes = true;
-      for (int ax : unsqueeze_axes)
-      {
-        if (ax > parent_out_shape.size())
-        {
-          valid_axes = false;
-          break;
-        }
-      }
-
-      if (unsqueeze_axes.size() == 0)
-      {
-        log_string("Skiping unsqueeze operation. No axes to unsqueeze.", log_level, LOG_LEVEL::DEBUG);
-        actual_layer = output_node_map[parent_name];
-        break;
-      }
-      else if (!valid_axes)
-      {
-        log_string("Skiping unsqueeze operation. The axes to unsqueeze are not valid", log_level, LOG_LEVEL::DEBUG);
-        actual_layer = output_node_map[parent_name];
-        break;
-      }
-      else
-      { // There are axes to unsqueeze
-        // Sort the axes to unsqueeze
-        std::sort(unsqueeze_axes.begin(), unsqueeze_axes.end());
-        // Search for duplicates. DUPLICATES ARE NOT ALLOWED
-        for (int i = 0; i < unsqueeze_axes.size() - 1; i++)
-        {
-          if (unsqueeze_axes[i] == unsqueeze_axes[i + 1])
-          {
-            unsqueeze_axes.erase(unsqueeze_axes.begin() + i);
-            log_string("Removing duplicates axis in Unsqueeze operator", log_level, LOG_LEVEL::WARN);
-            i--;
-          }
-        }
-        // Insert the new dims
-        vector<int> target_shape = parent_out_shape;
-        for (int unsq_ax : unsqueeze_axes)
-        {
-          target_shape.insert(target_shape.begin() + unsq_ax, 1);
-        }
-        actual_layer = new LReshape(parent, target_shape, name, dev, mem);
-        log_string("Unsqueeze (with Reshape) layer created", log_level, LOG_LEVEL::DEBUG);
-      }
-    }
-    break;
-
+      actual_layer = build_unsqueeze_layer(node, output_node_map, log_level, dev, mem);
+      break;
     case ONNX_LAYERS::TRANSPOSE:
-    {
-      log_string("Transpose layer detected", log_level, LOG_LEVEL::DEBUG);
-      vector<int> perm;
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("perm"))
-        {
-          for (int h = 0; h < attribute.ints_size(); h++)
-          {
-            perm.push_back(attribute.ints(h));
-          }
-        }
-      }
-      log_string("perm vector created", log_level, LOG_LEVEL::DEBUG);
-
-      string parent_name;
-      parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-
-      if (recurrent_net)
-      {
-        if (perm.size() > 1)
-        {
-          if (perm[0] != 0 || perm[1] != 1)
-          {
-            log_string("Transpose layers in recurrent nets can not swap batch or sequence dimensions. Skiping Transpose layer...", log_level, LOG_LEVEL::DEBUG);
-            actual_layer = parent;
-            break;
-          }
-        }
-        else
-        {
-          log_string("WARNING: Transpose layer with permute indices size of " + to_string(perm.size()) + ". Skiping Transpose layer...", log_level, LOG_LEVEL::WARN);
-          actual_layer = parent;
-          break;
-        }
-      }
-
-      // EDDL models have to be batch first in shape
-      if (perm[0] != 0)
-      {
-        msg("The perm vector of the operator " + name + " is not valid (perm[0] != 0). EDDL tensors are batch first.", "ONNX::ImportNet");
-      }
-      else
-      {
-        // Remove batch dimension to create the Permute layer
-        perm.erase(perm.begin());
-        // Fix the perm vector after removing batch dim
-        for (int i = 0; i < perm.size(); ++i)
-          perm[i]--;
-      }
-
-      actual_layer = new LPermute(parent, perm, name, dev, mem);
-      log_string("Permute layer created", log_level, LOG_LEVEL::DEBUG);
-    }
-    break;
-
+      actual_layer = build_permute_layer(node, output_node_map, recurrent_net, log_level, dev, mem);
+      break;
     case ONNX_LAYERS::RESIZE:
-    {
-      bool reshape_out = true;
-      string da_mode("nearest");
-      float constant = 0.0;
-
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("coordinate_transformation_mode"))
-        {
-          if (attribute.s().compare("asymmetric"))
-          {
-            msg("In Resize operator, the coordinate transformation mode \"" + attribute.s() + "\" is not supported. It must be \"asymmetric\".", "ONNX::ImportNet");
-          }
-        }
-        if (!attr_name.compare("mode"))
-        {
-          if (attribute.s().compare("nearest"))
-          {
-            // ONNX only supports: "nearest", "linear" and "cubic".
-            msg("In Resize operator, the mode \"" + attribute.s() + "\" is not supported. It must be \"nearest\".", "ONNX::ImportNet");
-          }
-        }
-      }
-
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-      vector<int> new_shape = parent->getShape();
-
-      string weights_name = node->input(2);
-      float *dim_scales = new float [(&(map_init_values[weights_name]))->size()];
-      COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[weights_name]), dim_scales);
-
-      // Compute new shape by scaling the parent output shape
-      for (int i = 0; i < new_shape.size(); ++i)
-      {
-        new_shape[i] = new_shape[i] * dim_scales[i];
-      }
-
-      delete [] dim_scales;
-
-      actual_layer = new LScale(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
-    }
-    break;
+      actual_layer = build_scale_layer(node, map_init_values, output_node_map, dev, mem);
+      break;
 
     default:
       log_string("Error: The ONNX node type " + layer_type_name + " is not supported!", log_level, LOG_LEVEL::ERROR);
       nodeQueue.pop();
       continue;
-      break;
     }
 
     for (int i = 0; i < node->output_size(); i++)
@@ -1200,7 +890,8 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
                      mem,
                      log_level);
 
-  vector<Layer *> input_layers; // To store the final input layers
+  // Get input layers of the model
+  vector<Layer *> input_layers;
   for (Layer *layer : inputs)
   {
     bool valid_input = true;

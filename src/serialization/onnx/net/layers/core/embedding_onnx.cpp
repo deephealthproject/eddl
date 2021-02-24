@@ -1,7 +1,7 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/core/embedding_onnx.h"
 #include "eddl/serialization/onnx/layers/core/squeeze_onnx.h"
-#include "eddl/serialization/onnx/layers/onnx_helpers/export_helpers.h"
+#include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 
 void build_embedding_node(LEmbedding *layer, onnx::GraphProto *graph)
 {
