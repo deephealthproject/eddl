@@ -122,6 +122,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#clion">CLion</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-datasets">Loading datasets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#loading-numpy-files-npy">Loading Numpy files (.npy)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
@@ -498,6 +502,28 @@ cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREF
 <span class="c1"># Note:</span>
 To get the path, activate the environment and type:
 <span class="nb">echo</span> <span class="nv">$CONDA_PREFIX</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="loading-datasets">
+<h2>Loading datasets<a class="headerlink" href="#loading-datasets" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="loading-numpy-files-npy">
+<h3>Loading Numpy files (.npy)<a class="headerlink" href="#loading-numpy-files-npy" title="Permalink to this headline">¶</a></h3>
+<p>Currently, we cannot do this natively from the EDDL. However, you can do it with the PyEDDL.</p>
+<p>First, install Numpy and the PyEDDL in you environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install numpy
+conda install -c dhealth pyeddl-cpu  <span class="c1"># or *-gpu</span>
+</pre></div>
+</div>
+<p>Then, we need to create a python file (<code class="docutils literal notranslate"><span class="pre">test.py</span></code>) in order to read the numpy file and convert it to <code class="docutils literal notranslate"><span class="pre">.bin</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyeddl.tensor</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Convert numpy to bin</span>
+<span class="n">t_npy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;myarray.npy&quot;</span><span class="p">)</span>
+<span class="n">t_eddl</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">t_npy</span><span class="p">)</span>
+<span class="n">t_eddl</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;myarray.bin&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
