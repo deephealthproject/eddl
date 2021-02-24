@@ -311,3 +311,33 @@ If you want to run it using the conda environment, add:
     echo $CONDA_PREFIX
 
 .. _more: https://stackoverflow.com/questions/39979836/using-openmp-with-c11-on-mac-os
+
+
+Loading datasets
+-----------------
+
+Loading a Numpy file (.npy)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Currently, we cannot do this natively from the EDDL. However, you can do it with the PyEDDL.
+
+First, install Numpy and the PyEDDL in you environment:
+
+.. code:: bash
+
+    pip install numpy
+    conda install -c dhealth pyeddl-cpu  # or *-gpu
+
+Then, we need to create a python file (``test.py``) in order to read the numpy file and convert it to ``.bin``:
+
+.. code:: python
+
+    from pyeddl.tensor import Tensor
+    import numpy as np
+
+    # Convert numpy to bin
+    t_npy = np.load("myarray.npy")
+    t_eddl = Tensor.fromarray(t_npy)
+    t_eddl.save("myarray.bin")
+
+
