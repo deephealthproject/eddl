@@ -1,50 +1,7 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/import_helpers.h"
-
+#include "eddl/serialization/onnx/layers/layers_onnx.h"
 #include "eddl/layers/core/layer_core.h"
-#include "eddl/layers/conv/layer_conv.h"
-#include "eddl/layers/normalization/layer_normalization.h"
-#include "eddl/layers/pool/layer_pool.h"
-#include "eddl/layers/recurrent/layer_recurrent.h"
-#include "eddl/layers/reductions/layer_reductions.h"
-#include "eddl/layers/da/layer_da.h"
-#include "eddl/layers/operators/layer_operators.h"
-#include "eddl/layers/merge/layer_merge.h"
-#include "eddl/tensor/tensor.h"
-#include "eddl/utils.h"
-
-#include "eddl/serialization/onnx/layers/core/dense_onnx.h"
-#include "eddl/serialization/onnx/layers/core/drop_onnx.h"
-#include "eddl/serialization/onnx/layers/core/reshape_onnx.h"
-#include "eddl/serialization/onnx/layers/core/activation_onnx.h"
-#include "eddl/serialization/onnx/layers/core/squeeze_onnx.h"
-#include "eddl/serialization/onnx/layers/core/unsqueeze_onnx.h"
-#include "eddl/serialization/onnx/layers/core/permute_onnx.h"
-#include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
-#include "eddl/serialization/onnx/layers/conv/upsampling_onnx.h"
-#include "eddl/serialization/onnx/layers/pool/avgpool_onnx.h"
-#include "eddl/serialization/onnx/layers/pool/maxpool_onnx.h"
-#include "eddl/serialization/onnx/layers/normalization/batchnorm_onnx.h"
-#include "eddl/serialization/onnx/layers/merge/concat_onnx.h"
-#include "eddl/serialization/onnx/layers/merge/add_onnx.h"
-#include "eddl/serialization/onnx/layers/merge/matmul_onnx.h"
-#include "eddl/serialization/onnx/layers/operators/abs_onnx.h"
-#include "eddl/serialization/onnx/layers/operators/div_onnx.h"
-#include "eddl/serialization/onnx/layers/operators/exp_onnx.h"
-#include "eddl/serialization/onnx/layers/operators/log_onnx.h"
-#include "eddl/serialization/onnx/layers/operators/mult_onnx.h"
-#include "eddl/serialization/onnx/layers/operators/sqrt_onnx.h"
-#include "eddl/serialization/onnx/layers/operators/diff_onnx.h"
-#include "eddl/serialization/onnx/layers/reductions/max_onnx.h"
-#include "eddl/serialization/onnx/layers/reductions/min_onnx.h"
-#include "eddl/serialization/onnx/layers/reductions/mean_onnx.h"
-#include "eddl/serialization/onnx/layers/reductions/sum_onnx.h"
-#include "eddl/serialization/onnx/layers/reductions/argmax_onnx.h"
-#include "eddl/serialization/onnx/layers/recurrent/lstm_onnx.h"
-#include "eddl/serialization/onnx/layers/recurrent/gru_onnx.h"
-#include "eddl/serialization/onnx/layers/recurrent/rnn_onnx.h"
-#include "eddl/serialization/onnx/layers/da/scale_onnx.h"
-#include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 
 // Gets the initializers from the onnx layer graph
 vector<onnx::TensorProto> get_initializers(onnx::GraphProto graph)
@@ -113,68 +70,6 @@ queue<onnx::NodeProto *> process_inputs(vector<Layer *> &inputs,
     }
   }
   return nodeQueue;
-}
-
-// Creates a map where the key is the onnx name for the layer type and the 
-// value is the constant value in the enumeration for onnx layer type.
-map<string, ONNX_LAYERS> create_enum_map()
-{
-  map<string, ONNX_LAYERS> map_layers;
-  map_layers["BatchNormalization"] = ONNX_LAYERS::BATCHNORM;
-  map_layers["Conv"] = ONNX_LAYERS::CONV;
-  map_layers["Gemm"] = ONNX_LAYERS::DENSE;
-  map_layers["Dropout"] = ONNX_LAYERS::DROP;
-  map_layers["Reshape"] = ONNX_LAYERS::RESHAPE;
-  map_layers["Flatten"] = ONNX_LAYERS::FLATTEN;
-  map_layers["Transpose"] = ONNX_LAYERS::TRANSPOSE;
-  map_layers["Squeeze"] = ONNX_LAYERS::SQUEEZE;
-  map_layers["Unsqueeze"] = ONNX_LAYERS::UNSQUEEZE;
-  map_layers["Upsample"] = ONNX_LAYERS::UPSAMPLING;
-  map_layers["Softmax"] = ONNX_LAYERS::SOFTMAX;
-  map_layers["MaxPool"] = ONNX_LAYERS::MAXPOOL;
-  map_layers["AveragePool"] = ONNX_LAYERS::AVGPOOL;
-  map_layers["GlobalMaxPool"] = ONNX_LAYERS::GLOBMAXPOOL;
-  map_layers["GlobalAveragePool"] = ONNX_LAYERS::GLOBAVGPOOL;
-  // Activation layers
-  map_layers["Relu"] = ONNX_LAYERS::RELU;
-  map_layers["Sigmoid"] = ONNX_LAYERS::SIGMOID;
-  map_layers["HardSigmoid"] = ONNX_LAYERS::HARD_SIGMOID;
-  map_layers["Tanh"] = ONNX_LAYERS::TANH;
-  map_layers["Linear"] = ONNX_LAYERS::LINEAR;
-  map_layers["Exponential"] = ONNX_LAYERS::EXPONENTIAL;
-  map_layers["LeakyRelu"] = ONNX_LAYERS::LEAKY_RELU;
-  map_layers["ThresholdedRelu"] = ONNX_LAYERS::THRESHOLDED_RELU;
-  map_layers["Elu"] = ONNX_LAYERS::ELU;
-  map_layers["Selu"] = ONNX_LAYERS::SELU;
-  map_layers["Softsign"] = ONNX_LAYERS::SOFTSIGN;
-  map_layers["Softplus"] = ONNX_LAYERS::SOFTPLUS;
-  // Merge Layers
-  map_layers["Concat"] = ONNX_LAYERS::CONCAT;
-  map_layers["Add"] = ONNX_LAYERS::ADD;
-  map_layers["MatMul"] = ONNX_LAYERS::MAT_MUL;
-
-  map_layers["LSTM"] = ONNX_LAYERS::LSTM;
-  map_layers["GRU"] = ONNX_LAYERS::GRU;
-  map_layers["RNN"] = ONNX_LAYERS::RNN;
-  map_layers["Identity"] = ONNX_LAYERS::IDENTITY;
-  map_layers["Gather"] = ONNX_LAYERS::GATHER;
-  map_layers["Cast"] = ONNX_LAYERS::CAST;
-  map_layers["Abs"] = ONNX_LAYERS::ABS;
-  map_layers["Div"] = ONNX_LAYERS::DIV;
-  map_layers["Exp"] = ONNX_LAYERS::EXP;
-  map_layers["Log"] = ONNX_LAYERS::LOG;
-  map_layers["Mul"] = ONNX_LAYERS::MUL;
-  //map_layers["Pow"] = ONNX_LAYERS::POW;
-  map_layers["Sqrt"] = ONNX_LAYERS::SQRT;
-  map_layers["Sub"] = ONNX_LAYERS::SUB;
-  map_layers["ReduceMax"] = ONNX_LAYERS::RMAX;
-  map_layers["ReduceMin"] = ONNX_LAYERS::RMIN;
-  map_layers["ReduceMean"] = ONNX_LAYERS::RMEAN;
-  map_layers["ReduceSum"] = ONNX_LAYERS::RSUM;
-  map_layers["ArgMax"] = ONNX_LAYERS::ARGMAX;
-  map_layers["Resize"] = ONNX_LAYERS::RESIZE;
-
-  return map_layers;
 }
 
 // Creates two maps. Both have the name of the initializer node as key. 
@@ -553,14 +448,6 @@ void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
   }
 }
 
-ONNX_LAYERS get_layer_type(string layer_type_name, map<string, ONNX_LAYERS> &map_layers)
-{
-  if (map_layers.count(layer_type_name))
-    return map_layers[layer_type_name];
-  else
-    return ONNX_LAYERS::NOT_SUPPORTED;
-}
-
 void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
                         map<string, vector<float>> &map_init_values,
                         map<string, vector<int>> &map_init_dims,
@@ -618,183 +505,27 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
       continue;
     }
 
-    // 6.3
-    // We have to know which layer to create. For it, we use a
-    // map <key:string - val:Enum> for creating a switch, where
-    // we call the constructor of that layer
-    string name = node->name();
-    string layer_type_name = node->op_type();
-    log_string("Node " + name + " has operation type = " + layer_type_name, log_level, LOG_LEVEL::DEBUG);
-    ONNX_LAYERS layer_type = get_layer_type(layer_type_name, map_layers);
-    int dev = DEV_CPU;
+    // 6.3: Create the layer from the onnx node
     // Every case should create the corresponding layer and asign it to "actual_layer" variable
-    Layer *actual_layer;
+    int dev = DEV_CPU;
+    Layer *actual_layer = build_layer_from_node(node,
+                                                map_layers,
+                                                map_init_values,
+                                                map_init_dims,
+                                                input_node_map,
+                                                output_node_map,
+                                                constant_node_map,
+                                                inputs2remove,
+                                                recurrent_net,
+                                                log_level,
+                                                dev,
+                                                mem);
 
-    switch (layer_type)
-    {
-    case ONNX_LAYERS::BATCHNORM:
-      actual_layer = build_batchnorm_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::CONV:
-      actual_layer = build_conv_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::DENSE:
-      actual_layer = build_dense_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::UPSAMPLING:
-      actual_layer = build_upsampling_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::DROP:
-      actual_layer = build_dropout_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::MAXPOOL:
-      actual_layer = build_maxpool_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::GLOBMAXPOOL:
-      actual_layer = build_globalmaxpool_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::AVGPOOL:
-      actual_layer = build_averagepool_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::GLOBAVGPOOL:
-      actual_layer = build_globalaveragegpool_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::RESHAPE:
-      actual_layer = build_reshape_layer(node, constant_node_map, map_init_values, map_init_dims, input_node_map, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::FLATTEN:
-      actual_layer = build_flatten_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::RELU:
-      actual_layer = build_relu_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::SIGMOID:
-      actual_layer = build_sigmoid_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::HARD_SIGMOID:
-      actual_layer = build_hard_sigmoid_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::TANH:
-      actual_layer = build_tanh_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::EXPONENTIAL:
-      actual_layer = build_exponential_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::LINEAR:
-      actual_layer = build_linear_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::LEAKY_RELU:
-      actual_layer = build_leaky_relu_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::THRESHOLDED_RELU:
-      actual_layer = build_thresholded_relu_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::ELU:
-      actual_layer = build_elu_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::SELU:
-      actual_layer = build_selu_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::SOFTSIGN:
-      actual_layer = build_softsign_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::SOFTPLUS:
-      actual_layer = build_softplus_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::SOFTMAX:
-      actual_layer = build_softmax_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::CONCAT:
-      actual_layer = build_concat_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::ADD:
-      actual_layer = build_add_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::ABS:
-      actual_layer = build_abs_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::DIV:
-      actual_layer = build_div_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::EXP:
-      actual_layer = build_exp_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::LOG:
-      actual_layer = build_log_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::MUL:
-      actual_layer = build_mul_layer(node, output_node_map, dev, mem);
-      break;
-    //case ONNX_LAYERS::POW:
-    //  TODO: Implement LPow in EDDL
-    //  actual_layer = build_pow_layer(node, output_node_map, dev, mem);
-    //  break;
-    case ONNX_LAYERS::SQRT:
-      actual_layer = build_sqrt_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::SUB:
-      actual_layer = build_diff_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::RMAX:
-      actual_layer = build_rmax_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::RMIN:
-      actual_layer = build_rmin_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::RMEAN:
-      actual_layer = build_rmean_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::RSUM:
-      actual_layer = build_rsum_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::ARGMAX:
-      actual_layer = build_rargmax_layer(node, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::MAT_MUL:
-      actual_layer = build_matmul_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
-      break;
-    case ONNX_LAYERS::LSTM:
-      actual_layer = build_lstm_layer(node, map_init_values, map_init_dims, input_node_map, output_node_map, inputs2remove, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::GRU:
-      actual_layer = build_gru_layer(node, map_init_values, map_init_dims, input_node_map, output_node_map, inputs2remove, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::RNN:
-      actual_layer = build_rnn_layer(node, map_init_values, map_init_dims, input_node_map, output_node_map, inputs2remove, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::IDENTITY:
-      actual_layer = handle_identity_node(node, output_node_map, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::CAST:
-      actual_layer = handle_cast_node(node, output_node_map, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::GATHER:
-      actual_layer = handle_gather_node(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::SQUEEZE:
-      actual_layer = build_squeeze_layer(node, output_node_map, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::UNSQUEEZE:
-      actual_layer = build_unsqueeze_layer(node, output_node_map, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::TRANSPOSE:
-      actual_layer = build_permute_layer(node, output_node_map, recurrent_net, log_level, dev, mem);
-      break;
-    case ONNX_LAYERS::RESIZE:
-      actual_layer = build_scale_layer(node, map_init_values, output_node_map, dev, mem);
-      break;
-
-    default:
-      log_string("Error: The ONNX node type " + layer_type_name + " is not supported!", log_level, LOG_LEVEL::ERROR);
-      nodeQueue.pop();
-      continue;
-    }
-
+    // 6.3: Add the nodes that use the outputs of the created layer to the queue
     for (int i = 0; i < node->output_size(); i++)
     {
       if (actual_layer != nullptr)
           output_node_map[node->output(i)] = actual_layer;
-      // Add the childs of the created layer to the queue
       vector<onnx::NodeProto *> child_nodes = input_node_map[node->output(i)];
       for (onnx::NodeProto *child : child_nodes)
         nodeQueue.push(child);
