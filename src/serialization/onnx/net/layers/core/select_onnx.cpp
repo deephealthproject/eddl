@@ -70,11 +70,6 @@ Layer* build_select_layer(onnx::NodeProto *node,
     }
   }
 
-  cout << "indices: ";
-  for (string &s : indices)
-    cout << s << ", ";
-  cout << endl;
-
   return new LSelect(parent, indices, node->name(), dev, mem);
 }
 
