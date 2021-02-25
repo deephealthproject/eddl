@@ -1391,12 +1391,13 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gp
         Tensor *output1 = net1->layers[i]->output;
         Tensor *output2 = net2->layers[i]->output;
 
-        // Send to device
-        if(compare_in_gpu){ output1->toGPU(); output2->toGPU(); }
-        else { output1->toCPU(); output2->toCPU(); }
+        // Send to device (not a good idea to have this here)
+        if(compare_in_gpu){
+            output1->toGPU(); output2->toGPU();
+        }else {
+            output1->toCPU(); output2->toCPU();
+        }
 
-//        output1->print(2, true);
-//        output2->print(2, true);
 
         // Check if both outputs are equivalent
         bool equal = Tensor::equivalent(output1, output2, 1e-03, 0.0);
@@ -1412,6 +1413,71 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gp
             }
             equivalent_nets = false;
         }
+    }
+    return equivalent_nets;
+}
+
+bool Net::compare_params(Net *net1, Net *net2, bool verbose, bool compare_in_gpu) {
+    bool equivalent_nets = true;
+
+    // Check if both layers are the same
+    if(net1==net2){
+        if(verbose){
+            cout << "Both nets point to the same object"  << "(" << "Net::compare_params" << ")" << endl;
+        }
+        return true;
+    }
+
+    // Compare the number of layers
+    if (net1->layers.size() != net2->layers.size()){
+        if(verbose){
+            cout << "Nets have a different number of layers"  << "(" << "Net::compare_params" << ")" << endl;
+        }
+        return false;
+    }
+
+
+    // Compare the output of each layer
+    for(int i=0; i<net1->layers.size(); i++){
+
+        // Check if both layers have the same number of parameters
+        if(net1->layers[i]->params.size() != net2->layers[i]->params.size()){
+            if(verbose){
+                cout << "The parameters in from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                     net2->layers[i]->name << ") do not match" << "(" << "Net::compare_params" << ")" << endl;
+            }
+            return false;
+        }
+
+        // Check params of this layer
+        for(int j=0; j<net1->layers[j]->params.size(); j++){
+            Tensor* param1 = net1->layers[j]->params[j];
+            Tensor* param2 = net2->layers[j]->params[j];
+
+            // Send to device (not a good idea to have this here)
+            if(compare_in_gpu){
+                param1->toGPU(); param2->toGPU();
+            }else {
+                param1->toCPU(); param2->toCPU();
+            }
+
+            // Check if both outputs are equivalent
+            bool equal = Tensor::equivalent(param1, param2, 1e-03, 0.0);
+            if(equal) {
+                if(verbose){
+                    cout << "[OKAY] The params #" << j << " from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                         net2->layers[i]->name << ") do match" << "[" << "Net::compare_params" << "]" << endl;
+                }
+            }else{
+                if(verbose) {
+                    cout << "[FAIL] The params #" << j << " from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                         net2->layers[i]->name << ") do not match" << "[" << "Net::compare_params" << "]" << endl;
+                }
+                equivalent_nets = false;
+            }
+
+        }
+
     }
     return equivalent_nets;
 }
