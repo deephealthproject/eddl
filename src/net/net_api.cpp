@@ -195,25 +195,28 @@ void Net::setlr(vector <float> p)
   snets[i]->optimizer->change(p);
 }
 
-vector<vtensor> Net::get_parameters(bool deepcopy, bool tocpu){
+vector<vtensor> Net::get_parameters(bool deepcopy){
     vector<vtensor> net_params;
 
     // Collect layer params
-    for(auto &l : this->layers){
-        if(!deepcopy){
-            net_params.push_back(l->params);
-        }else{
-            // Clone parameters
-            vtensor lp;
-            for(auto &param : l->params){
-                Tensor* new_param = param->clone();
-                if(tocpu) { new_param->toCPU(); }  // Send to CPU
-                lp.push_back(new_param);  // Add to layer vector of params
-            }
+    for(int i=0; i<this->layers.size(); i++){
 
-            // Add new params
-            net_params.push_back(lp);
+        // Clone parameters
+        vtensor layer_params;
+        for(int j=0; j<this->layers[i]->params.size(); j++){
+            // Collect Tensors from Device to CPU
+            collectTensor(this->layers[i], "param", j);
+
+            // Add to layer vector of params
+            if (deepcopy){
+                layer_params.push_back(this->layers[i]->params[j]->clone());
+            }else{
+                layer_params.push_back(this->layers[i]->params[j]);
+            }
         }
+
+        // Add new params
+        net_params.push_back(layer_params);
     }
 
     return net_params;
@@ -1367,7 +1370,7 @@ vtensor Net::predict(vtensor tin) {
 }
 
 
-bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gpu) {
+bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, float atol, float rtol, bool equal_nan) {
     bool equivalent_nets = true;
 
     // Check if both layers are the same
@@ -1388,19 +1391,16 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gp
 
     // Compare the output of each layer
     for(int i=0; i<net1->layers.size(); i++){
+        // Collect Tensors from Device to CPU
+        collectTensor(net1->layers[i], "output");
+        collectTensor(net2->layers[i], "output");
+
+        // Get tensors
         Tensor *output1 = net1->layers[i]->output;
         Tensor *output2 = net2->layers[i]->output;
 
-        // Send to device (not a good idea to have this here)
-        if(compare_in_gpu){
-            output1->toGPU(); output2->toGPU();
-        }else {
-            output1->toCPU(); output2->toCPU();
-        }
-
-
         // Check if both outputs are equivalent
-        bool equal = Tensor::equivalent(output1, output2, 1e-03, 0.0);
+        bool equal = Tensor::equivalent(output1, output2, atol, rtol, equal_nan);
         if(equal) {
             if(verbose){
                 cout << "[OKAY] The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
@@ -1417,7 +1417,7 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gp
     return equivalent_nets;
 }
 
-bool Net::compare_params(Net *net1, Net *net2, bool verbose, bool compare_in_gpu) {
+bool Net::compare_params(Net *net1, Net *net2, bool verbose, float atol, float rtol, bool equal_nan) {
     bool equivalent_nets = true;
 
     // Check if both layers are the same
@@ -1451,18 +1451,15 @@ bool Net::compare_params(Net *net1, Net *net2, bool verbose, bool compare_in_gpu
 
         // Check params of this layer
         for(int j=0; j<net1->layers[j]->params.size(); j++){
+            // Collect Tensors from Device to CPU
+            collectTensor(net1->layers[i], "param", j);
+            collectTensor(net2->layers[i], "param", j);
+
             Tensor* param1 = net1->layers[j]->params[j];
             Tensor* param2 = net2->layers[j]->params[j];
 
-            // Send to device (not a good idea to have this here)
-            if(compare_in_gpu){
-                param1->toGPU(); param2->toGPU();
-            }else {
-                param1->toCPU(); param2->toCPU();
-            }
-
             // Check if both outputs are equivalent
-            bool equal = Tensor::equivalent(param1, param2, 1e-03, 0.0);
+            bool equal = Tensor::equivalent(param1, param2, atol, rtol, equal_nan);
             if(equal) {
                 if(verbose){
                     cout << "[OKAY] The params #" << j << " from layers #" << i << " (" << net1->layers[i]->name << " AND " <<

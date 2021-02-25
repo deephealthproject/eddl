@@ -176,7 +176,7 @@ public:
     void compute_loss();
     void clamp(float min,float max);
     void setlr(vector <float> p);
-    vector<vtensor> get_parameters(bool deepcopy=false, bool tocpu=false);
+    vector<vtensor> get_parameters(bool deepcopy=false);
     void set_parameters(const vector<vtensor>& params);
 
     vector<float> get_losses();
@@ -196,8 +196,8 @@ public:
     vtensor predict(vtensor tin);
 
     // Debug
-    static bool compare_outputs(Net* net1, Net* net2, bool verbose=false, bool compare_in_gpu=false);
-    static bool compare_params(Net* net1, Net* net2, bool verbose=false, bool compare_in_gpu=false);
+    static bool compare_outputs(Net* net1, Net* net2, bool verbose=false, float atol=1e-05f, float rtol=0.0f, bool equal_nan=false);
+    static bool compare_params(Net* net1, Net* net2, bool verbose=false, float atol=1e-05f, float rtol=0.0f, bool equal_nan=false);
 };
 
 
