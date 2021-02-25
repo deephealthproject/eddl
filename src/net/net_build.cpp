@@ -469,6 +469,10 @@ void Net::setTrainable(string lname, bool val)
 
 void Net::removeLayer(string lname)
 {
+  if (isbuild) {
+    msg("Only remove layers BEFORE Build","Net::removeLayer");
+  }
+
   for(int i=0;i<layers.size();i++) {
     if (layers[i]->name==lname) {
       cout<<"removing "<<lname<<endl;
