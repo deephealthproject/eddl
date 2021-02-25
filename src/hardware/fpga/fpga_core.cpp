@@ -9,42 +9,75 @@
 
 #ifdef cFPGA
 
-#include "eddl/hardware/fpga/xcl2.hpp"
-#include <vector>
-#include <math.h>
-#include <float.h>
-#include "eddl/tensor/tensor.h"
-#include "eddl/descriptors/descriptors.h"
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include <sys/time.h>
-#include "eddl/hardware/cpu/cpu_tensor.h"
+// Headers -------------------------------------------------------------------------------------------------
+#include "eddl/hardware/fpga/xcl2.hpp"      // OpenCL header
+#include <vector>                           // Vectors
+#include <math.h>                           // Math functions
+#include <float.h>                          // Float operations
+#include "eddl/tensor/tensor.h"             // EDDL Tensors
+#include "eddl/descriptors/descriptors.h"   // EDDL Descriptors
+#include "eddl/hardware/fpga/fpga_hw.h"     // FPGA enables of kernels
+#include <sys/time.h>                       // Time (for stats)
+#include "eddl/hardware/cpu/cpu_tensor.h"   // CPU related function headers (cpu_transpose, cpu_copy, ...)
+#include <ap_fixed.h>                       // Aproximated precision fixed point support
+#include <ap_int.h>                         // Aproximated precision integer support
 
-int next_fpga_tensor_id = 1;
-int num_tensors_created = 0;
+// ----------------------------------------------------------------------------------------------------------
+// Precision support
+//
+// data_type is the basic precision format used for tensors in FPGA
+//
+// Three supported formats:
+//  - float. This format has been tested and works well within EDDL. Indeed, is the single format used by EDDL
+//  - ap_fixed. This format is under test. Aproximated precision fixed point format
+//  - ap_int. This format is under test. Aproximated precision integer
+//
+// The PRECISION_CONVERSION define must be set if either ap_fixed or ap_int formats are used. This define
+// enables the precision conversion from CPU to FPGA and viceversa. Whenever a tensor is read or written
+// from/to the FPGA the precision conversion is performed on a temporary CPU buffer.
+// If float precision is used, then PRECISION_CONVERSION should not be used
+//
+//#define PRECISION_CONVERSION
+#define data_type float
+//#define data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
+//#define data_type ap_int<8>
+//
 
-#define MAX_BUFFER_POOL 10000
+// Defines --------------------------------------------------------------------------------------------------------------------------------
+#define MAX_BUFFER_POOL 10000             // All FPGA tensors are managed in a pool, this define sets the pool size (static)
 
-cl::Buffer *fpga_ptr_buffer_pool[MAX_BUFFER_POOL];
-long fpga_size_buffer_pool[MAX_BUFFER_POOL];
-int fpga_inuse_buffer_pool[MAX_BUFFER_POOL];
-int fpga_free_buffer_pool[MAX_BUFFER_POOL];
-int fpga_num_buffer_pool_slots;
 
-cl::Context      context;
-cl::CommandQueue q;
-cl::CommandQueue com;
-cl::Program      program;
+// Global variables -----------------------------------------------------------------------------------------------------------------------
+int next_fpga_tensor_id = 1;              // Each FPGA tensor is identified with a unique ID, this is the counter of the next available ID
+int num_tensors_created = 0;              // The tensors created in FPGA are managed in a queue, this is the counter of created tensors
 
+// Tensor pool related global variables
+cl::Buffer *fpga_ptr_buffer_pool[MAX_BUFFER_POOL];    // pool of tensors created in the FPGA
+long fpga_size_buffer_pool[MAX_BUFFER_POOL];          // size of each buffer in the pool
+int fpga_inuse_buffer_pool[MAX_BUFFER_POOL];          // flag for each slot in the pool indicating whether is in use or not (can be reused)
+int fpga_free_buffer_pool[MAX_BUFFER_POOL];           // flag for each slot in the pool indicating whether is empty or has valid information
+int fpga_num_buffer_pool_slots;                       // number of allocated slots in the pool
+
+// OpenCL related variables
+cl::Context               *context;                   // OpenCL context
+std::vector<cl:: Device>   devices;                   // List of OpenCL devices
+cl::Device                 device;                    // FPGA device
+cl::CommandQueue          *q;                         // Command queue
+cl::CommandQueue           com;                       // Command queue
+cl::Program               *program;                   // Program
+
+// List of all kernels that can be instantiated in the FPGA
+//
 // activation kernels (22)
 cl::Kernel kernel_relu,   kernel_d_relu,  kernel_thresholded_relu,    kernel_d_thresholded_relu, kernel_leaky_relu,     kernel_d_leaky_relu;
 cl::Kernel kernel_elu,    kernel_d_elu,   kernel_softplus,            kernel_d_softplus,         kernel_softsign,       kernel_d_softsign;
 cl::Kernel kernel_linear, kernel_d_linear,kernel_sigmoid,             kernel_d_sigmoid,          kernel_hard_sigmoid,   kernel_d_hard_sigmoid;
 cl::Kernel kernel_exp,    kernel_d_exp,   kernel_tanh, kernel_d_tanh, kernel_softmax,            kernel_d_softmax;
-
+//
 // bn kernels (4)
 cl::Kernel kernel_permute_channels_last, kernel_permute_channels_first;
 cl::Kernel kernel_permute_batch_last,    kernel_permute_batch_first;
-
+//
 // comparison kernels (20)
 cl::Kernel kernel_all,         kernel_any,        kernel_isfinite,    kernel_isinf;
 cl::Kernel kernel_isnan,       kernel_isneginf,   kernel_isposinf,    kernel_equal2;
@@ -53,43 +86,44 @@ cl::Kernel kernel_allclose,    kernel_isclose,    kernel_greater,     kernel_gre
 cl::Kernel kernel_less,        kernel_less_equal, kernel_equal,       kernel_not_equal;
 cl::Kernel kernel_greater_vector, kernel_greater_equal_vector, kernel_less_vector;
 cl::Kernel kernel_less_equal_vector, kernel_equal_vector, kernel_not_equal_vector;
-
+//
 // core kernels (11)
 cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      kernel_fill;
 cl::Kernel kernel_select,      kernel_select_back, kernel_set_select, kernel_set_select_back;
 cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 cl::Kernel kernel_select_nn,   kernel_select_back_nn, kernel_set_select_nn, kernel_set_select_back_nn;
-
+//
 // conv kernels (3)
 cl::Kernel kernel_im2col,      kernel_conv2d;
-cl::Kernel kernel_conv2D_K3x3_S1x1_P1x1_BS1;
-
+cl::Kernel kernel_conv2D_4x4;
+cl::Kernel kernel_conv2D_8x8;
+//
 // create kernels (3)
 cl::Kernel kernel_range, kernel_eye, kernel_diag;
-
+//
 // da kernels (6)
 cl::Kernel kernel_single_shift, kernel_single_rotate, kernel_single_scale;
 cl::Kernel kernel_single_flip,  kernel_single_crop;
 cl::Kernel kernel_crop_scale_random;
-
+//
 // generator kernels (4)
 cl::Kernel kernel_rand_uniform, kernel_signed_uniform, kernel_rand_binary, kernel_rand_normal;
-
+//
 // losses kernels (1)
 cl::Kernel kernel_cent;
-
+//
 // metrics kernels (22)
 cl::Kernel kernel_accuracy, kernel_bin_accuracy;
-
+//
 // pool kernels (4)
 cl::Kernel kernel_mpool2D, kernel_mpool2D_back, kernel_avgpool2D, kernel_avgpool2D_back;
-
+//
 // reduction kernels (5)
 cl::Kernel kernel_reduce, kernel_reduce_op, kernel_reduce_sum2D, kernel_reduction, kernel_reduction_back;
-
+//
 // tensor_nn kernels (2)
 cl::Kernel kernel_repeat_nn, kernel_d_repeat_nn;
-
+//
 // math kernels (46)
 cl::Kernel kernel_abs,       kernel_acos,   kernel_add,      kernel_asin,       kernel_atan,          kernel_ceil,          kernel_clamp;
 cl::Kernel kernel_cos,       kernel_cosh,   kernel_mod,      kernel_mult,       kernel_trunc,         kernel_sum_abs;
@@ -99,74 +133,58 @@ cl::Kernel kernel_sign,      kernel_sin,    kernel_sinh,     kernel_sqr,        
 cl::Kernel kernel_inc,       kernel_el_div, kernel_el_mult,  kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
 cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d;
 
+// global variables for profiling. Each kernel can be profiled (obtained the number of instances executed and the accumulated execution time)
+int num_instances_fpga[_NUM_FPGA_FUNCS];            // number of instances a kernel (function) has been called
+struct timeval time_ini_fpga[_NUM_FPGA_FUNCS];      // initial time of an instance for a kernel (function). Temporary variable
+unsigned long long acc_time_fpga[_NUM_FPGA_FUNCS];  // accumulated ime of a kernel (function)
 
-// profiling
-int num_instances_fpga[_NUM_FPGA_FUNCS];
-float mb_memory_needed_fpga;
+// profiling of FPGA resources being used
+float mb_memory_needed_fpga;                        // Megabytes of memory needed for tensors in the FPGA
 
-// Sets the callback for a particular event
+
+// OpenCL-related support functions ----------------------------------------------------------------------------------------------------------
+//
+
+// set_callback(). Sets the callback for a particular event in OpenCL
 void set_callback(cl::Event event, const char *queue_name) {
   cl_int err;
   OCL_CHECK(err,
             err = event.setCallback(CL_COMPLETE, event_cb, (void *)queue_name));
 }
 
-// An event callback function that prints the operations performed by the OpenCL
-// runtime.
+// event_cb(). An event callback function that prints the operations performed by the OpenCL runtime
 void event_cb(cl_event event1, cl_int cmd_status, void *data) {
+#ifdef FPGA_DEBUG
   cl_int err;
   cl_command_type command;
   cl::Event event(event1, true);
   OCL_CHECK(err, err = event.getInfo(CL_EVENT_COMMAND_TYPE, &command));
   cl_int status;
-  OCL_CHECK(err,
-            err = event.getInfo(CL_EVENT_COMMAND_EXECUTION_STATUS, &status));
+  OCL_CHECK(err, err = event.getInfo(CL_EVENT_COMMAND_EXECUTION_STATUS, &status));
+
   const char *command_str;
   const char *status_str;
   switch (command) {
-  case CL_COMMAND_READ_BUFFER:
-    command_str = "buffer read";
-    break;
-  case CL_COMMAND_WRITE_BUFFER:
-    command_str = "buffer write";
-    break;
-  case CL_COMMAND_NDRANGE_KERNEL:
-    command_str = "kernel";
-    break;
-  case CL_COMMAND_MAP_BUFFER:
-    command_str = "kernel";
-    break;
-  case CL_COMMAND_COPY_BUFFER:
-    command_str = "kernel";
-    break;
-  case CL_COMMAND_MIGRATE_MEM_OBJECTS:
-    command_str = "buffer migrate";
-    break;
-  default:
-    command_str = "unknown";
+    case CL_COMMAND_READ_BUFFER:          command_str = "buffer read"; break;
+    case CL_COMMAND_WRITE_BUFFER:         command_str = "buffer write"; break;
+    case CL_COMMAND_NDRANGE_KERNEL:       command_str = "kernel";  break;
+    case CL_COMMAND_MAP_BUFFER:           command_str = "kernel";  break;
+    case CL_COMMAND_COPY_BUFFER:          command_str = "kernel";  break;
+    case CL_COMMAND_MIGRATE_MEM_OBJECTS:  command_str = "buffer migrate"; break;
+    default:                              command_str = "unknown";
   }
   switch (status) {
-  case CL_QUEUED:
-    status_str = "Queued";
-    break;
-  case CL_SUBMITTED:
-    status_str = "Submitted";
-    break;
-  case CL_RUNNING:
-    status_str = "Executing";
-    break;
-  case CL_COMPLETE:
-    status_str = "Completed";
-    break;
+    case CL_QUEUED:    status_str = "Queued"; break;
+    case CL_SUBMITTED: status_str = "Submitted"; break;
+    case CL_RUNNING:   status_str = "Executing"; break;
+    case CL_COMPLETE:  status_str = "Completed"; break;
   }
-  printf("[%s]: %s %s\n", reinterpret_cast<char *>(data), status_str,
-         command_str);
+  printf("[%s]: %s %s\n", reinterpret_cast<char *>(data), status_str, command_str);
   fflush(stdout);
+#endif
 }
 
-
-
-// profiling functions
+// _profile_fpga_funcname(). profiling function
 void _profile_fpga_funcname(int i, char *name) {
   switch(i) {
       case _FPGA_ALL              : strcpy(name, "all"); break;
@@ -316,9 +334,7 @@ void _profile_fpga_funcname(int i, char *name) {
   }
 }
 
-struct timeval time_ini_fpga[_NUM_FPGA_FUNCS];
-unsigned long long acc_time_fpga[_NUM_FPGA_FUNCS];
-
+// _profile_fpga(). Function to profile a kernel (function)
 void _profile_fpga(int f_id, int end) {
 #ifdef FPGA_DEBUG
   char func_name[50];
@@ -336,10 +352,13 @@ void _profile_fpga(int f_id, int end) {
   }
 }
 
+// _profile_fpga_tensor(). Function to profile a tensor. It provides
+// tensor information through the console
 void _profile_fpga_tensor(Tensor *T) {
 #ifdef FPGA_DEBUG
-  // We read the tensor from FPGA
+  // We read the tensor from FPGA first
   fpga_copy_from_fpga(T, T->ptr);
+  // Now we calculate statistics (min, max, avg) from the tensor
   float min = FLT_MAX;
   float max = FLT_MIN;
   float sum = 0.f;
@@ -350,10 +369,47 @@ void _profile_fpga_tensor(Tensor *T) {
     sum += T->ptr[i];
   }
   avg = sum / (float)T->size;
-  printf("  - Tensor id %d size %d size_fpga %d shape0 %d shape1 %d (cpu_ptr %p). Min %8.4f Max %8.4f Avg %8.4f\n", T->fpga_tensor_id, T->size, T->fpga_size, T->shape[0], T->shape[1], T->ptr, min, max, avg);
+
+  // Now, we print the information (related tensor information and statistics of the tensor)
+  printf("  - Tensor id %3d ", T->fpga_tensor_id);
+  printf(" size %10d ", T->size);
+  printf(" size_fpga %10d ", T->fpga_size);
+  printf(" shape0 %6d ", T->shape[0]);
+  if (T->ndim>=2) printf(" shape1 %6d ", T->shape[1]); else printf("               ");
+  if (T->ndim>=3) printf(" shape2 %6d ", T->shape[2]); else printf("               ");
+  if (T->ndim>=4) printf(" shape3 %6d ", T->shape[3]); else printf("               ");
+  printf(" (cpu_ptr %p). ", T->ptr);
+  printf(" Min %8.4f Max %8.4f Avg %8.4f\n", min, max, avg);
 #endif
 }
 
+// _profile_fpga_tensor_print(). Prints some values of the tensor
+void _profile_fpga_tensor_print(Tensor *T) {
+#ifdef FPGA_DEBUG_VERBOSE
+  // We read the tensor from FPGA
+  printf("tensor print:\n");
+  fpga_copy_from_fpga(T, T->ptr);
+  int d1_max = 2;
+  int d2_max = 4;
+  int d3_max = 4;
+  if (T->ndim==4) {
+    for (int d0=0; d0<T->shape[0]; d0++) {
+    for (int d1=0; d1<d1_max; d1++) {
+    for (int d2=0; d2<d2_max; d2++) {
+    for (int d3=0; d3<d3_max; d3++) {
+      int a = (d0 * T->shape[1] * T->shape[2] * T->shape[3]) + (d1 * T->shape[2] * T->shape[3]) + (d2 * T->shape[3]) + d3;
+      printf("%f ", T->ptr[a]);
+    }
+    }
+    printf("\n");
+    }
+    printf("\n");
+    }
+  }
+#endif
+}
+
+// _show_profile_fpga(). Shows all the profile collected so far.
 void _show_profile_fpga() {
 #ifdef FPGA_DEBUG
   printf("\n---------------------------------------\nFPGA functions called:\n");
@@ -369,6 +425,7 @@ void _show_profile_fpga() {
 #endif
 }
 
+// _profile_fpga_add_tensor(). Adds a tensor profile information
 void _profile_fpga_add_tensor(int size) {
 //  printf("tensor add: size in MB: %6.4f\n", (float)size / 1024.0 / 1024.0);
   mb_memory_needed_fpga += (float)size / 1024.0 / 1024.0;
@@ -379,55 +436,53 @@ void _profile_fpga_add_tensor(int size) {
 #endif
 }
 
+// _profile_fpga_remove_tensor(). Removes tensor profile related information
 void _profile_fpga_remove_tensor(int size) {
   mb_memory_needed_fpga -= (float)size / 1024.0 / 1024.0;
   num_tensors_created--;
 }
 
-
-
-// FPGA initialization and finalization ----------------------
+// FPGA initialization and finalization functions ---------------------------------------------------------------------------------------
 //
-void fpga_init(){ // initialize only once
 
-    cl_int err;
+// fpga_init(). Initialices the devide, sets up the kernels, prepares everything related to the FPGA device and support infrastructure
+// This function must be called only once and at the begining of operations with the FPGA
+void fpga_init(){
+
+#ifdef FPGA_DEBUG
+    printf("initializing FPGA\n");
+#endif
+
+    cl_int      err;
     std::string binaryFile = "eddl.xclbin";
-    unsigned fileBufSize;
-    //std::vector<cl::Device> devices = xcl::get_xil_devices();
-    //cl::Device device = devices[0];
-    auto devices = xcl::get_xil_devices();
-    auto device = devices[0];
+    unsigned    fileBufSize;
 
-    OCL_CHECK(err, context = cl::Context(device, NULL, NULL, NULL, &err));
-    OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
-    char *fileBuf = xcl::read_binary_file(binaryFile, fileBufSize);
-    cl::Program::Binaries bins{{fileBuf, fileBufSize}};
+#ifdef FPGA_DEBUG
+    std::cout << "Creating Context..." << std::endl;
+#endif
+    devices = xcl::get_xil_devices();
+    device = devices[0];
 
+    OCL_CHECK(err, context = new cl::Context(device, NULL, NULL, NULL, &err));
+
+    OCL_CHECK(err, q = new cl::CommandQueue(*context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
+    
+    std::string device_name = device.getInfo<CL_DEVICE_NAME>();
+    auto fileBuf = xcl::read_binary_file(binaryFile);
+    cl::Program::Binaries bins;
+
+    bins = cl::Program::Binaries{{fileBuf.data(), fileBuf.size()}};
     devices.resize(1);
-    OCL_CHECK(err, program = cl::Program(context, devices, bins, NULL, &err));
+
+    OCL_CHECK(err, program = new cl::Program(*context, devices, bins, NULL, &err));
+#ifdef FPGA_DEBUG
+    std::cout << "Device " << device_name.c_str() << ": program successful!" << std::endl;
+#endif
+
 
     #ifdef K_ENABLED_RELU
-    printf("creating ReLu kernel\n");
     OCL_CHECK(err, kernel_relu = cl::Kernel(program,"k_relu", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
-
-  // prueba
-  cl::Event event;
-  cl::Buffer b1;
-  cl::Buffer b2;
-  long sizeA = 1024;
-  OCL_CHECK(err,b1 = cl::Buffer(context,CL_MEM_READ_WRITE, sizeA*sizeof(float), NULL, &err));
-  OCL_CHECK(err,b2 = cl::Buffer(context,CL_MEM_READ_WRITE, sizeA*sizeof(float), NULL, &err));
-  OCL_CHECK(err, err = kernel_relu.setArg(0, b1));
-  OCL_CHECK(err, err = kernel_relu.setArg(1, b2));
-  OCL_CHECK(err, err = kernel_relu.setArg(2, sizeA));
-  OCL_CHECK(err, err = q.enqueueTask(kernel_relu, NULL, &event));
-  printf("relu kernel lanzado en init\n");
-  //  event.wait();
-  q.finish();
-
-
-
     #endif
     #ifdef K_ENABLED_D_RELU
     OCL_CHECK(err, kernel_d_relu = cl::Kernel(program,"k_d_relu", &err));
@@ -718,60 +773,13 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_conv2d = cl::Kernel(program,"k_conv2d", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
-    #ifdef K_ENABLED_CONV2D_K3X3_S1X1_P1X1_BS1
-    OCL_CHECK(err, kernel_conv2D_K3x3_S1x1_P1x1_BS1 = cl::Kernel(program, "k_conv2D_8x8", &err));
+    #ifdef K_ENABLED_CONV2D_4x4
+    OCL_CHECK(err, kernel_conv2D_4x4 = cl::Kernel(*program, "k_conv2D", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
-
-    // prueba
-    cl::Event event1;
-    cl::Buffer I;
-    cl::Buffer K;
-    cl::Buffer B;
-    cl::Buffer O;
-    int Ich = 8;
-    int W = 256;
-    int H = 256;
-    int Och = 8;
-    int arg = 0;
-
-    OCL_CHECK(err,I = cl::Buffer(context,CL_MEM_READ_WRITE, Ich * W * H * sizeof(float), NULL, &err));
-    OCL_CHECK(err,K = cl::Buffer(context,CL_MEM_READ_WRITE, 3 * 3 * Ich * Och * sizeof(float), NULL, &err));
-    OCL_CHECK(err,B = cl::Buffer(context,CL_MEM_READ_WRITE, Och * sizeof(float), NULL, &err));
-    OCL_CHECK(err,O = cl::Buffer(context,CL_MEM_READ_WRITE, Och * W * H * sizeof(float), NULL, &err));
-
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, I));
-
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, H));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, W));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, Ich));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, Och));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, 1));  // I_ITER
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, 1));  // O_ITER
-
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, K));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, B));
-    
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
-    OCL_CHECK(err, err = kernel_conv2D_K3x3_S1x1_P1x1_BS1.setArg(arg++, O));
-
-    OCL_CHECK(err, err = q.enqueueTask(kernel_conv2D_K3x3_S1x1_P1x1_BS1, NULL, &event1));
-    printf("conv kernel lanzado en init\n");
-    // event.wait();
-    q.finish();
-
+    #endif
+    #ifdef K_ENABLED_CONV2D_8x8
+    OCL_CHECK(err, kernel_conv2D_8x8 = cl::Kernel(*program, "k_conv2D_8x8", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_RANGE
     OCL_CHECK(err, kernel_range = cl::Kernel(program,"k_range", &err));
@@ -1059,8 +1067,9 @@ void fpga_init(){ // initialize only once
     }
     fpga_num_buffer_pool_slots = 0;
     //
-
+#ifdef FPGA_DEBUG
     printf("end of fpga_init\n");
+#endif
 }
 
 void close_fpga(){
@@ -1078,7 +1087,7 @@ cl::Buffer *fpga_create_tensor(int device, int size)
 #ifdef FPGA_DEBUG
     printf("    (creating tensor in fpga, size %d)\n", size);
 #endif
-    _profile_fpga_add_tensor(size*sizeof(float));
+    _profile_fpga_add_tensor(size*sizeof(data_type));
 
     // search an available slot
     int e;
@@ -1097,13 +1106,13 @@ cl::Buffer *fpga_create_tensor(int device, int size)
       printf("Error, too many buffer pools\n");
       exit(1);
     }
-
     // buffer pool slot creation
 #ifdef FPGA_DEBUG
     printf("Creating new buffer pool entry\n");
 #endif
-    OCL_CHECK(err,buffer = new cl::Buffer(context,CL_MEM_READ_WRITE, size*sizeof(float), NULL, &err));
+
     e = fpga_num_buffer_pool_slots;
+    OCL_CHECK(err,buffer = new cl::Buffer(*context,CL_MEM_READ_WRITE, size*sizeof(data_type), NULL, &err));
     fpga_ptr_buffer_pool[e] = buffer;
     fpga_size_buffer_pool[e] = size;
     fpga_inuse_buffer_pool[e] = 1;
@@ -1119,7 +1128,7 @@ void fpga_delete_tensor(int device, cl::Buffer *ptr, int fpga_tensor_id_p, int s
     printf("    (deleting tensor in fpga, id %d)\n", fpga_tensor_id_p);
 #endif
 
-    _profile_fpga_remove_tensor(size*sizeof(float));
+    _profile_fpga_remove_tensor(size*sizeof(data_type));
 
     // we just update the buffer pool
     //
@@ -1133,8 +1142,14 @@ void fpga_delete_tensor(int device, cl::Buffer *ptr, int fpga_tensor_id_p, int s
       printf("Error, delete tensor function did not find the buffer in the pool\n");
       exit(1);
     }
+    // we remove the buffer
+    delete fpga_ptr_buffer_pool[e];
+    fpga_free_buffer_pool[e] = 1;    // this entry now is not assigned to a buffer and is free
     fpga_inuse_buffer_pool[e] = 0;
 
+    #ifdef FPGA_DEBUG
+    printf("    tensor deleted\n");
+    #endif
     //delete[] ptr;
 }
 
@@ -1150,11 +1165,21 @@ void fpga_copy_fpga(Tensor *A, Tensor *B)
 #endif
     cl_int err;
     cl::Event blocking_event;
-    cl::Buffer *bufferA = A->fpga_ptr;
-    cl::Buffer *bufferB = B->fpga_ptr;
+    cl::Buffer *bufferA = (cl::Buffer*)A->fpga_ptr;
+    cl::Buffer *bufferB = (cl::Buffer*)B->fpga_ptr;
     if (A->size > B->size) {printf("Error, copy_fpga beyond limits\n"); exit(1);}
-    OCL_CHECK(err, err= q.enqueueCopyBuffer(*bufferA, *bufferB, 0, 0, A->size*sizeof(float), NULL, &blocking_event));
-    q.finish();
+
+    // TODO... enqueueCopyBuffer does not work, we need to pass through CPU!!!!!!!
+    if (1==1) { //(A->size < 16) {
+      //printf("\nFPGA Warning: copy through CPU (buffer too small: %d bytes)\n", A->size*sizeof(data_type));
+      float *p = (float *)malloc(A->size*sizeof(float));
+      fpga_copy_from_fpga(A, p);
+      fpga_copy_to_fpga(p, B);
+      free(p);
+    } else {
+      OCL_CHECK(err, err= (*q).enqueueCopyBuffer(*bufferA, *bufferB, 0, 0, A->size*sizeof(data_type), NULL, &blocking_event));
+      (*q).finish();
+    }
 #ifdef FPGA_DEBUG
     printf("copy completed\n");
 #endif
@@ -1162,69 +1187,104 @@ void fpga_copy_fpga(Tensor *A, Tensor *B)
 
 void fpga_copy_to_fpga(float *nptr, Tensor *A)
 {
-#ifdef FPGA_DEBUG
+#ifdef FPGA_DEBUG_VERBOSE
     printf("    (copy to fpga: tensor id %d, size %d, from_cpu_ptr %p)\n", A->fpga_tensor_id, A->size, nptr);
 #endif
+
+#ifdef PRECISION_CONVERSION
+    // We allocate a buffer to convert from floats to data_type
+    data_type *cpu_buff = (data_type*)malloc(A->size*sizeof(data_type));
+    for (int x=0; x<A->size; x++) cpu_buff[x] = data_type(nptr[x]);
+
+    //for (int x=0; x<1; x++) printf("cpu %6.4f -> fpga %6.4f\n", nptr[x], float(cpu_buff[x]));
+
+    // now we copy into the FPGA
     cl_int err;
     cl::Event blocking_event;
-    cl::Buffer *buf = A->fpga_ptr;
-    OCL_CHECK(err, err= q.enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &blocking_event));
-    q.finish();
+    cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(data_type), cpu_buff, nullptr, &blocking_event));
+    (*q).finish();
+    free(cpu_buff);
+#else
+    // regular copy from CPU to FPGA with no precision conversion
+    cl_int err;
+    cl::Event blocking_event;
+    cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(data_type), nptr, nullptr, &blocking_event));
+    (*q).finish();
+#endif
 }
 
 ///////////////////////////////////////////
 void fpga_copy_from_fpga(Tensor *A,float *nptr)
 {
-#ifdef FPGA_DEBUG
+#ifdef FPGA_DEBUG_VERBOSE
     printf("    (copy from fpga: tensor id %d, size %d, to_cpu_ptr %p)\n", A->fpga_tensor_id, A->size, nptr);
 #endif
-    cl_int err;
-    cl::Event event;
-    OCL_CHECK(err, err= q.enqueueReadBuffer(*(A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &event));
-    q.finish();;
+
+#ifdef PRECISION_CONVERSION
+  // We read from the FPGA to a temporal buffer and then convert the precision
+  data_type *cpu_buff = (data_type*)malloc(A->size * sizeof(data_type));
+  cl_int err;
+  cl::Event event;
+  OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(data_type), cpu_buff, nullptr, &event));
+  (*q).finish();
+  // now we perform the precision conversion
+  for (int x=0; x<A->size; x++) nptr[x] = float(cpu_buff[x]);
+  free(cpu_buff);
+#else
+  // regular copy from FPGA to CPU with no precision conversion
+  cl_int err;
+  cl::Event event;
+  OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(data_type), nptr, nullptr, &event));
+  (*q).finish();
+#endif
 }
 
 void fpga_copy_addresses_from_fpga(SelDescriptor *SD, int size, int *nptr)
 {
     cl_int err;
     cl::Event event;
-    cl::Buffer *buf = SD->fpga_ptr;
-    OCL_CHECK(err, err= q.enqueueReadBuffer(*buf, CL_TRUE, 0, size, nptr, nullptr, &event));
-    q.finish();;
+    cl::Buffer *buf = (cl::Buffer*)SD->fpga_ptr;
+    OCL_CHECK(err, err= (*q).enqueueReadBuffer(*buf, CL_TRUE, 0, size, nptr, nullptr, &event));
+    (*q).finish();
 }
 
 void fpga_destroy_memory(cl::Buffer *fpga_ptrI) {
-    if (fpga_ptrI != (cl::Buffer *)nullptr) delete fpga_ptrI;
+#ifdef FPGA_DEBUG_VERBOSE
+    printf("   destroy_memory buffer in FPGA\n");
+#endif
+   // if (fpga_ptrI != (cl::Buffer *)nullptr) delete fpga_ptrI;
 }
 
 cl::Buffer *fpga_create_memory(long int size) {
     cl::Buffer *buffer;
     cl_int err;
-    #ifdef FPGA_DEBUG
+    #ifdef FPGA_DEBUG_VERBOSE
     printf("    (creating memory in fpga size %d)\n", size);
     #endif
-    OCL_CHECK(err,buffer = new cl::Buffer(context,CL_MEM_READ_WRITE, size, NULL, &err));
+    OCL_CHECK(err,buffer = new cl::Buffer(*context,CL_MEM_READ_WRITE, size, NULL, &err));
     return buffer;
 }
 
 void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size) {
-#ifdef FPGA_DEBUG
+#ifdef FPGA_DEBUG_VERBOSE
     printf("    (copy memory to fpga: size %d, ptr_cpu %p)\n", size, ptr_cpu);
 #endif
     cl_int err;
     cl::Event blocking_event;
-    OCL_CHECK(err, err= q.enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &blocking_event));
-    q.finish();
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &blocking_event));
+    (*q).finish();
 }
 
 void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size) {
-#ifdef FPGA_DEBUG
+#ifdef FPGA_DEBUG_VERBOSE
     printf("    (copy memory from fpga: size %d, ptr_cpu %p)\n", size, ptr_cpu);
 #endif
     cl_int err;
     cl::Event event;
-    OCL_CHECK(err, err= q.enqueueReadBuffer(*ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &event));
-    q.finish();
+    OCL_CHECK(err, err= (*q).enqueueReadBuffer(*ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &event));
+    (*q).finish();
 }
 
 
@@ -1348,6 +1408,7 @@ void fpga_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int
 // select
 //
 void fpga_cpuemu_select(Tensor *A, Tensor *B, SelDescriptor *sd) {
+  printf("hola CPUEMU_SELECT\n");
   int ADDRsize = B->size * sizeof(int);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_addresses_from_fpga(sd, ADDRsize, sd->cpu_addresses);

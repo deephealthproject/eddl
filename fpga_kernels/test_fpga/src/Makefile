@@ -129,7 +129,7 @@ $(TEMP_DIR)/$(KRNL_OBJ): $(KRNL_SRCS)
 	$(VPP) $(CLFLAGS) --temp_dir $(TEMP_DIR) -c -k $(KRNL_FUNC) -I'$(<D)' -I../ -o'$@' '$<'
 $(BUILD_DIR)/$(KRNL_XCLBIN): $(BINARY_CONTAINER_kernel_OBJS)
 	mkdir -p $(BUILD_DIR)
-	$(VPP) $(CLFLAGS) --temp_dir $(BUILD_DIR) -l $(LDCLFLAGS) -o'$@' $(+)
+	$(VPP) $(CLFLAGS) --temp_dir $(BUILD_DIR) -l $(LDCLFLAGS) -o'$@' $(+) #--config ./cfg_connectivity.ini
 
 # Building Host
 $(EXECUTABLE): check-xrt $(HOST_SRCS) $(HOST_HDRS)

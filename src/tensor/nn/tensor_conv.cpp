@@ -22,6 +22,7 @@
 #endif
 
 PROFILING_ENABLE_EXTERN(Conv2D);
+PROFILING_ENABLE_EXTERN(Conv2DReLU);
 PROFILING_ENABLE_EXTERN(Conv2D_grad);
 PROFILING_ENABLE_EXTERN(Conv2D_back);
 
@@ -119,6 +120,39 @@ void Conv2D_back(ConvolDescriptor *D) {
     D->ID->tsem->unlock();
 
     PROFILING_FOOTER(Conv2D_back);
+}
+
+void Conv2DReLU(ConvolDescriptor *D) {
+    /////////////////////////////////////////////////////////////////////
+    //// Conv2DReLU
+    //// Dimensions must be compatible
+    //// A is input 4D Tensor, Batch x Channels x Rows x Cols
+    //// D is a ConvolDescriptor
+    /////////////////////////////////////////////////////////////////////
+    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
+
+    PROFILING_HEADER(Conv2DReLU);
+
+    D->O->tsem->lock();
+    if (D->I->isCPU()) {
+        printf("Error, Conv2DReLU not supported in CPU\n");
+        exit(1);
+    }
+#ifdef cGPU
+    else if (D->I->isGPU())
+      {
+          printf("Error, Conv2DReLU not supported in GPU\n");
+          exit(1);
+      }
+#endif
+#ifdef cFPGA
+    else {
+        fpga_conv2DReLU(D);
+    }
+#endif
+    D->O->tsem->unlock();
+
+    PROFILING_FOOTER(Conv2DReLU);
 }
 
 }

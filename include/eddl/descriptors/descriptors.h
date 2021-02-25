@@ -106,12 +106,13 @@ public:
     Tensor *gpugK; // gradient kernels
     Tensor *gpuD; // Delta
 
-#ifdef cFPGA
-    // FPGA implementation
-    cl::Buffer *fpga_ptrI;
-    long int fpga_sizeI;
-    int kernel_in_fpga_format;   // tells whether the kernels have been adapted to the expected format 
-#endif
+    // FPGA implementation specific variables
+    void *fpga_ptrI;                      // Input data pointer (FPGA DDR memory)
+    long int fpga_sizeI;                  // Size of input data (FPGA DDR memory)
+    int fpga_kernel_in_fpga_format = 0;   // tells whether the kernels have been adapted to the expected format 
+                                          // The FPGA conv kernel expects kernel data in GI * GO * CPI * CPO * KW * KH format
+    int fpga_apply_relu            = 0;   // Whether this operation also should include a RELU operation
+    Tensor *fpga_relu_ptrO;               // Tensor where to produce the output when relu is activated
 
     ConvolDescriptor();
 

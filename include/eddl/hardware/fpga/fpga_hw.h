@@ -18,11 +18,13 @@
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"
 
-extern cl::CommandQueue q;
+extern cl::CommandQueue *q;
 
-//#define FPGA_DEBUG
+#define FPGA_DEBUG
+//#define FPGA_DEBUG_VERBOSE
 
 #include "eddl/hardware/fpga/fpga_enables.h"
+
 
 // activation kernels (24)
 extern cl::Kernel kernel_relu,   kernel_d_relu,  kernel_thresholded_relu,    kernel_d_thresholded_relu, kernel_leaky_relu,     kernel_d_leaky_relu;
@@ -51,7 +53,8 @@ extern cl::Kernel kernel_select_nn,   kernel_select_back_nn, kernel_set_select_b
 
 // conv kernels (3)
 extern cl::Kernel kernel_im2col,      kernel_conv2d;
-extern cl::Kernel kernel_conv2D_K3x3_S1x1_P1x1_BS1;
+extern cl::Kernel kernel_conv2D_4x4;
+extern cl::Kernel kernel_conv2D_8x8;
 
 // create kernels (3)
 extern cl::Kernel kernel_range, kernel_eye, kernel_diag;

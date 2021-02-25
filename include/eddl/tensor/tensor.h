@@ -94,13 +94,11 @@ public:
     int gpu_device;
     mutex *tsem = nullptr;  // Multithreading. Tensor semaphore
 
-#ifdef cFPGA
     // fpga-related information
     int fpga_device;         // fpga device
-    cl::Buffer *fpga_ptr;     // open-cl buffer pointer to data
+    void *fpga_ptr;          // open-cl buffer pointer to data
     int fpga_tensor_id;      // for debuging and tracking tensors
     long int fpga_size;      // buffer size (in elements)
-#endif
 
     // Constructors
     /**

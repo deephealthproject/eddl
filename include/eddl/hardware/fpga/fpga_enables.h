@@ -2,7 +2,7 @@
 // implemented on the FPGA
 
 //Activations
-#define K_ENABLED_RELU
+//#define K_ENABLED_RELU
 //#define K_ENABLED_D_RELU
 //#define K_ENABLED_THRESHOLDED_RELU
 //#define K_ENABLED_D_TRHESHOLDED_RELU
@@ -65,7 +65,8 @@
 //#define K_ENABLED_CONV2D
 //#define K_ENALBED_CONV2D_GRAD
 //#define K_ENABLED_CONV2D_BACK
-#define K_ENABLED_CONV2D_K3X3_S1X1_P1X1_BS1
+#define K_ENABLED_CONV2D_4x4
+//#define K_ENABLED_CONV2D_8x8
 
 //Core
 //#define K_ENABLED_FILL_

@@ -44,7 +44,7 @@ void fpga_mpool2D(PoolDescriptor *D){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_mpool2D.setArg(0, (int)D->ir));
+    /*    OCL_CHECK(err, err = kernel_mpool2D.setArg(0, (int)D->ir));
         OCL_CHECK(err, err = kernel_mpool2D.setArg(1, (int)D->ic));
         OCL_CHECK(err, err = kernel_mpool2D.setArg(2, (int)D->iz));
         OCL_CHECK(err, err = kernel_mpool2D.setArg(3, (int)D->padrt));
@@ -57,13 +57,13 @@ void fpga_mpool2D(PoolDescriptor *D){
         OCL_CHECK(err, err = kernel_mpool2D.setArg(10, (int)D->sc));
         OCL_CHECK(err, err = kernel_mpool2D.setArg(11, (long int)D->size));
         OCL_CHECK(err, err = kernel_mpool2D.setArg(12, (int)D->I->shape[0]));
-        OCL_CHECK(err, err = kernel_mpool2D.setArg(13, *(D->I->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_mpool2D.setArg(14, *(D->O->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_mpool2D.setArg(15, *(D->indX->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_mpool2D.setArg(16, *(D->indY->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_mpool2D.setArg(13, *((cl::Buffer*)D->I->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_mpool2D.setArg(14, *((cl::Buffer*)D->O->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_mpool2D.setArg(15, *((cl::Buffer*)D->indX->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_mpool2D.setArg(16, *((cl::Buffer*)D->indY->fpga_ptr)));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_mpool2D, NULL, &event));
-        q.finish();
+        q.finish();*/
     }
     _profile_fpga_tensor(D->O);
     _profile_fpga(_FPGA_MPOOL2D, 1);
@@ -86,7 +86,7 @@ void fpga_mpool2D_back(PoolDescriptor *D){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_mpool2D_back.setArg(0, (int)D->ir));
+     /* OCL_CHECK(err, err = kernel_mpool2D_back.setArg(0, (int)D->ir));
       OCL_CHECK(err, err = kernel_mpool2D_back.setArg(1, (int)D->ic));
       OCL_CHECK(err, err = kernel_mpool2D_back.setArg(2, (int)D->iz));
       OCL_CHECK(err, err = kernel_mpool2D_back.setArg(3, (int)D->padrt));
@@ -99,13 +99,13 @@ void fpga_mpool2D_back(PoolDescriptor *D){
       OCL_CHECK(err, err = kernel_mpool2D_back.setArg(10, (int)D->sc));
       OCL_CHECK(err, err = kernel_mpool2D_back.setArg(11, (long int)D->size));
       OCL_CHECK(err, err = kernel_mpool2D_back.setArg(12, (int)D->I->shape[0]));
-      OCL_CHECK(err, err = kernel_mpool2D_back.setArg(13, *(D->I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_mpool2D_back.setArg(14, *(D->O->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_mpool2D_back.setArg(15, *(D->indX->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_mpool2D_back.setArg(16, *(D->indY->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_mpool2D_back.setArg(13, *((cl::Buffer*)D->I->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_mpool2D_back.setArg(14, *((cl::Buffer*)D->O->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_mpool2D_back.setArg(15, *((cl::Buffer*)D->indX->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_mpool2D_back.setArg(16, *((cl::Buffer*)D->indY->fpga_ptr)));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_mpool2D, NULL, &event));
-      q.finish();
+      q.finish();*/
     }
     _profile_fpga(_FPGA_MPOOL2D_BACK, 1);
 }

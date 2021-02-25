@@ -10,6 +10,8 @@
 #ifndef EDDL_CPU_TENSOR_H
 #define EDDL_CPU_TENSOR_H
 
+#define CPU_DEBUG
+
 #include "cpu_profile.h"
 
 #include "eddl/tensor/tensor.h"
@@ -19,6 +21,8 @@
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
+
+void _profile_cpu_tensor(Tensor *T);
 
 // CPU: Core (static)
 void cpu_transpose(Tensor *A, Tensor *B);

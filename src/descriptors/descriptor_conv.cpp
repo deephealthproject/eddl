@@ -126,7 +126,7 @@ void ConvolDescriptor::build(Tensor *A) {
     gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
     gbias = new Tensor(vector<int>{nk}, I->device);
 
-    if (I->isCPU()) {
+    if (I->isCPU() || (I->isFPGA())) {
         // mem for ptr, lowering im2col
         ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
 	 _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
@@ -211,7 +211,7 @@ void ConvolDescriptor::resize(int b)
 #ifdef cFPGA
     else if (I->isFPGA()) {
         // We reallocate memory on the FGPA for the im2col buffer
-	fpga_destroy_memory(fpga_ptrI);
+	fpga_destroy_memory((cl::Buffer *)fpga_ptrI);
 	fpga_sizeI = l_size * sizeof(float);
         fpga_ptrI = fpga_create_memory(fpga_sizeI);
         // We do the same on the CPU side (for smooth cpuemu)

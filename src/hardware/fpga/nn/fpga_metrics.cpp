@@ -18,8 +18,8 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 
 extern cl::Kernel kernel_accuracy;
-extern cl::CommandQueue q;
-extern cl::Context context;
+//extern cl::CommandQueue q;
+//extern cl::Context context;
 
 // -----------------------------------------------------------------
 // accuracy

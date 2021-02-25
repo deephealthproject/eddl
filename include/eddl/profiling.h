@@ -34,12 +34,12 @@
     prof_##fn##_calls += 1;
 
 #define PROFILING_PRINTF(fn) \
-    if (prof_##fn##_calls > 0) printf("  %-50s: %8lld calls, %8lld us , %10.4f us/call\n", #fn, \
+    if (prof_##fn##_calls > 0) printf("  %-50s: %8lld calls, %12lld us , %10.4f us/call\n", #fn, \
                     prof_##fn##_calls, prof_##fn##_time, \
                     (float) prof_##fn##_time / (float) prof_##fn##_calls);
 
 #define PROFILING_PRINTF2(fn, acc) \
-    if (prof_##fn##_calls > 0) printf("  %-50s: %8lld calls, %8lld us (%6.2f), %10.4f us/call\n", #fn, \
+    if (prof_##fn##_calls > 0) printf("  %-50s: %8lld calls, %12lld us (%6.2f), %10.4f us/call\n", #fn, \
                     prof_##fn##_calls, prof_##fn##_time, \
             100.0 * prof_##fn##_time / acc, (float) prof_##fn##_time / (float) prof_##fn##_calls);
 #endif

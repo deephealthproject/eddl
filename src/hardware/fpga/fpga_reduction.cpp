@@ -14,7 +14,7 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
-extern cl::CommandQueue q;
+//extern cl::CommandQueue *q;
 extern cl::Kernel reduce_sum2D;
 
 // emulation switches of functions (via cpu)
@@ -85,14 +85,14 @@ void fpga_reduce_op(Tensor *A, Tensor *B, string op, int *map)
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_reduce_op.setArg(0, *(A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce_op.setArg(1, *(B->fpga_ptr)));
+  //    OCL_CHECK(err, err = kernel_reduce_op.setArg(0, *((cl::Buffer*)A->fpga_ptr)));
+  //    OCL_CHECK(err, err = kernel_reduce_op.setArg(1, *((cl::Buffer*)B->fpga_ptr)));
       //OCL_CHECK(err, err = kernel_reduce_op.setArg(2, (int)op));
       //OCL_CHECK(err, err = kernel_reduce_op.setArg(3, (int)map));
       printf("Error, parameters not passed\n"); exit(1);
 
-      OCL_CHECK(err, err = q.enqueueTask(kernel_reduce_op, NULL, &event));
-      q.finish();
+  //    OCL_CHECK(err, err = q.enqueueTask(kernel_reduce_op, NULL, &event));
+  //    q.finish();
   }
   _profile_fpga(_FPGA_REDUCE_OP, 1);
 }
@@ -126,8 +126,8 @@ void fpga_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
   cl_int err;
   cl::Event event;
 
-  OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(0, *(A->fpga_ptr)));
-  OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(0, *((cl::Buffer*)A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(1, *((cl::Buffer*)B->fpga_ptr)));
   OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(2, A->shape[0]));
   OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(3, A->shape[1]));
   OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(4, axis));

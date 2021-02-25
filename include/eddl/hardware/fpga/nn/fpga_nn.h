@@ -62,6 +62,7 @@ int fpga_bin_accuracy(Tensor *A, Tensor *B);
 
 // Conv
 void fpga_conv2D(ConvolDescriptor *D);
+void fpga_conv2DReLU(ConvolDescriptor *D);
 void fpga_conv2D_grad(ConvolDescriptor *D);
 void fpga_conv2D_back(ConvolDescriptor *D);
 

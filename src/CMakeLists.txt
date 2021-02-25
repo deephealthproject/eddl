@@ -309,7 +309,8 @@ if(USE_FPGA)
     if (OpenCL_FOUND)
         add_definitions(-DcFPGA)
 
-        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include}>")
+        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include>")
+	target_include_directories(${PROJECT_NAME} PUBLIC /opt/xilinx/xrt/include)
         #target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:/opt/Xilinx/Vivado/2018.3/include)  # Is this cross-platform?
 
         target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCL_LIBRARY})

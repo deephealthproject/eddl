@@ -78,6 +78,7 @@ namespace tensorNN{
 // ***** Deep Learning *****************************
 // Conv2D
     void Conv2D(ConvolDescriptor *D);
+    void Conv2DReLU(ConvolDescriptor *D);
     void Conv2D_grad(ConvolDescriptor *D);
     void Conv2D_back(ConvolDescriptor *D);
 

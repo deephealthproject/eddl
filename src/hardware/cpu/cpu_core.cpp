@@ -10,6 +10,7 @@
 #include "eddl/hardware/cpu/cpu_tensor.h"
 #include <algorithm>
 #include <numeric>
+#include <float.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
@@ -184,6 +185,30 @@ case _CPU_REPEAT_NN              : strcpy(name, "repeat_nn"); break;
 case _CPU_D_REPEAT_NN            : strcpy(name, "d_repeat_nn"); break;
 default                          : strcpy(name, "?????"); break;
 }
+}
+
+void _profile_cpu_tensor(Tensor *T) {
+#ifdef CPU_DEBUG
+  float min = FLT_MAX;
+  float max = FLT_MIN;
+  float sum = 0.f;
+  float avg;
+  for (int i=0; i<T->size; i++) {
+    if (T->ptr[i] > max) max = T->ptr[i];
+    if (T->ptr[i] < min) min = T->ptr[i];
+    sum += T->ptr[i];
+  }
+  avg = sum / (float)T->size;
+  printf("  - Tensor (cpu)  ");
+  printf(" size %10d ", T->size);
+  printf("                      ");
+  printf(" shape0 %6d ", T->shape[0]);
+  if (T->ndim>=2) printf(" shape1 %6d ", T->shape[1]); else printf("               ");
+  if (T->ndim>=3) printf(" shape2 %6d ", T->shape[2]); else printf("               ");
+  if (T->ndim>=4) printf(" shape3 %6d ", T->shape[3]); else printf("               ");
+  printf(" (cpu_ptr %p). ", T->ptr);
+  printf(" Min %8.4f Max %8.4f Avg %8.4f\n", min, max, avg);
+#endif
 }
 
 struct timeval time_ini[_NUM_CPU_FUNCS];

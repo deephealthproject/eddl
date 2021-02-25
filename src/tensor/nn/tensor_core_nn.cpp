@@ -61,8 +61,7 @@ namespace tensorNN {
 #endif
 #ifdef cFPGA
         else {
-            printf("repeat_nn not supported yet on FPGA\n");
-            exit(1);
+            fpga_repeat_nn(A, B, size);
         }
 #endif
         PROFILING_FOOTER(repeat_nn);

@@ -70,9 +70,9 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2){
     }
 #endif
 
-#ifdef cFPGA
-    fpga_ptr = (cl::Buffer *)nullptr;
-#endif
+//#ifdef cFPGA
+    fpga_ptr = nullptr;   // valgrind complaints here
+//#endif
 
     // Update values
     updateDevice(dev);
@@ -170,7 +170,7 @@ void Tensor::deleteData(){
 #ifdef cFPGA
         else if (this->isFPGA())
 	{
-            fpga_delete_tensor(this->fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->fpga_size);
+            fpga_delete_tensor(this->fpga_device, (cl::Buffer*)this->fpga_ptr, this->fpga_tensor_id, this->fpga_size);
 	}
 
       // delete FPGA Tensor
@@ -242,7 +242,7 @@ void Tensor::updateData(float *fptr, void *fptr2,bool setshared){
           #endif
         } else {
           printf(" info: fpga_ptr %p fptr2 %p\n", this->fpga_ptr, fptr2);
-          if ((this->fpga_ptr == (cl::Buffer *)nullptr) && (fptr2 == nullptr)) {
+          if ((this->fpga_ptr == NULL) && (fptr2 == nullptr)) {
             this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
             this->fpga_size = this->size;
             this->fpga_tensor_id = next_fpga_tensor_id;
@@ -251,7 +251,7 @@ void Tensor::updateData(float *fptr, void *fptr2,bool setshared){
             #ifdef FPGA_DEBUG
             printf("  fpga_ptr and fptr2 were null, we create a buffer with tensor id %d\n", this->fpga_tensor_id);
             #endif
-          } else if ((this->fpga_ptr == (cl::Buffer *)nullptr) && (fptr2 != nullptr)) {
+          } else if ((this->fpga_ptr == NULL) && (fptr2 != nullptr)) {
             #ifdef FPGA_DEBUG
             printf("  fpga_ptr null but fptr2 not\n");
             #endif
@@ -307,12 +307,14 @@ void Tensor::toCPU(int dev){
 #ifdef cFPGA
         if (isFPGA())
     {
-
         // Reserve memory for CPU
-        float *cpu_ptr = get_fmem(size, "Tensor::toCPU");
+        cpu_ptr = get_fmem(size, "Tensor::toCPU");
 
-        // Copy GPU data to CPU
-        fpga_copy_from_fpga(this, cpu_ptr);
+        // In FPGA the CPU buffer is already allocated, so, there is no need to allocate a new one
+        // We simply copy the buffer located at the FPGA to the one located at the CPU
+        fpga_copy_from_fpga(this, this->ptr);
+        this->device = dev;
+        return;
     }
 #endif
         // COMMON: Delete data in HW + reassign pointer

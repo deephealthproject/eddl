@@ -71,7 +71,7 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
     ///////
 
     // sharing the pointers to data
-#ifdef cFPGA
+#ifdef FPGA_DEBUG
     printf("creating new tensor output for reshape (at constructor)\n");
 #endif
 
@@ -89,7 +89,6 @@ LReshape::~LReshape(){
 void LReshape::resize(int batch){
     ls[0]=batch;
 #ifdef cFPGA
-    printf("voy a hacer resize!!!! batch %d shape[0] %d tensor_id %d, tensor_id parent %d fpga_ptr %p\n", batch, output->shape[0], output->fpga_tensor_id, parent[0]->output->fpga_tensor_id, parent[0]->output->fpga_ptr);
     output->resize(batch, parent[0]->output->ptr, parent[0]->output->fpga_ptr, false);
 #else
     output->resize(batch, parent[0]->output->ptr, nullptr, false);

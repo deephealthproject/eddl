@@ -12,8 +12,6 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
-extern cl::Context context;
-extern cl::CommandQueue q;
 extern cl::Kernel mult2D;
 extern cl::Kernel sum2D_rowwise;
 

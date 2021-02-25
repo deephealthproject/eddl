@@ -534,6 +534,7 @@ PROFILING_ENABLE(Softsign);
 PROFILING_ENABLE(ThresholdedReLu);
 // conv
 PROFILING_ENABLE(Conv2D);
+PROFILING_ENABLE(Conv2DReLU);
 PROFILING_ENABLE(Conv2D_grad);
 PROFILING_ENABLE(Conv2D_back);
 // losses
@@ -587,6 +588,8 @@ PROFILING_ENABLE(AvgPool2D_back);
 // fpga-specific
 PROFILING_ENABLE(fpga_reshape_input_data_convol);
 PROFILING_ENABLE(fpga_reshape_kernel_data_convol);
+PROFILING_ENABLE(fpga_Conv2D_8x8);
+PROFILING_ENABLE(fpga_Conv2D_4x4);
 
 void __show_profile() {
 
@@ -701,6 +704,7 @@ void __show_profile() {
   PROFILING_PRINTF(ThresholdedReLu);
   // conv
   PROFILING_PRINTF(Conv2D);
+  PROFILING_PRINTF(Conv2DReLU);
   PROFILING_PRINTF(Conv2D_grad);
   PROFILING_PRINTF(Conv2D_back);
   // losses
@@ -754,6 +758,6 @@ void __show_profile() {
   // fpga-specific
   PROFILING_PRINTF(fpga_reshape_input_data_convol);
   PROFILING_PRINTF(fpga_reshape_kernel_data_convol);
-
-
+  PROFILING_PRINTF(fpga_Conv2D_8x8);
+  PROFILING_PRINTF(fpga_Conv2D_4x4);
 }
