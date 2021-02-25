@@ -231,7 +231,7 @@ void cpu_not_equal(Tensor *A, Tensor *B, float v);
 void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
 // Legacy
-int cpu_equal2(Tensor *A, Tensor *B, float epsilon);
+int cpu_allclose_verbose(Tensor *A, Tensor *B, float epsilon);
 
 
 

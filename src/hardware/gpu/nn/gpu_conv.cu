@@ -103,7 +103,7 @@ void cuDNN_environment_initialization(condesc *D){
   aux_alg = 0;
   size=0;
   do{
-      D->bwd_data_algorithm = perfResults_d[aux_alg].algo;
+      D->bwd_data_algorithm =  perfResults_d[aux_alg].algo;
 
       check_cudnn(cudnnGetConvolutionBackwardDataWorkspaceSize(hdnn[device],D->wDesc, D->yDesc,
                                                               D->convolution_descriptor,  D->xDesc,

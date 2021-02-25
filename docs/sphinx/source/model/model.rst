@@ -240,3 +240,26 @@ Example:
     toGPU(net); // Model synchronization every batch, use of all available GPUs, and full_mem mode
 
 
+Get parameters
+---------------
+
+.. doxygenfunction:: eddl::get_parameters
+
+Example:
+
+.. code-block:: c++
+
+    vector<vtensor> get_parameters(net, true); // deep_copy=true
+
+
+Set parameters
+---------------
+
+.. doxygenfunction:: eddl::set_parameters
+
+Example:
+
+.. code-block:: c++
+
+    vector<vtensor> myparameters = ...
+    set_parameters(net, myparameters);

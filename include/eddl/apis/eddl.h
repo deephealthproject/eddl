@@ -68,7 +68,23 @@ namespace eddl {
     void initializeLayer(Net *net, string l);
     void setTrainable(model net, string lanme, bool val);
 
-    vector<vtensor> get_parameters(model net, bool deepcopy=false, bool tocpu=false);
+    /**
+      *  @brief Return a vector of vector of tensors with the parameters of each layer.
+      *  These tensors are in CPU. Function transparent for distributed mode
+      *
+      *  @param net  Model
+      *  @param deepcopy  Whether the return vectors contains reference to the tensors or a copy of them
+      *  @return Vector of Vector of Tensors
+    */
+    vector<vtensor> get_parameters(model net, bool deepcopy=false);
+
+    /**
+    *  @brief Sets the parameters of the net.
+     *  Function transparent for distributed mode
+    *
+    *  @param net  Model
+    *  @param params  Params to copy to the net
+    */
     void set_parameters(model net, const vector<vtensor>& params);
 
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
@@ -2186,6 +2202,7 @@ namespace eddl {
     Net* download_resnet50(bool top=true, vector<int> input_shape={}); 
     Net* download_resnet101(bool top=true, vector<int> input_shape={});
     Net* download_resnet152(bool top=true, vector<int> input_shape={});
+    Net* download_densenet121(bool top=true, vector<int> input_shape={});
 
     ///////////////////////////////////////
     //  DATASETS
