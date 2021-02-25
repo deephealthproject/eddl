@@ -316,7 +316,7 @@ If you want to run it using the conda environment, add:
 Loading datasets
 -----------------
 
-Loading a Numpy file (.npy)
+Loading Numpy files (.npy)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Currently, we cannot do this natively from the EDDL. However, you can do it with the PyEDDL.

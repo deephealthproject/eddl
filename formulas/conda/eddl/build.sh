@@ -29,8 +29,8 @@ echo "CPU_COUNT=$CPU_COUNT"
 echo "#################################################"
 
 # Build makefiles
-cmake -DBUILD_TARGET=CUDNN \
-      -DBUILD_SUPERBUILD=ON \
+cmake -DBUILD_TARGET=CPU \
+      -DBUILD_SUPERBUILD=OFF \
       -DBUILD_EXAMPLES=OFF \
       -DBUILD_TESTS=OFF \
       -DCMAKE_C_COMPILER=$CC \
