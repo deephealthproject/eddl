@@ -2,6 +2,7 @@
 #include "eddl/serialization/onnx/layers/merge/add_onnx.h"
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/conv/layer_conv.h"
+#include "eddl/layers/normalization/layer_normalization.h"
 
 // ONNX import
 Layer* build_add_layer(onnx::NodeProto *node,
@@ -29,9 +30,7 @@ Layer* build_add_layer(onnx::NodeProto *node,
   
   if (parameter_input)
   {
-    LConv *conv;
-    LDense *dense;
-    if ((conv = dynamic_cast<LConv *>(parents[0])))
+    if (LConv *conv = dynamic_cast<LConv *>(parents[0]))
     {
       ConvolDescriptor *cd = conv->cd;
       string bias_name = node->input(index_parameter);
@@ -54,7 +53,7 @@ Layer* build_add_layer(onnx::NodeProto *node,
       delete bias_tensor;
       return conv;
     }
-    else if ((dense = dynamic_cast<LDense *>(parents[0])))
+    else if (LDense *dense = dynamic_cast<LDense *>(parents[0]))
     {
       log_string("Detected a Dense layer as the parent of the Add node.", log_level, LOG_LEVEL::DEBUG);
       string bias_name = node->input(index_parameter);
@@ -80,8 +79,21 @@ Layer* build_add_layer(onnx::NodeProto *node,
       }
       return dense;
     }
+    else if (LBatchNorm *bn = dynamic_cast<LBatchNorm *>(parents[0]))
+    {
+      log_string("Detected a BatchNorm layer as the parent of the Add node.", log_level, LOG_LEVEL::DEBUG);
+      string bias_name = node->input(index_parameter);
+      vector<float> *bias_weights = &(map_init_values[bias_name]);
+      vector<int> bias_dims = map_init_dims[bias_name];
+      Tensor *bias_tensor = new Tensor(bias_dims, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_weights, bias_tensor);
+      Tensor::copy(bias_tensor, bn->bn_b);
+      delete bias_tensor;
+
+      return bn;
+    }
     else
-      cerr << "Error, add with a parameter input where the other input is not a dense or a convolutional layer" << endl;
+      cerr << "Error, add with a parameter input where the other input is not a dense, a convolutional or a batchnorm layer" << endl;
   }
 
   LAdd *actual_layer = new LAdd(parents, node->name(), dev, mem);

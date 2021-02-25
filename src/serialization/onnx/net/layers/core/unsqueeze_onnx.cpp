@@ -3,12 +3,15 @@
 
 // ONNX export
 Layer* build_unsqueeze_layer(onnx::NodeProto *node,
+                             map<string, vector<float>> &map_init_values,
+                             map<string, vector<int>> &map_init_dims,
                              map<string, Layer *> &output_node_map,
                              LOG_LEVEL log_level,
                              int dev,
                              int mem)
 {
   log_string("Unsqueeze layer detected", log_level, LOG_LEVEL::DEBUG);
+  string name = node->name();  // Get the name of the layer
   vector<int> unsqueeze_axes;
   for (int j = 0; j < node->attribute_size(); j++)
   { // Set the attributes
@@ -24,8 +27,21 @@ Layer* build_unsqueeze_layer(onnx::NodeProto *node,
     }
   }
 
-  string parent_name;
-  parent_name = node->input(0);
+  string parent_name = node->input(0);
+  if (map_init_values.count(parent_name))
+  {
+      // This case is for detecting the pattern that applies the scale and bias of the
+      // bath normalization with Mul and Add operators feeded by the batchnorm output
+      // and an Unsqueeze operator with the scale or bias as initializer input
+      log_string("The Unsqueeze layer " + name + " has an initializer as input. "
+                 "As the output is a constant we will not create a layer for it. "
+                 "It will be handled by its child nodes.", log_level, LOG_LEVEL::DEBUG);
+      // Propagate initializer input to child node
+      string out_name = node->output(0);
+      map_init_values[out_name] = map_init_values[parent_name];
+      map_init_dims[out_name] = map_init_dims[parent_name];
+      return nullptr;
+  }
   Layer *parent = output_node_map[parent_name];
   vector<int> parent_out_shape = parent->output->getShape();
   // Check if we are trying to unsqueeze the axis 0 with a recurrent parent node
@@ -84,7 +100,7 @@ Layer* build_unsqueeze_layer(onnx::NodeProto *node,
     {
       target_shape.insert(target_shape.begin() + unsq_ax, 1);
     }
-    Layer *actual_layer = new LReshape(parent, target_shape, node->name(), dev, mem);  // TODO: use unsqueeze layer
+    Layer *actual_layer = new LReshape(parent, target_shape, name, dev, mem);  // TODO: use unsqueeze layer
     log_string("Unsqueeze (with Reshape) layer created", log_level, LOG_LEVEL::DEBUG);
     return actual_layer;
   }

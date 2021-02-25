@@ -223,7 +223,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_log_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::MUL:
-      new_layer = build_mul_layer(node, output_node_map, dev, mem);
+      new_layer = build_mul_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
     //case ONNX_LAYERS::POW:
     //  TODO: Implement LPow in EDDL
@@ -275,7 +275,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_squeeze_layer(node, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::UNSQUEEZE:
-      new_layer = build_unsqueeze_layer(node, output_node_map, log_level, dev, mem);
+      new_layer = build_unsqueeze_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::TRANSPOSE:
       new_layer = build_permute_layer(node, output_node_map, recurrent_net, log_level, dev, mem);

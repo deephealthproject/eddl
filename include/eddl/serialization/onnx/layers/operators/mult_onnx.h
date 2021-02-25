@@ -10,6 +10,8 @@
 
 // OPSET: 13, 7
 Layer* build_mul_layer(onnx::NodeProto *node,
+                       map<string, vector<float>> &map_init_values,
+                       map<string, vector<int>> &map_init_dims,
                        map<string, Layer *> &output_node_map,
                        int dev,
                        int mem);

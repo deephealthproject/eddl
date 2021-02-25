@@ -11,6 +11,8 @@
 
 // OPSET: 11, 1
 Layer* build_unsqueeze_layer(onnx::NodeProto *node,
+                             map<string, vector<float>> &map_init_values,
+                             map<string, vector<int>> &map_init_dims,
                              map<string, Layer *> &output_node_map,
                              LOG_LEVEL log_level,
                              int dev,
