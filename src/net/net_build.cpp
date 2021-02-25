@@ -483,16 +483,13 @@ void Net::removeLayer(string lname)
             break;
           }
         }//child
-        // create new outputs from parents
-        lout.push_back(p);
       }//parent
 
       // remove lname from out if is in
-      //layers.erase(layers.begin() + i);
       for(int j=0;j<lout.size();j++) {
-        cout<<lout[j]->name<<endl;
         if (lout[j]->name==lname) {
             lout.erase(lout.begin()+j);
+            cout<<"Warning: output layer has been removed"<<endl;
             break;
         }
       }
