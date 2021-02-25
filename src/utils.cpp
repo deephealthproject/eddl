@@ -272,15 +272,15 @@ vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>&
                     max = std::stoi(str.substr(pos+delimiter.length(), string::npos));  // Numpy style
                 }
             }
+
+            max -= 1;  // last index is not included
         }else{  // Not found => "5"
             min = std::stoi(str);
             max = min;
         }
-
         // Negative indices // len + (-x)
         if(min<0) { min = shape[i] + min; }
         if(max<0) { max = shape[i] + max; }
-        max -= 1;  // last index is not included
 
         ranges.push_back({min, max});
     }
