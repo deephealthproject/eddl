@@ -249,7 +249,7 @@ void Net::set_parameters(const vector<vtensor>& new_params){
         // Copy current params
         for(int j=0; j<this->layers[i]->params.size(); j++){
             Tensor::copy(new_params[i][j], this->layers[i]->params[j]);
-            sync_weights();
+            sync_weights();  // Send CPU tensors to devices
         }
 
     }
