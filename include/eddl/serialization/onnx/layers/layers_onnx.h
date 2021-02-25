@@ -59,8 +59,9 @@ enum ONNX_LAYERS {
   RMEAN,            // OPSET: 13, 11, 1
   RSUM,             // OPSET: 11, 1
   ARGMAX,           // OPSET: 13, 12, 11, 1
-  RESIZE            // OPSET: 13
-  // POW,            // OPSET: 13, 12, 7 (TODO: Implement LPow)
+  RESIZE,           // OPSET: 13
+  SLICE             // OPSET: 13, 11, 10
+  //POW,            // OPSET: 13, 12, 7 (TODO: Implement LPow)
 };
 
 map<string, ONNX_LAYERS> create_enum_map();
