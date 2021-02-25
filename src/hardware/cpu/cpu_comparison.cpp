@@ -289,7 +289,7 @@ void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C){
 
 
 
-int cpu_equal2(Tensor *A, Tensor *B, float epsilon){
+int cpu_allclose_verbose(Tensor *A, Tensor *B, float epsilon){
   _profile(_CPU_EQUAL2, 0);
 
   for (int i = 0; i < A->size; i++){

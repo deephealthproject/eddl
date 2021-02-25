@@ -272,14 +272,14 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s2x2_pad_same){
 }
 
 #ifdef cGPU
-TEST(MaxPoolTestSuite, mpool_k2x2_s2x2_pad_valid_gpu)
+TEST(MaxPoolTestSuite, mpool_k3x3_s1x1_pad_valid_gpu)
 {
     // Image
     Tensor* t_cpu = Tensor::randu({1, 3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     // CPU Operation
-    auto *pd_cpu = new PoolDescriptor({2, 2}, {2, 2}, "valid");
+    auto *pd_cpu = new PoolDescriptor({3, 3}, {1, 1}, "valid");
     pd_cpu->build(t_cpu);
     pd_cpu->ID = Tensor::zeros(pd_cpu->I->getShape());
     pd_cpu->D = Tensor::ones(pd_cpu->O->getShape());
@@ -287,7 +287,7 @@ TEST(MaxPoolTestSuite, mpool_k2x2_s2x2_pad_valid_gpu)
     pd_cpu->indY = new Tensor(pd_cpu->O->getShape());
 
     // GPU Operation
-    auto *pd_gpu = new PoolDescriptor({2, 2}, {2, 2}, "valid");
+    auto *pd_gpu = new PoolDescriptor({3, 3}, {1, 1}, "valid");
     pd_gpu->build(t_gpu);
     pd_gpu->ID = Tensor::zeros(pd_gpu->I->getShape(), t_gpu->device);
     pd_gpu->D = Tensor::ones(pd_gpu->O->getShape(), t_gpu->device);

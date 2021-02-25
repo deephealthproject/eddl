@@ -103,7 +103,7 @@ not found (or CUDA), the EDDL will automatically fallback to CPU.
 
 .. code:: bash
 
-    -DBUILD_TARGET=GPU
+    -DBUILD_TARGET=GPU  # or "CUDA", both are equivalent
 
 .. note::
 

@@ -62,8 +62,8 @@ namespace eddl {
         net->setTrainable(lname,val);
     }
 
-    vector<vtensor> get_parameters(model net, bool deepcopy, bool tocpu){
-        return net->get_parameters(deepcopy, tocpu);
+    vector<vtensor> get_parameters(model net, bool deepcopy){
+        return net->get_parameters(deepcopy);
     }
 
     void set_parameters(model net, const vector<vtensor>& params){

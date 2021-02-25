@@ -76,7 +76,7 @@ public:
     int r, c, z;
     int padrt,padrb;
     int padcl,padcr;
-    int size;  // Auxiliar var
+    //int size;  // Auxiliar var
 
 
     // To store info...
