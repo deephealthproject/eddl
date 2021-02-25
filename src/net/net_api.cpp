@@ -1399,8 +1399,8 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gp
         bool equal = Tensor::equivalent(output1, output2);
         if(!equal){
             if(verbose) {
-                cout << "The outs from Layer #" << i << " (" << net1->layers[i]->name << ") and Layer #" << i <<
-                     " (" << net2->layers[i]->name << ") does not match" << "(" << "Net::compare_outputs" << ")"
+                cout << "The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                net2->layers[i]->name << ") do not match" << "[" << "Net::compare_outputs" << "]"
                      << endl;
             }
             equivalent_nets = false;
