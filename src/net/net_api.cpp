@@ -1379,7 +1379,7 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gp
     }
 
     // Compare the number of layers
-    if (net1->layers.size() != net1->layers.size()){
+    if (net1->layers.size() != net2->layers.size()){
         if(verbose){
             cout << "Nets have a different number of layers"  << "(" << "Net::compare_outputs" << ")" << endl;
         }
