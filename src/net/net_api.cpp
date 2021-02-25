@@ -1373,7 +1373,7 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gp
     // Check if both layers are the same
     if(net1==net2){
         if(verbose){
-            cout << "Both nets point to the same object"  << "(" << "Net::compare_outputs" << ")" << endl;
+            cout << "Both nets point to the same object"  << " [Net::compare_outputs]" << endl;
         }
         return true;
     }
@@ -1381,7 +1381,7 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gp
     // Compare the number of layers
     if (net1->layers.size() != net2->layers.size()){
         if(verbose){
-            cout << "Nets have a different number of layers"  << "(" << "Net::compare_outputs" << ")" << endl;
+            cout << "Nets have a different number of layers"  << " [Net::compare_outputs]" << endl;
         }
         return false;
     }
@@ -1404,12 +1404,12 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gp
         if(equal) {
             if(verbose){
                 cout << "[OKAY] The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
-                     net2->layers[i]->name << ") do match" << "[" << "Net::compare_outputs" << "]" << endl;
+                     net2->layers[i]->name << ") do match" << " [Net::compare_outputs]" << endl;
             }
         }else{
             if(verbose) {
                 cout << "[FAIL] The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
-                net2->layers[i]->name << ") do not match" << "[" << "Net::compare_outputs" << "]" << endl;
+                net2->layers[i]->name << ") do not match" << " [Net::compare_outputs]" << endl;
             }
             equivalent_nets = false;
         }
@@ -1423,7 +1423,7 @@ bool Net::compare_params(Net *net1, Net *net2, bool verbose, bool compare_in_gpu
     // Check if both layers are the same
     if(net1==net2){
         if(verbose){
-            cout << "Both nets point to the same object"  << "(" << "Net::compare_params" << ")" << endl;
+            cout << "Both nets point to the same object"  << " [Net::compare_params]" << endl;
         }
         return true;
     }
@@ -1431,7 +1431,7 @@ bool Net::compare_params(Net *net1, Net *net2, bool verbose, bool compare_in_gpu
     // Compare the number of layers
     if (net1->layers.size() != net2->layers.size()){
         if(verbose){
-            cout << "Nets have a different number of layers"  << "(" << "Net::compare_params" << ")" << endl;
+            cout << "Nets have a different number of layers"  << " [Net::compare_params]" << endl;
         }
         return false;
     }
@@ -1444,7 +1444,7 @@ bool Net::compare_params(Net *net1, Net *net2, bool verbose, bool compare_in_gpu
         if(net1->layers[i]->params.size() != net2->layers[i]->params.size()){
             if(verbose){
                 cout << "The parameters in from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
-                     net2->layers[i]->name << ") do not match" << "(" << "Net::compare_params" << ")" << endl;
+                     net2->layers[i]->name << ") do not match" << " [Net::compare_params]" << endl;
             }
             return false;
         }
@@ -1466,12 +1466,12 @@ bool Net::compare_params(Net *net1, Net *net2, bool verbose, bool compare_in_gpu
             if(equal) {
                 if(verbose){
                     cout << "[OKAY] The params #" << j << " from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
-                         net2->layers[i]->name << ") do match" << "[" << "Net::compare_params" << "]" << endl;
+                         net2->layers[i]->name << ") do match" << " [Net::compare_params]" << endl;
                 }
             }else{
                 if(verbose) {
                     cout << "[FAIL] The params #" << j << " from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
-                         net2->layers[i]->name << ") do not match" << "[" << "Net::compare_params" << "]" << endl;
+                         net2->layers[i]->name << ") do not match" << " [Net::compare_params]" << endl;
                 }
                 equivalent_nets = false;
             }
