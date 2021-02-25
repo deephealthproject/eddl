@@ -1395,13 +1395,20 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gp
         if(compare_in_gpu){ output1->toGPU(); output2->toGPU(); }
         else { output1->toCPU(); output2->toCPU(); }
 
+//        output1->print(2, true);
+//        output2->print(2, true);
+
         // Check if both outputs are equivalent
-        bool equal = Tensor::equivalent(output1, output2);
-        if(!equal){
+        bool equal = Tensor::equivalent(output1, output2, 1e-03, 0.0);
+        if(equal) {
+            if(verbose){
+                cout << "[OKAY] The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                     net2->layers[i]->name << ") do match" << "[" << "Net::compare_outputs" << "]" << endl;
+            }
+        }else{
             if(verbose) {
-                cout << "The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
-                net2->layers[i]->name << ") do not match" << "[" << "Net::compare_outputs" << "]"
-                     << endl;
+                cout << "[FAIL] The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                net2->layers[i]->name << ") do not match" << "[" << "Net::compare_outputs" << "]" << endl;
             }
             equivalent_nets = false;
         }
