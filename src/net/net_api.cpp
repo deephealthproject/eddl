@@ -1366,4 +1366,47 @@ vtensor Net::predict(vtensor tin) {
 
 }
 
+
+bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, bool compare_in_gpu) {
+    bool equivalent_nets = true;
+
+    // Check if both layers are the same
+    if(net1==net2){
+        if(verbose){
+            cout << "Both nets point to the same object"  << "(" << "Net::compare_outputs" << ")" << endl;
+        }
+        return true;
+    }
+
+    // Compare the number of layers
+    if (net1->layers.size() != net1->layers.size()){
+        if(verbose){
+            cout << "Nets have a different number of layers"  << "(" << "Net::compare_outputs" << ")" << endl;
+        }
+        return false;
+    }
+
+    // Compare the output of each layer
+    for(int i=0; i<net1->layers.size(); i++){
+        Tensor *output1 = net1->layers[i]->output;
+        Tensor *output2 = net2->layers[i]->output;
+
+        // Send to device
+        if(compare_in_gpu){ output1->toGPU(); output2->toGPU(); }
+        else { output1->toCPU(); output2->toCPU(); }
+
+        // Check if both outputs are equivalent
+        bool equal = Tensor::equivalent(output1, output2);
+        if(!equal){
+            if(verbose) {
+                cout << "The outs from Layer #" << i << " (" << net1->layers[i]->name << ") and Layer #" << i <<
+                     " (" << net2->layers[i]->name << ") does not match" << "(" << "Net::compare_outputs" << ")"
+                     << endl;
+            }
+            equivalent_nets = false;
+        }
+    }
+    return equivalent_nets;
+}
+
 //////
