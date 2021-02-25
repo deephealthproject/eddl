@@ -195,7 +195,9 @@ public:
     vtensor predict_recurrent(vtensor tin);
     vtensor predict(vtensor tin);
 
-
+    // Debug
+    static bool compare_outputs(Net* net1, Net* net2, bool verbose=false, bool compare_in_gpu=false);
+    static bool compare_params(Net* net1, Net* net2, bool verbose=false, bool compare_in_gpu=false);
 };
 
 

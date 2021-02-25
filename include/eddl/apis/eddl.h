@@ -2186,6 +2186,7 @@ namespace eddl {
     Net* download_resnet50(bool top=true, vector<int> input_shape={}); 
     Net* download_resnet101(bool top=true, vector<int> input_shape={});
     Net* download_resnet152(bool top=true, vector<int> input_shape={});
+    Net* download_densenet121(bool top=true, vector<int> input_shape={});
 
     ///////////////////////////////////////
     //  DATASETS

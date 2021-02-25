@@ -1602,6 +1602,30 @@ namespace eddl {
         
         return net;
     } 
+
+    Net* download_densenet121(bool top, vector<int> input_shape) 
+    {
+        download_model("densenet121.onnx","mod7a1pf0eldyd1"); 
+        Net *net;
+        cout<<"Import ONNX..."<<endl;
+
+        if (input_shape.size()) 
+	        net = import_net_from_onnx_file("densenet121.onnx", input_shape, DEV_CPU);
+        else net = import_net_from_onnx_file("densenet121.onnx", DEV_CPU);
+
+        Layer *l=getLayer(net,"data"); l->name="input";
+        if (top) {
+            net->removeLayer("conv2d121");
+            
+            Layer *l=getLayer(net,"avgpool10"); 
+            l=Reshape(l,{-1});
+            l->name="top";
+        }
+        
+        return net;
+    } 
+
+    
     ///////////////////////////////////////
     //  DATASETS
     ///////////////////////////////////////
