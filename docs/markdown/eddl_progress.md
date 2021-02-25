@@ -12,7 +12,7 @@
 ## Core layers
 
 | Functionality | CPU | GPU | cuDNN | ONNX | Comments |
-| ------------- |------| -----| -----| ------|---------|
+| ------------- |------| -----| ----| ------|---------|
 | Dense     | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Just your regular densely-connected NN layer. |
 | Dropout   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Applies Dropout to the input. |
 | Flatten   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Flattens the input. Does not affect the batch size. (Wrapper for Reshape) |
