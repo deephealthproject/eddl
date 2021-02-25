@@ -68,6 +68,38 @@ TEST(UtilsTestSuite, parse_indices){
     vector<vector<int>> indices;
     vector<vector<int>> indices_ref;
 
+    // Test cases: "x" ***************************************************
+    indices = parse_indices({"0", "0", "0"}, {3, 28, 28});
+    indices_ref = {{0, 0}, {0, 0}, {0, 0}};
+    ASSERT_TRUE(indices.size()==indices_ref.size());
+    for(int i=0; i<indices.size(); i++){ ASSERT_TRUE(indices[i] == indices_ref[i]); }
+
+    indices = parse_indices({"2", "27", "27"}, {3, 28, 28});
+    indices_ref = {{2, 2}, {27, 27}, {27, 27}};
+    ASSERT_TRUE(indices.size()==indices_ref.size());
+    for(int i=0; i<indices.size(); i++){ ASSERT_TRUE(indices[i] == indices_ref[i]); }
+
+    indices = parse_indices({"1", "5", "15"}, {3, 28, 28});
+    indices_ref = {{1, 1}, {5, 5}, {15, 15}};
+    ASSERT_TRUE(indices.size()==indices_ref.size());
+    for(int i=0; i<indices.size(); i++){ ASSERT_TRUE(indices[i] == indices_ref[i]); }
+
+    // Test cases: "-x" ***************************************************
+    indices = parse_indices({"-0", "-0", "-0"}, {3, 28, 28});
+    indices_ref = {{0, 0}, {0, 0}, {0, 0}};
+    ASSERT_TRUE(indices.size()==indices_ref.size());
+    for(int i=0; i<indices.size(); i++){ ASSERT_TRUE(indices[i] == indices_ref[i]); }
+
+    indices = parse_indices({"-3", "-28", "-28"}, {3, 28, 28});
+    indices_ref = {{0, 0}, {0, 0}, {0, 0}};
+    ASSERT_TRUE(indices.size()==indices_ref.size());
+    for(int i=0; i<indices.size(); i++){ ASSERT_TRUE(indices[i] == indices_ref[i]); }
+
+    indices = parse_indices({"-1", "-5", "-18"}, {3, 28, 28});
+    indices_ref = {{2, 2}, {23, 23}, {10, 10}};
+    ASSERT_TRUE(indices.size()==indices_ref.size());
+    for(int i=0; i<indices.size(); i++){ ASSERT_TRUE(indices[i] == indices_ref[i]); }
+
     // Test cases: ":" ***************************************************
     indices = parse_indices({":", ":", ":"}, {3, 28, 28});
     indices_ref = {{0, 2}, {0, 27}, {0, 27}};
