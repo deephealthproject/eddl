@@ -13,8 +13,8 @@ int main(int argc, char **argv) {
           adam(0.001), // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}), // one GPU
-//            CS_CPU(), // CPU with maximum threads availables
+//          CS_GPU({1}), // one GPU
+            CS_CPU(), // CPU with maximum threads availables
           false       // Parameter that indicates that the weights of the net must not be initialized to random values.
     );
 
@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
           adam(0.001), // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}), // one GPU
-//            CS_CPU(), // CPU with maximum threads availables
+//          CS_GPU({1}), // one GPU
+            CS_CPU(), // CPU with maximum threads availables
           false       // Parameter that indicates that the weights of the net must not be initialized to random values.
     );
 
@@ -40,11 +40,11 @@ int main(int argc, char **argv) {
     auto output2 = predict(net2, { input2 });
 
     // Compare nets (outputs)
-    bool res1 = Net::compare_outputs(net1, net2, true);
+    bool res1 = Net::compare_outputs(net1, net2, true, 1e-4);
     cout << "Both nets are equal w.r.t outputs? " << res1 << " (1=yes; 0=no)" << endl;
 
     // Compare nets (params)
-    bool res2 = Net::compare_params(net1, net2, true);
+    bool res2 = Net::compare_params(net1, net2, true, 1e-4);
     cout << "Both nets are equal w.r.t params? " << res2 << " (1=yes; 0=no)" << endl;
 
     return 0;
