@@ -31,10 +31,12 @@ int main(int argc, char **argv) {
     // Load and preprocess training data
     Tensor* x_train1 = Tensor::load("cifar_trX.bin"); x_train1->div_(255.0f);
     Tensor* input1 = x_train1->select({ "0" });
+    set_mode(net1, TSMODE);
     auto output1 = predict(net1, { input1 });
 
     Tensor* x_train2 = Tensor::load("cifar_trX.bin"); x_train2->div_(255.0f);
     Tensor* input2 = x_train2->select({ "0" });
+    set_mode(net2, TSMODE);
     auto output2 = predict(net2, { input2 });
 
     // Compare nets (outputs)
