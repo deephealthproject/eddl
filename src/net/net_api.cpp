@@ -222,11 +222,11 @@ vector<vtensor> Net::get_parameters(bool deepcopy){
     return net_params;
 }
 
-void Net::set_parameters(const vector<vtensor>& params){
+void Net::set_parameters(const vector<vtensor>& new_params){
     // Check the number of layers
-    if(params.size() != this->layers.size()){
+    if(new_params.size() != this->layers.size()){
         msg("AssertionError: The number of layers in params does not match the number of layers in this network ("
-        + std::to_string(params.size())  + "!=" + std::to_string(this->layers.size()) +")",
+        + std::to_string(new_params.size())  + "!=" + std::to_string(this->layers.size()) +")",
         "Net::set_parameters");
     }
 
@@ -235,10 +235,10 @@ void Net::set_parameters(const vector<vtensor>& params){
         Layer* l = this->layers[i];  // Alias
 
         // Check number of params
-        if(params[i].size() != l->params.size()){
+        if(new_params[i].size() != l->params.size()){
             msg("AssertionError: The number of parameters in layer '" + std::to_string(i) +
             "'(" + l->name +") does not match the number of parameters in the given vector<Tensor*>. (" +
-            std::to_string(l->params.size()) + "!=" + std::to_string(params[i].size())  +")",
+            std::to_string(l->params.size()) + "!=" + std::to_string(new_params[i].size())  +")",
                 "Net::set_parameters");
         }
     }
@@ -248,9 +248,8 @@ void Net::set_parameters(const vector<vtensor>& params){
 
         // Copy current params
         for(int j=0; j<this->layers[i]->params.size(); j++){
-            Tensor* new_param = params[i][j];
-            new_param->toDevice(this->dev);  // Send to the same device as the net
-            Tensor::copy(new_param, this->layers[i]->params[j]);
+            Tensor::copy(new_params[i][j], this->layers[i]->params[j]);
+            sync_weights();
         }
 
     }

@@ -177,7 +177,7 @@ public:
     void clamp(float min,float max);
     void setlr(vector <float> p);
     vector<vtensor> get_parameters(bool deepcopy=false);
-    void set_parameters(const vector<vtensor>& params);
+    void set_parameters(const vector<vtensor>& new_params);
 
     vector<float> get_losses();
     vector<float> get_metrics();
