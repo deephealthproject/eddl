@@ -105,6 +105,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#can-i-contribute">Can I contribute?</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-support">Installation &amp; Support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#do-you-have-x-feature-supported">Do you have X feature supported?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i-need-x-feature-can-you-add-it">I need X feature, can you add it?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#do-you-have-a-dockerfile-prepared">Do you have a Dockerfile prepared?</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#performance">Performance</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#is-it-faster-than-pytorch-tensorflow-etc">Is it faster than PyTorch/TensorFlow/etc?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#is-it-more-memory-efficient-than-pytorch-tensorflow-etc">Is it more memory-efficient than PyTorch/TensorFlow/etc?</a></li>
@@ -272,16 +278,48 @@ ecosystem can work smoothly.</p>
 <p>Yes, but first you need to open a new issue to explain and discuss your contribution.</p>
 </div>
 </div>
+<div class="section" id="installation-support">
+<h2>Installation &amp; Support<a class="headerlink" href="#installation-support" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="do-you-have-x-feature-supported">
+<h3>Do you have X feature supported?<a class="headerlink" href="#do-you-have-x-feature-supported" title="Permalink to this headline">¶</a></h3>
+<p>We have two markdown where you can check the layers and operations that we currently support:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md">Layers supported</a></p></li>
+<li><p><a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md">Tensor operations supported</a></p></li>
+</ul>
+</div>
+<div class="section" id="i-need-x-feature-can-you-add-it">
+<h3>I need X feature, can you add it?<a class="headerlink" href="#i-need-x-feature-can-you-add-it" title="Permalink to this headline">¶</a></h3>
+<p>Maybe… Open a new <a class="reference external" href="https://github.com/deephealthproject/eddl/issues">issue</a> and we will happily discuss it.</p>
+</div>
+<div class="section" id="do-you-have-a-dockerfile-prepared">
+<h3>Do you have a Dockerfile prepared?<a class="headerlink" href="#do-you-have-a-dockerfile-prepared" title="Permalink to this headline">¶</a></h3>
+<p>Yes, it’s on the root directory of the repo.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build the image</span>
+<span class="nb">cd</span> eddl/
+docker build -f Dockerfile .
+
+<span class="c1"># Enter in the terminal</span>
+docker <span class="nb">exec</span> -it <span class="o">[</span>container-id<span class="o">]</span> bash
+</pre></div>
+</div>
+</div>
+</div>
 <div class="section" id="performance">
 <h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="is-it-faster-than-pytorch-tensorflow-etc">
 <h3>Is it faster than PyTorch/TensorFlow/etc?<a class="headerlink" href="#is-it-faster-than-pytorch-tensorflow-etc" title="Permalink to this headline">¶</a></h3>
 <p>Check our benchmakrs: <a class="reference external" href="https://github.com/jofuelo/eddl_benchmark">EDDL benchmarks</a></p>
+<p><strong>Summary:</strong></p>
+<ul class="simple">
+<li><p>50% faster than PyTorch</p></li>
+<li><p>Similar performance as Keras</p></li>
+</ul>
 </div>
 <div class="section" id="is-it-more-memory-efficient-than-pytorch-tensorflow-etc">
 <h3>Is it more memory-efficient than PyTorch/TensorFlow/etc?<a class="headerlink" href="#is-it-more-memory-efficient-than-pytorch-tensorflow-etc" title="Permalink to this headline">¶</a></h3>
 <p>Depends on your memory setting.
-You can take a look at our benchmakrs: <a class="reference external" href="https://github.com/jofuelo/eddl_benchmark">EDDL benchmarks</a></p>
+You can take a look at our benchmarks: <a class="reference external" href="https://github.com/jofuelo/eddl_benchmark">EDDL benchmarks</a></p>
 </div>
 </div>
 </div>

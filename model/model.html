@@ -136,6 +136,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#learning-rate-on-the-fly">Learning rate (on the fly)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logging">Logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#move-to-device">Move to device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-parameters">Get parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#set-parameters">Set parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="onnx.html">ONNX</a></li>
@@ -574,6 +576,51 @@ softmax4                      |  (10)      =&gt;      (10)
 <span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mi">1</span><span class="p">});</span> <span class="c1">// Model synchronization every batch and full_mem mode</span>
 <span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="s">&quot;low_mem&quot;</span><span class="p">);</span> <span class="c1">// Model synchronization every batch and use of all available GPUs</span>
 <span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">);</span> <span class="c1">// Model synchronization every batch, use of all available GPUs, and full_mem mode</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-parameters">
+<h2>Get parameters<a class="headerlink" href="#get-parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl14get_parametersE5modelb">
+<span id="_CPPv3N4eddl14get_parametersE5modelb"></span><span id="_CPPv2N4eddl14get_parametersE5modelb"></span><span id="eddl::get_parameters__model.b"></span><span class="target" id="namespaceeddl_1ab5115226a09d7fb741ef262922768d1a"></span>vector&lt;vtensor&gt; <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">get_parameters</code><span class="sig-paren">(</span>model <em>net</em>, bool <em>deepcopy</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14get_parametersE5modelb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a vector of vector of tensors with the parameters of each layer. These tensors are in CPU. Function transparent for distributed mode. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Vector of Vector of Tensors </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deepcopy</span></code>: Whether the return vectors contains reference to the tensors or a copy of them </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="n">vtensor</span><span class="o">&gt;</span> <span class="n">get_parameters</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span> <span class="c1">// deep_copy=true</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="set-parameters">
+<h2>Set parameters<a class="headerlink" href="#set-parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl14set_parametersE5modelRK6vectorI7vtensorE">
+<span id="_CPPv3N4eddl14set_parametersE5modelRK6vectorI7vtensorE"></span><span id="_CPPv2N4eddl14set_parametersE5modelRK6vectorI7vtensorE"></span><span id="eddl::set_parameters__model.vector:vtensor:CR"></span><span class="target" id="namespaceeddl_1af8cb37f682d6969770c61a6801bdbf84"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">set_parameters</code><span class="sig-paren">(</span>model <em>net</em>, <em class="property">const</em> vector&lt;vtensor&gt; &amp;<em>params</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14set_parametersE5modelRK6vectorI7vtensorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the parameters of the net. Function transparent for distributed mode. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: Params to copy to the net </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="n">vtensor</span><span class="o">&gt;</span> <span class="n">myparameters</span> <span class="o">=</span> <span class="p">...</span>
+<span class="n">set_parameters</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">myparameters</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
