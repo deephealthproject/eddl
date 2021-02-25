@@ -61,7 +61,7 @@ void msg(const string& text, const string& title) {
     }
     std::cerr << "==================================================================\n";
     std::cerr << s << std::endl;
-    std::cerr << "==================================================================\n";
+    std::cerr << "==================================================================\n\n";
 
     throw std::runtime_error("RuntimeError: " + title);
 }
