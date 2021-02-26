@@ -19,7 +19,7 @@ SET(USE_FPGA OFF)
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
-elseif(${BUILD_TARGET} STREQUAL "GPU")
+elseif(${BUILD_TARGET} STREQUAL "GPU" OR ${BUILD_TARGET} STREQUAL "CUDA")
     SET(USE_CUDA ON) # Local's scope
 elseif(${BUILD_TARGET} STREQUAL "CUDNN")
     SET(USE_CUDA ON) # Local's scope

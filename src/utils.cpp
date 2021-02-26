@@ -259,26 +259,27 @@ vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>&
         if(pos != string::npos){ // Found
             if(str==delimiter){  // ":"
                 min = 0;
-                max = shape[i]-1;
+                max = shape[i];
             }else{
                 if (pos==0){ // ":5"
                     min = 0;
-                    max = std::stoi(str.substr(pos+delimiter.length(), shape[i]-1)) - 1;
+                    max = std::stoi(str.substr(pos+delimiter.length(), string::npos));  // Numpy style
                 }else if(pos==str.length()-1){  // "5:"
-                    min = std::stoi(str.substr(0, pos));
-                    max = shape[i]-1;
+                    min = std::stoi(str.substr(0, str.length()-delimiter.length()));
+                    max = shape[i];
                 }else{  // "5:10"
-                    min = std::stoi(str.substr(0, pos));
-                    max = std::stoi(str.substr(pos+delimiter.length(), shape[i]-1)) - 1;
+                    min = std::stoi(str.substr(0, pos - 0));  // (start_pos, len= end_pos-start_pos)
+                    max = std::stoi(str.substr(pos+delimiter.length(), string::npos));  // Numpy style
                 }
             }
+
+            max -= 1;  // last index is not included
         }else{  // Not found => "5"
             min = std::stoi(str);
             max = min;
         }
-
         // Negative indices // len + (-x)
-        if(min<0) { min = shape[i] + min ; }
+        if(min<0) { min = shape[i] + min; }
         if(max<0) { max = shape[i] + max; }
 
         ranges.push_back({min, max});
