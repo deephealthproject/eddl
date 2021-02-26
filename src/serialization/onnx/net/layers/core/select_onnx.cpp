@@ -9,36 +9,70 @@ Layer* build_select_layer(onnx::NodeProto *node,
                           int dev,
                           int mem)
 {
-
-  // Get starts indexes
-  string starts_node_name = node->input(1);
-  onnx::NodeProto *starts_node = constant_node_map[starts_node_name];
-  onnx::AttributeProto starts_attr = starts_node->attribute(0);
-  onnx::TensorProto starts_tensor = starts_attr.t();
-  vector<int> starts_vec = vf2vi(parseTensorValues(starts_tensor));
-
-  // Get ends indexes
-  string ends_node_name = node->input(2);
-  onnx::NodeProto *ends_node = constant_node_map[ends_node_name];
-  onnx::AttributeProto ends_attr = ends_node->attribute(0);
-  onnx::TensorProto ends_tensor = ends_attr.t();
-  vector<int> ends_vec = vf2vi(parseTensorValues(ends_tensor));
-
-  // Get axes to apply indexes 
-  vector<int> axes_vec;
-  if (node->input_size() > 3) // This input is optional
+  vector<int> starts_vec; // firs position from the axis to select
+  vector<int> ends_vec;   // last position (exclusive) from the axis to select
+  vector<int> axes_vec;   // axes indexes to apply the selection
+  if (node->attribute_size() == 3) // Operator version 1
   {
-    string axes_node_name = node->input(3);
-    onnx::NodeProto *axes_node = constant_node_map[axes_node_name];
-    onnx::AttributeProto axes_attr = axes_node->attribute(0);
-    onnx::TensorProto axes_tensor = axes_attr.t();
-    axes_vec = vf2vi(parseTensorValues(axes_tensor));
-    // Shift indexes to skip batch dimension (not supported by EDDL Select)
-    //   Note: In LSelect the axis 0 means the first axis after the batch dimension
-    for (int &ax : axes_vec)
-      if (--ax < 0)
-        msg("EDDL can't import a Slice operator that performs a selection "
-            "over the batch dimension", "ONNX::ImportNet");
+    for (int j = 0; j < node->attribute_size(); j++)
+    { // Set the attributes
+      onnx::AttributeProto attribute = node->attribute(j);
+      string attr_name = attribute.name();
+      if (!attr_name.compare("axes"))
+      {
+        for (int h = 0; h < attribute.ints_size(); h++)
+          axes_vec.push_back(attribute.ints(h));
+
+        for (int &ax : axes_vec)
+          if (--ax < 0)
+            msg("EDDL can't import a Slice operator that performs a selection "
+                "over the batch dimension", "ONNX::ImportNet");
+      }
+      else if (!attr_name.compare("ends"))
+      {
+        for (int h = 0; h < attribute.ints_size(); h++)
+          ends_vec.push_back(attribute.ints(h));
+      }
+      else if (!attr_name.compare("starts"))
+      {
+        for (int h = 0; h < attribute.ints_size(); h++)
+          starts_vec.push_back(attribute.ints(h));
+      }
+      else
+        msg("Found an unexpected attribute (" + attr_name +") in Slice operator", "ONNX::ImportNet");
+    }
+  }
+  else // Operator version 13, 11 and 10
+  {
+    // Get starts indexes
+    string starts_node_name = node->input(1);
+    onnx::NodeProto *starts_node = constant_node_map[starts_node_name];
+    onnx::AttributeProto starts_attr = starts_node->attribute(0);
+    onnx::TensorProto starts_tensor = starts_attr.t();
+    starts_vec = vf2vi(parseTensorValues(starts_tensor));
+
+    // Get ends indexes
+    string ends_node_name = node->input(2);
+    onnx::NodeProto *ends_node = constant_node_map[ends_node_name];
+    onnx::AttributeProto ends_attr = ends_node->attribute(0);
+    onnx::TensorProto ends_tensor = ends_attr.t();
+    ends_vec = vf2vi(parseTensorValues(ends_tensor));
+
+    // Get axes to apply indexes 
+    if (node->input_size() > 3) // This input is optional
+    {
+      string axes_node_name = node->input(3);
+      onnx::NodeProto *axes_node = constant_node_map[axes_node_name];
+      onnx::AttributeProto axes_attr = axes_node->attribute(0);
+      onnx::TensorProto axes_tensor = axes_attr.t();
+      axes_vec = vf2vi(parseTensorValues(axes_tensor));
+      // Shift indexes to skip batch dimension (not supported by EDDL Select)
+      //   Note: In LSelect the axis 0 means the first axis after the batch dimension
+      for (int &ax : axes_vec)
+        if (--ax < 0)
+          msg("EDDL can't import a Slice operator that performs a selection "
+              "over the batch dimension", "ONNX::ImportNet");
+    }
   }
 
   // Prepare parameters to create the Select layer
