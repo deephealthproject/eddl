@@ -21,7 +21,7 @@ void save_net_to_onnx_file(Net *net, string path)
     msg("The file could not be saved. Check if the directory exists or if you have permissions to write in it.", "ONNX::ExportNet");
   }
 
-  sync_snets_with_orig(net); // sync weights from device
+  collect_params(net); // sync weights from device
 
   bool export_gradients = false; // We always store weights to file
   onnx::ModelProto model = build_onnx_model(net, export_gradients);
@@ -36,7 +36,9 @@ void save_net_to_onnx_file(Net *net, string path)
 
 size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gradients)
 {
-  sync_snets_with_orig(net, gradients); // sync weights and accumulated gradients from device
+  collect_params(net); // sync weights from device
+  if (gradients)
+      net->collect_acc_grads();
 
   onnx::ModelProto model = build_onnx_model(net, gradients);
   // Serialization of the model to an array of bytes
@@ -52,7 +54,9 @@ size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gra
 
 string *serialize_net_to_onnx_string(Net *net, bool gradients)
 {
-  sync_snets_with_orig(net, gradients); // sync weights and accumulated gradients from device
+  collect_params(net); // sync weights from device
+  if (gradients)
+      net->collect_acc_grads();
 
   onnx::ModelProto model = build_onnx_model(net, gradients);
   // Serialization of the model to an array of bytes

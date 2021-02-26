@@ -48,13 +48,6 @@ void log_string(string log, LOG_LEVEL actual_log_level, LOG_LEVEL string_log_lev
 std::vector<int> vf2vi(const std::vector<float> &vf);
 
 // Synchronize the weights of the snets with the original net
-// Also synchronizes the accumulated gradients if specified
-void sync_snets_with_orig(Net *net, bool acc_gradients=false);
-
-// Synchronize the weights of the snets
-void sync_params(Net *net);
-
-// Synchronize the accumulated gradients of the snets
-void sync_acc_gradients(Net *net);
+void collect_params(Net *net);
 
 #endif // EDDL_UTILS_ONNX_H
