@@ -47,7 +47,7 @@ Layer* build_squeeze_layer(onnx::NodeProto *node,
   bool valid_axes = true;
   for (int ax : squeeze_axes)
   {
-    if (ax >= parent_out_shape.size())
+    if (ax >= parent_out_shape.size() || ax == 0)
     {
       valid_axes = false;
       break;
@@ -64,8 +64,41 @@ Layer* build_squeeze_layer(onnx::NodeProto *node,
     log_string("Skiping squeeze operation. The axes to squeeze are not valid", log_level, LOG_LEVEL::DEBUG);
     return output_node_map[parent_name];
   }
-  else
-  { // There are axes to squeeze
+  else // There are valid axes to squeeze
+  {
+    if (squeeze_axes.size() == 1)
+    {
+      Layer *actual_layer = new LSqueeze(parent, squeeze_axes[0] - 1, node->name(), dev, mem);
+      log_string("Squeeze layer created", log_level, LOG_LEVEL::DEBUG);
+      return actual_layer;
+    }
+
+    // Sort the axes to squeeze
+    std::sort(squeeze_axes.begin(), squeeze_axes.end());
+
+    // Check if we can create a Squeeze layer with axis=-1
+    bool use_squeeze_layer = true;
+    auto sq_axes_it = squeeze_axes.begin();
+    // Check that the squeeze_axes match with the axes with values 1 in the input
+    for (int ax = 1; ax < parent_out_shape.size(); ++ax)
+      if (parent_out_shape[ax] == 1)
+      {
+        if (*sq_axes_it != ax)
+          use_squeeze_layer = false;
+        else
+          sq_axes_it++;
+      }
+    // Lastly check that we reached the end of the axes to squeeze
+    if (sq_axes_it != squeeze_axes.end())
+      use_squeeze_layer = false;
+
+    if(use_squeeze_layer)
+    {
+      Layer *actual_layer = new LSqueeze(parent, -1, node->name(), dev, mem);
+      log_string("Squeeze layer created with axis = -1", log_level, LOG_LEVEL::DEBUG);
+      return actual_layer;
+    }
+
     vector<int> target_shape;
     bool to_squeeze = false;
     for (int parent_ax = 0; parent_ax < parent_out_shape.size(); ++parent_ax)

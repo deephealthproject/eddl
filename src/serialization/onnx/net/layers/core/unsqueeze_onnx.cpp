@@ -63,7 +63,7 @@ Layer* build_unsqueeze_layer(onnx::NodeProto *node,
   bool valid_axes = true;
   for (int ax : unsqueeze_axes)
   {
-    if (ax > parent_out_shape.size())
+    if (ax > parent_out_shape.size() || ax == 0)
     {
       valid_axes = false;
       break;
@@ -80,8 +80,8 @@ Layer* build_unsqueeze_layer(onnx::NodeProto *node,
     log_string("Skiping unsqueeze operation. The axes to unsqueeze are not valid", log_level, LOG_LEVEL::DEBUG);
     return output_node_map[parent_name];
   }
-  else
-  { // There are axes to unsqueeze
+  else // There are valid axes to unsqueeze
+  {
     // Sort the axes to unsqueeze
     std::sort(unsqueeze_axes.begin(), unsqueeze_axes.end());
     // Search for duplicates. DUPLICATES ARE NOT ALLOWED
@@ -94,6 +94,15 @@ Layer* build_unsqueeze_layer(onnx::NodeProto *node,
         i--;
       }
     }
+
+    // If we only have to unsqueeze one axis we can use the Unsqueeze layer
+    if (unsqueeze_axes.size() == 1)
+    {
+      Layer *actual_layer = new LUnsqueeze(parent, unsqueeze_axes[0] - 1, node->name(), dev, mem);
+      log_string("Unsqueeze layer created", log_level, LOG_LEVEL::DEBUG);
+      return actual_layer;
+    }
+
     // Insert the new dims
     vector<int> target_shape = parent_out_shape;
     for (int unsq_ax : unsqueeze_axes)
