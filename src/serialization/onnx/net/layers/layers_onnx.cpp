@@ -323,6 +323,10 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_averagepool_node(l, graph);
   else if (LReshape *l = dynamic_cast<LReshape *>(layer))
     build_reshape_node(l, graph);
+  else if (LSqueeze *l = dynamic_cast<LSqueeze *>(layer))
+    build_squeeze_node(l, graph);
+  else if (LUnsqueeze *l = dynamic_cast<LUnsqueeze *>(layer))
+    build_unsqueeze_node(l, graph);
   else if (LPermute *l = dynamic_cast<LPermute *>(layer))
     build_permute_node(l, graph);
   else if (LUpSampling *l = dynamic_cast<LUpSampling *>(layer))

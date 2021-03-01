@@ -21,7 +21,9 @@ Layer* build_squeeze_layer(onnx::NodeProto *node,
  */
 
 // OPSET: 11, 1
-void build_squeeze_node(string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph);
+void build_squeeze_node(LSqueeze *layer, onnx::GraphProto *graph);
+
+void squeeze_node_builder(string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph);
 
 #endif // EDDL_SQUEEZE_ONNX_H
 #endif // cPROTO

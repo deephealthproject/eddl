@@ -458,7 +458,7 @@ void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
   {
     // Squeeze: [seq_length, num_directions, batch_size, hidden_size] -> [seq_length, batch_size, hidden_size]
     //   Note: The EDDL only supports one-directional LSTM, so num_directions=1
-    build_squeeze_node(
+    squeeze_node_builder(
         layer->name + "_outputSqueeze", // node name
         layer->name + "_Y",             // input name
         layer->name,                    // Output name
@@ -469,7 +469,7 @@ void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
   { // is encoder
     // Squeeze: [num_directions, batch_size, hidden_size] -> [batch_size, hidden_size]
     //   Note: The EDDL only supports one-directional LSTM, so num_directions=1
-    build_squeeze_node(
+    squeeze_node_builder(
         layer->name + "_outputSqueeze", // node name
         layer->name + "_Y_h",           // input name
         layer->name,                    // Output name

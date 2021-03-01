@@ -96,8 +96,30 @@ Layer* build_squeeze_layer(onnx::NodeProto *node,
   }
 }
 
+void build_squeeze_node(LSqueeze *layer, onnx::GraphProto *graph)
+{
+  vector<int> axes;
+  if (layer->axis == -1)
+  {
+    // Detect the axes to squeeze
+    vector<int> input_shape = layer->input->getShape();
+    for (int i = 1/*skip batch*/; i < input_shape.size(); ++i)
+      if (input_shape[i] == 1)
+        axes.push_back(i);
+  }
+  else
+    axes = {layer->axis+1}; // +1 to add batch dimension
+
+  squeeze_node_builder(
+      layer->name,
+      layer->parent[0]->name,
+      layer->name,
+      axes,
+      graph);
+}
+
 // ONNX export
-void build_squeeze_node(string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph)
+void squeeze_node_builder(string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph)
 {
   onnx::NodeProto *node_sq = graph->add_node();
   node_sq->set_op_type("Squeeze");

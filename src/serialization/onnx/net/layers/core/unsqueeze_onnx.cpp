@@ -107,7 +107,18 @@ Layer* build_unsqueeze_layer(onnx::NodeProto *node,
 }
 
 // ONNX export
-void build_unsqueeze_node(string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph)
+void build_unsqueeze_node(LUnsqueeze *layer, onnx::GraphProto *graph)
+{
+  unsqueeze_node_builder(
+      layer->name,
+      layer->parent[0]->name,
+      layer->name,
+      {layer->axis+1},  // +1 to add batch dimension
+      graph);
+}
+
+// ONNX export
+void unsqueeze_node_builder(string node_name, string input, string output, vector<int> axes, onnx::GraphProto *graph)
 {
   onnx::NodeProto *node_usq = graph->add_node();
   node_usq->set_op_type("Unsqueeze");

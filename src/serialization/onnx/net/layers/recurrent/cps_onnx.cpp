@@ -18,7 +18,7 @@ void handle_copy_states(LCopyStates *layer, onnx::GraphProto *graph)
    *   Note: The h state coming from the previous LSTM has been squeezed, so we
    *         have to unsqueeze it to get the desired shape for the decoder LSTM
    */
-  build_unsqueeze_node(
+  unsqueeze_node_builder(
       layer->name + "_h_unsqueeze", // node name
       input_name,                   // input name
       output_name,                  // Output name

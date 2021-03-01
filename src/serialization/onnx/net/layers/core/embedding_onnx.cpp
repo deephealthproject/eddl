@@ -19,7 +19,7 @@ void build_embedding_node(LEmbedding *layer, onnx::GraphProto *graph)
     string squeeze_node_name = layer->name + "_squeeze";
     string squeeze_node_input = layer->parent[0]->name;
     string squeeze_node_output = layer->name + "_squeeze";
-    build_squeeze_node(
+    squeeze_node_builder(
         squeeze_node_name,
         squeeze_node_input,
         squeeze_node_output,
