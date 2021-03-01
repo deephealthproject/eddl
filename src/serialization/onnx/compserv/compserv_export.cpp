@@ -4,7 +4,7 @@
 using namespace std;
 
 #if defined(cPROTO)
-#include "onnx.pb.h"
+#include "eddl/serialization/onnx/onnx.pb.h"
 #endif
 
 #ifdef cPROTO
@@ -109,7 +109,7 @@ string *serialize_compserv_to_onnx_string(CompServ *cs) {
 #else
 
 void save_compserv_to_onnx_file(CompServ *cs, string path) {
-  cerr << "Not compiled for ONNX. Missing Protobuf" << endl;
+  cerr << "Not compiled for ONNX. Missing Protobuf. The CompServ is not going to be exported to file" << endl;
 }
 
 size_t serialize_compsev_to_onnx_pointer(CompServ *cs, void *&serialized_cs) {
