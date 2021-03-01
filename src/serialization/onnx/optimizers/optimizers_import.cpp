@@ -5,7 +5,7 @@
 using namespace std;
 
 #if defined(cPROTO)
-#include "onnx.pb.h"
+#include "eddl/serialization/onnx/onnx.pb.h"
 #endif
 
 #ifdef cPROTO

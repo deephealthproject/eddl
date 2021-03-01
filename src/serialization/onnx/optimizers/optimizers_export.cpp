@@ -4,7 +4,7 @@
 using namespace std;
 
 #if defined(cPROTO)
-#include "onnx.pb.h"
+#include "eddl/serialization/onnx/onnx.pb.h"
 #endif
 
 #ifdef cPROTO
@@ -181,7 +181,7 @@ string *serialize_optimizer_to_onnx_string(Optimizer *optimizer) {
 #else
 
 void save_optimizer_to_onnx_file(Optimizer *optimizer, string path) {
-  cerr << "Not compiled for ONNX. Missing Protobuf" << endl;
+  cerr << "Not compiled for ONNX. Missing Protobuf. The optimizer is not going to be exported to file" << endl;
 }
 
 size_t serialize_optimizer_to_onnx_pointer(Optimizer *optimizer, void *&serialized_optimizer) {
