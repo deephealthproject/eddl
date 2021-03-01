@@ -968,6 +968,10 @@ namespace eddl {
         return new LLog10(l, "", DEV_CPU, 0);
     }
 
+    layer Clamp(layer l, float min, float max){
+        return new LClamp(l, min, max, "", DEV_CPU, 0);
+    }
+
     layer Mult(layer l1, layer l2){
         return new LMult(l1, l2, "", DEV_CPU, 0);
     }
