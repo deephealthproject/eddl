@@ -12,24 +12,25 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/layers/fused/layer_conv2d_relu.h"
+#include "eddl/layers/fused/layer_fused.h"
 
 using namespace std;
 
 
-int LConv2d_Relu::total_layers = 0;
+int LConv2dActivation::total_layers = 0;
 
 // constructors and clones
 
-LConv2d_Relu::LConv2d_Relu(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
-             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) :
-             LConv2d_Relu(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, pads, groups, dilation_rate, use_bias, mem), name, dev, mem) {
+LConv2dActivation::LConv2dActivation(Layer *parent, string act, int filters, const vector<int> &kernel_size,
+                                     const vector<int> &strides, string padding, const vector<int> &pads,
+                                     int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) :
+        LConv2dActivation(parent, act, new ConvolDescriptor(filters, kernel_size, strides, padding, pads, groups, dilation_rate, use_bias, mem), name, dev, mem) {
 };
 
-LConv2d_Relu::LConv2d_Relu(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
-    if (parent->output->ndim != 4) msg("LConv2d_Relu only works over 4D tensors", "LConv2d_Relu::LConv2d_Relu");
+LConv2dActivation::LConv2dActivation(Layer *parent, string act, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+    if (parent->output->ndim != 4) msg("LConv2d_Relu only works over 4D tensors", "LConv2dActivation::LConv2dActivation");
 
-    // Check dev with tensor dev
+    this->act=act;
 
     // Set default name
     if(name.empty()) this->name = "conv2d_relu" + to_string(++total_layers);
@@ -59,16 +60,16 @@ LConv2d_Relu::LConv2d_Relu(Layer *parent, ConvolDescriptor *D, string name, int 
 }
 
 
-LConv2d_Relu::~LConv2d_Relu(){
+LConv2dActivation::~LConv2dActivation(){
     delete cd;  
 }
 
 // virtual
-void LConv2d_Relu::resize(int batch){
+void LConv2dActivation::resize(int batch){
     cd->resize(batch);
 }
 
-void LConv2d_Relu::mem_delta(){
+void LConv2dActivation::mem_delta(){
     if(this->delta == nullptr) {
         // Reserve parent's delta
         parent[0]->mem_delta();
@@ -83,11 +84,11 @@ void LConv2d_Relu::mem_delta(){
     }
 }
 
-void LConv2d_Relu::forward() {
-    tensorNN::Conv2D(this->cd);
+void LConv2dActivation::forward() {
+    tensorNN::conv2d_activation(this->act, this->cd);
 }
 
-void LConv2d_Relu::backward() {
+void LConv2dActivation::backward() {
     //get gradients with provided delta
     if (trainable) { tensorNN::Conv2D_grad(this->cd); }
     //else {cout<<name<<" not trainable"<<endl;}
@@ -101,27 +102,27 @@ void LConv2d_Relu::backward() {
     if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}
 }
 
-void LConv2d_Relu::initialize() {
+void LConv2dActivation::initialize() {
     init->apply(params[0]);  // Conv
     params[1]->fill_(0.0f); // Bias
 }
 
-void LConv2d_Relu::update_weights(Tensor* w, Tensor* bias) {
+void LConv2dActivation::update_weights(Tensor* w, Tensor* bias) {
     Tensor::copy( w, cd->K );
     if ( bias != nullptr ) Tensor::copy( bias, cd->bias );
 }
 
-void LConv2d_Relu::accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {
+void LConv2dActivation::accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {
     cd->K->add_( gw );
     if ( gbias != nullptr ) cd->bias->add_( gbias );
 }
 
-void LConv2d_Relu::reset_accumulated_gradients() {
+void LConv2dActivation::reset_accumulated_gradients() {
     cd->acc_gK->fill_(0.0);
     cd->acc_gbias->fill_(0.0);
 }
 
-void LConv2d_Relu::apply_accumulated_gradients() {
+void LConv2dActivation::apply_accumulated_gradients() {
     cd->K->add_( cd->acc_gK );
     cd->bias->add_( cd->acc_gbias );
 
@@ -129,8 +130,8 @@ void LConv2d_Relu::apply_accumulated_gradients() {
     if(reg!= nullptr) {reg->apply(cd->K);}
 }
 
-Layer *LConv2d_Relu::share(int c, int bs, vector<Layer *> p) {
-    LConv2d_Relu *n = new LConv2d_Relu(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias,  "share_"+to_string(c) + this->name, this->dev, this->mem_level);
+Layer *LConv2dActivation::share(int c, int bs, vector<Layer *> p) {
+    LConv2dActivation *n = new LConv2dActivation(p[0], this->act, cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
 
     n->orig = this;
     n->isshared=true;
@@ -177,8 +178,8 @@ Layer *LConv2d_Relu::share(int c, int bs, vector<Layer *> p) {
     return n;
 }
 
-Layer *LConv2d_Relu::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LConv2d_Relu *n = new LConv2d_Relu(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias,  this->name, todev, this->mem_level);
+Layer *LConv2dActivation::clone(int c, int bs, vector<Layer *> p, int todev) {
+    LConv2dActivation *n = new LConv2dActivation(p[0], this->act, cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias, this->name, todev, this->mem_level);
     n->trainable = trainable;
     n->do_deletes = false;
 
@@ -196,7 +197,7 @@ Layer *LConv2d_Relu::clone(int c, int bs, vector<Layer *> p, int todev) {
 }
 
 
-string LConv2d_Relu::plot(int c) {
+string LConv2dActivation::plot(int c) {
     string s;
 
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray,shape=box]";
@@ -205,11 +206,11 @@ string LConv2d_Relu::plot(int c) {
     return s;
 }
 
-void LConv2d_Relu::reset_name_counter() {
+void LConv2dActivation::reset_name_counter() {
     total_layers = 0;
 }
 
-void LConv2d_Relu::enable_distributed() {
+void LConv2dActivation::enable_distributed() {
     distributed_training = true;
     cd->enable_distributed();
 

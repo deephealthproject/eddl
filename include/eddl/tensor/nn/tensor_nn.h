@@ -105,9 +105,8 @@ namespace tensorNN{
     void AvgPool2D_back(PoolDescriptor *D);
 
     // ***** Deep Learning: Fused *****************************
-    // Conv2D + Relu
-    void Conv2D_Relu(ConvolDescriptor *D);
-    void Conv2D_Relu_back(ConvolDescriptor *D);
+    // Conv2D + Activation
+    void conv2d_activation(string act, ConvolDescriptor *D);
 
 // ***** Tensor operations *****************************
     void repeat_nn(Tensor *A, Tensor *B, vector<int> size);

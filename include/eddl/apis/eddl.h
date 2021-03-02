@@ -27,7 +27,7 @@
 #include "eddl/layers/conv/layer_conv.h"
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/da/layer_da.h"
-#include "eddl/layers/fused/layer_conv2d_relu.h"
+#include "eddl/layers/fused/layer_fused.h"
 #include "eddl/layers/generators/layer_generators.h"
 #include "eddl/layers/merge/layer_merge.h"
 #include "eddl/layers/noise/layer_noise.h"
@@ -2197,7 +2197,7 @@ namespace eddl {
     //  FUSED LAYERS
     ///////////////////////////////////////
     /**
-      *  @brief Convolution + Relu layer.
+      *  @brief Convolution + Activation layer.
       *
       *  @param parent  Parent layer
       *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
@@ -2210,9 +2210,9 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     Convolution layer
     */
-    layer Conv2d_Relu(layer parent, int filters, const vector<int> &kernel_size,
-               const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
-               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+    layer Conv2dActivation(layer parent, string act, int filters, const vector<int> &kernel_size,
+                           const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+                           int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
     ///////////////////////////////////////
     // MODELS
