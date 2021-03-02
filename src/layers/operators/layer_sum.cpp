@@ -75,9 +75,7 @@ LSum::LSum(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(nam
 void LSum::forward() {
     if (binary) Tensor::add(1.0, parent[0]->output, 1.0, parent[1]->output, output, 0);
     else {
-        Tensor::copy(parent[0]->output, output);
-        output->add_(val);
-
+        Tensor::add(parent[0]->output, output, val);
     }
 }
 

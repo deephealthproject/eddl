@@ -20,16 +20,6 @@ using namespace std;
 int LClamp::total_layers = 0;
 
 
-/**
-  @brief Clamps the values of aLayer element-wise
-
-  @param l a Layer.
-  @param name a name for the operation (predefined as 'LClamp_TotaLClampLayers')
-  @param dev which computing service utilize
-
-  @returns the result of the logarithm with base 10 operation over l
-
-  */
 LClamp::LClamp(Layer *l, float min, float max, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "clamp_" + to_string(++total_layers);
 
@@ -44,12 +34,11 @@ LClamp::LClamp(Layer *l, float min, float max, string name, int dev, int mem) : 
 }
 
 void LClamp::forward() {
-    Tensor::copy(parent[0]->output, output);
-    output->clamp_(this->min, this->max);
+    Tensor::clamp(parent[0]->output, output, this->min, this->max);
 }
 
 void LClamp::backward() {
-    msg("Not implemented error", "LClamp::backward");
+    msg("NotImplementedError: Only available for inference", "LClamp::backward");
 }
 
 Layer *LClamp::share(int c, int bs, vector<Layer *> p) {
@@ -57,8 +46,7 @@ Layer *LClamp::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LClamp::clone(int c, int bs, vector<Layer *> p, int todev) {
-  LClamp *n;
-  n = new LClamp(p[0], this->min, this->max, name, todev, this->mem_level);
+  auto *n = new LClamp(p[0], this->min, this->max, name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

@@ -86,10 +86,8 @@ void LDiv::forward() {
     if (binary) Tensor::el_div(parent[0]->output, parent[1]->output, output, 0);
     else {
         if (left) {
-          Tensor::copy(parent[0]->output, output);
-          output->div_(val);
-        }
-        else {
+          Tensor::div(parent[0]->output, output, val);
+       }else {
           Tensor::copy(parent[0]->output, output);
           output->inv_();
           output->mult_(val);
