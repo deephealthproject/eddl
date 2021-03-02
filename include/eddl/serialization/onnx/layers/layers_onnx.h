@@ -52,6 +52,7 @@ enum ONNX_LAYERS {
   EXP,              // OPSET: 13, 6
   LOG,              // OPSET: 13, 6
   MUL,              // OPSET: 13, 7
+  CLIP,             // OPSET: 13, 12, 11
   SQRT,             // OPSET: 13, 6
   SUB,              // OPSET: 13, 7
   RMAX,             // OPSET: 13, 12, 11, 1

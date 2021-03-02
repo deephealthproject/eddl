@@ -26,6 +26,7 @@
 #include "eddl/serialization/onnx/layers/operators/mult_onnx.h"
 #include "eddl/serialization/onnx/layers/operators/sqrt_onnx.h"
 #include "eddl/serialization/onnx/layers/operators/diff_onnx.h"
+#include "eddl/serialization/onnx/layers/operators/clamp_onnx.h"
 #include "eddl/serialization/onnx/layers/reductions/max_onnx.h"
 #include "eddl/serialization/onnx/layers/reductions/min_onnx.h"
 #include "eddl/serialization/onnx/layers/reductions/mean_onnx.h"
@@ -91,6 +92,7 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["Exp"] = ONNX_LAYERS::EXP;
   map_layers["Log"] = ONNX_LAYERS::LOG;
   map_layers["Mul"] = ONNX_LAYERS::MUL;
+  map_layers["Clip"] = ONNX_LAYERS::CLIP;
   //map_layers["Pow"] = ONNX_LAYERS::POW;
   map_layers["Sqrt"] = ONNX_LAYERS::SQRT;
   map_layers["Sub"] = ONNX_LAYERS::SUB;
@@ -216,7 +218,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_abs_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::DIV:
-      new_layer = build_div_layer(node, output_node_map, dev, mem);
+      new_layer = build_div_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::EXP:
       new_layer = build_exp_layer(node, output_node_map, dev, mem);
@@ -226,6 +228,9 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       break;
     case ONNX_LAYERS::MUL:
       new_layer = build_mul_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::CLIP:
+      new_layer = build_clamp_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     //case ONNX_LAYERS::POW:
     //  TODO: Implement LPow in EDDL
@@ -378,6 +383,8 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_log_node(l, graph);
   else if (LMult *l = dynamic_cast<LMult *>(layer))
     build_mul_node(l, graph);
+  else if (LClamp *l = dynamic_cast<LClamp *>(layer))
+    build_clip_node(l, graph);
   //else if (LPow *l = dynamic_cast<LPow *>(layer))
   //  build_pow_node(l, graph);
   else if (LSqrt *l = dynamic_cast<LSqrt *>(layer))

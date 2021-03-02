@@ -15,9 +15,10 @@ Layer* build_mul_layer(onnx::NodeProto *node,
   Layer *first_operator = output_node_map[first_operator_name];
 
   string second_operator_name = node->input(1);
-  // Detect pattern for applying scale and bias of batchnorm using Mult
-  // and Add operators
   if(map_init_dims.count(second_operator_name))
+  {
+    // Detect pattern for applying scale and bias of batchnorm using Mult
+    // and Add operators
     if (LBatchNorm *l = dynamic_cast<LBatchNorm*>(first_operator))
     {
       // Set the scale value of the input batchnorm layer
@@ -32,6 +33,20 @@ Layer* build_mul_layer(onnx::NodeProto *node,
       output_node_map[node->output(0)] = first_operator;
       return nullptr;
     }
+    else // Is a multiplication of a tensor by a scalar
+    {
+      vector<float> scalars = map_init_values[second_operator_name];
+      if (scalars.size() == 1)
+      {
+        return new LMult(first_operator, scalars[0], node->name(), dev, mem);
+      }
+      else
+      {
+        msg("Error: The divisor input of the Div layer " + node->name() + " is not valid", "ONNX::ImportNet");
+        return nullptr;
+      }
+    }
+  }
 
   Layer *second_operator = output_node_map[second_operator_name];
 
@@ -52,6 +67,17 @@ void build_mul_node(LMult *layer, onnx::GraphProto *graph)
   }
   // Set the name of the output of the node to link with other nodes
   node->add_output(layer->name);
+
+  if (!layer->binary)
+  {
+    string value_name(layer->name + "_value");
+    node->add_input(value_name); // Add the value initializer as input
+    // Create the value initializer
+    onnx::TensorProto *mult_value = graph->add_initializer();
+    mult_value->set_name(value_name);
+    mult_value->set_data_type(onnx::TensorProto::FLOAT);
+    mult_value->add_float_data(layer->val);
+  }
 }
 
 #endif // defined(cPROTO)
