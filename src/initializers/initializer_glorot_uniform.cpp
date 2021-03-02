@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -38,7 +38,7 @@ void IGlorotUniform::apply(Tensor* params) {
 
         params->fill_rand_signed_uniform_(1.0);
 
-        float limits=sqrtf(6.0 / (float)(fin+fout));
+        float limits=sqrtf(6.0f / (float)(fin+fout));
 
         params->mult_(limits);
       }
@@ -54,8 +54,7 @@ void IGlorotUniform::apply(Tensor* params) {
         int fout=rf*params->shape[0];
 
         params->fill_rand_signed_uniform_(1.0);
-
-        float limits=sqrtf(6.0 / (float)(fin+fout));
+        float limits=sqrtf(6.0f / (float)(fin+fout));
 
         params->mult_(limits);
 

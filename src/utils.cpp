@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -59,52 +59,89 @@ void msg(const string& text, const string& title) {
     if(!title.empty()){
         s += " (" + title + ")";
     }
-    cout<<"==================================================================\n";
-    cout<<s<<endl;
-    cout<<"==================================================================\n";
+    std::cerr << "==================================================================\n";
+    std::cerr << s << std::endl;
+    std::cerr << "==================================================================\n\n";
 
-    throw std::runtime_error("eddl exception");
+    throw std::runtime_error("RuntimeError: " + title);
 }
 
+void * eddl_malloc(size_t size, const string & str_info)
+{
+    constexpr size_t alignment_block_size = 64;
 
-float *get_fmem(unsigned long int size, const string &str){
     // Careful with memory overcommitment:
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
     // TODO: This function does not work properly (...but it does, at least most of the time -for linux and mac-)
-    float* ptr = nullptr;
+    void * ptr = nullptr;
     bool error = false;
+    int rc = -1;
 
 
+#if defined(EDDL_LINUX) || defined(EDDL_APPLE)
     // Check if free memory is bigger than requested
-    unsigned long freemem = get_free_mem();
-    if (size*sizeof(float) > freemem) {
-        error=true;
+    /* get_free_mem() is not actually necessary,
+       memory allocating system calls set the 'errno' variable
+       to indicate which was the error when trying to allocate
+       the CPU memory
+
+    unsigned long int freemem = get_free_mem();
+    error = (size > freemem);
+    */
+
+    if (! error) {
+
+        // New vs Malloc *******************
+        // New is the C++ way of doing it
+        // New is type-safe, Malloc is not
+        // New calls your type constructor, Malloc not - Same for destructor
+        // New is an operator, Malloc a function (slower)
+        try {
+            //ptr = new float[size];
+            //ptr=(float *)malloc(size*sizeof(float));
+            //ptr=(float *)aligned_alloc(64, size*sizeof(float));
+            rc = posix_memalign((void **)&ptr, alignment_block_size, size);
+            error = (0 != rc);
+            errno = rc;
+        }
+        catch (std::bad_alloc & badAlloc) { error = true; }
     }
 
-    // New vs Malloc *******************
-    // New is the C++ way of doing it
-    // New is type-safe, Malloc is not
-    // New calls your type constructor, Malloc not - Same for destructor
-    // New is an operator, Malloc a function (slower)
-    try{
-        ptr = new float[size];
-        //ptr=(float *)malloc(size*sizeof(float));
-        //ptr=(float *)aligned_alloc(64, size*sizeof(float));
-        //posix_memalign((void **)&ptr, 64, size*sizeof(float));
-
-    }
-    catch (std::bad_alloc& badAlloc){
-        error=true;
-    }
+#elif defined(EDDL_WINDOWS)
+    errno = 0;
+    ptr = _aligned_malloc(size, alignment_block_size);
+    error = (nullptr == ptr || errno == ENOMEM);
+#else
+#error "A proper configuration must define either EDDL_LINUX, EDDL_APPLE or EDDL_WINDOWS"
+#endif
 
     // Check for errors
     // Not enough free memory
-    if (error) {
-        delete[] ptr;
-        throw std::runtime_error("Error allocating " + string(bytes2human(size * sizeof(float))) + " in " + string(str));
+    if (error || ptr == nullptr) {
+        if (ptr != nullptr) eddl_free(ptr);
+        //throw std::runtime_error("Error allocating " + string(bytes2human(size * sizeof(float))) + " in " + string(str));
+        throw std::runtime_error("Error " + std::to_string(errno)
+                                + " allocating " + string(bytes2human(size, 0)) + " bytes at "
+                                + string(__FILE__) + "(" + std::to_string(__LINE__) + ") " + str_info);
     }
 
     return ptr;
+}
+
+void eddl_free(void * ptr)
+{
+#if defined(EDDL_LINUX) || defined(EDDL_APPLE)
+    free(ptr);
+#elif defined(EDDL_WINDOWS)
+    _aligned_free(ptr);
+#else
+#error "A proper configuration must define either EDDL_LINUX, EDDL_APPLE or EDDL_WINDOWS"
+#endif
+}
+
+float *get_fmem(unsigned long int size, const string &str)
+{
+    return (float *)eddl_malloc(size * sizeof(float), str);
 }
 
 
@@ -222,26 +259,27 @@ vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>&
         if(pos != string::npos){ // Found
             if(str==delimiter){  // ":"
                 min = 0;
-                max = shape[i]-1;
+                max = shape[i];
             }else{
                 if (pos==0){ // ":5"
                     min = 0;
-                    max = std::stoi(str.substr(pos+delimiter.length(), shape[i]-1)) - 1;
+                    max = std::stoi(str.substr(pos+delimiter.length(), string::npos));  // Numpy style
                 }else if(pos==str.length()-1){  // "5:"
-                    min = std::stoi(str.substr(0, pos));
-                    max = shape[i]-1;
+                    min = std::stoi(str.substr(0, str.length()-delimiter.length()));
+                    max = shape[i];
                 }else{  // "5:10"
-                    min = std::stoi(str.substr(0, pos));
-                    max = std::stoi(str.substr(pos+delimiter.length(), shape[i]-1)) - 1;
+                    min = std::stoi(str.substr(0, pos - 0));  // (start_pos, len= end_pos-start_pos)
+                    max = std::stoi(str.substr(pos+delimiter.length(), string::npos));  // Numpy style
                 }
             }
+
+            max -= 1;  // last index is not included
         }else{  // Not found => "5"
             min = std::stoi(str);
             max = min;
         }
-
         // Negative indices // len + (-x)
-        if(min<0) { min = shape[i] + min ; }
+        if(min<0) { min = shape[i] + min; }
         if(max<0) { max = shape[i] + max; }
 
         ranges.push_back({min, max});
@@ -389,6 +427,51 @@ string get_parent_dir(const string& fname){
            : fname.substr(0, pos);
 }
 
+vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch){
+    int faxis = axis+(int)ignore_batch;
+    int lastdim = (int)(shape.size()-1);
+
+    // Check dimension bounds
+    if (faxis > lastdim) {
+        msg("Number of dimensions exceeded (" + to_string(axis) + " >= " + to_string((int)(shape.size()-(int)ignore_batch)) + ")", "compute_squeeze");
+    }else  if (faxis < -1){
+        msg("The axis must be greater or equal than zero; or -1 (special case)", "compute_squeeze");
+    }
+
+    // Remove single dimension entries from the array
+    vector<int> new_shape;
+
+    // Ignore batch if needed
+    if(ignore_batch){
+        new_shape.push_back(shape[0]);
+    }
+
+    for(int i=(int)ignore_batch; i<shape.size(); i++){
+        int dim = shape[i];
+
+        // If dimension is greater than 1 or batch is ignored
+        if((dim>1) || (i!=faxis && axis!=-1)){
+            new_shape.push_back(dim);
+        }
+    }
+
+    return new_shape;
+};
+
+vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch){
+    int faxis = axis+(int)ignore_batch;
+
+    // Check dimension bounds
+    if (faxis > shape.size()) {
+        msg("Number of dimensions exceeded (" + to_string(axis) + " >= " + to_string((int)(shape.size()-(int)ignore_batch)) + ")", "compute_unsqueeze");
+    }else  if (faxis < 0){
+        msg("The axis must be greater or equal than zero", "compute_unsqueeze");
+    }
+
+    vector<int> new_shape(shape);
+    new_shape.insert(new_shape.begin()+faxis, 1); // Add one dimension to the beginning
+    return new_shape;
+}
 
 WrappingMode getWrappingMode(string mode){
     if(mode == "constant"){
@@ -419,6 +502,13 @@ WrappingMode getWrappingMode(string mode){
         return WrappingMode::Constant;
     }
 }
+
+void show_deprecated_warning(const string& deprecated_name, const string& new_name, const string& type, const string& version){
+    std::cerr << "[DEPRECATION WARNING]: The '" << deprecated_name << "' " << type << " will be deprecated in a " << version << " version";
+    if (!new_name.empty()) { std::cerr << " in favor of '" << new_name << "'"; }
+    std::cerr << "." << std::endl;
+}
+
 
 // ---------------------------------------------------------------------------------------------
 // Profiling
@@ -590,6 +680,9 @@ PROFILING_ENABLE(fpga_reshape_input_data_convol);
 PROFILING_ENABLE(fpga_reshape_kernel_data_convol);
 PROFILING_ENABLE(fpga_Conv2D_8x8);
 PROFILING_ENABLE(fpga_Conv2D_4x4);
+PROFILING_ENABLE(Precision_Conversion);
+PROFILING_ENABLE(FPGA_READ);
+PROFILING_ENABLE(FPGA_WRITE);
 
 void __show_profile() {
 
@@ -713,7 +806,7 @@ void __show_profile() {
   PROFILING_PRINTF(fill_rand_uniform);
   PROFILING_PRINTF(fill_rand_signed_uniform);
   PROFILING_PRINTF(fill_rand_normal);
-  PROFILING_PRINTF(fill_rand_binary);  
+  PROFILING_PRINTF(fill_rand_binary);
   // comparison
   PROFILING_PRINTF(all);
   PROFILING_PRINTF(any);
@@ -754,10 +847,14 @@ void __show_profile() {
   PROFILING_PRINTF(MPool2D);
   PROFILING_PRINTF(MPool2D_back);
   PROFILING_PRINTF(AvgPool2D);
-  PROFILING_PRINTF(AvgPool2D_back);
+
   // fpga-specific
   PROFILING_PRINTF(fpga_reshape_input_data_convol);
   PROFILING_PRINTF(fpga_reshape_kernel_data_convol);
   PROFILING_PRINTF(fpga_Conv2D_8x8);
   PROFILING_PRINTF(fpga_Conv2D_4x4);
+  PROFILING_PRINTF(Precision_Conversion);
+  PROFILING_PRINTF(FPGA_READ);
+  PROFILING_PRINTF(FPGA_WRITE);
+
 }

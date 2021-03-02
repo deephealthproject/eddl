@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -30,6 +30,9 @@ using namespace std;
 class Net;
 
 class Layer {
+private:
+    int    reference_counter;
+
 public:
     string name;
     Tensor *input;
@@ -45,6 +48,7 @@ public:
     bool iscloned;
     bool isnorm;
     bool isdecoder;
+    bool distributed_training;
 
     vector<Tensor *> params;
     vector<Tensor *> gradients;
@@ -66,6 +70,7 @@ public:
     int lin, lout;
     int delta_bp;
     bool detached;
+    bool do_deletes;
     unsigned int verbosity_level = 0;
 
     Layer(string name, int dev, int mem);
@@ -80,12 +85,6 @@ public:
     void check_target();
     void detach(Layer *l);
     vector<int> getShape();
-
-    Tensor* getWeights();
-    Tensor* setWeights(Tensor bias);
-
-    Tensor* getBias();
-    Tensor* setBias(Tensor bias);
 
     void clamp(float min,float max);
     void set_detach();
@@ -133,6 +132,8 @@ public:
 
 	virtual void enable_distributed() {}
 
+    int decrease_and_get_reference_counter();
+    void increase_reference_counter(); 
 };
 
 

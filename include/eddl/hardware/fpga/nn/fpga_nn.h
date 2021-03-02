@@ -47,6 +47,8 @@ void fpga_d_exp(Tensor *D, Tensor *I, Tensor *PD);
 void fpga_tanh(Tensor *A, Tensor *B);
 void fpga_d_tanh(Tensor *D, Tensor *I, Tensor *PD);
 
+void fpga_full_softmax(Tensor *A, Tensor *B, int axis, bool stable);
+
 void fpga_softmax(Tensor *A, Tensor *B);
 void fpga_d_softmax(Tensor *D, Tensor *I, Tensor *PD);
 

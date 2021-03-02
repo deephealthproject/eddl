@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -28,11 +28,31 @@ LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const ve
 
 LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
     if(name.empty()) this->name = "avgpool" + to_string(++total_layers);
+ 
+    // Params
+    D->indX = new Tensor(D->O->shape, dev);  // Is this needed here?
+    D->indY = new Tensor(D->O->shape, dev);
+#ifdef cCUDNN
+if(!D->I->isCPU()){
+    D->mode = CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING;
+    D->maxpoolingNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+
+    cudnnStatus_t bbb =  cudnnSetPooling2dDescriptor(D->poolingDesc, D->mode, D->maxpoolingNanOpt, D->windowHeight, D->windowWidth,
+    D->verticalPadding, D->horizontalPadding, D->verticalStride, D->horizontalStride);
+   if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create avg pooling 2D descriptor "<< cudnnGetErrorString(bbb) <<std::endl;
+}
+#endif
 }
 
 
 void LAveragePool::resize(int batch){
     LPool::resize(batch);
+
+    delete pd->indX; 
+    pd->indX = new Tensor(pd->O->shape, dev);
+    
+    delete pd->indY; 
+    pd->indY = new Tensor(pd->O->shape, dev);
 }
 
 void LAveragePool::forward() {
@@ -44,7 +64,7 @@ void LAveragePool::backward() {
 }
 
 Layer *LAveragePool::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LAveragePool(p[0], this->pd, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LAveragePool(p[0], new PoolDescriptor(pd->ksize, pd->stride, pd->pad, pd->mem_level), "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -52,7 +72,7 @@ Layer *LAveragePool::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LAveragePool::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    auto *n = new LMaxPool(p[0], new PoolDescriptor(pd->ksize, pd->stride, pd->pad, pd->mem_level),  "share_"+to_string(c)+this->name, todev, this->mem_level);
+    auto *n = new LAveragePool(p[0], new PoolDescriptor(pd->ksize, pd->stride, pd->pad, pd->mem_level),  "share_"+to_string(c)+this->name, todev, this->mem_level);
 
     n->orig = this;
 

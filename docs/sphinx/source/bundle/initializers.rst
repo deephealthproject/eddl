@@ -15,9 +15,8 @@ GlorotNormal
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    layer GlorotNormal(layer l,int seed=1234);
+    l = GlorotNormal(l);
 
 
 GlorotUniform
@@ -28,9 +27,8 @@ GlorotUniform
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    layer GlorotUniform(layer l,int seed=1234);
+    l = GlorotUniform(l);
 
 
 RandomNormal
@@ -41,9 +39,8 @@ RandomNormal
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    layer RandomNormal(layer l, float m=0.0,float s=0.1, float seed=1234);
+    l = RandomNormal(l, 0.0, 0.1);
 
 
 RandomUniform
@@ -54,9 +51,8 @@ RandomUniform
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    layer RandomUniform(layer l, float min=0.0,float max=0.1, float seed=1234);
+    l = RandomUniform(l, -0.05, 0.05);
 
 
 Constant
@@ -67,9 +63,9 @@ Constant
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    layer Constant(layer l, float v=0.1);
+    l = Constant(l, 0.5);
+
 
 
 HeUniform
@@ -80,9 +76,8 @@ HeUniform
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    layer HeUniform(layer l, int seed=1234);
+    l = HeUniform(l);
 
 
 HeNormal
@@ -93,6 +88,5 @@ HeNormal
 Example:
 
 .. code-block:: c++
-   :linenos:
 
-    layer HeNormal(layer l,int seed=1234)
+    l = HeNormal(l);

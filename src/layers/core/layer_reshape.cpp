@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -82,6 +82,14 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
 }
 
 LReshape::~LReshape(){
+    if (output != nullptr) {
+        output->ptr = nullptr; // because the memory block of the tensor comes from the parent layer.
+        delete output;
+    }
+    if (delta != nullptr) {
+        delta->ptr = nullptr; // because the memory block of the tensor comes from the parent layer.
+        delete delta;
+    }
     output=delta=nullptr;
 }
 

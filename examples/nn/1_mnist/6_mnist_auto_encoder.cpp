@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -24,12 +24,18 @@ using namespace eddl;
 //////////////////////////////////
 
 int main(int argc, char **argv) {
+    bool testing = false;
+    bool use_cpu = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
 
     // Download dataset
     download_mnist();
 
     // Settings
-    int epochs = 5;
+    int epochs = (testing) ? 2 : 5;
     int batch_size = 100;
 
     // Define network
@@ -46,16 +52,22 @@ int main(int argc, char **argv) {
 
     model net = Model({in}, {out});
 
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU({1}, "low_mem"); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+        // cs = CS_FPGA({1});
+    }
+
     // Build model
     build(net,
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          CS_GPU({1}) // one GPU
-          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
-          //CS_FPGA({1})
-    );
+          cs);
 
     // View model
     summary(net);
@@ -63,10 +75,23 @@ int main(int argc, char **argv) {
 
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
+
+    if (testing) {
+        std::string _range_ = "0:" + std::to_string(2 * batch_size);
+        Tensor* x_mini_train = x_train->select({_range_, ":"});
+
+        delete x_train;
+
+        x_train = x_mini_train;
+    }
     // Preprocessing
     x_train->div_(255.0f);
 
     // Train model
     fit(net, {x_train}, {x_train}, batch_size, epochs);
 
+    delete x_train;
+    delete net;
+    
+    return EXIT_SUCCESS;
 }

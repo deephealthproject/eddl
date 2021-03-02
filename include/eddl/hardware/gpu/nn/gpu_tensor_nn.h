@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -58,8 +58,11 @@ void gpu_softmax(Tensor *A,Tensor *B);
 
 void gpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable);
 void gpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable);  // Aux. temp.
+void gpu_full_softmax_nd(Tensor *A, Tensor *B, int axis, bool stable);  // Aux. temp.
+
 void gpu_d_full_softmax(Tensor *D, Tensor *I, Tensor *PD, int axis);
 void gpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD);  // Aux. temp.
+void gpu_d_full_softmax_nd(Tensor *D, Tensor *I, Tensor *PD, int axis);  // Aux. temp.
 
 void gpu_linear(Tensor *A,Tensor *B,float param);
 void gpu_d_linear(Tensor *D,Tensor *I,Tensor *PD,float param);
@@ -67,18 +70,33 @@ void gpu_d_linear(Tensor *D,Tensor *I,Tensor *PD,float param);
 // Losses
 void gpu_cent(Tensor *A,Tensor *B,Tensor *C);
 
+float gpu_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred);
+void gpu_d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
+
+float gpu_binary_cross_entropy(Tensor* y_true, Tensor* y_pred);
+void gpu_d_binary_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
+
 // Metrics
 void gpu_accuracy(Tensor *A,Tensor *B,int *acc);
 void gpu_bin_accuracy(Tensor *A,Tensor *B,int *acc);
 
-// Conv
+// Conv3D
 void gpu_conv2D(ConvolDescriptor *D);
 void gpu_conv2D_grad(ConvolDescriptor *D);
 void gpu_conv2D_back(ConvolDescriptor *D);
 
-// MaxPool
+// Conv3D
+void gpu_conv3D(ConvolDescriptor3D *D);
+void gpu_conv3D_grad(ConvolDescriptor3D *D);
+void gpu_conv3D_back(ConvolDescriptor3D *D);
+
+// MaxPool2D
 void gpu_mpool2D(PoolDescriptor *D);
 void gpu_mpool2D_back(PoolDescriptor *D);
+
+// MaxPool3D
+void gpu_mpool3D(PoolDescriptor3D *D);
+void gpu_mpool3D_back(PoolDescriptor3D *D);
 
 // AvgPool
 void gpu_avgpool2D(PoolDescriptor *D);
@@ -98,5 +116,17 @@ void gpu_permute_channels_first(Tensor *A,Tensor *B);
 void gpu_permute_channels_last(Tensor *A,Tensor *B);
 void gpu_permute_batch_first(Tensor *A,Tensor *B);
 void gpu_permute_batch_last(Tensor *A,Tensor *B);
+
+// new batchnorm implementation
+void gpu_batchnorm_forward(int gpu_device, int b, int z, int rc,
+        float *input, float *output, float *opa,
+        float *global_mean, float *global_variance,
+        float *affine_g, float *affine_b,
+        float *mean, float *variance,
+        bool trmode, float epsilon, float momentum);
+
+void gpu_batchnorm_backward(int gpu_device, int b, int z, int rc,
+        float *delta, float *opa, float *pdelta, float *gbn_g, float *gbn_b,
+        float *bn_g, float *variance, float *mean1, float *mean2);
 
 #endif //EDDL_GPU_TENSOR_NN_H

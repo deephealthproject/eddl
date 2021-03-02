@@ -10,7 +10,7 @@ Example:
 
 .. code-block:: c++
 
-    optimizer adadelta(float lr, float rho, float epsilon, float weight_decay);
+    opt = adadelta(0.001, 0.95, 0.000001, 0);
 
 
 Adam
@@ -23,7 +23,7 @@ Example:
 
 .. code-block:: c++
 
-    optimizer adam(float lr=0.01, float beta_1=0.9, float beta_2=0.999, float epsilon=0.000001, float weight_decay=0,bool amsgrad=false);
+    opt = adam(0.001);
 
 
 Adagrad
@@ -36,7 +36,8 @@ Example:
 
 .. code-block:: c++
 
-    optimizer adagrad(float lr, float epsilon, float weight_decay);
+    opt = adagrad(0.001, 0.000001, 0);
+
 
 Adamax
 ----------
@@ -48,7 +49,7 @@ Example:
 
 .. code-block:: c++
 
-    optimizer adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay);
+    opt = adamax(0.001, 0.9, 0.999, 0.000001, 0);
 
 
 Nadam
@@ -61,7 +62,7 @@ Example:
 
 .. code-block:: c++
 
-    optimizer nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay);
+    opt = nadam(0.001, 0.9, 0.999, 0.0000001, 0.004);
 
 
 RMSProp
@@ -74,7 +75,7 @@ Example:
 
 .. code-block:: c++
 
-    optimizer rmsprop(float lr=0.01, float rho=0.9, float epsilon=0.00001, float weight_decay=0.0);
+    opt = rmsprop(0.001);
 
 
 SGD (Stochastic Gradient Descent)
@@ -86,5 +87,28 @@ Example:
 
 .. code-block:: c++
 
-    optimizer sgd(float lr = 0.01f, float momentum = 0.0f, float weight_decay = 0.0f, bool nesterov = false);
+    opt = sgd(0.001);
 
+
+Export to file
+------------------
+
+.. doxygenfunction:: save_optimizer_to_onnx_file
+
+Example:
+
+.. code-block:: c++
+
+    optimizer opt = sgd(0.001, 0.9);
+    save_optimizer_to_onnx_file(opt, "my_opt.onnx");
+
+Import from file
+------------------
+
+.. doxygenfunction:: import_optimizer_from_onnx_file
+
+Example:
+
+.. code-block:: c++
+
+    optimizer opt = import_optimizer_from_onnx_file("my_opt.onnx");

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -80,8 +80,6 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2){
     updateSize();
     updateStrides();
     updateData(fptr, fptr2);
-
-    this->tsem = new mutex();
 }
 
 // From shape and device
@@ -113,7 +111,6 @@ Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : T
 
 Tensor::~Tensor() {
     this->deleteData();
-    if(this->tsem != nullptr) { this->tsem->unlock(); delete tsem; }
 }
 
 void Tensor::updateDevice(int dev){
@@ -121,7 +118,9 @@ void Tensor::updateDevice(int dev){
 }
 
 void Tensor::updateShape(const vector<int> &new_shape){
-    this->shape = vector<int>(new_shape);
+    // this->shape = vector<int>(new_shape);
+    this->shape.clear();
+    for (int _ : new_shape) this->shape.push_back(_);
     this->ndim = this->shape.size();
 }
 
@@ -145,26 +144,30 @@ void Tensor::updateStrides() {
 
 void Tensor::deleteData(){
     // Carefpdal, you can't know is a pointer is allocated
-    if (isshared) return;
+//fprintf(stderr, "control passed %s(%d) %p %p %p \n", __FILE__, __LINE__, this, this->ptr, this->ptr2);
+    if (isshared) {
+        if (/*this->isCPU() && this->ndim == 2 &&*/ this->ptr2 != nullptr) {
+            delete this->ptr2;
+            this->ptr2 = nullptr;
+        }
+        return;
+    }
 
     if(this->ptr != nullptr){
         if (this->isCPU()) {
             // Delete eigen matrix
-            if (this->ndim == 2){
+            if (/*this->ndim == 2 &&*/ this->ptr2 != nullptr){
                 delete this->ptr2; //double free or corruption (out)
-                delete[] this->ptr;
                 this->ptr2 = nullptr;
-                this->ptr = nullptr;  // Redundant
-            }else{
-                delete[] this->ptr;
-                this->ptr = nullptr;  // Redundant
             }
-
+            eddl_free(this->ptr); // because currently memory for tensor data is allocated by means of posix_memalign()
+            this->ptr = nullptr;
         }
 #ifdef cGPU
         else if (this->isGPU())
         {
             gpu_delete_tensor(this->gpu_device, this->ptr);
+            //cout<<"delete here"<<endl;
         }
 #endif
 #ifdef cFPGA
@@ -180,16 +183,25 @@ void Tensor::deleteData(){
     }
 }
 
-void Tensor::updateData(float *fptr, void *fptr2,bool setshared){
+void Tensor::updateData(float *fptr, void *fptr2, bool setshared){
     // TODO: What if the new_pointer is the same?
     // Solved with setshared for reshape_
+    bool was_shared = isshared;
     isshared=false;
     if (this->isCPU()) {
         // If null => Reserve memory
         // else => point to data
-        if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::updateData"); }
-        else { this->ptr = fptr; isshared=setshared;};
+        if (fptr==nullptr) {
+            if (false == was_shared && this->ptr != nullptr) eddl_free(this->ptr);
+            this->ptr = get_fmem(this->size,"Tensor::updateData");
+        } else {
+            this->ptr = fptr; isshared=setshared;
+        };
 
+        if (this->ptr2 != nullptr) {
+            delete this->ptr2;
+            this->ptr2 = nullptr;
+        }
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
         if (this->ndim == 2){
@@ -209,7 +221,6 @@ void Tensor::updateData(float *fptr, void *fptr2,bool setshared){
         // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
         if (fptr == nullptr) { this->ptr = gpu_create_tensor(this->gpu_device, this->size); }
         else { this->ptr = fptr; isshared=setshared;}
-
     }
 #endif
 #ifdef cFPGA
@@ -276,9 +287,12 @@ void Tensor::updateData(float *fptr, void *fptr2,bool setshared){
           printf("  end of changes: fptr %p tensor id %d ptr %p fpga_ptr %p size %d fpga_size %d fptr2 %p)\n", fptr, this->fpga_tensor_id, this->ptr, this->fpga_ptr, this->size, this->fpga_size, fptr2);
           #endif
           this->ptr = fptr;
+          // isshared = setshared; should this apply in the case of FPGA?
         }
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
+        //
+        // 2021-01-27, the following three lines should not be here, could people in charge of FPGA code review it?
         if (this->ndim == 2) {
           this->ptr2= new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
         }
@@ -338,7 +352,7 @@ void Tensor::toGPU(int dev){
         this->device = dev;
         this->gpu_device = this->device - DEV_GPU;
 
-        float *cpu_ptr = ptr;
+        float *cpu_ptr = this->ptr;
         float *gpu_ptr = gpu_create_tensor(this->gpu_device, this->size);
 
         if (!initcuda[gpu_device]){
@@ -348,7 +362,11 @@ void Tensor::toGPU(int dev){
 
         this->ptr = gpu_ptr;
         gpu_copy_to_gpu(cpu_ptr, this);
-        delete []cpu_ptr;
+        eddl_free(cpu_ptr); // because currently memory for tensor data is allocated by means of posix_memalign()
+        if (/*this->ndim == 2 &&*/ this->ptr2 != nullptr){
+            delete this->ptr2;
+            this->ptr2 = nullptr;
+        }
     }
     else if (this->isGPU())
     {
@@ -367,7 +385,7 @@ void Tensor::toFPGA(int dev){
         this->device = dev;
         this->fpga_device = this->device - DEV_FPGA;
 
-        float *cpu_ptr = ptr;
+        float *cpu_ptr =this->ptr;
 	cl::Buffer *fpga_ptr = fpga_create_tensor(this->fpga_device, this->size);
 
         if (!initfpga[fpga_device]){
@@ -391,6 +409,20 @@ void Tensor::toFPGA(int dev){
 #endif
 }
 
+void Tensor::toDevice(int dev){
+    int dev_id = Tensor::getDeviceID(dev);
+
+    // Select device
+    if(dev_id == 0){  // CPU
+        this->toCPU(dev);
+    }else if(dev_id == 1){  // GPU
+        this->toGPU(dev);
+    }else if(dev_id == 2) {  // FPGA
+        this->toFPGA(dev);
+    }else{
+        throw std::runtime_error("Not compiled for FPGA");
+    }
+}
 
 Tensor* Tensor::clone(){
     auto* t_new = new Tensor(this->shape, this->device);
@@ -472,11 +504,14 @@ void Tensor::print(int precision, bool raw) {
     buffer << std::fixed;
     buffer << std::setprecision(precision);
 
+    int lines = 0;
+    int max_lines = 100000;
     for (int i = 0; i < aux->size; ++i) {
+        if(i % this->stride[0]==0){lines++;}
 
         if(raw){
             // Print number
-            buffer << aux->ptr[i] << " ";
+            buffer << aux->ptr[i] << ", ";
 
         }else{
 
@@ -512,6 +547,13 @@ void Tensor::print(int precision, bool raw) {
                 }
             }
 
+            // Stop
+            if(lines >= max_lines){
+                cout << "Maximum tensor length exceeded." << endl;
+                cout << "Printing only first " << max_lines << " rows:" << endl;
+                break;
+            }
+
         }
 
     }
@@ -529,13 +571,20 @@ void Tensor::print(int precision, bool raw) {
     }
 }
 
-string Tensor::getDeviceName(){
-    if ((this->device >= DEV_CPU) && (this->device < DEV_GPU)) { return "CPU"; }
-    else if ((device >= DEV_GPU) && (this->device < DEV_FPGA)) { return "GPU"; }
-    else if (this->device >= DEV_FPGA) { return "FPGA"; }
+string Tensor::getDeviceName() const{
+    int dev_id = Tensor::getDeviceID(this->device);
+    if (dev_id == 0) { return "CPU"; }
+    else if (dev_id == 1) { return "GPU"; }
+    else if (dev_id == 2) { return "FPGA"; }
     return "unknown";
 }
 
+int Tensor::getDeviceID(int dev) const{
+    if ((dev >= DEV_CPU) && (dev < DEV_GPU)) { return 0; }
+    else if ((device >= DEV_GPU) && (dev < DEV_FPGA)) { return 1; }
+    else if (dev >= DEV_FPGA) { return 2; }
+    return -1;
+}
 
 bool Tensor::isSquared(Tensor *A){
     int last_dim = A->shape[0];
@@ -559,6 +608,6 @@ void Tensor::resize(int b, float *fptr, void *fptr2, bool delete_data) {
     updateShape(new_shape);
     updateSize();
     updateStrides();
-    if (fptr != nullptr && delete_data) deleteData();  // Potential error on layers such as Reshape (passed pointer)
+    if (!isshared && delete_data) deleteData();  // Potential error on layers such as Reshape (passed pointer)
     updateData(fptr, fptr2);
 }

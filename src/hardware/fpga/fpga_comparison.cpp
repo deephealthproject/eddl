@@ -764,8 +764,10 @@ void fpga_not_equal(Tensor *A, Tensor *B, Tensor *C){
 int fpga_cpuemu_equal2(Tensor *A, Tensor *B, float epsilon) {
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
-  int ret = cpu_equal2(A, B, epsilon);
-  return ret;
+  printf("Error, cpu_equal2 does not exist anymore\n");
+  exit(1);
+  //int ret = cpu_equal2(A, B, epsilon);
+  return -1; //ret;
 }
 
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon){

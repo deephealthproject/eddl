@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -23,6 +23,10 @@
 
 PROFILING_ENABLE_EXTERN(MPool2D);
 PROFILING_ENABLE_EXTERN(MPool2D_back);
+
+PROFILING_ENABLE_EXTERN(MPool3D);
+PROFILING_ENABLE_EXTERN(MPool3D_back);
+
 PROFILING_ENABLE_EXTERN(AvgPool2D);
 PROFILING_ENABLE_EXTERN(AvgPool2D_back);
 
@@ -40,7 +44,7 @@ namespace tensorNN {
 
 	      PROFILING_HEADER(MPool2D);
 
-        D->O->tsem->lock();
+
         if (D->I->isCPU()) {
             cpu_mpool2D(D);
         }
@@ -56,7 +60,7 @@ namespace tensorNN {
         fpga_mpool2D(D);
       }
 #endif
-        D->O->tsem->unlock();
+
 
 	      PROFILING_FOOTER(MPool2D);
     }
@@ -72,7 +76,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(MPool2D_back);
 
-        D->ID->tsem->lock();
+
         if (D->I->isCPU()) {
             cpu_mpool2D_back(D);
         }
@@ -88,11 +92,79 @@ namespace tensorNN {
         fpga_mpool2D_back(D);
       }
 #endif
-        D->ID->tsem->unlock();
+
 
         PROFILING_FOOTER(MPool2D_back);
     }
 
+
+    void MPool3D(PoolDescriptor3D *D) {
+        /////////////////////////////////////////////////////////////////////
+        //// MPool3D
+        //// Dimensions must be compatible
+        //// A is input 5D Tensor, batch_shape + (channels, pool_dim1, pool_dim2, pool_dim3)
+        //// D is a PoolDescriptor3D
+        /////////////////////////////////////////////////////////////////////
+        if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::MPool5D");
+
+//        PROFILING_HEADER(MPool3D);
+
+
+        if (D->I->isCPU()) {
+            cpu_mpool3D(D);
+        }
+#ifdef cGPU
+        else if (D->I->isGPU())
+        {
+            gpu_mpool3D(D);
+        }
+#endif
+#ifdef cFPGA
+            else if (D->I->isFPGA())
+      {
+        printf("Error, fpga_mpool3D not implemented yet\n"); 
+        exit(1);
+        //fpga_mpool3D(D);
+      }
+#endif
+
+
+//        PROFILING_FOOTER(MPool3D);
+    }
+
+    void MPool3D_back(PoolDescriptor3D *D) {
+        /////////////////////////////////////////////////////////////////////
+        //// MPool3D
+        //// Dimensions must be compatible
+        //// A is input 5D Tensor, batch_shape + (channels, pool_dim1, pool_dim2, pool_dim3)
+        //// D is a PoolDescriptor3D
+        /////////////////////////////////////////////////////////////////////
+        if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::MPool2D_back");
+
+//        PROFILING_HEADER(MPool3D_back);
+
+
+        if (D->I->isCPU()) {
+            cpu_mpool3D_back(D);
+        }
+#ifdef cGPU
+        else if (D->I->isGPU())
+        {
+            gpu_mpool3D_back(D);
+        }
+#endif
+#ifdef cFPGA
+            else if (D->I->isFPGA())
+      {
+        printf("Error, fpga_mpool_3D_back not implemented yet\n");
+        exit(1);
+        //fpga_mpool3D_back(D);
+      }
+#endif
+
+
+//        PROFILING_FOOTER(MPool3D_back);
+    }
 
     void AvgPool2D(PoolDescriptor *D) {
         /////////////////////////////////////////////////////////////////////
@@ -105,7 +177,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(AvgPool2D);
 
-        D->O->tsem->lock();
+
         if (D->I->isCPU()) {
             cpu_avgpool2D(D);
         }
@@ -121,7 +193,7 @@ namespace tensorNN {
         fpga_avgpool2D(D);
       }
 #endif
-        D->O->tsem->unlock();
+
 
         PROFILING_FOOTER(AvgPool2D);
     }
@@ -137,7 +209,7 @@ namespace tensorNN {
 
         PROFILING_HEADER(AvgPool2D_back);
 
-        D->ID->tsem->lock();
+
         if (D->I->isCPU()) {
             cpu_avgpool2D_back(D);
         }
@@ -153,7 +225,7 @@ namespace tensorNN {
         fpga_avgpool2D_back(D);
       }
 #endif
-        D->ID->tsem->unlock();
+
 
         PROFILING_FOOTER(AvgPool2D_back);
     }

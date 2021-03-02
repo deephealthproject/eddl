@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -16,6 +16,7 @@
 
 #include "eddl/apis/eddl.h"
 #include "eddl/utils.h"
+#include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 
 using namespace std;
@@ -36,18 +37,9 @@ namespace eddl {
         return new Net(in, out);
     }
 
-    model Model(vector<Net*> vnets) {
-      return new Net(vnets);
-    }
-
     void setName(model m, string name)
     {
       m->name=name;
-    }
-
-    layer getLayer(model net, vlayer in)
-    {
-      return net->getLayer(in);
     }
 
     layer getLayer(model net, string lname)
@@ -58,6 +50,11 @@ namespace eddl {
     void removeLayer(model net, string lname)
     {
       net->removeLayer(lname);
+    }
+
+    void initializeLayer(model net, string lname)
+    {
+      net->initializeLayer(lname);
     }
 
     void setTrainable(model net, string lname, bool val)
@@ -75,14 +72,18 @@ namespace eddl {
 
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
-        if (cs== nullptr){
+        bool do_compserv_delete = true;
+        bool do_optimizer_delete = true;
+        if (cs == nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
+            do_compserv_delete = true;
         }
-        if (o== nullptr){
+        if (o == nullptr){
             o = new SGD(0.001,0.9);
+            do_optimizer_delete = true;
         }
 
-        net->build(o, {}, {}, cs, init_weights);
+        net->build(o, {}, {}, cs, init_weights, do_optimizer_delete, do_compserv_delete);
     }
 
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs, bool init_weights){
@@ -107,12 +108,25 @@ namespace eddl {
         }
 
         // Assign default computing service
-        if (cs== nullptr){
+        bool do_compserv_delete = true;
+        if (cs == nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
+            do_compserv_delete = true;
         }
 
+        // Assign default optimizer
+        bool do_optimizer_delete = true;
+        if (o == nullptr){
+            o = new SGD(0.001,0.9);
+            do_optimizer_delete = true;
+        }
 
-        net->build(o, l, m, cs, init_weights);
+        net->build(o, l, m, cs, init_weights, do_optimizer_delete, do_compserv_delete);
+
+        // do not free the objects pointed to by the elements of the following
+        // vectors, but clean the internal data structure of these vectors
+        m.clear();
+        l.clear();
     }
 
     // Computing services
@@ -344,6 +358,7 @@ namespace eddl {
     }
     vlayer forward(model net,vector<Layer*> in)
     {
+        net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
         net->reset();
         net->forward(in);
 
@@ -351,6 +366,7 @@ namespace eddl {
     }
     vlayer forward(model net,vector<Tensor*> in)
     {
+        net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
         net->reset();
         net->forward(in);
 
@@ -359,6 +375,7 @@ namespace eddl {
 
     vlayer forward(model net,int b)
     {
+        net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
         net->resize(b);
         net->reset();
         net->forward();
@@ -368,6 +385,7 @@ namespace eddl {
     }
     vlayer forward(model net)
     {
+        net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
         net->reset();
         net->forward();
 
@@ -411,6 +429,15 @@ namespace eddl {
         m->print_loss(batch);
     }
 
+    vector<float> get_losses(model m){
+        return m->get_losses();
+    }
+
+    vector<float> get_metrics(model m){
+        return m->get_metrics();
+    }
+
+
     // model constraints
     void clamp(model m,float min,float max)
     {
@@ -430,17 +457,19 @@ namespace eddl {
     }
 
     Loss* getLoss(string type){
-        if (type == "mse" || type == "mean_squared_error"){
+        if (type == "mean_squared_error" || type == "mse"){
             return new LMeanSquaredError();
-        } else if (type == "cross_entropy"){
-            return new LCrossEntropy();
-        } else if (type == "soft_cross_entropy"){
+        } else if (type == "categorical_cross_entropy" || type == "cross_entropy"  || type=="ce" || type=="cce"){
+            return new LCategoricalCrossEntropy();
+        } else if (type == "binary_cross_entropy" || type=="bce"){
+            return new LBinaryCrossEntropy();
+        } else if (type == "soft_cross_entropy" || type == "softmax_cross_entropy" || type == "sce"){
             return new LSoftCrossEntropy();
-        }
-        else if (type == "dice"){
+        } else if (type == "deprecated_cross_entropy"){
+            return new LCrossEntropy();
+        } else if (type == "dice"){
             return new LDice();
-        }
-        else if (type == "none"){
+        } else if (type == "none"){
             return new Loss("none");
         }
         return nullptr;
@@ -513,14 +542,15 @@ namespace eddl {
         return new LActivation(parent, activation, params, name, DEV_CPU, 0);
     }
 
-    layer Softmax(layer parent, string name){
+    layer SoftmaxDeprecated(layer parent, string name){
+        show_deprecated_warning("SoftmaxDeprecated", "Softmax");
         vector<float> params = {};
-        return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
+        return new LActivation(parent,"softmax_deprecated", params, name, DEV_CPU, 0);
     }
 
-    layer FullSoftmax(layer parent, string name){
-        vector<float> params = {};
-        return new LActivation(parent,"full_softmax", params, name, DEV_CPU, 0);
+    layer Softmax(layer parent, int axis, string name){
+        vector<float> params = {static_cast<float>(axis)};
+        return new LActivation(parent,"softmax", params, name, DEV_CPU, 0);
     }
 
     layer Sigmoid(layer parent, string name){
@@ -589,13 +619,13 @@ namespace eddl {
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding,  bool use_bias,
                int groups, const vector<int> &dilation_rate,string name){
-        return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+        return new LConv(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
     layer ConvReLU(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding,  bool use_bias,
                int groups, const vector<int> &dilation_rate,string name){
-        return new LConvReLU(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+        return new LConvReLU(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
     layer Conv1D(layer parent, int filters, vector<int> kernel_size,
@@ -603,11 +633,43 @@ namespace eddl {
                int groups, vector<int> dilation_rate,string name){
         kernel_size.push_back(1);
         strides.push_back(1);
-        return new LConv1D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+        return new LConv1D(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
+
+    layer Conv2D(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides, string padding,  bool use_bias,
+               int groups, const vector<int> &dilation_rate,string name){
+        return new LConv(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
+
+    layer Conv3D(layer parent, int filters, const vector<int> &kernel_size,
+                 const vector<int> &strides, string padding,  bool use_bias,
+                 int groups, const vector<int> &dilation_rate,string name){
+        return new LConv3D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
+
+    // Legacy
+    layer PointwiseConv(layer parent, int filters,
+                          const vector<int> &strides, bool use_bias,
+                          int groups, const vector<int> &dilation_rate,string name){
+        return new LConv(parent, filters, {1, 1}, strides, "none", {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
 
+    layer PointwiseConv2D(layer parent, int filters,
+               const vector<int> &strides, bool use_bias,
+               int groups, const vector<int> &dilation_rate,string name){
+        return new LConv(parent, filters, {1, 1}, strides, "none", {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
+
+    // Legacy
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
+                const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
+                const vector<int> &strides, bool use_bias, string name){
+        return new LConvT(parent, filters, kernel_size, output_padding, padding, dilation_rate, strides, use_bias, name, DEV_CPU, 0);
+    }
+
+    layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
                 const vector<int> &strides, bool use_bias, string name){
         return new LConvT(parent, filters, kernel_size, output_padding, padding, dilation_rate, strides, use_bias, name, DEV_CPU, 0);
@@ -631,7 +693,18 @@ namespace eddl {
         return new LInput(new Tensor(s), name, DEV_CPU, 0);
     }
 
+    layer States(const vector<int> &shape, string name){
+        tshape s = vector<int>(shape.begin(), shape.end());
+        if (s.size()!=2) msg("States must have two dimensions, numstates x dim_states","eddl.States");
+        s.insert(s.begin(), 1); // batch + num_states + dim_states
+        return new LStates(new Tensor(s), name, DEV_CPU, 0);
+    }
+    // Legacy
     layer UpSampling(layer parent, const vector<int> &size, string interpolation, string name){
+        return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
+    }
+
+    layer UpSampling2D(layer parent, const vector<int> &size, string interpolation, string name){
         return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
     }
 
@@ -643,6 +716,14 @@ namespace eddl {
 
     layer Flatten(layer parent, string name){
         return Reshape(parent, {-1}, name);
+    }
+
+    layer Squeeze(layer parent, const int axis, string name){
+        return new LSqueeze(parent, axis, name, DEV_CPU, 0);
+    }
+
+    layer Unsqueeze(layer parent, const int axis, string name){
+        return new LUnsqueeze(parent, axis, name, DEV_CPU, 0);
     }
 
     layer Transpose(layer parent, string name){
@@ -789,15 +870,23 @@ namespace eddl {
 
     // Normalization
     layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "BatchNormalization"); }
+
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
+
     layer BatchNormalization(layer parent, bool affine, float momentum, float epsilon,  string name){
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "BatchNormalization"); }
+
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
 
     layer LayerNormalization(layer parent, float epsilon, bool affine, string name){
         return new LLayerNorm(parent,  epsilon, affine, name, DEV_CPU, 0);
     }
+
     layer LayerNormalization(layer parent, bool affine,float epsilon,  string name)
     {
         return new LLayerNorm(parent,  epsilon, affine, name, DEV_CPU, 0);
@@ -824,24 +913,39 @@ namespace eddl {
     }
 
 
-
-
     //  Operator Layers
     layer Abs(layer l){
         return new LAbs(l, "", DEV_CPU, 0);
     }
 
+
+    layer Sub(layer l1, layer l2){
+        return new LDiff(l1, l2, "", DEV_CPU, 0);
+    }
+
+    layer Sub(layer l1, float k){
+        return new LDiff(l1, k, "", DEV_CPU, 0);
+    }
+
+    layer Sub(float k,layer l1){
+        return new LDiff(k, l1, "", DEV_CPU, 0);
+    }
+
     layer Diff(layer l1, layer l2){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(l1, l2, "", DEV_CPU, 0);
     }
 
     layer Diff(layer l1, float k){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(l1, k, "", DEV_CPU, 0);
     }
 
     layer Diff(float k,layer l1){
+        show_deprecated_warning("Diff", "Sub");
         return new LDiff(k, l1, "", DEV_CPU, 0);
     }
+
     layer Div(layer l1, layer l2){
         return new LDiv(l1, l2, "", DEV_CPU, 0);
     }
@@ -893,15 +997,30 @@ namespace eddl {
         return new LSqrt(l, "", DEV_CPU, 0);
     }
 
+    layer Add(layer l1, layer l2){
+        return new LSum(l1, l2, "", DEV_CPU, 0);
+    }
+
+    layer Add(layer l1, float k){
+        return new LSum(l1, k, "", DEV_CPU, 0);
+    }
+
+    layer Add(float k,layer l1){
+        return new LSum(l1, k, "", DEV_CPU, 0);
+    }
+
     layer Sum(layer l1, layer l2){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, l2, "", DEV_CPU, 0);
     }
 
     layer Sum(layer l1, float k){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, k, "", DEV_CPU, 0);
     }
 
     layer Sum(float k,layer l1){
+        show_deprecated_warning("Sum", "Add");
         return new LSum(l1, k, "", DEV_CPU, 0);
     }
 
@@ -947,47 +1066,119 @@ namespace eddl {
         return new LUniform(low, high, size, "", DEV_CPU, 0);
     }
 
-    // Pooling Layers
-    layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding,
-                      string name){
-        return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
-    }
-    layer GlobalAveragePool(layer parent, string name){
-        if (parent->output->ndim!=4) msg("GlobalAveragePool only over 4D tensors","GlobalAveragePool");
-
-        int h=parent->output->shape[2];
-        int w=parent->output->shape[3];
-        return AveragePool(parent, {h,w},{1,1});
-    }
-
+    // Generic (in-theory)
     layer MaxPool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
         return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
+
     layer MaxPool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
-
-        vector<int> shape=parent->output->getShape();
-        shape.push_back(1);
-        LReshape *l=new LReshape(parent, shape, "", DEV_CPU, 0);
-
         pool_size.push_back(1);
         strides.push_back(1);
-        LMaxPool *lp=new LMaxPool(l, pool_size, strides, padding, name, DEV_CPU, 0);
-
-        vector<int> shape2=lp->output->getShape();
-        shape2.pop_back();
-        return new LReshape(lp,shape2, "", DEV_CPU, 0);
+        return new LMaxPool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
 
+    layer MaxPool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer MaxPool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return new LMaxPool3D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    // Pooling Layers
+    layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
+        return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer AveragePool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        pool_size.push_back(1);
+        strides.push_back(1);
+        return new LAveragePool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer AveragePool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+    }
+
+    layer AveragePool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        msg("Not implemented error", "AveragePool3D");
+        return nullptr;
+    }
+
+
     layer GlobalMaxPool(layer parent, string name){
-        if (parent->output->ndim!=4) msg("GlobalMaxPool only over 4D tensors","GlobalMaxPool");
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "GlobalMaxPool"); }
+
+        return GlobalMaxPool2D(parent, name);
+    }
+
+    layer GlobalMaxPool1D(layer parent, string name){
+        if (parent->output->ndim!=3) msg("GlobalMaxPool1D only works over 3D tensors","GlobalMaxPool1D");
+
+        int h=parent->output->shape[2];
+
+        if (name.empty()) { name = "GlobalMaxPool1D"; }  // Set default name
+        return MaxPool1D(parent, {h},{1}, name);
+    }
+
+    layer GlobalMaxPool2D(layer parent, string name){
+        // Check dimension
+        if (parent->output->ndim!=4) msg("GlobalMaxPool only over 4D tensors","GlobalMaxPool2D");
 
         int h=parent->output->shape[2];
         int w=parent->output->shape[3];
-        return MaxPool(parent, {h,w}, {1,1},"none","gpool");
+
+        if(name.empty()) { name = "GlobalMaxPool2D"; }  // Set default name
+        return MaxPool(parent, {h,w}, {1,1},"none", name);
+    }
+
+    layer GlobalMaxPool3D(layer parent, string name){
+        // Check dimension
+        if (parent->output->ndim!=5) msg("GlobalMaxPool only works over 5D tensors","GlobalMaxPool3D");
+
+        int d=parent->output->shape[2];
+        int h=parent->output->shape[3];
+        int w=parent->output->shape[4];
+
+        if(name.empty()) { name = "GlobalMaxPool3D"; }  // Set default name
+        return MaxPool3D(parent, {d, h,w}, {1, 1,1},"none", name);
+    }
+
+    layer GlobalAveragePool(layer parent, string name){
+        // Expand dimension if needed
+        if(parent->output->shape.size()==3){ parent = _expand3d_to_4d(parent, "GlobalAveragePool"); }
+
+        return GlobalAveragePool2D(parent, name);
+    }
+
+    layer GlobalAveragePool1D(layer parent, string name){
+        // Expands dimensions if needed
+        if (parent->output->ndim!=3) msg("GlobalAveragePool1D only works over 3D tensors","GlobalAveragePool1D");
+
+        int h=parent->output->shape[2];
+
+        if(name.empty()) { name = "GlobalAveragePool1D"; }  // Set default name
+        return AveragePool1D(parent, {h},{1}, "none", name);
+    }
+
+    layer GlobalAveragePool2D(layer parent, string name){
+        // Check dimension
+        if (parent->output->ndim!=4) msg("GlobalAveragePool only works over 4D tensors","GlobalAveragePool2D");
+
+        int h=parent->output->shape[2];
+        int w=parent->output->shape[3];
+
+        if(name.empty()) { name = "GlobalAveragePool2D"; }  // Set default name
+        return AveragePool(parent, {h,w},{1,1},  "none",name);
+    }
+
+    layer GlobalAveragePool3D(layer parent, string name){
+        msg("Not implemented error", "GlobalAveragePool3D");
+        return nullptr;
     }
 
     // Recurrent Layers
-
     layer RNN(layer parent, int units, string activation, bool use_bias, bool bidirectional, string name){
 
         return new LRNN({parent}, units, activation, use_bias, bidirectional, name, DEV_CPU, 0);
@@ -997,11 +1188,21 @@ namespace eddl {
         return new LLSTM({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
-    void setDecoder(layer l)
+    layer LSTM(vector<layer> parent, int units, bool mask_zeros, bool bidirectional, string name){
+        return new LLSTM(parent, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
+    }
+
+    layer GRU(layer parent, int units, bool mask_zeros, bool bidirectional, string name) {
+        return new LGRU({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
+    }
+
+    layer GRU(vector<layer> parent, int units, bool mask_zeros, bool bidirectional, string name) {
+        return new LGRU(parent, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
+    }
+
+    layer GetStates(layer parent)
     {
-       l->isdecoder=true;
-       for(int i=0;i<l->parent.size();i++)
-         setDecoder(l->parent[i]);
+      return new LCopyStates({parent},"getstates", DEV_CPU,0);
     }
 
 
@@ -1020,53 +1221,15 @@ namespace eddl {
       return rec;
     }
 
-    layer Decoder(layer dec, layer enc, string op)
+    void setDecoder(layer l)
     {
 
-      bool enrec=isrec(enc);
+       l->isdecoder=true;
 
-      if (enrec) {
-        // copy states from encoder
-        cout<<"Enc-Dec\n";
-        layer cps=new LCopyStates({enc},"",DEV_CPU, 0);
-        cps->isdecoder=false;
+       int p=l->child.size();
+       for(int i=0;i<p;i++)
+         setDecoder(l->child[i]);
 
-        setDecoder(dec);
-
-        // clone and link with encoder
-        layer in=dec->parent[0];
-        in->detach(dec);
-
-        layer n=dec->clone(0,1,{in,cps},DEV_CPU);
-        n->orig=nullptr;
-        n->name="dec_"+dec->name;
-        n->isdecoder=true;
-
-        delete dec;
-        return n;
-      }
-      else {
-        cout<<"Dec "<<endl;
-        setDecoder(dec);
-
-        layer in=dec->parent[0];
-        in->detach(dec);
-
-        layer lop;
-        if (op=="concat") lop=Concat({enc,in},1);
-          else if (op=="sum") lop=Sum(enc,in);
-        else {
-          msg("Incorrect operator layer","Decoder");
-        }
-        lop->isdecoder=true;
-
-        layer n=dec->clone(0,1,{lop},DEV_CPU);
-        n->orig=nullptr;
-        n->name="dec_"+dec->name;
-        n->isdecoder=true;
-        delete dec;
-        return n;
-      }
     }
 
 
@@ -1119,6 +1282,12 @@ namespace eddl {
         return l1->gradients[p]->clone();
     }
 
+    Tensor* getState(layer l1,int p){
+        collectTensor(l1,"state",p);
+        return l1->states[p]->clone();
+    }
+
+
     // get vector of tensor
     vector<Tensor*> getParams(layer l1){
       vector<Tensor*> n;
@@ -1134,6 +1303,15 @@ namespace eddl {
       for(int i=0;i<l1->gradients.size();i++) {
         collectTensor(l1,"gradients",i);
         n.push_back(l1->gradients[i]->clone());
+      }
+      return n;
+    }
+
+    vector<Tensor*> getStates(layer l1){
+      vector<Tensor*> n;
+      for(int i=0;i<l1->states.size();i++) {
+        collectTensor(l1,"states",i);
+        n.push_back(l1->states[i]->clone());
       }
       return n;
     }
@@ -1155,11 +1333,23 @@ namespace eddl {
         Tensor::copy(l1->delta,l2->delta);
         distributeTensor(l2,"delta");
     }
+
+
     void copyParam(Layer *l1,Layer *l2, int p)
     {
-        collectTensor(l1,"param",p);
-        Tensor::copy(l1->params[p],l2->params[p]);
-        distributeTensor(l2,"param",p);
+        if (p==-1) {
+          cout<<"copy all params from "<<l1->name<<" to "<<l2->name<<endl;
+          for(int i=0;i<l1->params.size();i++) {
+            collectTensor(l1,"param",i);
+            Tensor::copy(l1->params[i],l2->params[i]);
+            distributeTensor(l2,"param",i);
+          }
+        }
+        else {
+          collectTensor(l1,"param",p);
+          Tensor::copy(l1->params[p],l2->params[p]);
+          distributeTensor(l2,"param",p);
+        }
     }
 
     void copyGradient(Layer *l1,Layer *l2, int p)
@@ -1169,6 +1359,12 @@ namespace eddl {
         distributeTensor(l2,"gradient",p);
     }
 
+    void distributeParams(Layer *l)
+    {
+         for(int i=0;i<l->params.size();i++)
+           distributeTensor(l,"param",i);
+    }
+
 
 
     ///////////////////////////////////////
@@ -1176,42 +1372,49 @@ namespace eddl {
     ///////////////////////////////////////
     layer GlorotNormal(layer l,int seed)
     {
-        l->init=new IGlorotNormal(seed);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IGlorotNormal(seed);
         return l;
     }
 
-    layer HeUniform(layer l,int seed)
+    layer HeUniform(layer l, int seed)
     {
-        l->init=new IHeUniform(seed);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IHeUniform(seed);
         return l;
     }
-    layer HeNormal(layer l,int seed)
+    layer HeNormal(layer l, int seed)
     {
-        l->init=new IHeNormal(seed);
-        return l;
-    }
-
-    layer GlorotUniform(layer l,int seed)
-    {
-        l->init=new IGlorotUniform(seed);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IHeNormal(seed);
         return l;
     }
 
-    layer RandomNormal(layer l, float m,float s, float seed)
+    layer GlorotUniform(layer l, int seed)
     {
-        l->init=new IRandomNormal(m,s,seed);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IGlorotUniform(seed);
         return l;
     }
 
-    layer RandomUniform(layer l, float min,float max, float seed)
+    layer RandomNormal(layer l, float m, float s, float seed)
     {
-        l->init=new IRandomUniform(min,max,seed);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IRandomNormal(m, s, seed);
+        return l;
+    }
+
+    layer RandomUniform(layer l, float min, float max, float seed)
+    {
+        if (l->init != nullptr) delete l->init;
+        l->init = new IRandomUniform(min, max, seed);
         return l;
     }
 
     layer Constant(layer l, float v)
     {
-        l->init=new IConstant(v);
+        if (l->init != nullptr) delete l->init;
+        l->init = new IConstant(v);
         return l;
     }
 
@@ -1220,21 +1423,22 @@ namespace eddl {
     //  REGULARIZERS
     ///////////////////////////////////////
     layer L2(layer l,float l2){
-        l->reg=new RL2(l2);
+        if (l->reg != nullptr) delete l->reg;
+        l->reg = new RL2(l2);
         return l;
     }
     layer L1(layer l,float l1){
-        l->reg=new RL1(l1);
+        if (l->reg != nullptr) delete l->reg;
+        l->reg = new RL1(l1);
         return l;
     }
-    layer L1L2(layer l,float l1,float l2){
-        l->reg=new RL1L2(l1,l2);
+    layer L1L2(layer l, float l1, float l2){
+        if (l->reg != nullptr) delete l->reg;
+        l->reg = new RL1L2(l1, l2);
         return l;
     }
 
-    ///////////////////////////////////////
-    //  DATASETS
-    ///////////////////////////////////////
+
     bool exist(string name){
         if (FILE *file = fopen(name.c_str(), "r")){
             fclose(file);
@@ -1243,6 +1447,194 @@ namespace eddl {
         return false;
     }
 
+    ///////////////////////////////////////
+    //  Pretrained Models
+    ///////////////////////////////////////
+    
+    void download_model(string name,string link) 
+    {
+        string cmd;
+        cout<<"Downloading "<<name<<endl;   
+        
+        if (!exist(name)) {
+            cout<<name<<" x\n";
+            cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link+"/"+name;
+            int status = system(cmd.c_str());
+            if (status < 0){
+                msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
+            }
+            else if (status > 0){
+                cout<<cmd<<endl;
+                msg("wget failed to download dataset (exit code: " + to_string(status) + "). See previous messages for details.", "eddl.download_"+name);
+            }
+          }
+          else {
+            cout<<name<<" ✓\n";
+          }
+    }
+
+    Net* download_vgg16(bool top, vector<int> input_shape) 
+    {
+        download_model("vgg16.onnx","2ovxkt64y11c083"); 
+
+        Net *net;
+    
+        cout<<"Import ONNX..."<<endl;
+        
+        if (input_shape.size()) 
+	        net = import_net_from_onnx_file("vgg16.onnx", input_shape, DEV_CPU);
+        else  
+            net = import_net_from_onnx_file("vgg16.onnx", DEV_CPU);
+
+        Layer *l=getLayer(net,"data"); l->name="input";
+        if (top) {
+            net->removeLayer("vgg0_dense2_fwd");
+            net->removeLayer("vgg0_dropout1_fwd");
+            net->removeLayer("vgg0_dense1_relu_fwd");
+            net->removeLayer("vgg0_dense1_fwd");
+            net->removeLayer("vgg0_dropout0_fwd");
+            net->removeLayer("vgg0_dense0_relu_fwd");
+            net->removeLayer("vgg0_dense0_fwd"); 
+            
+            Layer *l=getLayer(net,"flatten_60"); l->name="top";
+
+        }
+        
+        return net;
+    } 
+    
+    Net* download_resnet18(bool top, vector<int> input_shape) 
+    {
+        download_model("resnet18.onnx","re7jodd12srksd7"); 
+        Net *net;
+
+        cout<<"Import ONNX..."<<endl;
+        
+        if (input_shape.size())
+	        net = import_net_from_onnx_file("resnet18.onnx", input_shape, DEV_CPU);
+        else 
+            net = import_net_from_onnx_file("resnet18.onnx", DEV_CPU);
+
+        Layer *l=getLayer(net,"data"); l->name="input";
+        if (top) {
+            net->removeLayer("resnetv15_dense0_fwd");
+            Layer *l=getLayer(net,"flatten_170"); l->name="top";
+
+        }
+        
+        return net;
+    } 
+
+    Net* download_resnet34(bool top, vector<int> input_shape) 
+    {
+        download_model("resnet34.onnx","ikcaak0q2cee8k1"); 
+        Net *net;
+
+        cout<<"Import ONNX..."<<endl;
+
+	    if (input_shape.size()) 
+            net = import_net_from_onnx_file("resnet34.onnx", input_shape, DEV_CPU);
+        else net = import_net_from_onnx_file("resnet34.onnx", DEV_CPU);
+
+        Layer *l=getLayer(net,"data"); l->name="input";
+        if (top) {
+            net->removeLayer("resnetv16_dense0_fwd");
+            Layer *l=getLayer(net,"flatten_306"); l->name="top";
+
+        }
+        
+        return net;
+    } 
+    
+    Net* download_resnet50(bool top, vector<int> input_shape) 
+    {
+        download_model("resnet50.onnx","hg4r3z8m6wsnwk3"); 
+        Net *net;
+
+        cout<<"Import ONNX..."<<endl;
+        
+        if (input_shape.size()) 
+	        net = import_net_from_onnx_file("resnet50.onnx", input_shape, DEV_CPU);
+        else net = import_net_from_onnx_file("resnet50.onnx", DEV_CPU);
+
+        Layer *l=getLayer(net,"data"); l->name="input";
+        if (top) {
+            net->removeLayer("resnetv17_dense0_fwd");
+            Layer *l=getLayer(net,"flatten_473"); l->name="top";
+
+        }
+        
+        return net;
+    } 
+    
+    Net* download_resnet101(bool top, vector<int> input_shape) 
+    {
+        download_model("resnet101.onnx","eaxjju4ftrwoti0"); 
+        Net *net;
+
+        cout<<"Import ONNX..."<<endl;
+
+        if (input_shape.size()) 
+	        net = import_net_from_onnx_file("resnet101.onnx", input_shape, DEV_CPU);
+        else net = import_net_from_onnx_file("resnet101.onnx", DEV_CPU);
+
+        Layer *l=getLayer(net,"data"); l->name="input";
+        if (top) {
+            net->removeLayer("resnetv18_dense0_fwd");
+            Layer *l=getLayer(net,"flatten_932"); l->name="top";
+
+        }
+        
+        return net;
+    } 
+
+    Net* download_resnet152(bool top, vector<int> input_shape) 
+    {
+        download_model("resnet152.onnx","phoffbhgnolg95u"); 
+        Net *net;
+
+        cout<<"Import ONNX..."<<endl;
+
+        if (input_shape.size()) 
+	        net = import_net_from_onnx_file("resnet152.onnx", input_shape, DEV_CPU);
+        else net = import_net_from_onnx_file("resnet152.onnx", DEV_CPU);
+
+        Layer *l=getLayer(net,"data"); l->name="input";
+        if (top) {
+            net->removeLayer("resnetv19_dense0_fwd");
+            Layer *l=getLayer(net,"flatten_1391"); l->name="top";
+
+        }
+        
+        return net;
+    } 
+
+    Net* download_densenet121(bool top, vector<int> input_shape) 
+    {
+        download_model("densenet121.onnx","mod7a1pf0eldyd1"); 
+        Net *net;
+        cout<<"Import ONNX..."<<endl;
+
+        if (input_shape.size()) 
+	        net = import_net_from_onnx_file("densenet121.onnx", input_shape, DEV_CPU);
+        else net = import_net_from_onnx_file("densenet121.onnx", DEV_CPU);
+
+        Layer *l=getLayer(net,"data"); l->name="input";
+        if (top) {
+            net->removeLayer("conv2d121");
+            
+            Layer *l=getLayer(net,"avgpool10"); 
+            l=Reshape(l,{-1});
+            l->name="top";
+        }
+        
+        return net;
+    } 
+
+    
+    ///////////////////////////////////////
+    //  DATASETS
+    ///////////////////////////////////////
     void download_dataset(string name, string ext, vector<string>link){
         string cmd;
 
@@ -1263,6 +1655,7 @@ namespace eddl {
                 msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
             }
             else if (status > 0){
+                cout<<cmd<<endl;
                 msg("wget failed to download dataset (exit code: " + to_string(status) + "). See previous messages for details.", "eddl.download_"+name);
             }
           }
@@ -1295,12 +1688,18 @@ namespace eddl {
     }
 
     void download_drive(){
-      download_dataset("drive","npy",{"sbd8eu32adcf5oi","qp0j8oiqzf6tc1a"});
+      download_dataset("drive","bin",{"tf3uzrsjtv4jiey","xakcuhby30ylpes"});
     }
 
-
-
-
-
+    // Auxiliar functions
+    layer _expand3d_to_4d(layer parent, string name){
+        layer p = parent;
+        if(parent->output->shape.size()==3){
+            std::cerr << name << " only works over 2D or 4D tensors. Since a 3D tensor was received, its shape was automatically unsqueezed to a 4D tensor." << std::endl;
+            std::cerr << "()" << std::endl;
+            p = Unsqueeze(p, 0);  // ([Batch - ignored], d0, d1)
+        }
+        return p;
+    }
 
 }//namespace

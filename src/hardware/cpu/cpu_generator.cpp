@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -14,7 +14,7 @@
 void cpu_rand_uniform(Tensor * A, float v)
 {
     _profile(_CPU_RAND_UNIFORM, 0);
-#pragma omp parallel for
+    // #pragma omp parallel for # congruent random number generators are not compatible with parallel calls
     for (int i = 0; i < A->size; ++i) A->ptr[i] = uniform() * v;
     _profile(_CPU_RAND_UNIFORM, 1);
 }
@@ -22,7 +22,7 @@ void cpu_rand_uniform(Tensor * A, float v)
 void cpu_rand_signed_uniform(Tensor * A, float v)
 {
     _profile(_CPU_RAND_SIGNED_UNIFORM, 0);
-    #pragma omp parallel for
+    // #pragma omp parallel for # congruent random number generators are not compatible with parallel calls
     for (int i = 0; i < A->size; ++i) A->ptr[i] = signed_uniform() * v;
     _profile(_CPU_RAND_SIGNED_UNIFORM, 1);
 }
@@ -30,7 +30,7 @@ void cpu_rand_signed_uniform(Tensor * A, float v)
 void cpu_rand_binary(Tensor * A, float v)
 {
     _profile(_CPU_BINARY, 0);
-    #pragma omp parallel for
+    // #pragma omp parallel for # congruent random number generators are not compatible with parallel calls
     for (int i = 0; i < A->size; ++i)
         if (uniform() < v) A->ptr[i] = 1.0;
         else A->ptr[i] = 0.0;

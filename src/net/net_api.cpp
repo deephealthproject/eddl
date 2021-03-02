@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -15,10 +15,11 @@
 #include <string>
 #include <chrono>
 #include <stdexcept>
-#include "eddl/net/net.h"
-#include "eddl/utils.h"
-#include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
+#include "eddl/net/net.h"
+#include "eddl/random.h"
+#include "eddl/system_info.h"
+#include "eddl/utils.h"
 
 
 #ifdef cFPGA
@@ -35,7 +36,6 @@ using namespace std::chrono;
 struct tdata {
   Net *net;
 };
-
 
 /////////////////////////////////////////
 void *train_batch_t(void *t) {
@@ -151,17 +151,26 @@ void Net::run_snets(void *(*F)(void *t))
   int rc;
   struct tdata td[100];
 
-  int comp=snets.size();
+  int comp = snets.size();
 
-  #pragma omp taskloop num_tasks(comp)
-  for (int i = 0; i < comp; i++) {
+  if((snets[0]->dev != DEV_CPU) && (comp > 1))
+  {
+    #pragma omp parallel for
+    for (int i = 0; i < comp; i++) {
+      // Thread params
+      td[i].net = snets[i];
+      // Call function
+      F(&td[i]);
+    }
+  }
+  else
+  {
     // Thread params
-    td[i].net = snets[i];
+    td[0].net = snets[0];
     // Call function
-    F(&td[i]);
+    F(&td[0]);
   }
 }
-
 
 //////////////////////////////////////////////////////////////
 //////// SIMPLE ATOMICS FUNCS
@@ -187,33 +196,37 @@ void Net::setlr(vector <float> p)
 }
 
 vector<vtensor> Net::get_parameters(bool deepcopy){
-    vector<vtensor> params;
+    vector<vtensor> net_params;
 
     // Collect layer params
-    for(auto &l : this->layers){
-        if(!deepcopy){
-            params.push_back(l->params);
-        }else{
-            // Clone parameters
-            vtensor lp;
-            for(auto &param : l->params){
-                Tensor* new_param = param->clone(); // TODO: Flag toCPU()?
-                lp.push_back(new_param);
-            }
+    for(int i=0; i<this->layers.size(); i++){
 
-            // Add new params
-            params.push_back(lp);
+        // Clone parameters
+        vtensor layer_params;
+        for(int j=0; j<this->layers[i]->params.size(); j++){
+            // Collect Tensors from Device to CPU
+            collectTensor(this->layers[i], "param", j);
+
+            // Add to layer vector of params
+            if (deepcopy){
+                layer_params.push_back(this->layers[i]->params[j]->clone());
+            }else{
+                layer_params.push_back(this->layers[i]->params[j]);
+            }
         }
+
+        // Add new params
+        net_params.push_back(layer_params);
     }
 
-    return params;
+    return net_params;
 }
 
-void Net::set_parameters(const vector<vtensor>& params){
+void Net::set_parameters(const vector<vtensor>& new_params){
     // Check the number of layers
-    if(params.size() != this->layers.size()){
+    if(new_params.size() != this->layers.size()){
         msg("AssertionError: The number of layers in params does not match the number of layers in this network ("
-        + std::to_string(params.size())  + "!=" + std::to_string(this->layers.size()) +")",
+        + std::to_string(new_params.size())  + "!=" + std::to_string(this->layers.size()) +")",
         "Net::set_parameters");
     }
 
@@ -222,10 +235,10 @@ void Net::set_parameters(const vector<vtensor>& params){
         Layer* l = this->layers[i];  // Alias
 
         // Check number of params
-        if(params[i].size() != l->params.size()){
+        if(new_params[i].size() != l->params.size()){
             msg("AssertionError: The number of parameters in layer '" + std::to_string(i) +
             "'(" + l->name +") does not match the number of parameters in the given vector<Tensor*>. (" +
-            std::to_string(l->params.size()) + "!=" + std::to_string(params[i].size())  +")",
+            std::to_string(l->params.size()) + "!=" + std::to_string(new_params[i].size())  +")",
                 "Net::set_parameters");
         }
     }
@@ -233,19 +246,12 @@ void Net::set_parameters(const vector<vtensor>& params){
     // Set layer params
     for(int i=0; i<this->layers.size(); i++){
 
-        // Delete current params
-        for(int j=this->layers[i]->params.size()-1; j>=0; j--){
-            cout << "Deleting params " << j << " from layer " << i << "(" << this->layers[i]->name << ")" << endl;
-            if (this->layers[i]->params[i]!= nullptr){
-                delete this->layers[i]->params[i];
-            }
+        // Copy current params
+        for(int j=0; j<this->layers[i]->params.size(); j++){
+            Tensor::copy(new_params[i][j], this->layers[i]->params[j]);
+            sync_weights();  // Send CPU tensors to devices
         }
 
-        // Empty params
-        this->layers[i]->params.clear();
-
-        // Add new params
-        this->layers[i]->params = params[i];  // Pass reference. Do not copy
     }
 }
 
@@ -277,7 +283,7 @@ void Net::forward(vector<Tensor*> in)
       // Distribute to snets inputs
       for (int i = 0; i < in.size(); i++)
         distributeTensor(lin[i]);
-      
+
 
     }
 
@@ -289,6 +295,10 @@ void Net::forward(vector<Tensor*> in)
 void Net::forward_recurrent(vector<Tensor*> tin)
 {
   int i,j,k,l;
+
+  if (isdecoder) {
+    msg("Recurrent nets with decoders can not use atomic funcs","forward");
+  }
 
   // prepare data for unroll net
   vtensor xt;
@@ -302,25 +312,26 @@ void Net::forward_recurrent(vector<Tensor*> tin)
   int inl;
   int outl;
 
-
   prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
   build_rnet(inl,outl);
 
-  if ((isencoder)&&(isdecoder))
-    rnet->forward(tinr);
-  else if (isencoder)
-    rnet->forward(tinr);
-  else if (isdecoder)
-    rnet->forward(tin);
+  rnet->forward(tinr);
+
+  if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
+
 
   for(i=0;i<xt.size();i++)
     delete xt[i];
   xt.clear();
 
-  for(i=0;i<xtd.size();i++)
-    delete xtd[i];
-  xtd.clear();
+  for(i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
+
 
 }
 
@@ -335,6 +346,7 @@ void Net::forward(vector<Layer *> in)
     msg("size missmatch in list of tensors","Net.forward(vtensor)");
 
     if (batch_size!=in[0]->output->shape[0]) {
+
       resize(in[0]->output->shape[0]);
     }
   }
@@ -374,8 +386,10 @@ void Net::backward(vector<Tensor *> target)
       if (target.size()!=lout.size())
       msg("size missmatch in list of targets","Net.backward(vtensor)");
 
-      if (batch_size!=target[0]->shape[0])
-      msg("bakcward step with different batch_size than forward","Net.backward(vtensor)");
+      if (batch_size!=target[0]->shape[0]) {
+        cout<<batch_size<<"!="<<target[0]->shape[0]<<endl;
+        msg("bakcward step with different batch_size than forward","Net.backward(vtensor)");
+      }
 
       int comp=snets.size();
       if (batch_size<comp) {
@@ -411,6 +425,10 @@ void Net::backward_recurrent(vector<Tensor *> target)
 {
   int i,j,k,l;
 
+  if (isdecoder) {
+    msg("Recurrent nets with decoders can not use atomic funcs","backward");
+  }
+
   // prepare data for unroll net
   vtensor xt;
   vtensor xtd;
@@ -425,20 +443,21 @@ void Net::backward_recurrent(vector<Tensor *> target)
 
   prepare_recurrent(tin,target,inl,outl,xt,xtd,yt,tinr,toutr);
 
-  if ((isencoder)&&(isdecoder))
-    rnet->backward(toutr);
-  else if (isencoder)
-    rnet->backward(target);
-  else if (isdecoder)
-    rnet->backward(toutr);
+  rnet->backward(toutr);
+
+  if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
+
 
   for(i=0;i<xt.size();i++)
     delete xt[i];
   xt.clear();
 
-  for(i=0;i<xtd.size();i++)
-    delete xtd[i];
-  xtd.clear();
+  for(i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
 
 }
 
@@ -526,49 +545,17 @@ void Net::compute_loss()
       }
     }
 
+    int p=0;
+    for(int k=0;k<lout.size();k+=decsize)
+     for (int j = 0; j < lout.size(); j++,p+=2) {
+       total_loss[k] += fiterr[p];  // losses
+       total_metric[k] += fiterr[p + 1];  // metric
+       fiterr[p] = fiterr[p + 1] = 0.0;
+      }
+
     inferenced_samples+=batch_size;
   }
 }
-
-float Net::get_metric( const string  layer_name, const string  metric_name )
-{
-    float value=-1.;
-    string lname="";
-
-    if (isrecurrent) {
-        value = -1.;
-    } else {
-        int p=0;
-        int length = decsize;
-        for (int k = 0; k < lout.size(); k+=decsize) {
-
-            for( int l=0; l < length; l++, p+=2 ) {
-                total_loss[k] += fiterr[p];  // loss
-                total_metric[k] += fiterr[p + 1];  // metric
-                fiterr[p] = fiterr[p + 1] = 0.0;
-            }
-
-            if ( layer_name.size() > 0 ) {
-                lname = lout[k]->name;
-                if (lout[k]->isshared) lname=lout[k]->orig->name;
-            }
-
-            // if no layer specified and more than one layer then
-            // the required metric of the last output layer will be returned
-
-            if ( layer_name.size() == 0 || layer_name == lname ) {
-
-                if ( losses[k]->name == metric_name ) {
-                    value = total_loss[k] / (length*inferenced_samples);
-                } else if ( metrics[k]->name == metric_name ) {
-                    value = total_metric[k] / (length*inferenced_samples);
-                }
-            }
-        }
-    }
-    return value;
-}
-
 void Net::print_loss(int b)
 {
   int p = 0;
@@ -578,24 +565,18 @@ void Net::print_loss(int b)
   }
   else {
     fprintf(stdout,"Batch %d ",b);
+
     int length=decsize;
     for (int k = 0; k < lout.size(); k+=decsize) {
-
-
-      for(int l=0;l<length;l++,p+=2) {
-        total_loss[k] += fiterr[p];  // loss
-        total_metric[k] += fiterr[p + 1];  // metric
-        fiterr[p] = fiterr[p + 1] = 0.0;
-      }
 
       string name=lout[k]->name;
 
       fprintf(stdout, "%s ( ", name.c_str());
       if (losses.size()>=(k+1)) {
-        fprintf(stdout, "loss[%s]=%1.3f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
+        fprintf(stdout, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
       }
-      if (metrics.size()>=(k+1)) {
-        fprintf(stdout, "metric[%s]=%1.3f ", metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
+      if (this->metrics.size()>=(k+1)) {
+        fprintf(stdout, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
       }
 
       fprintf(stdout, ") -- ");
@@ -604,11 +585,11 @@ void Net::print_loss(int b)
       if ((flog_tr!=nullptr)&&(trmode)) {
         fprintf(flog_tr, "%s ", name.c_str());
         if (losses.size()>=(k+1)) {
-          fprintf(flog_tr, "loss[%s]=%1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+          fprintf(flog_tr, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
         }
-        if (metrics.size()>=(k+1)) {
-          if (metrics[k]->name!="none")
-          fprintf(flog_tr, "metric[%s]=%1.3f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+        if (this->metrics.size()>=(k+1)) {
+          if (this->metrics[k]->name!="none")
+          fprintf(flog_tr, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
         }
 
         fprintf(flog_tr, " -- ");
@@ -618,11 +599,11 @@ void Net::print_loss(int b)
       if ((flog_ts!=nullptr)&&(!trmode)) {
         fprintf(flog_ts, "%s ", name.c_str());
         if (losses.size()>=(k+1)) {
-          fprintf(flog_ts, "loss[%s]=%1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+          fprintf(flog_ts, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
         }
-        if (metrics.size()>=(k+1)) {
-          if (metrics[k]->name!="none")
-          fprintf(flog_ts, "metric[%s]=%1.3f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+        if (this->metrics.size()>=(k+1)) {
+          if (this->metrics[k]->name!="none")
+          fprintf(flog_ts, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
         }
 
         fprintf(flog_ts, " -- ");
@@ -642,6 +623,75 @@ void Net::print_loss(int b)
       fflush(flog_ts);
     }
   }
+}
+
+
+vector<float> Net::get_losses(){
+    // NOTE: I have no idea how the internals of the metrics/loss values work,
+    // so I did a sort of copy and paste from print_loss fuction with minor workarounds
+    vector<float> loss_values;
+
+    if (this->isrecurrent) {
+        if (this->rnet!=nullptr) { return this->rnet->get_losses(); } // Dangerous A.F.
+    } else {
+        int p = 0;
+
+        // Copy total_loss / fiterr (I don't know how it works but i don't like it...)
+        vector<float> tmp_total_error; //(total_loss);
+        vector<float> tmp_fiterr; //(fiterr);
+        for (auto _ : total_loss) tmp_total_error.push_back(_);
+        for (auto _ : fiterr) tmp_fiterr.push_back(_);
+
+        int length=decsize;
+        for (int k = 0; k < lout.size(); k+=decsize) {
+
+            // Do stuff
+            for(int l=0;l<length;l++,p+=2) {
+                tmp_total_error[k] += tmp_fiterr[p];  // loss
+                tmp_fiterr[p] = tmp_fiterr[p + 1] = 0.0;
+            }
+
+            // Compute average loss
+            if (losses.size()>=(k+1)) {
+                loss_values.push_back(tmp_total_error[k] /  (float)(length*inferenced_samples));
+            }
+        }
+    }
+
+    return loss_values;
+}
+
+vector<float> Net::get_metrics(){
+    // NOTE: I have no idea how the internals of the metrics/loss values work,
+    // so I did a sort of copy and paste from print_loss fuction with minor workarounds
+    vector<float> metrics_values;
+
+    if (this->isrecurrent) {
+        if (this->rnet!=nullptr) { this->rnet->get_metrics(); } // Dangerous A.F.
+    } else {
+        int p = 0;
+
+        // Copy total_loss / fiterr (I don't know how it works but i don't like it...)
+        vector<float> tmp_total_metrics; //(total_metric);
+        vector<float> tmp_fiterr; //(fiterr);
+        for (auto _ : total_metric) tmp_total_metrics.push_back(_);
+        for (auto _ : fiterr) tmp_fiterr.push_back(_);
+
+        int length=decsize;
+        for (int k = 0; k < lout.size(); k+=decsize) {
+
+            for(int l=0;l<length;l++,p+=2) {
+                tmp_total_metrics[k] += tmp_fiterr[p + 1];  // metric
+                tmp_fiterr[p] = tmp_fiterr[p + 1] = 0.0;
+            }
+
+            if (this->metrics.size()>=(k+1)) {
+                metrics_values.push_back( tmp_total_metrics[k] / (float)(length*inferenced_samples));
+            }
+        }
+    }
+
+    return metrics_values;
 }
 
 void Net::reset_grads()
@@ -707,7 +757,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
   int i, j, k, n;
 
   if (isrecurrent) {
-    fit_recurrent(tin,tout, batch, epochs);
+    fit_recurrent(tin, tout, batch, epochs);
   }
   else{
 
@@ -748,7 +798,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     // Create array to store batch indices (later random)
     vind sind;
     for (i = 0; i < batch_size; i++)
-    sind.push_back(0);
+        sind.push_back(0);
 
 
     // Start training
@@ -780,19 +830,275 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
         high_resolution_clock::time_point e2 = high_resolution_clock::now();
         duration<double> epoch_time_span = e2 - e1;
-        fprintf(stdout, "%1.3f secs/batch\r", epoch_time_span.count()/(j+1));
+        fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count()/(j+1));
         fflush(stdout);
 
 
       }
       high_resolution_clock::time_point e2 = high_resolution_clock::now();
       duration<double> epoch_time_span = e2 - e1;
-      fprintf(stdout, "\n%1.3f secs/epoch\n", epoch_time_span.count());
+      fprintf(stdout, "\n%1.4f secs/epoch\n", epoch_time_span.count());
     }
     fflush(stdout);
   }
 
 }
+
+
+void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z)
+{
+  int i, j, k, n;
+
+  // Check whether is encoder, decoder or both.
+  for(i=0;i<vfts.size();i++) {
+    if (vfts[i]->isdecoder) {isdecoder=true;break;}
+    else if (vfts[i]->isrecurrent) isencoder=true;
+  }
+
+  // Set the properties to snets
+  for(i=0;i<snets.size();i++) {
+    snets[i]->isdecoder=isdecoder;
+    snets[i]->isencoder=isencoder;
+  }
+
+  inl=outl=1;
+
+  for(i=0;i<tin.size();i++) {
+    xt.push_back(tin[i]->clone());
+    tinr.push_back(new Tensor(xt[i]->shape,xt[i]->ptr,xt[i]->device));
+  }
+
+
+  // PREPARE INPUT and OUTPUT DECODER
+  for(i=0;i<tout.size();i++) {
+    if (tout[i]->ndim<3)
+      msg("Output tensor should be batch x timesteps x dims","Net::prepare_recurrent");
+    vector<int> pshape;
+    pshape.push_back(1);
+    pshape.push_back(0);
+    for(int j=2;j<tout[i]->ndim;j++)
+     pshape.push_back(j);
+    yt.push_back(Tensor::permute(tout[i],pshape)); // time x batch x dim
+  }
+
+  // outl=out time_steps.
+  // Check that all the potential inputs have the same timesteps:
+  outl=yt[0]->shape[0];
+  for(i=0;i<yt.size();i++) {
+    if (yt[i]->shape[0]!=outl)
+    msg("Output tensors with different time steps","fit_recurrent");
+  }
+  cout<<"Vec2Seq "<<inl<<" to "<<outl<<"\n";
+
+  int offset;
+  for(i=0;i<yt.size();i++) {
+    offset=yt[i]->size/yt[i]->shape[0];
+    vector<int>shape;
+    for(j=1;j<yt[i]->ndim;j++)
+      shape.push_back(yt[i]->shape[j]);
+
+    //input, delayed
+    vector<int>zero_shape;
+    for(j=0;j<tout[i]->ndim;j++)
+      if (j!=1) zero_shape.push_back(tout[i]->shape[j]);
+
+    tinr.push_back(Tensor::zeros(zero_shape,tout[i]->device));
+    for(j=0;j<outl-1;j++)
+      tinr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset),yt[i]->device));
+
+    // output
+    for(j=0;j<outl;j++)
+      toutr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset),yt[i]->device));
+  }
+
+
+
+}
+
+
+
+void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z)
+{
+
+  int i, j, k, n;
+
+  // Check whether is encoder, decoder or both.
+  for(i=0;i<vfts.size();i++) {
+    if (vfts[i]->isdecoder) {isdecoder=true;break;}
+    else if (vfts[i]->isrecurrent) isencoder=true;
+  }
+
+  // Set the properties to snets
+  for(i=0;i<snets.size();i++) {
+    snets[i]->isdecoder=isdecoder;
+    snets[i]->isencoder=isencoder;
+  }
+
+  inl=outl=1;
+
+  // PREPARE INPUT ENCODER
+  for(i=0;i<tin.size();i++) {
+    if (tin[i]->ndim<3)
+        msg("Input tensor should be batch x timesteps x dims","Net::prepare_recurrent");
+    vector<int> pshape;
+    pshape.push_back(1);
+    pshape.push_back(0);
+    for(int j=2;j<tin[i]->ndim;j++)
+     pshape.push_back(j);
+    xt.push_back(Tensor::permute(tin[i],pshape)); // time x batch x dims
+  }
+
+  // inl=input time_steps.
+  // Check that all the potential inputs have the same timesteps:
+  inl=xt[0]->shape[0];
+  for(i=0;i<xt.size();i++) {
+    if (xt[i]->shape[0]!=inl)
+      msg("Input tensors with different time steps","Net::prepare_recurrent");
+  }
+
+
+  int offset;
+  for(i=0;i<xt.size();i++) { // again xt.size() is normally 1
+    offset=xt[i]->size/xt[i]->shape[0];
+    vector<int>shape;
+    for(j=1;j<xt[i]->ndim;j++)
+      shape.push_back(xt[i]->shape[j]);
+    for(j=0;j<inl;j++) // fot all timesteps create a share tensor
+      tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset),xt[i]->device));
+  }
+
+
+  // PREPARE INPUT and OUTPUT DECODER
+  for(i=0;i<tout.size();i++) {
+    if (tout[i]->ndim<3)
+      msg("Output tensor should be batch x timesteps x dims","Net::prepare_recurrent");
+    vector<int> pshape;
+    pshape.push_back(1);
+    pshape.push_back(0);
+    for(int j=2;j<tout[i]->ndim;j++)
+     pshape.push_back(j);
+    yt.push_back(Tensor::permute(tout[i],pshape)); // time x batch x dim
+  }
+
+  // outl=out time_steps.
+  // Check that all the potential inputs have the same timesteps:
+  outl=yt[0]->shape[0];
+  for(i=0;i<yt.size();i++) {
+    if (yt[i]->shape[0]!=outl)
+    msg("Output tensors with different time steps","fit_recurrent");
+  }
+
+  cout<<"Seq2Seq "<<inl<<" to "<<outl<<"\n";
+
+  for(i=0;i<yt.size();i++) {
+    offset=yt[i]->size/yt[i]->shape[0];
+    vector<int>shape;
+    for(j=1;j<yt[i]->ndim;j++)
+      shape.push_back(yt[i]->shape[j]);
+
+    //input, delayed
+    vector<int>zero_shape;
+    for(j=0;j<tout[i]->ndim;j++)
+      if (j!=1) zero_shape.push_back(tout[i]->shape[j]);
+
+    tinr.push_back(Tensor::zeros(zero_shape,tout[i]->device));
+    for(j=0;j<outl-1;j++)
+      tinr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset),yt[i]->device));
+
+    // output
+    for(j=0;j<outl;j++)
+      toutr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset),yt[i]->device));
+  }
+
+}
+
+
+void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z)
+{
+  int i, j, k, n;
+
+
+  // Check whether is encoder, decoder or both.
+  for(i=0;i<vfts.size();i++) {
+    if (vfts[i]->isdecoder) {isdecoder=true;break;}
+    else if (vfts[i]->isrecurrent) isencoder=true;
+  }
+
+  // Set the properties to snets
+  for(i=0;i<snets.size();i++) {
+    snets[i]->isdecoder=isdecoder;
+    snets[i]->isencoder=isencoder;
+  }
+
+  inl=outl=1;
+
+  // PREPARE INPUT
+  for(i=0;i<tin.size();i++) {
+    if (tin[i]->ndim<3)
+        msg("Input tensor should be batch x timesteps x dims","Net::prepare_recurrent");
+    vector<int> pshape;
+    pshape.push_back(1);
+    pshape.push_back(0);
+    for(int j=2;j<tin[i]->ndim;j++)
+     pshape.push_back(j);
+    xt.push_back(Tensor::permute(tin[i],pshape)); // time x batch x dims
+
+  inl=xt[0]->shape[0];
+  // inl=time_steps.
+  // Check that all the potential inputs have the same timesteps:
+  for(i=0;i<xt.size();i++) {
+    if (xt[i]->shape[0]!=inl)
+      msg("Input tensors with different time steps","Net::prepare_recurrent");
+    }
+  }
+
+  int offset;
+  for(i=0;i<xt.size();i++) { // again xt.size() is normally 1
+    offset=xt[i]->size/xt[i]->shape[0];
+    vector<int>shape;
+    for(j=1;j<xt[i]->ndim;j++)
+      shape.push_back(xt[i]->shape[j]);
+    for(j=0;j<inl;j++) // fot all timesteps create a share tensor
+      tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset),xt[i]->device));
+  }
+
+  // PREPARE OUTPUT
+  for(i=0;i<tout.size();i++) {
+    if (tout[i]->ndim<3)
+      msg("Output tensor should be batch x timesteps x dims","Net::prepare_recurrent");
+    vector<int> pshape;
+    pshape.push_back(1);
+    pshape.push_back(0);
+    for(int j=2;j<tout[i]->ndim;j++)
+     pshape.push_back(j);
+    yt.push_back(Tensor::permute(tout[i],pshape)); // time x batch x dims
+
+    outl=yt[0]->shape[0];
+    // outl=time_steps output
+    // Check that all the potential outputs have the same timesteps:
+    for(i=0;i<yt.size();i++) {
+      if (yt[i]->shape[0]!=outl)
+      msg("Output tensors with different time steps","Net::prepare_recurrent");
+    }
+  }
+
+  if (outl>1)
+    cout<<"Synchronous Seq2Seq "<<inl<<" to "<<outl<<"\n";
+  else
+    cout<<"Recurrent "<<inl<<" to "<<outl<<"\n";
+
+  for(i=0;i<yt.size();i++) {
+    offset=yt[i]->size/yt[i]->shape[0];
+    vector<int>shape;
+    for(j=1;j<yt[i]->ndim;j++)
+      shape.push_back(yt[i]->shape[j]);
+
+    if (tout.size())
+      for(j=0;j<outl;j++)
+        toutr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset),yt[i]->device));
+  }
+}
+
 
 
 void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z)
@@ -811,83 +1117,12 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
     snets[i]->isencoder=isencoder;
   }
 
-  inl=outl=1;
-
-  if (tin.size()) {
-    if (isencoder) {
-      for(i=0;i<tin.size();i++)
-        xt.push_back(Tensor::permute(tin[i],{1,0,2})); // time x batch x dim
-
-      inl=xt[0]->shape[0];
-      for(i=0;i<xt.size();i++) {
-        if (xt[i]->shape[0]!=inl)
-          msg("Input tensors with different time steps","fit_recurrent");
-      }
-    }
-  }
-
-  if (tout.size()) {
-    if (isdecoder) {
-      //set decoder input with outputs
-      for(i=0;i<tout.size();i++)
-        xtd.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
-
-      //prepare output
-      for(i=0;i<tout.size();i++)
-        yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
-
-      outl=yt[0]->shape[0];
-      for(i=0;i<yt.size();i++) {
-        if (yt[i]->shape[0]!=outl)
-        msg("Output tensors with different time steps","fit_recurrent");
-      }
-    }
-  }
-
-  // prepare data for unroll net
-  if (isencoder) {
-    int offset;
-    for(i=0;i<xt.size();i++) {
-      offset=xt[i]->size/xt[i]->shape[0];
-      vector<int>shape;
-      for(j=1;j<xt[i]->ndim;j++)
-        shape.push_back(xt[i]->shape[j]);
-      for(j=0;j<inl;j++)
-        tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset),xt[i]->device));
-    }
-  }
-
-  if (isdecoder) {
-    //increase input with delayed output in xtd
-    int offset;
-    for(i=0;i<xtd.size();i++) {
-      offset=xtd[i]->size/xtd[i]->shape[0];
-      vector<int>shape;
-      for(j=1;j<xtd[i]->ndim;j++)
-        shape.push_back(xtd[i]->shape[j]);
-
-      vector<int>zero_shape;
-      for(j=0;j<tout[i]->ndim;j++)
-        if (j!=1) zero_shape.push_back(tout[i]->shape[j]);
-
-      if (!isencoder) tinr.push_back(new Tensor(tin[0]->shape,tin[0]->ptr,tin[0]->device));
-      tinr.push_back(Tensor::zeros(zero_shape,tout[i]->device));
-      for(j=0;j<outl-1;j++)
-        tinr.push_back(new Tensor(shape,xtd[i]->ptr+(j*offset),xtd[i]->device));
-    }
-
-    for(i=0;i<yt.size();i++) {
-      offset=yt[i]->size/yt[i]->shape[0];
-      vector<int>shape;
-      for(j=1;j<yt[i]->ndim;j++)
-        shape.push_back(yt[i]->shape[j]);
-
-      if (tout.size())
-        for(j=0;j<outl;j++)
-          toutr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset),yt[i]->device));
-    }
-  }
-
+  if ((isencoder)&&(isdecoder))
+    prepare_recurrent_enc_dec(tin, tout, inl, outl, xt, xtd, yt, tinr,toutr);
+  else if (isdecoder)
+      prepare_recurrent_dec(tin, tout, inl, outl, xt, xtd, yt, tinr,toutr);
+  else
+    prepare_recurrent_enc(tin, tout, inl, outl, xt, xtd, yt, tinr,toutr);
 }
 
 void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
@@ -908,32 +1143,21 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
 
   build_rnet(inl,outl);
 
-  if ((isencoder)&&(isdecoder))
-    rnet->fit(tinr,toutr,batch,epochs);
-  else if (isencoder)
-    rnet->fit(tinr,tout,batch,epochs);
-  else if (isdecoder)
-    rnet->fit(tinr,toutr,batch,epochs);
+  rnet->fit(tinr,toutr,batch,epochs);
 
   if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
 
   for(i=0;i<tinr.size();i++) delete(tinr[i]);
   for(i=0;i<toutr.size();i++) delete(toutr[i]);
 
-  if (isencoder) {
-    for(i=0;i<xt.size();i++)
-      delete xt[i];
-    xt.clear();
-  }
-  if (isdecoder) {
-    for(i=0;i<xtd.size();i++)
-      delete xtd[i];
-    xtd.clear();
 
-    for(i=0;i<yt.size();i++)
-      delete yt[i];
-    yt.clear();
-  }
+  for(i=0;i<xt.size();i++)
+    delete xt[i];
+  xt.clear();
+
+  for(i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
 
 }
 
@@ -972,19 +1196,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
       Tensor::select(Y[j], Ys[i][j], sind, start, end);
       snets[i]->lout[j]->check_target();
       Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
-
-      if (isdecoder) {
-        if (eval) {
-          if (j==0) snets[i]->din[0]->input->fill_(0.0); //start
-          else {
-            snets[i]->lout[j-1]->addchild(snets[i]->din[j]);
-          }
-        }
-        else {
-          if (j==0) snets[i]->din[0]->input->fill_(0.0); //start
-          else Tensor::copy(Ys[i][j-1], snets[i]->din[j]->input);
-        }
-      }
     }
   }
 
@@ -992,11 +1203,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
   run_snets(eval_batch_t);
   else
   run_snets(train_batch_t);
-
-  if ((eval)&&(isdecoder))
-    for (int i = 0; i < comp; i++)
-      for (int j = 1; j < Y.size(); j++)
-         snets[i]->lout[j-1]->detach(snets[i]->din[j]);
 
   // If training (eval==0), apply gradients
   if (!eval) {
@@ -1042,7 +1248,7 @@ void Net::evaluate(vtensor tin, vtensor tout,int bs) {
     if (tout[i]->shape[0] != n)
     msg("different number of samples in output tensor", "Net.evaluate");
 
-    resize(bs);
+    if (bs!=-1) resize(bs);
 
     printf("Evaluate with batch size %d\n",batch_size);
 
@@ -1058,7 +1264,7 @@ void Net::evaluate(vtensor tin, vtensor tout,int bs) {
     for (j = 0; j < n / batch_size; j++) {
 
       for (k=0;k<batch_size;k++)
-      sind[k]=(j*batch_size)+k;
+        sind [k]=(j*batch_size)+k;
 
       train_batch(tin, tout, sind, 1);
 
@@ -1091,31 +1297,19 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout, int bs) {
 
   build_rnet(inl,outl);
 
-  cout<<"OK"<<endl;
-  if ((isencoder)&&(isdecoder))
-    rnet->evaluate(tinr,toutr,bs);
-  else if (isencoder){cout<<"OKenc"<<endl;
-    rnet->evaluate(tinr,tout,bs);}
-  else if (isdecoder)
-    rnet->evaluate(tinr,toutr,bs);
+  rnet->evaluate(tinr,toutr,bs);
 
   for(i=0;i<tinr.size();i++) delete(tinr[i]);
   for(i=0;i<toutr.size();i++) delete(toutr[i]);
 
-  if (isencoder) {
-    for(i=0;i<xt.size();i++)
+  for(i=0;i<xt.size();i++)
       delete xt[i];
-    xt.clear();
-  }
-  if (isdecoder) {
-    for(i=0;i<xtd.size();i++)
-      delete xtd[i];
-    xtd.clear();
+  xt.clear();
 
-    for(i=0;i<yt.size();i++)
+  for(i=0;i<yt.size();i++)
       delete yt[i];
-    yt.clear();
-  }
+  yt.clear();
+
 
 }
 
@@ -1145,6 +1339,10 @@ vtensor Net::predict_recurrent(vtensor tin) {
     delete xt[i];
   xt.clear();
 
+  for(int i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
+
   return out;
 }
 
@@ -1168,6 +1366,116 @@ vtensor Net::predict(vtensor tin) {
     return out;
   }
 
+}
+
+
+bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, float atol, float rtol, bool equal_nan) {
+    bool equivalent_nets = true;
+
+    // Check if both layers are the same
+    if(net1==net2){
+        if(verbose){
+            cout << "Both nets point to the same object"  << " [Net::compare_outputs]" << endl;
+        }
+        return true;
+    }
+
+    // Compare the number of layers
+    if (net1->layers.size() != net2->layers.size()){
+        if(verbose){
+            cout << "Nets have a different number of layers"  << " [Net::compare_outputs]" << endl;
+        }
+        return false;
+    }
+
+    // Compare the output of each layer
+    for(int i=0; i<net1->layers.size(); i++){
+        // Collect Tensors from Device to CPU
+        collectTensor(net1->layers[i], "output");
+        collectTensor(net2->layers[i], "output");
+
+        // Get tensors
+        Tensor *output1 = net1->layers[i]->output;
+        Tensor *output2 = net2->layers[i]->output;
+
+        // Check if both outputs are equivalent
+        bool equal = Tensor::equivalent(output1, output2, atol, rtol, equal_nan);
+        if(equal) {
+            if(verbose){
+                cout << "[OKAY] The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                     net2->layers[i]->name << ") do match" << " [Net::compare_outputs]" << endl;
+            }
+        }else{
+            if(verbose) {
+                cout << "[FAIL] The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                net2->layers[i]->name << ") do not match" << " [Net::compare_outputs]" << endl;
+            }
+            equivalent_nets = false;
+        }
+    }
+    return equivalent_nets;
+}
+
+bool Net::compare_params(Net *net1, Net *net2, bool verbose, float atol, float rtol, bool equal_nan) {
+    bool equivalent_nets = true;
+
+    // Check if both layers are the same
+    if(net1==net2){
+        if(verbose){
+            cout << "Both nets point to the same object"  << " [Net::compare_params]" << endl;
+        }
+        return true;
+    }
+
+    // Compare the number of layers
+    if (net1->layers.size() != net2->layers.size()){
+        if(verbose){
+            cout << "Nets have a different number of layers"  << " [Net::compare_params]" << endl;
+        }
+        return false;
+    }
+
+
+    // Compare the output of each layer
+    for(int i=0; i<net1->layers.size(); i++){
+
+        // Check if both layers have the same number of parameters
+        if(net1->layers[i]->params.size() != net2->layers[i]->params.size()){
+            if(verbose){
+                cout << "The parameters in from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                     net2->layers[i]->name << ") do not match" << " [Net::compare_params]" << endl;
+            }
+            return false;
+        }
+
+        // Check params of this layer
+        for(int j=0; j<net1->layers[j]->params.size(); j++){
+            // Collect Tensors from Device to CPU
+            collectTensor(net1->layers[i], "param", j);
+            collectTensor(net2->layers[i], "param", j);
+
+            Tensor* param1 = net1->layers[j]->params[j];
+            Tensor* param2 = net2->layers[j]->params[j];
+
+            // Check if both outputs are equivalent
+            bool equal = Tensor::equivalent(param1, param2, atol, rtol, equal_nan);
+            if(equal) {
+                if(verbose){
+                    cout << "[OKAY] The params #" << j << " from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                         net2->layers[i]->name << ") do match" << " [Net::compare_params]" << endl;
+                }
+            }else{
+                if(verbose) {
+                    cout << "[FAIL] The params #" << j << " from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
+                         net2->layers[i]->name << ") do not match" << " [Net::compare_params]" << endl;
+                }
+                equivalent_nets = false;
+            }
+
+        }
+
+    }
+    return equivalent_nets;
 }
 
 //////

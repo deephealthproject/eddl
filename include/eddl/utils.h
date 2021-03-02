@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -17,6 +17,10 @@
 using namespace std;
 
 void msg(const string& text, const string& title="");
+
+void * eddl_malloc(size_t size, const string & str_info = "");
+
+void eddl_free(void * ptr);
 
 float *get_fmem(unsigned long int size, const string &str);
 
@@ -46,6 +50,9 @@ bool pathExists(const std::string &s);
 
 string get_parent_dir(const string& fname);
 
+vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch=false);
+vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch=false);
+
 template<typename T>
 string printVector(vector<T> myvector){
     string temp = "";
@@ -60,5 +67,8 @@ enum WrappingMode {Constant=0, Reflect=1, Nearest=2, Mirror=3, Wrap=4, Original=
 WrappingMode getWrappingMode(string mode);
 
 void __show_profile();
+
+void show_deprecated_warning(const string& deprecated_name, const string& new_name="", const string& type="function", const string& version="future");
+
 
 #endif //EDDL_UTILS_H

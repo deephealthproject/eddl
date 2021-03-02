@@ -32,6 +32,7 @@ int fpga_cpuemu_accuracy(Tensor *A, Tensor *B) {
 }
 
 int fpga_accuracy(Tensor *A, Tensor *B){
+  _debug_fpga_funcs("accuracy");
   int acc;
   int *accu;
   _profile_fpga(_FPGA_ACCURACY, 0);
@@ -73,6 +74,7 @@ int fpga_cpuemu_bin_accuracy(Tensor *A, Tensor *B) {
 }
 
 int fpga_bin_accuracy(Tensor *A, Tensor *B){
+  _debug_fpga_funcs("bin_accuracy");
   int acc;
   int *accu;
   _profile_fpga(_FPGA_ACCURACY, 0);

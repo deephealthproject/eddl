@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -235,7 +235,7 @@ void cpu_not_equal(Tensor *A, Tensor *B, float v);
 void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
 // Legacy
-int cpu_equal2(Tensor *A, Tensor *B, float epsilon);
+int cpu_allclose_verbose(Tensor *A, Tensor *B, float epsilon);
 
 
 

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -56,6 +56,17 @@
 #define MAX_GPUS 8
 #define MAX_FPGAS 8
 
+#define CPU_MIN_FLOAT 1.17549e-38f;  // Minimum finite value
+#define CPU_MAX_FLOAT 3.40282e+38f;  // Maximum finite value
+#define CPU_EPS_FLOAT 1.19209e-07f;  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
+#define CPU_LOWEST_FLOAT -3.40282e+38f;  // For floating-point types: implementation-dependent; generally, the negative of max()
+
+//const float CPU_MIN_FLOAT = std::numeric_limits<float>::min();  // Minimum finite value
+//const float CPU_MAX_FLOAT = std::numeric_limits<float>::max();  // Maximum finite value
+//const float CPU_EPS_FLOAT = std::numeric_limits<float>::epsilon();  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
+//const float CPU_LOWEST_FLOAT = -CPU_MAX_FLOAT;  // For floating-point types: implementation-dependent; generally, the negative of max()
+
+
 using namespace std;
 
 // TODO: Remove this. Don't like here
@@ -65,15 +76,13 @@ typedef vector<int> tshape;
 class Tensor {
 private:
     // Load methods
-    static Tensor* load_from_bin(std::ifstream &ifs);
-    static Tensor* load_from_onnx(std::ifstream &ifs);
+    static Tensor* load_from_bin(std::ifstream &ifs, int start_row, int end_row);
     static Tensor* load_from_img(const string &filename, const string &format);
 //    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);  // Deprecated
 //    static Tensor* load_from_txt(std::ifstream &ifs, char delimiter, int headerRows);  // Deprecated
 
     // Save methods
     void save2bin(std::ofstream &ofs);
-    void save2onnx(std::ofstream &ofs);
     void save2img(const string &filename, string format);
 //    void save2numpy(const string &filename, string format);
     void save2txt(std::ofstream &ofs, const char delimiter, const vector<string> &header);
@@ -92,13 +101,14 @@ public:
 
     // Aux variables
     int gpu_device;
-    mutex *tsem = nullptr;  // Multithreading. Tensor semaphore
 
     // fpga-related information
-    int fpga_device;         // fpga device
-    void *fpga_ptr;          // open-cl buffer pointer to data
-    int fpga_tensor_id;      // for debuging and tracking tensors
-    long int fpga_size;      // buffer size (in elements)
+    int fpga_device;              // fpga device
+    void *fpga_ptr;               // open-cl buffer pointer to data
+    int fpga_tensor_id;           // for debuging and tracking tensors
+    long int fpga_size;           // buffer size (in elements)
+    int fpga_consistent_buffers;  // flag to avoid redundant reads from FPGA buffer to CPU buffer
+
 
     // Constructors
     /**
@@ -124,7 +134,7 @@ public:
     *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
     *  @return a tensor
     */
-    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=0);
+    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=nullptr);
 
     /**
     *  @brief Construct an uninitialized tensor
@@ -159,7 +169,7 @@ public:
     void updateShape(const vector<int> &new_shape);
     void updateSize();
     void updateStrides();
-    void updateData(float* ptr, void *ptr2=NULL,bool setshared=true);
+    void updateData(float* ptr, void *ptr2=nullptr, bool setshared=true);
     void deleteData();
 
     /**
@@ -176,6 +186,12 @@ public:
       *  @brief Clone a tensor to the GFPGA.
     */
     void toFPGA(int dev=DEV_FPGA);
+
+    /**
+      *  @brief Clone a tensor to a specific device.
+    */
+    void toDevice(int dev);
+
     /**
       *  @brief Check if the tensor is in CPU.
       *
@@ -217,7 +233,14 @@ public:
       *
       *  @return    string
     */
-    string getDeviceName();
+    string getDeviceName() const;
+
+    /**
+      *  @brief Returns the device name given a device number
+      *
+      *  @return    string
+    */
+    int getDeviceID(int dev) const;
 
     // Core
     vector<int> getShape();
@@ -237,10 +260,10 @@ public:
       *  @brief Load tensor from filestream.
       *
       *  @param ifs  Filestream
-      *  @param format    File format. Accepted formats are: bin, onnx, csv, tsv, txt.
+      *  @param format    File format. Accepted formats are: bin
       *  @return    Tensor
     */
-    static Tensor* loadfs(std::ifstream &ifs, string format="");
+    static Tensor* loadfs(std::ifstream &ifs, const string& format="");
 
     /**
       *  @brief Load tensor from file.
@@ -254,15 +277,15 @@ public:
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
 
-    /**
-      *  @brief Load data from a text file
-      *
-      *  @param filename  Name of the file to load the tensor from.
-      *  @param delimiter    Character used to separate the columns of the file.
-      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
-      *  @return    Tensor
-    */
-    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
+//    /**
+//      *  @brief Load data from a text file
+//      *
+//      *  @param filename  Name of the file to load the tensor from.
+//      *  @param delimiter    Character used to separate the columns of the file.
+//      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
+//      *  @return    Tensor
+//    */
+//    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
     /**
       *  @brief Load tensor from a void pointer.
@@ -272,13 +295,23 @@ public:
     */
     static Tensor* load_from_ptr(void * src);
 
+        /**
+      *  @brief Load a binary file from the row i to row j
+      *
+      *  @param filename  Name of the file to load the tensor from.
+      *  @param start_row  Index for the initial row (starts from 0)
+      *  @param end_row  Index for the last row (ends at n-1)
+      *  @return    Tensor
+    */
+    static Tensor* load_partial(const string& filename, int start_row=0, int end_row=-1);
+
     /**
       *  @brief Save tensor to a filestream.
       *
       *  @param ofs     Filestream.
       *  @param format    Format to use. The accepted formats are the following:
       *                     - Text: csv, tsv, txt
-      *                     - Other: bin, onnx
+      *                     - Other: bin
       *  @return    void
     */
     void savefs(std::ofstream &ofs, string format="");
@@ -303,7 +336,7 @@ public:
       *  @param header      Header rows.
       *  @return    void
     */
-    void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
+    void save2txt(const string& filename, char delimiter=',', const vector<string> &header={});
 
     /**
       *  @brief Save tensor to a void pointer.
@@ -385,6 +418,7 @@ public:
       *  @brief Create a tensor with the shape an device of the input tensor and filled with a specific value.
       *
       *  @param A  Input tensor from wich to take shape and device.
+      *  @param value  Value to use to fill the tensor
       *  @return     Value initialized A-shaped tensor
     */
     static Tensor* full_like(Tensor *A, float value);
@@ -456,8 +490,7 @@ public:
     /**
       *  @brief Create a tensor representing the identity matrix. Equivalent to calling function ``eye`` with ``offset = 0``.
       *
-      *  @param shape  Shape of the tensor to create.
-      *  @param value  Value to use to fill the tensor.
+      *  @param rows  Shape of the tensor to create.
       *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
       *  @return     Tensor of the specified shape filled with the value
     */
@@ -900,26 +933,26 @@ public:
 
     /**
     *   @brief In-place element-wise acos operation
-    *   @param A. The tensor where the operation is applied
-    *   @return A new tensor with abs applied over A
+    *   @return A new tensor with the result of acos operation
     */
     Tensor* acos();
 
     /**
     *   @brief Element-wise acos operation
+    *   @param A The tensor where the operation is applied
     *   @param B A new tensor with acos applied
     */
     static void acos(Tensor *A, Tensor *B);
 
     /**
     *   @brief In-place element-wise add operation of a tensor and a real value
-    *   @param v. The real number to add
+    *   @param v The real number to add
     */
     void add_(float v);
 
     /**
     *   @brief Element-wise add operation of a tensor and a real value
-    *   @param v. The real number to add
+    *   @param v The real number to add
     *   @return A new tensor with the sum
     */
     Tensor* add(float v);
@@ -1117,7 +1150,7 @@ public:
 
     /**
     *   @brief In-place element-wise division operation of two tensors
-    *   @param A. The tensor to divide by
+    *   @param A The tensor to divide by
     */
     void div_(Tensor* A); // this = this ./ A
 
@@ -1167,7 +1200,7 @@ public:
 
     /**
     *   @brief Element-wise floor operation.
-    *   @param A. The tensor where the operation is applied.
+    *   @param A The tensor where the operation is applied.
     *   @param B The output tensor.
     */
     static void floor(Tensor *A, Tensor *B);
@@ -1291,7 +1324,7 @@ public:
 
     /**
     *   @brief In-place multiplication operation of a tensor by a scalar.
-    *   @param v. The value to multiply by
+    *   @param v The value to multiply by
     */
     void mult_(float v);
 
@@ -1343,15 +1376,15 @@ public:
 
     /**
     *   @brief In-place element-wise normalization of values in a given range.
-    *   @param min. The lower bound of the new range
-    *   @param max. The upper bound of the new range
+    *   @param min The lower bound of the new range
+    *   @param max The upper bound of the new range
     */
     void normalize_(float min=0.0f, float max=1.0f);
 
     /**
     *   @brief In-place element-wise normalization of values in a given range.
-    *   @param min. The lower bound of the new range.
-    *   @param max. The upper bound of the new range.
+    *   @param min The lower bound of the new range.
+    *   @param max The upper bound of the new range.
     *   @return A tensor with the result.
     */
     Tensor* normalize(float min=0.0f, float max=1.0f);
@@ -1360,8 +1393,8 @@ public:
     *   @brief In-place element-wise normalization of values in a given range.
     *   @param A The tensor where the operation is applied.
     *   @param B The output tensor.
-    *   @param min. The lower bound of the new range
-    *   @param max. The upper bound of the new range
+    *   @param min The lower bound of the new range
+    *   @param max The upper bound of the new range
     */
     static void normalize(Tensor *A, Tensor *B, float min=0.0f, float max=1.0f);
 
@@ -1374,7 +1407,7 @@ public:
 
     /**
     *   @brief Element-wise power operation with base e.
-    *   @param exp. The exponent.
+    *   @param exp The exponent.
     *   @return A tensor with the result.
     */
     Tensor* pow(float exp);
@@ -1421,14 +1454,14 @@ public:
 
     /**
     *   @brief Element-wise reciprocal operation.
-    *   @param A. The tensor where the operation is applied.
+    *   @param A The tensor where the operation is applied.
     *   @param B A tensor with reciprocal(A), element-wise
     */
     static void reciprocal(Tensor *A, Tensor *B);
 
     /**
     *   @brief In-place element-wise reminder operation.
-    *   @param v. The real to divide A by
+    *   @param v The real to divide A by
     */
     void remainder_(float v);
 
@@ -1593,7 +1626,7 @@ public:
 
     /**
     *   @brief In-place element-wise substraction operation of two tensors.
-    *   @param A. The tensor to substract.
+    *   @param A The tensor to substract.
     */
     void sub_(Tensor* A); // this = this .- A
 
@@ -1816,8 +1849,7 @@ public:
     /**
     *   @brief Interchange two axes of an array.
     *   @param axis1 First axis.
-    *   @param destination Destination position for the original axis. These must also be unique
-    *   @return axis2 Second axis.
+    *   @param axis2 Destination position for the original axis. These must also be unique
     *   @return A new tensor with the result
     */
     Tensor* swapaxis(int axis1, int axis2);
@@ -1840,7 +1872,7 @@ public:
     /**
     *   @brief Set a new shape to a tensor.
     *   @param A The output vector where te reshape is stored.
-    *   @param dims A vector containing the new shape.
+    *   @param shape A vector containing the new shape.
     *   @return A new tensor with the result
     */
     static Tensor* reshape(Tensor *A, const vector<int> &shape);
@@ -1903,7 +1935,7 @@ public:
     /**
     *   @brief Returns a new tensor with a dimension of size one inserted at the specified position.
     *   @param A Output tensor where the unsqueeze is stored.
-*   @param axis the index at which to insert the singleton dimension. Default: axis=0
+    *   @param axis the index at which to insert the singleton dimension. Default: axis=0
     *   @return A new tensor with the result
     */
     static Tensor* unsqueeze(Tensor *A, int axis=0);
@@ -1944,6 +1976,7 @@ public:
     /**
 *   @brief Rotate the tensor. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
 *   @param angle The rotation angle in degrees.
+*   @param offset_center The center where to perform the rotation
 *   @param mode Must be one of the following:
 *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
 *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
@@ -1960,6 +1993,7 @@ public:
     *   @param A Input tensor.
     *   @param B Output tensor.
     *   @param angle The rotation angle in degrees.
+    *   @param offset_center The center where to perform the rotation
     *   @param mode Must be one of the following:
     *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
     *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
@@ -2207,6 +2241,7 @@ public:
     *   @brief Crop randomly the tensor.
     *   @param height Height of the crop (must be smaller than the original image)
     *   @param width Width of the crop (must be smaller than the original image)
+    *   @param cval
     *   @param keep_size Keep original size
     */
     Tensor* crop_random(int height, int width, float cval=0.0f, bool keep_size=false);
@@ -2352,68 +2387,72 @@ public:
 
     // Logic funcions: Truth value testing *****************************
 
+
     /**
       *  @brief Test whether all elements evaluate to True.
       *
-      *  @param A   Tensor to evaluate
       *  @return    bool
     */
+    bool all();
     static bool all(Tensor *A);
+    
 
     /**
       *  @brief Test whether any element evaluates to True.
       *
-      *  @param A   Tensor to evaluate
       *  @return    bool
     */
+    bool any();
     static bool any(Tensor *A);
+    
 
     // Logic funcions: Logical ops
 
     /**
       *  @brief Test element-wise for finiteness (not infinity or not Not a Number).
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isfinite();
     static void isfinite(Tensor *A, Tensor* B);
+    
 
     /**
       *  @brief Test element-wise for positive or negative infinity.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isinf();
     static void isinf(Tensor *A, Tensor* B);
+    
 
     /**
       *  @brief Test element-wise for Nan.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isnan();
     static void isnan(Tensor *A, Tensor* B);
+
+    bool anynan();
 
     /**
       *  @brief Test element-wise for negative infinity.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isneginf();
     static void isneginf(Tensor *A, Tensor* B);
+    
 
     /**
       *  @brief Test element-wise for positive infinity.
       *
-      *  @param A   Tensor to evaluate
-      *  @param B   Tensor to store the results of the test as booleans
-      *  @return    void
+      *  @return    Tensor with the results of the test as booleans
     */
+    Tensor* isposinf();
     static void isposinf(Tensor *A, Tensor* B);
+    
 
     // Logic funcions: Logical ops
 
@@ -2421,40 +2460,41 @@ public:
       *  @brief Compute the truth value of ``A and B`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param C   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_and(Tensor *A);
     static void logical_and(Tensor *A, Tensor *B, Tensor *C);
+    
 
     /**
       *  @brief Compute the truth value of ``A or B`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param C   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_or(Tensor *A);
     static void logical_or(Tensor *A, Tensor *B, Tensor *C);
+    
 
     /**
       *  @brief Compute the truth value of ``not A`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_not();
     static void logical_not(Tensor *A, Tensor *B);
+    
 
     /**
       *  @brief Compute the truth value of ``A xor B`` element-wise.
       *
       *  @param A   Tensor
-      *  @param B   Tensor
-      *  @param C   Tensor to store the results of the operation
-      *  @return    void
+      *  @return    Tensor with the result of the operation
     */
+    Tensor* logical_xor(Tensor *A);
     static void logical_xor(Tensor *A, Tensor *B, Tensor *C);
+    
 
     // Logic funcions: Comparison ops *****************************
 
@@ -2462,26 +2502,26 @@ public:
       *  @brief Returns True if two arrays accomplish, element-wise, the condition \f$|A-B| \leq atol+rtol\times|B|\f$
       *
       *  @param A   Input tensor.
-      *  @param B   Input tensor.
       *  @param rtol relative tolerance.
       *  @param atol absolute tolerance.
       *  @param equal_nan if ``True``, then two ``NaN``s will be considered equal.
-      *  @return    void
+      *  @return    boolean indicating if all elements in tensor hold the condition
     */
+    bool allclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
     static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
-
+    
     /**
       *  @brief Returns a boolean array where a position is true if elements in A and B accomplish \f$|A-B| \leq atol+rtol\times|B|\f$
       *
       *  @param A   Input tensor.
-      *  @param B   Input tensor.
-      *  @param C   Output tensor.
       *  @param rtol relative tolerance.
       *  @param atol absolute tolerance.
       *  @param equal_nan if ``True``, then two ``NaN``s will be considered equal.
-      *  @return    void
+      *  @return    boolean indicating if all elements in tensor hold the condition
     */
+    Tensor* isclose(Tensor *A, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
+    
 
     /**
       *  @brief Return the truth value of the input elements > ``v`` element-wise. In-place operation.
@@ -2801,6 +2841,7 @@ public:
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, vector<Tensor*> t, unsigned int axis);
 
+    static Tensor* stack(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.
@@ -3111,13 +3152,16 @@ public:
     static int sameShape(Tensor *A, Tensor *B);  // Previously named "Tensor::eqsize"
 
     /**
-    *   @brief Check if two tensors have the same contents given a threshold.
+    *   @brief Check if two tensors have the same contents given a threshold. (Note: absolute(a - b) <= (atol + rtol * absolute(b)))
     *   @param A Input tensor.
     *   @param B Input tensor.
-    *   @param epsilon Error threshold.
+    *   @param atol The absolute tolerance parameter
+    *   @param rtol The relative tolerance parameter
+    *   @param equal_nan If a NaN is considered equal to another Nan
+    *   @param verbose Prints the first mismatch
     *   @return 1 if they are equivalent, 0 otherwise.
     */
-    static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false);  // Previously named "Tensor::equal2"
+    static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false, bool verbose=true);  // Previously named "Tensor::equal2"
 
 };
 
@@ -3153,7 +3197,7 @@ template<typename T>
 /**
   *   @brief Load content from file to a tensor
   *   @param filename The file path.
-  *   @param format The format of the file. Supported image formats: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm, bin, onnx, npy, npz, csv, tsv, txt
+  *   @param format The format of the file. Supported image formats: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm, bin
   *   @return The initialized tensor
 */
 Tensor* Tensor::load(const string& filename, string format){
@@ -3173,14 +3217,8 @@ Tensor* Tensor::load(const string& filename, string format){
        format=="hdr" || format=="psd" || format=="tga" || format=="gif" ||
        format=="pic"  || format=="pgm"  || format=="ppm") { // Images
         t = Tensor::load_from_img(filename, format);
-    }else if(format=="bin" || format=="onnx"){
+    }else if(format=="bin"){
         t = Tensor::loadfs(ifs, format);
-    }else if(format=="npy" || format=="npz"){  // Deprecated
-        msg("Format deprecated in favor of python: *.'" + format + "'", "Tensor::load");
-//        t = Tensor::load_from_numpy<T>(filename, format);
-    }else if(format=="csv" || format=="tsv" || format=="txt"){  // Deprecated
-        msg("Format deprecated in favor of python: *.'" + format + "'", "Tensor::load");
-//        t = Tensor::loadfs(ifs, format);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load");
     }
@@ -3189,6 +3227,7 @@ Tensor* Tensor::load(const string& filename, string format){
     ifs.close();
     return t;
 }
+
 
 /**
     *   @brief Check if two tensors are compatible, it is, they are in the same device and have the same shape.

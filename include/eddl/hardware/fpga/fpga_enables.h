@@ -62,10 +62,13 @@
 //#define K_ENABLED_EQUAL2
 
 //Conv
-//#define K_ENABLED_CONV2D
+#define K_ENABLED_CONV2D 
+#define K_VERSION_CONV2D     1
+#define K_SUBVERSION_CONV2D  5
+
 //#define K_ENALBED_CONV2D_GRAD
 //#define K_ENABLED_CONV2D_BACK
-#define K_ENABLED_CONV2D_4x4
+//#define K_ENABLED_CONV2D_4x4
 //#define K_ENABLED_CONV2D_8x8
 
 //Core

@@ -1,8 +1,7 @@
 Training a CNN
 --------------
 
-This example trains and evaluates a simple convolutional neural network. Additionally, we perform some data
-augmentation to the input data.
+This example trains and evaluates a simple convolutional neural network. Additionally, we perform some data augmentation to the input data. `[source] <https://github.com/deephealthproject/eddl/blob/master/examples/nn/2_cifar10/2_cifar_conv_da.cpp>`__
 
 .. image:: /_static/images/models/cnn_da.svg
   :scale: 100%

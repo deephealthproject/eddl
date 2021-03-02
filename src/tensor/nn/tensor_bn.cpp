@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -111,7 +111,60 @@ namespace tensorNN {
           fpga_permute_batch_first(A, B);
         }
 #endif
-        PROFILING_FOOTER(permute_batch_last);
+        PROFILING_FOOTER(permute_batch_first);
+    }
+
+    void BatchNormForward(Tensor *input, Tensor *output, Tensor *opa,
+            Tensor *mean, Tensor *variance,
+            Tensor *bn_g, Tensor *bn_b,
+            Tensor *bn_mean, Tensor *bn_var,
+            bool trmode, float epsilon, float momentum)
+    {
+
+        if (input->isCPU()) {
+            cpu_batchnorm_forward(input->shape[0], input->shape[1],
+                input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
+                input->ptr, output->ptr, opa->ptr,
+                mean->ptr, variance->ptr,
+                bn_g != NULL ? bn_g->ptr : NULL,
+                bn_b != NULL ? bn_b->ptr : NULL,
+                bn_mean->ptr, bn_var->ptr, trmode, epsilon, momentum);
+        } else {
+#ifdef cGPU
+            gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],
+                input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
+                input->ptr, output->ptr, opa->ptr,
+                mean->ptr, variance->ptr,
+                bn_g != NULL ? bn_g->ptr : NULL,
+                bn_b != NULL ? bn_b->ptr : NULL,
+                bn_mean->ptr, bn_var->ptr, trmode, epsilon, momentum);
+#endif
+        }
+    }
+
+    void BatchNormBackward(Tensor *delta, Tensor *opa, Tensor *pdelta, Tensor *gbn_g,
+            Tensor *gbn_b, Tensor *bn_g, Tensor *bn_var,
+            Tensor *work1, Tensor *work2)
+    {
+        if (delta->isCPU()) {
+            cpu_batchnorm_backward(delta->shape[0], delta->shape[1],
+                delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
+                delta->ptr, opa->ptr, pdelta->ptr,
+                gbn_g != NULL ? gbn_g->ptr : NULL,
+                gbn_b != NULL ? gbn_b->ptr : NULL,
+                bn_g != NULL ? bn_g->ptr : NULL,
+                bn_var->ptr, work1->ptr, work2->ptr);
+        } else  {
+#ifdef cGPU
+            gpu_batchnorm_backward(delta->gpu_device, delta->shape[0], delta->shape[1],
+                delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
+                delta->ptr, opa->ptr, pdelta->ptr,
+                gbn_g != NULL ? gbn_g->ptr : NULL,
+                gbn_b != NULL ? gbn_b->ptr : NULL,
+                bn_g != NULL ? bn_g->ptr : NULL,
+                bn_var->ptr, work1->ptr, work2->ptr);
+#endif
+        }
     }
 
 }

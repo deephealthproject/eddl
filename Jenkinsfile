@@ -7,24 +7,24 @@ pipeline {
                     agent {
                         docker { 
                             label 'docker'
-                            image 'stal12/ubuntu18-gcc5'
+                            image 'pritt/base'
                         }
                     }
                     stages {
                         stage('Build') {
                             steps {
-								timeout(15) {
-									echo 'Building..'
-									cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
-								}
+                                timeout(60) {
+                                    echo 'Building..'
+                                    cmakeBuild buildDir: 'build', cmakeArgs: '-DBUILD_TARGET=CPU -DBUILD_SUPERBUILD=ON -DBUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                                }
                             }
                         }
                         stage('Test') {
                             steps {
-								timeout(15) {
-									echo 'Testing..'
-									ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
-								}
+                                timeout(15) {
+                                    echo 'Testing..'
+                                    ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
+                                }
                             }
                         }
                         stage('linux_end') {
@@ -41,18 +41,18 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-								timeout(15) {
-									echo 'Building..'
-									cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
-								}
+                                timeout(60) {
+                                    echo 'Building..'
+                                    cmakeBuild buildDir: 'build', cmakeArgs: '-DBUILD_TARGET=CPU -DBUILD_SHARED_LIBS=OFF -DBUILD_SUPERBUILD=ON -DBUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                                }
                             }
                         }
                         stage('Test') {
                             steps {
-								timeout(15) {
-									echo 'Testing..'
-									bat 'cd build && ctest -C Debug -VV'
-								}
+                                timeout(15) {
+                                    echo 'Testing..'
+                                    bat 'cd build && ctest -C Debug -VV'
+                                }
                             }
                         }
                         stage('windows_end') {
@@ -66,26 +66,26 @@ pipeline {
                     agent {
                         docker { 
                             label 'docker && gpu'
-                            image 'stal12/cuda10-gcc5'
+                            image 'pritt/base-cuda'
                             args '--gpus 1'
                         }
                     }
                     stages {
                         stage('Build') {
                             steps {
-								timeout(15) {
-									echo 'Building..'
-									cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TARGET=GPU -D BUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
-								}
-							}
+                                timeout(60) {
+                                    echo 'Building..'
+                                    cmakeBuild buildDir: 'build', cmakeArgs: '-DBUILD_TARGET=GPU -DBUILD_TESTS=ON -DBUILD_SUPERBUILD=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                                }
+                            }
                         }
                         stage('Test') {
                             steps {
-								timeout(15) {
-									echo 'Testing..'
-									ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
-								}
-							}
+                                timeout(15) {
+                                    echo 'Testing..'
+                                    ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
+                                }
+                            }
                         }
                         stage('linux_gpu_end') {
                             steps {
@@ -101,43 +101,23 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-								timeout(15) {
-									echo 'Building..'
-									cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TARGET=GPU -D BUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
-								}
+                                timeout(60) {
+                                    echo 'Building..'
+                                    cmakeBuild buildDir: 'build', cmakeArgs: '-DBUILD_TARGET=GPU -DBUILD_TESTS=ON -DBUILD_SUPERBUILD=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                                }
                             }
                         }
                         stage('Test') {
                             steps {
-								timeout(15) {
-									echo 'Testing..'
-									bat 'cd build && ctest -C Debug -VV'
-								}
+                                timeout(15) {
+                                    echo 'Testing..'
+                                    bat 'cd build && ctest -C Debug -VV'
+                                }
                             }
                         }
                         stage('windows_gpu_end') {
                             steps {
                                 echo 'Success!'
-                            }
-                        }
-                    }
-                }
-                stage('documentation') {
-                    when { 
-                        branch 'master' 
-                        beforeAgent true
-                    }
-                    agent {
-                        label 'windows && eddl_doxygen'
-                    }
-                    stages {
-                        stage('Update documentation') {
-                            steps {
-								timeout(15) {
-									bat 'cd docs\\doxygen && doxygen'
-									bat 'powershell -Command "(gc %EDDL_DOXYGEN_INPUT_COMMANDS%) -replace \'@local_dir\', \'docs\\build\\html\' | Out-File commands_out.txt"'
-									bat 'winscp /ini:nul /script:commands_out.txt'
-								}
                             }
                         }
                     }

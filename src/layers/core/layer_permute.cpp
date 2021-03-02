@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -74,11 +74,7 @@ Layer *LPermute::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LPermute::clone(int c, int bs, vector<Layer *> p, int todev) {
-    // Remove batch index
-    vector<int> dims_batch = vector<int>(sd->dims.begin()+1, sd->dims.end());
-    for(auto &d : dims_batch){ d-=1; }
-
-    auto *n = new LPermute(p[0], dims_batch,  name, todev, this->mem_level);
+    auto *n = new LPermute(p[0], sd->dims,  name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

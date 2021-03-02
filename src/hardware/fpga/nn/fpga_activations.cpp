@@ -24,33 +24,30 @@ extern cl::Context      context;
 // relu
 //
 void fpga_cpuemu_relu(Tensor *A, Tensor *B){
-  fpga_copy_from_fpga(A, A->ptr);
-  cpu_relu(A, B);
-  fpga_copy_to_fpga(B->ptr, B);
+    _profile(_CPU_RELU, 0);
+    fpga_copy_from_fpga(A, A->ptr, 0);
+    fpga_data_type *ptrA = (fpga_data_type *) A->ptr;
+    fpga_data_type *ptrB = (fpga_data_type *) B->ptr;
+#pragma omp parallel for
+    for (int i = 0; i < A->size; i++) {
+        if (ptrA[i] > fpga_data_type(0)) ptrB[i]= ptrA[i];
+        else ptrB[i] = fpga_data_type(0);
+    }
+    fpga_copy_to_fpga(B->ptr, B, 0);
+
+    _profile(_CPU_RELU, 1);
 }
 
 void fpga_relu(Tensor *A, Tensor *B){
+  _debug_fpga_funcs("ReLU");
   _profile_fpga(_FPGA_RELU, 0);
   _profile_fpga_tensor(A);
-#ifndef K_ENABLED_RELU
+  #ifndef K_ENABLED_RELU
   fpga_cpuemu_relu(A, B);
-#else
+  #else
+  
   cl_int err;
   cl::Event event;
-
-  // prueba
-/*  cl::Buffer b1;
-  cl::Buffer b2;
-  printf("1\n");
-  OCL_CHECK(err,b1 = cl::Buffer(context,CL_MEM_READ_WRITE, A->size*sizeof(float), NULL, &err));
-  printf("2\n");
-  OCL_CHECK(err,b2 = cl::Buffer(context,CL_MEM_READ_WRITE, B->size*sizeof(float), NULL, &err));
-  printf("3\n");
-  OCL_CHECK(err, err = kernel_relu.setArg(0, b1));
-  printf("4\n");
-  OCL_CHECK(err, err = kernel_relu.setArg(1, b2));
-  printf("5\n");
-  OCL_CHECK(err, err = kernel_relu.setArg(2, A->size));*/
 
   OCL_CHECK(err, err = kernel_relu.setArg(0, *(A->fpga_ptr)));
   OCL_CHECK(err, err = kernel_relu.setArg(1, *(B->fpga_ptr)));
@@ -60,7 +57,6 @@ void fpga_relu(Tensor *A, Tensor *B){
 
   //  event.wait();
   q.finish();
-
 #endif
   _profile_fpga_tensor(B);
   _profile_fpga(_FPGA_RELU, 1);
@@ -621,6 +617,7 @@ void fpga_cpuemu_softmax(Tensor *A, Tensor *B){
 }
 
 void fpga_softmax(Tensor *A, Tensor *B) {
+  _debug_fpga_funcs("softmax");
   _profile_fpga(_FPGA_SOFTMAX, 0);
 #ifndef K_ENABLED_SOFTMAX
   fpga_cpuemu_softmax(A, B);
@@ -643,6 +640,73 @@ void fpga_softmax(Tensor *A, Tensor *B) {
 }
 
 // -----------------------------------------------------------------
+// full softmax
+// softmax
+//
+void fpga_cpuemu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable) {
+
+  fpga_copy_from_fpga(A, A->ptr, 0);
+  fpga_data_type *ptrA = (fpga_data_type *)A->ptr;
+  fpga_data_type *ptrB = (fpga_data_type *)B->ptr;
+
+  int chuck_size = A->shape[axis];
+  int n_samples = A->size/chuck_size;
+  int inner_stride = A->stride[axis];
+  int sample_stride = chuck_size*A->stride[axis];
+  int k_stride = (chuck_size-1)*A->stride[axis];
+
+  #pragma omp parallel for
+  for(int si=0; si<n_samples; si++) {  // n chucks
+    int start_b = si % inner_stride + si/inner_stride * sample_stride;
+    int end_b = start_b + k_stride;
+
+    // Case: Shape=(100, 3, 5, 5); Stride=(75, 25, 5, 1)
+    // Action: 1) Remove dimensions (virtually), 2) Jump from your axis stride
+    // Example: 1) axis=1 => 0, 25, 75...   |   2) axis=2 => 0, 5, 10, 15,...
+    // for(int i=0; i<batch_stride; i+=A->stride[axis]){ ... }
+
+    // Numerical stability (opt.)
+    // stable => first value, no stable => 0.0f
+    fpga_data_type max_value = (fpga_data_type)CPU_LOWEST_FLOAT;
+    if (stable) {
+      for (int i = start_b; i <= end_b; i += inner_stride) {
+        if (ptrA[i] > max_value) { max_value = ptrA[i]; }
+      }
+    }
+
+    // Numerator
+    fpga_data_type denominator = (fpga_data_type)CPU_EPS_FLOAT;
+    for (int i = start_b; i <= end_b; i += inner_stride) {
+      fpga_data_type value = ::expf(ptrA[i] - max_value);  // Highest number should be zero
+      ptrB[i] = value;
+      denominator += value;
+    }
+
+    // Softmax
+    for (int i = start_b; i <= end_b; i += inner_stride) {
+      ptrB[i] /= denominator;
+    }
+  }
+
+  fpga_copy_to_fpga(B->ptr, B, 0);
+}
+
+void fpga_full_softmax(Tensor *A, Tensor *B, int axis, bool stable) {
+  _debug_fpga_funcs("(full)softmax");
+  _profile_fpga(_FPGA_SOFTMAX, 0);
+#ifndef K_ENABLED_SOFTMAX
+  fpga_cpuemu_full_softmax(A, B, axis, stable);
+#else
+  printf("kernel full softmax not implemented yet\n");
+  exit(1);
+#endif
+  _profile_fpga(_FPGA_SOFTMAX, 1);
+  _profile_fpga_tensor(A);
+  _profile_fpga_tensor(B);
+}
+
+
+// -----------------------------------------------------------------
 // d_softmax
 //
 void fpga_cpuemu_d_softmax(Tensor *D, Tensor *I, Tensor *PD){
@@ -654,7 +718,7 @@ void fpga_cpuemu_d_softmax(Tensor *D, Tensor *I, Tensor *PD){
 
 void fpga_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
  _profile_fpga(_FPGA_D_SOFTMAX, 0);
-  PD->tsem->lock();
+
 #ifndef K_ENABLED_D_SOFTMAX
   fpga_cpuemu_d_softmax(D, I, PD);
 #else
@@ -669,7 +733,7 @@ void fpga_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_d_softmax, NULL, &event));
   q.finish();
 #endif
-  PD->tsem->unlock();
+
   _profile_fpga(_FPGA_D_SOFTMAX, 1);
 }
 

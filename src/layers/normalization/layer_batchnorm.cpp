@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -40,6 +40,8 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     output=new Tensor(input->getShape(),dev);
     opa=new Tensor(input->getShape(),dev);
+    work1 = new Tensor(shape, dev);
+    work2 = new Tensor(shape, dev);
 
     mean=new Tensor(shape,dev);
     mean->fill_(0.0);
@@ -63,6 +65,42 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
         gradients.push_back(gbn_g);
         gradients.push_back(gbn_b);
     }
+#ifdef cCUDNN
+     if(!input->isCPU()){
+      data_type = CUDNN_DATA_FLOAT;
+      tensor_format = CUDNN_TENSOR_NCHW;
+      bn_mode =(input->ndim > 2) ? CUDNN_BATCHNORM_SPATIAL : CUDNN_BATCHNORM_PER_ACTIVATION;
+      
+      cudnnCreateTensorDescriptor(&xDesc);
+      cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                 input->shape[0],input->shape[1],
+                 (input->shape.size()>2) ? input->shape[2] : 1,
+                 (input->shape.size()>3) ? input->shape[3] : 1);
+      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor x "<< cudnnGetErrorString(bbb) <<std::endl;
+      
+      cudnnCreateTensorDescriptor(&yDesc);
+      bbb = cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                 output->shape[0],output->shape[1],
+                 (output->shape.size()>2) ? output->shape[2] : 1,
+                 (output->shape.size()>3) ? output->shape[3] : 1);
+      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor y "<< cudnnGetErrorString(bbb) <<std::endl;
+      
+      cudnnCreateTensorDescriptor(&bnScaleBiasMeanVarDesc);
+      if(bn_mode == CUDNN_BATCHNORM_SPATIAL){
+      bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
+                 1,output->shape[1],
+                 1, 1);
+      }
+      else{
+      bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
+                 1,output->shape[1],
+                 (output->shape.size()>2) ? output->shape[2] : 1,
+                 (output->shape.size()>3) ? output->shape[3] : 1);
+
+      }
+      exponentialAverageFactor = 1.0 - this->momentum;
+   }
+#endif
 
     // no trainable:
     params.push_back(mean);
@@ -76,6 +114,8 @@ LBatchNorm::~LBatchNorm(){
     delete bn_mean;
     delete bn_var;
     delete opa; //output pre-affine
+    delete work1;
+    delete work2;
 }
 
 // override functions:
@@ -97,6 +137,20 @@ void LBatchNorm::resize(int batch){
         opa->reshape_(output->getShape());
         output->resize(batch);
         opa->resize(batch);
+#ifdef cCUDNN
+        if(!input->isCPU()){
+        cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                                                       batch,input->shape[1],
+                                                       (input->shape.size()>2) ? input->shape[2] : 1,
+                                                       (input->shape.size()>3) ? input->shape[3] : 1);
+        if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor x "<< cudnnGetErrorString(bbb) <<std::endl;
+        bbb = cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                                         batch,output->shape[1],
+                                         (output->shape.size()>2) ? output->shape[2] : 1,
+                                         (output->shape.size()>3) ? output->shape[3] : 1);
+        if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor y "<< cudnnGetErrorString(bbb) <<std::endl;
+}
+#endif
     }
 }
 
@@ -107,117 +161,179 @@ void LBatchNorm::forward() {
     // Input = Output = opa = {Batch,Channels,H,W} OR {Batch,Dim}
     // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
 
-    int M,N;
-    int b,z,r,c,d;
-    Tensor *in;
+    if ((input->isCPU())||(input->isFPGA())) {
 
-    if (input->ndim==2) {
-        N=b=input->shape[0];
-        M=d=input->shape[1];
-        in=input->clone();
+    // new implementation for CPU / GPU
+     if (input->isCPU()) {
+        tensorNN::BatchNormForward(input, output, opa, mean, variance,
+                affine ? bn_g : NULL, affine ? bn_b : NULL,
+                bn_mean, bn_var, mode == TRMODE, epsilon, momentum);
+    } else {
+        int M,N;
+        int b,z,r,c,d;
+        Tensor *in;
+
+        if (input->ndim==2) {
+            N=b=input->shape[0];
+            M=d=input->shape[1];
+            in=input->clone();
+        }
+        else {
+            b=input->shape[0];
+            M=z=input->shape[1];
+            r=input->shape[2];
+            c=input->shape[3];
+            N=b*r*c;
+
+            in=new Tensor({b*r*c*z},input->device);
+            tensorNN::permute_channels_last(input,in);
+            in->reshape_({N,M});
+            opa->reshape_({N,M});
+        }
+
+        BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
+
+
+        Tensor::copy(in,opa);
+        if (affine) {
+            Tensor *var=new Tensor({N,M},input->device);
+            Tensor *ones=new Tensor({N,1},input->device);
+            ones->fill_(1.0);
+
+            // apply affine transform in=gamma*in+beta
+            rmult(in,bn_g,ones,var);
+            rsum(in,bn_b,ones,var);
+            delete var;
+            delete ones;
+        }
+
+        // copy in to ouput
+        if (input->ndim==4) {
+            tensorNN::permute_channels_first(in,output);
+        }
+        else Tensor::copy(in,output);
+
+
+        delete in;
     }
-    else {
-        b=input->shape[0];
-        M=z=input->shape[1];
-        r=input->shape[2];
-        c=input->shape[3];
-        N=b*r*c;
 
-        in=new Tensor({b*r*c*z},input->device);
-        tensorNN::permute_channels_last(input,in);
-        in->reshape_({N,M});
-        opa->reshape_({N,M});
     }
+    else { // GPU
+#ifdef cCUDNN
+    float alpha = 1.0;
+    float beta = 0.0;
 
-    BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
+    cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(hdnn[input->gpu_device], bn_mode, &alpha, &beta,
+                                                             xDesc, input->ptr, yDesc, output->ptr,
+                                                             bnScaleBiasMeanVarDesc, bn_g->ptr, bn_b->ptr,
+                                                             exponentialAverageFactor, mean->ptr, variance->ptr, epsilon,
+                                                             bn_mean->ptr, bn_var->ptr);
+    if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error fwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;        
+#else
+    tensorNN::BatchNormForward(input, output, opa, mean, variance,
+                affine ? bn_g : NULL, affine ? bn_b : NULL,
+                bn_mean, bn_var, mode == TRMODE, epsilon, momentum);
+#endif
 
-
-    Tensor::copy(in,opa);
-    if (affine) {
-        Tensor *var=new Tensor({N,M},input->device);
-        Tensor *ones=new Tensor({N,1},input->device);
-        ones->fill_(1.0);
-
-        // apply affine transform in=gamma*in+beta
-        rmult(in,bn_g,ones,var);
-        rsum(in,bn_b,ones,var);
-        delete var;
-        delete ones;
     }
-
-    // copy in to ouput
-    if (input->ndim==4) {
-        tensorNN::permute_channels_first(in,output);
-    }
-    else Tensor::copy(in,output);
-
-
-    delete in;
-}
+}      
 
 void LBatchNorm::backward(){
-    int M,N;
-    int b,z,r,c,d;
 
-    Tensor *dp;
+    //std::cout<<"BN layer BWD: "<< this->name <<std::endl;
+     if ((input->isCPU())||(input->isFPGA())) {
+        // new implementation for CPU 
+        if (input->isCPU()) {
+            tensorNN::BatchNormBackward(delta, opa, parent[0]->delta,
+                affine ? gbn_g : NULL, affine ? gbn_b : NULL, affine ? bn_g : NULL,
+                bn_var, work1, work2);
+        } else
+        {
 
-    if (input->ndim==2) {
-        N=b=input->shape[0];
-        M=d=input->shape[1];
+            int M,N;
+            int b,z,r,c,d;
 
-        dp=delta->clone();
+            Tensor *dp;
+
+            if (input->ndim==2) {
+                N=b=input->shape[0];
+                M=d=input->shape[1];
+
+                dp=delta->clone();
+            }
+            else {
+                b=input->shape[0];
+                M=z=input->shape[1];
+                r=input->shape[2];
+                c=input->shape[3];
+
+                N=b*r*c;
+
+                // permute input and delta
+                dp=new Tensor({b,r,c,z},input->device);
+
+                tensorNN::permute_channels_last(delta,dp);
+
+                dp->reshape_({N,M});
+
+            }
+
+            // Affine
+            if (affine) {
+                Tensor *A=new Tensor({N,M},delta->device);
+                Tensor *ones=new Tensor({N},delta->device);
+                ones->fill_(1.0);
+                Tensor *m=new Tensor({1,M},delta->device);
+                //1 gamma
+                Tensor::el_mult(dp,opa,A,0);
+                cmean(A,m,ones);
+                Tensor::add(1,gbn_g,1,m,gbn_g,1);
+
+                //2 Beta
+                cmean(dp,m,ones);
+                Tensor::add(1,gbn_b,1,m,gbn_b,1);
+
+                // delta=dE/dY
+                // Obtain dE/dY from delta:
+                rmult(dp,bn_g,ones,A);
+                delete A;
+                delete ones;
+                delete m;
+            }
+
+            BN_backward(dp,bn_var,opa);
+
+            // Inc parent delta
+            if (input->ndim==4) {
+                tensorNN::permute_channels_first(dp,delta);
+                Tensor::inc(delta, parent[0]->delta);
+            }
+            else Tensor::inc(dp, parent[0]->delta);
+
+            delete dp;
+
+        }
     }
-    else {
-        b=input->shape[0];
-        M=z=input->shape[1];
-        r=input->shape[2];
-        c=input->shape[3];
+    else {  //GPU
+    #ifdef cCUDNN
+      float alphaDataDiff = 1.0;
+      float betaDataDiff = 0.0;
+      float alphaParamDiff = 1.0;
+      float betaParamDiff = 0.0;
 
-        N=b*r*c;
 
-        // permute input and delta
-        dp=new Tensor({b,r,c,z},input->device);
-
-        tensorNN::permute_channels_last(delta,dp);
-
-        dp->reshape_({N,M});
+      cudnnStatus_t nnn= cudnnBatchNormalizationBackward(hdnn[input->gpu_device], bn_mode, &alphaDataDiff, &betaDataDiff, &alphaParamDiff, &betaParamDiff, xDesc, input->ptr,
+                                                         yDesc, delta->ptr, xDesc, parent[0]->delta->ptr,
+                                                         bnScaleBiasMeanVarDesc,bn_g->ptr, gbn_g->ptr, gbn_b->ptr,
+                                                         epsilon, bn_mean->ptr, bn_var->ptr);
+    if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;
+#else  
+    tensorNN::BatchNormBackward(delta, opa, parent[0]->delta,
+            affine ? gbn_g : NULL, affine ? gbn_b : NULL, affine ? bn_g : NULL,
+            bn_var, work1, work2);
+#endif
 
     }
-
-    // Affine
-    if (affine) {
-        Tensor *A=new Tensor({N,M},delta->device);
-        Tensor *ones=new Tensor({N},delta->device);
-        ones->fill_(1.0);
-        Tensor *m=new Tensor({1,M},delta->device);
-        //1 gamma
-        Tensor::el_mult(dp,opa,A,0);
-        cmean(A,m,ones);
-        Tensor::add(1,gbn_g,1,m,gbn_g,1);
-
-        //2 Beta
-        cmean(dp,m,ones);
-        Tensor::add(1,gbn_b,1,m,gbn_b,1);
-
-        // delta=dE/dY
-        // Obtain dE/dY from delta:
-        rmult(dp,bn_g,ones,A);
-        delete A;
-        delete ones;
-        delete m;
-    }
-
-    BN_backward(dp,bn_var,opa);
-
-    // Inc parent delta
-    if (input->ndim==4) {
-        tensorNN::permute_channels_first(dp,delta);
-        Tensor::inc(delta, parent[0]->delta);
-    }
-    else Tensor::inc(dp, parent[0]->delta);
-
-    delete dp;
-
 }
 
 

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -241,24 +241,30 @@ void cpu_softmax(Tensor *A, Tensor *B) {
 
 void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
     _profile(_CPU_D_SOFTMAX, 0);
-    PD->tsem->lock();
+
 
 #pragma omp parallel for
     for (int i = 0; i < D->size; i++)
         PD->ptr[i] += D->ptr[i] * (I->ptr[i] * (1.0 - I->ptr[i]));
 
-    PD->tsem->unlock();
+
     _profile(_CPU_D_SOFTMAX, 1);
 }
 
 
 void cpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable){
-    if(axis==1){
-        cpu_full_softmax_batched(A, B, stable);
-    }else{ msg("Not implemented Error", "cpu_full_softmax"); }
+    _profile(_CPU_SOFTMAX, 0);
+    cpu_full_softmax_nd(A, B, axis, stable);
+//
+//    if(axis==1 && A->ndim==2){  // TODO: Temp. This should be generic for n-dimensions
+//        cpu_full_softmax_batched_2d(A, B, stable);
+//    }else{
+//        cpu_full_softmax_nd(A, B, axis, stable);
+//    }
+    _profile(_CPU_SOFTMAX, 1);
 }
 
-void cpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable){
+void cpu_full_softmax_batched_2d(Tensor *A, Tensor *B, bool stable){
     int n_batches = A->shape[0];
     int n_features = A->shape[1];
 
@@ -270,7 +276,7 @@ void cpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable){
 
         // Numerical stability (opt.)
         // stable => first value, no stable => 0.0f
-        float max_value = 0.0f;
+        float max_value = CPU_LOWEST_FLOAT;
         if(stable){
             for(int j=start; j<end; j++){
                 if (A->ptr[j] > max_value) { max_value = A->ptr[j]; }
@@ -278,7 +284,7 @@ void cpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable){
         }
 
         // Numerator
-        float denominator = 0.0f;
+        float denominator = CPU_EPS_FLOAT;
         for(int j=start; j<end; j++){
             float value = ::expf(A->ptr[j] - max_value);
             B->ptr[j] = value;
@@ -292,13 +298,61 @@ void cpu_full_softmax_batched(Tensor *A, Tensor *B, bool stable){
     }
 }
 
-void cpu_d_full_softmax(Tensor *D, Tensor *I, Tensor *PD, int axis) {
-    if(axis==1){
-        cpu_d_full_softmax_batched(D, I, PD);
-    }else{ msg("Not implemented Error", "cpu_d_full_softmax"); }
+
+void cpu_full_softmax_nd(Tensor *A, Tensor *B, int axis, bool stable){
+    int chuck_size = A->shape[axis];
+    int n_samples = A->size/chuck_size;
+    int inner_stride = A->stride[axis];
+    int sample_stride = chuck_size*A->stride[axis];
+    int k_stride = (chuck_size-1)*A->stride[axis];
+
+
+    #pragma omp parallel for
+    for(int si=0; si<n_samples; si++) {  // n chucks
+            int start_b = si % inner_stride + si/inner_stride * sample_stride;
+            int end_b = start_b + k_stride;
+
+            // Case: Shape=(100, 3, 5, 5); Stride=(75, 25, 5, 1)
+            // Action: 1) Remove dimensions (virtually), 2) Jump from your axis stride
+            // Example: 1) axis=1 => 0, 25, 75...   |   2) axis=2 => 0, 5, 10, 15,...
+            // for(int i=0; i<batch_stride; i+=A->stride[axis]){ ... }
+
+
+            // Numerical stability (opt.)
+            // stable => first value, no stable => 0.0f
+            float max_value = CPU_LOWEST_FLOAT;
+            if (stable) {
+                for (int i = start_b; i <= end_b; i += inner_stride) {
+                    if (A->ptr[i] > max_value) { max_value = A->ptr[i]; }
+                }
+            }
+
+            // Numerator
+            float denominator = CPU_EPS_FLOAT;
+            for (int i = start_b; i <= end_b; i += inner_stride) {
+                float value = ::expf(A->ptr[i] - max_value);  // Highest number should be zero
+                B->ptr[i] = value;
+                denominator += value;
+            }
+
+            // Softmax
+            for (int i = start_b; i <= end_b; i += inner_stride) {
+                B->ptr[i] /= denominator;
+            }
+    }
 }
 
-void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD) {
+void cpu_d_full_softmax(Tensor *D, Tensor *I, Tensor *PD, int axis) {
+    cpu_d_full_softmax_nd(D, I, PD, axis);
+//
+//    if(axis==1 && D->ndim==2){
+//        cpu_d_full_softmax_batched_2d(D, I, PD);
+//    }else{
+//        cpu_d_full_softmax_nd(D, I, PD, axis);
+//    }
+}
+
+void cpu_d_full_softmax_batched_2d(Tensor *D, Tensor *I, Tensor *PD) {
     Tensor* SM = I; // Alias (softmax)
 
     int n_batches = D->shape[0];
@@ -311,17 +365,45 @@ void cpu_d_full_softmax_batched(Tensor *D, Tensor *I, Tensor *PD) {
 
         // 1) Compute Jacobbian matrix: DS=[ NxN ]  // DjSi
         // 2) Compute delta: D * DS = (1,n)x(n,n)=(1,n)
-        // 2.1) Dot product: D0*DS0,0 + D1*DS0,1 + D2*DS0,2 + ...
+        // 2.1) Dot product: PD[i] = Dj*DjSi = D0*D0Di + D1*D1Di + ... Dn*DnSi
         for(int i=0; i<n_features; i++){  // Rows
             for(int j=0; j<n_features; j++){  // Cols
 
                 // Derivative
-                float DjSi = SM->ptr[start+i] * ((float)(i==j) - SM->ptr[start+j]);
+                float DjSi = SM->ptr[start+i] * (float)(i==j) - SM->ptr[start+j]*SM->ptr[start+i];
+                PD->ptr[start+i] += D->ptr[start+j] * DjSi;
 
-                // Dot product: Dj=D*DS[:, j]
-                // "i" trick. Technically, PD is (1, n) but I can consider it as (n, 1) without reshaping it
-                D->ptr[start+j] += PD->ptr[start+i] * DjSi;
             }
         }
     }
+}
+
+void cpu_d_full_softmax_nd(Tensor *D, Tensor *I, Tensor *PD, int axis) {
+    Tensor* SM = I; // Alias (softmax)
+
+    int chuck_size = D->shape[axis];
+    int n_samples = D->size/chuck_size;
+    int inner_stride = D->stride[axis];
+    int sample_stride = chuck_size*D->stride[axis];
+    int k_stride = (chuck_size-1)*D->stride[axis];
+
+    #pragma omp parallel for
+    for(int si=0; si<n_samples; si++) {  // n chucks
+        int start_b = si % inner_stride + si/inner_stride * sample_stride;
+        int end_b = start_b + k_stride;
+
+        // 1) Compute Jacobbian matrix: DS=[ NxN ]  // DjSi
+        // 2) Compute delta: D * DS = (1,n)x(n,n)=(1,n)
+        // 2.1) Dot product: PD[i] = Dj*DjSi = D0*D0Di + D1*D1Di + ... Dn*DnSi
+        for (int i = start_b; i <= end_b; i += inner_stride) {  // Rows
+            for (int j = start_b; j <= end_b; j += inner_stride) {  // Cols
+
+                // Derivative
+                float DjSi = SM->ptr[i] * (float)(i==j) - SM->ptr[j]*SM->ptr[i];
+                PD->ptr[i] += D->ptr[j] * DjSi;
+
+            }
+        }
+    }
+
 }

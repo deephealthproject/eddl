@@ -14,6 +14,8 @@
 
 using namespace eddl;
 
+// Fast check for GPU: CS_GP-U({1}, "low_mem")
+// Fast check for CPU: CS_CP-U()
 
 TEST(NetTestSuite, memory_leaks_select){
     layer in=Input({3, 32, 32});
@@ -44,7 +46,7 @@ TEST(NetTestSuite, net_delete_mnist_mlp){
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -72,7 +74,7 @@ TEST(NetTestSuite, net_delete_mnist_initializers){
     // Build model
     build(net,
           sgd(0.01, 0.9), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -101,7 +103,7 @@ TEST(NetTestSuite, net_delete_mnist_regularizers){
     // Build model
     build(net,
           sgd(0.01, 0.9), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -137,7 +139,7 @@ TEST(NetTestSuite, net_delete_mnist_da){
     // Build model
     build(net,
           sgd(0.01, 0.9), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -170,7 +172,7 @@ TEST(NetTestSuite, net_delete_mnist_conv){
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -199,7 +201,7 @@ TEST(NetTestSuite, net_delete_mnist_rnn){
     // Build model
     build(net,
           rmsprop(0.001), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -229,7 +231,7 @@ TEST(NetTestSuite, net_delete_mnist_conv1D){
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -238,84 +240,6 @@ TEST(NetTestSuite, net_delete_mnist_conv1D){
     ASSERT_TRUE(true);
 }
 
-TEST(NetTestSuite, net_delete_mnist_auto_encoder_merging){
-    // Define encoder
-    layer in = Input({784});
-    layer l = in;  // Aux var
-
-    l = Activation(Dense(l, 256), "relu");
-    l = Activation(Dense(l, 128), "relu");
-    layer out = Activation(Dense(l, 64), "relu");
-
-    model encoder = Model({in}, {out});
-
-    // Define decoder
-    in = Input({64});
-    l = Activation(Dense(in, 128), "relu");
-    l = Activation(Dense(l, 256), "relu");
-
-    out = Sigmoid(Dense(l, 784));
-
-    model decoder = Model({in}, {out});
-
-    // Merge both models into a new one
-    model net = Model({encoder,decoder});
-
-    // Build model
-    build(net,
-          adam(0.0001), // Optimizer
-          {"mse"}, // Losses
-          {"dice"}, // Metrics
-          CS_CPU()
-    );
-    delete net;
-
-    ASSERT_TRUE(true);
-}
-
-TEST(NetTestSuite, net_delete_mnist_siamese){
-    // ERROR => malloc_consolidate(): invalid chunk size
-    layer in1 = Input({784});
-    layer in2 = Input({784});
-
-    // base model
-    layer in = Input({784});
-    layer l = Activation(Dense(in, 256), "relu");
-    l = Activation(Dense(l, 128), "relu");
-
-    model enc=Model({in},{l});
-    setName(enc,"enc");
-
-    in = Input({128});
-    layer out = Activation(Dense(in, 64), "relu");
-
-    model dec=Model({in},{out});
-    setName(dec,"dec");
-
-    model base = Model({enc,dec});
-    setName(base,"base");
-
-    layer out1 = getLayer(base,{in1});
-    layer out2 = getLayer(base,{in2});
-
-    l=Diff(out1,out2);
-    l=ReLu(Dense(l,256));
-    layer outs=Sigmoid(Dense(l,784));
-
-    model siamese=Model({in1,in2},{outs});
-    setName(siamese,"siamese");
-
-    // Build model
-    build(siamese,
-          adam(0.0001), // Optimizer
-          {"dice"}, // Losses
-          {"dice"}, // Metrics
-          CS_CPU()
-    );
-    delete siamese;
-
-    ASSERT_TRUE(true);
-}
 
 
 // Auxiliary function for: net_delete_cifar_resnet50_da_bg
@@ -389,7 +313,7 @@ TEST(NetTestSuite, net_delete_cifar_resnet50_da_bg){
     // Build model
     build(net,
           sgd(0.001,0.9), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -450,13 +374,16 @@ layer UNetWithPadding(layer x, bool use_concat){
 
 TEST(NetTestSuite, net_delete_drive_seg_da) {
 
+    int input_size = 584/4;
+    int crop_size = 512/4;
+
     // Network for Data Augmentation
-    layer in1=Input({3,584,584});
-    layer in2=Input({1,584,584});
+    layer in1=Input({3,input_size,input_size});
+    layer in2=Input({1,input_size,input_size});
 
     layer l=Concat({in1,in2});   // Cat image and mask
     l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
-    l= CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
+    l= CenteredCrop(l,{crop_size,crop_size});         // Crop to work with sizes power 2
     layer img=Select(l,{"0:3"}); // UnCat [0-2] image
     layer mask=Select(l,{"3"});  // UnCat [3] mask
     // Both, image and mask, have the same augmentation
@@ -469,37 +396,42 @@ TEST(NetTestSuite, net_delete_drive_seg_da) {
     delete danet;
 }
 
-//TEST(NetTestSuite, net_delete_drive_seg_concat) {
-//    // Build SegNet
-//    bool use_concat = true;
-//    layer in=Input({3,512,512});
-//    layer out=Sigmoid(UNetWithPadding(in, use_concat));
-//    model segnet=Model({in},{out});
-//    build(segnet,
-//          adam(0.00001), // Optimizer
-//          {"mse"}, // Losses
-//          {"mse"}, // Metrics
-//          CS_CPU(-1)
-//    );
-//    delete segnet;
-//}
+TEST(NetTestSuite, net_delete_drive_seg_concat) {
+    int input_size = 584/4;
+    int crop_size = 512/4;
 
-//
-//TEST(NetTestSuite, net_delete_drive_seg_sum){
-//
-//    // Build SegNet
-//    bool use_concat = false;
-//    layer in=Input({3,512,512});
-//    layer out=Sigmoid(UNetWithPadding(in, use_concat));
-//    model segnet=Model({in},{out});
-//    build(segnet,
-//          adam(0.00001), // Optimizer
-//          {"mse"}, // Losses
-//          {"mse"}, // Metrics
-//          CS_CPU(-1)
-//    );
-//    delete segnet;
-//}
+    // Build SegNet
+    bool use_concat = true;
+    layer in=Input({3,crop_size,crop_size});
+    layer out=Sigmoid(UNetWithPadding(in, use_concat));
+    model segnet=Model({in},{out});
+    build(segnet,
+          adam(0.00001), // Optimizer
+          {"mse"}, // Losses
+          {"mse"}, // Metrics
+          CS_CPU()
+    );
+    delete segnet;
+}
+
+
+TEST(NetTestSuite, net_delete_drive_seg_sum){
+    int input_size = 584/4;
+    int crop_size = 512/4;
+
+    // Build SegNet
+    bool use_concat = false;
+    layer in=Input({3,crop_size,crop_size});
+    layer out=Sigmoid(UNetWithPadding(in, use_concat));
+    model segnet=Model({in},{out});
+    build(segnet,
+          adam(0.00001), // Optimizer
+          {"mse"}, // Losses
+          {"mse"}, // Metrics
+          CS_CPU()
+    );
+    delete segnet;
+}
 
 
 
@@ -526,7 +458,7 @@ TEST(NetTestSuite, net_delete_nlp_sentiment_rnn){
     // Build model
     build(net,
           opt, // Optimizer
-          {"cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"binary_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -558,7 +490,7 @@ TEST(NetTestSuite, net_delete_nlp_sentiment_lstm){
     // Build model
     build(net,
           opt, // Optimizer
-          {"cross_entropy"}, // Losses
+          {"categorical_cross_entropy"}, // Losses
           {"binary_accuracy"}, // Metrics
           CS_CPU()
     );
@@ -567,37 +499,5 @@ TEST(NetTestSuite, net_delete_nlp_sentiment_lstm){
 
 
 TEST(NetTestSuite, net_delete_nlp_machine_translation){
-    // ERROR => malloc_consolidate(): invalid chunk size
-    int invs=687;
-    int outvs=514;
-    int embedding=64;
 
-    // Encoder
-    layer in = Input({1}); //1 word
-    layer l = in;
-
-    layer lE = Dropout(RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05),0.5); // mask_zeros=true
-    layer enc = LSTM(lE,128,true);  // mask_zeros=true
-
-    // Decoder
-    layer ld=Input({outvs});
-    ld = ReduceArgMax(ld,{0});
-    ld = RandomUniform(Embedding(ld, outvs, 1,embedding),-0.05,0.05);
-
-    l = Decoder(LSTM(ld,128),enc);
-    layer out = Softmax(Dense(l, outvs));
-
-    model net = Model({in}, {out});
-
-    optimizer opt=adam(0.01);
-    //opt->set_clip_val(0.01);
-
-    // Build model
-    build(net,
-          opt, // Optimizer
-          {"soft_cross_entropy"}, // Losses
-          {"accuracy"}, // Metrics
-          CS_CPU()
-    );
-    delete net;
 }

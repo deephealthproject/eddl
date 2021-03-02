@@ -17,13 +17,42 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"
+#include <ap_fixed.h>                       // Aproximated precision fixed point support
+#include <ap_int.h>                         // Aproximated precision integer support
+
 
 extern cl::CommandQueue *q;
 
-#define FPGA_DEBUG
+//#define FPGA_DEBUG
+//#define FPGA_DEBUG_TENSORS
+//#define FPGA_DEBUG_FUNCS
 //#define FPGA_DEBUG_VERBOSE
 
 #include "eddl/hardware/fpga/fpga_enables.h"
+
+
+// ----------------------------------------------------------------------------------------------------------
+// Precision support
+//
+// data_type is the basic precision format used for tensors in FPGA
+//
+// Three supported formats:
+//  - float. This format has been tested and works well within EDDL. Indeed, is the single format used by EDDL
+//  - ap_fixed. This format is under test. Aproximated precision fixed point format
+//  - ap_int. This format is under test. Aproximated precision integer
+//
+// The PRECISION_CONVERSION define must be set if either ap_fixed or ap_int formats are used. This define
+// enables the precision conversion from CPU to FPGA and viceversa. Whenever a tensor is read or written
+// from/to the FPGA the precision conversion is performed on a temporary CPU buffer.
+// If float precision is used, then PRECISION_CONVERSION should not be used
+//
+#define PRECISION_CONVERSION
+//#define fpga_data_type float
+//#define fpga_data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
+#define fpga_data_type ap_int<8>
+
+// Debug functions
+void _debug_fpga_funcs(const char *str);
 
 
 // activation kernels (24)
@@ -52,9 +81,8 @@ extern cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 extern cl::Kernel kernel_select_nn,   kernel_select_back_nn, kernel_set_select_back_nn, kernel_set_select_nn;
 
 // conv kernels (3)
-extern cl::Kernel kernel_im2col,      kernel_conv2d;
-extern cl::Kernel kernel_conv2D_4x4;
-extern cl::Kernel kernel_conv2D_8x8;
+extern cl::Kernel kernel_im2col;
+extern cl::Kernel kernel_conv2D[16];
 
 // create kernels (3)
 extern cl::Kernel kernel_range, kernel_eye, kernel_diag;
@@ -91,6 +119,14 @@ extern cl::Kernel kernel_sign,      kernel_sin,    kernel_sinh,     kernel_sqr, 
 extern cl::Kernel kernel_inc,       kernel_el_div, kernel_el_mult,  kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
 extern cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d;
 
+// conv2d kernel related global variables
+#ifdef K_ENABLED_CONV2D
+extern int k_conv2d_cpi;
+extern int k_conv2d_cpo;
+extern int k_conv2d_num_kernels;
+extern int k_conv2d_max_rows; 
+#endif
+
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
@@ -108,8 +144,8 @@ void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size
 void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size);
 
 void fpga_copy_fpga(Tensor *A, Tensor *B);
-void fpga_copy_to_fpga(float *nptr, Tensor *A);
-void fpga_copy_from_fpga(Tensor *A,float *nptr);
+void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt=1);
+void fpga_copy_from_fpga(Tensor *A,float *nptr, int cvt=1);
 void fpga_copy_addresses_from_fpga(SelDescriptor *SD, int size, int *nptr);
 
 

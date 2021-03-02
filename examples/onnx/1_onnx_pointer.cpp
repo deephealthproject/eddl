@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -25,6 +25,12 @@ using namespace eddl;
 
 
 int main(int argc, char **argv) { 
+    bool testing = false;
+    bool use_cpu = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
 	/* 2020-01-10
 #define layer Layer*
 #define model Net*
@@ -50,7 +56,7 @@ int main(int argc, char **argv) {
     l = ReLu(Dense(l, 1024));
     l = ReLu(Dense(l, 1024));
 
-    layer out = Activation(Dense(l, num_classes), "softmax");
+    layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
 
     // dot from graphviz should be installed:
@@ -61,7 +67,7 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           CS_CPU(4), // CPU with maximum threads availables
@@ -90,8 +96,10 @@ int main(int argc, char **argv) {
 
 	//resize_model(net, batch_size);
     // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
-    //fit(net, {x_mini_train}, {y_mini_train}, batch_size, epochs);
+    if (testing)
+        fit(net, {x_mini_train}, {y_mini_train}, batch_size, epochs);
+    else
+        fit(net, {x_train}, {y_train}, batch_size, epochs);
 
 	// Going to reset gradients
 	//cout << "reseting gradients" << endl;
@@ -100,7 +108,7 @@ int main(int argc, char **argv) {
 
     // Evaluate
 	cout << "Evaluating test before import" << endl;
-    evaluate(net, {x_test}, {y_test});
+    evaluate(net, {x_test}, {y_test}, batch_size);
 
 	
 
@@ -133,7 +141,7 @@ int main(int argc, char **argv) {
 
     l = ReLu(Dense(l, 1024));
 
-    out = Activation(Dense(l, num_classes), "softmax");
+    out = Softmax(Dense(l, num_classes));
     model net2 = Model({in}, {out});
 
 	*/
@@ -142,12 +150,13 @@ int main(int argc, char **argv) {
 	Net* imported_net = import_net_from_onnx_pointer(serialized_net, model_size);
 	//Net* imported_net = import_net_from_onnx_file(path);
 	//Net* imported_net = import_net_from_onnx_string(model_string);
+    delete [] (char *)serialized_net;
 
 
     // Build model
     build(imported_net,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           CS_CPU(4), // CPU with maximum threads availables
@@ -182,10 +191,12 @@ int main(int argc, char **argv) {
 
     // Evaluate
 	cout << "Evaluating test before new weights" << endl;
-    evaluate(imported_net, {x_test}, {y_test});
+    evaluate(imported_net, {x_test}, {y_test}, batch_size);
 
 	// Apply grads
-	//apply_grads_from_onnx_pointer( imported_net, serialized_gradients, gradients_size );
+	//
+    apply_grads_from_onnx_pointer( imported_net, serialized_gradients, gradients_size );
+    delete [] (char *)serialized_gradients;
 	
 	/*
 	for( int i = 0; i < 10; i++)
@@ -212,14 +223,19 @@ int main(int argc, char **argv) {
     evaluate(imported_net, {x_test}, {y_test});
 	
 	// Set new weights
-	//set_weights_from_onnx_pointer( imported_net, serialized_net_once_trained, snot_size );
+	//
+    set_weights_from_onnx_pointer( imported_net, serialized_net_once_trained, snot_size );
+    delete [] (char *)serialized_net_once_trained;
     // Evaluate
 	cout << "Evaluating test after new weights" << endl;
     evaluate(imported_net, {x_test}, {y_test});
 
 	for( int k=0; k < 10; k++ ) {
 		// Train
-		fit(net, {x_train}, {y_train}, batch_size, epochs);
+        if (testing)
+		    fit(net, {x_mini_train}, {y_mini_train}, batch_size, epochs);
+        else
+		    fit(net, {x_train}, {y_train}, batch_size, epochs);
 		// Evaluate
 		cout << "Evaluating test after training" << endl;
 		evaluate(net, {x_test}, {y_test});
@@ -229,13 +245,26 @@ int main(int argc, char **argv) {
 		net->reset_accumulated_gradients();
 
 		// Apply gradients to imported_net
-		//apply_grads_from_onnx_pointer( imported_net, serialized_gradients, gradients_size );
+		//
+        apply_grads_from_onnx_pointer( imported_net, serialized_gradients, gradients_size );
+        delete [] (char *)serialized_gradients;
 
 		// Evaluate imported net
 		evaluate( imported_net, {x_test}, {y_test});
 	}
 
-	return 0;
+    delete x_mini_train;
+    delete y_mini_train;
+
+    delete x_train;
+    delete y_train;
+    delete x_test;
+    delete y_test;
+
+    delete imported_net;
+    delete net;
+
+	return EXIT_SUCCESS;
 /*
 	string path2("mnist2.onnx");
 	//saveModelToOnnx(imported_net,path2);
@@ -247,7 +276,7 @@ int main(int argc, char **argv) {
     // Build model
     build(imported_net2,
           rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           CS_CPU(), // CPU with maximum threads availables

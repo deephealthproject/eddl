@@ -6,25 +6,25 @@ developing for several platforms. Assuming the following folder structure:
 
 .. code:: bash
 
-    first_example
-       |- src
-       |   |- main.cpp
+    first_example/
+       |- main.cpp
        |- CMakeLists.txt
 
-The following minimal ``CMakeLists.txt`` is enough to build the first example:
+A folder named ``first_example`` with two files inside: a ``*.cpp`` and a ``CMakeLists.txt``.
+Now, you can copy the following lines to the ``CMakeLists.txt`` file so that we can build the first example:
 
 .. code:: cmake
 
     cmake_minimum_required(VERSION 3.9.2)
     project(first_example)
 
-    add_executable(first_example src/main.cpp)
+    add_executable(first_example main.cpp)
 
     find_package(EDDL REQUIRED)
     target_link_libraries(first_example PUBLIC EDDL::eddl)
 
 
-`cmake` has to know where to find the headers, this is done through the ``CMAKE_INSTALL_PREFIX``
+`cmake` has to know where to find the headers; this is done through the ``CMAKE_INSTALL_PREFIX``
 variable. Note that ``CMAKE_INSTALL_PREFIX`` is usually the path to a folder containing the following
 subfolders: ``include``, ``lib`` and ``bin``, so you don't have to pass any additional option for linking.
 Examples of valid values for ``CMAKE_INSTALL_PREFIX`` on Unix platforms are ``/usr/local``, ``/opt``.
@@ -36,7 +36,7 @@ the first example with cmake and then runs the program:
 
     mkdir build
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX=your_prefix ..
+    cmake ..
     make
     ./first_example
 

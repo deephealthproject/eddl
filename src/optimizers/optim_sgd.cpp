@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -28,7 +28,7 @@ SGD::~SGD() {
     for(int i=0; i<mT.size(); i++){ delete mT[i]; }
 }
 
-void SGD::change(vector<float> &p) {
+void SGD::change(vector<float> p) {
     if (p.size()>0) lr = p[0];
     if (p.size()>1) mu = p[1];
 }
@@ -75,6 +75,10 @@ void SGD::applygrads(int batch) {
           for (int j = 0; j < layers[i]->get_trainable_params_count(); j++, p++) {
             Tensor::add(lr , layers[i]->gradients[j], mu, mT[p], mT[p], 0);
             Tensor::add(1.0, layers[i]->params[j], -1.0, mT[p], layers[i]->params[j], 0);
+
+            // Distributed training: Accumulation of gradients
+            if (layers[i]->acc_gradients.size() > 0) 
+              Tensor::add(1.0, layers[i]->acc_gradients[j], -1.0, mT[p], layers[i]->acc_gradients[j], 0);
           }
         }
         else p+=layers[i]->get_trainable_params_count();

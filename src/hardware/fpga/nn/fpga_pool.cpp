@@ -25,17 +25,69 @@ char fpga_set_cpuemu_mpool2D_back    = 1;
 char fpga_set_cpuemu_avgpool2D       = 1;
 char fpga_set_cpuemu_avgpool2D_back  = 1;
 
+fpga_data_type fpga_get_pixel(int b,int px,int py,int pz,PoolDescriptor *D,int isize,int irsize) {
+
+  fpga_data_type *ptr = (fpga_data_type *)D->I->ptr;
+  // Check boundaries of the window
+  if (px<0) return fpga_data_type(0.0);
+  if (py<0) return fpga_data_type(0.0);
+  if (px>=D->ic) return fpga_data_type(0.0);
+  if (py>=D->ir) return fpga_data_type(0.0);
+
+  // Compute address from indices (row-major)
+  unsigned int address = (b*isize) + (pz*irsize) + (py*D->ic) + px;
+  return ptr[address];
+}
+
 // -----------------------------------------------------------------
 // mpool2D
 //
 void fpga_cpuemu_mpool2D(PoolDescriptor *D) {
-  fpga_copy_from_fpga(D->I, D->I->ptr);
-  cpu_mpool2D(D);
-  fpga_copy_to_fpga(D->O->ptr, D->O);
-//  printf("FPGA warning: pool addresses are stored in CPU for the moment...\n");
+
+  fpga_copy_from_fpga(D->I, D->I->ptr, 0);
+
+  int isize = D->ir*D->ic*D->iz;
+  int irsize = D->ir*D->ic;
+
+  #pragma omp parallel for default(none) shared(D, isize, irsize)
+  for(int b=0; b<D->I->shape[0]; b++){  // Batches
+      int p=b*D->size;  // Kernel's index (opt. shared variable)
+
+      for(int k=0; k<D->iz; k++) { // Depth: front-back
+          for(int i=-D->padrt; i<=D->ir+D->padrb-D->kr; i+=D->sr) {  // rows: top-bottom
+              for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc, p++) { // cols: left-right
+
+                  // Get max value in window
+                  fpga_data_type max = CPU_LOWEST_FLOAT;
+                  for(int ki=0; ki<D->kr; ki++){  // rows (kernel): top-bottom
+                      for(int kj=0; kj<D->kc; kj++) { // cols (kernel): left-right
+
+                          // Get value W[ki,kj] value in window
+                          float v = fpga_get_pixel(b,j+kj,i+ki, k, D, isize, irsize);
+                          if (v>max) {
+                              max = v;
+                              D->indX->ptr[p] = j+kj;
+                              D->indY->ptr[p] = i+ki;
+                          }
+
+                      } // kernel cols
+                  }  // kernel rows
+
+                  // Set output value
+                  fpga_data_type *ptr = (fpga_data_type *)D->O->ptr;
+                  ptr[p] = max;
+
+              } // cols
+          } // rows
+      } // depth
+  } // batch
+
+  fpga_copy_to_fpga(D->O->ptr, D->O, 0);
+
 }
 
 void fpga_mpool2D(PoolDescriptor *D){
+    _debug_fpga_funcs("mpool2D");
     _profile_fpga(_FPGA_MPOOL2D, 0);
     _profile_fpga_tensor(D->I);
     if (fpga_set_cpuemu_mpool2D == 1) {

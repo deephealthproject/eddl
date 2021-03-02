@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -187,8 +187,7 @@ void Tensor::reshape_(const vector<int> &new_shape){
     updateShape(final_shape);
     updateSize();
     updateStrides();
-    updateData(this->ptr,nullptr, false);  // Due to potential the Eigen mapping
-
+    updateData(this->ptr, nullptr, isshared);  // Due to potential Eigen mapping when CPU and dim=2
 }
 
 Tensor* Tensor::reshape(const vector<int> &new_shape){
@@ -220,16 +219,8 @@ Tensor* Tensor::flatten(Tensor *A){
 
 
 void Tensor::squeeze_(int axis){
-    // Remove single dimension entries from the array
-    vector<int> new_shape;
-    for(int i=0; i<this->shape.size(); i++){
-        int dim = this->shape[i];
-
-        // If dimension is greater than 1
-        if(dim>1 || (i!=axis && axis!=-1)){
-            new_shape.push_back(dim);
-        }
-    }
+    // Remove dimension/s
+    vector<int> new_shape = compute_squeeze(this->shape, axis);
     this->reshape_(new_shape);
 }
 
@@ -246,8 +237,8 @@ Tensor* Tensor::squeeze(Tensor *A, int axis){
 
 
 void Tensor::unsqueeze_(int axis){
-    vector<int> new_shape(this->shape);
-    new_shape.insert(new_shape.begin()+axis, 1); // Add one dimension to the beginning
+    // Add dimension
+    vector<int> new_shape = compute_unsqueeze(this->shape, axis);
     this->reshape_(new_shape);
 }
 
@@ -301,7 +292,7 @@ Tensor* Tensor::unsqueeze(Tensor *A, int axis){
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // TODO: Deprecated.
     // Transpose
-    B->tsem->lock();
+
     if (A->size != B->size)
         msg("Tensors with different size", "Tensor::transpose");
 
@@ -327,7 +318,7 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
         fpga_transpose(A, N);
     }
 #endif
-    B->tsem->unlock();
+
 
     if (A == B) delete N;
 
@@ -344,7 +335,7 @@ void Tensor::copy(Tensor *A, Tensor *B) {
         msg("Tensors with different size", "Tensor::copy");
     }
 
-    B->tsem->lock();
+
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_copy(A, B);
     }
@@ -378,7 +369,7 @@ void Tensor::copy(Tensor *A, Tensor *B) {
         fprintf(stderr, "(%d %d)\n", A->device, B->device);
         msg("unsupported copy between devices", "Tensor::copy");
     }
-    B->tsem->unlock();
+
 }
 
 
@@ -389,7 +380,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
     if (A->ndim != B->ndim)
         msg("Tensors with different shape", "Tensor::fill");
 
-    B->tsem->lock();
+
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_fill(A, aini, aend, B, bini, bend, inc);
     }
@@ -402,7 +393,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
         fprintf(stderr, "(%d %d)\n", A->device, B->device);
         msg("unsupported copy between devices", "Tensor::copy");
     }
-    B->tsem->unlock();
+
 }
 
 void Tensor::sort_(bool descending, bool stable){
@@ -596,6 +587,54 @@ void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
 #endif
 }
 
+Tensor* Tensor::stack(const vector<Tensor*> A, unsigned int axis, Tensor* output){
+    // Check number of vectors to concat
+    if(A.size()<2){
+        msg("Stack requires a minimum of two tensors", "Tensor::stack");
+    }
+
+    // Create fake tensors with dimension expanded
+    vector<Tensor*> tmp_tensors;
+    for(int i=0; i<A.size(); i++) {
+        // Create fake tensor (ptr reference)
+        Tensor* tmp = new Tensor(A[i]->shape, A[i]->ptr, A[i]->device);
+
+        // Expand dimension
+        tmp->unsqueeze_(axis);
+
+        // Add tmp tensor to buffer
+        tmp_tensors.push_back(tmp);
+    }
+
+    vector<int> new_shape = tmp_tensors[0]->shape;
+    new_shape[axis] = tmp_tensors.size();
+
+    // Create new tensor
+    if(output==nullptr){
+        output = new Tensor(new_shape, A[0]->device);
+    }else{
+        // Check dimensions
+        if(output->shape!=new_shape){
+            msg("The dimension of the output tensor is incorrect", "Tensor::stack");
+        }else if(output->device != A[0]->device){
+            msg("The output tensor and the input ones must be on the same device", "Tensor::stack");
+        }
+    }
+
+    // Concat tensors in the expanded axis
+    Tensor::concat(tmp_tensors, axis, output);
+
+    // Delete fake tensors
+    for(int i=0; i<A.size(); i++) {
+        tmp_tensors[i]->ptr = nullptr; // Dereference tensor
+        delete tmp_tensors[i]; tmp_tensors[i] = nullptr;
+    }
+    tmp_tensors.clear();
+
+
+    return output;
+}
+
 
 Tensor* Tensor::select(const vector<string>& indices){
     // Build descriptor
@@ -658,6 +697,7 @@ void Tensor::set_select(const vector<string>& indices, float value){
     if(sd->oshape==A->shape){
         Tensor::set_select(this, A, sd);
     }else{
+      
         msg("Incompatible dimensions", "Tensor::set_select");
     }
 
@@ -673,6 +713,9 @@ void Tensor::set_select(const vector<string>& indices, Tensor *A){
     if(sd->oshape==A->shape){
         Tensor::set_select(this, A, sd);
     }else{
+        info();
+        A->info();
+
         msg("Incompatible dimensions", "Tensor::set_select");
     }
 
@@ -727,7 +770,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
     }
 
 
-    //B->tsem->lock();
+
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_select(A, B, sind, ini, end,mask_zeros);
     }
@@ -743,7 +786,6 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
         Tensor *Bc=B->clone();
         Bc->toCPU();
 
-        cout<<".....";
         cpu_select(A, Bc, sind, ini, end,mask_zeros);
 
         Tensor::copy(Bc,B);
@@ -784,7 +826,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
     else {
         msg("unsuppoted select", "Tensor::select");
     }
-    //B->tsem->unlock();
+
 }
 void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc, bool mask_zeros) {
     ///////////////////////////////////////
@@ -797,7 +839,7 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
         msg("Incompatible shape", "Tensor::select");
     }
 
-    //B->tsem->lock();
+
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_deselect(A, B, sind, ini, end, inc,mask_zeros);
     }
@@ -850,7 +892,7 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
     else {
         msg("unsuppoted select", "Tensor::select");
     }
-    //B->tsem->unlock();
+
 }
 
 void Tensor::tile(Tensor *A, Tensor *B)

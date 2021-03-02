@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -78,7 +78,7 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
         // Check bounds
         if (i <= max_i && j <= max_j){
 
-            float max = GPU_MIN_FLOAT;
+            float max = GPU_LOWEST_FLOAT;
             //float max = I[i,j];
             for (int ki = 0; ki < kr; ki++){  // rows (kernel): top-bottom
                 for (int kj = 0; kj < kc; kj++) {  // cols (kernel): left-right

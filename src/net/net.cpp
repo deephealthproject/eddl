@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -13,6 +13,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <chrono>
 #include "eddl/net/net.h"
@@ -22,18 +23,6 @@
 #include "eddl/layers/core/layer_core.h"
 
 
-
-ostream &operator<<(ostream &os, const vector<int> shape) {
-    int i;
-    os << "(";
-    for (i = 0; i < shape.size() - 1; ++i) {
-        os << shape[i];
-        os << "x";
-    }
-    os << shape[i] << ")";
-
-    return os;
-}
 
 /////////////////////////////////////////
 int isIn(Layer *l, vlayer vl, int &ind) {
@@ -69,29 +58,39 @@ Net::Net() {
     name="model";
     tr_batches=0;
     flog_tr=nullptr;
+    has_to_close_flog_tr = false;
     flog_ts=nullptr;
+    has_to_close_flog_ts = false;
+    trmode = TRMODE;
     rnet=nullptr;
     isbuild=false;
     isdecoder=false;
     isencoder=false;
     isrecurrent=false;
     decsize=1;
+    do_compserv_delete = true;
+    do_optimizer_delete = true;
 }
 
 Net::Net(vlayer in, vlayer out):Net() {
     // Set input/outlayer
-    lin = in;
-    lout = out;
+    //lin = in;
+    //lout = out;
+    for (auto l : in) lin.push_back(l);
+    for (auto l : out) lout.push_back(l);
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
     for (int i = 0; i < lin.size(); i++) {
-        walk(lin[i]);
+        walk(lin[i],lout);
     }
 
     for (int i = 0; i < lout.size(); i++) {
         walk_back(lout[i]);
     }
+    
+    for(auto l:layersf) layers.push_back(l);
+    for(auto l:layersb) if (!inNet(l)) layers.push_back(l);
 
     for (int i = 0; i < lout.size(); i++) {
         total_loss.push_back(0.0);
@@ -102,89 +101,102 @@ Net::Net(vlayer in, vlayer out):Net() {
 
 
     build_randn_table();
-}
 
-Net::Net(vector <Net *> vnets):Net()
-{
-  int vsize=vnets.size();
-  int ind;
-
-  if (vsize<2) {
-    msg("Use at least two networks to concatenate","Net::Net");
-  }
-
-  for(int i=0;i<vnets[0]->lin.size();i++)
-    lin.push_back(vnets[0]->lin[i]);
-
-  for(int i=0;i<vnets[0]->layers.size();i++)
-    layers.push_back(vnets[0]->layers[i]);
-
-///
-  for(int i=0;i<vnets.size()-1;i++) {
-    if (vnets[i]->lout.size()!=vnets[i+1]->lin.size())
-      msg("out layers does not match in layers","Net");
-    for(int j=0;j<vnets[i+1]->layers.size();j++)
-        layers.push_back(vnets[i+1]->layers[j]);
-
-    for(int j=0;j<vnets[i]->lout.size();j++) {
-        vnets[i]->lout[j]->addchild(vnets[i+1]->lin[j]);
-        vnets[i+1]->lin[j]->addparent(vnets[i]->lout[j]);
+    // It is important that layers vector keep the forward sort
+    fts();
+    while (layers.size()) layers.pop_back();
+    for(auto l: vfts ) {
+        l->increase_reference_counter();
+        layers.push_back(l);
     }
-  }
-
-
-  for(int i=0;i<vnets[vsize-1]->lout.size();i++)
-    lout.push_back(vnets[vsize-1]->lout[i]);
-
-
-  for (int i = 0; i < lout.size(); i++) {
-    total_loss.push_back(0.0);
-    total_metric.push_back(0.0);
-    fiterr.push_back(0.0);
-    fiterr.push_back(0.0);
-  }
-
-  isrecurrent=false;
-  rnet=nullptr;
-
-  for(int i=0;i<vnets.size();i++)
-    mnets.push_back(vnets[i]);
-
-  build_randn_table();
-
-
+    while (vfts.size()) vfts.pop_back();
 }
-
-
 
 
 Net::~Net(){
+    // IF CPU : net = snets[0]
+    // IF GPU: net , snets[0]= clone on GPU
 
-    if (mnets.size()) return;
+    if (this->has_to_close_flog_tr && this->flog_tr != nullptr) {
+        fclose(this->flog_tr);
+        this->flog_tr = nullptr;
+        this->has_to_close_flog_tr = false;
+    }
+    if (this->has_to_close_flog_ts && this->flog_ts != nullptr) {
+        fclose(this->flog_ts);
+        this->flog_ts = nullptr;
+        this->has_to_close_flog_ts = false;
+    }
 
+    // not necessary in theory, but valgrid reports "still reachable blocks"
+    this->total_loss.clear();
+    this->total_metric.clear();
+    this->fiterr.clear();
+    this->lin.clear();
+    this->lout.clear();
 
-    // IF CPU : net = snets[0]   snets.push_back(this)
+    // Clean inputs
+    for(int i=0; i<Xs->size(); i++) {
+        for(int j=0;j<Xs[i].size();j++)
+            delete Xs[i][j];
+        Xs[i].clear();
+    }
 
-   // IF GPU: net , snets[0]= clone en GPU
+    // Clean targets
+    for(int i=0; i<Ys->size(); i++) {
+        for(int j=0;j<Ys[i].size();j++)
+            delete Ys[i][j];
+        Ys[i].clear();
+    }
 
+    // delete optimizer
     for(int i=0;i<snets.size();i++){
-      for(int j=0;j<snets[i]->layers.size();j++) {
-        if (snets[i]->layers[j]!=nullptr) {
-          delete snets[i]->layers[j];
-          snets[i]->layers[j] = nullptr;
+        if (snets[i]->optimizer!=nullptr && snets[i]->do_optimizer_delete){
+            delete snets[i]->optimizer;
         }
-      }
     }
 
-    //TODO:
-    /*
-    if (GPU){
-      for(int j=0;j<layers.size();j++)
-         delete layers[j];
+    if (snets.size() == 0 || snets[0] != this){
+        if (this->optimizer != nullptr && this->do_optimizer_delete){
+            delete this->optimizer;
+        }
     }
-    */
 
-    if (rnet!=nullptr) {delete rnet; rnet = nullptr;}
+    // clean metrics and losses
+    for (auto m : this->metrics) delete m;
+    this->metrics.clear();
+    for (auto l : this->losses) delete l;
+    this->losses.clear();
+
+    // clean device mem
+    for(int i=0;i<snets.size();i++){
+        for(int j=0;j<snets[i]->layers.size();j++) {
+            if (snets[i]->layers[j]!=nullptr) {
+                if (snets[i]->layers[j]->decrease_and_get_reference_counter() == 0) {
+                    delete snets[i]->layers[j];
+                }
+                snets[i]->layers[j] = nullptr;
+            }
+        }
+    }
+
+    // net running on device != CPU
+    // clean also CPU mem
+    if (snets.size() == 0 || snets[0]!=this){
+        for(int j=0;j<layers.size();j++) {
+            if (layers[j]->decrease_and_get_reference_counter() == 0) {
+                delete layers[j];
+            }
+            layers[j] = nullptr;
+        }
+    }
+
+    if (rnet!=nullptr) { delete rnet; rnet = nullptr;}
+
+    if (this->do_compserv_delete && this->cs != nullptr) {
+        delete this->cs;
+        this->cs = nullptr;
+    }
 }
 
 
@@ -196,46 +208,65 @@ int Net::inNet(Layer *l) {
     }
     return 0;
 }
-
-
 /////////////////////////////////////////
-void Net::walk(Layer *l) {
-    // If this layer is not in the network, add it, as well as all its children (recursively)
-
-    if (!inNet(l)) {
-        if (l->orig!=nullptr) l->net=l->orig->net;
-        else l->net=this;
-
-        layers.push_back(l);
-        for (int i = 0; i < l->child.size(); i++)
-            walk(l->child[i]);
-
+int Net::inNetF(Layer *l) {
+    // Check if the layer l is in the network
+    for (int i = 0; i < layersf.size(); i++){
+        if (l == layersf[i]) return 1;
     }
+    return 0;
 }
 /////////////////////////////////////////
-void Net::walk_back(Layer *l) {
-    // If this layer is not in the network, add it, as well as all its children (recursively)
-
-    if (!inNet(l)) {
-        //cout<<l->name<<"  BACK\n";
-        if (l->orig!=nullptr) l->net=l->orig->net;
-        else l->net=this;
-
-        layers.push_back(l);
+int Net::inNetB(Layer *l) {
+    // Check if the layer l is in the network
+    for (int i = 0; i < layersb.size(); i++){
+        if (l == layersb[i]) return 1;
     }
+    return 0;
+}
+/////////////////////////////////////////
+void Net::walk(Layer *l,vlayer lout) {
+    int ind;
+
+    if (!inNetF(l)) {
+        l->net=this;
+        layersf.push_back(l);
+    }
+    else return;
+
+    if (isIn(l,lout,ind)) return; // cut recursivity for out layers
+
+    for (int i = 0; i < l->child.size(); i++)
+       walk(l->child[i],lout);
+
+}
+
+/////////////////////////////////////////
+void Net::walk_back(Layer *l) {
+    
+    if (!inNetB(l)) {
+        layersb.push_back(l);
+        l->net=this;
+    }
+    else return;
+
     for (int i = 0; i < l->parent.size(); i++)
         walk_back(l->parent[i]);
-
 }
 
 
 /////////////////////////////////////////
 string Net::summary() {
     std::stringstream ss;
-    ss << "---------------------------------------------------------" << endl;
+    ss << "-------------------------------------------------------------------------------" << endl;
     ss << name << endl;
-    ss << "---------------------------------------------------------" << endl;
+    ss << "-------------------------------------------------------------------------------" << endl;
 
+    int maxl=0;
+    for (auto & l : vfts) 
+      if (l->name.length() > maxl) maxl=l->name.length();
+
+    int tot_size=0;
     for (auto & l : vfts) {
         // Get input/output shapes
         vector<int> ishape(l->input->shape);
@@ -249,14 +280,20 @@ string Net::summary() {
         string istr = "(" + printVector(ishape) + ")";
         string ostr = "(" + printVector(oshape) + ")";
 
-        ss << setw(30) << left << l->name << "|  ";
-        ss << setw(10) << left << istr;
-        ss << setw(8) << left << "=>";
-        ss << setw(10) << left << ostr;
+        int size=0;
+        for(auto &p:l->params)
+          size+=p->size;
+        tot_size+=size;
+
+        ss << setw(maxl) << left << l->name << "|  ";
+        ss << setw(20) << left << istr;
+        ss << setw(5) << left << "=>";
+        ss << setw(20) << left << ostr;
+        ss << setw(10) << left << size;
         ss << endl;
     }
-    ss << "---------------------------------------------------------" << endl;
-
+    ss << "-------------------------------------------------------------------------------" << endl;
+    ss << "Params: "<<tot_size<<endl;
     return ss.str();
 }
 
@@ -298,8 +335,11 @@ void Net::plot(string fname,string mode) {
 
     cmd = "dot -T " + type + " ./tmp.dot >" + "./" + fname;
 
-    system(cmd.c_str());
-
+    int rc = system(cmd.c_str());
+    if (rc != EXIT_SUCCESS) {
+        std::cerr << "Unable to run the following command" << std::endl << std::endl
+                << "   " << cmd << std::endl;
+    }
 }
 
 /////////////////////////////////////////
@@ -308,11 +348,19 @@ void Net::setlogfile(string fname)
     string str=fname+"_tr.log";
     string sts=fname+"_ts.log";
 
-    flog_tr=fopen(str.c_str(),"wt");
-    if (flog_tr==nullptr) msg("error creating tr log file","Net.setlogfile");
+    this->flog_tr = fopen(str.c_str(),"wt");
+    if (this->flog_tr == nullptr) {
+        msg("error creating tr log file","Net.setlogfile");
+    } else {
+        this->has_to_close_flog_tr = true;
+    }
 
-    flog_ts=fopen(sts.c_str(),"wt");
-    if (flog_ts==nullptr) msg("error creating ts log file","Net.setlogfile");
+    this->flog_ts = fopen(sts.c_str(),"wt");
+    if (this->flog_ts == nullptr) {
+        msg("error creating ts log file","Net.setlogfile");
+    } else {
+        this->has_to_close_flog_ts = true;
+    }
 }
 
 
@@ -367,6 +415,7 @@ void Net::apply_accumulated_gradients(){
         l->apply_accumulated_gradients();
     }
 }
+
 
 
 

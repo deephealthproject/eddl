@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -43,6 +43,66 @@ PROFILING_ENABLE_EXTERN(equal);
 PROFILING_ENABLE_EXTERN(not_equal);
 PROFILING_ENABLE_EXTERN(equivalent);
 
+
+bool Tensor::all(){
+    return Tensor::all(this);
+}
+bool Tensor::any(){
+    return Tensor::any(this);
+}
+Tensor* Tensor::isfinite(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isfinite(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::isinf(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isinf(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::isnan(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isnan(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::isneginf(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isneginf(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::isposinf(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isposinf(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::logical_not(){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::logical_not(this, t_new);
+    return t_new;
+}
+Tensor* Tensor::logical_and(Tensor *A){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::logical_and(this, A, t_new);
+    return t_new;
+}
+Tensor* Tensor::logical_or(Tensor *A){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::logical_or(this, A, t_new);
+    return t_new;
+}
+Tensor* Tensor::logical_xor(Tensor *A){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::logical_xor(this, A, t_new);
+    return t_new;
+}
+bool Tensor::allclose(Tensor *A, float rtol, float atol, bool equal_nan){
+    return Tensor::allclose(this, A, rtol, atol, equal_nan);
+}
+Tensor* Tensor::isclose(Tensor *A, float rtol, float atol, bool equal_nan){
+    Tensor* t_new = Tensor::empty_like(this);
+    Tensor::isclose(this, A, t_new, rtol, atol, equal_nan);
+    return t_new;
+}
 
 bool Tensor::all(Tensor *A){
 
@@ -161,6 +221,13 @@ void Tensor::isnan(Tensor *A, Tensor* B){
         }
 #endif
     PROFILING_FOOTER(isnan);
+}
+
+bool Tensor::anynan(){
+    Tensor *tmp = this->isnan();  // For debugging. It's inefficient
+    float s = tmp->sum();
+    delete tmp;
+    return s>0.0f;
 }
 
 void Tensor::isneginf(Tensor *A, Tensor* B){
@@ -297,6 +364,7 @@ void Tensor::logical_xor(Tensor *A, Tensor *B, Tensor *C){
 #endif
     PROFILING_FOOTER(logical_xor);
 }
+
 
 
 bool Tensor::allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
@@ -750,7 +818,7 @@ int Tensor::sameShape(Tensor *A, Tensor *B) {
     return 1;
 }
 
-int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_nan) {
+int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_nan, bool verbose) {
 
     // Equal device
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::equivalent");
@@ -762,8 +830,11 @@ int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_
     
     // Equal data
     if (A->isCPU() && B->isCPU()) {
-//        return cpu_allclose(A, B, rtol, atol, equal_nan);
-        return cpu_equal2(A, B, atol);  // TODO: Temp!
+        if(verbose){
+            return cpu_allclose_verbose(A, B, atol);  // TODO: Temp!
+        }else{
+            return cpu_allclose(A, B, rtol, atol, equal_nan);
+        }
     }
 #ifdef cGPU
     else if (A->isGPU() || B->isGPU())

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -29,7 +29,7 @@ RMSProp::~RMSProp() {
     for(int i=0; i<gT1.size(); i++){ delete gT1[i]; gT1[i] = nullptr;}
 }
 
-void RMSProp::change(vector<float> &p) {
+void RMSProp::change(vector<float> p) {
   if (p.size()>0) lr = p[0];
   if (p.size()>1) rho = p[1];
   cout<<"Optimizer RMSProp set new lr="<<lr<<" rho="<<rho<<"\n";
@@ -91,10 +91,9 @@ void RMSProp::applygrads(int batch) {
 
             Tensor::add(-lr, gT[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
 
-      			/*if (layers[i]->acc_gradients.size() > 0) {
-        				Tensor::add(-lr, gT[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
-      			}
-            */
+            // Distributed training: Accumulation of gradients
+            if (layers[i]->acc_gradients.size() > 0) 
+              Tensor::add(-lr, gT[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
         }
     }
     else p+=layers[i]->get_trainable_params_count();

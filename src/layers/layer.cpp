@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -37,26 +37,38 @@ Layer::Layer(string name, int dev, int mem) {
     trainable=true;
     iscloned=false;
     isdecoder=false;
+    distributed_training=false;
 
-    orig=nullptr;
-    net=nullptr;
+    this->do_deletes = true;
 
-    reg = nullptr;
-    //init=new IGlorotNormal(1234);
-    init=new IGlorotUniform(1234);  // Has problems with the drive dataset
+    this->orig = nullptr;
+    this->net = nullptr;
+
+    this->reg = nullptr;
+    // init = new IGlorotNormal(1234);
+    this->init = new IGlorotUniform(1234);  // Has problems with the drive dataset
+
+    this->reference_counter = 0; // accounts how many nets are referencing this layer
 }
 
 Layer::~Layer(){
     // Note: nullptr are not really needed. However, I like to have this pointers pointing to "something" just in case
+    for (auto _ : this->states) if (_ != output) delete _;
+    if (output != nullptr) { delete output; output = nullptr; }
+    this->states.clear();
+    if (target != nullptr) { delete target; target = nullptr; }
 
-    if (output!=nullptr) { delete output; output = nullptr; }
-    if (delta!=nullptr)  { delete delta; delta = nullptr; }
-    if (target!=nullptr) { delete target; target = nullptr; }
+    for (auto _ : this->delta_states) if (_ != delta) delete _;
+    this->delta_states.clear();
+    if (delta != nullptr)  { delete delta; delta = nullptr; }
+
 
 //    if (orig!=nullptr) delete this->orig;
 //    if (net!=nullptr) delete this->net;
-//    if (reg!=nullptr)  { delete this->reg;  this->reg = nullptr; }
-//    if (init!=nullptr) { delete this->init; this->init = nullptr; }
+    if (this->do_deletes) {
+        if (this->reg  != nullptr) { delete this->reg;  this->reg  = nullptr; }
+        if (this->init != nullptr) { delete this->init; this->init = nullptr; }
+    }
 
     //params if any
     if (!isshared){
@@ -114,13 +126,10 @@ void Layer::mem_delta_parent(){
 
 void Layer::mem_delta(){
     // Reserve space for the delta
-    if(this->delta == nullptr){
+    if(this->delta == nullptr)
         this->delta = Tensor::zeros(this->output->shape, this->output->device);
 
-        if(this->verbosity_level >= 2){
-            std::cout << "Booked delta for: " + this->name << std::endl;
-        }
-    }
+
 }
 
 void Layer::free_delta(){
@@ -152,7 +161,7 @@ void Layer::setTrainable(bool value){
 
 int Layer::get_trainable_params_count()
 {
-    return params.size();
+        return params.size();
 }
 
 void Layer::detach(Layer *l){
@@ -235,27 +244,20 @@ void Layer::info() {
     cout << "===============\n\n";
 }
 
-Tensor* Layer::getWeights(){
-    return nullptr;
-}
-
-Tensor* Layer::setWeights(Tensor bias){
-    return nullptr;
-}
-
-Tensor* Layer::getBias(){
-    return nullptr;
-}
-
-Tensor* Layer::setBias(Tensor bias){
-    return nullptr;
-}
-
 
 void Layer::copy(Layer *l2){
     for(int i=0;i<params.size();i++){
         Tensor::copy(params[i],l2->params[i]);
     }
+}
+
+void Layer::increase_reference_counter()
+{
+    reference_counter++;
+}
+int Layer::decrease_and_get_reference_counter()
+{
+    return --reference_counter;
 }
 
 ////////////////////////////////////

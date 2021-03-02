@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -19,14 +19,16 @@ using namespace std;
 
 class CompServ {
 public:
-    string type;
+    string type; // "local" or "distributed"
+    string hw; //CPU, GPU, FPGA    
 
-
+    int threads_arg; // The value passed to the constructor
     int local_threads;
     vector<int> local_gpus;
     vector<int> local_fpgas;
     int lsb; //local sync batches
     bool isshared;
+    
 
 
 
@@ -40,7 +42,7 @@ public:
 
     CompServ();
     CompServ * share();
-
+    CompServ * clone(); 
     // for local
     CompServ(int threads, const vector<int> g, const vector<int> &f,int lsb=1, int mem=0);
 

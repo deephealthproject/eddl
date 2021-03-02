@@ -21,27 +21,13 @@
 #include "eddl/hardware/cpu/cpu_tensor.h"   // CPU related function headers (cpu_transpose, cpu_copy, ...)
 #include <ap_fixed.h>                       // Aproximated precision fixed point support
 #include <ap_int.h>                         // Aproximated precision integer support
+#include "eddl/profiling.h"                 // Profiling
 
-// ----------------------------------------------------------------------------------------------------------
-// Precision support
-//
-// data_type is the basic precision format used for tensors in FPGA
-//
-// Three supported formats:
-//  - float. This format has been tested and works well within EDDL. Indeed, is the single format used by EDDL
-//  - ap_fixed. This format is under test. Aproximated precision fixed point format
-//  - ap_int. This format is under test. Aproximated precision integer
-//
-// The PRECISION_CONVERSION define must be set if either ap_fixed or ap_int formats are used. This define
-// enables the precision conversion from CPU to FPGA and viceversa. Whenever a tensor is read or written
-// from/to the FPGA the precision conversion is performed on a temporary CPU buffer.
-// If float precision is used, then PRECISION_CONVERSION should not be used
-//
-//#define PRECISION_CONVERSION
-#define data_type float
-//#define data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
-//#define data_type ap_int<8>
-//
+// Macros
+PROFILING_ENABLE_EXTERN(Precision_Conversion);
+PROFILING_ENABLE_EXTERN(FPGA_READ);
+PROFILING_ENABLE_EXTERN(FPGA_WRITE);
+
 
 // Defines --------------------------------------------------------------------------------------------------------------------------------
 #define MAX_BUFFER_POOL 10000             // All FPGA tensors are managed in a pool, this define sets the pool size (static)
@@ -94,9 +80,8 @@ cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 cl::Kernel kernel_select_nn,   kernel_select_back_nn, kernel_set_select_nn, kernel_set_select_back_nn;
 //
 // conv kernels (3)
-cl::Kernel kernel_im2col,      kernel_conv2d;
-cl::Kernel kernel_conv2D_4x4;
-cl::Kernel kernel_conv2D_8x8;
+cl::Kernel kernel_im2col;
+cl::Kernel kernel_conv2D[16];
 //
 // create kernels (3)
 cl::Kernel kernel_range, kernel_eye, kernel_diag;
@@ -132,6 +117,14 @@ cl::Kernel kernel_normalize, kernel_pow,    kernel_powb,     kernel_reciprocal, 
 cl::Kernel kernel_sign,      kernel_sin,    kernel_sinh,     kernel_sqr,        kernel_sqrt,          kernel_tan;
 cl::Kernel kernel_inc,       kernel_el_div, kernel_el_mult,  kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
 cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d;
+
+// conv2d kernel related global variables
+#ifdef K_ENABLED_CONV2D
+int k_conv2d_cpi;
+int k_conv2d_cpo;
+int k_conv2d_num_kernels;
+int k_conv2d_max_rows; 
+#endif
 
 // global variables for profiling. Each kernel can be profiled (obtained the number of instances executed and the accumulated execution time)
 int num_instances_fpga[_NUM_FPGA_FUNCS];            // number of instances a kernel (function) has been called
@@ -409,6 +402,12 @@ void _profile_fpga_tensor_print(Tensor *T) {
 #endif
 }
 
+void _debug_fpga_funcs(const char *str) {
+#ifdef FPGA_DEBUG_FUNCS 
+printf("%s\n", str);
+#endif
+}
+
 // _show_profile_fpga(). Shows all the profile collected so far.
 void _show_profile_fpga() {
 #ifdef FPGA_DEBUG
@@ -454,7 +453,27 @@ void fpga_init(){
 #endif
 
     cl_int      err;
-    std::string binaryFile = "eddl.xclbin";
+
+    // depending on the kernel version we load one binary file or another
+    std::string binaryFile;
+
+    #ifdef K_ENABLED_CONV2D
+    // We need to instantiate the proper number of kernels, we also take the specifities of the kernels
+    switch (K_VERSION_CONV2D) {
+      case 1: switch (K_SUBVERSION_CONV2D) {
+                case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_fp32_relu_1kernel.xclbin"; break;
+                case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_apf8_relu_1kernel.xclbin"; break;
+                case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_api8_relu_1kernel.xclbin"; break;
+                case 3: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_8x8_apf8_relu_1kernel.xclbin"; break;
+                case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_8x8_api8_relu_1kernel.xclbin"; break;
+                case 5: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_fp32_relu_2kernel.xclbin"; break;
+                default: printf("Error, unrecognized conv2d kernel subversion\n"); exit(1); break;
+              }
+      default: printf("Error, unrecognized conv2d kernel version\n"); exit(1); break;
+    }
+    #else
+      binaryFile = "eddl.xclbin";
+    #endif
     unsigned    fileBufSize;
 
 #ifdef FPGA_DEBUG
@@ -769,17 +788,15 @@ void fpga_init(){
     OCL_CHECK(err, kernel_im2col = cl::Kernel(program,"k_im2col", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
+
     #ifdef K_ENABLED_CONV2D
-    OCL_CHECK(err, kernel_conv2d = cl::Kernel(program,"k_conv2d", &err));
-    if (err != CL_SUCCESS) printf("Error creating kernel\n");
-    #endif
-    #ifdef K_ENABLED_CONV2D_4x4
-    OCL_CHECK(err, kernel_conv2D_4x4 = cl::Kernel(*program, "k_conv2D", &err));
-    if (err != CL_SUCCESS) printf("Error creating kernel\n");
-    #endif
-    #ifdef K_ENABLED_CONV2D_8x8
-    OCL_CHECK(err, kernel_conv2D_8x8 = cl::Kernel(*program, "k_conv2D_8x8", &err));
-    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    for (int k=0; k<k_conv2d_num_kernels; k++) {
+      char dummy[50];
+      sprintf(dummy, "k_conv2D:{k_conv2D_%d}", k+1);
+      //printf("kernel name %s\n", dummy);
+      OCL_CHECK(err, kernel_conv2D[k] = cl::Kernel(*program, dummy, &err));
+      std::cout << "Kernel sucessfully created" << std::endl ;
+    }
     #endif
     #ifdef K_ENABLED_RANGE
     OCL_CHECK(err, kernel_range = cl::Kernel(program,"k_range", &err));
@@ -1087,7 +1104,7 @@ cl::Buffer *fpga_create_tensor(int device, int size)
 #ifdef FPGA_DEBUG
     printf("    (creating tensor in fpga, size %d)\n", size);
 #endif
-    _profile_fpga_add_tensor(size*sizeof(data_type));
+    _profile_fpga_add_tensor(size*sizeof(fpga_data_type));
 
     // search an available slot
     int e;
@@ -1112,7 +1129,7 @@ cl::Buffer *fpga_create_tensor(int device, int size)
 #endif
 
     e = fpga_num_buffer_pool_slots;
-    OCL_CHECK(err,buffer = new cl::Buffer(*context,CL_MEM_READ_WRITE, size*sizeof(data_type), NULL, &err));
+    OCL_CHECK(err,buffer = new cl::Buffer(*context,CL_MEM_READ_WRITE, size*sizeof(fpga_data_type), NULL, &err));
     fpga_ptr_buffer_pool[e] = buffer;
     fpga_size_buffer_pool[e] = size;
     fpga_inuse_buffer_pool[e] = 1;
@@ -1128,7 +1145,7 @@ void fpga_delete_tensor(int device, cl::Buffer *ptr, int fpga_tensor_id_p, int s
     printf("    (deleting tensor in fpga, id %d)\n", fpga_tensor_id_p);
 #endif
 
-    _profile_fpga_remove_tensor(size*sizeof(data_type));
+    _profile_fpga_remove_tensor(size*sizeof(fpga_data_type));
 
     // we just update the buffer pool
     //
@@ -1171,13 +1188,13 @@ void fpga_copy_fpga(Tensor *A, Tensor *B)
 
     // TODO... enqueueCopyBuffer does not work, we need to pass through CPU!!!!!!!
     if (1==1) { //(A->size < 16) {
-      //printf("\nFPGA Warning: copy through CPU (buffer too small: %d bytes)\n", A->size*sizeof(data_type));
+      //printf("\nFPGA Warning: copy through CPU (buffer too small: %d bytes)\n", A->size*sizeof(fpga_data_type));
       float *p = (float *)malloc(A->size*sizeof(float));
       fpga_copy_from_fpga(A, p);
       fpga_copy_to_fpga(p, B);
       free(p);
     } else {
-      OCL_CHECK(err, err= (*q).enqueueCopyBuffer(*bufferA, *bufferB, 0, 0, A->size*sizeof(data_type), NULL, &blocking_event));
+      OCL_CHECK(err, err= (*q).enqueueCopyBuffer(*bufferA, *bufferB, 0, 0, A->size*sizeof(fpga_data_type), NULL, &blocking_event));
       (*q).finish();
     }
 #ifdef FPGA_DEBUG
@@ -1185,59 +1202,103 @@ void fpga_copy_fpga(Tensor *A, Tensor *B)
 #endif
 }
 
-void fpga_copy_to_fpga(float *nptr, Tensor *A)
+void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt)
 {
 #ifdef FPGA_DEBUG_VERBOSE
     printf("    (copy to fpga: tensor id %d, size %d, from_cpu_ptr %p)\n", A->fpga_tensor_id, A->size, nptr);
 #endif
 
 #ifdef PRECISION_CONVERSION
-    // We allocate a buffer to convert from floats to data_type
-    data_type *cpu_buff = (data_type*)malloc(A->size*sizeof(data_type));
-    for (int x=0; x<A->size; x++) cpu_buff[x] = data_type(nptr[x]);
-
-    //for (int x=0; x<1; x++) printf("cpu %6.4f -> fpga %6.4f\n", nptr[x], float(cpu_buff[x]));
-
-    // now we copy into the FPGA
-    cl_int err;
-    cl::Event blocking_event;
-    cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(data_type), cpu_buff, nullptr, &blocking_event));
-    (*q).finish();
-    free(cpu_buff);
+    if (cvt) {
+      _debug_fpga_funcs("Conversion (CPU->FPGA)");
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to fpga_data_type
+      fpga_data_type *cpu_buff = (fpga_data_type*)malloc(A->size*sizeof(fpga_data_type));
+      for (int x=0; x<A->size; x++) cpu_buff[x] = fpga_data_type(nptr[x]);
+      PROFILING_FOOTER(Precision_Conversion);
+      // now we copy into the FPGA
+      cl_int err;
+      cl::Event blocking_event;
+      cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
+      PROFILING_HEADER(FPGA_WRITE);
+      OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), cpu_buff, nullptr, &blocking_event));
+      (*q).finish();
+      PROFILING_FOOTER(FPGA_WRITE);
+      free(cpu_buff);
+    } else {
+      // regular copy from CPU to FPGA with no precision conversion
+      cl_int err;
+      cl::Event blocking_event;
+      cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
+      PROFILING_HEADER(FPGA_WRITE);
+      OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &blocking_event));
+      (*q).finish();
+      PROFILING_FOOTER(FPGA_WRITE);
+    }
 #else
     // regular copy from CPU to FPGA with no precision conversion
     cl_int err;
     cl::Event blocking_event;
     cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(data_type), nptr, nullptr, &blocking_event));
+    PROFILING_HEADER(FPGA_WRITE);
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &blocking_event));
     (*q).finish();
+    PROFILING_FOOTER(FPGA_WRITE);
 #endif
+
+    // Optimization. Reads after writes are avoided if we detect a write within a tensor and then a read within a tensor
+    // A flag is used to indicate the tensor buffer contents are the same (CPU buffer and FPGA buffer)
+    //if (nptr == A->ptr) A->fpga_consistent_buffers = 1; else A->fpga_consistent_buffers = 0;
+    //
+    // TODO: El puntero de CPU puede cambiar y no enterarme, por tanto, introduciendo inconsistencias
+    // Una solución es que cada vez que se reasigna el puntero de CPU se pone la variable fpga_consistent_buffers a 0 del tensor
 }
 
 ///////////////////////////////////////////
-void fpga_copy_from_fpga(Tensor *A,float *nptr)
+void fpga_copy_from_fpga(Tensor *A,float *nptr, int cvt)
 {
 #ifdef FPGA_DEBUG_VERBOSE
     printf("    (copy from fpga: tensor id %d, size %d, to_cpu_ptr %p)\n", A->fpga_tensor_id, A->size, nptr);
 #endif
 
+    // Optimization. Reads after writes are avoided if we detect a write within a tensor and then a read within a tensor
+    // A flag is used to indicate the tensor buffer contents are the same (CPU buffer and FPGA buffer)
+    //if ((nptr == A->ptr) && (A->fpga_consistent_buffers == 1)); return;
+
+
 #ifdef PRECISION_CONVERSION
   // We read from the FPGA to a temporal buffer and then convert the precision
-  data_type *cpu_buff = (data_type*)malloc(A->size * sizeof(data_type));
-  cl_int err;
-  cl::Event event;
-  OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(data_type), cpu_buff, nullptr, &event));
-  (*q).finish();
-  // now we perform the precision conversion
-  for (int x=0; x<A->size; x++) nptr[x] = float(cpu_buff[x]);
-  free(cpu_buff);
+  if (cvt) {
+    _debug_fpga_funcs("Conversion (FPGA->CPU)");
+    fpga_data_type *cpu_buff = (fpga_data_type*)malloc(A->size * sizeof(fpga_data_type));
+    cl_int err;
+    cl::Event event;
+    PROFILING_HEADER(FPGA_READ);
+    OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(fpga_data_type), cpu_buff, nullptr, &event));
+    (*q).finish();
+    PROFILING_FOOTER(FPGA_READ);
+    PROFILING_HEADER(Precision_Conversion);
+    // now we perform the precision conversion
+    for (int x=0; x<A->size; x++) nptr[x] = float(cpu_buff[x]);
+    free(cpu_buff);
+    PROFILING_FOOTER(Precision_Conversion);
+  } else {
+    // regular copy from FPGA to CPU with no precision conversion
+    cl_int err;
+    cl::Event event;
+    PROFILING_HEADER(FPGA_READ);
+    OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &event));
+    (*q).finish();
+    PROFILING_FOOTER(FPGA_READ);
+  }
 #else
   // regular copy from FPGA to CPU with no precision conversion
   cl_int err;
   cl::Event event;
-  OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(data_type), nptr, nullptr, &event));
+  PROFILING_HEADER(FPGA_READ);
+  OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &event));
   (*q).finish();
+  PROFILING_FOOTER(FPGA_READ);
 #endif
 }
 
@@ -1246,8 +1307,10 @@ void fpga_copy_addresses_from_fpga(SelDescriptor *SD, int size, int *nptr)
     cl_int err;
     cl::Event event;
     cl::Buffer *buf = (cl::Buffer*)SD->fpga_ptr;
+    PROFILING_HEADER(FPGA_READ);
     OCL_CHECK(err, err= (*q).enqueueReadBuffer(*buf, CL_TRUE, 0, size, nptr, nullptr, &event));
     (*q).finish();
+    PROFILING_FOOTER(FPGA_READ);
 }
 
 void fpga_destroy_memory(cl::Buffer *fpga_ptrI) {
@@ -1273,8 +1336,10 @@ void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size
 #endif
     cl_int err;
     cl::Event blocking_event;
+    PROFILING_HEADER(FPGA_WRITE);
     OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &blocking_event));
     (*q).finish();
+    PROFILING_FOOTER(FPGA_WRITE);
 }
 
 void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size) {
@@ -1283,8 +1348,10 @@ void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int si
 #endif
     cl_int err;
     cl::Event event;
+    PROFILING_HEADER(FPGA_READ);
     OCL_CHECK(err, err= (*q).enqueueReadBuffer(*ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &event));
     (*q).finish();
+    PROFILING_FOOTER(FPGA_READ);
 }
 
 

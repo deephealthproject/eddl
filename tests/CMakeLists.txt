@@ -2,71 +2,156 @@ cmake_minimum_required(VERSION 3.9.2)
 
 project(eddl-tests)
 
-
-if(USE_LOCAL_GTEST AND NOT BUILD_SUPERBUILD)
-    message(STATUS "Using local GTest...")
+# GTest
+enable_testing()
+if(GTEST_ROOT)
+    # Find libraries (need absolute paths)
+    find_library(GTEST_LIBRARY NAMES gtest HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTEST_MAIN_LIBRARY NAMES gtest_main HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTESTD_LIBRARY NAMES gtestd HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTEST_MAIND_LIBRARY NAMES gtest_maind HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
 else()
-    # GTest (use local)
-    enable_testing()
-    if(DEFINED GTEST_INCLUDE_DIRS AND DEFINED GTEST_LIBRARIES_DIRS AND DEFINED GTEST_BOTH_LIBRARIES)
-        message(STATUS "Using specific GTest")
-    else()
-        message(STATUS "Searching for GTest in the system...")
-        find_package(GTest REQUIRED)
-        message(STATUS "GTest found!")
-        SET(GTEST_BOTH_LIBRARIES "gtest;gtest_main")
-
-        # Check if GTest was really found
-        if(NOT GTEST_FOUND)
-            message(FATAL_ERROR "GTest was found by CMake but its libraries or includes are missing.
-                    Use '-D USE_LOCAL_GTEST=ON', -D BUILD_SUPERBUILD=ON, or try with a different GTest installation to
-                    fix this problem. Alternatively, you can disable this tests with '-D BUILD_TESTS=OFF")
-        endif()
-    endif()
+    find_package(GTest REQUIRED)
 endif()
 
 # Find tests (recursively, from here)
 file(GLOB_RECURSE CPP_TESTS_FILES "${PROJECT_SOURCE_DIR}/*" *.{h, cpp})
 
+# Filter ONNX files if they are not needed
+if(NOT BUILD_PROTOBUF)
+    list(FILTER CPP_TESTS_FILES EXCLUDE REGEX ".*/onnx/*")
+endif()
+
 # Build test and target libraries
 add_executable(unit_tests ${CPP_TESTS_FILES})
-target_include_directories(unit_tests PUBLIC $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>)  # TODO: Why build interface?
-target_link_directories(unit_tests PUBLIC ${GTEST_LIBRARIES_DIRS})
+target_include_directories(unit_tests PUBLIC $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>)
+
+# Add libraries
 if(MSVC)
-    target_link_libraries(unit_tests PUBLIC eddl
-        optimized ${GTEST_BOTH_LIBRARIES}
-        debug ${GTEST_BOTH_LIBRARIES_D})
+    target_link_libraries(unit_tests PUBLIC eddl 
+        optimized ${GTEST_LIBRARY} optimized ${GTEST_MAIN_LIBRARY}
+        debug ${GTESTD_LIBRARY} debug ${GTEST_MAIND_LIBRARY}
+    )
 else()
-    find_package(Threads)
-    target_link_libraries(unit_tests PUBLIC eddl ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    find_package(Threads REQUIRED)
+    target_link_libraries(unit_tests PUBLIC eddl ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 
-# CUDA (set in parent scope)
+# CUDA (TEMP! We shouldn't need this)
+if(USE_CUDA)
+    cmake_minimum_required(VERSION 3.17.2)  # Due to CUDAToolkit
+
+    # Check if cuda is available
+    include(CheckLanguage)
+    check_language(CUDA)
+
+    if (CMAKE_CUDA_COMPILER)
+        enable_language(CUDA)
+        find_package(CUDAToolkit)
+
+        # NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
+                message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8 (DETECTED: ${CMAKE_CXX_COMPILER_VERSION}).
+        Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
+            endif()
+        endif()
+
+        # Set standard CUDA variables
+        if(NOT DEFINED CMAKE_CUDA_STANDARD)
+            set(CMAKE_CUDA_STANDARD 11)
+            set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+        endif()
+
+        # Target properties
+        set_target_properties(unit_tests PROPERTIES
+                CUDA_SEPARABLE_COMPILATION ON
+                CUDA_RESOLVE_DEVICE_SYMBOLS ON
+                )
+
+        # Add source files
+        target_sources(unit_tests PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
+
+        # Add includes
+        target_include_directories(unit_tests PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
+
+        # Add libraries
+        target_link_libraries(unit_tests PRIVATE CUDA::cublas CUDA::cudart CUDA::curand)
+        if(USE_CUDNN)
+            if(CUDNN_ROOT_DIR)
+                SET(CUDNN_INCLUDE_DIRS ${CUDNN_ROOT_DIR}/include)
+                find_library(CUDNN_LIBRARY cudnn HINTS ${CUDNN_ROOT_DIR} PATHS ${CUDNN_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
+            else()
+                SET(CUDNN_INCLUDE_DIRS ${CUDAToolkit_INCLUDE_DIRS})
+                find_library(CUDNN_LIBRARY cudnn HINTS ${CUDAToolkit_LIBRARY_DIR} PATHS ${CUDAToolkit_LIBRARY_DIR})
+            endif()
+
+            # Check if the library has been found
+            if(CUDNN_LIBRARY)
+                target_include_directories(unit_tests PRIVATE ${CUDNN_INCLUDE_DIRS})
+                target_link_libraries(unit_tests PRIVATE ${CUDNN_LIBRARY})
+            else()
+                message(WARNING "[WARNING] CUDNN was not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=GPU')
+                Hint: Install CUDNN in the same path as the CUDA Toolkit, or specify the CUDNN path using this flag '-D CUDNN_ROOT_DIR=path'")
+                SET(BUILD_TARGET "GPU") # Local's scope
+                SET(USE_CUDNN OFF) # Local's scope (disable)
+            endif()
+        endif()
+
+        if(APPLE)
+            # We need to add the path to the driver (libcuda.dylib) as an rpath,
+            # so that the static cuda runtime can find it at runtime.
+            set_property(TARGET unit_tests PROPERTY BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+        endif()
+
+        if(NOT DEFINED CMAKE_CUDA_STANDARD)
+            # Make EDDL works for cuda 7.5
+            set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
+        endif()
+    else()
+        message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
+        Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
+        SET(BUILD_TARGET "CPU") # Local's scope
+        SET(USE_CUDNN OFF) # Local's scope (disable)
+        SET(USE_CUDA OFF) # Local's scope (disable)
+    endif()
+endif()
+SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
+SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
+
+##########################################################################
+############################# DEFINITIONS ################################
+##########################################################################
+
 if(USE_CUDA)
     add_definitions(-DcGPU)
 endif()
-
-if (USE_FPGA)
+if(USE_CUDNN)
+    add_definitions(-DcCUDNN)
+endif()
+if(USE_FPGA)
     add_definitions(-DcFPGA)
 endif()
+
+##########################################################################
+############################# EXECUTABLES ################################
+##########################################################################
 
 # Add test
 add_test(NAME unit_tests COMMAND unit_tests)
 
 
+##########################################################################
+############################### SUMMARY ##################################
+##########################################################################
+
 # SHOW OPTIONS
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
-message(STATUS "Use local GTest: ${USE_LOCAL_GTEST} (different from superbuild)" )
 message(STATUS "GTest root: " ${GTEST_ROOT} )
-message(STATUS "GTest include: " ${GTEST_INCLUDE_DIRS} )
-message(STATUS "GTest library dirs: " ${GTEST_LIBRARIES_DIRS} )
-message(STATUS "GTest libraries: " ${GTEST_BOTH_LIBRARIES} )
+message(STATUS "GTest include dirs: " ${GTEST_INCLUDE_DIRS} )
+message(STATUS "GTest libraries: ${GTEST_LIBRARY}; ${GTEST_MAIN_LIBRARY} ")
+#message(STATUS "GTest libraries (debug): ${GTESTD_LIBRARY}; ${GTESTD_MAIN_LIBRARY} ")
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
-if(USE_CUDA)
-    message(STATUS "CUDA compiler: " ${CMAKE_CUDA_COMPILER})
-    message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
-    message(STATUS "CUDA toolkit: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} )
-endif()

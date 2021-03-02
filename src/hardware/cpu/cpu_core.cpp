@@ -1,36 +1,17 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 #include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/profiling.h"
 #include <algorithm>
 #include <numeric>
 #include <float.h>
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-
-    #include <chrono>
-    #include <windows.h>
-    #include <winsock.h>
-
-    int gettimeofday(struct timeval* tp, struct timezone* tzp)
-    {
-        namespace sc = std::chrono;
-        sc::system_clock::duration d = sc::system_clock::now().time_since_epoch();
-        sc::seconds s = sc::duration_cast<sc::seconds>(d);
-        tp->tv_sec = s.count();
-        tp->tv_usec = sc::duration_cast<sc::microseconds>(d - s).count();
-
-        return 0;
-    }
-#else
-    #include <sys/time.h>
-#endif
 
 int num_instances[_NUM_CPU_FUNCS];
 float mb_memory_needed;

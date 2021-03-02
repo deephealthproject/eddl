@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -32,7 +32,10 @@ NetLoss::NetLoss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> 
 
     Net *sn=in[0]->net;
 
-    graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},sn->cs);
+    CompServ *cs=sn->cs->clone();
+    cs->mem_level=0; //delta must stay to backward netinput layers
+
+    graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},cs, true, true, true);
 
     cout<<"Loss graph:"<<name<<endl;
     cout<<graph->summary();
@@ -52,8 +55,12 @@ NetLoss::NetLoss(const std::function<Layer*(Layer*)>& f, Layer *in, string name)
     graph=new Net(ginput,{fout});
 
     Net *sn=in->net;
+    
+    CompServ * cs=sn->cs->clone();
+    cs->mem_level=0; //delta must stay to backward netinput layers
 
-    graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},sn->cs);
+
+    graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},cs, true, true, true);
 
     cout<<"Loss graph:"<<name<<endl;
     cout<<graph->summary();

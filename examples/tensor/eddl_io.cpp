@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -31,6 +31,8 @@ int main(int argc, char **argv) {
     t->print();
     t->print(1);
     t->print(0, true);
+
+    delete t;
 
     // Load image (formats accepted: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm)
     Tensor *t1 = Tensor::load(fname + "elephant.jpg");
@@ -121,4 +123,10 @@ int main(int argc, char **argv) {
     cout << "Tensor after loading from ptr" << endl;
     loaded_t7->info();
     loaded_t7->print();
+
+    delete t1;
+    delete t6;
+    delete t7;
+    delete loaded_t7;
+    free(serial_t7.first);
 }

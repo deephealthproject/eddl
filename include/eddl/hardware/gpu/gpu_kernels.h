@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -17,6 +17,12 @@
 /* we need these includes for CUDA's random number stuff */
 #include <curand.h>
 #include <curand_kernel.h>
+
+// Same as in tensor.h
+#define GPU_MIN_FLOAT 1.17549e-38f;  // Minimum finite value
+#define GPU_MAX_FLOAT 3.40282e+38f;  // Maximum finite value
+#define GPU_EPS_FLOAT 1.19209e-07f;  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
+#define GPU_LOWEST_FLOAT -3.40282e+38f;  // For floating-point types: implementation-dependent; generally, the negative of max()
 
 
 // GPU: Core (static)
@@ -188,6 +194,5 @@ __global__ void gpu_not_equal(float *A, float *B, float *C, long int size);
 // Legacy
 
 __global__ void mask(float *A, float v, long int size);
-
 
 #endif

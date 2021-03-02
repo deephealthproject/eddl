@@ -1,13 +1,19 @@
 name: build-windows
 
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - gh-pages
+  pull_request:
+    branches-ignore:
+      - gh-pages
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #os: [windows-latest, windows-2016]
+        #os: [windows-latest, windows-2016] 
         os: [windows-latest]
     steps:
     - uses: actions/checkout@v2
@@ -15,7 +21,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G "Visual Studio 16 2019" -A x64 -T ClangCL -DBUILD_SUPERBUILD=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TARGET=CPU ..
+        cmake -G "Visual Studio 16 2019" -A x64 -DBUILD_SUPERBUILD=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TARGET=CPU -DBUILD_HPC=OFF -DBUILD_TESTS=ON -DBUILD_DIST=OFF -DBUILD_RUNTIME=OFF ..
       shell: cmd
     - name: Build
       run: cmake --build build --config Release
@@ -25,3 +31,4 @@ jobs:
         cd build
         "bin/Release/unit_tests.exe"
       shell: cmd
+      

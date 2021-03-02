@@ -1,0 +1,5 @@
+.git/
+cmake-*/
+/[Bb]uild*
+_build/
+Dockerfile

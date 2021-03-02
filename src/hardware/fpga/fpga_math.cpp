@@ -81,6 +81,7 @@ void fpga_cpuemu_add(Tensor *A, Tensor *B, float v) {
 }
 
 void fpga_add(Tensor *A, Tensor *B, float v) {
+  _debug_fpga_funcs("add");
   _profile_fpga(_FPGA_ADD, 0);
 #ifndef K_ENABLED_ADD
   fpga_cpuemu_add(A, B, v);
@@ -486,12 +487,17 @@ void fpga_mod(Tensor *A, Tensor *B, float v){
 // mult
 //
 void fpga_cpuemu_mult(Tensor *A, Tensor *B, float v) {
-  fpga_copy_from_fpga(A, A->ptr);
-  cpu_mult(A, B, v);
-  fpga_copy_to_fpga(B->ptr, B);
+  fpga_copy_from_fpga(A, A->ptr, 0);
+  fpga_data_type *ptrA = (fpga_data_type *)A->ptr;
+  fpga_data_type *ptrB = (fpga_data_type *)B->ptr;
+  fpga_data_type vv = (fpga_data_type)v;
+  #pragma omp parallel for
+  for (int i = 0; i < A->size; ++i) ptrB[i] = ptrA[i] * vv;
+  fpga_copy_to_fpga(B->ptr, B, 0);
 }
 
 void fpga_mult(Tensor *A, Tensor *B, float v) {
+  _debug_fpga_funcs("mult");
   _profile_fpga(_FPGA_MULT, 0);
   _profile_fpga_tensor(A);
 #ifndef K_ENABLED_MULT
@@ -942,7 +948,7 @@ void fpga_cpuemu_inc(Tensor *A, Tensor *B) {
 
 void fpga_inc(Tensor *A, Tensor *B) {
   _profile_fpga(_FPGA_INC, 0);
-  B->tsem->lock();               // why locks?
+                 // why locks?
 #ifndef K_ENABLED_INC
   fpga_cpuemu_inc(A, B);
 #else
@@ -956,7 +962,7 @@ void fpga_inc(Tensor *A, Tensor *B) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_inc, NULL, &event));
   q.finish();
 #endif
-  B->tsem->unlock();
+
   _profile_fpga(_FPGA_INC, 1);
 }
 
@@ -971,6 +977,7 @@ void fpga_cpuemu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int inc
 }
 
 void fpga_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
+    _debug_fpga_funcs("mult2D");
     _profile_fpga(_FPGA_MULT2D, 0);
     _profile_fpga_tensor(A);
     _profile_fpga_tensor(B);
@@ -1010,6 +1017,7 @@ void fpga_cpuemu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 }
 
 void fpga_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
+  _debug_fpga_funcs("el_div");
   _profile_fpga(_FPGA_EL_DIV, 0);
   _profile_fpga_tensor(A);
   _profile_fpga_tensor(B);
@@ -1098,13 +1106,24 @@ void fpga_sign(Tensor *A, Tensor *B, float zero_sign){
 // sum2D_rowwise
 //
 void fpga_cpuemu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
-  fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_from_fpga(B, B->ptr);
-  cpu_sum2D_rowwise(A, B, C);
-  fpga_copy_to_fpga(C->ptr, C);
+
+  fpga_copy_from_fpga(A, A->ptr, 0);
+  fpga_copy_from_fpga(B, B->ptr, 0);
+  fpga_data_type *ptrA = (fpga_data_type *)A->ptr;
+  fpga_data_type *ptrB = (fpga_data_type *)B->ptr;
+  fpga_data_type *ptrC = (fpga_data_type *)C->ptr;
+
+  #pragma omp parallel for
+  for (int i = 0; i < A->shape[0]; i++) {
+      int p=i*A->shape[1];
+      for (int j = 0; j < A->shape[1]; j++, p++)
+        ptrC[p] = ptrA[p] + ptrB[j];
+  }
+  fpga_copy_to_fpga(C->ptr, C, 0);
 }
 
 void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
+  _debug_fpga_funcs("sum2D_rowwise");
   _profile_fpga(_FPGA_SUM2D_ROWWISE, 0);
 #ifndef K_ENABLED_SUM2D_ROWWISE
   fpga_cpuemu_sum2D_rowwise(A, B, C);

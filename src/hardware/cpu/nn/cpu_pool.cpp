@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -16,6 +16,30 @@
 
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
+
+float get_pixel(int b,int px,int py,int pz,PoolDescriptor *D,int isize,int irsize) {
+  // Check boundaries of the window
+  if (px<0) return 0.0;
+  if (py<0) return 0.0;
+  if (px>=D->ic) return 0.0;
+  if (py>=D->ir) return 0.0;
+
+  // Compute address from indices (row-major)
+  unsigned int address = (b*isize) + (pz*irsize) + (py*D->ic) + px;
+  return D->I->ptr[address];
+}
+
+void add_pixel(int b,int px,int py,int pz,PoolDescriptor *D,int isize,int irsize,float val) {
+  // Check boundaries of the window
+  if (px<0) return;
+  if (py<0) return;
+  if (px>=D->ic) return;
+  if (py>=D->ir) return;
+
+  // Compute address from indices (row-major)
+  unsigned int address = (b*isize) + (pz*irsize) + (py*D->ic) + px;
+  D->ID->ptr[address]+=val;
+}
 
 void cpu_mpool2D(PoolDescriptor *D){
     _profile(_CPU_MPOOL2D, 0);
@@ -31,7 +55,7 @@ void cpu_mpool2D(PoolDescriptor *D){
                 for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc, p++) { // cols: left-right
 
                     // Get max value in window
-                    float max = std::numeric_limits<float>::min();
+                    float max = CPU_LOWEST_FLOAT;
                     for(int ki=0; ki<D->kr; ki++){  // rows (kernel): top-bottom
                         for(int kj=0; kj<D->kc; kj++) { // cols (kernel): left-right
 
@@ -79,6 +103,15 @@ void cpu_mpool2D_back(PoolDescriptor *D){
     } // batch
     _profile(_CPU_MPOOL2D_BACK, 1);
 }
+
+void cpu_mpool3D(PoolDescriptor3D *D){
+
+}
+
+void cpu_mpool3D_back(PoolDescriptor3D *D){
+
+}
+
 
 void cpu_avgpool2D(PoolDescriptor *D){
     _profile(_CPU_AVGPOOL2D, 0);

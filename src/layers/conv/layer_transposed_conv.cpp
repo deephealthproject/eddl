@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -22,7 +22,7 @@ int LConvT::total_layers = 0;
 // ---- TRANSPOSED CONVOLUTION ----
 LConvT::LConvT(Layer *parent, int filters, const vector<int> &kernel_size,
     const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
-    const vector<int> &strides, bool use_bias, string name, int dev, int mem) : LConvT(parent, new ConvolDescriptor(filters, kernel_size, strides, padding,mem), name, dev, mem) {
+    const vector<int> &strides, bool use_bias, string name, int dev, int mem) : LConvT(parent, nullptr, name, dev, mem) {
     // TODO: Implement (Fix initialization)
 };
 

@@ -1,6 +1,9 @@
 Image operations
 ================
 
+.. note::
+   A practical example of the vast majority of the operations in this page are included in a working example in our `GitHub respository <https://github.com/deephealthproject/eddl/blob/master/examples/tensor/eddl_image.cpp>`_
+
 Transformations
 ----------------
 

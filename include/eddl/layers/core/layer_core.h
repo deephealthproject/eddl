@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -113,7 +113,6 @@ public:
     static int total_layers;
     int ndim;
     bool use_bias;  // TODO: Implement
-	bool distributed_training;
 
 	// Params
 	Tensor *W;
@@ -161,7 +160,25 @@ public:
     string act;
     static int total_layers;
     vector<float> params;
+#ifdef cCUDNN
+    //Softmax
+    cudnnSoftmaxAlgorithm_t  algorithm;
+    cudnnSoftmaxMode_t  softmax_mode;
 
+    //Other Activations
+    cudnnActivationDescriptor_t activationDesc;
+    cudnnActivationMode_t mode;
+    cudnnNanPropagation_t reluNanOpt;
+    double coef;
+
+    //BOTH softmax and activations
+    cudnnTensorDescriptor_t    xDesc;
+    cudnnTensorDescriptor_t    yDesc;
+
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+
+#endif
     LActivation(Layer *parent, string act, vector<float> params, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -170,6 +187,10 @@ public:
 
     void save(std::ofstream &ofs, string format) override;
     void load(std::ifstream &ifs, string format) override;
+
+#ifdef cCUDNN
+    void resize(int batch) override;
+#endif
 
     void forward() override;
 
@@ -188,6 +209,62 @@ public:
     // constructors and clones
     LReshape(Layer *parent, vector<int> shape, string name, int dev, int mem);
     ~LReshape() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    // implementation
+    void mem_delta() override;
+    void free_delta() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+
+};
+
+/// Squeeze Layer
+class LSqueeze : public LinLayer {
+public:
+    static int total_layers;
+    int axis;
+
+    // constructors and clones
+    LSqueeze(Layer *parent, int axis, string name, int dev, int mem);
+    ~LSqueeze() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    // implementation
+    void mem_delta() override;
+    void free_delta() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+
+};
+
+/// Unsqueeze Layer
+class LUnsqueeze : public LinLayer {
+public:
+    static int total_layers;
+    int axis;
+
+    // constructors and clones
+    LUnsqueeze(Layer *parent, int axis, string name, int dev, int mem);
+    ~LUnsqueeze() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

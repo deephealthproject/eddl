@@ -10,6 +10,7 @@ src/serialization/onnx/onnx.pb.cc
 *.DS_Store
 .idea
 .vscode
+*~
 
 # Build
 /[Bb]uild*

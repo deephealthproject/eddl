@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -23,6 +23,8 @@
 
 PROFILING_ENABLE_EXTERN(cent);
 
+#include <cmath>
+
 namespace tensorNN {
 
 
@@ -33,25 +35,132 @@ namespace tensorNN {
 
         PROFILING_HEADER(cent);
 
-        C->tsem->lock();
+
         if (A->isCPU()) {
             cpu_cent(A, B, C);
         }
 #ifdef cGPU
         else if (A->isGPU())
-          {
-             gpu_cent(A,B,C);
-          }
+        {
+            gpu_cent(A,B,C);
+        }
 #endif
 #ifdef cFPGA
-    else if (A->isFPGA())
+        else if (A->isFPGA())
       {
          fpga_cent(A,B,C);
       }
 #endif
-        C->tsem->unlock();
+
 
         PROFILING_FOOTER(cent);
     }
 
-}
+
+    float categorical_cross_entropy(Tensor* y_true, Tensor* y_pred){
+        if (!Tensor::sameDevice(y_true, y_pred)) {
+            msg("Tensors in different devices", "TensorNN::categorical_cross_entropy");
+        }
+        if (!Tensor::sameShape(y_true, y_pred)) {
+            msg("Incompatible dims", "TensorNN::categorical_cross_entropy");
+        }
+
+        if (y_true->isCPU()) {
+            return cpu_categorical_cross_entropy(y_true, y_pred);
+        }
+#ifdef cGPU
+        else if (y_true->isGPU())
+        {
+            return gpu_categorical_cross_entropy(y_true, y_pred);
+        }
+#endif
+#ifdef cFPGA
+        else {
+            printf("ERROR, fpga_categorial_cross_entropy not implemented on FPGA yet\n");
+            exit(1);
+        return -1; //fpga_categorical_cross_entropy(y_true, y_pred);
+    }
+#endif
+        return std::nanf("");
+    }
+
+    void d_categorical_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
+        if (!Tensor::sameDevice(y_true, y_pred) || !Tensor::sameDevice(y_true, delta)) {
+            msg("Tensors in different devices", "TensorNN::d_categorical_cross_entropy");
+        }
+        if (!Tensor::sameShape(y_true, y_pred) || !Tensor::sameShape(y_true, delta)) {
+            msg("Incompatible dims", "TensorNN::d_categorical_cross_entropy");
+        }
+
+        if (y_true->isCPU()) {
+            cpu_d_categorical_cross_entropy(y_true, y_pred, delta);
+        }
+#ifdef cGPU
+        else if (y_true->isGPU())
+        {
+            gpu_d_categorical_cross_entropy(y_true, y_pred, delta);
+        }
+#endif
+#ifdef cFPGA
+        else {
+            printf("Error, fpga_d_categorical_cross_entropy not implemented yet\n");
+            exit(1);
+        //fpga_d_categorical_cross_entropy(y_true, y_pred, delta);
+    }
+#endif
+    }
+
+    float binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
+        if (!Tensor::sameDevice(y_true, y_pred)) {
+            msg("Tensors in different devices", "TensorNN::binary_cross_entropy");
+        }
+        if (!Tensor::sameShape(y_true, y_pred)) {
+            msg("Incompatible dims", "TensorNN::binary_cross_entropy");
+        }
+        if (y_true->isCPU()) {
+            return cpu_binary_cross_entropy(y_true, y_pred);
+        }
+#ifdef cGPU
+        else if (y_true->isGPU())
+        {
+            return gpu_binary_cross_entropy(y_true, y_pred);
+        }
+#endif
+#ifdef cFPGA
+        else {
+            printf("Error, fpga_full_cross_entropy not implemented yet\n"); 
+            exit(1);
+        return -1; //fpga_full_cross_entropy(y_true, y_pred);
+    }
+#endif
+        return std::nanf("");
+    }
+
+    void d_binary_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta){
+        if (!Tensor::sameDevice(y_true, y_pred) || !Tensor::sameDevice(y_true, delta)) {
+            msg("Tensors in different devices", "TensorNN::d_binary_cross_entropy");
+        }
+        if (!Tensor::sameShape(y_true, y_pred) || !Tensor::sameShape(y_true, delta)) {
+            msg("Incompatible dims", "TensorNN::d_binary_cross_entropy");
+        }
+
+        if (y_true->isCPU()) {
+            cpu_d_binary_cross_entropy(y_true, y_pred, delta);
+        }
+#ifdef cGPU
+        else if (y_true->isGPU())
+        {
+            gpu_d_binary_cross_entropy(y_true, y_pred, delta);
+        }
+#endif
+#ifdef cFPGA
+        else {
+            printf("Error, fpga_d_binary_cross_entropy not implemented yet\n");
+            exit(1);
+        //fpga_d_binary_cross_entropy(y_true, y_pred, delta);
+    }
+#endif
+    }
+
+
+}  // namespace

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.7
+* Version: 0.9
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: April 2020
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -197,6 +197,9 @@ void cpu_print_data(ConvolDescriptor *D, int KW, int KH, int I, int O, int W, in
 void cpu_conv2D(ConvolDescriptor *D)
 {
   _profile(_CPU_CONV2D, 0);
+  //printf("CONV: input data : "); _profile_cpu_tensor(D->I);
+  //printf("          filter : "); _profile_cpu_tensor(D->K);
+  //printf("            bias : "); _profile_cpu_tensor(D->bias);
 
    int osize=D->z*D->r*D->c;
   int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
@@ -316,10 +319,7 @@ void cpu_conv2D(ConvolDescriptor *D)
   }
     _profile(_CPU_CONV2D, 1);
 
-  printf("CONV: input data : "); _profile_cpu_tensor(D->I);
-  printf("          filter : "); _profile_cpu_tensor(D->K);
-  printf("            bias : "); _profile_cpu_tensor(D->bias);
-  printf("          output : "); _profile_cpu_tensor(D->O);
+  //printf("          output : "); _profile_cpu_tensor(D->O);
 
     //float *ptr = D->O->ptr;
     //printf("obtained pixel out[0][0][0]: %6.4f\n", ptr[cpu_data_offset(0, 0, 0, Irows, Icols)]);
@@ -391,4 +391,17 @@ void cpu_conv2D_back(ConvolDescriptor *D)
 
   }// batch
     _profile(_CPU_CONV2D_BACK, 1);
+}
+
+
+void cpu_conv3D(ConvolDescriptor3D *D){
+
+}
+
+void cpu_conv3D_grad(ConvolDescriptor3D *D){
+
+}
+
+void cpu_conv3D_back(ConvolDescriptor3D *D){
+
 }
