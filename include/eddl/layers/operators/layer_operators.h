@@ -169,6 +169,24 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
+/// Clamp Layer
+class LClamp : public OperatorLayer {
+public:
+    static int total_layers;
+    float min;
+    float max;
+
+    LClamp(Layer *l, float min, float max, string name, int dev, int mem);
+
+    void forward() override;
+
+    void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
 /// Mean Layer
 /*class LMean : public OperatorLayer {
 public:
@@ -210,8 +228,8 @@ public:
 class LPow : public OperatorLayer {
 public:
     static int total_layers;
+    float exponent;
 
-    LPow(Layer *l1, Layer *l2, string name, int dev, int mem);
     LPow(Layer *l, float k, string name, int dev, int mem);
 
     void forward() override;

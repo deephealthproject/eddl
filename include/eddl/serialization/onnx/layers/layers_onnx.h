@@ -48,10 +48,12 @@ enum ONNX_LAYERS {
   GATHER,           // OPSET: 13, 11, 1
   CAST,             // We skip this layer when found
   ABS,              // OPSET: 13, 6
+  SUM,              // OPSET: 13, 8, 6, 1
   DIV,              // OPSET: 13, 7
   EXP,              // OPSET: 13, 6
   LOG,              // OPSET: 13, 6
   MUL,              // OPSET: 13, 7
+  CLIP,             // OPSET: 13, 12, 11
   SQRT,             // OPSET: 13, 6
   SUB,              // OPSET: 13, 7
   RMAX,             // OPSET: 13, 12, 11, 1

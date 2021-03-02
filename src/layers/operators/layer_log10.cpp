@@ -42,8 +42,7 @@ LLog10::LLog10(Layer *l, string name, int dev, int mem) : OperatorLayer(name, de
 }
 
 void LLog10::forward() {
-    Tensor::copy(parent[0]->output, output);
-    output->log10_();
+    Tensor::log10(parent[0]->output, output);
 }
 
 void LLog10::backward() {
@@ -56,8 +55,7 @@ Layer *LLog10::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LLog10::clone(int c, int bs, vector<Layer *> p, int todev) {
-  LLog *n;
-  n = new LLog(p[0],  name, todev, this->mem_level);
+  auto *n = new LLog10(p[0],  name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

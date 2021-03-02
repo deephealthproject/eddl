@@ -18,7 +18,7 @@ endif()
 file(GLOB_RECURSE CPP_TESTS_FILES "${PROJECT_SOURCE_DIR}/*" *.{h, cpp})
 
 # Filter ONNX files if they are not needed
-if(NOT BUILD_PROTOBUF)
+if(NOT USE_PROTOBUF)
     list(FILTER CPP_TESTS_FILES EXCLUDE REGEX ".*/onnx/*")
 endif()
 
@@ -124,6 +124,9 @@ SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 ############################# DEFINITIONS ################################
 ##########################################################################
 
+if(USE_PROTOBUF)
+    add_definitions(-DcPROTO)
+endif()
 if(USE_CUDA)
     add_definitions(-DcGPU)
 endif()

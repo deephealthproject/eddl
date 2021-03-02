@@ -76,7 +76,7 @@ Deterministic transformations
 | HorizontalFlip | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Horizontally flip the given image. |
 | Pad            | ⚫️ | ⚫️ |⚫️ | ⚫️ | Pad the given image on all sides with the given "pad" value. |
 | Rotate         | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Rotate the image by angle. |
-| Scale          | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Resize the input image to the given size. `[height, width]` |
+| Scale          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Resize the input image to the given size. `[height, width]` |
 | Shift          | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Shift the input image `[a, b]` |
 | VerticallyFlip | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Vertically flip the given image. |
 | Normalize      | ⚫ | ⚫️ |⚫️ | ⚫️ | Normalize an image with mean and standard deviation. |
@@ -158,7 +158,7 @@ Apply data transformations with random parametrization.
 | Functionality | CPU | GPU | cuDNN | ONNX | Comments |
 | ------------- |------| -----| -----| ------|---------|
 | Abs           |  🟢️️| 🟢️️ |🟢️️ | 🟢️️ | |
-| Sum           | 🟢️️ | 🟢️️ |🟢️️ | 🔴️ | |
+| Sum           | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
 | Div           | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
 | Exp           | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
 | Log           | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
@@ -196,9 +196,9 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | cuDNN | ONNX | Comments |
 | ------------- |------| -----| -----| ------|---------|
-| L1   | 🟢️️ | 🟢️️ |🟢️️ | 🔴️ | Lasso Regression |
-| L2   | 🟢️️ | 🟢️️ |🟢️️ | 🔴️ | Ridge Regression |
-| L1L2 | 🟢️️ | 🟢️️ |🟢️️ | 🔴️ |  |
+| L1   | 🟢️️ | 🟢️️ |🟢️️ | ⚫ | Lasso Regression |
+| L2   | 🟢️️ | 🟢️️ |🟢️️ | ⚫ | Ridge Regression |
+| L1L2 | 🟢️️ | 🟢️️ |🟢️️ | ⚫ |  |
 
 
 # Initializers

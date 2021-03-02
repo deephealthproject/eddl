@@ -97,8 +97,7 @@ void LDiff::forward(){
     }
     else {
       if (left) {
-        Tensor::copy(parent[0]->output,output);
-        output->add_(-val);
+        Tensor::sub(parent[0]->output, output, val);
       }
       else {
         Tensor::copy(parent[0]->output,output);

@@ -968,6 +968,10 @@ namespace eddl {
         return new LLog10(l, "", DEV_CPU, 0);
     }
 
+    layer Clamp(layer l, float min, float max){
+        return new LClamp(l, min, max, "", DEV_CPU, 0);
+    }
+
     layer Mult(layer l1, layer l2){
         return new LMult(l1, l2, "", DEV_CPU, 0);
     }
@@ -978,9 +982,6 @@ namespace eddl {
 
     layer Mult(float k,layer l1){
         return new LMult(l1, k, "", DEV_CPU, 0);
-    }
-    layer Pow(layer l1, layer l2){
-        return new LPow(l1, l2, "", DEV_CPU, 0);
     }
 
     layer Pow(layer l1, float k){
@@ -1439,6 +1440,16 @@ namespace eddl {
             return true;
         }
         return false;
+    }
+
+    ///////////////////////////////////////
+    //  FUSED LAYERS
+    ///////////////////////////////////////
+
+    layer Conv2d_Relu(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides, string padding,  bool use_bias,
+               int groups, const vector<int> &dilation_rate,string name){
+        return new LConv2d_Relu(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
     ///////////////////////////////////////

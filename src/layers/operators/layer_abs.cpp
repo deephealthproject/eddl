@@ -37,7 +37,6 @@ LAbs::LAbs(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, m
 
     mask=new Tensor(l->output->getShape(),dev);
     output=new Tensor(l->output->getShape(),dev);
-//    delta=new Tensor(l->output->getShape(),dev);
 
     l->addchild(this);
     addparent(l);
@@ -48,9 +47,7 @@ LAbs::~LAbs(){
 }
 
 void LAbs::forward(){
-    Tensor::copy(parent[0]->output,output);
-    output->abs_();
-
+    Tensor::abs(parent[0]->output, output);
 }
 
 void LAbs::backward(){
@@ -69,8 +66,7 @@ Layer *LAbs::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LAbs::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LAbs *n = new LAbs(p[0],  name, todev, this->mem_level);
+    auto *n = new LAbs(p[0],  name, todev, this->mem_level);
     n->orig = this;
-
     return n;
 }
