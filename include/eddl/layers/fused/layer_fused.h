@@ -8,8 +8,8 @@
 */
 
 
-#ifndef EDDL_LAYER_CONV2D_RELU_H
-#define EDDL_LAYER_CONV2D_RELU_H
+#ifndef EDDL_LAYER_FUSED_H
+#define EDDL_LAYER_FUSED_H
 
 #include <string>
 #include <cstdio>
@@ -25,21 +25,21 @@ using namespace std;
 
 
 /// LConv2d_Relu Layer
-class LConv2d_Relu : public LinLayer {
+class LConv2dActivation : public LinLayer {
 public:
     static int total_layers;
-
+    string act;
     ConvolDescriptor *cd;
 
 
     // constructors and clones
-    LConv2d_Relu(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
-          int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
+    LConv2dActivation(Layer *parent, string act, int filters, const vector<int> &kernel_size, const vector<int> &strides,
+                      string padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
 
-    LConv2d_Relu(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
+    LConv2dActivation(Layer *parent, string act, ConvolDescriptor *cd, string name, int dev, int mem);
 
     // Destructor
-    ~LConv2d_Relu();
+    ~LConv2dActivation();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -73,4 +73,4 @@ public:
 };
 
 
-#endif //EDDL_LAYER_CONV2D_RELU_H
+#endif //EDDL_LAYER_FUSED_H
