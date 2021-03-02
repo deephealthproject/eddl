@@ -122,12 +122,12 @@ endif()
 ########################### LINK LIBRARIES ################################
 ###########################################################################
 
-# Eigen
+# Eigen ***************************************
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
 target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
-# ONNX files
+# Protobuf ***************************************
 if(BUILD_PROTOBUF)
 
     # Link library
@@ -170,7 +170,7 @@ endif()
 SET(USE_PROTOBUF ${USE_PROTOBUF} PARENT_SCOPE)  # Parent's scope
 
 
-# OpenMP
+# OpenMP ***************************************
 if(BUILD_OPENMP)
     # find_package does not support Clang on Windows
     if (WIN32 AND CMAKE_RC_COMPILER STREQUAL "llvm-rc")
@@ -210,7 +210,7 @@ endif()
 SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 
 
-# CUDA
+# CUDA ***************************************
 if(USE_CUDA)
     cmake_minimum_required(VERSION 3.17.2)  # Due to CUDAToolkit
 
@@ -293,8 +293,7 @@ SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 
 
-
-# FPGA
+# FPGA ***************************************
 if(USE_FPGA)
     find_package(OpenCL)
     if (OpenCL_FOUND)
@@ -324,7 +323,7 @@ endif()
 SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
 
 if(BUILD_DIST)
-    # ZLIB
+    # ZLIB  ***************************************
     if(DEFINED ZLIB_ROOT AND DEFINED ZLIB_INCLUDE_DIRS)
         find_library(ZLIB_LIBRARIES z HINTS ${ZLIB_ROOT} PATHS ${ZLIB_ROOT} PATH_SUFFIXES "lib" "lib64")
     else()
@@ -339,7 +338,7 @@ if(BUILD_DIST)
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
     target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES})
 
-    # OPENSSL
+    # OPENSSL ***************************************
     if(DEFINED OPENSSL_ROOT_DIR AND DEFINED OPENSSL_INCLUDE_DIR)
         find_library(OPENSSL_SSL_LIBRARY ssl HINTS ${OPENSSL_ROOT_DIR} PATHS ${OPENSSL_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
         find_library(OPENSSL_CRYPTO_LIBRARY crypto HINTS ${OPENSSL_ROOT_DIR} PATHS ${OPENSSL_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
