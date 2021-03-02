@@ -15,6 +15,7 @@ SET(USE_OPENMP OFF)
 SET(USE_CUDA OFF)
 SET(USE_CUDNN OFF)
 SET(USE_FPGA OFF)
+SET(USE_PROTOBUF OFF)
 
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
@@ -128,7 +129,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only libra
 
 # ONNX files
 if(BUILD_PROTOBUF)
-    add_definitions(-DcPROTO)
 
     # Link library
     if(Protobuf_ROOT)
@@ -138,34 +138,36 @@ if(BUILD_PROTOBUF)
         find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf libprotobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
     else()
         find_package(Protobuf)  # Problems with: Protobuf_ROOT
+    endif()
 
-        # Check if Protobuf was really found
-        if(NOT Protobuf_FOUND)
-            message(FATAL_ERROR "Protobuf was found by CMake.
-                    Use '-D BUILD_SUPERBUILD=ON', or try with a different Protobuf installation to fix this problem.
-                    Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
+    # Check if Protobuf was really found
+    if(Protobuf_LIBRARY OR Protobuf_FOUND)
+        # Add extra files
+        target_sources(${PROJECT_NAME} PRIVATE ${ONNX_FILES})
+
+        # Add includes
+        target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
+
+        # Add libraries
+        if(MSVC)
+            target_link_libraries(${PROJECT_NAME} PUBLIC optimized ${Protobuf_LIBRARY} debug ${Protobuf_LIBRARY_DEBUG})
+        else()
+            target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
         endif()
-    endif()
 
-    # Add extra files
-    target_sources(${PROJECT_NAME} PRIVATE ${ONNX_FILES})
-
-    # Add includes
-    target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
-
-    # Add libraries
-    if(MSVC)
-        target_link_libraries(${PROJECT_NAME} PUBLIC optimized ${Protobuf_LIBRARY} debug ${Protobuf_LIBRARY_DEBUG})
+        # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
+        # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
+        #if(OVERWRITE_PROTO_FILES)
+        #    EXEC_PROGRAM(${Protobuf_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+        #endif()
+        SET(USE_PROTOBUF ON)
     else()
-        target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
+        message(WARNING "[WARNING] Protobuf was requested but it has not been found (Falling back to: '-D BUILD_PROTOBUF=OFF')
+        Hint: Use '-D BUILD_SUPERBUILD=ON', or try with a different protobuf installation to fix this problem.")
+        SET(USE_PROTOBUF OFF)
     endif()
-
-    # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
-    # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
-    #if(OVERWRITE_PROTO_FILES)
-    #    EXEC_PROGRAM(${Protobuf_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
-    #endif()
 endif()
+SET(USE_PROTOBUF ${USE_PROTOBUF} PARENT_SCOPE)  # Parent's scope
 
 
 # OpenMP
@@ -200,7 +202,7 @@ if(BUILD_OPENMP)
             set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
             SET(USE_OPENMP ON) # Local's scope
         else()
-            message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-DBUILD_OPENMP=OFF')\n\
+            message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-D BUILD_OPENMP=OFF')\n\
             Hint: Use a compiler with OpenMP support using: '-D CMAKE_CXX_COMPILER=path'")
         endif()
     endif()
@@ -280,7 +282,7 @@ if(USE_CUDA)
             set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
         endif()
     else()
-        message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
+        message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=CPU')
         Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
         SET(BUILD_TARGET "CPU") # Local's scope
         SET(USE_CUDNN OFF) # Local's scope (disable)
@@ -393,6 +395,9 @@ endif()
 ############################# DEFINITIONS ################################
 ##########################################################################
 
+if(USE_PROTOBUF)
+    add_definitions(-DcPROTO)
+endif()
 if(USE_CUDA)
     add_definitions(-DcGPU)
 endif()
@@ -483,7 +488,7 @@ message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 root dir: " ${Eigen3_DIR} )
 message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
-message(STATUS "Use Protobuf: " ${BUILD_PROTOBUF} )
+message(STATUS "Use Protobuf: " ${USE_PROTOBUF} )
 if(BUILD_PROTOBUF)
     message(STATUS "Protobuf root dir: " ${Protobuf_ROOT} )
     message(STATUS "Protobuf include dirs: " ${Protobuf_INCLUDE_DIRS} )
