@@ -1,5 +1,5 @@
 #if defined(cPROTO)
-#include "eddl/serialization/onnx/layers/reductions/sum_onnx.h"
+#include "eddl/serialization/onnx/layers/reductions/rsum_onnx.h"
 
 // ONNX import
 Layer* build_rsum_layer(onnx::NodeProto *node,
