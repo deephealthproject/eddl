@@ -426,13 +426,13 @@ TEST(Conv2DTestSuite, conv2d_cpu_gpu)
                     tensorNN::Conv2D(cd_cpu);
                     tensorNN::Conv2D(cd_gpu);
                     Tensor *cd_gpu_O = cd_gpu->O->clone(); cd_gpu_O->toCPU();  // Tensor::equivalent is only for CPU (at the moment)
-                    bool test_fwrd = (bool) Tensor::equivalent(cd_cpu->O, cd_gpu_O, 10e-5f, 0.0, false, false);
+                    bool test_fwrd = (bool) Tensor::equivalent(cd_cpu->O, cd_gpu_O, 10e-5f, 0.0, false, true);
 
                     // Backward
                     tensorNN::Conv2D_back(cd_cpu);
                     tensorNN::Conv2D_back(cd_gpu);
                     Tensor *cd_gpu_ID = cd_gpu->ID->clone(); cd_gpu_ID->toCPU(); // Tensor::equivalent is only for CPU (at the moment)
-                    bool test_bwrd = (bool) Tensor::equivalent(cd_cpu->ID, cd_gpu_ID, 10e-5f, 0.0, false, false);
+                    bool test_bwrd = (bool) Tensor::equivalent(cd_cpu->ID, cd_gpu_ID, 10e-5f, 0.0, false, true);
 
                     // Print results to ease debugging
                     cout << "Testing conv2d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<

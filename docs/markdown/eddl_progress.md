@@ -18,8 +18,8 @@
 | Flatten   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Flattens the input. Does not affect the batch size. (Wrapper for Reshape) |
 | Input     | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Used to instantiate a EDDL tensor. |
 | Reshape   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Reshapes an output to a certain shape. |
-| Squeeze   | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Reshapes an output to a certain shape. |
-| Unsqueeze | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Reshapes an output to a certain shape. |
+| Squeeze   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Reshapes an output to a certain shape. |
+| Unsqueeze | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Reshapes an output to a certain shape. |
 | Permute   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️  | Permutes the dimensions of the input according to a given pattern. |
 | Embedding | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Turns positive integers (indexes) into dense vectors of fixed size; (also known as mapping). e.g. `[[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]`|
 | Transpose | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Permute the last two dimensions |
@@ -166,7 +166,7 @@ Apply data transformations with random parametrization.
 | Log10         | 🟢️️ | 🟢️️ |🟢️️ | ⚫ (Not in ONNX) | |
 | Mult          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
 | Pow           | 🔴️ | 🔴️ |🔴️ | 🔴️ | |
-| Select        |  🟢️️| 🟢️️ |🟢️️ | ⚫ (Not in ONNX) | |
+| Select        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | |
 | Sqrt          |  🟢️️| 🟢️️ |🟢️️ | 🟢️️ | |
 | Sub           | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
 
@@ -187,9 +187,9 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | cuDNN | ONNX | Comments |
 | ------------- |------| -----| -----| ------|---------|
-| GRU  | 🟢️️ | 🟢️️ | 🟢️️ | 🔴️ | Gated Recurrent Unit - Cho et al. 2014. |
+| GRU  | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Gated Recurrent Unit - Cho et al. 2014. |
 | LSTM | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Long Short-Term Memory layer - Hochreiter 1997. |
-| RNN  | 🟢️️ | 🟢️️ | 🟢️️ | 🔴️ | Fully-connected RNN where the output is to be fed back to input. |
+| RNN  | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Fully-connected RNN where the output is to be fed back to input. |
 
 
 ## Regularizer layers

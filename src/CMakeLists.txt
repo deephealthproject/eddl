@@ -5,7 +5,7 @@
 # USER OPTIONS *******************************
 #CUDNN option is CUDA+CUDNN
 set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA}")
-option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
+#option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA)
@@ -56,8 +56,9 @@ file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 
 # Remove dependent files of protobuf
-list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/serialization/onnx/onnx.pb*")
-list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/serialization/onnx/onnx.pb*")
+list(FILTER PUBLIC_HEADERS EXCLUDE REGEX ".*/include/eddl/serialization/onnx/onnx.pb*")
+list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/serialization/onnx/onnx_third_party/onnx.pb*")
+list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/serialization/onnx/onnx_third_party/onnx.pb*")
 
 # Remove problematic files if they are not needed
 if(NOT BUILD_DIST)
@@ -70,8 +71,8 @@ SET(ALL_FILES ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
 
 # Setup-dependent  files (dependent on the setup)  ########################
 # ONNX (these files might not exist yet)
-set(ONNX_FILES ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.h
-        ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.cc)
+set(ONNX_FILES ${PROJECT_SOURCE_DIR}/include/eddl/serialization/onnx/onnx.pb.h
+        ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx_third_party/onnx.pb.cc)
 
 # CUDA & CUDNN
 file(GLOB_RECURSE CUDA_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/gpu/*" *.{h, hpp})
@@ -161,9 +162,9 @@ if(BUILD_PROTOBUF)
 
     # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
     # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
-    if(OVERWRITE_PROTO_FILES)
-        EXEC_PROGRAM(${Protobuf_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
-    endif()
+    #if(OVERWRITE_PROTO_FILES)
+    #    EXEC_PROGRAM(${Protobuf_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+    #endif()
 endif()
 
 
@@ -219,13 +220,13 @@ if(USE_CUDA)
         enable_language(CUDA)
         find_package(CUDAToolkit)
 
-        # NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
-                message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8 (DETECTED: ${CMAKE_CXX_COMPILER_VERSION}).
-        Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
-            endif()
-        endif()
+#        # NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
+#        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+#            if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
+#                message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8 (DETECTED: ${CMAKE_CXX_COMPILER_VERSION}).
+#        Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
+#            endif()
+#        endif()
 
         # Set standard CUDA variables
         if(NOT DEFINED CMAKE_CUDA_STANDARD)

@@ -1673,6 +1673,16 @@ namespace eddl {
     layer Log10(layer l);
 
     /**
+      *  @brief Layer that clamps the values of another layer
+      *
+      *  @param l  Parent layer
+      *  @param min  Minimum value
+      *  @param max  Maximum value
+      *  @return     Parent layer `l` after computing its logarithm to base 10
+    */
+    layer Clamp(layer l, float min, float max);
+
+    /**
       *  @brief  Layer that computes the element-wise multiplication of two layers.
       *
       *  @param l1  Layer
