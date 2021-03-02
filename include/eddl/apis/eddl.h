@@ -1683,15 +1683,6 @@ namespace eddl {
     layer Mult(float k,layer l1);
 
     /**
-      *  @brief  Layer that computes the element-wise power of two layers.
-      *
-      *  @param l1  A layer
-      *  @param l2  A layer
-      *  @return     Result of the element-wise power of `l1` and `l2`
-    */
-    layer Pow(layer l1, layer l2);
-
-    /**
       *  @brief Layer that computes the power of a layer raised to a float number.
       *
       *  @param l1  Parent layer

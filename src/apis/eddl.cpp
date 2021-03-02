@@ -983,9 +983,6 @@ namespace eddl {
     layer Mult(float k,layer l1){
         return new LMult(l1, k, "", DEV_CPU, 0);
     }
-    layer Pow(layer l1, layer l2){
-        return new LPow(l1, l2, "", DEV_CPU, 0);
-    }
 
     layer Pow(layer l1, float k){
         return new LPow(l1, k, "", DEV_CPU, 0);
