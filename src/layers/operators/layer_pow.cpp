@@ -22,7 +22,14 @@ int LPow::total_layers = 0;
 
 LPow::LPow(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "pow_" + to_string(++total_layers);
+
     this->exponent = k;
+
+    input = l->output;
+    output = Tensor::empty_like(input);
+
+    l->addchild(this);
+    addparent(l);
 }
 
 void LPow::forward(){
