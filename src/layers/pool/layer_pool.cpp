@@ -30,8 +30,6 @@ LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : 
     pd->build(input);
 
     output = pd->O;
-//    delta = pd->D;
-//    pd->ID = parent->delta;
 
     parent->addchild(this);
     addparent(parent);

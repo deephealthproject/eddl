@@ -43,10 +43,6 @@ LConv3D::LConv3D(Layer *parent, ConvolDescriptor3D *D, string name, int dev, int
 
     output = cd->O;
 
-
-//    delta = cd->D;
-//    cd->ID = parent->delta;
-
     params.push_back(cd->K);
     params.push_back(cd->bias);
 

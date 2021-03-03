@@ -26,8 +26,8 @@ LClamp::LClamp(Layer *l, float min, float max, string name, int dev, int mem) : 
     this->min=min;
     this->max=max;
 
-    input=l->output;
-    output = new Tensor(l->output->shape, dev);
+    input = l->output;
+    output = Tensor::empty_like(input);
 
     l->addchild(this);
     addparent(l);
