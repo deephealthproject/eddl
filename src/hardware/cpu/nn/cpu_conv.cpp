@@ -163,14 +163,15 @@ inline void naive_conv2D(int image_rows, int image_cols, float *image,
 
 void cpu_new_conv2D(ConvolDescriptor *D, float *output)
 {
-    printf("input: in=%d, iz=%d, ir=%d, ic=%d\n", D->in, D->iz, D->ir, D->ic);
+    // printf("input: shape[0]=%d, in=%d\n", D->I->shape[0], D->in);
+    /* printf("input: in=%d, iz=%d, ir=%d, ic=%d\n", D->I->shape[0], D->iz, D->ir, D->ic);
     printf("kernel: nk=%d, kz (iz)=%d, kr=%d, kc=%d\n", D->nk, D->kz, D->kr, D->kc);
     printf("output: in=%d, z (nk)=%d, r=%d, c=%d\n", D->in, D->z, D->r, D->c);
     printf("padcl=%d, padcr=%d, padrt=%d, padrb=%d\n", D->padcl, D->padcr, D->padrt, D->padrb);
-    printf("stride: %d,%d bias:%d\n", D->sr, D->sc, D->use_bias);
+    printf("stride: %d,%d bias:%d\n", D->sr, D->sc, D->use_bias); */
     float *ptrO = output;
     // #pragma omp parallel for // collapse(2) doesn't work
-    for (int b = 0; b < D->in; b++) { // batch
+    for (int b = 0; b < D->I->shape[0]; b++) { // batch
         for (int k = 0; k < D->nk; k++) { // kernel
             memset(ptrO, 0, D->r * D->c * sizeof(float));
             for (int z = 0; z < D->iz; z++) { // canal
@@ -189,8 +190,8 @@ void cpu_new_conv2D(ConvolDescriptor *D, float *output)
 
     //bias
     if (D->use_bias) {
-        for(int z = 0; z < D->O->shape[1]; z++) printf("%e ", D->bias->ptr[z]);
-        printf("\n");
+        // for(int z = 0; z < D->O->shape[1]; z++) printf("%e ", D->bias->ptr[z]);
+        // printf("\n");
         int osize = D->z * D->r * D->c;
         // #pragma omp parallel for
         for(int b = 0; b< D->O->shape[0]; b++) {
