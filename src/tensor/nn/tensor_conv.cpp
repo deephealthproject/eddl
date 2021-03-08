@@ -44,9 +44,9 @@ void Conv2D(ConvolDescriptor *D) {
 
 
     if (D->I->isCPU()) {
-#if 0
+#if 1
         cpu_conv2D(D);
-        // cpu_new_conv2D(D, D->O->ptr);
+        cpu_new_conv2D(D, D->O->ptr);
 #else
         int n = D->I->shape[0] * D->z*D->r*D->c;
         float *output = new float[n];
@@ -95,7 +95,7 @@ void Conv2D_grad(ConvolDescriptor *D) {
 #if 1
         cpu_conv2D_grad(D);
         // cpu_new_conv2D_grad(D, D->gK->ptr);
-        printf("cpu_conv2D_grad\n");
+        // printf("cpu_conv2D_grad\n");
 #else
         int n = D->kr * D->kc * D->kz * D->nk;
         float *output = new float[n];
@@ -143,7 +143,7 @@ void Conv2D_back(ConvolDescriptor *D) {
 #if 1
         cpu_conv2D_back(D);
         // cpu_new_conv2D_back(D, D->gK->ptr);
-        printf("cpu_conv2D_back\n");
+        // printf("cpu_conv2D_back\n");
 #else
         int n = D->I->shape[0] * D->z*D->r*D->c;
         float *output = new float[n];
