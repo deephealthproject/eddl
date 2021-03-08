@@ -5,7 +5,7 @@
 # USER OPTIONS *******************************
 #CUDNN option is CUDA+CUDNN
 set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA}")
-option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
+#option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA)
@@ -15,11 +15,12 @@ SET(USE_OPENMP OFF)
 SET(USE_CUDA OFF)
 SET(USE_CUDNN OFF)
 SET(USE_FPGA OFF)
+SET(USE_PROTOBUF OFF)
 
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
-elseif(${BUILD_TARGET} STREQUAL "GPU")
+elseif(${BUILD_TARGET} STREQUAL "GPU" OR ${BUILD_TARGET} STREQUAL "CUDA")
     SET(USE_CUDA ON) # Local's scope
 elseif(${BUILD_TARGET} STREQUAL "CUDNN")
     SET(USE_CUDA ON) # Local's scope
@@ -56,8 +57,9 @@ file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 
 # Remove dependent files of protobuf
-list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/serialization/onnx/onnx.pb*")
-list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/serialization/onnx/onnx.pb*")
+list(FILTER PUBLIC_HEADERS EXCLUDE REGEX ".*/include/eddl/serialization/onnx/onnx.pb*")
+list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/serialization/onnx/onnx_third_party/onnx.pb*")
+list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/serialization/onnx/onnx_third_party/onnx.pb*")
 
 # Remove problematic files if they are not needed
 if(NOT BUILD_DIST)
@@ -70,8 +72,8 @@ SET(ALL_FILES ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
 
 # Setup-dependent  files (dependent on the setup)  ########################
 # ONNX (these files might not exist yet)
-set(ONNX_FILES ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.h
-        ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.cc)
+set(ONNX_FILES ${PROJECT_SOURCE_DIR}/include/eddl/serialization/onnx/onnx.pb.h
+        ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx_third_party/onnx.pb.cc)
 
 # CUDA & CUDNN
 file(GLOB_RECURSE CUDA_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/gpu/*" *.{h, hpp})
@@ -120,14 +122,13 @@ endif()
 ########################### LINK LIBRARIES ################################
 ###########################################################################
 
-# Eigen
+# Eigen ***************************************
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
 target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
-# ONNX files
+# Protobuf ***************************************
 if(BUILD_PROTOBUF)
-    add_definitions(-DcPROTO)
 
     # Link library
     if(Protobuf_ROOT)
@@ -137,37 +138,39 @@ if(BUILD_PROTOBUF)
         find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf libprotobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
     else()
         find_package(Protobuf)  # Problems with: Protobuf_ROOT
+    endif()
 
-        # Check if Protobuf was really found
-        if(NOT Protobuf_FOUND)
-            message(FATAL_ERROR "Protobuf was found by CMake.
-                    Use '-D BUILD_SUPERBUILD=ON', or try with a different Protobuf installation to fix this problem.
-                    Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
+    # Check if Protobuf was really found
+    if(Protobuf_LIBRARY OR Protobuf_FOUND)
+        # Add extra files
+        target_sources(${PROJECT_NAME} PRIVATE ${ONNX_FILES})
+
+        # Add includes
+        target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
+
+        # Add libraries
+        if(MSVC)
+            target_link_libraries(${PROJECT_NAME} PUBLIC optimized ${Protobuf_LIBRARY} debug ${Protobuf_LIBRARY_DEBUG})
+        else()
+            target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
         endif()
-    endif()
 
-    # Add extra files
-    target_sources(${PROJECT_NAME} PRIVATE ${ONNX_FILES})
-
-    # Add includes
-    target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
-
-    # Add libraries
-    if(MSVC)
-        target_link_libraries(${PROJECT_NAME} PUBLIC optimized ${Protobuf_LIBRARY} debug ${Protobuf_LIBRARY_DEBUG})
+        # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
+        # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
+        #if(OVERWRITE_PROTO_FILES)
+        #    EXEC_PROGRAM(${Protobuf_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+        #endif()
+        SET(USE_PROTOBUF ON)
     else()
-        target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
-    endif()
-
-    # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
-    # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
-    if(OVERWRITE_PROTO_FILES)
-        EXEC_PROGRAM(${Protobuf_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+        message(WARNING "[WARNING] Protobuf was requested but it has not been found (Falling back to: '-D BUILD_PROTOBUF=OFF')
+        Hint: Use '-D BUILD_SUPERBUILD=ON', or try with a different protobuf installation to fix this problem.")
+        SET(USE_PROTOBUF OFF)
     endif()
 endif()
+SET(USE_PROTOBUF ${USE_PROTOBUF} PARENT_SCOPE)  # Parent's scope
 
 
-# OpenMP
+# OpenMP ***************************************
 if(BUILD_OPENMP)
     # find_package does not support Clang on Windows
     if (WIN32 AND CMAKE_RC_COMPILER STREQUAL "llvm-rc")
@@ -199,7 +202,7 @@ if(BUILD_OPENMP)
             set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
             SET(USE_OPENMP ON) # Local's scope
         else()
-            message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-DBUILD_OPENMP=OFF')\n\
+            message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-D BUILD_OPENMP=OFF')\n\
             Hint: Use a compiler with OpenMP support using: '-D CMAKE_CXX_COMPILER=path'")
         endif()
     endif()
@@ -207,7 +210,7 @@ endif()
 SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 
 
-# CUDA
+# CUDA ***************************************
 if(USE_CUDA)
     cmake_minimum_required(VERSION 3.17.2)  # Due to CUDAToolkit
 
@@ -219,13 +222,13 @@ if(USE_CUDA)
         enable_language(CUDA)
         find_package(CUDAToolkit)
 
-        # NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
-                message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8 (DETECTED: ${CMAKE_CXX_COMPILER_VERSION}).
-        Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
-            endif()
-        endif()
+#        # NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
+#        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+#            if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
+#                message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8 (DETECTED: ${CMAKE_CXX_COMPILER_VERSION}).
+#        Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
+#            endif()
+#        endif()
 
         # Set standard CUDA variables
         if(NOT DEFINED CMAKE_CUDA_STANDARD)
@@ -279,7 +282,7 @@ if(USE_CUDA)
             set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
         endif()
     else()
-        message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
+        message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=CPU')
         Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
         SET(BUILD_TARGET "CPU") # Local's scope
         SET(USE_CUDNN OFF) # Local's scope (disable)
@@ -290,8 +293,7 @@ SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 
 
-
-# FPGA
+# FPGA ***************************************
 if(USE_FPGA)
     find_package(OpenCL)
     if (OpenCL_FOUND)
@@ -321,7 +323,7 @@ endif()
 SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
 
 if(BUILD_DIST)
-    # ZLIB
+    # ZLIB  ***************************************
     if(DEFINED ZLIB_ROOT AND DEFINED ZLIB_INCLUDE_DIRS)
         find_library(ZLIB_LIBRARIES z HINTS ${ZLIB_ROOT} PATHS ${ZLIB_ROOT} PATH_SUFFIXES "lib" "lib64")
     else()
@@ -336,7 +338,7 @@ if(BUILD_DIST)
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
     target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES})
 
-    # OPENSSL
+    # OPENSSL ***************************************
     if(DEFINED OPENSSL_ROOT_DIR AND DEFINED OPENSSL_INCLUDE_DIR)
         find_library(OPENSSL_SSL_LIBRARY ssl HINTS ${OPENSSL_ROOT_DIR} PATHS ${OPENSSL_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
         find_library(OPENSSL_CRYPTO_LIBRARY crypto HINTS ${OPENSSL_ROOT_DIR} PATHS ${OPENSSL_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
@@ -391,6 +393,9 @@ endif()
 ############################# DEFINITIONS ################################
 ##########################################################################
 
+if(USE_PROTOBUF)
+    add_definitions(-DcPROTO)
+endif()
 if(USE_CUDA)
     add_definitions(-DcGPU)
 endif()
@@ -481,7 +486,7 @@ message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 root dir: " ${Eigen3_DIR} )
 message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
-message(STATUS "Use Protobuf: " ${BUILD_PROTOBUF} )
+message(STATUS "Use Protobuf: " ${USE_PROTOBUF} )
 if(BUILD_PROTOBUF)
     message(STATUS "Protobuf root dir: " ${Protobuf_ROOT} )
     message(STATUS "Protobuf include dirs: " ${Protobuf_INCLUDE_DIRS} )

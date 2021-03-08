@@ -35,7 +35,7 @@ LSubtract::LSubtract(vector<Layer *> parent, string name, int dev, int mem) : ML
     input = parent[0]->output;
 
     output = new Tensor(parent[0]->output->shape, dev);
-//    if (!mem_level) { delta = new Tensor(parent[0]->output->shape, dev);  }
+
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);

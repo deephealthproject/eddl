@@ -3152,13 +3152,16 @@ public:
     static int sameShape(Tensor *A, Tensor *B);  // Previously named "Tensor::eqsize"
 
     /**
-    *   @brief Check if two tensors have the same contents given a threshold.
+    *   @brief Check if two tensors have the same contents given a threshold. (Note: absolute(a - b) <= (atol + rtol * absolute(b)))
     *   @param A Input tensor.
     *   @param B Input tensor.
-    *   @param epsilon Error threshold.
+    *   @param atol The absolute tolerance parameter
+    *   @param rtol The relative tolerance parameter
+    *   @param equal_nan If a NaN is considered equal to another Nan
+    *   @param verbose Prints the first mismatch
     *   @return 1 if they are equivalent, 0 otherwise.
     */
-    static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false);  // Previously named "Tensor::equal2"
+    static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false, bool verbose=true);  // Previously named "Tensor::equal2"
 
 };
 

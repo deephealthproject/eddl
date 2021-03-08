@@ -72,7 +72,6 @@ LNorm::LNorm(Layer *parent, float epsilon, string name, int dev, int mem) : LinL
     ////////////////////////////
 
     output=div->output;
-//    delta=div->delta;
 
     parent->addchild(this);
     addparent(parent);

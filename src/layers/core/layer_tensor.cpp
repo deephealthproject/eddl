@@ -29,7 +29,6 @@ extern ostream &operator<<(ostream &os, const vector<int> shape);
 // From shape
 LTensor::LTensor(const vector<int> shape, int dev, int mem) : LinLayer("ltensor" + to_string(total_layers++), dev, mem) {
     data = input = output = new Tensor(shape, dev);
-//    if (!mem_level) { delta = new Tensor(output->shape, dev); }
 }
 
 

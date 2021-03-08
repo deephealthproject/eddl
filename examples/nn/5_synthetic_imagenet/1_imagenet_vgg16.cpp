@@ -43,11 +43,11 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = testing ? 2 : 5;
-  int batch_size = 32;
+  int batch_size = testing ? 2 : 32;
   int num_classes = 1000;
   //This factor indicates the number of batches of batch_size for the execution
   //If the NODE/GPU runs out of memory, just decrease the factor valur
-  int factor =3; 
+  int factor = testing ? 1 : 3; 
   // network
   layer in=Input({3,224,224});
   layer l=in;

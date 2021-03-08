@@ -27,23 +27,20 @@ int LExp::total_layers = 0;
   @param dev which computing service utilize
 
   @returns the result of e^l
-
   */
 LExp::LExp(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "exp_" + to_string(++total_layers);
 
     input=l->output;
     output = new Tensor(l->output->shape, dev);
-//    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
+
 
     l->addchild(this);
     addparent(l);
 }
 
 void LExp::forward() {
-    Tensor::copy(parent[0]->output, output);
-    output->exp_();
-
+    Tensor::exp(parent[0]->output, output);
 }
 
 void LExp::backward() {
@@ -55,8 +52,7 @@ Layer *LExp::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LExp::clone(int c, int bs, vector<Layer *> p, int todev) {
-  LExp *n;
-  n = new LExp(p[0],  name, todev, this->mem_level);
+  auto *n = new LExp(p[0],  name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

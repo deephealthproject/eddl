@@ -58,7 +58,6 @@ LNormMax::LNormMax(Layer *parent, float epsilon, string name, int dev, int mem) 
     ////////////////////////////
 
     output=div->output;
-//    delta=div->delta;
 
     parent->addchild(this);
     addparent(parent);

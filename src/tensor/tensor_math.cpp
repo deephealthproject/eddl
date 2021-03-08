@@ -1784,26 +1784,29 @@ Tensor* Tensor::pow(float exp){
 
 
 void Tensor::pow(Tensor *A, Tensor *B, float exp){
-    
-    PROFILING_HEADER_EXTERN(pow);
-    
-    if (A->isCPU() && B->isCPU()) {
-        cpu_pow(A, B, exp);
-    }
+    if(exp==2.0f){
+        Tensor::sqr(A, B);
+    }else{
+        PROFILING_HEADER_EXTERN(pow);
+
+        if (A->isCPU() && B->isCPU()) {
+            cpu_pow(A, B, exp);
+        }
 #ifdef cGPU
-    else if (A->isGPU() && B->isGPU())
-      {
-        gpu_pow(A, B, exp);
-      }
+        else if (A->isGPU() && B->isGPU())
+        {
+            gpu_pow(A, B, exp);
+        }
 #endif
 #ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
+            else if (A->isFPGA() && B->isFPGA())
       {
         fpga_pow(A, B, exp);
       }
 #endif
 
-    PROFILING_FOOTER(pow);
+        PROFILING_FOOTER(pow);
+    }
 }
 
 

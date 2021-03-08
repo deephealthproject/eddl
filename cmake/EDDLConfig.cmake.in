@@ -33,6 +33,7 @@ endif()
 # CUDA
 if(USE_CUDA)
     enable_language(CUDA)
+    find_dependency(CUDAToolkit)
 endif()
 
 # FPGA

@@ -121,10 +121,6 @@ target_link_libraries(tensor_image eddl)
 add_executable(tensor_io "tensor/eddl_io.cpp")
 target_link_libraries(tensor_io eddl)
 
-add_executable(tensor_tests_dev "tensor/eddl_tests_dev.cpp")
-target_link_libraries(tensor_tests_dev eddl)
-
-
 # EXAMPLES: ONNX ******************************************************************
 if(BUILD_PROTOBUF)
     add_executable(onnx_pointer "onnx/1_onnx_pointer.cpp")
@@ -136,14 +132,17 @@ if(BUILD_PROTOBUF)
     add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
 		target_link_libraries(onnx_import eddl)
 
-    add_executable(utils_serialization "onnx/4_utils_serialization.cpp")
-    target_link_libraries(utils_serialization eddl)
+    add_executable(onnx_utils_serialization "onnx/4_onnx_utils_serialization.cpp")
+    target_link_libraries(onnx_utils_serialization eddl)
 
     add_executable(onnx_gradients "onnx/4_onnx_test_gradients.cpp")
     target_link_libraries(onnx_gradients eddl)
 
     add_executable(onnx_import_reshape "onnx/5_onnx_import_net_and_reshape.cpp")
     target_link_libraries(onnx_import_reshape eddl)
+
+	add_executable(onnx_predict "onnx/6_onnx_predict.cpp")
+	target_link_libraries(onnx_predict eddl)
 
 	# EXAMPLES: ONNX MNIST ****************************************************
 	add_executable(onnx_mnist_mlp "onnx/nn/1_mnist/1_mnist_mlp.cpp")

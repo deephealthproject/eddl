@@ -200,7 +200,7 @@ void ConvolDescriptor::build(Tensor *A) {
     }
 #ifdef cCUDNN
     //CUDNN
-    convolution_mode = CUDNN_CONVOLUTION; //CUDNN_CROSS_CORRELATION
+    convolution_mode = CUDNN_CROSS_CORRELATION; //CUDNN_CONVOLUTION; 
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
 

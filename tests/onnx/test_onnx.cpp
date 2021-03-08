@@ -1,3 +1,5 @@
+#ifdef cPROTO
+
 #include <gtest/gtest.h>
 #include <random>
 #include <string>
@@ -129,3 +131,4 @@ TEST(ONNXTestSuite, onnx_import){
 
 }
 
+#endif
