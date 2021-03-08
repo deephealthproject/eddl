@@ -283,7 +283,7 @@ void LActivation::backward(){
             float scale = this->params[1];
 
             tensorNN::D_ELu(delta, input, parent[0]->delta, alpha);
-            this->output->mult_(scale);
+            parent[0]->delta->mult_(scale);
 
         }else if (act == "exp"){
             tensorNN::D_Exp(delta, output, parent[0]->delta);
