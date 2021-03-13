@@ -129,7 +129,7 @@ void cpu_conv2D(ConvolDescriptor *D)
 inline void naive_conv2D(int image_rows, int image_cols, float *image,
         int kernel_rows, int kernel_cols, float *kernel,
         int out_rows, int out_cols, float *output,
-        int pad_left, int pad_top, int stride_rows, int stride_cols)
+        int pad_row, int pad_col, int stride_rows, int stride_cols)
 {
     // int dx = kernel_rows / 2;
     // int dy = kernel_cols / 2;
@@ -143,20 +143,20 @@ inline void naive_conv2D(int image_rows, int image_cols, float *image,
             float s = 0;
             // printf("[%d,%d]\n", i, j);
             for (int x = 0; x < kernel_rows; x++) {
-                int px = i * stride_rows + x - pad_left;
+                int px = i * stride_rows + x - pad_row;
                 if (px >= 0 && px < image_rows) {
                     for (int y = 0; y < kernel_cols; y++) {
-                        int py = j * stride_cols + y - pad_top;
+                        int py = j * stride_cols + y - pad_col;
                         if (py >= 0 && py < image_cols) {
                         // printf("    k[%d,%d]=%e i[%d,%d]=%e\n",
                         //         x, y, kernel[dx-x + (dy-y) * kernel_rows],
                         //         px, py, image[px + py * image_rows]);
-                            s = s + kernel[x + y * kernel_rows] * image[px + py * image_rows];
+                            s = s + kernel[x * kernel_cols + y] * image[px * image_cols + py];
                         }
                     }
                 }
             }
-            output[i + j * out_rows] += s;
+            output[i * out_cols + j] += s;
         }
     }
 }
@@ -182,7 +182,7 @@ void cpu_new_conv2D(ConvolDescriptor *D, float *output)
                     D->kr, D->kc,
                     D->K->ptr + (k * D->kz + z) * D->kr * D->kc,
                     D->r, D->c, ptrO,
-                    D->padcl, D->padrt, D->sr, D->sc);
+                    D->padrt, D->padcl, D->sr, D->sc);
             }
             ptrO += D->r * D->c;
         }
