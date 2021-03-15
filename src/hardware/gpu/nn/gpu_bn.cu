@@ -88,7 +88,7 @@ void gpu_batchnorm_forward(int gpu_device, int b, int z, int rc,
     } else {
         gpu_batchnorm_forward_2<<<num_blocks_z, batch_norm_block_size>>>(z, 1.0 / (b * rc), NULL, variance, momentum, NULL, global_variance, epsilon);
         // normalization
-        gpu_batchnorm_forward_3<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, input, mean, variance, affine_g, affine_b, opa, output);
+        gpu_batchnorm_forward_3<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, input, global_mean, variance, affine_g, affine_b, opa, output);
     }
 }
 
