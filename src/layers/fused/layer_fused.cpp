@@ -41,10 +41,6 @@ LConv2dActivation::LConv2dActivation(Layer *parent, string act, ConvolDescriptor
 
     output = cd->O;
 
-
-//    delta = cd->D;
-//    cd->ID = parent->delta;
-
     params.push_back(cd->K);
     params.push_back(cd->bias);
 

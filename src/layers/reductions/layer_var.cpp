@@ -44,7 +44,6 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
     detach(diff);
 
     output=m2->output;
-//    delta=m2->delta;
 
     l->addchild(this);
     addparent(l);

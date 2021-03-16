@@ -46,7 +46,6 @@ LSelect::LSelect(Layer *parent, vector<string> indices, string name, int dev, in
     vector<int> oshape(sd->oshape);
     oshape.insert(oshape.begin() + 0, 1);
     output=new Tensor(oshape, dev);
-//    delta=new Tensor(sd->oshape, dev);
 
     parent->addchild(this);
     addparent(parent);

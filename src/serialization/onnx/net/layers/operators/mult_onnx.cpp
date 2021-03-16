@@ -15,7 +15,7 @@ Layer* build_mul_layer(onnx::NodeProto *node,
   Layer *first_operator = output_node_map[first_operator_name];
 
   string second_operator_name = node->input(1);
-  if(map_init_dims.count(second_operator_name))
+  if(map_init_values.count(second_operator_name))
   {
     // Detect pattern for applying scale and bias of batchnorm using Mult
     // and Add operators

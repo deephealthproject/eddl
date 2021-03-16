@@ -35,7 +35,7 @@ LLog10::LLog10(Layer *l, string name, int dev, int mem) : OperatorLayer(name, de
 
     input=l->output;
     output = new Tensor(l->output->shape, dev);
-//    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
+
 
     l->addchild(this);
     addparent(l);

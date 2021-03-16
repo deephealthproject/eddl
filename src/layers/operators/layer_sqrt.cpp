@@ -34,7 +34,6 @@ int LSqrt::total_layers = 0;
 
       input=l->output;
       output = new Tensor(l->output->shape, dev);
-//      if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
       l->addchild(this);
       addparent(l);
