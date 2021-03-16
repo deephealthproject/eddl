@@ -81,6 +81,7 @@ void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
     }
   }
     _profile(_CPU_IM2COL, 1);
+
 }
 
 

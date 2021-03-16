@@ -157,7 +157,7 @@ bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
             {
                 allclose = false;
                 if(first_idx < 0) { first_idx=i; }
-
+   //             fprintf(stderr, "[%d]\t\t%f != %f\n",i,  A->ptr[i], B->ptr[i]);
             }
 #if defined(EDDL_LINUX) || defined(EDDL_UNIX) || defined(EDDL_APPLE)
             #pragma omp cancel for
@@ -291,18 +291,23 @@ void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C){
 
 int cpu_allclose_verbose(Tensor *A, Tensor *B, float epsilon){
   _profile(_CPU_EQUAL2, 0);
-
+  int tt = 1;
+          //fprintf(stderr, "\n>>>>>>>>>>\n");
   for (int i = 0; i < A->size; i++){
       float delta = ::fabs(A->ptr[i] - B->ptr[i]);
       if (delta > epsilon) {
-          fprintf(stderr, "\n>>>>>>>>>>\n");
-          fprintf(stderr, "[values]\t\t%f != %f\n", A->ptr[i], B->ptr[i]);
-          fprintf(stderr, "[diff/epsilon]\t%f > %f\n", delta, epsilon);
-          fprintf(stderr, "<<<<<<<<<<\n");
+          //fprintf(stderr, "\n>>>>>>>>>>\n");
+          printf("[%d]\t\t%f != %f\t", i, A->ptr[i], B->ptr[i]);
+          printf("[diff/epsilon]\t%f > %f\n", delta, epsilon);
+          //fprintf(stderr, "<<<<<<<<<<\n");
+          tt=0;
           _profile(_CPU_EQUAL2, 1);
-          return 0;
+          //return 0;
+      }
+      else{
+          printf("OK!!!!!!   [%d]\t\t%f != %f\n", i, A->ptr[i], B->ptr[i]);
       }
   }
   _profile(_CPU_EQUAL2, 1);
-  return 1;
+  return tt;
 }

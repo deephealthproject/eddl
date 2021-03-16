@@ -222,13 +222,23 @@ void LBatchNorm::forward() {
 #ifdef cCUDNN
     float alpha = 1.0;
     float beta = 0.0;
-
-    cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(hdnn[input->gpu_device], bn_mode, &alpha, &beta,
+    if (mode == TRMODE){
+        cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(hdnn[input->gpu_device], bn_mode, &alpha, &beta,
                                                              xDesc, input->ptr, yDesc, output->ptr,
                                                              bnScaleBiasMeanVarDesc, bn_g->ptr, bn_b->ptr,
-                                                             exponentialAverageFactor, mean->ptr, variance->ptr, epsilon,
+                                                             exponentialAverageFactor, mean->ptr, 
+							     variance->ptr, epsilon,
                                                              bn_mean->ptr, bn_var->ptr);
-    if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error fwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;        
+        if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error fwd BN (training) "<< cudnnGetErrorString(nnn) <<std::endl;        
+    }
+    else{
+        cudnnStatus_t nnn=cudnnBatchNormalizationForwardInference(hdnn[input->gpu_device], bn_mode, &alpha, &beta,
+                                                             xDesc, input->ptr, yDesc, output->ptr,
+                                                             bnScaleBiasMeanVarDesc, bn_g->ptr, bn_b->ptr,
+                                                             mean->ptr, variance->ptr, epsilon);
+        if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error fwd BN (Inference) "<< cudnnGetErrorString(nnn) <<std::endl;        
+
+   }
 #else
     tensorNN::BatchNormForward(input, output, opa, mean, variance,
                 affine ? bn_g : NULL, affine ? bn_b : NULL,
