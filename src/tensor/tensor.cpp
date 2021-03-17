@@ -577,9 +577,9 @@ string Tensor::getDeviceName() const{
     return "unknown";
 }
 
-int Tensor::getDeviceID(int dev) const{
+int Tensor::getDeviceID(int dev){
     if ((dev >= DEV_CPU) && (dev < DEV_GPU)) { return 0; }
-    else if ((device >= DEV_GPU) && (dev < DEV_FPGA)) { return 1; }
+    else if ((dev >= DEV_GPU) && (dev < DEV_FPGA)) { return 1; }
     else if (dev >= DEV_FPGA) { return 2; }
     return -1;
 }

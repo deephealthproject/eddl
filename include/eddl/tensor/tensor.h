@@ -240,7 +240,7 @@ public:
       *
       *  @return    string
     */
-    int getDeviceID(int dev) const;
+    static int getDeviceID(int dev);
 
     // Core
     vector<int> getShape();
