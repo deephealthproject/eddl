@@ -1168,7 +1168,50 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
 
 // TODO:  train_batch_recurrent
 /////////////////////////////////////////
+void Net::train_batch_recurrent(vtensor tin, vtensor tout,vind sind, int eval) {
+  int i, j, k, n;
+
+  // prepare data for unroll net
+  vtensor xt;
+  vtensor xtd;
+  vtensor yt;
+
+  vtensor toutr;
+  vtensor tinr;
+
+  int inl;
+  int outl;
+
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
+
+  build_rnet(inl,outl);
+
+  rnet->train_batch(tinr,toutr,sind,eval);
+
+  if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
+
+
+  for(i=0;i<xt.size();i++)
+    delete xt[i];
+  xt.clear();
+
+  for(i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
+
+}
+
+
 void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
+
+  if (isrecurrent) {
+    verboserec=0;
+    train_batch_recurrent(X,Y,sind,eval);
+  }
+  else{
 
   if (batch_size!=sind.size()) resize(sind.size());
 
@@ -1222,7 +1265,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 #ifdef cFPGA
   _show_profile_fpga();
 #endif
-
+}
 }
 
 

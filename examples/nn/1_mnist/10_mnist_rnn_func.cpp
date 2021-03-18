@@ -121,12 +121,14 @@ int main(int argc, char **argv) {
             x_train_batch->reshape_({batch_size,28,28}); // time x dim
             y_train_batch->reshape_({batch_size,1,10});
 
+            train_batch(net, {x_train_batch}, {y_train_batch});
+/*
             zeroGrads(net);
             forward(net,{x_train_batch});
             backward(net,{y_train_batch});
             update(net);
 
-
+*/
             print_loss(net,j);
             printf("\r");
 
