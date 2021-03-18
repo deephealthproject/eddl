@@ -406,6 +406,7 @@ TEST(Conv2DTestSuite, conv2d_cpu_gpu)
     for(auto& p : padding){
             for(auto& s : strides){
                 for(auto& k : kernels){
+		  try{
                     // CPU Operation
                     auto *cd_cpu = new ConvolDescriptor(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
                     cd_cpu->build(t_cpu);
@@ -456,6 +457,10 @@ TEST(Conv2DTestSuite, conv2d_cpu_gpu)
 
                     delete cd_gpu_O;
                     delete cd_gpu_ID;
+		  }
+		  catch (...) {
+		    cout << "[FAILED] Testing conv2d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<endl;
+}
                 }
             }
         }
