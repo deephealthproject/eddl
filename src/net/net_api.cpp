@@ -28,6 +28,8 @@ extern void _show_profile_fpga();
 
 #define VERBOSE 0
 
+int verboserec=1;
+
 using namespace std;
 using namespace std::chrono;
 
@@ -263,6 +265,7 @@ void Net::forward(vector<Tensor*> in)
 {
 
   if (isrecurrent) {
+    verboserec=0;
     forward_recurrent(in);
   }
   else {
@@ -378,6 +381,7 @@ void Net::backward(vector<Tensor *> target)
     if (rnet==nullptr) {
       msg("Error backward without previous forward","backward_recurrent");
     }
+    verboserec=0;
     backward_recurrent(target);
   }
   else  {
@@ -888,7 +892,7 @@ void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, 
     if (yt[i]->shape[0]!=outl)
     msg("Output tensors with different time steps","fit_recurrent");
   }
-  cout<<"Vec2Seq "<<inl<<" to "<<outl<<"\n";
+  if (verboserec) cout<<"Vec2Seq "<<inl<<" to "<<outl<<"\n";
 
   int offset;
   for(i=0;i<yt.size();i++) {
@@ -988,7 +992,7 @@ void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &ou
     msg("Output tensors with different time steps","fit_recurrent");
   }
 
-  cout<<"Seq2Seq "<<inl<<" to "<<outl<<"\n";
+  if (verboserec) cout<<"Seq2Seq "<<inl<<" to "<<outl<<"\n";
 
   for(i=0;i<yt.size();i++) {
     offset=yt[i]->size/yt[i]->shape[0];
@@ -1082,10 +1086,11 @@ void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, 
     }
   }
 
-  if (outl>1)
-    cout<<"Synchronous Seq2Seq "<<inl<<" to "<<outl<<"\n";
-  else
-    cout<<"Recurrent "<<inl<<" to "<<outl<<"\n";
+  if (verboserec)
+    if (outl>1)
+      cout<<"Synchronous Seq2Seq "<<inl<<" to "<<outl<<"\n";
+    else 
+      cout<<"Recurrent "<<inl<<" to "<<outl<<"\n";
 
   for(i=0;i<yt.size();i++) {
     offset=yt[i]->size/yt[i]->shape[0];
