@@ -8,6 +8,7 @@ Layer* build_reshape_layer(onnx::NodeProto *node,
                            map<string, vector<int>> &map_init_dims,
                            map<string, vector<onnx::NodeProto *>> &input_node_map,
                            map<string, Layer *> &output_node_map,
+                           LOG_LEVEL log_level,
                            int dev,
                            int mem)
 {
@@ -33,8 +34,21 @@ Layer* build_reshape_layer(onnx::NodeProto *node,
   string parent_name = node->input(0);
   if (output_node_map.count(parent_name))
   {
-    shape[0] = 1; // Default batch size = 1
+    // Detect special case of a reshape used between two recurrent layers encoder-decoder
+    // where the reshape operation must me skiped.
+    //   The case must have:
+    //     - A recurrent layer as parent (encoder or decoder)
+    //     - The target shape is [-1, dim] (if encoder) or [-1, seq, dim] (if decoder)
     Layer *parent = output_node_map[parent_name];
+    if ((parent->isrecurrent && shape.size() == 2 && shape[0] == -1) ||
+        (parent->isdecoder && shape.size() == 3 && shape[0] == -1))
+    {
+        log_string("Skiping reshape operation. Unnecessary operation after recurrent layer.", log_level, LOG_LEVEL::DEBUG);
+        return parent;
+    }
+
+    // Create a the reshape layer
+    shape[0] = 1; // Default batch size = 1
     return new LReshape(parent, shape, name, dev, mem);
   }
   else if (map_init_values.count(parent_name))
