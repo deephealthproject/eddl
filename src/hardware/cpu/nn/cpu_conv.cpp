@@ -120,7 +120,7 @@ void cpu_conv2D(ConvolDescriptor *D)
   // Map memory to Eigen
   Eigen::Map<Eigen::MatrixXf> matK=Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
 
-  //#pragma omp parallel for
+  #pragma omp parallel for
   for(int b=0;b<D->I->shape[0];b++){
 
     float *ptrO=D->O->ptr+(b*osize);
