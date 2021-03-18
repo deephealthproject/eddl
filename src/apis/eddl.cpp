@@ -1301,6 +1301,55 @@ namespace eddl {
     }
   }
 
+
+
+    // get COPIES of tensors
+  // collect from CS when necessary
+  Tensor* getInput(layer l1){
+    Net *n=l1->net;
+    if (n->rnet==nullptr) {
+      //cout<<"collect Output from layer "<<l1->name<<endl;
+      collectTensor(l1,"input");
+      return l1->output->clone();  // Why not return addresses so that we can easily avoid potential memory leaks?
+    }
+    else {
+      cout<<"get input from recurrent"<<endl;
+      int length=0;
+
+      vector<int> shape;
+      for(auto l: n->rnet->layers) 
+	if (l->sorig==l1) {
+	  if (length==0) shape=l->output->shape;
+	  length++;
+	}
+
+      shape.insert(shape.begin(), length);
+      // length x batch x dim_layer
+      Tensor *output=new Tensor(shape,DEV_CPU);
+
+      int i=0;
+      for(auto l: n->rnet->layers) 
+	if (l->sorig==l1) {
+	  Tensor *out=getOutput(l);
+	  shape[0]=1;
+	  out->reshape_(shape);
+
+	  // put into output
+	  vector<string> s;
+	  s.push_back(to_string(i));
+	  for(int j=1;j<shape.size();j++) s.push_back(":");
+
+	  output->set_select(s, out);
+
+	  s.clear();
+	  i++;
+	  delete out;
+	}
+      return output;      
+    }
+  }
+
+
   Tensor* getDelta(layer l1){
     collectTensor(l1,"delta");
     return l1->delta->clone();

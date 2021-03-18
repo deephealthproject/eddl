@@ -1249,6 +1249,7 @@ void Net::evaluate(vtensor tin, vtensor tout,int bs) {
     msg("different number of samples in output tensor", "Net.evaluate");
 
     if (bs!=-1) resize(bs);
+    else resize(10);  // to avoid some issues when no previous fit is performed, TODO
 
     printf("Evaluate with batch size %d\n",batch_size);
 

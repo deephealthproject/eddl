@@ -2065,6 +2065,7 @@ namespace eddl {
 
     // Manage tensors inside layers
     Tensor* getOutput(layer l1);
+    Tensor* getInput(layer l1);
     Tensor* getDelta(layer l1);
     Tensor* getParam(layer l1, int p);
     Tensor* getGradient(layer l1,int p);
