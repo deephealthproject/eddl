@@ -58,6 +58,7 @@ public:
     bool isbuild;
     bool isdecoder;
     bool isencoder;
+    bool isresized;
     int decsize;
 
     vector<int> devsel;

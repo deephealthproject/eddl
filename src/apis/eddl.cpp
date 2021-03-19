@@ -1269,7 +1269,7 @@ namespace eddl {
       int length=0;
 
       vector<int> shape;
-      for(auto l: n->rnet->layers) 
+      for(auto l: n->rnet->layers)
 	if (l->sorig==l1) {
 	  if (length==0) shape=l->output->shape;
 	  length++;
@@ -1280,7 +1280,7 @@ namespace eddl {
       Tensor *output=new Tensor(shape,DEV_CPU);
 
       int i=0;
-      for(auto l: n->rnet->layers) 
+      for(auto l: n->rnet->layers)
 	if (l->sorig==l1) {
 	  Tensor *out=getOutput(l);
 	  shape[0]=1;
@@ -1297,7 +1297,7 @@ namespace eddl {
 	  i++;
 	  delete out;
 	}
-      return output;      
+      return output;
     }
   }
 
@@ -1317,7 +1317,7 @@ namespace eddl {
       int length=0;
 
       vector<int> shape;
-      for(auto l: n->rnet->layers) 
+      for(auto l: n->rnet->layers)
 	if (l->sorig==l1) {
 	  if (length==0) shape=l->output->shape;
 	  length++;
@@ -1328,7 +1328,7 @@ namespace eddl {
       Tensor *output=new Tensor(shape,DEV_CPU);
 
       int i=0;
-      for(auto l: n->rnet->layers) 
+      for(auto l: n->rnet->layers)
 	if (l->sorig==l1) {
 	  Tensor *out=getOutput(l);
 	  shape[0]=1;
@@ -1345,7 +1345,7 @@ namespace eddl {
 	  i++;
 	  delete out;
 	}
-      return output;      
+      return output;
     }
   }
 
@@ -1543,12 +1543,12 @@ namespace eddl {
   ///////////////////////////////////////
   //  Pretrained Models
   ///////////////////////////////////////
-    
-  void download_model(string name,string link) 
+
+  void download_model(string name,string link)
   {
     string cmd;
-    cout<<"Downloading "<<name<<endl;   
-        
+    cout<<"Downloading "<<name<<endl;
+
     if (!exist(name)) {
       cout<<name<<" x\n";
       cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link+"/"+name;
@@ -1566,17 +1566,17 @@ namespace eddl {
     }
   }
 
-  Net* download_vgg16(bool top, vector<int> input_shape) 
+  Net* download_vgg16(bool top, vector<int> input_shape)
   {
-    download_model("vgg16.onnx","2ovxkt64y11c083"); 
+    download_model("vgg16.onnx","2ovxkt64y11c083");
 
     Net *net;
-    
+
     cout<<"Import ONNX..."<<endl;
-        
-    if (input_shape.size()) 
+
+    if (input_shape.size())
       net = import_net_from_onnx_file("vgg16.onnx", input_shape, DEV_CPU);
-    else  
+    else
       net = import_net_from_onnx_file("vgg16.onnx", DEV_CPU);
 
     Layer *l=getLayer(net,"data"); l->name="input";
@@ -1587,25 +1587,25 @@ namespace eddl {
       net->removeLayer("vgg0_dense1_fwd");
       net->removeLayer("vgg0_dropout0_fwd");
       net->removeLayer("vgg0_dense0_relu_fwd");
-      net->removeLayer("vgg0_dense0_fwd"); 
-            
+      net->removeLayer("vgg0_dense0_fwd");
+
       Layer *l=getLayer(net,"flatten_60"); l->name="top";
 
     }
-        
+
     return net;
-  } 
-    
-  Net* download_resnet18(bool top, vector<int> input_shape) 
+  }
+
+  Net* download_resnet18(bool top, vector<int> input_shape)
   {
-    download_model("resnet18.onnx","re7jodd12srksd7"); 
+    download_model("resnet18.onnx","re7jodd12srksd7");
     Net *net;
 
     cout<<"Import ONNX..."<<endl;
-        
+
     if (input_shape.size())
       net = import_net_from_onnx_file("resnet18.onnx", input_shape, DEV_CPU);
-    else 
+    else
       net = import_net_from_onnx_file("resnet18.onnx", DEV_CPU);
 
     Layer *l=getLayer(net,"data"); l->name="input";
@@ -1614,18 +1614,18 @@ namespace eddl {
       Layer *l=getLayer(net,"flatten_170"); l->name="top";
 
     }
-        
-    return net;
-  } 
 
-  Net* download_resnet34(bool top, vector<int> input_shape) 
+    return net;
+  }
+
+  Net* download_resnet34(bool top, vector<int> input_shape)
   {
-    download_model("resnet34.onnx","ikcaak0q2cee8k1"); 
+    download_model("resnet34.onnx","ikcaak0q2cee8k1");
     Net *net;
 
     cout<<"Import ONNX..."<<endl;
 
-    if (input_shape.size()) 
+    if (input_shape.size())
       net = import_net_from_onnx_file("resnet34.onnx", input_shape, DEV_CPU);
     else net = import_net_from_onnx_file("resnet34.onnx", DEV_CPU);
 
@@ -1635,18 +1635,18 @@ namespace eddl {
       Layer *l=getLayer(net,"flatten_306"); l->name="top";
 
     }
-        
+
     return net;
-  } 
-    
-  Net* download_resnet50(bool top, vector<int> input_shape) 
+  }
+
+  Net* download_resnet50(bool top, vector<int> input_shape)
   {
-    download_model("resnet50.onnx","hg4r3z8m6wsnwk3"); 
+    download_model("resnet50.onnx","hg4r3z8m6wsnwk3");
     Net *net;
 
     cout<<"Import ONNX..."<<endl;
-        
-    if (input_shape.size()) 
+
+    if (input_shape.size())
       net = import_net_from_onnx_file("resnet50.onnx", input_shape, DEV_CPU);
     else net = import_net_from_onnx_file("resnet50.onnx", DEV_CPU);
 
@@ -1656,18 +1656,18 @@ namespace eddl {
       Layer *l=getLayer(net,"flatten_473"); l->name="top";
 
     }
-        
+
     return net;
-  } 
-    
-  Net* download_resnet101(bool top, vector<int> input_shape) 
+  }
+
+  Net* download_resnet101(bool top, vector<int> input_shape)
   {
-    download_model("resnet101.onnx","eaxjju4ftrwoti0"); 
+    download_model("resnet101.onnx","eaxjju4ftrwoti0");
     Net *net;
 
     cout<<"Import ONNX..."<<endl;
 
-    if (input_shape.size()) 
+    if (input_shape.size())
       net = import_net_from_onnx_file("resnet101.onnx", input_shape, DEV_CPU);
     else net = import_net_from_onnx_file("resnet101.onnx", DEV_CPU);
 
@@ -1677,18 +1677,18 @@ namespace eddl {
       Layer *l=getLayer(net,"flatten_932"); l->name="top";
 
     }
-        
-    return net;
-  } 
 
-  Net* download_resnet152(bool top, vector<int> input_shape) 
+    return net;
+  }
+
+  Net* download_resnet152(bool top, vector<int> input_shape)
   {
-    download_model("resnet152.onnx","phoffbhgnolg95u"); 
+    download_model("resnet152.onnx","phoffbhgnolg95u");
     Net *net;
 
     cout<<"Import ONNX..."<<endl;
 
-    if (input_shape.size()) 
+    if (input_shape.size())
       net = import_net_from_onnx_file("resnet152.onnx", input_shape, DEV_CPU);
     else net = import_net_from_onnx_file("resnet152.onnx", DEV_CPU);
 
@@ -1698,33 +1698,33 @@ namespace eddl {
       Layer *l=getLayer(net,"flatten_1391"); l->name="top";
 
     }
-        
-    return net;
-  } 
 
-  Net* download_densenet121(bool top, vector<int> input_shape) 
+    return net;
+  }
+
+  Net* download_densenet121(bool top, vector<int> input_shape)
   {
-    download_model("densenet121.onnx","mod7a1pf0eldyd1"); 
+    download_model("densenet121.onnx","mod7a1pf0eldyd1");
     Net *net;
     cout<<"Import ONNX..."<<endl;
 
-    if (input_shape.size()) 
+    if (input_shape.size())
       net = import_net_from_onnx_file("densenet121.onnx", input_shape, DEV_CPU);
     else net = import_net_from_onnx_file("densenet121.onnx", DEV_CPU);
 
     Layer *l=getLayer(net,"data"); l->name="input";
     if (top) {
       net->removeLayer("conv2d121");
-            
-      Layer *l=getLayer(net,"avgpool10"); 
+
+      Layer *l=getLayer(net,"avgpool10");
       l=Reshape(l,{-1});
       l->name="top";
     }
-        
-    return net;
-  } 
 
-    
+    return net;
+  }
+
+
   ///////////////////////////////////////
   //  DATASETS
   ///////////////////////////////////////
@@ -1741,19 +1741,19 @@ namespace eddl {
 
     for(int i=0;i<link.size();i++) {
       if (!exist(file[i])) {
-	cout<<file[i]<<" x\n";
-	cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
-	int status = system(cmd.c_str());
-	if (status < 0){
-	  msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
-	}
-	else if (status > 0){
-	  cout<<cmd<<endl;
-	  msg("wget failed to download dataset (exit code: " + to_string(status) + "). See previous messages for details.", "eddl.download_"+name);
-	}
+        cout<<file[i]<<" x\n";
+        cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
+        int status = system(cmd.c_str());
+        if (status < 0){
+          msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
+        }
+        else if (status > 0){
+          cout<<cmd<<endl;
+          msg("wget failed to download dataset (exit code: " + to_string(status) + "). See previous messages for details.", "eddl.download_"+name);
+        }
       }
       else {
-	cout<<file[i]<<" ✓\n";
+        cout<<file[i]<<" ✓\n";
       }
     }
   }

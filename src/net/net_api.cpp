@@ -568,7 +568,7 @@ void Net::print_loss(int b,int nb)
     if (rnet!=nullptr) rnet->print_loss(b,nb);
   }
   else {
-    fprintf(stdout,"Batch %d ",b);
+
 
     if (nb!=-1) {
       int pc=((b+1)*10)/nb;
@@ -590,11 +590,13 @@ void Net::print_loss(int b,int nb)
       printf("] ");
     }
 
+    fprintf(stdout,"Batch %d ",b);
 
     int length=decsize;
     for (int k = 0; k < lout.size(); k+=decsize) {
-
       string name=lout[k]->name;
+      if (lout[k]->sorig!=nullptr)
+         name=lout[k]->sorig->name;
 
       fprintf(stdout, "%s ( ", name.c_str());
       if (losses.size()>=(k+1)) {
@@ -813,7 +815,6 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     for (i = 1; i < tout.size(); i++)
     if (tout[i]->shape[0] != n)
     msg("different number of samples in output tensor", "Net.fit");
-
 
 
     // Set batch size
@@ -1318,7 +1319,7 @@ void Net::evaluate(vtensor tin, vtensor tout,int bs) {
     msg("different number of samples in output tensor", "Net.evaluate");
 
     if (bs!=-1) resize(bs);
-    else resize(10);  // to avoid some issues when no previous fit is performed, TODO
+    else if (!isresized) resize(10);  // to avoid some issues when no previous fit is performed, TODO
 
     printf("Evaluate with batch size %d\n",batch_size);
 
@@ -1338,7 +1339,7 @@ void Net::evaluate(vtensor tin, vtensor tout,int bs) {
 
       train_batch(tin, tout, sind, 1);
 
-      print_loss(j+1);
+      print_loss(j+1,n / batch_size);
       fprintf(stdout, "\r");
       fflush(stdout);
     }
