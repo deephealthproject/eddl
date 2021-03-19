@@ -581,7 +581,7 @@ void Net::print_loss(int b,int nb)
 
       if (pc<20) {
         if (b%4<2) printf("✛");
-        else if (b%4<4) printf("⨯");
+        else printf("⨯");
       }
 
       printf("\033[0;31m");
