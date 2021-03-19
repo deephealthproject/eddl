@@ -577,8 +577,15 @@ void Net::print_loss(int b,int nb)
       printf("[");
       printf("\033[0;32m");
       for(int k=0;k<pc;k++) printf("✓");
+      printf("\033[0;33m");
+
+      if (pc<10) {
+        if (b%4<2) printf("✛");
+        else if (b%4<4) printf("⨯");
+      }
+
       printf("\033[0;31m");
-      for(int k=pc;k<10;k++) printf("-");
+      for(int k=pc+1;k<10;k++) printf("-");
       printf("\033[0m");
       printf("] ");
     }
