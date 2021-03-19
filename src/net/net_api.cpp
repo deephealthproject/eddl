@@ -560,15 +560,29 @@ void Net::compute_loss()
     inferenced_samples+=batch_size;
   }
 }
-void Net::print_loss(int b)
+void Net::print_loss(int b,int nb)
 {
   int p = 0;
 
   if (isrecurrent) {
-    if (rnet!=nullptr) rnet->print_loss(b);
+    if (rnet!=nullptr) rnet->print_loss(b,nb);
   }
   else {
     fprintf(stdout,"Batch %d ",b);
+
+    if (nb!=-1) {
+      int pc=((b+1)*10)/nb;
+      if (b>=nb) pc=10;
+
+      printf("[");
+      printf("\033[0;32m");
+      for(int k=0;k<pc;k++) printf("✓");
+      printf("\033[0;31m");
+      for(int k=pc;k<10;k++) printf("-");
+      printf("\033[0m");
+      printf("] ");
+    }
+
 
     int length=decsize;
     for (int k = 0; k < lout.size(); k+=decsize) {
@@ -830,7 +844,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
         train_batch(tin, tout, sind);
 
-        print_loss(j+1);
+        print_loss(j+1,num_batches);
 
         high_resolution_clock::time_point e2 = high_resolution_clock::now();
         duration<double> epoch_time_span = e2 - e1;
@@ -1089,7 +1103,7 @@ void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, 
   if (verboserec)
     if (outl>1)
       cout<<"Synchronous Seq2Seq "<<inl<<" to "<<outl<<"\n";
-    else 
+    else
       cout<<"Recurrent "<<inl<<" to "<<outl<<"\n";
 
   for(i=0;i<yt.size();i++) {

@@ -164,7 +164,7 @@ public:
     void forward();
     void forward_recurrent(vector<Tensor*> tin);
     void reset_loss();
-    void print_loss(int b);
+    void print_loss(int b,int nb=-1);
     void backward(vector<Tensor *> target);
     void backward(Layer* (*f)(Layer *),Layer *out);
     void backward();
