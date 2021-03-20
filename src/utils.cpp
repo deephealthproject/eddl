@@ -65,7 +65,18 @@ void msg(const string& text, const string& title) {
 
     throw std::runtime_error("RuntimeError: " + title);
 }
-
+void set_text_green()
+{
+  printf("\033[0;32m");
+}
+void set_text_red()
+{
+  printf("\033[0;31m");
+}
+void set_text_default()
+{
+  printf("\033[0m");
+}
 void * eddl_malloc(size_t size, const string & str_info)
 {
     constexpr size_t alignment_block_size = 64;

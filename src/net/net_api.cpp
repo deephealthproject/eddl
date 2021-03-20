@@ -560,6 +560,8 @@ void Net::compute_loss()
     inferenced_samples+=batch_size;
   }
 }
+
+
 void Net::print_loss(int b,int nb)
 {
   int p = 0;
@@ -575,18 +577,19 @@ void Net::print_loss(int b,int nb)
       if (b>=nb) pc=20;
 
       printf("[");
-      printf("\033[0;32m");
+    
+      set_text_green();
       for(int k=0;k<pc;k++) printf("✓");
-      printf("\033[0;33m");
 
       if (pc<20) {
         if (b%4<2) printf("✛");
         else printf("⨯");
       }
 
-      printf("\033[0;31m");
+      set_text_red();
       for(int k=pc+1;k<20;k++) printf("-");
-      printf("\033[0m");
+
+      set_text_default();
       printf("] ");
     }
 
