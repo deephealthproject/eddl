@@ -579,11 +579,11 @@ void Net::print_loss(int b,int nb)
       printf("[");
     
       set_text_green();
-      for(int k=0;k<pc;k++) printf("✓");
+      for(int k=0;k<pc;k++) printf("X");
 
       if (pc<20) {
-        if (b%4<2) printf("✛");
-        else printf("⨯");
+        if (b%4<2) printf("/");
+        else printf("\\");
       }
 
       set_text_red();
