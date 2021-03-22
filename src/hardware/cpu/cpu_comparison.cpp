@@ -150,6 +150,12 @@ bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     _profile(_CPU_ALLCLOSE, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
+        // Check if both values are NaN
+        if (equal_nan && std::isnan(A->ptr[i]) && std::isnan(B->ptr[i])) {
+            continue;
+        }
+
+        // Compare values
         bool close = ::fabsf(A->ptr[i] - B->ptr[i]) <= (atol + rtol * ::fabsf(B->ptr[i]));
         if (!close){
             #pragma omp critical
@@ -172,6 +178,12 @@ bool cpu_allclose_verbose(Tensor *A, Tensor *B, float rtol, float atol, bool equ
     int first_idx = -1;
 
     for (int i = 0; i < A->size; ++i){
+        // Check if both values are NaN
+        if (equal_nan && std::isnan(A->ptr[i]) && std::isnan(B->ptr[i])) {
+            continue;
+        }
+
+        // Compare values
         float delta = ::fabsf(A->ptr[i] - B->ptr[i]);
         bool close = delta <= (atol + rtol * ::fabsf(B->ptr[i]));
         if (!close){
