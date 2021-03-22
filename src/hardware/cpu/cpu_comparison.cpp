@@ -190,6 +190,7 @@ bool cpu_allclose_verbose(Tensor *A, Tensor *B, float rtol, float atol, bool equ
             allclose = false;
             if(first_idx < 0) { first_idx=i; }
             std::cerr << "[idx=" << i << "]:\t" << A->ptr[i] << "!=" << B->ptr[i] << " (delta=" << delta << ")" << std::endl;
+            return allclose;  // break
         }
     }
     return allclose;
