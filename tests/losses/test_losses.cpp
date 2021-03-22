@@ -27,7 +27,7 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
     // Compute loss
     float value = loss.value(t1_y_true, t1_y_true_pred);
     value /= (float)t1_y_true->shape[0];  // Why? b/c we don't normalize it (due to the print method)
-    ASSERT_NEAR(value, 0.524911046f, 10e-4f);
+    ASSERT_NEAR(value, 0.524911046f, 1e-3f);
 
 
     // Compute delta
@@ -37,7 +37,7 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
     t1_delta_ref->div_(t1_delta_ref->shape[0]);  // Why? b/c we normalize the delta a posteriori
 
     loss.delta(t1_y_true, t1_y_true_pred, t1_delta);
-    ASSERT_TRUE(Tensor::equivalent(t1_delta_ref, t1_delta, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_delta_ref, t1_delta, 1e-3f, 0.0f, true, true));
 
     // Deletes
     delete t1_y_true_pred;
@@ -61,7 +61,7 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
     // Compute loss
     float cpu_loss = loss.value(t_cpu_y_true, t_cpu_y_pred);
     float gpu_loss = loss.value(t_gpu_y_true, t_gpu_y_pred);
-    ASSERT_NEAR(cpu_loss-gpu_loss, 0.0f, 10e-4f);
+    ASSERT_NEAR(cpu_loss-gpu_loss, 0.0f, 1e-3f);
 
     // Test: Deltas
     // Generate matrices
@@ -73,7 +73,7 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
     loss.delta(t_gpu_y_true, t_gpu_y_pred, t_gpu_delta);
 
     t_gpu_delta->toCPU();  // Send to CPU
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-3));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 1e-3f, 0.0f, true, true));
 
     // Deletes
     delete t_cpu_y_pred;
@@ -97,7 +97,7 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
     // Compute loss
     float value = loss.value(t1_y_true, t1_y_true_pred);
     value /= (float)t1_y_true->shape[0];  // Why? b/c we don't normalize it (due to the print method)
-    ASSERT_NEAR(value, 0.4564, 10e-4f);
+    ASSERT_NEAR(value, 0.4564, 1e-3f);
 
 
     // Compute delta
@@ -105,7 +105,7 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
     Tensor* t1_delta_ref = new Tensor({-1.4285, -3.3333, -1.1111, 1.1111, -1.6666,}, {5, 1});
     t1_delta_ref->div_(t1_delta_ref->shape[0]);  // Why? b/c we normalize the delta a posteriori
     loss.delta(t1_y_true, t1_y_true_pred, t1_delta);
-    ASSERT_TRUE(Tensor::equivalent(t1_delta_ref, t1_delta, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_delta_ref, t1_delta, 1e-3f, 0.0f, true, true));
 
     // Deletes
     delete t1_y_true_pred;
@@ -130,7 +130,7 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
     // Compute loss
     float cpu_loss = loss.value(t_cpu_y_true, t_cpu_y_pred);
     float gpu_loss = loss.value(t_gpu_y_true, t_gpu_y_pred);
-    ASSERT_NEAR(cpu_loss-gpu_loss, 0.0f, 10e-3f);
+    ASSERT_NEAR(cpu_loss-gpu_loss, 0.0f, 1e-3f);
 
     // Test: Deltas
     // Generate matrices
@@ -143,7 +143,7 @@ TEST(NetTestSuite, losses_binary_cross_entropy){
 
     // We need to increase the margin error since there is some minor discrepancy between the CPU and GPU
     t_gpu_delta->toCPU();  // Send to CPU
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 10e-2));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_delta, t_gpu_delta, 1e-3f, 0.0f, true, true));
 
     // Deletes
     delete t_cpu_y_pred;
