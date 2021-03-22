@@ -639,7 +639,7 @@ namespace eddl {
   layer Conv3D(layer parent, int filters, const vector<int> &kernel_size,
 	       const vector<int> &strides, string padding,  bool use_bias,
 	       int groups, const vector<int> &dilation_rate,string name){
-    return new LConv3D(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    return new LConv3D(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
   // Legacy
