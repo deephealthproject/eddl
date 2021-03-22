@@ -2874,6 +2874,26 @@ public:
     static void set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
     /**
+      *  @brief Gathers values along an axis specified by dim.
+      *
+      *  @param A  the source tensor
+      *  @param axis  the axis along which to index
+      *  @param indices  the indices of elements to gather
+      *  @return     void
+    */
+    static void gather(Tensor *A, Tensor *B, GatherDescriptor *sd);
+
+    /**
+      *  @brief Broadcast the input tensor following the given shape and the broadcast rule.
+      *
+      *  @param A  the source tensor
+      *  @param axis  the axis along which to index
+      *  @param indices  the indices of elements to gather
+      *  @return     void
+    */
+    static void expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+
+    /**
      *  @brief Clone a tensor (same device). Similar to copy, but returning a new instance
      *
      *  @return    Tensor
