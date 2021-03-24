@@ -1096,8 +1096,7 @@ namespace eddl {
   }
 
   layer AveragePool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
-    msg("Not implemented error", "AveragePool3D");
-    return nullptr;
+    return new LAveragePool3D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
   }
 
 
