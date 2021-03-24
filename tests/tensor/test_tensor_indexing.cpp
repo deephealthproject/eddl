@@ -21,7 +21,7 @@ TEST(TensorTestSuite, tensor_indexing_nonzero){
     Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
 
     Tensor* new_t = t1->nonzero(true);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -49,7 +49,7 @@ TEST(TensorTestSuite, tensor_indexing_where){
     Tensor* condition = t1_A->greater(0.0f);
 
     Tensor* new_t = Tensor::where(condition, t1_A, t1_B);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1_A;
@@ -69,9 +69,9 @@ TEST(TensorTestSuite, tensor_indexing_where){
     Tensor* t_gpu_condition = t_cpu_condition->clone(); t_gpu_condition->toGPU();
 
     Tensor* new_t_cpu = Tensor::where(t_cpu_condition, t_cpu_A, t_cpu_B);
-    Tensor* new_t_gpu =Tensor::where(t_gpu_condition, t_gpu_A, t_gpu_B);; new_t_gpu->toCPU();
+    Tensor* new_t_gpu =Tensor::where(t_gpu_condition, t_gpu_A, t_gpu_B); new_t_gpu->toCPU();
 
-    ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 1e-3f, 0.0f, true, true));
 
     delete t_cpu_A;
     delete t_gpu_A;

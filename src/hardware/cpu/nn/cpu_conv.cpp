@@ -13,8 +13,14 @@
 
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
+#define VERBOSE 0
 
 float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize) {
+
+  if (VERBOSE)
+    cout<<"pixel: "<<pz<<" "<<py<<" "<<px<<endl;
+  //getchar();
+  
   // Check boundaries of the window
   if (px<0) return 0.0;
   if (py<0) return 0.0;
@@ -63,6 +69,18 @@ void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
   for(j=0;j<D->matI.rows();j++) {
     k=j;
 
+    if (VERBOSE){
+    cout<<"======================"<<endl;
+    cout<<j<<" "<<j/D->c<<" "<<j%D->c<<endl;
+    cout<<"======================"<<endl;
+    }
+    if ((j!=0)&&((j%D->c)==0)) {
+       if (VERBOSE) cout<<"change row"<<endl; 
+      px=-D->padcl;
+      py+=D->sr;
+    }
+
+    
     for(i=0;i<D->matI.cols();i++,k+=orsize) {
       pz=i/ksize;
       y=py+(i%ksize)/D->kc;
@@ -75,12 +93,16 @@ void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 
     }
     px+=D->sc;
-    if (px>=D->ic+D->padcl-kc2-1) {
-      px=-D->padcl;
-      py+=D->sr;
-    }
+  if (VERBOSE)    getchar();
   }
     _profile(_CPU_IM2COL, 1);
+
+    if (VERBOSE){
+    getchar();
+    for(int i=0;i<100;i++) cout<<ptrI[i]<<" ";
+
+    getchar();
+    }
 
 }
 

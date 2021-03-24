@@ -42,6 +42,7 @@ Layer::Layer(string name, int dev, int mem) {
     this->do_deletes = true;
 
     this->orig = nullptr;
+    this->sorig = nullptr;
     this->net = nullptr;
 
     this->reg = nullptr;

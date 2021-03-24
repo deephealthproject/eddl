@@ -12,8 +12,8 @@ wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VE
 tar -xf protobuf-cpp-$PROTOBUF_VERSION.tar.gz
 
 # Build and install
-cd protobuf-$PROTOBUF_VERSION
-./configure
-make -j$(nproc)
-make install
-ldconfig
+cd protobuf-$PROTOBUF_VERSION && \
+./configure && \
+make -j$(nproc) && \
+sudo make install  && \
+sudo ldconfig

@@ -68,7 +68,7 @@ if(NOT BUILD_DIST)
     list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/distributed/*")
 endif()
 
-SET(ALL_FILES ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
+SET(ALL_FILES ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES} layers/auxiliar/layer_shape.cpp)
 
 # Setup-dependent  files (dependent on the setup)  ########################
 # ONNX (these files might not exist yet)

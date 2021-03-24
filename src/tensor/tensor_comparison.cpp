@@ -831,7 +831,7 @@ int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_
     // Equal data
     if (A->isCPU() && B->isCPU()) {
         if(verbose){
-            return cpu_allclose_verbose(A, B, atol);  // TODO: Temp!
+            return cpu_allclose_verbose(A, B, rtol, atol, equal_nan);
         }else{
             return cpu_allclose(A, B, rtol, atol, equal_nan);
         }

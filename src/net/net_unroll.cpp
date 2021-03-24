@@ -521,6 +521,7 @@ void Net::build_rnet(int inl,int outl) {
   for(i=0;i<rnet->layers.size();i++) {
      rnet->layers[i]->isrecurrent=false;
      rnet->layers[i]->net=rnet;
+     rnet->layers[i]->sorig=rnet->layers[i]->orig;
      rnet->layers[i]->orig=rnet->layers[i];
    }
    rnet->isrecurrent=false;

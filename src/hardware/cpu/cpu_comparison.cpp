@@ -143,7 +143,6 @@ void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C){
 
 
 // CPU: Logic functions: Comparisons
-
 bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     bool allclose = true;
     int first_idx = -1;
@@ -151,13 +150,18 @@ bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     _profile(_CPU_ALLCLOSE, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
+        // Check if both values are NaN
+        if (equal_nan && std::isnan(A->ptr[i]) && std::isnan(B->ptr[i])) {
+            continue;
+        }
+
+        // Compare values
         bool close = ::fabsf(A->ptr[i] - B->ptr[i]) <= (atol + rtol * ::fabsf(B->ptr[i]));
         if (!close){
             #pragma omp critical
             {
                 allclose = false;
                 if(first_idx < 0) { first_idx=i; }
-   //             fprintf(stderr, "[%d]\t\t%f != %f\n",i,  A->ptr[i], B->ptr[i]);
             }
 #if defined(EDDL_LINUX) || defined(EDDL_UNIX) || defined(EDDL_APPLE)
             #pragma omp cancel for
@@ -166,14 +170,29 @@ bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     }
     _profile(_CPU_ALLCLOSE, 1);
 
-//    // TODO: temp!
-//    if(!allclose){
-//        fprintf(stderr, "\n>>>>>>>>>>\n");
-//        fprintf(stderr, "[values]\t\t%f != %f\n", A->ptr[first_idx], B->ptr[first_idx]);
-//        fprintf(stderr, "[diff=\t%f (rtol=%f; atol=%f)]\n", A->ptr[first_idx] - B->ptr[first_idx], rtol, atol);
-//        fprintf(stderr, "<<<<<<<<<<\n");
-//    }
+    return allclose;
+}
 
+bool cpu_allclose_verbose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
+    bool allclose = true;
+    int first_idx = -1;
+
+    for (int i = 0; i < A->size; ++i){
+        // Check if both values are NaN
+        if (equal_nan && std::isnan(A->ptr[i]) && std::isnan(B->ptr[i])) {
+            continue;
+        }
+
+        // Compare values
+        float delta = ::fabsf(A->ptr[i] - B->ptr[i]);
+        bool close = delta <= (atol + rtol * ::fabsf(B->ptr[i]));
+        if (!close){
+            allclose = false;
+            if(first_idx < 0) { first_idx=i; }
+            std::cerr << "[idx=" << i << "]:\t" << A->ptr[i] << "!=" << B->ptr[i] << " (delta=" << delta << ")" << std::endl;
+            return allclose;  // break
+        }
+    }
     return allclose;
 }
 
@@ -288,26 +307,3 @@ void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C){
 }
 
 
-
-int cpu_allclose_verbose(Tensor *A, Tensor *B, float epsilon){
-  _profile(_CPU_EQUAL2, 0);
-  int tt = 1;
-          //fprintf(stderr, "\n>>>>>>>>>>\n");
-  for (int i = 0; i < A->size; i++){
-      float delta = ::fabs(A->ptr[i] - B->ptr[i]);
-      if (delta > epsilon) {
-          //fprintf(stderr, "\n>>>>>>>>>>\n");
-          printf("[%d]\t\t%f != %f\t", i, A->ptr[i], B->ptr[i]);
-          printf("[diff/epsilon]\t%f > %f\n", delta, epsilon);
-          //fprintf(stderr, "<<<<<<<<<<\n");
-          tt=0;
-          _profile(_CPU_EQUAL2, 1);
-          //return 0;
-      }
-      else{
-          printf("OK!!!!!!   [%d]\t\t%f != %f\n", i, A->ptr[i], B->ptr[i]);
-      }
-  }
-  _profile(_CPU_EQUAL2, 1);
-  return tt;
-}

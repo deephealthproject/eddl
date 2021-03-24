@@ -193,7 +193,7 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
            losses.push_back(i==0 ? lo[j] : lo[j]->clone());
 
     } else {
-        // losses = vloss(lo); 
+        // losses = vloss(lo);
         for(auto _l_ : losses) delete _l_;
         losses.clear();
         for(auto _l_ : lo) losses.push_back(_l_);
@@ -407,6 +407,7 @@ void Net::resize(int b)
 
   if (batch_size==b) return;
 
+  isresized=true;
   batch_size=b;
 
   int c=snets.size();
@@ -455,7 +456,7 @@ void Net::setTrainable(string lname, bool val)
     if (layers[i]->name==lname) {
       Layer *l=layers[i];
       l->setTrainable(val);
-      
+
       for(int j=0;j<snets.size();j++) {
         for(int k=0;k<snets[j]->layers.size();k++)
           if (snets[j]->layers[k]->orig==l) {
@@ -503,7 +504,7 @@ void Net::removeLayer(string lname)
       return;
     }//if
   }// for layers
-  
+
 }
 
 void Net::initializeLayer(string lname)
@@ -515,13 +516,13 @@ void Net::initializeLayer(string lname)
       l->initialize();
       //initialize in devices:
       if (snets[0]!=this)
-        for(auto n:snets) 
+        for(auto n:snets)
           for(auto sl:n->layers)
               if(sl->orig==l) {
                 cout<<"Initialize "<<l->name<<" on device"<<endl;
                 sl->initialize();
               }
-        
+
       break;
     }//if
   }// for layers

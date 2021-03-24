@@ -63,7 +63,7 @@ TEST(TensorTestSuite, tensor_linalg_norm){
     Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
 
     float t1_norm = t1->norm();
-    ASSERT_NEAR(t1_norm, 7.7459f, 10e-4f);
+    ASSERT_NEAR(t1_norm, 7.7459f, 1e-3f);
 
     delete t1;
 
@@ -76,7 +76,7 @@ TEST(TensorTestSuite, tensor_linalg_norm){
     float t_cpu_norm = t_cpu->norm();
     float t_gpu_norm = t_gpu->norm();
 
-    ASSERT_NEAR(t_cpu_norm, t_gpu_norm, 10e-2f);
+    ASSERT_NEAR(t_cpu_norm, t_gpu_norm, 1e-0f);// Special margin error
 
     delete t_cpu;
     delete t_gpu;

@@ -167,7 +167,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_globalaveragegpool_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::RESHAPE:
-      new_layer = build_reshape_layer(node, constant_node_map, map_init_values, map_init_dims, input_node_map, output_node_map, dev, mem);
+      new_layer = build_reshape_layer(node, constant_node_map, map_init_values, map_init_dims, input_node_map, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::FLATTEN:
       new_layer = build_flatten_layer(node, output_node_map, dev, mem);

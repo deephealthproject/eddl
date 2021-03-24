@@ -23,7 +23,7 @@ TEST(TensorTestSuite, tensor_math_reduction_max) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->max({0}, false);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({4.0f, 8.0f, 9.0f, 6.0f},  {4}, DEV_CPU);
@@ -34,7 +34,7 @@ TEST(TensorTestSuite, tensor_math_reduction_max) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->max({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -53,7 +53,7 @@ TEST(TensorTestSuite, tensor_math_reduction_max) {
 //    t_cpu_max->print();
 //    t_gpu_max->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_max, t_gpu_max, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_max, t_gpu_max, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -73,7 +73,7 @@ TEST(TensorTestSuite, tensor_math_reduction_argmax) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->argmax({0}, false);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({1.0f, 2.0f, 2.0f, 1.0f},  {4}, DEV_CPU);
@@ -84,7 +84,7 @@ TEST(TensorTestSuite, tensor_math_reduction_argmax) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->argmax({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -103,7 +103,7 @@ TEST(TensorTestSuite, tensor_math_reduction_argmax) {
 //    t_cpu_argmax->print();
 //    t_gpu_argmax->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_argmax, t_gpu_argmax, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_argmax, t_gpu_argmax, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -124,7 +124,7 @@ TEST(TensorTestSuite, tensor_math_reduction_min) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->min({0}, false);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({1.0f, 4.0f, -3.0f, 0.0f},  {4}, DEV_CPU);
@@ -135,7 +135,7 @@ TEST(TensorTestSuite, tensor_math_reduction_min) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->min({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -154,7 +154,7 @@ TEST(TensorTestSuite, tensor_math_reduction_min) {
 //    t_cpu_min->print();
 //    t_gpu_min->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_min, t_gpu_min, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_min, t_gpu_min, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -174,7 +174,7 @@ TEST(TensorTestSuite, tensor_math_reduction_argmin) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->argmin({0}, false);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({0.0f, 1.0f, 1.0f, 2.0f},  {4}, DEV_CPU);
@@ -185,7 +185,7 @@ TEST(TensorTestSuite, tensor_math_reduction_argmin) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->argmin({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -204,7 +204,7 @@ TEST(TensorTestSuite, tensor_math_reduction_argmin) {
 //    t_cpu_argmin->print();
 //    t_gpu_argmin->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_argmin, t_gpu_argmin, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_argmin, t_gpu_argmin, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -223,7 +223,7 @@ TEST(TensorTestSuite, tensor_math_reduction_sum) {
     Tensor *t1 = Tensor::ones({3, 2, 4}, DEV_CPU);
 
     Tensor *new_t = t1->sum({2}, false);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({
@@ -233,7 +233,7 @@ TEST(TensorTestSuite, tensor_math_reduction_sum) {
     Tensor *t2 = Tensor::ones({3, 2, 4}, DEV_CPU);
 
     Tensor *new_t2 = t2->sum({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -252,7 +252,7 @@ TEST(TensorTestSuite, tensor_math_reduction_sum) {
 //    t_cpu_sum->print();
 //    t_gpu_sum->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_sum, t_gpu_sum, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_sum, t_gpu_sum, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -270,7 +270,7 @@ TEST(TensorTestSuite, tensor_math_reduction_sum_abs) {
                              6.0f, 4.0f, -4.0f}, {2, 3}, DEV_CPU);
 
     Tensor *new_t = t1->sum_abs({0}, false);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #1
     Tensor *t2_ref = new Tensor({14.0f, 14.0f},  {2}, DEV_CPU);
@@ -278,7 +278,7 @@ TEST(TensorTestSuite, tensor_math_reduction_sum_abs) {
                              6.0f, 4.0f, -4.0f}, {2, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->sum_abs({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -297,7 +297,7 @@ TEST(TensorTestSuite, tensor_math_reduction_sum_abs) {
 //    t_cpu_sum_abs->print();
 //    t_gpu_sum_abs->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_sum_abs, t_gpu_sum_abs, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_sum_abs, t_gpu_sum_abs, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -314,7 +314,7 @@ TEST(TensorTestSuite, tensor_math_reduction_prod) {
                              6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
 
     Tensor *new_t = t1->prod({0}, false);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({ 16., 160.,  48.,  32. },  {4}, DEV_CPU);
@@ -325,7 +325,7 @@ TEST(TensorTestSuite, tensor_math_reduction_prod) {
                                     1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->prod({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -343,7 +343,7 @@ TEST(TensorTestSuite, tensor_math_reduction_prod) {
 //    t_cpu_prod->print();
 //    t_gpu_prod->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_prod, t_gpu_prod, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_prod, t_gpu_prod, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -360,7 +360,7 @@ TEST(TensorTestSuite, tensor_math_reduction_mean) {
                              6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
 
     Tensor *new_t = t1->mean({0}, false);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({ 3.0000, 5.6667, 4.3333, 4.3333},  {4}, DEV_CPU);
@@ -371,7 +371,7 @@ TEST(TensorTestSuite, tensor_math_reduction_mean) {
                                     1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->mean({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -389,7 +389,7 @@ TEST(TensorTestSuite, tensor_math_reduction_mean) {
 //    t_cpu_mean->print();
 //    t_gpu_mean->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_mean, t_gpu_mean, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_mean, t_gpu_mean, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -406,7 +406,7 @@ TEST(TensorTestSuite, tensor_math_reduction_var) {
                              6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
 
     Tensor *new_t = t1->var({0}, false, true);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({ 3.0000,  4.3333, 10.3333, 12.3333},  {4}, DEV_CPU);
@@ -417,7 +417,7 @@ TEST(TensorTestSuite, tensor_math_reduction_var) {
                                     1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->var({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -435,7 +435,7 @@ TEST(TensorTestSuite, tensor_math_reduction_var) {
 //    t_cpu_var->print();
 //    t_gpu_var->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_var, t_gpu_var, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_var, t_gpu_var, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -453,7 +453,7 @@ TEST(TensorTestSuite, tensor_math_reduction_std) {
                                  6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
 
     Tensor *new_t = t1->std({0}, false, true);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({1.7321, 2.0817, 3.2146, 3.5119},  {4}, DEV_CPU);
@@ -464,7 +464,7 @@ TEST(TensorTestSuite, tensor_math_reduction_std) {
                                     1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->std({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -482,7 +482,7 @@ TEST(TensorTestSuite, tensor_math_reduction_std) {
 //    t_cpu_std->print();
 //    t_gpu_std->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_std, t_gpu_std, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_std, t_gpu_std, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -504,7 +504,7 @@ TEST(TensorTestSuite, tensor_math_reduction_mode) {
                              1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->mode({0}, false);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({4., 5., 2., 1.},  {4}, DEV_CPU);
@@ -515,7 +515,7 @@ TEST(TensorTestSuite, tensor_math_reduction_mode) {
                                     1.0f, 1.0f, 1.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->mode({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -534,7 +534,7 @@ TEST(TensorTestSuite, tensor_math_reduction_mode) {
 //    t_cpu_mode->print();
 //    t_gpu_mode->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_mode, t_gpu_mode, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_mode, t_gpu_mode, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -555,7 +555,7 @@ TEST(TensorTestSuite, tensor_math_reduction_norm) {
                                     1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->norm({0}, false, "fro");
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({5.7446f, 10.2470f, 8.7750f, 9.0000f},  {4}, DEV_CPU);
@@ -566,7 +566,7 @@ TEST(TensorTestSuite, tensor_math_reduction_norm) {
                                     1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t2 = t2->norm({1}, false, "fro");
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -585,7 +585,7 @@ TEST(TensorTestSuite, tensor_math_reduction_norm) {
 //    t_cpu_norm->print();
 //    t_gpu_norm->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_norm, t_gpu_norm, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_norm, t_gpu_norm, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;
@@ -604,7 +604,7 @@ TEST(TensorTestSuite, tensor_math_reduction_median) {
                                   5.0f, 2.0f, 3.0f,}, {3, 3}, DEV_CPU);
 
     Tensor *new_t = t1->median({0}, false);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({ 1.5f, 4.0f, 4.5f},  {3}, DEV_CPU);
@@ -614,7 +614,7 @@ TEST(TensorTestSuite, tensor_math_reduction_median) {
                                     4.0f, 5.0f, 8.0f, 1.0f}, {3, 4}, DEV_CPU);
 
     Tensor *new_t2 = t2->median({1}, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -633,7 +633,7 @@ TEST(TensorTestSuite, tensor_math_reduction_median) {
 //    t_cpu_median->print();
 //    t_gpu_median->print();
 
-    ASSERT_TRUE(Tensor::equivalent(t_cpu_median, t_gpu_median, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_median, t_gpu_median, 1e-3f, 0.0f, true, true));
 
     delete t_cpu;
     delete t_gpu;

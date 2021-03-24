@@ -284,6 +284,7 @@ void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     }
     _profile(_CPU_SET_SELECT, 1);
 }
+
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     _profile(_CPU_SET_SELECT_BACK, 0);
     #pragma omp parallel for
@@ -293,6 +294,23 @@ void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     _profile(_CPU_SET_SELECT_BACK, 1);
 }
 
+void cpu_gather(Tensor *A, Tensor *B, GatherDescriptor *sd){
+    _profile(_CPU_SET_SELECT, 0);
+    #pragma omp parallel for
+    for (int i = 0; i < B->size; i++) {
+        A->ptr[sd->cpu_addresses[i]] = B->ptr[i];
+    }
+    _profile(_CPU_SET_SELECT, 1);
+}
+
+void cpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
+    _profile(_CPU_SET_SELECT, 0);
+#pragma omp parallel for
+    for (int i = 0; i < B->size; i++) {
+        A->ptr[sd->cpu_addresses[i]] = B->ptr[i];
+    }
+    _profile(_CPU_SET_SELECT, 1);
+}
 
 void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool mask_zeros){
     _profile(_CPU_SELECT2, 0);
