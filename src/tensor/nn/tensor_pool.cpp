@@ -230,10 +230,10 @@ namespace tensorNN {
         /////////////////////////////////////////////////////////////////////
         //// AvgPool3D
         //// Dimensions must be compatible
-        //// A is input 4D Tensor, Batch x Channels x Rows x Cols
+        //// A is input 5D Tensor, batch_shape + (channels, pool_dim1, pool_dim2, pool_dim3)
         //// D is a PoolDescriptor
         /////////////////////////////////////////////////////////////////////
-        if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::AvgPool3D");
+        if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::AvgPool3D");
 
 
         if (D->I->isCPU()) {
@@ -258,10 +258,10 @@ namespace tensorNN {
         /////////////////////////////////////////////////////////////////////
         //// AvgPool3D_back
         //// Dimensions must be compatible
-        //// A is input 4D Tensor, Batch x Channels x Rows x Cols
+        //// A is input 5D Tensor, batch_shape + (channels, pool_dim1, pool_dim2, pool_dim3)
         //// D is a PoolDescriptor
         /////////////////////////////////////////////////////////////////////
-        if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::AvgPool3D_back");
+        if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::AvgPool3D_back");
 
 
         if (D->I->isCPU()) {
