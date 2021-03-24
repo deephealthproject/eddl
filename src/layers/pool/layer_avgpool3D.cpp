@@ -34,12 +34,11 @@ LAveragePool3D::LAveragePool3D(Layer *parent, PoolDescriptor3D *D, const string&
     D->indY = new Tensor(D->O->shape, dev);
 #ifdef cCUDNN
 if(!D->I->isCPU()){
-//    D->mode = CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING;
-//    D->maxpoolingNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+    D->mode = CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING;
+    D->maxpoolingNanOpt = CUDNN_NOT_PROPAGATE_NAN;
+     cudnnStatus_t bbb = cudnnSetPoolingNdDescriptor(D->poolingDesc, D->mode, D->maxpoolingNanOpt, 3, D->cwindow,  D->cpadding,   D->cstride);
 
-//    cudnnStatus_t bbb =  cudnnSetPooling2dDescriptor(D->poolingDesc, D->mode, D->maxpoolingNanOpt, D->windowHeight, D->windowWidth,
-//    D->verticalPadding, D->horizontalPadding, D->verticalStride, D->horizontalStride);
-//   if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create avg pooling 3D descriptor "<< cudnnGetErrorString(bbb) <<std::endl;
+   if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create avg pooling 3D descriptor "<< cudnnGetErrorString(bbb) <<std::endl;
 }
 #endif
 }
