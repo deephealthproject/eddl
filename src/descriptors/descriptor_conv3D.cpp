@@ -152,7 +152,7 @@ void ConvolDescriptor3D::build(Tensor *A) {
            if(pad[0] != pad[1] || pad[2] != pad[3] || pad[4] != pad[5]){
              std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
            }
-           if (pad[0] != pad[1]){pad[0] = pad[1];}
+           if (pad[0] != pad[1]){ pad[0] = pad[1];}
            if (pad[2] != pad[3]){ pad[2] = pad[3];}
            if (pad[4] != pad[5]){ pad[4] = pad[5];}
 
