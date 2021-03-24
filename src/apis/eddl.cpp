@@ -1168,8 +1168,15 @@ namespace eddl {
   }
 
   layer GlobalAveragePool3D(layer parent, string name){
-    msg("Not implemented error", "GlobalAveragePool3D");
-    return nullptr;
+      // Expands dimensions if needed
+      if (parent->output->ndim!=5) msg("GlobalAveragePool3D only works over 5D tensors","GlobalAveragePool3D");
+
+      int d=parent->output->shape[2];
+      int h=parent->output->shape[3];
+      int w=parent->output->shape[4];
+
+      if(name.empty()) { name = "GlobalAveragePool3D"; }  // Set default name
+      return AveragePool3D(parent, {d,h,w},{1,1,1}, "none", name);
   }
 
   // Recurrent Layers
