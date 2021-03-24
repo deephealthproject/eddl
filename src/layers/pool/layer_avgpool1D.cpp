@@ -27,7 +27,7 @@ LAveragePool1D::LAveragePool1D(Layer *parent, const vector<int> &pool_size, cons
 LAveragePool1D::LAveragePool1D(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, const string& name, int dev, int mem) : LAveragePool1D(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
 LAveragePool1D::LAveragePool1D(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem) : LPool1D(parent, D, name, dev, mem) {
-    if(name.empty()) this->name = "averagepool1D" + to_string(++total_layers);
+    if(name.empty()) this->name = "avgpool1d" + to_string(++total_layers);
 
     // Params
     D->indX = new Tensor(D->O->shape, dev);  // Is this needed here?
