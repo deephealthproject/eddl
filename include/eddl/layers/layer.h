@@ -40,6 +40,7 @@ public:
     Tensor *target;
     Tensor *delta;
     Layer *orig;
+    Layer *sorig;
     Net *net;
     bool trainable;
     int mem_level; // See CS

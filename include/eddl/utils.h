@@ -18,6 +18,10 @@ using namespace std;
 
 void msg(const string& text, const string& title="");
 
+void set_text_green();
+void set_text_red();
+void set_text_default();
+
 void * eddl_malloc(size_t size, const string & str_info = "");
 
 void eddl_free(void * ptr);

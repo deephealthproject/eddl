@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.9.2)
 
 project(eddl-tests)
 
+SET(PROJECT_TESTS_NAME unit_tests)
+
 # GTest
 enable_testing()
 if(GTEST_ROOT)
@@ -23,22 +25,23 @@ if(NOT USE_PROTOBUF)
 endif()
 
 # Build test and target libraries
-add_executable(unit_tests ${CPP_TESTS_FILES})
-target_include_directories(unit_tests PUBLIC $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>)
+add_executable(${PROJECT_TESTS_NAME} ${CPP_TESTS_FILES})
+target_include_directories(${PROJECT_TESTS_NAME} PUBLIC $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>)
 
 # Add libraries
 if(MSVC)
-    target_link_libraries(unit_tests PUBLIC eddl 
+    target_link_libraries(${PROJECT_TESTS_NAME} PUBLIC eddl 
         optimized ${GTEST_LIBRARY} optimized ${GTEST_MAIN_LIBRARY}
         debug ${GTESTD_LIBRARY} debug ${GTEST_MAIND_LIBRARY}
     )
 else()
     find_package(Threads REQUIRED)
-    target_link_libraries(unit_tests PUBLIC eddl ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(${PROJECT_TESTS_NAME} PUBLIC eddl ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 
 # CUDA (TEMP! We shouldn't need this)
+# CUDA ***************************************
 if(USE_CUDA)
     cmake_minimum_required(VERSION 3.17.2)  # Due to CUDAToolkit
 
@@ -50,13 +53,13 @@ if(USE_CUDA)
         enable_language(CUDA)
         find_package(CUDAToolkit)
 
-        # NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
-                message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8 (DETECTED: ${CMAKE_CXX_COMPILER_VERSION}).
-        Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
-            endif()
-        endif()
+        #        # NVCC needs GCC versions to be less or equal than 8  (GCC < 9.0;)
+        #        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        #            if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9)
+        #                message(FATAL_ERROR "[WARNING] The nvcc compiler in CUDA 10 (or later) does not support gcc versions later than 8 (DETECTED: ${CMAKE_CXX_COMPILER_VERSION}).
+        #        Hint: Use g++-8 (or older); Set other compiler version by using '-D CMAKE_CXX_COMPILER='$(which g++-8)' or creating a symbolic link.")
+        #            endif()
+        #        endif()
 
         # Set standard CUDA variables
         if(NOT DEFINED CMAKE_CUDA_STANDARD)
@@ -65,32 +68,36 @@ if(USE_CUDA)
         endif()
 
         # Target properties
-        set_target_properties(unit_tests PROPERTIES
+        set_target_properties(${PROJECT_TESTS_NAME} PROPERTIES
                 CUDA_SEPARABLE_COMPILATION ON
                 CUDA_RESOLVE_DEVICE_SYMBOLS ON
                 )
 
         # Add source files
-        target_sources(unit_tests PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
+        target_sources(${PROJECT_TESTS_NAME} PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
 
         # Add includes
-        target_include_directories(unit_tests PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
+        target_include_directories(${PROJECT_TESTS_NAME} PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
 
         # Add libraries
-        target_link_libraries(unit_tests PRIVATE CUDA::cublas CUDA::cudart CUDA::curand)
+        target_link_libraries(${PROJECT_TESTS_NAME} PRIVATE CUDA::cublas CUDA::cudart CUDA::curand)
         if(USE_CUDNN)
             if(CUDNN_ROOT_DIR)
                 SET(CUDNN_INCLUDE_DIRS ${CUDNN_ROOT_DIR}/include)
-                find_library(CUDNN_LIBRARY cudnn HINTS ${CUDNN_ROOT_DIR} PATHS ${CUDNN_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
+                find_library(CUDNN_CUDNN_LIBRARY cudnn HINTS ${CUDNN_ROOT_DIR} PATHS ${CUDNN_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
+                find_library(CUDNN_CNN_INFER_LIBRARY cudnn_cnn_infer HINTS ${CUDNN_ROOT_DIR} PATHS ${CUDNN_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
+                find_library(CUDNN_OPS_INFER_LIBRARY cudnn_ops_infer HINTS ${CUDNN_ROOT_DIR} PATHS ${CUDNN_ROOT_DIR} PATH_SUFFIXES "lib" "lib64")
             else()
                 SET(CUDNN_INCLUDE_DIRS ${CUDAToolkit_INCLUDE_DIRS})
-                find_library(CUDNN_LIBRARY cudnn HINTS ${CUDAToolkit_LIBRARY_DIR} PATHS ${CUDAToolkit_LIBRARY_DIR})
+                find_library(CUDNN_CUDNN_LIBRARY cudnn HINTS ${CUDAToolkit_LIBRARY_DIR} PATHS ${CUDAToolkit_LIBRARY_DIR})
+                find_library(CUDNN_CNN_INFER_LIBRARY cudnn_cnn_infer HINTS ${CUDAToolkit_LIBRARY_DIR} PATHS ${CUDAToolkit_LIBRARY_DIR})
+                find_library(CUDNN_OPS_INFER_LIBRARY cudnn_ops_infer HINTS ${CUDAToolkit_LIBRARY_DIR} PATHS ${CUDAToolkit_LIBRARY_DIR})
             endif()
 
             # Check if the library has been found
-            if(CUDNN_LIBRARY)
-                target_include_directories(unit_tests PRIVATE ${CUDNN_INCLUDE_DIRS})
-                target_link_libraries(unit_tests PRIVATE ${CUDNN_LIBRARY})
+            if(CUDNN_LIBRARY AND CUDNN_CNN_INFER_LIBRARY AND CUDNN_OPS_INFER_LIBRARY)
+                target_include_directories(${PROJECT_TESTS_NAME} PRIVATE ${CUDNN_INCLUDE_DIRS})
+                target_link_libraries(${PROJECT_TESTS_NAME} PRIVATE ${CUDNN_LIBRARY} ${CUDNN_CNN_INFER_LIBRARY} ${CUDNN_OPS_INFER_LIBRARY})
             else()
                 message(WARNING "[WARNING] CUDNN was not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=GPU')
                 Hint: Install CUDNN in the same path as the CUDA Toolkit, or specify the CUDNN path using this flag '-D CUDNN_ROOT_DIR=path'")
@@ -102,7 +109,7 @@ if(USE_CUDA)
         if(APPLE)
             # We need to add the path to the driver (libcuda.dylib) as an rpath,
             # so that the static cuda runtime can find it at runtime.
-            set_property(TARGET unit_tests PROPERTY BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+            set_property(TARGET ${PROJECT_TESTS_NAME} PROPERTY BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
         endif()
 
         if(NOT DEFINED CMAKE_CUDA_STANDARD)
@@ -110,7 +117,7 @@ if(USE_CUDA)
             set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
         endif()
     else()
-        message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
+        message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=CPU')
         Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
         SET(BUILD_TARGET "CPU") # Local's scope
         SET(USE_CUDNN OFF) # Local's scope (disable)
@@ -142,7 +149,7 @@ endif()
 ##########################################################################
 
 # Add test
-add_test(NAME unit_tests COMMAND unit_tests)
+add_test(NAME ${PROJECT_TESTS_NAME} COMMAND ${PROJECT_TESTS_NAME})
 
 
 ##########################################################################

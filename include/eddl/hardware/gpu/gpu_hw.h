@@ -40,6 +40,10 @@ void gpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
+void gpu_gather(Tensor *A, Tensor *B, GatherDescriptor *sd);
+void gpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+
+
 void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
 
 // GPU: Create

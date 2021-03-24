@@ -37,6 +37,9 @@ void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
+void cpu_gather(Tensor *A, Tensor *B, GatherDescriptor *sd);
+void cpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+
 void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false); // TODO: Legacy
 void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0,bool mask_zeros=false); // TODO: Legacy
 
@@ -209,29 +212,28 @@ void cpu_logical_not(Tensor *A, Tensor *B);
 void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
 
 // CPU: Logic functions: Comparisons
+bool cpu_allclose_verbose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
 
 void cpu_greater(Tensor *A, Tensor *B, float v);
+
 void cpu_greater(Tensor *A, Tensor *B, Tensor *C);
-
 void cpu_greater_equal(Tensor *A, Tensor *B, float v);
+
 void cpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
-
 void cpu_less(Tensor *A, Tensor *B, float v);
+
 void cpu_less(Tensor *A, Tensor *B, Tensor *C);
-
 void cpu_less_equal(Tensor *A, Tensor *B, float v);
+
 void cpu_less_equal(Tensor *A, Tensor *B, Tensor *C);
-
 void cpu_equal(Tensor *A, Tensor *B, float v);
+
 void cpu_equal(Tensor *A, Tensor *B, Tensor *C);
-
 void cpu_not_equal(Tensor *A, Tensor *B, float v);
-void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
-// Legacy
-int cpu_allclose_verbose(Tensor *A, Tensor *B, float epsilon);
+void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
 
 

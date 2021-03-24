@@ -233,9 +233,9 @@ public:
 
     ConvolDescriptor3D();
 
-    ConvolDescriptor3D(int filters, const vector<int> &ks, const vector<int> &st, const string& p, bool use_bias, int mem=0);
+    ConvolDescriptor3D(int filters, const vector<int> &ks, const vector<int> &st, const string& p, const vector<int> &pads, bool use_bias, int mem=0);
 
-    ConvolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
+    ConvolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, bool use_bias, int mem=0);
 
     ~ConvolDescriptor3D();
 

@@ -58,6 +58,7 @@ public:
     bool isbuild;
     bool isdecoder;
     bool isencoder;
+    bool isresized;
     int decsize;
 
     vector<int> devsel;
@@ -164,7 +165,7 @@ public:
     void forward();
     void forward_recurrent(vector<Tensor*> tin);
     void reset_loss();
-    void print_loss(int b);
+    void print_loss(int b,int nb=-1);
     void backward(vector<Tensor *> target);
     void backward(Layer* (*f)(Layer *),Layer *out);
     void backward();
@@ -190,6 +191,7 @@ public:
 
     void fit_recurrent(vtensor tin, vtensor tout, int batch_size, int epochs);
     void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
+    void train_batch_recurrent(vtensor X, vtensor Y, vind sind, int eval = 0);
     void evaluate(vtensor tin, vtensor tout, int bs=100);
     void evaluate_recurrent(vtensor tin, vtensor tout, int bs);
     vtensor predict_recurrent(vtensor tin);

@@ -38,14 +38,14 @@ int main(int argc, char **argv) {
     int batch_size = 100;
     int num_classes = 10;
 
-    // Define network
+        // Define network
     layer in = Input({28});
     layer l = in;  // Aux var
 
     l = LeakyReLu(Dense(l, 32));
-    l = LSTM(l, 32, "relu");
-    l = LSTM(l, 32, "relu");
-
+    //l = L2(RNN(l, 128, "relu"),0.001);
+    l = L2(LSTM(l, 128),0.001);
+    layer ls=l;
     l = LeakyReLu(Dense(l, 32));
 
     layer out = Softmax(Dense(l, num_classes));
@@ -121,12 +121,14 @@ int main(int argc, char **argv) {
             x_train_batch->reshape_({batch_size,28,28}); // time x dim
             y_train_batch->reshape_({batch_size,1,10});
 
+            train_batch(net, {x_train_batch}, {y_train_batch});
+/*
             zeroGrads(net);
             forward(net,{x_train_batch});
             backward(net,{y_train_batch});
             update(net);
 
-
+*/
             print_loss(net,j);
             printf("\r");
 

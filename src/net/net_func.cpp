@@ -168,6 +168,8 @@ void collectTensor(Layer *l,string tname, int p){
 
         if (tname=="output"){
             Tensor::deselect(sl->output, l->output, sind, start, end);
+        }else if (tname=="input"){
+            Tensor::deselect(sl->input, l->input, sind, start, end);
         }else if (tname=="delta"){
             Tensor::deselect(sl->delta, l->delta, sind, start, end);
         }else if (tname=="param"){

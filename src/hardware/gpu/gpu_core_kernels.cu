@@ -119,6 +119,23 @@ __global__ void set_select_back(float* A, float* B, long int size, int* indices)
 }
 
 
+__global__ void gpu_gather(float* A, float* B, long int size, int* indices){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        A[indices[thread_id_x]] = B[thread_id_x];
+    }
+}
+
+
+__global__ void gpu_expand(float* A, float* B, long int size, int* indices){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        A[indices[thread_id_x]] = B[thread_id_x];
+    }
+}
+
 
 __global__ void concat(float *dest, float *src, unsigned int src_size, unsigned int src_stride, unsigned int dest_stride, bool derivative){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
