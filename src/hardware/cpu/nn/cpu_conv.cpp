@@ -126,7 +126,7 @@ void cpu_conv2D(ConvolDescriptor *D)
 
 }
 
-inline void naive_conv2D(int image_rows, int image_cols, float *image,
+inline void naive_image_conv2D(int image_rows, int image_cols, float *image,
         int kernel_rows, int kernel_cols, float *kernel,
         int out_rows, int out_cols, float *output,
         int pad_row, int pad_col, int stride_rows, int stride_cols)
@@ -161,7 +161,7 @@ inline void naive_conv2D(int image_rows, int image_cols, float *image,
     }
 }
 
-void cpu_new_conv2D(ConvolDescriptor *D, float *output)
+void cpu_naive_conv2D(ConvolDescriptor *D, float *output)
 {
     // printf("input: shape[0]=%d, in=%d\n", D->I->shape[0], D->in);
     /* printf("input: in=%d, iz=%d, ir=%d, ic=%d\n", D->I->shape[0], D->iz, D->ir, D->ic);
@@ -177,7 +177,7 @@ void cpu_new_conv2D(ConvolDescriptor *D, float *output)
             for (int z = 0; z < D->iz; z++) { // canal
                 // printf("b=%d k=%d z=%d\n", b, k, z);
                 // printf("ptrO=%p ptrI=%p ptrK=%p\n", ptrO, ptrI, ptrK);
-                naive_conv2D(D->ir, D->ic,
+                naive_image_conv2D(D->ir, D->ic,
                     D->I->ptr + (b * D->iz + z) * D->ir * D->ic,
                     D->kr, D->kc,
                     D->K->ptr + (k * D->kz + z) * D->kr * D->kc,
@@ -270,6 +270,102 @@ void cpu_conv2D_back(ConvolDescriptor *D)
 
   }// batch
     _profile(_CPU_CONV2D_BACK, 1);
+}
+
+inline void naive_image_conv2D_back(int image_rows, int image_cols, float *image,
+        int kernel_rows, int kernel_cols, float *kernel,
+        int out_rows, int out_cols, float *output,
+        int pad_row, int pad_col, int stride_rows, int stride_cols)
+{
+    int dx = kernel_rows / 2;
+    int dy = kernel_cols / 2;
+
+    // int out_rows = image_rows - kernel_cols + 1 + pad_left + pad_right;
+    // int out_cols = image_cols - kernel_rows + 1 + pad_top + pad_bottom;
+    // printf("out_rows=%d out_cols=%d\n", out_rows, out_cols);
+
+    float *t = new float[out_rows * out_cols];
+    memset(t, 0, out_rows * out_cols * sizeof(float));
+    for (int i = 0; i < out_rows; i++) {
+        for (int j = 0; j < out_cols; j++) {
+            int px = i - pad_row;
+            int py = j - pad_col;
+            if (px % stride_rows) continue;
+            if (py % stride_cols) continue;
+            px /= stride_cols;
+            py /= stride_cols;
+            if (px >= 0 && px < image_rows &&
+                py >= 0 && py < image_cols) {
+                    t[i * out_cols + j] = image[px * image_cols + py];
+            }
+        }
+    }
+    for (int i = 0; i < out_rows; i++) {
+        for (int j = 0; j < out_cols; j++) {
+            printf("% 6.1f ", t[i * out_cols + j]);
+        }
+        printf("\n");
+    }
+
+    for (int i = 0; i < out_rows; i++) {
+        for (int j = 0; j < out_cols; j++) {
+            float s = 0;
+            // printf("[%d,%d]\n", i, j);
+            for (int x = 0; x < kernel_rows; x++) {
+                for (int y = 0; y < kernel_cols; y++) {
+                    int px = i - pad_row + x - dx;
+                    int py = j - pad_col + y - dy;
+                    if (px % stride_rows) continue;
+                    if (py % stride_cols) continue;
+                    px /= stride_cols;
+                    py /= stride_cols;
+                    if (px >= 0 && px < image_rows &&
+                        py >= 0 && py < image_cols) {
+                    // printf("    k[%d,%d]=%e i[%d,%d]=%e\n",
+                             // x - dx, y - dx,
+                             // kernel[(kernel_rows - 1 - x) * kernel_cols + kernel_cols - 1 - y],
+                             // px, py, image[px + py * image_rows]);
+                        s += kernel[(kernel_rows - 1 - x) * kernel_cols +
+                                     kernel_cols - 1 - y]
+                           * image[px * image_cols + py];
+                    }
+                }
+            }
+            output[i * out_cols + j] += s;
+        }
+    }
+    delete(t);
+}
+
+void cpu_naive_conv2D_back(ConvolDescriptor *D, float *output)
+{
+    printf("input: in=%d, iz=%d, ir=%d, ic=%d\n", D->I->shape[0], D->iz, D->ir, D->ic);
+    printf("kernel: nk=%d, kz (iz)=%d, kr=%d, kc=%d\n", D->nk, D->kz, D->kr, D->kc);
+    printf("output: in=%d, z (nk)=%d, r=%d, c=%d\n", D->in, D->z, D->r, D->c);
+    printf("padcl=%d, padcr=%d, padrt=%d, padrb=%d\n", D->padcl, D->padcr, D->padrt, D->padrb);
+    printf("padding: %d %d %d %d\n", D->pads[0], D->pads[1], D->pads[2], D->pads[3]);
+    printf("stride: %d,%d bias:%d\n", D->sr, D->sc, D->use_bias);
+    float *ptrID = output;
+    int pad_row = D->padrt == 0 ? D->kr / 2 : 0;
+    int pad_col = D->padcl == 0 ? D->kc / 2 : 0;
+    // #pragma omp parallel for // collapse(2) doesn't work
+    for (int b = 0; b < D->I->shape[0]; b++) { // batch
+        for (int k = 0; k < D->nk; k++) { // kernel
+            memset(ptrID, 0, D->ir * D->ic * sizeof(float));
+            for (int z = 0; z < D->iz; z++) { // canal
+                // printf("b=%d k=%d z=%d\n", b, k, z);
+                // printf("ptrO=%p ptrI=%p ptrK=%p\n", ptrO, ptrI, ptrK);
+                naive_image_conv2D_back(D->r, D->c,
+                    D->D->ptr + (b * D->iz + z) * D->r * D->c,
+                    D->kr, D->kc,
+                    D->K->ptr + (k * D->kz + z) * D->kr * D->kc,
+                    D->ir, D->ic, ptrID,
+                    pad_row, pad_col,
+                    D->sr, D->sc);
+            }
+            ptrID += D->ir * D->ic;
+        }
+    }
 }
 
 
