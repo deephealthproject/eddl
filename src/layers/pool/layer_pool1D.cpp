@@ -39,9 +39,6 @@ LPool1D::LPool1D(Layer *parent, PoolDescriptor *D, string name, int dev, int mem
     out_shape.pop_back();
     this->output = new Tensor(out_shape, this->pd->O);
 
-//  this->delta = this->pd->D;
-//  this->pd->ID = parent->delta;
-
     parent->addchild(this);
     addparent(parent);
 }

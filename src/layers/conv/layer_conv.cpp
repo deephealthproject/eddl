@@ -40,10 +40,6 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
 
     output = cd->O;
 
-
-//    delta = cd->D;
-//    cd->ID = parent->delta;
-
     params.push_back(cd->K);
     params.push_back(cd->bias);
 

@@ -758,6 +758,40 @@ void Tensor::set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 
 }
 
+void Tensor::gather(Tensor *A, Tensor *B, GatherDescriptor *sd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_gather(A, B, sd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_gather(A, B, sd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+        fpga_gather(A, B, sd);
+    }
+#endif
+}
+
+void Tensor::expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_expand(A, B, sd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_expand(A, B, sd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+        fpga_expand(A, B, sd);
+    }
+#endif
+}
+
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros) {
     ///////////////////////////////////////
     /// Select from A to B, A is bigger

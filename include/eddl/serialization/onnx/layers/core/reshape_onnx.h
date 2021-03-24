@@ -16,6 +16,7 @@ Layer* build_reshape_layer(onnx::NodeProto *node,
                            map<string, vector<int>> &map_init_dims,
                            map<string, vector<onnx::NodeProto *>> &input_node_map,
                            map<string, Layer *> &output_node_map,
+                           LOG_LEVEL log_level,
                            int dev,
                            int mem);
 

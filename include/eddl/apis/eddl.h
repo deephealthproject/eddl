@@ -27,6 +27,7 @@
 #include "eddl/layers/conv/layer_conv.h"
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/da/layer_da.h"
+#include "eddl/layers/fused/layer_fused.h"
 #include "eddl/layers/generators/layer_generators.h"
 #include "eddl/layers/merge/layer_merge.h"
 #include "eddl/layers/noise/layer_noise.h"
@@ -1655,6 +1656,16 @@ namespace eddl {
     layer Log10(layer l);
 
     /**
+      *  @brief Layer that clamps the values of another layer
+      *
+      *  @param l  Parent layer
+      *  @param min  Minimum value
+      *  @param max  Maximum value
+      *  @return     Parent layer `l` after computing its logarithm to base 10
+    */
+    layer Clamp(layer l, float min, float max);
+
+    /**
       *  @brief  Layer that computes the element-wise multiplication of two layers.
       *
       *  @param l1  Layer
@@ -1671,15 +1682,6 @@ namespace eddl {
     */
     layer Mult(layer l1, float k);
     layer Mult(float k,layer l1);
-
-    /**
-      *  @brief  Layer that computes the element-wise power of two layers.
-      *
-      *  @param l1  A layer
-      *  @param l2  A layer
-      *  @return     Result of the element-wise power of `l1` and `l2`
-    */
-    layer Pow(layer l1, layer l2);
 
     /**
       *  @brief Layer that computes the power of a layer raised to a float number.
@@ -2063,6 +2065,7 @@ namespace eddl {
 
     // Manage tensors inside layers
     Tensor* getOutput(layer l1);
+    Tensor* getInput(layer l1);
     Tensor* getDelta(layer l1);
     Tensor* getParam(layer l1, int p);
     Tensor* getGradient(layer l1,int p);
@@ -2191,6 +2194,26 @@ namespace eddl {
     */
     layer L1L2(layer l,float l1,float l2);
 
+    ///////////////////////////////////////
+    //  FUSED LAYERS
+    ///////////////////////////////////////
+    /**
+      *  @brief Convolution + Activation layer.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param padding  One of "none", "valid" or "same"
+      *  @param use_bias  Boolean, whether the layer uses a bias vector
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer Conv2dActivation(layer parent, string act, int filters, const vector<int> &kernel_size,
+                           const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+                           int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
     ///////////////////////////////////////
     // MODELS

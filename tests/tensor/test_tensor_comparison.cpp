@@ -108,12 +108,12 @@ TEST(TensorTestSuite, tensor_comparison_any){
 //    Tensor* t2_cpu = Tensor::ones({3, 1000, 1000}); t2_cpu->ptr[5] = 1.0f + 10e-3f;
 //    Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
 //
-//    bool t1_cpu_res = Tensor::allclose(t1_cpu, t2_cpu, 10e-2);
-//    bool t1_gpu_res = Tensor::allclose(t1_gpu, t2_gpu, 10e-2);
+//    bool t1_cpu_res = Tensor::allclose(t1_cpu, t2_cpu, 1e-5);
+//    bool t1_gpu_res = Tensor::allclose(t1_gpu, t2_gpu, 1e-5);
 //    ASSERT_TRUE(t1_cpu_res && t1_gpu_res);
 //
-//    bool t2_cpu_res = Tensor::allclose(t1_cpu, t2_cpu, 10e-5);
-//    bool t2_gpu_res = Tensor::allclose(t1_gpu, t2_gpu, 10e-5);
+//    bool t2_cpu_res = Tensor::allclose(t1_cpu, t2_cpu, 1e-5);
+//    bool t2_gpu_res = Tensor::allclose(t1_gpu, t2_gpu, 1e-5);
 //    ASSERT_TRUE(t2_cpu_res && t2_gpu_res);
 //#endif
 //}
@@ -129,7 +129,7 @@ TEST(TensorTestSuite, tensor_comparison_greaterT){
     Tensor* t1_B = Tensor::full(t1_shape_ref, 3, DEV_CPU);
 
     Tensor* new_t = t1_A->greater(t1_B);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1_A;
@@ -147,7 +147,7 @@ TEST(TensorTestSuite, tensor_comparison_greaterT){
         Tensor* new_t_cpu = t_cpu_A->greater(t_cpu_B);
         Tensor* new_t_gpu = t_gpu_A->greater(t_gpu_B); new_t_gpu->toCPU();
 
-        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 1e-3f, 0.0f, true, true));
 
         delete t_cpu_A;
         delete t_gpu_A;
@@ -169,13 +169,13 @@ TEST(TensorTestSuite, tensor_comparison_greater_equalT){
     Tensor* t1_B = Tensor::full(t1_shape_ref, 3, DEV_CPU);
 
     Tensor* new_t = t1_A->greater_equal(t1_B);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     Tensor* t2_A = Tensor::full(t1_shape_ref, 5, DEV_CPU);
     Tensor* t2_B = Tensor::full(t1_shape_ref, 5, DEV_CPU);
 
     Tensor* new_t2 = t2_A->greater_equal(t2_B);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1_A;
@@ -197,7 +197,7 @@ TEST(TensorTestSuite, tensor_comparison_greater_equalT){
         Tensor* new_t_cpu = t_cpu_A->greater_equal(t_cpu_B);
         Tensor* new_t_gpu = t_gpu_A->greater_equal(t_gpu_B); new_t_gpu->toCPU();
 
-        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 1e-3f, 0.0f, true, true));
 
         delete t_cpu_A;
         delete t_gpu_A;
@@ -219,7 +219,7 @@ TEST(TensorTestSuite, tensor_comparison_lessT){
     Tensor* t1_B = Tensor::full(t1_shape_ref, 5, DEV_CPU);
 
     Tensor* new_t = t1_A->less(t1_B);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1_A;
@@ -237,7 +237,7 @@ TEST(TensorTestSuite, tensor_comparison_lessT){
         Tensor* new_t_cpu = t_cpu_A->less(t_cpu_B);
         Tensor* new_t_gpu = t_gpu_A->less(t_gpu_B); new_t_gpu->toCPU();
 
-        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 1e-3f, 0.0f, true, true));
 
         delete t_cpu_A;
         delete t_gpu_A;
@@ -259,13 +259,13 @@ TEST(TensorTestSuite, tensor_comparison_less_equalT){
     Tensor* t1_B = Tensor::full(t1_shape_ref, 5, DEV_CPU);
 
     Tensor* new_t = t1_A->less_equal(t1_B);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     Tensor* t2_A = Tensor::full(t1_shape_ref, 5, DEV_CPU);
     Tensor* t2_B = Tensor::full(t1_shape_ref, 5, DEV_CPU);
 
     Tensor* new_t2 = t2_A->greater_equal(t2_B);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1_A;
@@ -286,7 +286,7 @@ TEST(TensorTestSuite, tensor_comparison_less_equalT){
         Tensor* new_t_cpu = t_cpu_A->less_equal(t_cpu_B);
         Tensor* new_t_gpu = t_gpu_A->less_equal(t_gpu_B); new_t_gpu->toCPU();
 
-        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 1e-3f, 0.0f, true, true));
 
         delete t_cpu_A;
         delete t_gpu_A;
@@ -305,14 +305,14 @@ TEST(TensorTestSuite, tensor_comparison_equalT){
     Tensor* t1_B = Tensor::full(t1_ref->shape, 5, DEV_CPU);
 
     Tensor* new_t = t1_A->equal(t1_B);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     Tensor* t2_ref = Tensor::zeros({2, 2});
     Tensor* t2_A = Tensor::full(t2_ref->shape, 5, DEV_CPU);
     Tensor* t2_B = Tensor::full(t2_ref->shape, 4, DEV_CPU);
 
     Tensor* new_t2 = t2_A->equal(t2_B);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1_A;
@@ -334,7 +334,7 @@ TEST(TensorTestSuite, tensor_comparison_equalT){
         Tensor* new_t_cpu = t_cpu_A->equal(t_cpu_B);
         Tensor* new_t_gpu = t_gpu_A->equal(t_gpu_B); new_t_gpu->toCPU();
 
-        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 1e-3f, 0.0f, true, true));
 
         delete t_cpu_A;
         delete t_gpu_A;
@@ -353,14 +353,14 @@ TEST(TensorTestSuite, tensor_comparison_not_equalT){
     Tensor* t1_B = Tensor::full(t1_ref->shape, 5, DEV_CPU);
 
     Tensor* new_t = t1_A->not_equal(t1_B);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     Tensor* t2_ref = Tensor::ones({2, 2});
     Tensor* t2_A = Tensor::full(t2_ref->shape, 5, DEV_CPU);
     Tensor* t2_B = Tensor::full(t2_ref->shape, 4, DEV_CPU);
 
     Tensor* new_t2 = t2_A->not_equal(t2_B);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1_A;
@@ -383,7 +383,7 @@ TEST(TensorTestSuite, tensor_comparison_not_equalT){
         Tensor* new_t_cpu = t_cpu_A->not_equal(t_cpu_B);
         Tensor* new_t_gpu = t_gpu_A->not_equal(t_gpu_B); new_t_gpu->toCPU();
 
-        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+        ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 1e-3f, 0.0f, true, true));
 
         delete t_cpu_A;
         delete t_gpu_A;

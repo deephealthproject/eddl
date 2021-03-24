@@ -41,6 +41,9 @@ __global__ void set_select_back(float *A, float* B, long int size, int* indices)
 __global__ void select_rows(float *A, float* B, int rowsize, int size, int* indices, int ini,bool mask_zeros);  // TODO: Legacy
 __global__ void deselect_rows(float *A, float* B, int rowsize, int size, int* indices, int ini,int inc,bool mask_zeros);  // TODO: Legacy
 
+__global__ void gpu_gather(float *A, float* B, long int size, int* indices);
+__global__ void gpu_expand(float *A, float* B, long int size, int* indices);
+
 __global__ void concat(float *dest, float *src, unsigned int src_size, unsigned int src_stride, unsigned int dest_stride, bool derivative);
 
 // GPU: Create

@@ -26,10 +26,13 @@
 #include "eddl/serialization/onnx/layers/operators/mult_onnx.h"
 #include "eddl/serialization/onnx/layers/operators/sqrt_onnx.h"
 #include "eddl/serialization/onnx/layers/operators/diff_onnx.h"
+#include "eddl/serialization/onnx/layers/operators/clamp_onnx.h"
+#include "eddl/serialization/onnx/layers/operators/sum_onnx.h"
+#include "eddl/serialization/onnx/layers/operators/pow_onnx.h"
 #include "eddl/serialization/onnx/layers/reductions/max_onnx.h"
 #include "eddl/serialization/onnx/layers/reductions/min_onnx.h"
 #include "eddl/serialization/onnx/layers/reductions/mean_onnx.h"
-#include "eddl/serialization/onnx/layers/reductions/sum_onnx.h"
+#include "eddl/serialization/onnx/layers/reductions/rsum_onnx.h"
 #include "eddl/serialization/onnx/layers/reductions/argmax_onnx.h"
 #include "eddl/serialization/onnx/layers/recurrent/lstm_onnx.h"
 #include "eddl/serialization/onnx/layers/recurrent/gru_onnx.h"
@@ -87,11 +90,13 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["Gather"] = ONNX_LAYERS::GATHER;
   map_layers["Cast"] = ONNX_LAYERS::CAST;
   map_layers["Abs"] = ONNX_LAYERS::ABS;
+  map_layers["Sum"] = ONNX_LAYERS::SUM;
   map_layers["Div"] = ONNX_LAYERS::DIV;
   map_layers["Exp"] = ONNX_LAYERS::EXP;
   map_layers["Log"] = ONNX_LAYERS::LOG;
+  map_layers["Pow"] = ONNX_LAYERS::POW;
   map_layers["Mul"] = ONNX_LAYERS::MUL;
-  //map_layers["Pow"] = ONNX_LAYERS::POW;
+  map_layers["Clip"] = ONNX_LAYERS::CLIP;
   map_layers["Sqrt"] = ONNX_LAYERS::SQRT;
   map_layers["Sub"] = ONNX_LAYERS::SUB;
   map_layers["ReduceMax"] = ONNX_LAYERS::RMAX;
@@ -162,7 +167,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_globalaveragegpool_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::RESHAPE:
-      new_layer = build_reshape_layer(node, constant_node_map, map_init_values, map_init_dims, input_node_map, output_node_map, dev, mem);
+      new_layer = build_reshape_layer(node, constant_node_map, map_init_values, map_init_dims, input_node_map, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::FLATTEN:
       new_layer = build_flatten_layer(node, output_node_map, dev, mem);
@@ -215,8 +220,11 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
     case ONNX_LAYERS::ABS:
       new_layer = build_abs_layer(node, output_node_map, dev, mem);
       break;
+    case ONNX_LAYERS::SUM:
+      new_layer = build_sum_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::DIV:
-      new_layer = build_div_layer(node, output_node_map, dev, mem);
+      new_layer = build_div_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::EXP:
       new_layer = build_exp_layer(node, output_node_map, dev, mem);
@@ -227,10 +235,12 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
     case ONNX_LAYERS::MUL:
       new_layer = build_mul_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
-    //case ONNX_LAYERS::POW:
-    //  TODO: Implement LPow in EDDL
-    //  new_layer = build_pow_layer(node, output_node_map, dev, mem);
-    //  break;
+    case ONNX_LAYERS::CLIP:
+      new_layer = build_clamp_layer(node, map_init_values, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::POW:
+      new_layer = build_pow_layer(node, map_init_values, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::SQRT:
       new_layer = build_sqrt_layer(node, output_node_map, dev, mem);
       break;
@@ -368,6 +378,8 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_concat_node(l, graph);
   else if (LAbs *l = dynamic_cast<LAbs *>(layer))
     build_abs_node(l, graph);
+  else if (LSum *l = dynamic_cast<LSum *>(layer))
+    build_sum_node(l, graph);
   else if (LAdd *l = dynamic_cast<LAdd *>(layer))
     build_add_node(l, graph);
   else if (LDiv *l = dynamic_cast<LDiv *>(layer))
@@ -376,10 +388,12 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_exp_node(l, graph);
   else if (LLog *l = dynamic_cast<LLog *>(layer))
     build_log_node(l, graph);
+  else if (LPow *l = dynamic_cast<LPow *>(layer))
+    build_pow_node(l, graph);
   else if (LMult *l = dynamic_cast<LMult *>(layer))
     build_mul_node(l, graph);
-  //else if (LPow *l = dynamic_cast<LPow *>(layer))
-  //  build_pow_node(l, graph);
+  else if (LClamp *l = dynamic_cast<LClamp *>(layer))
+    build_clip_node(l, graph);
   else if (LSqrt *l = dynamic_cast<LSqrt *>(layer))
     build_sqrt_node(l, graph);
   else if (LDiff *l = dynamic_cast<LDiff *>(layer))

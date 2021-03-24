@@ -22,10 +22,10 @@ int LConv3D::total_layers = 0;
 // constructors and clones
 
 LConv3D::LConv3D(Layer *parent, const vector<int> &ks, const vector<int> &st,
-             const vector<int> &p, string name, int dev, int mem) : LConv3D(parent, new ConvolDescriptor3D(ks, st, p, mem), name, dev, mem) {}
+             const vector<int> &p, bool use_bias, string name, int dev, int mem) : LConv3D(parent, new ConvolDescriptor3D(ks, st, p, use_bias, mem), name, dev, mem) {}
 
-LConv3D::LConv3D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv3D(parent, new ConvolDescriptor3D(filters, kernel_size, strides, padding, use_bias, mem), name, dev, mem) {
+LConv3D::LConv3D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
+             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv3D(parent, new ConvolDescriptor3D(filters, kernel_size, strides, padding, pads, use_bias, mem), name, dev, mem) {
     // TODO: Implement (Fix initialization)
 };
 
@@ -42,10 +42,6 @@ LConv3D::LConv3D(Layer *parent, ConvolDescriptor3D *D, string name, int dev, int
     cd->build(input);
 
     output = cd->O;
-
-
-//    delta = cd->D;
-//    cd->ID = parent->delta;
 
     params.push_back(cd->K);
     params.push_back(cd->bias);
@@ -133,13 +129,11 @@ void LConv3D::apply_accumulated_gradients() {
 }
 
 Layer *LConv3D::share(int c, int bs, vector<Layer *> p) {
-    LConv3D *n = new LConv3D(p[0], cd->ksize, cd->stride, cd->pad,  "share_"+to_string(c)+this->name, dev,mem_level);
+    LConv3D *n = new LConv3D(p[0], cd->ksize, cd->stride, cd->pad, cd->use_bias, "share_"+to_string(c)+this->name, dev,mem_level);
     n->orig = this;
     n->isshared=true;
     n->trainable = trainable;
     n->do_deletes = false;
-
-    n->cd->use_bias=cd->use_bias;
 
     //share params
 
@@ -184,12 +178,10 @@ Layer *LConv3D::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LConv3D::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LConv3D *n = new LConv3D(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
+    LConv3D *n = new LConv3D(p[0], cd->ksize, cd->stride, cd->pad, cd->use_bias, name, todev, this->mem_level);
     n->trainable = trainable;
     n->do_deletes = false;
-
     n->orig = this;
-    n->cd->use_bias = cd->use_bias;
 
     if (n->reg != nullptr) delete n->reg;
     n->reg = reg;

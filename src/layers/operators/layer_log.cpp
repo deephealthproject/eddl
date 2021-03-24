@@ -34,15 +34,14 @@ LLog::LLog(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, m
 
     input=l->output;
     output = new Tensor(l->output->shape, dev);
-//    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
+
 
     l->addchild(this);
     addparent(l);
 }
 
 void LLog::forward() {
-    Tensor::copy(parent[0]->output, output);
-    output->log_();
+    Tensor::log(parent[0]->output, output);
 }
 
 void LLog::backward() {
@@ -54,8 +53,7 @@ Layer *LLog::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LLog::clone(int c, int bs, vector<Layer *> p, int todev) {
-  LLog *n;
-  n = new LLog(p[0],  name, todev, this->mem_level);
+  auto *n = new LLog(p[0],  name, todev, this->mem_level);
   n->orig = this;
   return n;
 }
