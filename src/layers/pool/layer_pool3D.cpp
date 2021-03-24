@@ -33,7 +33,6 @@ LPool3D::LPool3D(Layer *parent, PoolDescriptor3D *D, string name, int dev, int m
 
     parent->addchild(this);
     addparent(parent);
-
 }
 
 LPool3D::~LPool3D(){
