@@ -101,6 +101,9 @@ void gpu_mpool3D_back(PoolDescriptor3D *D);
 // AvgPool
 void gpu_avgpool2D(PoolDescriptor *D);
 void gpu_avgpool2D_back(PoolDescriptor *D);
+// AvgPool3D
+void gpu_avgpool3D(PoolDescriptor3D *D);
+void gpu_avgpool3D_back(PoolDescriptor3D *D);
 
 // Tensor
 void gpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
