@@ -242,6 +242,7 @@ namespace tensorNN {
 #ifdef cGPU
         else if (D->I->isGPU())
         {
+            gpu_avgpool3D(D);
         }
 #endif
 #ifdef cFPGA
@@ -270,6 +271,7 @@ namespace tensorNN {
 #ifdef cGPU
         else if (D->I->isGPU())
         {
+            gpu_avgpool3D_back(D);
         }
 #endif
 #ifdef cFPGA
