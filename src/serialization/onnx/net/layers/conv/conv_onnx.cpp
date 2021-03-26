@@ -17,7 +17,7 @@ Layer* build_conv_layer(onnx::NodeProto *node,
   string auto_pad_option = "custom";
   vector<float> *bias;
   bool use_bias = node->input_size() > 2;
-  bool conv1d = false;
+  int conv_dim = 2; // Number of dimension of the convolution (1, 2 or 3)
   int groups = 1;
   vector<int> dilation_rate = {1, 1};
 
@@ -41,36 +41,43 @@ Layer* build_conv_layer(onnx::NodeProto *node,
     else if (!attr_name.compare("kernel_shape"))
     {
       for (int h = 0; h < attribute.ints_size(); h++)
-      {
         kernel_shape.push_back(attribute.ints(h));
-      }
+
+      // Deduce conv dimension
       if (attribute.ints_size() == 1)
-      { // If is conv1D, we make the equivalent in conv2D
-        conv1d = true;
-      }
+        conv_dim = 1;
+      else if (attribute.ints_size() == 3)
+        conv_dim = 3;
     }
     else if (!attr_name.compare("pads"))
     {
       for (int h = 0; h < attribute.ints_size(); h++)
-      {
         pads.push_back(attribute.ints(h));
-      }
-      if (attribute.ints_size() == 4)
+
+      // Reorder padding from [x1_begin, x2_begin,..., x1_end, x2_end,...] to [x1_begin, x1_end, x2_begin, x2_end,...]
+      if (attribute.ints_size() == 4) // Conv2D
         swap(pads[1], pads[2]);
+      else if (attribute.ints_size() == 6) // Conv3D
+      {
+        swap(pads[1], pads[3]);
+        swap(pads[2], pads[3]);
+        swap(pads[3], pads[4]);
+      }
     }
     else if (!attr_name.compare("strides"))
     {
       for (int h = 0; h < attribute.ints_size(); h++)
-      {
         strides.push_back(attribute.ints(h));
-      }
+
+      // Deduce conv dimension
       if (attribute.ints_size() == 1)
-      { // If is conv1D, we make the equivalent in conv2D
-        conv1d = true;
-      }
+        conv_dim = 1;
+      else if (attribute.ints_size() == 3)
+        conv_dim = 3;
     }
   }
 
+  string name = node->name(); // Layer name
   string parent_name = node->input(0); // Get parent
   Layer *parent = output_node_map[parent_name];
   vector<int> parent_shape = parent->output->shape;
@@ -78,54 +85,84 @@ Layer* build_conv_layer(onnx::NodeProto *node,
   string weights_name = node->input(1); // Get weights and dims
   vector<float> *weights = &(map_init_values[weights_name]);
   vector<int> dims = map_init_dims[weights_name];
-
-  if (parent_shape.size() == 3)
-  {
-    conv1d = true;
-  }
-
-  if (conv1d)
-  {
-    strides.push_back(1);
-    kernel_shape.push_back(1);
-    dims.push_back(1);
-    pads.push_back(0);
-    pads.push_back(0);
-  }
-
   filters = dims[0];
-  string name = node->name();
-  ConvolDescriptor *cd = new ConvolDescriptor(filters, 
-                                              kernel_shape, 
-                                              strides, 
-                                              auto_pad_option,
-                                              pads, 
-                                              groups, 
-                                              dilation_rate, 
-                                              use_bias, 
-                                              mem);
+
+  // Deduce conv dimension from layer input
+  if (parent_shape.size() == 3)
+    conv_dim = 1;
+  else if (parent_shape.size() == 4)
+    conv_dim = 2;
+  else if (parent_shape.size() == 5)
+    conv_dim = 3;
 
   Layer *actual_layer;
-  if (conv1d)
-    actual_layer = new LConv1D(parent, cd, name, dev, mem);
-  else
-    actual_layer = new LConv(parent, cd, name, dev, mem);
-
-  if (use_bias)
+  if (conv_dim < 3) // Handle Conv1D and Conv2D (they use the same ConvolDescriptor)
   {
-    string bias_name = node->input(2);
-    bias = &(map_init_values[bias_name]);
-    vector<int> bias_shape;
-    bias_shape.push_back(bias->size());
-    Tensor *bias_tensor = new Tensor(bias_shape, nullptr, dev);
-    COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, bias_tensor);
-    Tensor::copy(bias_tensor, cd->bias);
-    delete bias_tensor;
+    if (conv_dim == 1)
+    {
+      // Prepare args to create a equivalent Conv2D from a Conv1D
+      strides.push_back(1);
+      kernel_shape.push_back(1);
+      dims.push_back(1);
+      pads.push_back(0);
+      pads.push_back(0);
+    }
+
+    ConvolDescriptor *cd = new ConvolDescriptor(filters,
+                                                kernel_shape,
+                                                strides,
+                                                auto_pad_option,
+                                                pads,
+                                                groups,
+                                                dilation_rate,
+                                                use_bias,
+                                                mem);
+
+    if (conv_dim == 1)
+      actual_layer = new LConv1D(parent, cd, name, dev, mem);
+    else
+      actual_layer = new LConv(parent, cd, name, dev, mem);
+
+    if (use_bias)
+    {
+      string bias_name = node->input(2);
+      bias = &(map_init_values[bias_name]);
+      Tensor *bias_tensor = new Tensor({(int)bias->size()}, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, bias_tensor);
+      Tensor::copy(bias_tensor, cd->bias);
+      delete bias_tensor;
+    }
+    Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
+    COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
+    Tensor::copy(weights_tensor, cd->K);
+    delete weights_tensor;
   }
-  Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
-  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
-  Tensor::copy(weights_tensor, cd->K);
-  delete weights_tensor;
+  else // Conv3D
+  {
+    ConvolDescriptor3D *cd = new ConvolDescriptor3D(filters,
+                                                    kernel_shape,
+                                                    strides,
+                                                    auto_pad_option,
+                                                    pads,
+                                                    use_bias,
+                                                    mem);
+
+    actual_layer = new LConv3D(parent, cd, name, dev, mem);
+
+    if (use_bias)
+    {
+      string bias_name = node->input(2);
+      bias = &(map_init_values[bias_name]);
+      Tensor *bias_tensor = new Tensor({(int)bias->size()}, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, bias_tensor);
+      Tensor::copy(bias_tensor, cd->bias);
+      delete bias_tensor;
+    }
+    Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
+    COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
+    Tensor::copy(weights_tensor, cd->K);
+    delete weights_tensor;
+  }
 
   return actual_layer;
 }

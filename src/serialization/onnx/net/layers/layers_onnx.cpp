@@ -11,10 +11,14 @@
 #include "eddl/serialization/onnx/layers/core/select_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv1D_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/conv3D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/upsampling_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool_onnx.h"
+#include "eddl/serialization/onnx/layers/pool/avgpool1D_onnx.h"
+#include "eddl/serialization/onnx/layers/pool/avgpool3D_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/maxpool_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/maxpool1D_onnx.h"
+#include "eddl/serialization/onnx/layers/pool/maxpool3D_onnx.h"
 #include "eddl/serialization/onnx/layers/normalization/batchnorm_onnx.h"
 #include "eddl/serialization/onnx/layers/merge/concat_onnx.h"
 #include "eddl/serialization/onnx/layers/merge/add_onnx.h"
@@ -320,6 +324,8 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_conv_node(l, graph, gradients);
   else if (LConv1D *l = dynamic_cast<LConv1D *>(layer))
     build_conv1D_node(l, graph, gradients);
+  else if (LConv3D *l = dynamic_cast<LConv3D *>(layer))
+    build_conv3D_node(l, graph, gradients);
   else if (LDense *l = dynamic_cast<LDense *>(layer))
     if (is_recurrent)
       build_dense_with_matmul_node(l, graph, gradients);
@@ -329,8 +335,14 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_maxpool_node(l, graph);
   else if (LMaxPool1D *l = dynamic_cast<LMaxPool1D *>(layer))
     build_maxpool1D_node(l, graph);
+  else if (LMaxPool3D *l = dynamic_cast<LMaxPool3D *>(layer))
+    build_maxpool3D_node(l, graph);
   else if (LAveragePool *l = dynamic_cast<LAveragePool *>(layer))
     build_averagepool_node(l, graph);
+  else if (LAveragePool1D *l = dynamic_cast<LAveragePool1D *>(layer))
+    build_averagepool1D_node(l, graph);
+  else if (LAveragePool3D *l = dynamic_cast<LAveragePool3D *>(layer))
+    build_averagepool3D_node(l, graph);
   else if (LReshape *l = dynamic_cast<LReshape *>(layer))
     build_reshape_node(l, graph);
   else if (LSqueeze *l = dynamic_cast<LSqueeze *>(layer))
