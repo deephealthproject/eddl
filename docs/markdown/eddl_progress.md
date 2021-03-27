@@ -17,9 +17,9 @@
 | Dropout   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Applies Dropout to the input. |
 | Flatten   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Flattens the input. Does not affect the batch size. (Wrapper for Reshape) |
 | Input     | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Used to instantiate a EDDL tensor. |
-| Reshape   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Reshapes an output to a certain shape. |
-| Squeeze   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Reshapes an output to a certain shape. |
-| Unsqueeze | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Reshapes an output to a certain shape. |
+| Reshape   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Returns a new layer with the same data and number of elements as input, but with the specified shape. |
+| Squeeze   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Returns a new layer with all the dimensions of input of size 1 removed. |
+| Unsqueeze | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Returns a new layer with a dimension of size one inserted at the specified position. |
 | Permute   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️  | Permutes the dimensions of the input according to a given pattern. |
 | Embedding | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Turns positive integers (indexes) into dense vectors of fixed size; (also known as mapping). e.g. `[[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]`|
 | Transpose | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Permute the last two dimensions |
@@ -144,13 +144,13 @@ Apply data transformations with random parametrization.
 | MaxPool3D           | 🔴️ | 🔴️ | 🟢️️ | 🔴️️ | 3D MaxPooling operation |
 | AveragePool1D       | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D AveragePooling operation |
 | AveragePool2D       | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D AveragePooling operation |
-| AveragePool3D       | 🔴️ | 🔴️ | 🟢️️ | 🔴️️ | 3D AveragePooling operation |
+| AveragePool3D       | 🔴️ | 🔴️️ | 🟢️️ | 🟢️️️ | 3D AveragePooling operation |
 | GlobalMaxPool1D     | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D GlobalMaxPooling operation |
 | GlobalMaxPool2D     | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D GlobalMaxPooling operation |
-| GlobalMaxPool3D     | 🔴️ | 🔴️ | 🔴️ | 🔴️️ | 3D GlobalMaxPooling operation |
+| GlobalMaxPool3D     | 🔴️ | 🔴️ | 🟢️️ | 🟢️️️ | 3D GlobalMaxPooling operation |
 | GlobalAveragePool1D | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D GlobalAveragePooling operation |
 | GlobalAveragePool2D | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D GlobalAveragePooling operation |
-| GlobalAveragePool3D | 🔴️ | 🔴️ | 🔴️ | 🔴️️ | 3D GlobalAveragePooling operation |
+| GlobalAveragePool3D | 🔴️ | 🔴️ | 🟢️️ | 🟢️️️ | 3D GlobalAveragePooling operation |
 
 
 ## Operators layers

@@ -100,9 +100,13 @@ namespace tensorNN{
     void MPool3D(PoolDescriptor3D *D);
     void MPool3D_back(PoolDescriptor3D *D);
 
-// AvgPool
+    // AvgPool2D
     void AvgPool2D(PoolDescriptor *D);
     void AvgPool2D_back(PoolDescriptor *D);
+
+    // AvgPool3D
+    void AvgPool3D(PoolDescriptor3D *D);
+    void AvgPool3D_back(PoolDescriptor3D *D);
 
     // ***** Deep Learning: Fused *****************************
     // Conv2D + Activation

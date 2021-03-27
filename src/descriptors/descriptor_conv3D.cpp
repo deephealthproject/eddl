@@ -154,7 +154,7 @@ void ConvolDescriptor3D::build(Tensor *A) {
            if(pad[0] != pad[1] || pad[2] != pad[3] || pad[4] != pad[5]){
              std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
            }
-           if (pad[0] != pad[1]){pad[0] = pad[1];}
+           if (pad[0] != pad[1]){ pad[0] = pad[1];}
            if (pad[2] != pad[3]){ pad[2] = pad[3];}
            if (pad[4] != pad[5]){ pad[4] = pad[5];}
 
@@ -222,7 +222,7 @@ void ConvolDescriptor3D::build(Tensor *A) {
     }
 #ifdef cCUDNN
     //CUDNN
-    convolution_mode = CUDNN_CONVOLUTION; //CUDNN_CROSS_CORRELATION
+    convolution_mode = CUDNN_CROSS_CORRELATION; //CUDNN_CONVOLUTION;
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
 

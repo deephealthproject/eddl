@@ -89,9 +89,9 @@ void PoolDescriptor3D::build(Tensor *A) {
         pad = {padd[0], padd[1], padr[0], padr[1], padc[0], padc[1]};  // (front, back), (top, bottom), (left, right)
     }
 
-    paddf = pad[0]; paddb = pad[1];  // depth: front-top
-    padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
-    padcl = pad[2]; padcr = pad[3];  // cols: left-right
+    paddf = pad[0]; paddb = pad[1];  // depth: front-back
+    padrt = pad[2]; padrb = pad[3];  // rows: top-bottom
+    padcl = pad[4]; padcr = pad[5];  // cols: left-right
 #ifdef cCUDNN
        if(!A->isCPU()){
            if(pad[0] != pad[1] || pad[2] != pad[3] || pad[4] != pad[5]){

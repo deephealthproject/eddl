@@ -203,4 +203,30 @@ public:
 
 };
 
+/// LAveragePool3D Layer
+class LAveragePool3D : public LPool3D {
+public:
+
+    // constructors and clones
+    LAveragePool3D(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, const string& name, int dev, int mem);
+
+    LAveragePool3D(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, const string& name, int dev, int mem);
+
+    LAveragePool3D(Layer *parent, PoolDescriptor3D *cd, const string& name, int dev, int mem);
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    string plot(int c) override;
+
+};
+
 #endif //EDDL_LAYER_POOL_H

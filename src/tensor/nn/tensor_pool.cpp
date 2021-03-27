@@ -42,7 +42,7 @@ namespace tensorNN {
         /////////////////////////////////////////////////////////////////////
         if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D");
 
-	      PROFILING_HEADER(MPool2D);
+        PROFILING_HEADER(MPool2D);
 
 
         if (D->I->isCPU()) {
@@ -50,19 +50,19 @@ namespace tensorNN {
         }
 #ifdef cGPU
         else if (D->I->isGPU())
-          {
+        {
             gpu_mpool2D(D);
-          }
+        }
 #endif
 #ifdef cFPGA
-    else if (D->I->isFPGA())
+            else if (D->I->isFPGA())
       {
         fpga_mpool2D(D);
       }
 #endif
 
 
-	      PROFILING_FOOTER(MPool2D);
+        PROFILING_FOOTER(MPool2D);
     }
 
     void MPool2D_back(PoolDescriptor *D) {
@@ -82,12 +82,12 @@ namespace tensorNN {
         }
 #ifdef cGPU
         else if (D->I->isGPU())
-          {
+        {
             gpu_mpool2D_back(D);
-          }
+        }
 #endif
 #ifdef cFPGA
-    else if (D->I->isFPGA())
+            else if (D->I->isFPGA())
       {
         fpga_mpool2D_back(D);
       }
@@ -120,7 +120,7 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-            else if (D->I->isFPGA())
+        else if (D->I->isFPGA())
       {
         fpga_mpool3D(D);
       }
@@ -152,7 +152,7 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-            else if (D->I->isFPGA())
+        else if (D->I->isFPGA())
       {
         fpga_mpool3D_back(D);
       }
@@ -179,12 +179,12 @@ namespace tensorNN {
         }
 #ifdef cGPU
         else if (D->I->isGPU())
-          {
+        {
             gpu_avgpool2D(D);
-          }
+        }
 #endif
 #ifdef cFPGA
-    else if (D->I->isFPGA())
+            else if (D->I->isFPGA())
       {
         fpga_avgpool2D(D);
       }
@@ -211,12 +211,12 @@ namespace tensorNN {
         }
 #ifdef cGPU
         else if (D->I->isGPU())
-          {
+        {
             gpu_avgpool2D_back(D);
-          }
+        }
 #endif
 #ifdef cFPGA
-    else if (D->I->isFPGA())
+            else if (D->I->isFPGA())
       {
         fpga_avgpool2D_back(D);
       }
@@ -224,6 +224,61 @@ namespace tensorNN {
 
 
         PROFILING_FOOTER(AvgPool2D_back);
+    }
+
+    void AvgPool3D(PoolDescriptor3D *D) {
+        /////////////////////////////////////////////////////////////////////
+        //// AvgPool3D
+        //// Dimensions must be compatible
+        //// A is input 5D Tensor, batch_shape + (channels, pool_dim1, pool_dim2, pool_dim3)
+        //// D is a PoolDescriptor
+        /////////////////////////////////////////////////////////////////////
+        if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::AvgPool3D");
+
+
+        if (D->I->isCPU()) {
+            msg("NotImplementedError", "Tensor::AvgPool3D");
+        }
+#ifdef cGPU
+        else if (D->I->isGPU())
+        {
+            gpu_avgpool3D(D);
+        }
+#endif
+#ifdef cFPGA
+            else if (D->I->isFPGA())
+      {
+            msg("NotImplementedError", "Tensor::AvgPool3D");
+      }
+#endif
+
+
+    }
+
+    void AvgPool3D_back(PoolDescriptor3D *D) {
+        /////////////////////////////////////////////////////////////////////
+        //// AvgPool3D_back
+        //// Dimensions must be compatible
+        //// A is input 5D Tensor, batch_shape + (channels, pool_dim1, pool_dim2, pool_dim3)
+        //// D is a PoolDescriptor
+        /////////////////////////////////////////////////////////////////////
+        if ((D->I->ndim != 5)) msg("Tensors are not 5D", "Tensor::AvgPool3D_back");
+
+
+        if (D->I->isCPU()) {
+            msg("NotImplementedError", "Tensor::AvgPool3D_back");
+        }
+#ifdef cGPU
+        else if (D->I->isGPU())
+        {
+            gpu_avgpool3D_back(D);
+        }
+#endif
+#ifdef cFPGA
+        msg("NotImplementedError", "Tensor::AvgPool3D_back");
+#endif
+
+
     }
 
 }
