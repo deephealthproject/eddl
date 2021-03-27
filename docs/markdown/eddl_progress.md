@@ -90,8 +90,7 @@ Apply data transformations with random parametrization.
 | RandomAffine         | ⚫️ | ⚫️ | ⚫️ | ⚫️ | Random affine transformation of the image keeping center invariant: rotate+translate+scale+shear |
 | RandomCrop           | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Crop the given image at a random location with size `[height, width]`  |
 | RandomCropScale      | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size |
-| RandomCutout         | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range `[(min_x, max_x), (min_y, max_y)]`, where these are relative values |
-
+| RandomCutout         | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range[(min_x, max_x), (min_y, max_y)]`, where these are relative values |
 | RandomFlip           | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Flip the given image at `axis=n` randomly with a given probability. |
 | RandomGrayscale      | ⚫ | ⚫ | ⚫ | ⚫️ | Randomly convert image to grayscale with a probability of p (default 0.1). |
 | RandomHorizontalFlip | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Horizontally flip the given image randomly with a given probability. |
