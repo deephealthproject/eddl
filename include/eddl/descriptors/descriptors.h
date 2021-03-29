@@ -249,6 +249,104 @@ public:
 
 };
 
+
+class ConvolDescriptorT {
+public:
+    vector<int> ksize;
+    vector<int> stride;
+    vector<int> pads; // {rows-top, rows-bottom, cols-left, cols-right}
+
+    int nk, kr, kc, kz;
+    int sr, sc;
+    int in, ir, ic, iz;
+    int r, c, z;
+    int padrt,padrb;
+    int padcl,padcr;
+    //int size;  // Auxiliar var
+
+
+    // To store info...
+    int filters;
+    vector<int> kernel_size;
+    vector<int> strides;
+    string padding; // valid/none, same/zeros, custom
+    int groups;
+    vector<int> dilation_rate;
+    bool use_bias;
+    int mem_level; // see CS
+
+    Tensor *I= nullptr; // Input map
+    Tensor *ID= nullptr;// Delta input map
+    Tensor *K= nullptr; // filters
+    Tensor *bias= nullptr; // bias
+    Tensor *gK= nullptr;// gradient filters
+    Tensor *gbias= nullptr;// gradient bias
+    Tensor *acc_gK= nullptr;// Accumulated gradients for kernels
+    Tensor *acc_gbias= nullptr;// Accumulated gradients for bias
+    Tensor *D = nullptr; // Delta
+    Tensor *O= nullptr; // Outputmap
+
+    // CPU implementation
+    float *ptrI;
+    Eigen::MatrixXf matI; // input
+    Eigen::MatrixXf matK; // kernels
+    Eigen::MatrixXf matO; // output
+    Eigen::MatrixXf matD; // Delta
+    Eigen::MatrixXf matgK; // gradient kernels
+
+    // GPU implementation
+    Tensor *gpuI; // input
+    Tensor *gpuIB; // input
+    Tensor *gpuO; // output
+    Tensor *gpuOB; // output
+    Tensor *gpuK; // kernels
+    Tensor *gpugK; // gradient kernels
+    Tensor *gpuD; // Delta
+
+#ifdef cCUDNN
+    // Following cuDNN nomenclature
+    cudnnConvolutionMode_t convolution_mode;
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+
+    cudnnConvolutionFwdAlgo_t fwd_algorithm;
+    cudnnConvolutionBwdFilterAlgo_t bwd_filter_algorithm;
+    cudnnConvolutionBwdDataAlgo_t bwd_data_algorithm;
+    cudnnConvolutionDescriptor_t convolution_descriptor;
+    cudnnTensorDescriptor_t xDesc; //input. also dxDesc
+    cudnnFilterDescriptor_t wDesc; //kernels also dwDesc
+    cudnnTensorDescriptor_t yDesc; //output also dyDesc
+    cudnnTensorDescriptor_t bDesc; //bias, also dbias
+
+    int cudnn_env_init;
+    int cudnn_conv_back_init;
+#endif
+
+
+
+#ifdef cFPGA
+    // FPGA implementation
+    cl::Buffer *fpga_ptrI;
+    long int fpga_sizeI;
+#endif
+
+    ConvolDescriptorT();
+
+    ConvolDescriptorT(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
+                     int groups, const vector<int> &dilation_rate, bool use_bias, int mem=0);
+
+    ~ConvolDescriptorT();
+
+    void build(Tensor *A);
+    void resize(int b);
+    void enable_distributed();
+
+    static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
+    static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
+    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
+
+};
+
 class PoolDescriptor {
 
 public:
