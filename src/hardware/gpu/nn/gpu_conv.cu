@@ -440,11 +440,16 @@ void gpu_conv2DT(ConvolDescriptorT *D) {
         D->cudnn_env_init = 1;
         cuDNN_environment_initialization<ConvolDescriptorT>(D);
     }
-    check_cudnn(cudnnConvolutionForward( hdnn[device], &alpha, D->xDesc, D->I->ptr,
-                                         D->wDesc, D->K->ptr,
-                                         D->convolution_descriptor, D->fwd_algorithm,
-                                         shared_workspace[device], workspace_size[device],
-                                         &beta, D->yDesc, D->O->ptr),"cudnnConvolutionForward",__FILE__);
+    //check_cudnn(cudnnConvolutionForward( hdnn[device], &alpha, D->xDesc, D->I->ptr,
+    //                                     D->wDesc, D->K->ptr,
+    //                                     D->convolution_descriptor, D->fwd_algorithm,
+    //                                     shared_workspace[device], workspace_size[device],
+    //                                     &beta, D->yDesc, D->O->ptr),"cudnnConvolutionForward",__FILE__);
+    check_cudnn(cudnnConvolutionBackwardData(hdnn[device], &alpha, D->wDesc, D->K->ptr,
+                                             D->xDesc, D->I->ptr,
+                                             D->convolution_descriptor, D->bwd_data_algorithm,
+                                             shared_workspace[device], workspace_size[device],
+                                             &beta, D->yDesc, D->O->ptr),"cudnnConvolutionTForward",__FILE__);
 #endif
     if (D->use_bias) {
 #ifndef cCUDNN
@@ -566,11 +571,16 @@ void gpu_conv2DT_back(ConvolDescriptorT *D){
 #else
     float alpha = 1.0f;
     float beta = 0.0f;
-    check_cudnn(cudnnConvolutionBackwardData(hdnn[device], &alpha, D->wDesc, D->K->ptr,
-                                             D->yDesc, D->D->ptr,
-                                             D->convolution_descriptor, D->bwd_data_algorithm,
-                                             shared_workspace[device], workspace_size[device],
-                                             &beta, D->xDesc, D->ID->ptr),"cudnnConvolutionBackwardData",__FILE__);
+    //check_cudnn(cudnnConvolutionBackwardData(hdnn[device], &alpha, D->wDesc, D->K->ptr,
+    //                                         D->yDesc, D->D->ptr,
+    //                                         D->convolution_descriptor, D->bwd_data_algorithm,
+    //                                         shared_workspace[device], workspace_size[device],
+    //                                         &beta, D->xDesc, D->ID->ptr),"cudnnConvolutionBackwardData",__FILE__);
+    check_cudnn(cudnnConvolutionForward( hdnn[device], &alpha, D->yDesc, D->D->ptr,
+                                         D->wDesc, D->K->ptr,
+                                         D->convolution_descriptor, D->fwd_algorithm,
+                                         shared_workspace[device], workspace_size[device],
+                                         &beta, D->yDesc, D->ID->ptr),"cudnnConvolutionForward",__FILE__);
 #endif
 
 }
