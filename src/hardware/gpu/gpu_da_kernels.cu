@@ -245,6 +245,21 @@ __global__ void crop_scale(float* A, float* B, int batch, int depth, int irows, 
     }
 }
 
+__global__ void gpu_pad(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int padt, int padb, int padl, int padr){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    long int ops = batch * depth*irows*icols;
+
+    if (thread_id_x < ops){
+    }
+}
+
+__global__ void gpu_pad_back(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int padt, int padb, int padl, int padr){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    long int ops = batch * depth*irows*icols;
+
+    if (thread_id_x < ops){
+    }
+}
 
 __global__ void shift_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, int mode, float constant, float* rnd){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
