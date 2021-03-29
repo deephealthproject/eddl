@@ -323,6 +323,74 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
 }
 
 
+void Tensor::pad(Tensor *A, Tensor *B, vector<int> pads) {
+    // coords => {y, x}
+    // Parameter check
+    if(pads[0] < 0.0f || pads[1] < 0.0f){
+        msg("Pad margin must be greater or equal than zero", "Tensor::pad");
+    }
+
+    // Check dimensions
+    if(A->shape!=B->shape){
+        msg("Incompatible dimensions", "Tensor::pad");
+    } else if (A->ndim != 4 || B->ndim != 4){
+        msg("This method requires two 4D tensors", "Tensor::pad");
+    }
+
+//    PROFILING_HEADER_EXTERN(pad);
+
+    if (A->isCPU()){
+        cpu_pad(A, B, std::move(pads));
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        gpu_pad(A, B, std::move(pads));
+    }
+#endif
+#ifdef cFPGA
+        else {
+//        fpga_pad(A, B, std::move(pads));
+    }
+#endif
+
+//    PROFILING_FOOTER(pad);
+}
+
+
+void Tensor::pad_back(Tensor *A, Tensor *B, vector<int> pads){
+    // coords => {y, x}
+    // Parameter check
+    if(pads[0] < 0.0f || pads[1] < 0.0f){
+        msg("Pad margin must be greater or equal than zero", "Tensor::pad_back");
+    }
+
+    // Check dimensions
+    if(A->shape!=B->shape){
+        msg("Incompatible dimensions", "Tensor::pad_back");
+    } else if (A->ndim != 4 || B->ndim != 4){
+        msg("This method requires two 4D tensors", "Tensor::pad_back");
+    }
+
+//    PROFILING_HEADER_EXTERN(pad_back);
+
+    if (A->isCPU()){
+        cpu_pad_back(A, B, std::move(pads));
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        gpu_pad_back(A, B, std::move(pads));
+    }
+#endif
+#ifdef cFPGA
+    else {
+//        fpga_pad_back(A, B, std::move(pads));
+    }
+#endif
+
+//    PROFILING_FOOTER(pad_back);
+}
 
 Tensor* Tensor::shift_random(vector<float> factor_x, vector<float> factor_y, WrappingMode mode, float cval){
     Tensor *t_new = Tensor::empty_like(this);
