@@ -393,11 +393,12 @@ void cpu_naive_conv2D_back(ConvolDescriptor *D, float *output)
 #else
     int n = D->I->shape[0] * D->iz * D->ir * D->ic;
     memset(output, 0, n * sizeof(float));
-    int osize=D->z*D->r*D->c;
-    int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
 
-    float *ptrD=D->D->ptr;
-    float *ptrI=D->ptrI;
+    int ksize=D->kr*D->kc;
+    int orsize=D->r*D->c;
+
+    int isize=D->ir*D->ic*D->iz;
+    int irsize=D->ir*D->ic;
 
     // Map memory to Eigen
     Eigen::Map<Eigen::MatrixXf> matK=Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
@@ -405,45 +406,30 @@ void cpu_naive_conv2D_back(ConvolDescriptor *D, float *output)
     #pragma omp parallel for
     for(int b=0;b<D->I->shape[0];b++){
 
-        float *ptrD=D->D->ptr+(b*osize);
-        float *ptrI=D->ptrI+(b*isize);
+        float *ptrD=D->D->ptr+(b*D->z*D->r*D->c);
+        float *ptrI=D->ptrI+(b*D->r*D->c*D->kc*D->kr*D->kz);//r*c,kr*kc*kz;
 
         Eigen::Map<Eigen::MatrixXf> matI=Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
         Eigen::Map<Eigen::MatrixXf> matD=Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
 
         matI=matD*matK.transpose();
 
-    // im2col(b,D,ptrI,1);
-    // void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
-    {
+        // im2col(b,D,ptrI,1);
+        // void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 
-        int i,j,k;
-        int pz,py,px,y,x;
-        int ksize=D->kr*D->kc;
-        int kr2=D->kr/2;
-        int kc2=D->kc/2;
+        int py=-D->padrt;
+        int px=-D->padcl;
 
-        if (kc2==0) kc2=-1;
-
-        int orsize=D->r*D->c;
-
-        int isize=D->ir*D->ic*D->iz;
-        int irsize=D->ir*D->ic;
-
-        k=0;
-        py=-D->padrt;
-        px=-D->padcl;
-
-        for(j=0;j<D->matI.rows();j++) {
-            k=j;
+        for(int j = 0; j < D->matI.rows(); j++) {
+            int k = j;
             if ((j!=0)&&((j%D->c)==0)) {
                 px=-D->padcl;
                 py+=D->sr;
             }
-            for(i=0;i<D->matI.cols();i++,k+=orsize) {
-                pz=i/ksize;
-                y=py+(i%ksize)/D->kc;
-                x=px+(i%D->kc);
+            for(int i = 0; i < D->matI.cols(); i++, k += orsize) {
+                int pz=i/ksize;
+                int y=py+(i%ksize)/D->kc;
+                int x=px+(i%D->kc);
                 // add_pixel(b,x,y,pz,D,isize,irsize,ptrI[k]);
                 // void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize,float val)
                 // Check boundaries of the window
@@ -459,8 +445,7 @@ void cpu_naive_conv2D_back(ConvolDescriptor *D, float *output)
             }
             px+=D->sc;
         }
-    }
-  }// batch
+    } // batch
 #endif
 }
 
