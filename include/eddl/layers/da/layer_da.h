@@ -179,6 +179,25 @@ public:
 };
 
 
+/// Pad Layer
+class LPad : public LDataAugmentation {
+public:
+    static int total_layers;
+    vector<int> pads;
+
+    LPad(Layer *parent, vector<int> pads, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+};
+
 
 /// Shift Layer
 class LShiftRandom : public LDataAugmentation {
