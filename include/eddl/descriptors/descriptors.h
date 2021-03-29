@@ -156,6 +156,7 @@ public:
     void enable_distributed();
 
     static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
+    static int compute_input(const string& padding, int output_size, int kerkel_size, int stride, int dilation_rate=1);
     static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
     static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
 

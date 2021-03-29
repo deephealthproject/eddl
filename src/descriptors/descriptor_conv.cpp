@@ -317,6 +317,22 @@ int ConvolDescriptor::compute_output(const string& padding, int input_size, int 
     return -1;
 }
 
+int ConvolDescriptor::compute_input(const string& padding, int output_size, int kerkel_size, int stride, int dilation_rate){
+    if (padding=="same" || padding =="zeros") {
+        return output_size*stride;  // inverse
+//        return std::ceil((float)input_size/(float)stride);
+
+    }else if(padding =="valid" || padding =="none"){
+        return output_size*stride + ((kerkel_size - 1) * dilation_rate);  // inverse
+//        return std::ceil(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate)/(float)stride);
+
+    }else{
+        cout<<padding<<endl;
+        msg("Incorrect padding type", "ConvolDescriptorT::compute_output");
+    }
+    return -1;
+}
+
 int ConvolDescriptor::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
     return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
 }
