@@ -224,8 +224,6 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
   int device=D->I->gpu_device;
 
   cudaSetDevice(device);
-  float alpha=1.0;
-  float beta = 0.0;
 #ifndef cCUDNN
   int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
@@ -254,6 +252,8 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
     }
   }
 #else
+        float alpha=1.0;
+        float beta = 0.0;
         check_cudnn(cudnnConvolutionBackwardFilter(hdnn[device], &alpha,
                                       D->xDesc, D->I->ptr,
                                       D->yDesc, D->D->ptr, D->convolution_descriptor,
@@ -403,7 +403,8 @@ void gpu_conv2DT(ConvolDescriptorT *D) {
     cudaSetDevice(device);
 
 #ifndef cCUDNN
-    int osize=D->z*D->r*D->c;
+/*  
+  int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
   D->gpuK->ptr=D->K->ptr;
   D->gpuO->ptr=D->O->ptr;
@@ -431,7 +432,7 @@ void gpu_conv2DT(ConvolDescriptorT *D) {
         gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
     }
 
-  }
+  }*/
 #else
     // FWD environment
     float alpha = 1.0f;
@@ -453,12 +454,12 @@ void gpu_conv2DT(ConvolDescriptorT *D) {
 #endif
     if (D->use_bias) {
 #ifndef cCUDNN
-        int size=D->bias->shape[0];
+    /*     int size=D->bias->shape[0];
     for(int i=0;i<size;i+=1024) {
       int s=min(1024,size-i);
       gpu_addbias_k<<<D->O->shape[0],s>>>(D->O->ptr, D->O->shape[0], D->r,D->c,D->nk,D->bias->ptr,i);
       check_cuda(cudaDeviceSynchronize(),"gpu_addbias");
-    }
+    }*/
 #else
         check_cudnn(cudnnAddTensor(hdnn[device], &alpha, D->bDesc, D->bias->ptr,
                                    &alpha, D->yDesc, D->O->ptr),"cudnnAddTensor",__FILE__);
@@ -474,10 +475,8 @@ void gpu_conv2DT_grad(ConvolDescriptorT *D){
     int device=D->I->gpu_device;
 
     cudaSetDevice(device);
-    float alpha=1.0;
-    float beta = 0.0;
 #ifndef cCUDNN
-    int osize=D->z*D->r*D->c;
+/*    int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
 
   D->gpugK->ptr=D->gK->ptr;
@@ -502,8 +501,10 @@ void gpu_conv2DT_grad(ConvolDescriptorT *D){
       for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize)
         gpu_mult2D(D->gpuD,0,D->gpuI,0,D->gpugK,1);
     }
-  }
+  }*/
 #else
+    float alpha=1.0;
+    float beta = 0.0;
     check_cudnn(cudnnConvolutionBackwardFilter(hdnn[device], &alpha,
                                                D->xDesc, D->I->ptr,
                                                D->yDesc, D->D->ptr, D->convolution_descriptor,
@@ -514,12 +515,12 @@ void gpu_conv2DT_grad(ConvolDescriptorT *D){
 #endif
     if (D->use_bias) {
 #ifndef cCUDNN
-        int size=D->bias->shape[0];
+    /*    int size=D->bias->shape[0];
     for(int i=0;i<size;i+=1024) {
       int s=min(1024,size-i);
       gpu_deltabias_k<<<D->D->shape[0],s>>>(D->D->ptr, D->D->shape[0], D->r,D->c,D->nk,D->gbias->ptr,i);
       check_cuda(cudaDeviceSynchronize(),"gpu_deltabias");
-    }
+    }*/
 #else
         check_cudnn(cudnnConvolutionBackwardBias(hdnn[device], &alpha, D->yDesc, D->D->ptr,
                                                  &beta, D->bDesc, D->gbias->ptr),"cudnnConvolutionBackwardBias",__FILE__);
@@ -537,8 +538,9 @@ void gpu_conv2DT_back(ConvolDescriptorT *D){
     int device=D->I->gpu_device;
     cudaSetDevice(device);
 #ifndef cCUDNN
-    int osize=D->z*D->r*D->c;
+  /*  int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
+  
   D->gpuK->ptr=D->K->ptr;
   D->gpuD->ptr=D->D->ptr;
   D->gpuI->ptr=D->gpuIB->ptr;
@@ -567,7 +569,7 @@ void gpu_conv2DT_back(ConvolDescriptorT *D){
       D->gpuI->ptr=D->gpuIB->ptr;
       gpu_im2col(D,1);
     }
-  }
+  }*/
 #else
     float alpha = 1.0f;
     float beta = 0.0f;
