@@ -66,6 +66,8 @@ __global__ void scale(float *A, float* B, int batch, int depth, int irows, int i
 __global__ void flip(float *A, float* B, int batch, int depth, int irows, int icols, int axis);
 __global__ void crop(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int* offsets, float constant, bool inverse);
 __global__ void crop_scale(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int mode, float constant);
+__global__ void gpu_pad(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int padt, int padb, int padl, int padr);
+__global__ void gpu_pad_back(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int padt, int padb, int padl, int padr);
 
 // GPU: Data augmentations (2D Optimized) ********************************************
 __global__ void shift_random(float *A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, int mode, float constant, float* rnd);

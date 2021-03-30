@@ -23,6 +23,7 @@ LExpand::LExpand(Layer *parent, vector<int> new_shape, string name, int dev, int
     if(name.empty()) this->name = "expand" + to_string(++total_layers);
 
     this->new_shape = new_shape;
+    input = parent->output;
 
     // TODO dummy code
     // Build descriptor
@@ -34,7 +35,6 @@ LExpand::LExpand(Layer *parent, vector<int> new_shape, string name, int dev, int
     vector<int> oshape(sd->oshape);
     oshape.insert(oshape.begin() + 0, 1);
 
-    input = parent->output;
     output=new Tensor(oshape, dev);
 
     parent->addchild(this);

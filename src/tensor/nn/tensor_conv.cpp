@@ -266,4 +266,99 @@ void Conv3D_back(ConvolDescriptor3D *D) {
 //    PROFILING_FOOTER(Conv3D_back);
 }
 
+
+
+    void Conv2DT(ConvolDescriptorT *D) {
+        /////////////////////////////////////////////////////////////////////
+        //// Conv2DT
+        //// Dimensions must be compatible
+        //// A is input 4D Tensor, Batch x Channels x Rows x Cols
+        //// D is a ConvolDescriptor
+        /////////////////////////////////////////////////////////////////////
+        if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2DT");
+
+//        PROFILING_HEADER(Conv2DT);
+
+
+        if (D->I->isCPU()) {
+            msg("NotImplementedError", "Tensor::Conv2DT");
+        }
+#ifdef cGPU
+        else if (D->I->isGPU())
+        {
+            gpu_conv2DT(D);
+        }
+#endif
+#ifdef cFPGA
+            else {
+            msg("NotImplementedError", "Tensor::Conv2DT");
+    }
+#endif
+
+
+//        PROFILING_FOOTER(Conv2DT);
+    }
+
+    void Conv2DT_grad(ConvolDescriptorT *D) {
+        /////////////////////////////////////////////////////////////////////
+        //// Conv2DT Grad
+        //// Dimensions must be compatible
+        //// A is input 4D Tensor, Batch x Channels x Rows x Cols
+        //// D is a ConvolDescriptor
+        /////////////////////////////////////////////////////////////////////
+        if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2DT");
+
+//        PROFILING_HEADER(Conv2DT_grad);
+
+
+        if (D->I->isCPU()) {
+            msg("NotImplementedError", "Tensor::Conv2DT");
+        }
+#ifdef cGPU
+        else if (D->I->isGPU())
+        {
+            gpu_conv2DT_grad(D);
+        }
+#endif
+#ifdef cFPGA
+            else {
+            msg("NotImplementedError", "Tensor::Conv2DT");
+    }
+#endif
+
+
+//        PROFILING_FOOTER(Conv2DT_grad);
+    }
+
+    void Conv2DT_back(ConvolDescriptorT *D) {
+        /////////////////////////////////////////////////////////////////////
+        //// Conv2DT Back
+        //// Dimensions must be compatible
+        //// A is input 4D Tensor, Batch x Channels x Rows x Cols
+        //// D is a ConvolDescriptorT
+        /////////////////////////////////////////////////////////////////////
+        if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2DT");
+
+        PROFILING_HEADER(Conv2D_back);
+
+
+        if (D->I->isCPU()) {
+            msg("NotImplementedError", "Tensor::Conv2DT");
+        }
+#ifdef cGPU
+        else if (D->I->isGPU())
+        {
+            gpu_conv2DT_back(D);
+        }
+#endif
+#ifdef cFPGA
+            else {
+            msg("NotImplementedError", "Tensor::Conv2DT");
+    }
+#endif
+
+//        PROFILING_FOOTER(Conv2DT_back);
+    }
+
+
 }

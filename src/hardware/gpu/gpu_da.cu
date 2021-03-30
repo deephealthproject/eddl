@@ -127,6 +127,36 @@ void gpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
 }
 
 
+void gpu_pad(Tensor *A, Tensor *B, vector<int> pads){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);
+
+    int padt = (int)pads[0]/2;
+    int padb = pads[0]-padt;
+    int padl = (int)pads[1]/2;
+    int padr = pads[1]-padl;
+
+    gpu_pad<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], padt, padb, padl, padr);
+    check_cuda(cudaDeviceSynchronize(), "gpu_pad");
+}
+
+void gpu_pad_back(Tensor *A, Tensor *B, vector<int> pads){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);
+
+    int padt = (int)pads[0]/2;
+    int padb = pads[0]-padt;
+    int padl = (int)pads[1]/2;
+    int padr = pads[1]-padl;
+
+    gpu_pad_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], padt, padb, padl, padr);
+    check_cuda(cudaDeviceSynchronize(), "gpu_pad_back");
+}
+
 void gpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);

@@ -2219,12 +2219,82 @@ namespace eddl {
     // MODELS
     ///////////////////////////////////////
     void download_model(string name,string link);
+
+    /**
+      *  @brief Returns a VGG16 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A VGG16 Net* with the desired topology
+    */
     Net* download_vgg16(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a ResNet18 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A ResNet18 Net* with the desired topology
+    */
     Net* download_resnet18(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a ResNet34 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A ResNet34 Net* with the desired topology
+    */
     Net* download_resnet34(bool top=true, vector<int> input_shape={}); 
+
+    /**
+      *  @brief Returns a ResNet50 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A ResNet50 Net* with the desired topology
+    */
     Net* download_resnet50(bool top=true, vector<int> input_shape={}); 
+
+    /**
+      *  @brief Returns a ResNet101 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A ResNet101 Net* with the desired topology
+    */
     Net* download_resnet101(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a ResNet152 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A ResNet152 Net* with the desired topology
+    */
     Net* download_resnet152(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a DenseNet121 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A DenseNet121 Net* with the desired topology
+    */
     Net* download_densenet121(bool top=true, vector<int> input_shape={});
 
     ///////////////////////////////////////

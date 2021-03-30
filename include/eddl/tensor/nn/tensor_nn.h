@@ -92,6 +92,11 @@ namespace tensorNN{
     void Conv3D_grad(ConvolDescriptor3D *D);
     void Conv3D_back(ConvolDescriptor3D *D);
 
+    // Conv2DT
+    void Conv2DT(ConvolDescriptorT *D);
+    void Conv2DT_grad(ConvolDescriptorT *D);
+    void Conv2DT_back(ConvolDescriptorT *D);
+
     // MaxPool2D
     void MPool2D(PoolDescriptor *D);
     void MPool2D_back(PoolDescriptor *D);

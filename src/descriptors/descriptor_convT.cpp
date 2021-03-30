@@ -23,12 +23,12 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #endif
 
-ConvolDescriptor::ConvolDescriptor() {}
+ConvolDescriptorT::ConvolDescriptorT() {}
 
-ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
+ConvolDescriptorT::ConvolDescriptorT(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
                  int groups, const vector<int> &dilation_rate, bool use_bias, int mem){
-    if (kernel_size.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
-    if (strides.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
+    if (kernel_size.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptorT::ConvolDescriptorT"); }
+    if (strides.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptorT::ConvolDescriptorT"); }
 
     // Store stuff
     this->filters = filters;
@@ -47,12 +47,12 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &kernel_size, 
     stride = vector<int>(strides);
 
     if (!(padding == "custom" || padding=="same" || padding =="none" || padding =="valid" || padding =="zeros" || padding=="same,none" || padding=="none,same")) {
-        msg("Incorrect padding type (" + padding + ")", "ConvolDescriptor::ConvolDescriptor");
+        msg("Incorrect padding type (" + padding + ")", "ConvolDescriptorT::ConvolDescriptorT");
     }
 }
 
 
-ConvolDescriptor::~ConvolDescriptor(){
+ConvolDescriptorT::~ConvolDescriptorT(){
     // input, output, delta, params[], and gradients[], acc_gradients[] => deleted in ~Layer()
     if (O->isCPU()) {
         eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
@@ -77,9 +77,9 @@ ConvolDescriptor::~ConvolDescriptor(){
 
 }
 
-void ConvolDescriptor::build(Tensor *A) {
+void ConvolDescriptorT::build(Tensor *A) {
 
-    if (A->ndim != 4) msg("Tensors are not 4D", "ConvolDescriptor::build");
+    if (A->ndim != 4) msg("Tensors are not 4D", "ConvolDescriptorT::build");
 
     I = A;
 
@@ -148,7 +148,7 @@ void ConvolDescriptor::build(Tensor *A) {
     if ((r <= 0) || (c <= 0)) {
         if(r <= 0) { std::cerr << "'Rows' are reach 0 or less (" << r << ")" << std::endl; }
         if(c <= 0) { std::cerr << "'Columns' are reach 0 or less (" << c << ")" << std::endl; }
-        msg("Invalid output shape", "ConvolDescriptor::build");
+        msg("Invalid output shape", "ConvolDescriptorT::build");
     }
 
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
@@ -163,7 +163,7 @@ void ConvolDescriptor::build(Tensor *A) {
     if (I->isCPU()) {
         // mem for ptr, lowering im2col
         unsigned long int l_size =  (unsigned long)(A->shape[0] * r * c) * (unsigned long)(kr * kc * kz);
-        ptrI=get_fmem(l_size,"ConvolDescriptor::build");
+        ptrI=get_fmem(l_size,"ConvolDescriptorT::build");
         matI=Eigen::Map<Eigen::MatrixXf>(ptrI, r*c,kz*kr*kc);
 	   _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
     }
@@ -238,12 +238,12 @@ void ConvolDescriptor::build(Tensor *A) {
 	fpga_ptrI = fpga_create_memory(fpga_sizeI);
 	// We allocate also on cpu so to ease the cpuemu flow
         // mem for ptr, lowering im2col
-        ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
+        ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptorT::build");
     }
 #endif
 }
 
-void ConvolDescriptor::resize(int b)
+void ConvolDescriptorT::resize(int b)
 {
     if (b==O->shape[0]) return;
 
@@ -255,7 +255,7 @@ void ConvolDescriptor::resize(int b)
 
     if (I->isCPU()) {
         eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
-        ptrI=get_fmem(l_size, "ConvolDescriptor::build");
+        ptrI=get_fmem(l_size, "ConvolDescriptorT::build");
 	   _profile_add_tensor(l_size);
     }
 #ifdef cGPU
@@ -288,14 +288,14 @@ void ConvolDescriptor::resize(int b)
         fpga_ptrI = fpga_create_memory(fpga_sizeI);
         // We do the same on the CPU side (for smooth cpuemu)
         eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
-        ptrI=get_fmem(l_size, "ConvolDescriptor::build");
+        ptrI=get_fmem(l_size, "ConvolDescriptorT::build");
     }
 #endif
 
 
 }
 
-void ConvolDescriptor::enable_distributed() {
+void ConvolDescriptorT::enable_distributed() {
     // Create and initialize the tensors for accumulating gradients in distributed training
     acc_gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
     acc_gK->fill_(0.0);
@@ -303,41 +303,29 @@ void ConvolDescriptor::enable_distributed() {
     acc_gbias->fill_(0.0);
 }
 
-int ConvolDescriptor::compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate){
+int ConvolDescriptorT::compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate){
     if (padding=="same" || padding =="zeros") {
-        return std::ceil((float)input_size/(float)stride);
-
-    }else if(padding =="valid" || padding =="none"){
-        return std::ceil(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate)/(float)stride);
-
-    }else{
-      cout<<padding<<endl;
-        msg("Incorrect padding type", "ConvolDescriptor::compute_output");
-    }
-    return -1;
-}
-
-int ConvolDescriptor::compute_input(const string& padding, int output_size, int kerkel_size, int stride, int dilation_rate){
-    if (padding=="same" || padding =="zeros") {
-        return output_size*stride;  // inverse
+        return input_size*stride;  // inverse
 //        return std::ceil((float)input_size/(float)stride);
 
     }else if(padding =="valid" || padding =="none"){
-        return output_size*stride + ((kerkel_size - 1) * dilation_rate);  // inverse
+        return input_size*stride + ((kerkel_size - 1) * dilation_rate);  // inverse
 //        return std::ceil(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate)/(float)stride);
 
     }else{
-        cout<<padding<<endl;
+      cout<<padding<<endl;
         msg("Incorrect padding type", "ConvolDescriptorT::compute_output");
     }
     return -1;
 }
 
-int ConvolDescriptor::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
-    return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
+int ConvolDescriptorT::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
+    return (input_size - 1)*stride + (kerkel_size - 1) * dilation_rate + padding[0] + padding[1] - 1;  // Inverse
+
+//    return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
 }
 
-vector<int> ConvolDescriptor::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding, bool row){
+vector<int> ConvolDescriptorT::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding, bool row){
     // Padding order: [left, right] // [top, bottom]
 
     if (padding=="same,none") {
@@ -350,7 +338,8 @@ vector<int> ConvolDescriptor::compute_padding(int output_size, int input_size, i
     }
 
     if (padding=="same" || padding =="zeros") {
-        int pad = (output_size-1) * stride + kerkel_size - input_size;
+        int pad = (input_size-1) * stride + kerkel_size - output_size;  // Inverse
+//        int pad = (output_size-1) * stride + kerkel_size - input_size;
         pad = std::max(pad, 0);
 
         // Ignore the padding if possible
@@ -364,7 +353,7 @@ vector<int> ConvolDescriptor::compute_padding(int output_size, int input_size, i
     }
     else{
         cout<<padding<<endl;
-        msg("Incorrect padding type", "ConvolDescriptor::compute_padding");
+        msg("Incorrect padding type", "ConvolDescriptorT::compute_padding");
     }
 
     return {-1};

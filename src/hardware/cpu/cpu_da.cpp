@@ -272,6 +272,23 @@ void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
     _profile(_CPU_CROP_SCALE, 1);
 }
 
+void cpu_pad(Tensor *A, Tensor *B, vector<int> pads){
+//    _profile(_CPU_PAD, 0);
+#pragma omp parallel for
+    for(int b=0; b<B->shape[0]; b++) {
+
+    }
+//    _profile(_CPU_PAD, 1);
+}
+
+void cpu_pad_back(Tensor *A, Tensor *B, vector<int> pads){
+//    _profile(_CPU_PAD, 0);
+#pragma omp parallel for
+    for(int b=0; b<B->shape[0]; b++) {
+
+    }
+//    _profile(_CPU_PAD, 1);
+}
 
 // CPU: Data augmentation (2D Optimized) ********************************************
 void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant) {

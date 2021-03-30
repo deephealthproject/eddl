@@ -100,6 +100,13 @@ The code is open source, and `available on github`_.
 
 .. toctree::
     :maxdepth: 1
+    :caption: Model Zoo
+
+    models_zoo/classification.rst
+
+
+.. toctree::
+    :maxdepth: 1
     :caption: Datasets
 
     datasets/classification.rst

@@ -65,6 +65,8 @@ void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float cons
 void cpu_flip(Tensor *A, Tensor *B, int axis);
 void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse);
 void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int mode, float constant);
+void cpu_pad(Tensor *A, Tensor *B, vector<int> pads);
+void cpu_pad_back(Tensor *A, Tensor *B, vector<int> pads);
 
 // CPU: Data augmentations (2D Optimized) ********************************************
 void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant);
