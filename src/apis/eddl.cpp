@@ -656,10 +656,10 @@ namespace eddl {
     return new LConv(parent, filters, {1, 1}, strides, "none", {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
-  // Legacy
-  layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
-             const vector<int> &strides, string padding,  bool use_bias,
-             int groups, const vector<int> &dilation_rate,string name){
+
+    layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
+                 const vector<int> &strides, string padding,  bool use_bias,
+                 int groups, const vector<int> &dilation_rate,string name){
       return new LConvT(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
