@@ -140,9 +140,9 @@ void Conv2D_back(ConvolDescriptor *D) {
 
 
     if (D->I->isCPU()) {
-#if 0
-        cpu_conv2D_back(D);
-        // cpu_naive_conv2D_back(D, D->ID->ptr);
+#if 1
+        // cpu_conv2D_back(D);
+        cpu_naive_conv2D_back(D, D->ID->ptr);
 #else
         int n = D->I->shape[0] * D->iz * D->ir * D->ic;
         float *output = new float[n];

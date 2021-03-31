@@ -400,19 +400,21 @@ void cpu_naive_conv2D_back(ConvolDescriptor *D, float *output)
     int isize=D->ir*D->ic*D->iz;
     int irsize=D->ir*D->ic;
 
-    // Map memory to Eigen
-    Eigen::Map<Eigen::MatrixXf> matK=Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
-
     #pragma omp parallel for
     for(int b=0;b<D->I->shape[0];b++){
 
         float *ptrD=D->D->ptr+(b*D->z*D->r*D->c);
         float *ptrI=D->ptrI+(b*D->r*D->c*D->kc*D->kr*D->kz);//r*c,kr*kc*kz;
 
-        Eigen::Map<Eigen::MatrixXf> matI=Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
-        Eigen::Map<Eigen::MatrixXf> matD=Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
+        // matI=matD*matK.transpose();
 
-        matI=matD*matK.transpose();
+        /* for (int j = 0; j < D->kz*D->kr*D->kc; j++)
+            for (int i = 0; i < D->r*D->c; i++) {
+                double a = 0.0;
+                for (int k = 0; k < D->z; k++)
+                    a += ptrD[i + k * D->r*D->c] * D->K->ptr[j + k * D->kz*D->kr*D->kc];
+                ptrI[i + j * D->r*D->c] = a;
+            } */
 
         // im2col(b,D,ptrI,1);
         // void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
@@ -420,16 +422,15 @@ void cpu_naive_conv2D_back(ConvolDescriptor *D, float *output)
         int py=-D->padrt;
         int px=-D->padcl;
 
-        for(int j = 0; j < D->matI.rows(); j++) {
-            int k = j;
-            if ((j!=0)&&((j%D->c)==0)) {
+        for(int i = 0; i < D->r*D->c; i++) {
+            if ((i!=0)&&((i%D->c)==0)) {
                 px=-D->padcl;
                 py+=D->sr;
             }
-            for(int i = 0; i < D->matI.cols(); i++, k += orsize) {
-                int pz=i/ksize;
-                int y=py+(i%ksize)/D->kc;
-                int x=px+(i%D->kc);
+            for(int j = 0; j < D->kz*D->kr*D->kc; j++) {
+                int pz=j/ksize;
+                int y=py+(j%ksize)/D->kc;
+                int x=px+(j%D->kc);
                 // add_pixel(b,x,y,pz,D,isize,irsize,ptrI[k]);
                 // void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize,float val)
                 // Check boundaries of the window
@@ -441,7 +442,11 @@ void cpu_naive_conv2D_back(ConvolDescriptor *D, float *output)
                 // Compute address from indices (row-major)
                 unsigned int address = (b*isize) + (pz*irsize) + (y*D->ic) + x;
                 // D->ID->ptr[address]+=val;
-                output[address]+=ptrI[k];
+                // output[address]+=ptrI[i + j * D->r*D->c];
+                double a = 0.0;
+                for (int k = 0; k < D->z; k++)
+                    a += ptrD[i + k * D->r*D->c] * D->K->ptr[j + k * D->kz*D->kr*D->kc];
+                output[address] += a;
             }
             px+=D->sc;
         }
