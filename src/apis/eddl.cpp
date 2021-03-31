@@ -1393,7 +1393,7 @@ namespace eddl {
   vector<Tensor*> getStates(layer l1){
     vector<Tensor*> n;
     for(int i=0;i<l1->states.size();i++) {
-      collectTensor(l1,"states",i);
+      collectTensor(l1,"state",i);
       n.push_back(l1->states[i]->clone());
     }
     return n;
