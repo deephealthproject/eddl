@@ -67,10 +67,10 @@ TEST(ConvT2DTestSuite, convt2d_custom)
 ////    cd->ID->toCPU(); cd->ID->print(2, true);
 //    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, cd->ID, 1e-3f, 0.0f, true, true));
 }
-//
+
 //
 //#ifdef cGPU
-//TEST(ConvT2DTestSuite, conv2d_cpu_gpu){
+//TEST(ConvT2DTestSuite, convt2d_cpu_gpu){
 //    // Image
 //    Tensor* t_cpu = Tensor::randu({1, 3, 1000, 1000});
 //    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
@@ -84,7 +84,7 @@ TEST(ConvT2DTestSuite, convt2d_custom)
 //            for(auto& k : kernels){
 //                try{
 //                    // CPU Operation
-//                    auto *cd_cpu = new ConvolDescriptor(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
+//                    auto *cd_cpu = new ConvolDescriptorT(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
 //                    cd_cpu->build(t_cpu);
 //                    cd_cpu->K = Tensor::ones(cd_cpu->K->getShape());
 //                    cd_cpu->bias = Tensor::zeros(cd_cpu->bias->getShape());
@@ -92,7 +92,7 @@ TEST(ConvT2DTestSuite, convt2d_custom)
 //                    cd_cpu->D = Tensor::ones(cd_cpu->O->getShape());
 //
 //                    // GPU Operation
-//                    auto *cd_gpu = new ConvolDescriptor(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
+//                    auto *cd_gpu = new ConvolDescriptorT(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
 //                    cd_gpu->build(t_gpu);
 //                    cd_gpu->K = Tensor::ones(cd_gpu->K->getShape(), t_gpu->device);
 //                    cd_gpu->bias = Tensor::zeros(cd_gpu->bias->getShape(), t_gpu->device);
@@ -100,19 +100,19 @@ TEST(ConvT2DTestSuite, convt2d_custom)
 //                    cd_gpu->D = Tensor::ones(cd_gpu->O->getShape(), t_gpu->device);
 //
 //                    // Forward
-//                    tensorNN::Conv2D(cd_cpu);
-//                    tensorNN::Conv2D(cd_gpu);
+//                    tensorNN::Conv2DT(cd_cpu);
+//                    tensorNN::Conv2DT(cd_gpu);
 //                    Tensor *cd_gpu_O = cd_gpu->O->clone(); cd_gpu_O->toCPU();  // Tensor::equivalent is only for CPU (at the moment)
 //                    bool test_fwrd = (bool) Tensor::equivalent(cd_cpu->O, cd_gpu_O, 1e-3f, 0.0f, true, true);
 //
 //                    // Backward
-//                    tensorNN::Conv2D_back(cd_cpu);
-//                    tensorNN::Conv2D_back(cd_gpu);
+//                    tensorNN::Conv2DT_back(cd_cpu);
+//                    tensorNN::Conv2DT_back(cd_gpu);
 //                    Tensor *cd_gpu_ID = cd_gpu->ID->clone(); cd_gpu_ID->toCPU(); // Tensor::equivalent is only for CPU (at the moment)
 //                    bool test_bwrd = (bool) Tensor::equivalent(cd_cpu->ID, cd_gpu_ID, 1e-3f, 0.0f, true, true);
 //
 //                    // Print results to ease debugging
-//                    cout << "Testing conv2d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<
+//                    cout << "Testing convT2d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<
 //                         " [Forward="<< test_fwrd << "; Backward=" << test_bwrd << "]" << endl;
 //
 //                    // Test correctness
@@ -135,7 +135,7 @@ TEST(ConvT2DTestSuite, convt2d_custom)
 //                    delete cd_gpu_ID;
 //                }
 //                catch (...) {
-//                    cout << "[FAILED] Testing conv2d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<endl;
+//                    cout << "[FAILED] Testing convT2d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<endl;
 //                }
 //            }
 //        }
