@@ -413,7 +413,6 @@ TEST(Conv2DTestSuite, conv2d_cpu_gpu){
                     cd_cpu->bias = Tensor::zeros(cd_cpu->bias->getShape());
                     cd_cpu->ID = Tensor::zeros(cd_cpu->I->getShape());
                     cd_cpu->D = Tensor::randu(cd_cpu->O->getShape());
-                    for (int i = 0; i < cd_cpu->D->size; i++) cd_cpu->D->ptr[i] = i;
 
                     // GPU Operation
                     auto *cd_gpu = new ConvolDescriptor(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
@@ -441,7 +440,7 @@ TEST(Conv2DTestSuite, conv2d_cpu_gpu){
 
                     // Test correctness
                     ASSERT_TRUE(test_fwrd);
-                    // ASSERT_TRUE(test_bwrd); // TODO fix CPU conv2D backward
+                    ASSERT_TRUE(test_bwrd);
 
                     delete cd_cpu->K;
                     delete cd_cpu->bias;

@@ -419,36 +419,40 @@ void cpu_naive_conv2D_back(ConvolDescriptor *D, float *output)
         // im2col(b,D,ptrI,1);
         // void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 
-        int py=-D->padrt;
-        int px=-D->padcl;
+        int py = -D->padrt - D->sr;
 
-        for(int i = 0; i < D->r*D->c; i++) {
-            if ((i!=0)&&((i%D->c)==0)) {
-                px=-D->padcl;
-                py+=D->sr;
-            }
-            for(int j = 0; j < D->kz*D->kr*D->kc; j++) {
-                int pz=j/ksize;
-                int y=py+(j%ksize)/D->kc;
-                int x=px+(j%D->kc);
-                // add_pixel(b,x,y,pz,D,isize,irsize,ptrI[k]);
-                // void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize,float val)
-                // Check boundaries of the window
-                if (x<0) continue;
-                if (y<0) continue;
-                if (x>=D->ic) continue;
-                if (y>=D->ir) continue;
+        for (int r = 0; r < D->r; r++) {
+            int px = -D->padcl;
+            py += D->sr;
+            for (int c = 0; c < D->c; c++) {
+                int i = r * D->c + c;
+                // for(int j = 0; j < D->kz*D->kr*D->kc; j++) {
+                for (int kz = 0; kz < D->kz; kz++)
+                for (int kr = 0; kr < D->kr; kr++)
+                for (int kc = 0; kc < D->kc; kc++) {
+                    int j = kz * D->kr * D->kc + kr * D->kc + kc;
+                    int pz = kz; // j/ksize;
+                    int y = py + kr; // (j%ksize)/D->kc;
+                    int x = px + kc; // (j%D->kc);
+                    // add_pixel(b,x,y,pz,D,isize,irsize,ptrI[k]);
+                    // void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize,float val)
+                    // Check boundaries of the window
+                    if (x<0) continue;
+                    if (y<0) continue;
+                    if (x>=D->ic) continue;
+                    if (y>=D->ir) continue;
 
-                // Compute address from indices (row-major)
-                unsigned int address = (b*isize) + (pz*irsize) + (y*D->ic) + x;
-                // D->ID->ptr[address]+=val;
-                // output[address]+=ptrI[i + j * D->r*D->c];
-                double a = 0.0;
-                for (int k = 0; k < D->z; k++)
-                    a += ptrD[i + k * D->r*D->c] * D->K->ptr[j + k * D->kz*D->kr*D->kc];
-                output[address] += a;
+                    // Compute address from indices (row-major)
+                    unsigned int address = (b*isize) + (pz*irsize) + (y*D->ic) + x;
+                    // D->ID->ptr[address]+=val;
+                    // output[address]+=ptrI[i + j * D->r*D->c];
+                    double a = 0.0;
+                    for (int k = 0; k < D->z; k++)
+                        a += ptrD[i + k * D->r*D->c] * D->K->ptr[j + k * D->kz*D->kr*D->kc];
+                    output[address] += a;
+                }
+                px+=D->sc;
             }
-            px+=D->sc;
         }
     } // batch
 #endif
