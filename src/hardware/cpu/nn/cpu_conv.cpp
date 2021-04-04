@@ -217,6 +217,30 @@ void cpu_conv2D_back(ConvolDescriptor *D)
     _profile(_CPU_CONV2D_BACK, 1);
 }
 
+void new_im2col(int b, ConvolDescriptor *D, float *ptrI)
+{
+    for (int r = 0; r < D->r; r++)
+        for (int c = 0; c < D->c; c++)
+            for (int kz = 0; kz < D->kz; kz++)
+                for (int kr = 0; kr < D->kr; kr++)
+                    for (int kc = 0; kc < D->kc; kc++) {
+                        int i = r * D->c + c;
+                        int j = ((kz * D->kr + kr) * D->kc) + kc;
+                        int k = j * D->r * D->c + i;
+                        int y = r * D->sr - D->padrt + kr;
+                        int x = c * D->sc - D->padcl + kc;
+                        // ptrI[k]=get_pixel(b,x,y,pz,D,isize,irsize);
+                        // float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize)
+                        // Check boundaries of the window
+                        if (x<0 || y<0 || x>=D->ic || y>=D->ir) ptrI[k] = 0.0;
+                        else {
+                            // Compute address from indices (row-major)
+                            unsigned int address = b*D->iz*D->ir*D->ic + kz*D->ir*D->ic + y*D->ic + x;
+                            ptrI[k] = D->I->ptr[address];
+                        }
+                    }
+}
+
 inline void naive_image_conv2D(int image_rows, int image_cols, float *image,
         int kernel_rows, int kernel_cols, float *kernel,
         int out_rows, int out_cols, float *output,
@@ -297,8 +321,6 @@ void cpu_naive_conv2D(ConvolDescriptor *D, float *output)
 
 void cpu_naive_conv2D_grad(ConvolDescriptor *D, float *output)
 {
-  _profile(_CPU_CONV2D_GRAD, 0);
-  //return;
   int osize=D->z*D->r*D->c;
   int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
 
@@ -323,8 +345,9 @@ void cpu_naive_conv2D_grad(ConvolDescriptor *D, float *output)
             for (int kz = 0; kz < D->kz; kz++)
                 for (int kr = 0; kr < D->kr; kr++)
                     for (int kc = 0; kc < D->kc; kc++) {
-                        int i = ((kz * D->kr + kr) * D->kc) + kc;
-                        int k = (i * D->r + r) * D->c + c;
+                        int i = r * D->c + c;
+                        int j = ((kz * D->kr + kr) * D->kc) + kc;
+                        int k = j * D->r * D->c + i;
                         int y = r * D->sr - D->padrt + kr;
                         int x = c * D->sc - D->padcl + kc;
                         // ptrI[k]=get_pixel(b,x,y,pz,D,isize,irsize);
@@ -338,7 +361,15 @@ void cpu_naive_conv2D_grad(ConvolDescriptor *D, float *output)
                         }
                     }
 
-    matgK+=matI.transpose()*matD;
+    // matgK+=matI.transpose()*matD;
+    for (int j = 0; j < D->nk; j++)
+        for (int i = 0; i < D->kr * D->kc * D->kz; i++) {
+            double a = 0.0;
+            for (int k = 0; k < D->r * D->c; k++)
+                a += ptrI[k + i * D->r * D->c] * ptrD[k + j * D->r * D->c];
+            output[i + j * D->kr * D->kc * D->kz] += a;
+        }
+
   }// batch
 
   //bias
@@ -354,7 +385,6 @@ void cpu_naive_conv2D_grad(ConvolDescriptor *D, float *output)
 
     }
   }
-    _profile(_CPU_CONV2D_GRAD, 1);
 }
 
 inline void naive_image_conv2D_back(int image_rows, int image_cols, float *image,
