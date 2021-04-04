@@ -295,6 +295,68 @@ void cpu_naive_conv2D(ConvolDescriptor *D, float *output)
     }
 }
 
+void cpu_naive_conv2D_grad(ConvolDescriptor *D, float *output)
+{
+  _profile(_CPU_CONV2D_GRAD, 0);
+  //return;
+  int osize=D->z*D->r*D->c;
+  int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
+
+
+  memset(output, 0, D->kr * D->kc * D->kz * D->nk * sizeof(float));
+  // Map memory to Eigen
+  Eigen::Map<Eigen::MatrixXf> matgK=Eigen::Map<Eigen::MatrixXf>(output /* D->gK->ptr */, D->kr * D->kc * D->kz, D->nk);
+
+  //#pragma omp parallel for
+  for(int b=0;b<D->I->shape[0];b++){
+
+    float *ptrD=D->D->ptr+(b*osize);
+    float *ptrI=D->ptrI+(b*isize);
+
+    Eigen::Map<Eigen::MatrixXf> matI=Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
+    Eigen::Map<Eigen::MatrixXf> matD=Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
+
+    // im2col(b,D,ptrI,0);
+    // void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
+    for (int r = 0; r < D->r; r++)
+        for (int c = 0; c < D->c; c++)
+            for (int kz = 0; kz < D->kz; kz++)
+                for (int kr = 0; kr < D->kr; kr++)
+                    for (int kc = 0; kc < D->kc; kc++) {
+                        int i = ((kz * D->kr + kr) * D->kc) + kc;
+                        int k = (i * D->r + r) * D->c + c;
+                        int y = r * D->sr - D->padrt + kr;
+                        int x = c * D->sc - D->padcl + kc;
+                        // ptrI[k]=get_pixel(b,x,y,pz,D,isize,irsize);
+                        // float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize)
+                        // Check boundaries of the window
+                        if (x<0 || y<0 || x>=D->ic || y>=D->ir) ptrI[k] = 0.0;
+                        else {
+                            // Compute address from indices (row-major)
+                            unsigned int address = b*D->iz*D->ir*D->ic + kz*D->ir*D->ic + y*D->ic + x;
+                            ptrI[k] = D->I->ptr[address];
+                        }
+                    }
+
+    matgK+=matI.transpose()*matD;
+  }// batch
+
+  //bias
+
+  //#pragma omp parallel for
+  if (D->use_bias) {
+    for(int b=0;b<D->D->shape[0];b++) {
+      float *ptrD=D->D->ptr+(b*osize);
+      for(int z=0;z<D->D->shape[1];z++)
+      for(int r=0;r<D->D->shape[2];r++)
+      for(int c=0;c<D->D->shape[3];c++,ptrD++)
+      D->gbias->ptr[z]+=(*ptrD);
+
+    }
+  }
+    _profile(_CPU_CONV2D_GRAD, 1);
+}
+
 inline void naive_image_conv2D_back(int image_rows, int image_cols, float *image,
         int kernel_rows, int kernel_cols, float *kernel,
         int out_rows, int out_cols, float *output,

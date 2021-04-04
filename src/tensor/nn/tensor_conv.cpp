@@ -92,22 +92,21 @@ void Conv2D_grad(ConvolDescriptor *D) {
 
 
     if (D->I->isCPU()) {
-#if 1
+#if 0
         cpu_conv2D_grad(D);
         // cpu_naive_conv2D_grad(D, D->gK->ptr);
-        // printf("cpu_conv2D_grad\n");
 #else
         int n = D->kr * D->kc * D->kz * D->nk;
         float *output = new float[n];
-        cpu_naive_conv2D_grad(D, output);
         cpu_conv2D_grad(D);
+        cpu_naive_conv2D_grad(D, output);
         int pos = 0; float max = 0.0;
         for (int i = 0; i < n; i++) {
             float d = fabsf(output[i] - D->gK->ptr[i]);
             if (fabs(D->gK->ptr[i]) > 1e-7) d = d / fabsf(D->gK->ptr[i]);
             if (d > max) { max = d; pos = i; }
         }
-        printf("%d %e (%e,%e)\n", pos, max, output[pos], D->O->ptr[pos]);
+        printf("cpu_conv2D_grad: %d %e (%e,%e)\n", pos, max, output[pos], D->gK->ptr[pos]);
         delete output;
 #endif
     }
@@ -140,7 +139,7 @@ void Conv2D_back(ConvolDescriptor *D) {
 
 
     if (D->I->isCPU()) {
-#if 0
+#if 1
         // cpu_conv2D_back(D);
         cpu_naive_conv2D_back(D, D->ID->ptr);
 #else
