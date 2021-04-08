@@ -121,6 +121,9 @@ target_link_libraries(tensor_image eddl)
 add_executable(tensor_io "tensor/eddl_io.cpp")
 target_link_libraries(tensor_io eddl)
 
+add_executable(tensor_dev_tests "tensor/eddl_dev_tests.cpp")
+target_link_libraries(tensor_dev_tests eddl)
+
 # EXAMPLES: ONNX ******************************************************************
 if(BUILD_PROTOBUF)
     add_executable(onnx_pointer "onnx/1_onnx_pointer.cpp")
