@@ -1221,12 +1221,12 @@ namespace eddl {
       *  @brief Pad the given image on all sides with the given `pad` value.
       *
       *  @param parent  Parent layer
-      *  @param padding  Padding on each border
+      *  @param padding  Padding on each border (top-bottom, left-right) or (top, right, bottom, left)
       *  @param constant  pads with a constant value
       *  @param name  A name for the operation
       *  @return     Padded image
     */
-    layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
+    layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name="");
 
     /**
       *  @brief Rotate the image by angle.
