@@ -20,7 +20,7 @@ using namespace std;
 
 int LPad::total_layers = 0;
 
-LPad::LPad(Layer *parent, vector<int> padding, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
+LPad::LPad(Layer *parent, vector<int> padding, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "pad" + to_string(++total_layers);
 
     // Check params
@@ -53,7 +53,7 @@ void LPad::forward() {
 }
 
 void LPad::backward(){
-//    Tensor::pad_back(parent[0]->delta, this->delta, this->padding);
+    Tensor::pad_back(parent[0]->delta, this->delta, this->padding);
 }
 
 

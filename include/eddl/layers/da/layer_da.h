@@ -180,7 +180,7 @@ public:
 
 
 /// Pad Layer
-class LPad : public LDataAugmentation {
+class LPad : public LinLayer {  // Cannot inherit from LDataAugmentation because the backward
 public:
     static int total_layers;
     vector<int> padding;

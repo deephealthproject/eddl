@@ -409,7 +409,7 @@ void Tensor::pad_back(Tensor *A, Tensor *B, vector<int> pads){
 
     // Check dimensions
     if(A->shape[0]!=B->shape[0] || A->shape[1]!=B->shape[1] ||
-       A->shape[2]!=(B->shape[2]-pads[0]*2) || A->shape[3]!=(B->shape[3]-pads[0]*2)){
+       A->shape[2]!=(B->shape[2]-(pads[0]+pads[2])) || A->shape[3]!=(B->shape[3]-(pads[1]+pads[3]))){
         msg("Incompatible dimensions", "Tensor::pad_back");
     } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::pad_back");
