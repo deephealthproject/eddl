@@ -210,6 +210,27 @@ Cutout
     :align: center
     :alt: Cutout operation on Lena
 
+Pad
+^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::pad(vector<int> pads, float cval = 0.0f)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::load("lena.jpg"); t1->unsqueeze_();  // 4D tensor needed
+
+    // Pad
+    Tensor* t2 = t1->pad({50, 50});
+    t2->save("lena_pad.jpg");
+
+    // Other ways
+    Tensor::pad(t1, t2, {50, 50});  // Static
+
+.. image:: ../_static/images/demos/lena_pad.jpg
+    :width: 256
+    :align: center
+    :alt: Pad operation on Lena
+
 
 Data augmentations
 -------------------
