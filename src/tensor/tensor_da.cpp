@@ -47,6 +47,8 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, WrappingMode mode, f
         msg("Incompatible dimensions", "Tensor::shift");
     } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::shift");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::shift");
     }
 
     PROFILING_HEADER_EXTERN(shift);
@@ -81,6 +83,8 @@ void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center
         msg("Incompatible dimensions", "Tensor::rotate");
     } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::rotate");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::rotate");
     }
 
     PROFILING_HEADER_EXTERN(rotate);
@@ -127,6 +131,8 @@ void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mod
     // Check dimensions
     if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::scale");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::scale");
     }
 
     PROFILING_HEADER_EXTERN(scale);
@@ -167,6 +173,8 @@ void Tensor::flip(Tensor *A, Tensor *B, int axis) {
         msg("Incompatible dimensions", "Tensor::flip");
     } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::flip");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::flip");
     }
 
     PROFILING_HEADER_EXTERN(flip);
@@ -205,16 +213,18 @@ Tensor* Tensor::crop(vector<int> coords_from, vector<int> coords_to, float cval,
 void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval) {
     // coords => {y, x}
     // Parameter check
-    if(coords_from[0] < 0.0f || coords_from[0]>= A->shape[2] ||
-       coords_from[1] < 0.0f || coords_from[1]>= A->shape[3] ||
-       coords_to[0] < 0.0f || coords_to[0]>= A->shape[2] ||
-       coords_to[1] < 0.0f || coords_to[1]>= A->shape[3]){
+    if(coords_from[0] < 0 || coords_from[0]>= A->shape[2] ||
+       coords_from[1] < 0 || coords_from[1]>= A->shape[3] ||
+       coords_to[0] < 0 || coords_to[0]>= A->shape[2] ||
+       coords_to[1] < 0 || coords_to[1]>= A->shape[3]){
         msg("Crop coordinates must fall within the range of the tensor", "Tensor::crop");
     }
 
     // Check dimensions
     if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::crop");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::crop");
     }
 
     PROFILING_HEADER_EXTERN(crop);
@@ -246,16 +256,18 @@ Tensor* Tensor::crop_scale(vector<int> coords_from, vector<int> coords_to, Wrapp
 void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, WrappingMode mode, float cval) {
     // coords => {y, x}
     // Parameter check
-    if(coords_from[0] < 0.0f || coords_from[0]>= A->shape[2] ||
-       coords_from[1] < 0.0f || coords_from[1]>= A->shape[3] ||
-       coords_to[0] < 0.0f || coords_to[0]>= A->shape[2] ||
-       coords_to[1] < 0.0f || coords_to[1]>= A->shape[3]){
+    if(coords_from[0] < 0 || coords_from[0]>= A->shape[2] ||
+       coords_from[1] < 0 || coords_from[1]>= A->shape[3] ||
+       coords_to[0] < 0 || coords_to[0]>= A->shape[2] ||
+       coords_to[1] < 0 || coords_to[1]>= A->shape[3]){
        msg("Crop coordinates must fall within the range of the tensor", "Tensor::crop_scale");
     }
 
     // Check dimensions
     if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::crop_scale");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::crop_scale");
     }
 
     PROFILING_HEADER_EXTERN(crop_scale);
@@ -288,10 +300,10 @@ Tensor* Tensor::cutout(vector<int> coords_from, vector<int> coords_to, float cva
 void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval) {
     // coords => {y, x}
     // Parameter check
-    if(coords_from[0] < 0.0f || coords_from[0]>= A->shape[2] ||
-       coords_from[1] < 0.0f || coords_from[1]>= A->shape[3] ||
-       coords_to[0] < 0.0f || coords_to[0]>= A->shape[2] ||
-       coords_to[1] < 0.0f || coords_to[1]>= A->shape[3]){
+    if(coords_from[0] < 0 || coords_from[0]>= A->shape[2] ||
+       coords_from[1] < 0 || coords_from[1]>= A->shape[3] ||
+       coords_to[0] < 0 || coords_to[0]>= A->shape[2] ||
+       coords_to[1] < 0 || coords_to[1]>= A->shape[3]){
        msg("Cutout coordinates must fall within the range of the tensor", "Tensor::cutout");
     }
 
@@ -300,6 +312,8 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
         msg("Incompatible dimensions", "Tensor::cutout");
     } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::cutout");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::cutout");
     }
 
     PROFILING_HEADER_EXTERN(cutout);
@@ -424,6 +438,8 @@ void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<f
         msg("Incompatible dimensions", "Tensor::shift_random");
     } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::shift_random");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::shift_random");
     }
 
     PROFILING_HEADER_EXTERN(shift_random);
@@ -459,6 +475,8 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
         msg("Incompatible dimensions", "Tensor::rotate_random");
     } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::rotate_random");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::rotate_random");
     }
 
     PROFILING_HEADER_EXTERN(rotate_random);
@@ -498,6 +516,8 @@ void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMo
     // Check dimensions
     if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::scale_random");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::scale_random");
     }
 
     PROFILING_HEADER_EXTERN(scale_random);
@@ -538,6 +558,8 @@ void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
         msg("Incompatible dimensions", "Tensor::flip_random");
     } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::flip_random");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::flip_random");
     }
 
     PROFILING_HEADER_EXTERN(flip_random);
@@ -586,6 +608,8 @@ void Tensor::crop_random(Tensor *A, Tensor *B) {
     // Check dimensions
     if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::crop_random");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::crop_random");
     }
 
     PROFILING_HEADER_EXTERN(crop_random);
@@ -624,6 +648,8 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, Wrapp
     // Check dimensions
     if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::crop_scale_random");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::crop_scale_random");
     }
 
     PROFILING_HEADER_EXTERN(crop_scale_random);
@@ -666,6 +692,8 @@ void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<
         msg("Incompatible dimensions", "Tensor::cutout_random");
     } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::cutout_random");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::cutout_random");
     }
 
     PROFILING_HEADER_EXTERN(cutout_random);
