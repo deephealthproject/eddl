@@ -133,10 +133,10 @@ void gpu_pad(Tensor *A, Tensor *B, vector<int> pads){
 
     setDims(A);
 
-    int padtb = pads[0];
-    int padlr = pads[1];
+    int padt = pads[0];
+    int padl = pads[3];
 
-    gpu_pad<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], padtb, padlr);
+    gpu_pad<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], padt, padl);
     check_cuda(cudaDeviceSynchronize(), "gpu_pad");
 }
 
@@ -146,10 +146,10 @@ void gpu_pad_back(Tensor *A, Tensor *B, vector<int> pads){
 
     setDims(A);
 
-    int padtb = pads[0];
-    int padlr = pads[1];
+    int padt = pads[0];
+    int padl = pads[3];
 
-    gpu_pad_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], padtb, padlr);
+    gpu_pad_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], padt, padl);
     check_cuda(cudaDeviceSynchronize(), "gpu_pad_back");
 }
 

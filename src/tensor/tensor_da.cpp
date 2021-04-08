@@ -337,21 +337,35 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
 }
 
 Tensor* Tensor::pad(vector<int> pads, float cval) {
-    Tensor* t_new = Tensor::full({this->shape[0], this->shape[1], this->shape[2]+pads[0]*2, this->shape[3]+pads[1]*2}, cval, this->device);
+    // Parameter check
+    if(pads.size()==2){
+        pads = vector<int>({pads[0], pads[1], pads[0], pads[1]});
+    } else if(pads.size()==4){ }
+    else{
+        msg("The padding on each border must follow this format (top-bottom, left-right) or (top, right, bottom, left)", "Tensor::pad");
+    }
+
+    Tensor* t_new = Tensor::full({this->shape[0], this->shape[1], this->shape[2]+(pads[0]+pads[2]), this->shape[3]+(pads[1]+pads[3])}, cval, this->device);
     Tensor::pad(this, t_new, pads);
     return t_new;
 }
 
 void Tensor::pad(Tensor *A, Tensor *B, vector<int> pads) {
-    // coords => {y, x}
     // Parameter check
-    if(pads[0] < 0 || pads[1] < 0){
+    if(pads.size()==2){
+        pads = vector<int>({pads[0], pads[1], pads[0], pads[1]});
+    } else if(pads.size()==4){ }
+    else{
+        msg("The padding on each border must follow this format (top-bottom, left-right) or (top, right, bottom, left)", "Tensor::pad");
+    }
+
+    if(pads[0] < 0 || pads[1] < 0  || pads[2] < 0 || pads[3] < 0){
         msg("Pad margin must be greater or equal than zero", "Tensor::pad");
     }
 
     // Check dimensions
     if(A->shape[0]!=B->shape[0] || A->shape[1]!=B->shape[1] ||
-        (A->shape[2]+pads[0]*2)!=B->shape[2] || (A->shape[3]+pads[0]*2)!=B->shape[3]){
+        (A->shape[2]+(pads[0]+pads[2]))!=B->shape[2] || (A->shape[3]+(pads[1]+pads[3])!=B->shape[3])){
         msg("Incompatible dimensions", "Tensor::pad");
     } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::pad");
@@ -381,10 +395,16 @@ void Tensor::pad(Tensor *A, Tensor *B, vector<int> pads) {
 
 
 void Tensor::pad_back(Tensor *A, Tensor *B, vector<int> pads){
-    // coords => {y, x}
     // Parameter check
-    if(pads[0] < 0 || pads[1] < 0){
-        msg("Pad margin must be greater or equal than zero", "Tensor::pad_back");
+    if(pads.size()==2){
+        pads = vector<int>({pads[0], pads[1], pads[0], pads[1]});
+    } else if(pads.size()==4){ }
+    else{
+        msg("The padding on each border must follow this format (top-bottom, left-right) or (top, right, bottom, left)", "Tensor::pad");
+    }
+
+    if(pads[0] < 0 || pads[1] < 0  || pads[2] < 0 || pads[3] < 0){
+        msg("Pad margin must be greater or equal than zero", "Tensor::pad");
     }
 
     // Check dimensions

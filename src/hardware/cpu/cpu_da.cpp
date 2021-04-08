@@ -280,7 +280,7 @@ void cpu_pad(Tensor *A, Tensor *B, vector<int> pads){
             for(int h=0; h<A->shape[2]; h++) {
                 for(int w=0; w<A->shape[3]; w++) {
                     int A_pos = b*A->stride[0] + c*A->stride[1] + h*A->stride[2] + w*A->stride[3];
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + (h+pads[0])*B->stride[2] + (w+pads[1])*B->stride[3];
+                    int B_pos = b*B->stride[0] + c*B->stride[1] + (h+pads[0])*B->stride[2] + (w+pads[3])*B->stride[3];
                     B->ptr[B_pos] = A->ptr[A_pos];
                 }
             }
@@ -297,7 +297,7 @@ void cpu_pad_back(Tensor *A, Tensor *B, vector<int> pads){
             for(int h=0; h<A->shape[2]; h++) {
                 for(int w=0; w<A->shape[3]; w++) {
                     int A_pos = b*A->stride[0] + c*A->stride[1] + h*A->stride[2] + w*A->stride[3];
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + (h+pads[0])*B->stride[2] + (w+pads[1])*B->stride[3];
+                    int B_pos = b*B->stride[0] + c*B->stride[1] + (h+pads[0])*B->stride[2] + (w+pads[3])*B->stride[3];
                     A->ptr[A_pos] += B->ptr[B_pos];
                 }
             }
