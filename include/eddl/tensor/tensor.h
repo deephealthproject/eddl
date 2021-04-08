@@ -2124,7 +2124,14 @@ public:
     static void cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval=0.0f);
 
     /**
-    *   @brief Set to a constant value a region of the tensor.
+   *   @brief Pads a tensor.
+   *   @param pads Margin to add to each size (top-bottom, left-right)
+   *   @param cval Value to fill the padded region
+   */
+    Tensor* pad(vector<int> pads, float cval=0.0f);
+
+    /**
+    *   @brief Pads a tensor.
     *   @param A Input tensor.
     *   @param B Output tensor.
     *   @param pads Margin to add to each size (top-bottom, left-right)
