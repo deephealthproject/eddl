@@ -153,6 +153,7 @@ Numpy-like operations over a raw-tensor object
 | crop      | 🟢️    | 🟢️    |  	   |
 | crop_scale      | 🟢️    | 🟢️    |  	   |
 | cutout      | 🟢️    | 🟢️    |  	   |
+| pad      | 🟢️    | 🟢️    |  	   |
 | shift_random      | 🟢️    | 🟢️    |  	   |
 | rotate_random      | 🟢️    | 🟢️    |  	   |
 | scale_random      | 🟢️    | 🟢️    |  	   |
