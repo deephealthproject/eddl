@@ -25,7 +25,7 @@ TEST(TensorTestSuite, tensor_da_pad){
         0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, {1, 1, 3+pad*2, 3+pad*2});
 
-    Tensor* t_new = t1->pad({pad, pad});
+    Tensor* t_new = t1->pad({pad, pad, pad, pad});
 //    t_new->squeeze_(); t_new->print(2.0f);
 //    t1_ref->squeeze_(); t1_ref->print(2.0f);
     ASSERT_TRUE(Tensor::equivalent(t_new, t1_ref, 1e-3f, 0.0f, true, true));
@@ -61,7 +61,7 @@ TEST(TensorTestSuite, tensor_da_pad_back){
     Tensor* t1_ref = Tensor::full({1, 1, 3, 3}, 5.0f);
     Tensor* delta = Tensor::full({1, 1, 3+pad*2, 3+pad*2}, 4.0f);  // 1+4 = 5
 
-    Tensor::pad_back(t1, delta, {pad, pad});
+    Tensor::pad_back(t1, delta, {pad, pad, pad, pad});
     ASSERT_TRUE(Tensor::equivalent(t1, t1_ref, 1e-3f, 0.0f, true, true));
 
     delete t1;
