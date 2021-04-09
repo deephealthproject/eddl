@@ -70,6 +70,9 @@ target_link_libraries(cifar_resnet_da_bn eddl)
 add_executable(cifar_resnet50_da_bn "nn/2_cifar10/7_cifar_resnet50_da_bn.cpp")
 target_link_libraries(cifar_resnet50_da_bn eddl)
 
+add_executable(cifar_avgpool3d "nn/2_cifar10/8_cifar_avgpool3d.cpp")
+target_link_libraries(cifar_avgpool3d eddl)
+
 # EXAMPLES: Drive segmentation ****************************************************
 add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
 target_link_libraries(drive_seg eddl)

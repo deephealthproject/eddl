@@ -29,7 +29,7 @@ TEST(ConvT2DTestSuite, convt2d_custom)
             0.03, -0.46, 0.08, 0.49, 0.39
     };
     auto* t_image = new Tensor({1, 3, 5, 5}, ptr_img, DEV_CPU);
-//    t_image->toGPU();
+    t_image->toGPU();
 
     // Forward
     auto *ptr_fwrd = new float[1*7*7]{
@@ -42,7 +42,7 @@ TEST(ConvT2DTestSuite, convt2d_custom)
         3.41, 2.39, 2.45, -0.06, -0.59, -0.65, -1.55,
     };;
     auto* t_fwrd = new Tensor({1, 1, 7, 7}, ptr_fwrd, DEV_CPU);
-//    t_fwrd->toGPU();
+    t_fwrd->toGPU();
 
 
     // Operation
@@ -53,14 +53,15 @@ TEST(ConvT2DTestSuite, convt2d_custom)
     cd->ID = Tensor::zeros(cd->I->getShape());
     cd->D = Tensor::ones(cd->O->getShape());
 
-//    cd->K->toGPU();
-//    cd->bias->toGPU();
-//    cd->ID->toGPU();
-//    cd->D->toGPU();
+    cd->K->toGPU();
+    cd->bias->toGPU();
+    cd->ID->toGPU();
+    cd->D->toGPU();
 
     // Forward
     tensorNN::Conv2DT(cd);
-    ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, cd->O, 1e-3f, 0.0f, true, true));
+    cd->O->toCPU()
+    //ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, cd->O, 1e-3f, 0.0f, true, true));
 
 //    // Backward
 //    tensorNN::Conv2DT_back(cd);
