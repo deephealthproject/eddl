@@ -245,19 +245,39 @@ __global__ void crop_scale(float* A, float* B, int batch, int depth, int irows, 
     }
 }
 
-__global__ void gpu_pad(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int padt, int padb, int padl, int padr){
+__global__ void gpu_pad(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int padt, int padl){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
-    long int ops = batch * depth*irows*icols;
+    long int ops = batch*depth*irows*icols;
 
     if (thread_id_x < ops){
+        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+        int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
+
+        int b = thread_id_x / A_stride[0] % batch;
+        int c = thread_id_x / A_stride[1] % depth;
+        int Ai = thread_id_x / A_stride[2] % irows;
+        int Aj = thread_id_x / A_stride[3] % icols;
+
+        int B_pos = b*B_stride[0] + c*B_stride[1] + (Ai+padt)*B_stride[2] + (Aj+padl)*B_stride[3];
+        B[B_pos] = A[thread_id_x];
     }
 }
 
-__global__ void gpu_pad_back(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int padt, int padb, int padl, int padr){
+__global__ void gpu_pad_back(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols,  int padt, int padl){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
+        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+        int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
+
+        int b = thread_id_x / A_stride[0] % batch;
+        int c = thread_id_x / A_stride[1] % depth;
+        int Ai = thread_id_x / A_stride[2] % irows;
+        int Aj = thread_id_x / A_stride[3] % icols;
+
+        int B_pos = b*B_stride[0] + c*B_stride[1] + (Ai+padt)*B_stride[2] + (Aj+padl)*B_stride[3];
+        A[thread_id_x] += B[B_pos];
     }
 }
 

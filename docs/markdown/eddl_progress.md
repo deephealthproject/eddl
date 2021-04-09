@@ -74,7 +74,7 @@ Deterministic transformations
 | Flip           | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Flip the given image at `axis=n`. |
 | Grayscale      | ⚫️ | ⚫️ |⚫️ | ⚫️️ | Convert image to grayscale. |
 | HorizontalFlip | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Horizontally flip the given image. |
-| Pad            | ⚫️ | ⚫️ |⚫️ | ⚫️ | Pad the given image on all sides with the given "pad" value. |
+| Pad            | 🟢️️ | 🟢️️ |🟢️️| ⚫️ | Pad the given image on all sides with the given "pad" value. |
 | Rotate         | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Rotate the image by angle. |
 | Scale          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Resize the input image to the given size. `[height, width]` |
 | Shift          | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Shift the input image `[a, b]` |

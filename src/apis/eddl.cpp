@@ -358,7 +358,6 @@ namespace eddl {
   }
   vlayer forward(model net,vector<Layer*> in)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->reset();
     net->forward(in);
 
@@ -366,7 +365,6 @@ namespace eddl {
   }
   vlayer forward(model net,vector<Tensor*> in)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->reset();
     net->forward(in);
 
@@ -375,7 +373,6 @@ namespace eddl {
 
   vlayer forward(model net,int b)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->resize(b);
     net->reset();
     net->forward();
@@ -385,7 +382,6 @@ namespace eddl {
   }
   vlayer forward(model net)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->reset();
     net->forward();
 
@@ -781,6 +777,10 @@ namespace eddl {
   layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant, string name){
     return new LCutout(parent, from_coords, to_coords, constant, name, DEV_CPU, 0);
   }
+
+    layer Pad(layer parent, vector<int> pads, float constant, string name){
+        return new LPad(parent, pads, constant, name, DEV_CPU, 0);
+    }
 
   // Data augmentation Layers
   layer RandomShift(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name){

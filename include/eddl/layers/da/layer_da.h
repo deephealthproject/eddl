@@ -180,12 +180,13 @@ public:
 
 
 /// Pad Layer
-class LPad : public LDataAugmentation {
+class LPad : public LinLayer {  // Cannot inherit from LDataAugmentation because the backward
 public:
     static int total_layers;
-    vector<int> pads;
+    vector<int> padding;
+    float constant = 0.0f;
 
-    LPad(Layer *parent, vector<int> pads, string name, int dev, int mem);
+    LPad(Layer *parent, vector<int> padding, float constant, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
