@@ -85,9 +85,6 @@ int cpu_bin_accuracy(Tensor *A, Tensor *B);
 void cpu_conv2D(ConvolDescriptor *D);
 void cpu_conv2D_grad(ConvolDescriptor *D);
 void cpu_conv2D_back(ConvolDescriptor *D);
-void cpu_naive_conv2D(ConvolDescriptor *D, float *ptrO);
-void cpu_naive_conv2D_grad(ConvolDescriptor *D, float *output);
-void cpu_naive_conv2D_back(ConvolDescriptor *D, float *output);
 
 // Conv3D
 void cpu_conv3D(ConvolDescriptor3D *D);
