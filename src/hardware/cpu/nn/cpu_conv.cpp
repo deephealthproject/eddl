@@ -213,9 +213,9 @@ void cpu_new_im2col(int b, ConvolDescriptor *D, float *ptrI)
                     }
 }
 
-void low_mem_conv3D(int batch_size,
-        int channels, int image_depth, int image_rows, int image_cols, float *image,
-        int num_kernels, int kernel_depth, int kernel_rows, int kernel_cols, float *kernel,
+void cpu_low_mem_conv3D(int batch_size,
+        int channels, int image_depth, int image_rows, int image_cols, const float *image,
+        int num_kernels, int kernel_depth, int kernel_rows, int kernel_cols, const float *kernel,
         int out_depth, int out_rows, int out_cols, float *output,
         int pad_depth, int pad_row, int pad_col,
         int stride_depth, int stride_rows, int stride_cols)
@@ -251,7 +251,7 @@ void cpu_conv2D(ConvolDescriptor *D)
 {
 #if 0
     // cpu_im2col_conv2D(D); // Conv2D_grad depends on im2col stored in ptrI
-    low_mem_conv3D(D->I->shape[0],
+    cpu_low_mem_conv3D(D->I->shape[0],
         D->iz, 1, D->ir, D->ic, D->I->ptr,
         D->nk, 1, D->kr, D->kc, D->K->ptr,
         1, D->r, D->c, D->O->ptr,
@@ -268,7 +268,7 @@ void cpu_conv2D(ConvolDescriptor *D)
     int n = D->I->shape[0] * D->z *D->r * D->c;
     float *output = new float[n];
     memset(output, 0, n * sizeof(float));
-    low_mem_conv3D(D->I->shape[0],
+    cpu_low_mem_conv3D(D->I->shape[0],
         D->iz, 1, D->ir, D->ic, D->I->ptr,
         D->nk, 1, D->kr, D->kc, D->K->ptr,
         1, D->r, D->c, output,
@@ -297,71 +297,55 @@ void cpu_conv2D(ConvolDescriptor *D)
   }
 }
 
-void cpu_low_mem_conv2D_grad(ConvolDescriptor *D, float *output)
+void cpu_low_mem_conv2D_grad(int batch_size,
+        int channels, int image_rows, int image_cols, const float *image,
+        int num_kernels, int kernel_rows, int kernel_cols, float *kernel,
+        int out_rows, int out_cols, const float *delta,
+        int pad_row, int pad_col,
+        int stride_rows, int stride_cols)
 {
-  int osize=D->z*D->r*D->c;
-  int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
-
-
-  // Map memory to Eigen
-  // Eigen::Map<Eigen::MatrixXf> matgK=Eigen::Map<Eigen::MatrixXf>(output /* D->gK->ptr */, D->kr * D->kc * D->kz, D->nk);
-
-  //#pragma omp parallel for
-  for(int b=0;b<D->I->shape[0];b++){
-
-    float *ptrD=D->D->ptr+(b*osize);
-    float *ptrI=D->ptrI+(b*isize);
-
-    // Eigen::Map<Eigen::MatrixXf> matI=Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
-    // Eigen::Map<Eigen::MatrixXf> matD=Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
-
-    // im2col(b,D,ptrI,0);
-    // void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
-    for (int r = 0; r < D->r; r++)
-        for (int c = 0; c < D->c; c++)
-            for (int kz = 0; kz < D->kz; kz++)
-                for (int kr = 0; kr < D->kr; kr++)
-                    for (int kc = 0; kc < D->kc; kc++) {
-                        int i = r * D->c + c;
-                        int j = ((kz * D->kr + kr) * D->kc) + kc;
-                        int k = j * D->r * D->c + i;
-                        int y = r * D->sr - D->padrt + kr;
-                        int x = c * D->sc - D->padcl + kc;
-                        // ptrI[k]=get_pixel(b,x,y,pz,D,isize,irsize);
-                        // float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize)
-                        // Check boundaries of the window
-                        if (x<0 || y<0 || x>=D->ic || y>=D->ir) ptrI[k] = 0.0;
-                        else {
-                            // Compute address from indices (row-major)
-                            unsigned int address = b*D->iz*D->ir*D->ic + kz*D->ir*D->ic + y*D->ic + x;
-                            ptrI[k] = D->I->ptr[address];
-                        }
-                    }
-
-    // matgK+=matI.transpose()*matD;
-    for (int j = 0; j < D->nk; j++)
-        for (int i = 0; i < D->kr * D->kc * D->kz; i++) {
-            double a = 0.0;
-            for (int k = 0; k < D->r * D->c; k++)
-                a += ptrI[k + i * D->r * D->c] * ptrD[k + j * D->r * D->c];
-            output[i + j * D->kr * D->kc * D->kz] += a;
+    // #pragma omp parallel for
+    for (int b = 0; b < batch_size; b++)
+    for (int c = 0; c < channels; c++)
+    for (int nk = 0; nk < num_kernels; nk++)
+    for (int i = 0; i < out_rows; i++)
+    for (int j = 0; j < out_cols; j++)
+    for (int x = 0; x < kernel_rows; x++) {
+        int px = i * stride_rows - pad_row + x;
+        if (px < 0) continue;
+        if (px >= image_rows) continue;
+        for (int y = 0; y < kernel_cols; y++) {
+            int py = j * stride_cols - pad_col + y;
+            if (py < 0) continue;
+            if (py >= image_cols) continue;
+            kernel[(((nk * channels + c) * kernel_rows + x) * kernel_cols) + y] +=
+               image[((b * channels + c) * image_rows + px) * image_cols + py] *
+               delta[((b * num_kernels + nk) * out_rows + i) * out_cols + j];
         }
-
-  }// batch
-
+    }
 }
 
 void cpu_conv2D_grad(ConvolDescriptor *D)
 {
 #if 0
     // cpu_im2col_conv2D_grad(D);
-    cpu_lowmem_conv2D_grad(D, D->gK->ptr);
+    cpu_low_mem_conv2D_grad(D->I->shape[0],
+        D->iz, D->ir, D->ic, D->I->ptr,
+        D->nk, D->kr, D->kc, D->gK->ptr,
+        D->r, D->c, D->D->ptr,
+        D->padrt, D->padcl,
+        D->sr, D->sc);
 #else
     cpu_im2col_conv2D_grad(D);
     int n = D->kr * D->kc * D->kz * D->nk;
     float *output = new float[n];
     memset(output, 0, D->kr * D->kc * D->kz * D->nk * sizeof(float));
-    cpu_low_mem_conv2D_grad(D, output);
+    cpu_low_mem_conv2D_grad(D->I->shape[0],
+        D->iz, D->ir, D->ic, D->I->ptr,
+        D->nk, D->kr, D->kc, output,
+        D->r, D->c, D->D->ptr,
+        D->padrt, D->padcl,
+        D->sr, D->sc);
     int pos = 0; float max = 0.0;
     for (int i = 0; i < n; i++) {
         float d = fabsf(output[i] - D->gK->ptr[i]);
@@ -385,171 +369,56 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
   }
 }
 
-inline void naive_image_conv2D_back(int image_rows, int image_cols, float *image,
-        int kernel_rows, int kernel_cols, float *kernel,
-        int out_rows, int out_cols, float *output,
-        int pad_row, int pad_col, int stride_rows, int stride_cols)
-{
-    int dx = kernel_rows / 2;
-    int dy = kernel_cols / 2;
-
-    // int out_rows = image_rows - kernel_cols + 1 + pad_left + pad_right;
-    // int out_cols = image_cols - kernel_rows + 1 + pad_top + pad_bottom;
-    // printf("out_rows=%d out_cols=%d\n", out_rows, out_cols);
-
-    float *t = new float[out_rows * out_cols];
-    memset(t, 0, out_rows * out_cols * sizeof(float));
-    for (int i = 0; i < out_rows; i++) {
-        for (int j = 0; j < out_cols; j++) {
-            int px = i - pad_row;
-            int py = j - pad_col;
-            if (px % stride_rows) continue;
-            if (py % stride_cols) continue;
-            px /= stride_cols;
-            py /= stride_cols;
-            if (px >= 0 && px < image_rows &&
-                py >= 0 && py < image_cols) {
-                    t[i * out_cols + j] = image[px * image_cols + py];
-            }
-        }
-    }
-    for (int i = 0; i < out_rows; i++) {
-        for (int j = 0; j < out_cols; j++) {
-            printf("% 6.1g ", t[i * out_cols + j]);
-        }
-        printf("\n");
-    }
-
-    for (int i = 0; i < out_rows; i++) {
-        for (int j = 0; j < out_cols; j++) {
-            float s = 0;
-            // printf("[%d,%d]\n", i, j);
-            for (int x = 0; x < kernel_rows; x++) {
-                for (int y = 0; y < kernel_cols; y++) {
-                    int px = i - pad_row + x - dx;
-                    int py = j - pad_col + y - dy;
-                    if (px % stride_rows) continue;
-                    if (py % stride_cols) continue;
-                    px /= stride_cols;
-                    py /= stride_cols;
-                    if (px >= 0 && px < image_rows &&
-                        py >= 0 && py < image_cols) {
-                    // printf("    k[%d,%d]=%e i[%d,%d]=%e\n",
-                             // x - dx, y - dx,
-                             // kernel[(kernel_rows - 1 - x) * kernel_cols + kernel_cols - 1 - y],
-                             // px, py, image[px + py * image_rows]);
-                        s += kernel[(kernel_rows - 1 - x) * kernel_cols +
-                                     kernel_cols - 1 - y]
-                           * image[px * image_cols + py];
-                    }
-                }
-            }
-            output[i * out_cols + j] += s;
-        }
-    }
-    delete(t);
-}
-
-void cpu_naive_conv2D_back(ConvolDescriptor *D, float *output)
-{
-    /* printf("input: in=%d, iz=%d, ir=%d, ic=%d\n", D->I->shape[0], D->iz, D->ir, D->ic);
-    printf("kernel: nk=%d, kz (iz)=%d, kr=%d, kc=%d\n", D->nk, D->kz, D->kr, D->kc);
-    printf("output: in=%d, z (nk)=%d, r=%d, c=%d\n", D->in, D->z, D->r, D->c);
-    printf("padcl=%d, padcr=%d, padrt=%d, padrb=%d\n", D->padcl, D->padcr, D->padrt, D->padrb);
-    printf("padding: %d %d %d %d\n", D->pads[0], D->pads[1], D->pads[2], D->pads[3]);
-    printf("stride: %d,%d bias:%d\n", D->sr, D->sc, D->use_bias); */
-    float *ptrID = output;
-    int pad_row = D->padrt == 0 ? D->kr / 2 : 0;
-    int pad_col = D->padcl == 0 ? D->kc / 2 : 0;
-    // #pragma omp parallel for // collapse(2) doesn't work
-    for (int b = 0; b < D->I->shape[0]; b++) { // batch
-        for (int k = 0; k < D->nk; k++) { // kernel
-            memset(ptrID, 0, D->ir * D->ic * sizeof(float));
-            for (int z = 0; z < D->iz; z++) { // canal
-                // printf("b=%d k=%d z=%d\n", b, k, z);
-                // printf("ptrO=%p ptrI=%p ptrK=%p\n", ptrO, ptrI, ptrK);
-                naive_image_conv2D_back(D->r, D->c,
-                    D->D->ptr + (b * D->iz + z) * D->r * D->c,
-                    D->kr, D->kc,
-                    D->K->ptr + (k * D->kz + z) * D->kr * D->kc,
-                    D->ir, D->ic, ptrID,
-                    pad_row, pad_col,
-                    D->sr, D->sc);
-            }
-            ptrID += D->ir * D->ic;
-        }
-    }
-}
-
-void cpu_low_mem_conv2D_back(ConvolDescriptor *D, float *output)
+void cpu_low_mem_conv2D_back(int batch_size,
+        int channels, int image_rows, int image_cols, float *image,
+        int num_kernels, int kernel_rows, int kernel_cols, const float *kernel,
+        int out_rows, int out_cols, const float *delta,
+        int pad_row, int pad_col,
+        int stride_rows, int stride_cols)
 {
     #pragma omp parallel for
-    for(int b=0;b<D->I->shape[0];b++){
-
-        // float *ptrD=D->D->ptr+(b*D->z*D->r*D->c);
-        // float *ptrI=D->ptrI+(b*D->r*D->c*D->kc*D->kr*D->kz);//r*c,kr*kc*kz;
-
-        // matI=matD*matK.transpose();
-
-        /* for (int j = 0; j < D->kz*D->kr*D->kc; j++)
-            for (int i = 0; i < D->r*D->c; i++) {
+    for (int b = 0; b < batch_size; b++)
+    for (int c = 0; c < channels; c++)
+    for (int i = 0; i < out_rows; i++)
+    for (int j = 0; j < out_cols; j++)
+        for (int x = 0; x < kernel_rows; x++) {
+            int px = i * stride_rows - pad_row + x;
+            if (px < 0) continue;
+            if (px >= image_rows) continue;
+            for (int y = 0; y < kernel_cols; y++) {
+                int py = j * stride_cols - pad_col + y;
+                if (py < 0) continue;
+                if (py >= image_cols) continue;
                 double a = 0.0;
-                for (int k = 0; k < D->z; k++)
-                    a += ptrD[i + k * D->r*D->c] * D->K->ptr[j + k * D->kz*D->kr*D->kc];
-                ptrI[i + j * D->r*D->c] = a;
-            } */
-
-        // im2col(b,D,ptrI,1);
-        // void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
-
-        // int py = -D->padrt;
-        for (int r = 0; r < D->r; r++) {
-            // int px = -D->padcl;
-            for (int c = 0; c < D->c; c++) {
-                // for(int j = 0; j < D->kz*D->kr*D->kc; j++) {
-                for (int kz = 0; kz < D->kz; kz++)
-                for (int kr = 0; kr < D->kr; kr++)
-                for (int kc = 0; kc < D->kc; kc++) {
-                    // int pz = kz; // j/ksize;
-                    int y = r * D->sr - D->padrt + kr; // py + (j%ksize)/D->kc;
-                    int x = c * D->sc - D->padcl + kc; // px + (j%D->kc);
-                    // add_pixel(b,x,y,pz,D,isize,irsize,ptrI[k]);
-                    // void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize,float val)
-                    // Check boundaries of the window
-                    if (x<0) continue;
-                    if (y<0) continue;
-                    if (x>=D->ic) continue;
-                    if (y>=D->ir) continue;
-
-                    // Compute address from indices (row-major)
-                    unsigned int address = b * D->ir*D->ic*D->iz + kz * D->ir*D->ic + y * D->ic + x;
-                    unsigned int i = b * D->z*D->r*D->c + r * D->c + c;
-                    unsigned int j = kz * D->kr*D->kc + kr * D->kc + kc;
-                    // D->ID->ptr[address]+=val;
-                    // output[address]+=ptrI[i + j * D->r*D->c];
-                    double a = 0.0;
-                    for (int k = 0; k < D->z; k++)
-                        a += D->D->ptr[i + k * D->r*D->c] * D->K->ptr[j + k * D->kz*D->kr*D->kc];
-                    output[address] += a;
-                }
-                // px += D->sc;
+                for (int nk = 0; nk < num_kernels; nk++)
+                    a += delta[((b * num_kernels + nk) * out_rows + i) * out_cols + j]
+                       * kernel[((nk * channels + c) * kernel_rows + x) * kernel_cols + y];
+                image[((b * channels + c) * image_rows + px) * image_cols + py] += a;
             }
-            // py += D->sr;
         }
-    } // batch
 }
 
 void cpu_conv2D_back(ConvolDescriptor *D)
 {
 #if 0
     // cpu_im2col_conv2D_back(D);
-    cpu_low_mem_conv2D_back(D, D->ID->ptr);
+    cpu_low_mem_conv2D_back(D->I->shape[0],
+        D->iz, D->ir, D->ic, D->ID->ptr,
+        D->nk, D->kr, D->kc, D->K->ptr,
+        D->r, D->c, D->D->ptr,
+        D->padrt, D->padcl,
+        D->sr, D->sc);
 #else
     cpu_im2col_conv2D_back(D);
     int n = D->I->shape[0] * D->iz * D->ir * D->ic;
     float *output = new float[n];
     memset(output, 0, n * sizeof(float));
-    cpu_low_mem_conv2D_back(D, output);
+    cpu_low_mem_conv2D_back(D->I->shape[0],
+        D->iz, D->ir, D->ic, output,
+        D->nk, D->kr, D->kc, D->K->ptr,
+        D->r, D->c, D->D->ptr,
+        D->padrt, D->padcl,
+        D->sr, D->sc);
     int pos = 0; float max = 0.0;
     for (int i = 0; i < n; i++) {
         float d = fabsf(output[i] - D->ID->ptr[i]);
