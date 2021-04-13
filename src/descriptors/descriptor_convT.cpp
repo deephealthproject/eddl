@@ -216,12 +216,17 @@ void ConvolDescriptorT::build(Tensor *A) {
    cudnnCreateTensorDescriptor(&xDesc);
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  in,iz,ir,ic);
-
+   //std::cout<<"xDesc Sizes:"<<in<<","<<iz<<","<<ir<<","<<ic<<std::endl;
    cudnnCreateFilterDescriptor(&wDesc);
-   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
+   //CONV
+   //cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
+   //CONVT we need to swap input channels with output so all other swappings (forward and backward functions) matches
+   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, kz, nk, kr, kc);
+   //std::cout<<"wDesc ppSizes:"<<kz<<","<<nk<<","<<kr<<","<<kc<<std::endl;
 
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
+   //std::cout<<"yDesc Sizes:"<<in<<","<<z<<","<<r<<","<<c<<std::endl;
 
    cudnnCreateTensorDescriptor(&bDesc);
    cudnnSetTensor4dDescriptor(bDesc, tensor_format, data_type, 1, nk,1,1);
