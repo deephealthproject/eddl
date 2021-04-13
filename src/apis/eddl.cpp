@@ -1017,6 +1017,10 @@ namespace eddl {
     return new LSelect(l, indices, name, DEV_CPU, 0);
   }
 
+    layer Slice(layer l, vector<string> indices, string name){
+        return new LSelect(l, indices, name, DEV_CPU, 0);
+    }
+
   layer Permute(layer l, vector<int> dims, string name){
     return new LPermute(l, dims, name, DEV_CPU, 0);
   }

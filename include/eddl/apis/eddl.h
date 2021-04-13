@@ -1730,6 +1730,17 @@ namespace eddl {
     layer Select(layer l, vector<string> indices, string name="");
 
     /**
+      *  @brief Returns a new tensor which indexes the input tensor using the entries in indices.
+      *  Alias for Select
+      *
+      *  @param l  Parent layer
+      *  @param indices  Vector of indices to be selected
+      *  @param name  A name for the operation
+      *  @return     A tensor with the selected elements
+    */
+    layer Slice(layer l, vector<string> indices, string name="");
+
+    /**
       *  @brief Permutes the dimensions of the input according to a given pattern.
       *
       *  @param l  Parent layer
