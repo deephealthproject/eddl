@@ -158,6 +158,19 @@ void gpu_conv2D(ConvolDescriptor *D) {
   cudaSetDevice(device);
 
 #ifndef cCUDNN
+#if 0
+    int output_size = D->nk * D->r * D->c;
+    int nb = output_size / low_mem_block_size;
+    if (output_size % low_mem_block_size) nb++;
+    dim3 grid(nb, D->I->shape[0]);
+    gpu_low_mem_conv3D<<<grid, low_mem_block_size>>>(D->I->shape[0],
+        D->iz, 1, D->ir, D->ic, D->I->ptr,
+        D->nk, 1, D->kr, D->kc, D->K->ptr,
+        1, D->r, D->c, D->O->ptr,
+        0, D->padrt, D->padcl,
+        1, D->sr, D->sc);
+    check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv3D");
+#else
   int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
   D->gpuK->ptr=D->K->ptr;
@@ -187,6 +200,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
     }
 
   }
+#endif
 #else
   // FWD environment
   float alpha = 1.0f;
@@ -287,6 +301,19 @@ void gpu_conv2D_back(ConvolDescriptor *D){
   int device=D->I->gpu_device;
   cudaSetDevice(device);
 #ifndef cCUDNN
+#if 1
+    int image_size = D->iz * D->r * D->c;
+    int nb = image_size / low_mem_block_size;
+    if (image_size % low_mem_block_size) nb++;
+    dim3 grid(nb, D->I->shape[0]);
+    gpu_low_mem_conv2D_back<<<grid, low_mem_block_size>>>(D->I->shape[0],
+        D->iz, D->ir, D->ic, D->ID->ptr,
+        D->nk, D->kr, D->kc, D->K->ptr,
+        D->r, D->c, D->D->ptr,
+        D->padrt, D->padcl,
+        D->sr, D->sc);
+    check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv2D_back");
+#else
   int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
   D->gpuK->ptr=D->K->ptr;
@@ -318,6 +345,7 @@ void gpu_conv2D_back(ConvolDescriptor *D){
       gpu_im2col(D,1);
     }
   }
+#endif
 #else
     float alpha = 1.0f;
     float beta = 0.0f;
@@ -403,6 +431,7 @@ void gpu_conv2DT(ConvolDescriptorT *D) {
     cudaSetDevice(device);
 
 #ifndef cCUDNN
+/*
     int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
   D->gpuK->ptr=D->K->ptr;
@@ -432,6 +461,7 @@ void gpu_conv2DT(ConvolDescriptorT *D) {
     }
 
   }
+*/
 #else
     // FWD environment
     float alpha = 1.0f;
@@ -477,6 +507,7 @@ void gpu_conv2DT_grad(ConvolDescriptorT *D){
     float alpha=1.0;
     float beta = 0.0;
 #ifndef cCUDNN
+/*
     int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
 
@@ -503,6 +534,7 @@ void gpu_conv2DT_grad(ConvolDescriptorT *D){
         gpu_mult2D(D->gpuD,0,D->gpuI,0,D->gpugK,1);
     }
   }
+*/
 #else
     check_cudnn(cudnnConvolutionBackwardFilter(hdnn[device], &alpha,
                                                D->xDesc, D->I->ptr,
@@ -537,6 +569,7 @@ void gpu_conv2DT_back(ConvolDescriptorT *D){
     int device=D->I->gpu_device;
     cudaSetDevice(device);
 #ifndef cCUDNN
+/*
     int osize=D->z*D->r*D->c;
   int isize=D->kz*D->kr*D->kc*D->r*D->c;
   D->gpuK->ptr=D->K->ptr;
@@ -568,6 +601,7 @@ void gpu_conv2DT_back(ConvolDescriptorT *D){
       gpu_im2col(D,1);
     }
   }
+*/
 #else
     float alpha = 1.0f;
     float beta = 0.0f;
