@@ -961,6 +961,28 @@ namespace eddl {
                  int groups = 1, const vector<int> &dilation_rate = {1, 1, 1}, string name = "");
 
     /**
+   *  @brief Transposed convolution layer (sometimes called Deconvolution).
+   *
+   *  @details
+   *   The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.
+   *
+   *  @param parent  Parent layer
+   *  @param filters  The dimensionality of the output space (i.e. the number of output filters in the convolution)
+   *  @param kernel_size  The height and width of the 2D convolution window
+   *  @param output_padding  The amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension
+   *  @param padding  One of "valid" or "same"
+   *  @param dilation_rate  The dilation rate to use for dilated convolution. Spacing between kernel elements
+   *  @param strides  The strides of the convolution along the height and width
+   *  @param use_bias  Boolean, whether the layer uses a bias vector
+   *  @param name  A name for the operation
+   *  @return     Output layer after upsampling operation
+ */
+
+  layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
+                 const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+                 int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    /**
       *  @brief Pointwise 2D convolution
       *
       *  @param parent  Parent layer
@@ -1068,33 +1090,6 @@ namespace eddl {
       *  @return     Output of reshape operation
     */
     layer Unsqueeze(layer parent, int axis=0, string name = "");
-
-    /**
-      *  @brief Transposed convolution layer (sometimes called Deconvolution).
-      *
-      *  @details
-      *   The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.
-      *
-      *  @param parent  Parent layer
-      *  @param filters  The dimensionality of the output space (i.e. the number of output filters in the convolution)
-      *  @param kernel_size  The height and width of the 2D convolution window
-      *  @param output_padding  The amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension
-      *  @param padding  One of "valid" or "same"
-      *  @param dilation_rate  The dilation rate to use for dilated convolution. Spacing between kernel elements
-      *  @param strides  The strides of the convolution along the height and width
-      *  @param use_bias  Boolean, whether the layer uses a bias vector
-      *  @param name  A name for the operation
-      *  @return     Output layer after upsampling operation
-    */
-    layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
-                const vector<int> &output_padding, string padding = "same",
-                const vector<int> &dilation_rate = {1, 1},
-                const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
-    // Legacy
-    layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
-                  const vector<int> &output_padding, string padding = "same",
-                  const vector<int> &dilation_rate = {1, 1},
-                  const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
 
     /**
       *  @brief Turns positive integers (indexes) into dense vectors of fixed size. eg. [[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]

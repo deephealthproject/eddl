@@ -183,7 +183,6 @@ public:
 
     ConvolDescriptorT *cd;
 
-
     // constructors and clones
     LConvT(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
           int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
