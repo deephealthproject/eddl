@@ -1433,7 +1433,7 @@ namespace eddl {
       *   It takes a list of layers as input and returns a single tensor that is the concatenation of all the input layers.
       *
       *  @param layers  List of layers
-      *  @param axis  Axis along which to concatenate
+      *  @param axis  Axis along which to concatenate (batch is not ignored)
       *  @param name  A name for the operation
       *  @return     Output of concatenation operation with all input layers
     */
@@ -1738,6 +1738,17 @@ namespace eddl {
       *  @return     The permuted tensor.
     */
     layer Permute(layer l, vector<int> dims, string name="");
+
+    /**
+      *  @brief Split a tensor (layer) into a list of tensors (layers)
+      *
+      *  @param l  Parent layer
+      *  @param indexes  Split indexes ({20, 60} => {0:20, 20:60, 60:end})
+      *  @param axis  Which axis to split on (default=-1, last)
+      *  @param name  A name for the operation
+      *  @return     Vector of layers
+    */
+    vlayer Split(layer l, vector<int> indexes, int axis=-1, string name="");
 
     // Reduction Layers
 

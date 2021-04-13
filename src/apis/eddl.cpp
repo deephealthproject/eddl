@@ -1021,6 +1021,62 @@ namespace eddl {
     return new LPermute(l, dims, name, DEV_CPU, 0);
   }
 
+    vlayer Split(layer l, vector<int> indexes, int axis, string name){
+        vlayer vl;
+
+        // Normalize axis
+        if(axis==-1){
+            axis = l->output->ndim - 1;
+        }else if(axis>=0){
+            axis += 1;
+        }
+
+        // Check axis
+        if(axis<0){
+            msg("Axis must be equal or greater than zero, with the exception of '-1' to select the last axis. (Batch dim is ignored)", "layer::Split");
+        }else if(axis>l->output->ndim-1){
+            msg("Axis must be smaller than the number of dimensions. (Batch dim is ignored)", "layer::Split");
+        }
+
+        // Check indexes values
+        if(indexes.size()==0) {
+            msg("The indexes param can't be empty", "layer::Split");
+        }else if(indexes.size() > l->output->shape[axis]) {
+            msg("There can't be more indexes than values", "layer::Split");
+        }
+        for(auto &idx : indexes){
+            if(idx <= 0){
+                msg("Indexes can't be zero or less", "layer::Split");
+            }else if(idx > l->output->shape[axis]){
+                msg("Indexes greater than dimension size", "layer::Split");
+            }
+        }
+
+        // Build ranges
+        // g.g.: axis=2 => [{":", ":", "0:40", ":"}, {":", ":", "40:60", ":"},...]
+        string last_idx = "0";
+        for(int i=0; i<=indexes.size(); i++){ // [{}, {} ,...]; extra dim to "end"
+
+            vector<string> sel_rngs;
+            for(int j=1; j<l->output->ndim;j++){ // {}; 0=batch, ignore
+                if(j==axis){
+                    if (i==indexes.size()){ // last selection, to close
+                        sel_rngs.push_back(last_idx + ":");
+                    }else{  // From 0 to n-2
+                        sel_rngs.push_back(last_idx + ":" + to_string(indexes[i]));
+                        last_idx = to_string(indexes[i]);
+                    }
+                }else{
+                    sel_rngs.push_back(":");
+                }
+            }
+
+            vl.push_back(Select(l, sel_rngs, "split_"+ to_string(i+1)));
+        }
+
+        return vl;
+    }
+
   // Reduction Layers
   layer ReduceMean(layer l, const vector<int> axis, bool keepdims){
     return new LRMean(l, axis, keepdims, "", DEV_CPU, 0);
