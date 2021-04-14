@@ -257,6 +257,7 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
                 nlayers[i].push_back(nin[i][j]);
             }
         }
+        
 
         // rest of layers
         for (j = 0; j < layers.size(); j++) {
@@ -293,8 +294,8 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
                 else {
                     vlayer par;
                     for (l = 0; l < layers[j]->parent.size(); l++) {
-                        if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
-                        else par.push_back(nlayers[i][ind]);
+                        if (isInorig(layers[j]->parent[l], nlayers[i], ind)) 
+                          par.push_back(nlayers[i][ind]);
                     }
 
                     if ((l == layers[j]->parent.size())||(layers[j]->isdecoder)) {
@@ -314,6 +315,17 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
 
                         }
                         else {
+                            int backi=i;
+                            while (par.size()<layers[j]->parent.size()) {
+                              for (l = 0; l < layers[j]->parent.size(); l++) {
+                               if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) 
+                                  if (isInorig(layers[j]->parent[l], nlayers[backi], ind)) {
+                                    par.push_back(nlayers[backi][ind]);
+                                  }
+                              }
+                              backi--;
+                             }
+                                
                             nlayers[i].push_back(layers[j]->share(i, batch_size, par));
                         }
                     }
