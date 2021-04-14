@@ -158,7 +158,15 @@ void gpu_conv2D(ConvolDescriptor *D) {
   cudaSetDevice(device);
 
 #ifndef cCUDNN
-#if 0
+  int osize=D->z*D->r*D->c;
+  int isize=D->kz*D->kr*D->kc*D->r*D->c;
+  D->gpuK->ptr=D->K->ptr;
+  D->gpuO->ptr=D->O->ptr;
+  D->gpuI->ptr=D->gpuIB->ptr;
+
+
+  if (D->mem_level>1) {
+#if 1
     int output_size = D->nk * D->r * D->c;
     int nb = output_size / low_mem_block_size;
     if (output_size % low_mem_block_size) nb++;
@@ -171,18 +179,11 @@ void gpu_conv2D(ConvolDescriptor *D) {
         1, D->sr, D->sc);
     check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv3D");
 #else
-  int osize=D->z*D->r*D->c;
-  int isize=D->kz*D->kr*D->kc*D->r*D->c;
-  D->gpuK->ptr=D->K->ptr;
-  D->gpuO->ptr=D->O->ptr;
-  D->gpuI->ptr=D->gpuIB->ptr;
-
-
-  if (D->mem_level>1) {
     for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize) {
       gpu_im2col_low(D,0,b);
       gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
     }
+#endif
   }
   else {
 
@@ -200,7 +201,6 @@ void gpu_conv2D(ConvolDescriptor *D) {
     }
 
   }
-#endif
 #else
   // FWD environment
   float alpha = 1.0f;
@@ -247,10 +247,24 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
   D->gpuI->ptr=D->gpuIB->ptr;
 
   if (D->mem_level>1) {
+#if 1
+    int kernel_size = D->nk * D->iz * D->kr * D->kc;
+    int nb = kernel_size / low_mem_block_size;
+    if (kernel_size % low_mem_block_size) nb++;
+    dim3 grid(nb, D->I->shape[0]);
+    gpu_low_mem_conv2D_grad<<<grid, low_mem_block_size>>>(D->I->shape[0],
+        D->iz, D->ir, D->ic, D->I->ptr,
+        D->nk, D->kr, D->kc, D->gK->ptr,
+        D->r, D->c, D->D->ptr,
+        D->padrt, D->padcl,
+        D->sr, D->sc);
+    check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv2D_grad");
+#else
     for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize){
       gpu_im2col_low(D,0,b);
       gpu_mult2D(D->gpuD,0,D->gpuI,0,D->gpugK,1);
     }
+#endif
   }
   else {
     if (D->mem_level==0) {
@@ -301,6 +315,14 @@ void gpu_conv2D_back(ConvolDescriptor *D){
   int device=D->I->gpu_device;
   cudaSetDevice(device);
 #ifndef cCUDNN
+  int osize=D->z*D->r*D->c;
+  int isize=D->kz*D->kr*D->kc*D->r*D->c;
+  D->gpuK->ptr=D->K->ptr;
+  D->gpuD->ptr=D->D->ptr;
+  D->gpuI->ptr=D->gpuIB->ptr;
+
+
+  if (D->mem_level>1) {
 #if 1
     int image_size = D->iz * D->r * D->c;
     int nb = image_size / low_mem_block_size;
@@ -314,18 +336,11 @@ void gpu_conv2D_back(ConvolDescriptor *D){
         D->sr, D->sc);
     check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv2D_back");
 #else
-  int osize=D->z*D->r*D->c;
-  int isize=D->kz*D->kr*D->kc*D->r*D->c;
-  D->gpuK->ptr=D->K->ptr;
-  D->gpuD->ptr=D->D->ptr;
-  D->gpuI->ptr=D->gpuIB->ptr;
-
-
-  if (D->mem_level>1) {
     for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize) {
         gpu_mult2D(D->gpuD, 1, D->gpuK, 0, D->gpuI, 0);
         gpu_im2col_low(D,1,b);
     }
+#endif
   }
   else {
     if (D->mem_level==0) {
@@ -345,7 +360,6 @@ void gpu_conv2D_back(ConvolDescriptor *D){
       gpu_im2col(D,1);
     }
   }
-#endif
 #else
     float alpha = 1.0f;
     float beta = 0.0f;

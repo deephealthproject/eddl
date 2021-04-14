@@ -199,6 +199,43 @@ __global__ void gpu_low_mem_conv3D(int batch_size,
     output[(((b * num_kernels + nk) * out_depth + k) * out_rows + i) * out_cols + j] = s;
 }
 
+__global__ void gpu_low_mem_conv2D_grad(int batch_size,
+        int channels, int image_rows, int image_cols, const float *image,
+        int num_kernels, int kernel_rows, int kernel_cols, float *kernel,
+        int out_rows, int out_cols, const float *delta,
+        int pad_row, int pad_col,
+        int stride_rows, int stride_cols)
+{
+    // for (int b = 0; b < batch_size; b++) {
+    int b = blockIdx.y;
+    /* for (int nk = 0; nk < num_kernels; nk++)
+    for (int c = 0; c < channels; c++)
+    for (int x = 0; x < kernel_rows; x++)
+    for (int y = 0; y < kernel_cols; y++) { */
+    int nk = blockIdx.x * low_mem_block_size + threadIdx.x;
+    int kernel_size = num_kernels * channels * kernel_rows * kernel_cols;
+    if (nk >= kernel_size) return;
+    int y = nk % kernel_cols; nk /= kernel_cols;
+    int x = nk % kernel_rows; nk /= kernel_rows;
+    int c = nk % channels; nk /= channels;
+
+    float s = 0.0;
+    for (int i = 0; i < out_rows; i++) {
+        int px = i * stride_rows - pad_row + x;
+        if (px < 0) continue;
+        if (px >= image_rows) continue;
+        for (int j = 0; j < out_cols; j++) {
+            int py = j * stride_cols - pad_col + y;
+            if (py < 0) continue;
+            if (py >= image_cols) continue;
+            s += image[((b * channels + c) * image_rows + px) * image_cols + py] *
+                delta[((b * num_kernels + nk) * out_rows + i) * out_cols + j];
+        }
+    }
+    // kernel[(((nk * channels + c) * kernel_rows + x) * kernel_cols) + y] = s;
+    atomicAdd(kernel + blockIdx.x * low_mem_block_size + threadIdx.x, s);
+}
+
 __global__ void gpu_low_mem_conv2D_back(int batch_size,
         int channels, int image_rows, int image_cols, float *image,
         int num_kernels, int kernel_rows, int kernel_cols, const float *kernel,
@@ -225,11 +262,11 @@ __global__ void gpu_low_mem_conv2D_back(int batch_size,
             int py = j * stride_cols - pad_col + y;
             if (py < 0) continue;
             if (py >= image_cols) continue;
-            double a = 0.0;
+            float s = 0.0;
             for (int nk = 0; nk < num_kernels; nk++)
-                a += delta[((b * num_kernels + nk) * out_rows + i) * out_cols + j]
+                s += delta[((b * num_kernels + nk) * out_rows + i) * out_cols + j]
                    * kernel[((nk * channels + c) * kernel_rows + x) * kernel_cols + y];
-            atomicAdd(image + ((b * channels + c) * image_rows + px) * image_cols + py, a);
+            atomicAdd(image + ((b * channels + c) * image_rows + px) * image_cols + py, s);
         }
     }
 }
