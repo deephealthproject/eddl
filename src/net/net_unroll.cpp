@@ -324,6 +324,8 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
                                   }
                               }
                               backi--;
+                              if (backi<0) 
+                                msg("Unexpected error","unroll");
                              }
                                 
                             nlayers[i].push_back(layers[j]->share(i, batch_size, par));
