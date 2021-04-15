@@ -146,6 +146,21 @@ Example:
    l = Slice(l, {"-1", "20:100", "50:-10", ":"});
 
 
+Expand
+---------------
+
+Returns a layer with singleton dimensions expanded to a larger size.
+
+.. doxygenfunction:: eddl::Expand(layer l, int size, string name="")
+
+
+Example:
+
+.. code-block:: c++
+
+    // {3, 1, 5, 1, 5} and size=100 => {3, 100, 5, 100, 5}
+   l = Expand(l, 100);
+
 Split
 ---------------
 
