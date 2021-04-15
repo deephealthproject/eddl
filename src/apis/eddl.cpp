@@ -736,8 +736,8 @@ namespace eddl {
     return new LRotate(parent, angle, offset_center, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
   }
 
-  layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name){
-    return new LScale(parent, new_shape, reshape, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
+  layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
+    return new LScale(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
   }
 
   layer Flip(layer parent, int axis, string name){
@@ -791,8 +791,8 @@ namespace eddl {
     return new LRotateRandom(parent, factor, offset_center, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
   }
 
-  layer RandomScale(layer parent, vector<float> factor, string da_mode, float constant, string name){
-    return new LScaleRandom(parent, factor, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
+  layer RandomScale(layer parent, vector<float> factor, string da_mode, float constant, string coordinate_transformation_mode, string name){
+    return new LScaleRandom(parent, factor, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
   }
 
   layer RandomFlip(layer parent, int axis, string name){
