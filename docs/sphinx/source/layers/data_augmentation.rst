@@ -2,32 +2,6 @@ Data augmentation
 =================
 
 These layers perform random transformations over the previous layer.
-Ranges are defined using relative coordinates between 0 and 1.
-
-.. note::
-
-    **Work in progress**. Not all transformation modes are implemented.
-
-    Currently implemented:
-
-    - ``constant``: The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter.
-    - ``original`` (for rotation): The input is extended by filling all values beyond the edge with the original values
-
-
-
-
-RandomAffine
--------------
-
-.. doxygenfunction:: RandomAffine
-
-.. note::
-
-    **Not implemented yet**
-
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-augmentations
-
-
 
 
 RandomCrop
@@ -132,7 +106,7 @@ Example:
 RandomScale
 --------------
 
-.. doxygenfunction:: RandomScale
+.. doxygenfunction::  RandomScale(layer parent, vector<float> factor, string da_mode = "nearest", float constant = 0.0f, string name = "")
 
 Example:
 

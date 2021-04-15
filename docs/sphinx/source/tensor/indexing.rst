@@ -165,7 +165,7 @@ Example:
 Expand
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::Expand(int size)
+.. doxygenfunction:: Tensor::expand(int size)
 
 Example:
 
