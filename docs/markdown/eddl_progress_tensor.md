@@ -180,9 +180,11 @@ Numpy-like operations over a raw-tensor object
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | select        | 🟢️   | 🟢️   | Returns an array with the selected indices. `Tensor::select(k); k=vector of strings ({"0", ":5", ":", "3:6"})`. _TODO: Accept masks_   |
 | set_select    | 🟢️   | 🟢️   | Sets the elements in the array using the selected indices        `Tensor::set_select({"0", ":5", ":", "3:6"}, k); //k=float or Tensor                           |
+| slice        | 🟢️   | 🟢️   | Alias for select  |
+| expand        | 🟢️   | 🟢️   | Returns a new tensor with singleton dimensions expanded to a larger size. |
 | index_select  | 🔴️   | 🔴️️   | Returns a new tensor which indexes the input tensor along dimension dim using the entries in index                          |
 | masked_select | 🔴️   | 🔴️️   | Returns a new 1-D tensor which indexes the input tensor according to the boolean mask                           |
-| take          | ⚫   | ⚫️   | Returns a new tensor with the elements of input at the given indices. The input tensor is treated as if it were viewed as a 1-D tensor.                          |
+| take          | 🔴️   | 🔴️️   | Returns a new tensor with the elements of input at the given indices. The input tensor is treated as if it were viewed as a 1-D tensor.                          |
 
 
 ## Input and output

@@ -25,9 +25,9 @@
 | :------ | :---------: | :----------: | :------- |
 | External dependencies | ✔️ |    ✔️     |          |
 | Build and optimization |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Build | ✔️ | ✔️ |    |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Backend support | ✔️ | ✔️ | FPGA support note: not yet implemented |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Additional flags | ✔️ |  ✔️ |   |
+| Build | ✔️ | ✔️ |    |
+| Backend support | ✔️ | ✔️ | FPGA support note: not yet implemented |
+| Additional flags | ✔️ |  ✔️ |   |
 
 
 ## Troubleshoot
