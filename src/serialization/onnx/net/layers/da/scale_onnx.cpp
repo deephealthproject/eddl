@@ -50,7 +50,7 @@ Layer* build_scale_layer(onnx::NodeProto *node,
 
       delete [] dim_scales;
 
-      return new LScale(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, node->name(), DEV_CPU, 0);
+      return new LScale(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, TransformationMode::HalfPixel, node->name(), DEV_CPU, 0);
 }
 
 // ONNX export

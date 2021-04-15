@@ -514,6 +514,22 @@ WrappingMode getWrappingMode(string mode){
     }
 }
 
+TransformationMode getTransformationMode(string mode){
+    if(mode == "half_pixel"){
+        return TransformationMode::HalfPixel;
+    }else if(mode == "pytorch_half_pixel"){
+        return TransformationMode::PytorchHalfPixel;
+    }else if(mode == "align_corners"){
+        return TransformationMode::AlignCorners;
+    }else if(mode == "asymmetric"){
+        return TransformationMode::Asymmetric;
+    }else if(mode == "tf_crop_and_resize"){
+        return TransformationMode::TFCropAndResize;
+    }else {  // constant
+        return TransformationMode::HalfPixel;
+    }
+}
+
 void show_deprecated_warning(const string& deprecated_name, const string& new_name, const string& type, const string& version){
     std::cerr << "[DEPRECATION WARNING]: The '" << deprecated_name << "' " << type << " will be deprecated in a " << version << " version";
     if (!new_name.empty()) { std::cerr << " in favor of '" << new_name << "'"; }

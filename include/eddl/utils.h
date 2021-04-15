@@ -70,6 +70,9 @@ string printVector(vector<T> myvector){
 enum WrappingMode {Constant=0, Reflect=1, Nearest=2, Mirror=3, Wrap=4, Original=5};
 WrappingMode getWrappingMode(string mode);
 
+enum TransformationMode {HalfPixel=0, PytorchHalfPixel=1, AlignCorners=2, Asymmetric=3, TFCropAndResize=4};
+TransformationMode getTransformationMode(string mode);
+
 void __show_profile();
 
 void show_deprecated_warning(const string& deprecated_name, const string& new_name="", const string& type="function", const string& version="future");

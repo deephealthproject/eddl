@@ -1221,12 +1221,12 @@ namespace eddl {
       *  @brief Pad the given image on all sides with the given `pad` value.
       *
       *  @param parent  Parent layer
-      *  @param padding  Padding on each border
+      *  @param padding  Padding on each border (top-bottom, left-right) or (top, right, bottom, left)
       *  @param constant  pads with a constant value
       *  @param name  A name for the operation
       *  @return     Padded image
     */
-    layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
+    layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name="");
 
     /**
       *  @brief Rotate the image by angle.
@@ -1248,9 +1248,10 @@ namespace eddl {
       *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
       *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
       *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively
+      *  @param coordinate_transformation_mode  This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
       *  @return     Output of scale transformation
     */
-    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string name="");
+    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string coordinate_transformation_mode="half_pixel", string name="");
 
     /**
       *  @brief Shift the input image `[a, b]`.
@@ -1433,7 +1434,7 @@ namespace eddl {
       *   It takes a list of layers as input and returns a single tensor that is the concatenation of all the input layers.
       *
       *  @param layers  List of layers
-      *  @param axis  Axis along which to concatenate
+      *  @param axis  Axis along which to concatenate (batch is not ignored)
       *  @param name  A name for the operation
       *  @return     Output of concatenation operation with all input layers
     */
@@ -1730,6 +1731,17 @@ namespace eddl {
     layer Select(layer l, vector<string> indices, string name="");
 
     /**
+      *  @brief Returns a new tensor which indexes the input tensor using the entries in indices.
+      *  Alias for Select
+      *
+      *  @param l  Parent layer
+      *  @param indices  Vector of indices to be selected
+      *  @param name  A name for the operation
+      *  @return     A tensor with the selected elements
+    */
+    layer Slice(layer l, vector<string> indices, string name="");
+
+    /**
       *  @brief Permutes the dimensions of the input according to a given pattern.
       *
       *  @param l  Parent layer
@@ -1738,6 +1750,17 @@ namespace eddl {
       *  @return     The permuted tensor.
     */
     layer Permute(layer l, vector<int> dims, string name="");
+
+    /**
+      *  @brief Split a tensor (layer) into a list of tensors (layers)
+      *
+      *  @param l  Parent layer
+      *  @param indexes  Split indexes ({20, 60} => {0:20, 20:60, 60:end})
+      *  @param axis  Which axis to split on (default=-1, last)
+      *  @param name  A name for the operation
+      *  @return     Vector of layers
+    */
+    vlayer Split(layer l, vector<int> indexes, int axis=-1, string name="");
 
     // Reduction Layers
 

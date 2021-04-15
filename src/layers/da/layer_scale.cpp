@@ -19,7 +19,7 @@ using namespace std;
 
 int LScale::total_layers = 0;
 
-LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
+LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, TransformationMode coordinate_transformation_mode, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "scale" + to_string(++total_layers);
 
     if (reshape){
@@ -33,6 +33,7 @@ LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode 
     this->reshape = reshape;
     this->cval = cval;
     this->da_mode = da_mode;
+    this->coordinate_transformation_mode = coordinate_transformation_mode;
 
     parent->addchild(this);
     addparent(parent);
@@ -41,7 +42,7 @@ LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode 
 
 
 void LScale::forward() {
-    Tensor::scale(this->input, this->output, this->new_shape, this->da_mode, this->cval);
+    Tensor::scale(this->input, this->output, this->new_shape, this->da_mode, this->cval, this->coordinate_transformation_mode);
 }
 
 void LScale::backward() {
@@ -50,14 +51,14 @@ void LScale::backward() {
 
 
 Layer *LScale::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->cval, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->cval, this->coordinate_transformation_mode, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LScale::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->cval,  name, todev, this->mem_level);
+    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->cval,  this->coordinate_transformation_mode, this->name, todev, this->mem_level);
     n->orig = this;
 
     return n;

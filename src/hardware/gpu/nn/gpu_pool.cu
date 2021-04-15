@@ -36,7 +36,7 @@ void gpu_mpool2D(PoolDescriptor *D){
     float beta=0.0;
     check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
                                     &alpha, D->xDesc, D->I->ptr,
-                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward MAX2D",__FILE__);
+                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward MAX2D",__FILE__,__LINE__);
 #endif
 }
 
@@ -55,7 +55,7 @@ void gpu_mpool2D_back(PoolDescriptor *D){
 
     check_cudnn(cudnnPoolingBackward(hdnn[device], D->poolingDesc, &alpha, D->yDesc, D->O->ptr,
                                      D->yDesc, D->D->ptr, D->xDesc, D->I->ptr,
-                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward MAX2D",__FILE__);
+                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward MAX2D",__FILE__,__LINE__);
 #endif
 }
 
@@ -69,7 +69,7 @@ int device=D->I->gpu_device;
     float beta=0.0;
     check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
                                     &alpha, D->xDesc, D->I->ptr,
-                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward MAX3D",__FILE__);
+                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward MAX3D",__FILE__,__LINE__);
 #endif
 
 }
@@ -84,7 +84,7 @@ int device=D->I->gpu_device;
 
     check_cudnn(cudnnPoolingBackward(hdnn[device], D->poolingDesc, &alpha, D->yDesc, D->O->ptr,
                                      D->yDesc, D->D->ptr, D->xDesc, D->I->ptr,
-                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward MAX3D",__FILE__);
+                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward MAX3D",__FILE__,__LINE__);
 #endif
 
 }
@@ -102,7 +102,7 @@ void gpu_avgpool2D(PoolDescriptor *D){
     float beta=0.0;
     check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
                                     &alpha, D->xDesc, D->I->ptr,
-                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward AVG2D",__FILE__);
+                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward AVG2D",__FILE__,__LINE__);
 
 #endif
 }
@@ -121,7 +121,7 @@ void gpu_avgpool2D_back(PoolDescriptor *D){
 
     check_cudnn(cudnnPoolingBackward(hdnn[device], D->poolingDesc, &alpha, D->yDesc, D->O->ptr,
                                      D->yDesc, D->D->ptr, D->xDesc, D->I->ptr,
-                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward AVG2D",__FILE__);
+                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward AVG2D",__FILE__,__LINE__);
 
 #endif
 }
@@ -136,7 +136,7 @@ int device=D->I->gpu_device;
     float beta=0.0;
     check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
                                     &alpha, D->xDesc, D->I->ptr,
-                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward AVG3D",__FILE__);
+                                    &beta, D->yDesc, D->O->ptr),"cudnnPoolingForward AVG3D",__FILE__,__LINE__);
 #endif
 
 }
@@ -151,7 +151,7 @@ int device=D->I->gpu_device;
 
     check_cudnn(cudnnPoolingBackward(hdnn[device], D->poolingDesc, &alpha, D->yDesc, D->O->ptr,
                                      D->yDesc, D->D->ptr, D->xDesc, D->I->ptr,
-                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward avg3D",__FILE__);
+                                     &beta, D->xDesc, D->ID->ptr),"cudnnPoolingBackward avg3D",__FILE__,__LINE__);
 #endif
 
 }

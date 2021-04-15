@@ -47,6 +47,7 @@ int main(int argc, char **argv){
     l = RandomHorizontalFlip(l);
     l = RandomCropScale(l, {0.8f, 1.0f});
     l = RandomCutout(l,{0.1,0.5},{0.1,0.5});
+//    l = Pad(l, {2, 2});
     ////
 
     l=MaxPool(ReLu(BatchNormalization(HeUniform(Conv(l,32,{3,3},{1,1},"same",false)))),{2,2});

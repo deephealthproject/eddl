@@ -358,7 +358,6 @@ namespace eddl {
   }
   vlayer forward(model net,vector<Layer*> in)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->reset();
     net->forward(in);
 
@@ -366,7 +365,6 @@ namespace eddl {
   }
   vlayer forward(model net,vector<Tensor*> in)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->reset();
     net->forward(in);
 
@@ -375,7 +373,6 @@ namespace eddl {
 
   vlayer forward(model net,int b)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->resize(b);
     net->reset();
     net->forward();
@@ -385,7 +382,6 @@ namespace eddl {
   }
   vlayer forward(model net)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->reset();
     net->forward();
 
@@ -740,8 +736,8 @@ namespace eddl {
     return new LRotate(parent, angle, offset_center, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
   }
 
-  layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name){
-    return new LScale(parent, new_shape, reshape, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
+  layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
+    return new LScale(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
   }
 
   layer Flip(layer parent, int axis, string name){
@@ -782,6 +778,10 @@ namespace eddl {
     return new LCutout(parent, from_coords, to_coords, constant, name, DEV_CPU, 0);
   }
 
+    layer Pad(layer parent, vector<int> pads, float constant, string name){
+        return new LPad(parent, pads, constant, name, DEV_CPU, 0);
+    }
+
   // Data augmentation Layers
   layer RandomShift(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name){
     return new LShiftRandom(parent, factor_x, factor_y, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
@@ -791,8 +791,8 @@ namespace eddl {
     return new LRotateRandom(parent, factor, offset_center, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
   }
 
-  layer RandomScale(layer parent, vector<float> factor, string da_mode, float constant, string name){
-    return new LScaleRandom(parent, factor, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
+  layer RandomScale(layer parent, vector<float> factor, string da_mode, float constant, string coordinate_transformation_mode, string name){
+    return new LScaleRandom(parent, factor, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
   }
 
   layer RandomFlip(layer parent, int axis, string name){
@@ -1017,9 +1017,69 @@ namespace eddl {
     return new LSelect(l, indices, name, DEV_CPU, 0);
   }
 
+    layer Slice(layer l, vector<string> indices, string name){
+        return new LSelect(l, indices, name, DEV_CPU, 0);
+    }
+
   layer Permute(layer l, vector<int> dims, string name){
     return new LPermute(l, dims, name, DEV_CPU, 0);
   }
+
+    vlayer Split(layer l, vector<int> indexes, int axis, string name){
+        vlayer vl;
+
+        // Normalize axis
+        if(axis==-1){
+            axis = l->output->ndim - 1;
+        }else if(axis>=0){
+            axis += 1;
+        }
+
+        // Check axis
+        if(axis<0){
+            msg("Axis must be equal or greater than zero, with the exception of '-1' to select the last axis. (Batch dim is ignored)", "layer::Split");
+        }else if(axis>l->output->ndim-1){
+            msg("Axis must be smaller than the number of dimensions. (Batch dim is ignored)", "layer::Split");
+        }
+
+        // Check indexes values
+        if(indexes.size()==0) {
+            msg("The indexes param can't be empty", "layer::Split");
+        }else if(indexes.size() > l->output->shape[axis]) {
+            msg("There can't be more indexes than values", "layer::Split");
+        }
+        for(auto &idx : indexes){
+            if(idx <= 0){
+                msg("Indexes can't be zero or less", "layer::Split");
+            }else if(idx > l->output->shape[axis]){
+                msg("Indexes greater than dimension size", "layer::Split");
+            }
+        }
+
+        // Build ranges
+        // g.g.: axis=2 => [{":", ":", "0:40", ":"}, {":", ":", "40:60", ":"},...]
+        string last_idx = "0";
+        for(int i=0; i<=indexes.size(); i++){ // [{}, {} ,...]; extra dim to "end"
+
+            vector<string> sel_rngs;
+            for(int j=1; j<l->output->ndim;j++){ // {}; 0=batch, ignore
+                if(j==axis){
+                    if (i==indexes.size()){ // last selection, to close
+                        sel_rngs.push_back(last_idx + ":");
+                    }else{  // From 0 to n-2
+                        sel_rngs.push_back(last_idx + ":" + to_string(indexes[i]));
+                        last_idx = to_string(indexes[i]);
+                    }
+                }else{
+                    sel_rngs.push_back(":");
+                }
+            }
+
+            vl.push_back(Select(l, sel_rngs, "split_"+ to_string(i+1)));
+        }
+
+        return vl;
+    }
 
   // Reduction Layers
   layer ReduceMean(layer l, const vector<int> axis, bool keepdims){

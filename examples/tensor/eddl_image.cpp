@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
     // Downscale
     t2 = Tensor::zeros({1, 3, 100, 100});
-    Tensor::scale(t1, t2, {100, 100});
+    Tensor::scale(t1, t2, {100, 100}, WrappingMode::Constant, 0.0f, TransformationMode::HalfPixel);
     t1->set_select({":", ":", "100:200", "300:400"}, t2);  // "Paste" t2 in t1
     t2->save(output + "example_scale_resize.jpg");
     cout << "Image saved! (Scale resize)" << endl;
