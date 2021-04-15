@@ -61,15 +61,13 @@ ConvolDescriptor::~ConvolDescriptor(){
 #ifndef cCUDNN
     else if (O->isGPU()) {
 
-        if (mem_level>1) {
+        if (mem_level == 1) {
             // Lowering
             delete gpuIB;
-        }
-        else {
+        } else if (mem_level == 0) {
             // Big tensor with all the batch for lowering
             delete gpuIB;
-            if (mem_level==0)
-                delete gpuOB;
+            delete gpuOB;
         }
     }
 #endif
@@ -161,24 +159,24 @@ void ConvolDescriptor::build(Tensor *A) {
     gbias = new Tensor(vector<int>{nk}, I->device);
 
     if (I->isCPU()) {
-        // mem for ptr, lowering im2col
-        unsigned long int l_size =  (unsigned long)(A->shape[0] * r * c) * (unsigned long)(kr * kc * kz);
-        ptrI=get_fmem(l_size,"ConvolDescriptor::build");
-        matI=Eigen::Map<Eigen::MatrixXf>(ptrI, r*c,kz*kr*kc);
-	   _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
+        if (mem_level < 2) {
+            // mem for ptr, lowering im2col
+            unsigned long int l_size =  (unsigned long)(A->shape[0] * r * c) * (unsigned long)(kr * kc * kz);
+            ptrI=get_fmem(l_size,"ConvolDescriptor::build");
+            matI=Eigen::Map<Eigen::MatrixXf>(ptrI, r*c,kz*kr*kc);
+               _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
+        }
     }
 #ifdef cGPU
     else if (I->isGPU()) {
 #ifndef cCUDNN
-        if (mem_level>1) {
+        if (mem_level == 1) {
             // Lowering
             gpuIB=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
-        }
-        else {
+        } else if (mem_level== 0) {
             // Big tensor with all the batch for lowering
             gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
-            if (mem_level==0)
-                gpuOB=new Tensor(vector<int>{z,A->shape[0]*r*c}, I->device);
+            gpuOB=new Tensor(vector<int>{z,A->shape[0]*r*c}, I->device);
         }
 #endif
         // Tensor with variable shared ptr, delete create ptr
@@ -261,7 +259,7 @@ void ConvolDescriptor::resize(int b)
 #ifdef cGPU
     else if (I->isGPU()) {
 #ifndef cCUDNN
-      if (mem_level<2)
+      if (mem_level < 1)
             gpuIB->resize(b*r*c);
         if (mem_level==0) {
             delete gpuOB;

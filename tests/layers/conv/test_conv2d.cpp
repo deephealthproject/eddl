@@ -395,7 +395,7 @@ TEST(Conv2DTestSuite, conv2d_k3x3_s2x2_pad_same){
 #ifdef cGPU
 TEST(Conv2DTestSuite, conv2d_cpu_gpu){
     // Image
-    Tensor* t_cpu = Tensor::randu({1, 3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({1, 3, 1000, 500});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     vector<string> padding = {"valid", "same"};
@@ -409,18 +409,18 @@ TEST(Conv2DTestSuite, conv2d_cpu_gpu){
                     // CPU Operation
                     auto *cd_cpu = new ConvolDescriptor(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
                     cd_cpu->build(t_cpu);
-                    cd_cpu->K = Tensor::ones(cd_cpu->K->getShape());
+                    cd_cpu->K = Tensor::randu(cd_cpu->K->getShape());
                     cd_cpu->bias = Tensor::zeros(cd_cpu->bias->getShape());
                     cd_cpu->ID = Tensor::zeros(cd_cpu->I->getShape());
-                    cd_cpu->D = Tensor::ones(cd_cpu->O->getShape());
+                    cd_cpu->D = Tensor::randu(cd_cpu->O->getShape());
 
                     // GPU Operation
                     auto *cd_gpu = new ConvolDescriptor(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
                     cd_gpu->build(t_gpu);
-                    cd_gpu->K = Tensor::ones(cd_gpu->K->getShape(), t_gpu->device);
+                    cd_gpu->K = cd_cpu->K->clone(); cd_gpu->K->toGPU();
                     cd_gpu->bias = Tensor::zeros(cd_gpu->bias->getShape(), t_gpu->device);
                     cd_gpu->ID = Tensor::zeros(cd_gpu->I->getShape(), t_gpu->device);
-                    cd_gpu->D = Tensor::ones(cd_gpu->O->getShape(), t_gpu->device);
+                    cd_gpu->D = cd_cpu->D->clone(); cd_gpu->D->toGPU();
 
                     // Forward
                     tensorNN::Conv2D(cd_cpu);

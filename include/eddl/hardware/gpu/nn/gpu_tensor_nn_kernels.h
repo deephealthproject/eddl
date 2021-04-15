@@ -81,6 +81,10 @@ __global__ void gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *b
 __global__ void gpu_im2col_k(float* I, float *ptrI, int b,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int padrt,int padrb,int padcl,int padcr,int col2im);
 __global__ void gpu_im2col_k_low(float* I, int b, float *ptrI, int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int padrt,int padrb,int padcl,int padcr,int col2im);
 
+const int low_mem_block_size = 256;
+__global__ void gpu_low_mem_conv3D(int batch_size, int channels, int image_depth, int image_rows, int image_cols, const float *image, int num_kernels, int kernel_depth, int kernel_rows, int kernel_cols, const float *kernel, int out_depth, int out_rows, int out_cols, float *output, int pad_depth, int pad_row, int pad_col, int stride_depth, int stride_rows, int stride_cols);
+__global__ void gpu_low_mem_conv2D_grad(int batch_size, int channels, int image_rows, int image_cols, const float *image, int num_kernels, int kernel_rows, int kernel_cols, float *kernel, int out_rows, int out_cols, const float *delta, int pad_row, int pad_col, int stride_rows, int stride_cols);
+__global__ void gpu_low_mem_conv2D_back(int batch_size, int channels, int image_rows, int image_cols, float *image, int num_kernels, int kernel_rows, int kernel_cols, const float *kernel, int out_rows, int out_cols, const float *delta, int pad_row, int pad_col, int stride_rows, int stride_cols);
 
 // GPU: Pool
 // MaxPool
