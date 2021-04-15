@@ -61,20 +61,6 @@ Example:
 
 
 
-RandomGrayscale
-----------------
-
-.. doxygenfunction:: RandomGrayscale
-
-.. note::
-
-    **Not implemented yet**
-
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-augmentations
-
-
-
-
 RandomHorizontalFlip
 ---------------------
 
