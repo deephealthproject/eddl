@@ -92,9 +92,25 @@ void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new
 
         for(int Bi=0; Bi<B->shape[2];Bi++) {
             for(int Bj=0; Bj<B->shape[3];Bj++) {
+                    int Ai = (Bi + offsets[0]);
+                    int Aj = (Bj + offsets[1]);
 
-                    int Ai = ((Bi + offsets[0]) * A->shape[2]) / new_shape[0];
-                    int Aj = ((Bj + offsets[1]) * A->shape[3]) / new_shape[1];
+                    if (coordinate_transformation_mode==TransformationMode::HalfPixel) {
+                        float scale_y = (float) new_shape[0] / A->shape[2];
+                        float scale_x = (float) new_shape[1] / A->shape[3];
+                        Ai = ((float)Ai + 0.5f) / scale_y - 0.5f;
+                        Aj = ((float)Aj + 0.5f) / scale_x - 0.5f;
+                    } else if (coordinate_transformation_mode==TransformationMode::Asymmetric) {
+                        float scale_y = (float) new_shape[0] / A->shape[2];
+                        float scale_x = (float) new_shape[1] / A->shape[3];
+                        Ai = Ai / scale_y;
+                        Aj = Aj / scale_x;
+                    } else if (coordinate_transformation_mode==TransformationMode::AlignCorners) {
+                        Ai = Ai * (A->shape[2]-1) / (new_shape[0] - 1);
+                        Aj = Aj * (A->shape[3]-1) / (new_shape[3] - 1);
+                    }else {
+                        msg("coordinate_transformation_mode (" + to_string(coordinate_transformation_mode) + ") not implemented", "Tensor::cpu_single_scale");
+                    }
 
                     int B_pos = b * B->stride[0] + c * B->stride[1] + Bi * B->stride[2] + Bj * B->stride[3];
                     if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]) {
@@ -220,7 +236,7 @@ void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, f
     // A=5x5; B=5x5; new_size=10x10 => Zoom in window
 
     _profile(_CPU_SCALE, 0);
-    // Center crop (if the if the crop is smaller than B)
+    // Center crop (if the the crop is smaller than B)
     int offsets[2] = {0, 0};
     offsets[0] = (new_shape[0] - B->shape[2])/2.0f;
     offsets[1] = (new_shape[1] - B->shape[3])/2.0f;
