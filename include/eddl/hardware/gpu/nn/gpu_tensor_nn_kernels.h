@@ -106,6 +106,9 @@ __global__ void gpu_select_back_nn(float *A, float* B, long int size, int* indic
 __global__ void gpu_set_select_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
 __global__ void gpu_set_select_back_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
 
+__global__ void gpu_expand_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
+__global__ void gpu_expand_back_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
+
 // BN
 __global__ void bn_permute_channels_first(float *src, float *dest,int b,int z,int r,int c,long int size);
 __global__ void bn_permute_channels_last(float *src, float *dest,int b,int z,int r,int c,long int size);
