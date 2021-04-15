@@ -95,19 +95,22 @@ void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new
                     int Ai = (Bi + offsets[0]);
                     int Aj = (Bj + offsets[1]);
 
+                    // Select transformation mode: HalfPixel=0, PytorchHalfPixel=1, AlignCorners=2, Asymmetric=3, TFCropAndResize=4
                     if (coordinate_transformation_mode==TransformationMode::HalfPixel) {
                         float scale_y = (float) new_shape[0] / A->shape[2];
                         float scale_x = (float) new_shape[1] / A->shape[3];
                         Ai = ((float)Ai + 0.5f) / scale_y - 0.5f;
                         Aj = ((float)Aj + 0.5f) / scale_x - 0.5f;
+                    } else if (coordinate_transformation_mode==TransformationMode::AlignCorners) {
+                        float scale_y = (float)(new_shape[0]-1) / (A->shape[2] - 1);
+                        float scale_x = (float)(new_shape[1]-1) / (A->shape[3] - 1);
+                        Ai = Ai / scale_y;
+                        Aj = Aj / scale_x;
                     } else if (coordinate_transformation_mode==TransformationMode::Asymmetric) {
                         float scale_y = (float) new_shape[0] / A->shape[2];
                         float scale_x = (float) new_shape[1] / A->shape[3];
                         Ai = Ai / scale_y;
                         Aj = Aj / scale_x;
-                    } else if (coordinate_transformation_mode==TransformationMode::AlignCorners) {
-                        Ai = Ai * (A->shape[2]-1) / (new_shape[0] - 1);
-                        Aj = Aj * (A->shape[3]-1) / (new_shape[3] - 1);
                     }else {
                         msg("coordinate_transformation_mode (" + to_string(coordinate_transformation_mode) + ") not implemented", "Tensor::cpu_single_scale");
                     }

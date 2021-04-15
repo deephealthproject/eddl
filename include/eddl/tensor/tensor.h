@@ -2024,7 +2024,7 @@ public:
     *        - ``TransformationMode::TFCropAndResize``: x_original = length_resized > 1 ? start_x * (length_original - 1) + x_resized * (end_x - start_x) * (length_original - 1) / (length_resized - 1) : 0.5 * (start_x + end_x) * (length_original - 1)
     *   @param keep_size Keep original size
     */
-    Tensor* scale(vector<int> new_shape, WrappingMode wrapping_mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::HalfPixel, bool keep_size=false);
+    Tensor* scale(vector<int> new_shape, WrappingMode wrapping_mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric, bool keep_size=false);
 
     /**
     *   @brief Scale the tensor. The array is scaled using spline interpolation.
@@ -2045,7 +2045,7 @@ public:
     *        - ``TransformationMode::Asymmetric``: x_original = x_resized / scale
     *        - ``TransformationMode::TFCropAndResize``: x_original = length_resized > 1 ? start_x * (length_original - 1) + x_resized * (end_x - start_x) * (length_original - 1) / (length_resized - 1) : 0.5 * (start_x + end_x) * (length_original - 1)
     */
-    static void scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::HalfPixel);
+    static void scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
 
     /**
     *   @brief Flip the tensor.

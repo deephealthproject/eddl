@@ -96,8 +96,28 @@ __device__ void gpu_single_scale(long int thread_id_x, float* A, float* B, int b
     //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
 
 
-    int Ai = ((Bi + offsets[0]) * irows) / new_shape[0];
-    int Aj = ((Bj + offsets[1]) * icols) / new_shape[1];
+    int Ai = (Bi + offsets[0]);
+    int Aj = (Bj + offsets[1]);
+
+    // Select transformation mode: HalfPixel=0, PytorchHalfPixel=1, AlignCorners=2, Asymmetric=3, TFCropAndResize=4
+    if (coordinate_transformation_mode==0) {
+        float scale_y = (float) new_shape[0] / irows;
+        float scale_x = (float) new_shape[1] / icols;
+        Ai = ((float)Ai + 0.5f) / scale_y - 0.5f;
+        Aj = ((float)Aj + 0.5f) / scale_x - 0.5f;
+    } else if (coordinate_transformation_mode==2) {
+        float scale_y = (float)(new_shape[0]-1) / (irows - 1);
+        float scale_x = (float)(new_shape[1]-1) / (icols - 1);
+        Ai = Ai / scale_y;
+        Aj = Aj / scale_x;
+    } else if (coordinate_transformation_mode==3) {
+        float scale_y = (float) new_shape[0] / irows;
+        float scale_x = (float) new_shape[1] / icols;
+        Ai = Ai / scale_y;
+        Aj = Aj / scale_x;
+    }
+    // If the mode does not exists, must be catched before calling this function
+
 
     if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols) {
         int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];

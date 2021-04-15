@@ -135,6 +135,13 @@ void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode wra
         msg("Tensors in different devices", "Tensor::scale");
     }
 
+    // Check here if this transformation is implemented (in gpu could be tricky to show useful alerts)
+    if(coordinate_transformation_mode!=TransformationMode::HalfPixel &&
+       coordinate_transformation_mode!=TransformationMode::Asymmetric &&
+       coordinate_transformation_mode!=TransformationMode::AlignCorners){
+        msg("This transformation mode is not implemented (" + to_string(coordinate_transformation_mode) + ")", "Tensor::scale");
+    }
+
     PROFILING_HEADER_EXTERN(scale);
 
     if (A->isCPU()) {
@@ -538,6 +545,13 @@ void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMo
         msg("This method requires two 4D tensors", "Tensor::scale_random");
     } else if (A->device != B->device){
         msg("Tensors in different devices", "Tensor::scale_random");
+    }
+
+    // Check here if this transformation is implemented (in gpu could be tricky to show useful alerts)
+    if(coordinate_transformation_mode!=TransformationMode::HalfPixel &&
+       coordinate_transformation_mode!=TransformationMode::Asymmetric &&
+       coordinate_transformation_mode!=TransformationMode::AlignCorners){
+        msg("This transformation mode is not implemented (" + to_string(coordinate_transformation_mode) + ")", "Tensor::scale");
     }
 
     PROFILING_HEADER_EXTERN(scale_random);
