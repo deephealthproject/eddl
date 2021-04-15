@@ -20,7 +20,11 @@
 | Reshape   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | Returns a new layer with the same data and number of elements as input, but with the specified shape. |
 | Squeeze   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Returns a new layer with all the dimensions of input of size 1 removed. |
 | Unsqueeze | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Returns a new layer with a dimension of size one inserted at the specified position. |
+| Select        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Returns a new layer which indexes the input tensor using the entries in indices.|
+| Slice        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Returns a new layer which indexes the input tensor using the entries in indices. (alias for Select) |
 | Permute   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️  | Permutes the dimensions of the input according to a given pattern. |
+| Split        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Split a layer into a list of tensors layers |
+| Expand        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Returns a layer with singleton dimensions expanded to a larger size. |
 | Embedding | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Turns positive integers (indexes) into dense vectors of fixed size; (also known as mapping). e.g. `[[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]`|
 | Transpose | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Permute the last two dimensions |
 
@@ -33,9 +37,9 @@
 | Exponential   |  🟢️️ | 🟢️️ |🟢️️ | 🟢️️ (Custom Op) | Exponential (base e) activation function. |
 | HardSigmoid   |  🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Hard sigmoid activation function. |
 | LeakyReLu     |  🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Leaky version of a Rectified Linear Unit.  |
-| Linear |         🟢️️ | 🟢️️ |🟢️️ | 🟢️️ (Custom Op) | Linear (i.e. identity) activation function.  |
-| PReLU |          ⚫️️ | ⚫️ |⚫️ | ⚫️️ | Parametric Rectified Linear Unit.   |
-| ReLu |           🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Rectified Linear Unit. |
+| Linear        | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ (Custom Op) | Linear (i.e. identity) activation function.  |
+| PReLU         |  ⚫️️ | ⚫️ |⚫️ | ⚫️️ | Parametric Rectified Linear Unit.   |
+| ReLu          |  🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Rectified Linear Unit. |
 | Softmax       |  🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Softmax activation function. |
 | Selu          |  🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Scaled Exponential Linear Unit (SELU). |
 | Sigmoid        | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Sigmoid activation function. |
@@ -51,10 +55,10 @@
 | ------------- |------| -----| -----| ------|---------|
 | Conv1D            | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | 1D convolution. |
 | Conv2D            | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | 2D convolution. |
-| Conv3D            | 🔴 | 🔴️ |🟢️️ | 🔴️ | 3D convolution. |
+| Conv3D            |  ⚫️️ | ⚫️  |🟢️️ | 🟢️ | 3D convolution. |
 | Pointwise         | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | 2D pointwise convolution. |
-| DepthwiseConv2D   | 🔴️ | 🔴️ |🔴️ | 🔴️ | 2D depthsise convolution. |
-| TransposedConv2D  | 🔴️ | 🔴️ |🔴️ | 🔴️ | Transposed convolution |
+| DepthwiseConv2D   | 🔴️ | 🔴️  |🔴️ | 🔴️ | 2D depthsise convolution. |
+| TransposedConv2D  | ⚫️️ | ⚫️   |🟢️| 🔴️ | Transposed convolution |
 | UpSampling        | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]`. |
 
 
@@ -83,6 +87,7 @@ Deterministic transformations
 
 
 ### Data augmentations
+
 Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | cuDNN | ONNX | Comments |
@@ -91,7 +96,6 @@ Apply data transformations with random parametrization.
 | RandomCrop           | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Crop the given image at a random location with size `[height, width]`  |
 | RandomCropScale      | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size |
 | RandomCutout         | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range `[(min_x, max_x), (min_y, max_y)]`, where these are relative values |
-
 | RandomFlip           | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Flip the given image at `axis=n` randomly with a given probability. |
 | RandomGrayscale      | ⚫ | ⚫ | ⚫ | ⚫️ | Randomly convert image to grayscale with a probability of p (default 0.1). |
 | RandomHorizontalFlip | 🟢️️ | 🟢️️ | 🟢️️ | ⚫️ | Horizontally flip the given image randomly with a given probability. |
@@ -141,16 +145,16 @@ Apply data transformations with random parametrization.
 | ------------- |------| -----| -----| ------|---------|
 | MaxPool1D           | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D MaxPooling operation |
 | MaxPool2D           | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D MaxPooling operation |
-| MaxPool3D           | 🔴️ | 🔴️ | 🟢️️ | 🔴️️ | 3D MaxPooling operation |
+| MaxPool3D           | ⚫  |  ⚫ | 🟢️️ | 🟢️ | 3D MaxPooling operation |
 | AveragePool1D       | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D AveragePooling operation |
 | AveragePool2D       | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D AveragePooling operation |
-| AveragePool3D       | 🔴️ | 🔴️️ | 🟢️️ | 🟢️️️ | 3D AveragePooling operation |
+| AveragePool3D       | ⚫  |  ⚫ | 🟢️️ | 🟢️️️ | 3D AveragePooling operation |
 | GlobalMaxPool1D     | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D GlobalMaxPooling operation |
 | GlobalMaxPool2D     | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D GlobalMaxPooling operation |
-| GlobalMaxPool3D     | 🔴️ | 🔴️ | 🟢️️ | 🟢️️️ | 3D GlobalMaxPooling operation |
+| GlobalMaxPool3D     | ⚫  |  ⚫ | 🟢️️ | 🟢️️️ | 3D GlobalMaxPooling operation |
 | GlobalAveragePool1D | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D GlobalAveragePooling operation |
 | GlobalAveragePool2D | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D GlobalAveragePooling operation |
-| GlobalAveragePool3D | 🔴️ | 🔴️ | 🟢️️ | 🟢️️️ | 3D GlobalAveragePooling operation |
+| GlobalAveragePool3D | ⚫  |  ⚫  | 🟢️️ | 🟢️️️ | 3D GlobalAveragePooling operation |
 
 
 ## Operators layers
@@ -166,10 +170,6 @@ Apply data transformations with random parametrization.
 | Log10         | 🟢️️ | 🟢️️ |🟢️️ | ⚫ (Not in ONNX) | |
 | Mult          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
 | Pow           | 🔴️ | 🔴️ |🔴️ | 🔴️ | |
-| Expand        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | |
-| Select        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | |
-| Slice        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | |
-| Split        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | |
 | Sqrt          |  🟢️️| 🟢️️ |🟢️️ | 🟢️️ | |
 | Sub           | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
 
@@ -240,9 +240,9 @@ Apply data transformations with random parametrization.
 | CategoricalCrossEntropy | 🟢️️ | 🟢️️ | 🟢️️ |  |
 | BinaryCrossEntropy      | 🟢️️ | 🟢️️ | 🟢️️ |  |
 | MSE                     | 🟢️️ | 🟢️️ | 🟢️️ | Mean Squared Error |
-| MAE                     | 🔴️ | 🔴️ | 🔴️ | Mean Absolute Error  |
-| MRE                     | 🔴️ | 🔴️ | 🔴️ | Mean Relative Error |
-| MSLE                    | 🔴️ | 🔴️ | 🔴️ | Mean Squared Logarithmic Error |
+| MAE                     | ⚫️    | ⚫️️  | Mean Absolute Error  |
+| MRE                     | ⚫️    | ⚫️️  | Mean Relative Error |
+| MSLE                    | ⚫️    | ⚫️️  | Mean Squared Logarithmic Error |
 | Min                     | 🟢️️ | 🟢️️ | 🟢️️ | Minimum Error |
 | Hinge                   | ⚫ | ⚫ | ⚫ | Hinge Error |
 | Dice                    | 🟢️️ | 🟢️️   🟢️️  | Dice loss |
@@ -267,11 +267,11 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | cuDNN | Comments |
 | ------------- |------| -----| ------| ---------|
-| Adadelta |🔴 | 🔴 |🔴 | Adadelta optimizer. |
-| Adagrad  |🔴 | 🔴 |🔴 | Adagrad optimizer. |
+| Adadelta |⚫ |⚫ | ⚫ | Adadelta optimizer. |
+| Adagrad  |⚫ |⚫ | ⚫ | Adagrad optimizer. |
 | Adam     |🟢️️ | 🟢️️ |🟢️️ | Adam optimizer. |
-| Adamax   |🔴 | 🔴 |🔴 | Adamax optimizer from Adam paper's Section 7.  |
-| Nadam    |🔴 | 🔴 |🔴 | Nesterov Adam optimizer. |
+| Adamax   |⚫ |⚫ | ⚫ | Adamax optimizer from Adam paper's Section 7.  |
+| Nadam    |⚫ |⚫ | ⚫ | Nesterov Adam optimizer. |
 | RMSProp  |🟢️️ | 🟢️️ |🟢️️ | RMSProp optimizer.  |
 | SGD      |🟢️️ | 🟢️️ |🟢️️ | Stochastic gradient descent optimizer. |
 

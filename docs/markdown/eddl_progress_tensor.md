@@ -68,7 +68,7 @@ Numpy-like operations over a raw-tensor object
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
 | diag          | 🟢️   | 🟢️   |  Extract a diagonal or construct a diagonal array.        |
-| tri           | 🔴️   | 🔴️   | An array with ones at and below the given diagonal and zeros elsewhere.         |
+| tri           | ⚫️    | ⚫️️    | An array with ones at and below the given diagonal and zeros elsewhere.         |
 
 
 ## Array manipulation routines
@@ -128,7 +128,7 @@ Numpy-like operations over a raw-tensor object
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
 | tile          | ⚫️   | ⚫️   |  	Construct an array by repeating A the number of times given by reps.   |
-| repeat        | 🔴️   | 🔴️   |  Repeat elements of an array.  |
+| repeat        | ⚫️    | ⚫️️ ️   |  Repeat elements of an array.  |
 
 
 ### Adding and removing elements
@@ -171,7 +171,7 @@ Numpy-like operations over a raw-tensor object
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | nonzero       | 🟢️   | 🔴️   | Return the indices of the elements that are non-zero.                                      |
 | where         | 🟢️   | 🟢️   | Return elements, either from x or y, depending on condition.                                      |
-| mask_indices  | 🔴️   | 🔴️️   | Return the indices to access (n, n) arrays, given a masking function.                                     |
+| mask_indices  | ⚫️    | ⚫️️    | Return the indices to access (n, n) arrays, given a masking function.                                     |
 
 
 ### Indexing-like operations
@@ -180,11 +180,12 @@ Numpy-like operations over a raw-tensor object
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | select        | 🟢️   | 🟢️   | Returns an array with the selected indices. `Tensor::select(k); k=vector of strings ({"0", ":5", ":", "3:6"})`. _TODO: Accept masks_   |
 | set_select    | 🟢️   | 🟢️   | Sets the elements in the array using the selected indices        `Tensor::set_select({"0", ":5", ":", "3:6"}, k); //k=float or Tensor                           |
+| permute        | 🟢️   | 🟢️   | Permutation of tensor dimensions   |
 | slice        | 🟢️   | 🟢️   | Alias for select  |
 | expand        | 🟢️   | 🟢️   | Returns a new tensor with singleton dimensions expanded to a larger size. |
-| index_select  | 🔴️   | 🔴️️   | Returns a new tensor which indexes the input tensor along dimension dim using the entries in index                          |
-| masked_select | 🔴️   | 🔴️️   | Returns a new 1-D tensor which indexes the input tensor according to the boolean mask                           |
-| take          | 🔴️   | 🔴️️   | Returns a new tensor with the elements of input at the given indices. The input tensor is treated as if it were viewed as a 1-D tensor.                          |
+| index_select  | ⚫️    | ⚫️️ ️   | Returns a new tensor which indexes the input tensor along dimension dim using the entries in index                          |
+| masked_select | ⚫️    | ⚫️️ ️   | Returns a new 1-D tensor which indexes the input tensor according to the boolean mask                           |
+| take          | ⚫️    | ⚫️️ ️   | Returns a new tensor with the elements of input at the given indices. The input tensor is treated as if it were viewed as a 1-D tensor.                          |
 
 
 ## Input and output
@@ -209,10 +210,10 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| dot         | 🔴️    |  🔴️   |  Dot product of two arrays.                                                            |
-| inner       | 🔴️    |  🔴️   |    Inner product of two arrays.                                                          |
-| outer       | 🔴️    |  🔴️   |     Compute the outer product of two vectors.                                                         |
-| matmul      | 🔴️    |  🔴️   |           Matrix product of two arrays.                                                   |
+| dot         | ⚫️    | ⚫️️    |  Dot product of two arrays.                                                            |
+| inner       | ⚫️    | ⚫️️   |    Inner product of two arrays.                                                          |
+| outer       | ⚫️    | ⚫️️   |     Compute the outer product of two vectors.                                                         |
+| matmul      | ⚫️    | ⚫️️   |           Matrix product of two arrays.                                                   |
 | tensordot   | ⚫️    |  ⚫️   |     Compute tensor dot product along specified axes for arrays >= 1-D.                                                         |
 | interpolate | 🟢️    |  🟢️   |  Interpolate two tensors: `c*A + (1-c)*B` |
 

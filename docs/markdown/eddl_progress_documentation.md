@@ -104,8 +104,11 @@
 | Input   |     ✔️       |      ✔️       |          |
 | Droput  |     ✔️       |      ✔️       |          |
 | Select  |     ✔️       |      ✔️       |          |
+| Slice  |     ✔️       |      ✔️       |          |
 | Permute |     ✔️       |      ✔️       |          |
-| Transpose  |  ✔️       |      ✔️       |          |
+| Expand  |     ✔️       |      ✔️       |          |
+| Split  |     ✔️       |      ✔️       |          |
+| Transpose |  ✔️       |      ✔️       |          |
 
 ## Activations
 
