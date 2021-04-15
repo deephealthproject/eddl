@@ -1252,7 +1252,7 @@ namespace eddl {
       *  @param coordinate_transformation_mode  This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
       *  @return     Output of scale transformation
     */
-    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string coordinate_transformation_mode="half_pixel", string name="");
+    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string coordinate_transformation_mode="asymmetric", string name="");
 
     /**
       *  @brief Shift the input image `[a, b]`.
@@ -1378,9 +1378,10 @@ namespace eddl {
       *  @param factor  Vector of factor size range new shape
       *  @param da_mode  One of "nearest"
       *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @param coordinate_transformation_mode  This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
       *  @return     Output of scale transformation
     */
-    layer RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string name= "");
+    layer RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string coordinate_transformation_mode="asymmetric", string name= "");
 
     /**
       *  @brief Shift the input image randomly in range `[a, b]`.
