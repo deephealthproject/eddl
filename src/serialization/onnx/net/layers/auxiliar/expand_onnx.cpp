@@ -13,9 +13,9 @@ Layer* build_expand_layer(onnx::NodeProto *node,
 
   string shape_name = node->input(1);
   vector<float> *shape_values = &(map_init_values[shape_name]);
-  vector<int> shape(shape_values->begin(), shape_values->end());
 
-  return new LExpand(parent, shape, node->name(), dev, mem);
+  int size = 30; // "{5, 5, 1, 5, 1}" => "{5, 5, 30, 5, 30}"
+  return new LExpand(parent, size, node->name(), dev, mem);
 }
 
 // ONNX export
@@ -37,9 +37,9 @@ void build_expand_node(LExpand *layer, onnx::GraphProto *graph)
   onnx::TensorProto *shape_data = graph->add_initializer();
   shape_data->set_name(shape_name);
   shape_data->set_data_type(onnx::TensorProto::INT64);
-  shape_data->add_dims(layer->new_shape.size());
-  for (int i : layer->new_shape)
-      shape_data->add_int64_data(i);
+//  shape_data->add_dims(layer->new_shape.size());
+//  for (int i : layer->new_shape)
+//      shape_data->add_int64_data(i);
 
   // Set the name of the output of the node to link with other nodes
   node->add_output(layer->name);
