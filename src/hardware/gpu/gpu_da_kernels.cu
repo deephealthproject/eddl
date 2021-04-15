@@ -17,7 +17,7 @@
 
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
-__device__ void gpu_single_shift(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant){
+__device__ void gpu_single_shift(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int wrapping_mode, float constant){
     int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
     int *B_stride = A_stride;
 
@@ -36,18 +36,18 @@ __device__ void gpu_single_shift(long int thread_id_x, float* A, float* B, int b
         int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
         B[thread_id_x] = A[A_pos];
     }else{
-        if(mode==0){ // Constant
+        if(wrapping_mode==0){ // Constant
             B[thread_id_x] = constant;
-        }else if(mode == 5){  // Original
+        }else if(wrapping_mode == 5){  // Original
             B[thread_id_x] = A[thread_id_x];
         }else{
-            printf("Mode (%d) not implemented (%s)", mode, "Tensor::gpu_single_shift");
+            printf("wrapping_mode (%d) not implemented (%s)", wrapping_mode, "Tensor::gpu_single_shift");
         }
     }
 }
 
 
-__device__ void gpu_single_rotate(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant){
+__device__ void gpu_single_rotate(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int wrapping_mode, float constant){
     int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
     int *B_stride = A_stride;
 
@@ -68,18 +68,18 @@ __device__ void gpu_single_rotate(long int thread_id_x, float* A, float* B, int 
         int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
         B[thread_id_x] = A[A_pos];
     }else{
-        if(mode==0){ // Constant
+        if(wrapping_mode==0){ // Constant
             B[thread_id_x] = constant;
-        }else if(mode == 5){  // Original
+        }else if(wrapping_mode == 5){  // Original
             B[thread_id_x] = A[thread_id_x];
         }else{
-            printf("Mode (%d) not implemented (%s)\n", mode, "Tensor::gpu_single_rotate");
+            printf("wrapping_mode (%d) not implemented (%s)\n", wrapping_mode, "Tensor::gpu_single_rotate");
         }
     }
 }
 
 
-__device__ void gpu_single_scale(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int mode, float constant){
+__device__ void gpu_single_scale(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode){
     int offsets[2] = {0, 0};
     offsets[0] = (new_shape[0] - orows)/2.0f;
     offsets[1] = (new_shape[1] - ocols)/2.0f;
@@ -103,12 +103,12 @@ __device__ void gpu_single_scale(long int thread_id_x, float* A, float* B, int b
         int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
         B[thread_id_x] = A[A_pos];
     } else {
-        if(mode==0){ // Constant
+        if(wrapping_mode==0){ // Constant
             B[thread_id_x] = constant;
-        }else if(mode == 5){  // Original
+        }else if(wrapping_mode == 5){  // Original
             B[thread_id_x] = A[thread_id_x];
         }else{
-            printf("Mode (%d) not implemented (%s)", mode, "Tensor::gpu_single_scale");
+            printf("wrapping_mode (%d) not implemented (%s)", wrapping_mode, "Tensor::gpu_single_scale");
         }
     }
 }
@@ -162,7 +162,7 @@ __device__ void gpu_single_crop(long int thread_id_x, float* A, float* B, int ba
 }
 
 
-__device__ void gpu_single_crop_scale(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int mode, float constant){
+__device__ void gpu_single_crop_scale(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int wrapping_mode, float constant){
     int A_hc = coords_to[0]-coords_from[0]+1;
     int A_wc = coords_to[1]-coords_from[1]+1;
 
@@ -183,34 +183,34 @@ __device__ void gpu_single_crop_scale(long int thread_id_x, float* A, float* B, 
 }
 
 
-__global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant){
+__global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int wrapping_mode, float constant){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
-        gpu_single_shift(thread_id_x, A, B, batch, depth, irows, icols, shift, mode, constant);
+        gpu_single_shift(thread_id_x, A, B, batch, depth, irows, icols, shift, wrapping_mode, constant);
     }
 
 }
 
 
-__global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant){
+__global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int wrapping_mode, float constant){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
     // Not implemented
     if (thread_id_x < ops){
-        gpu_single_rotate(thread_id_x, A, B, batch, depth, irows, icols, angle_rad, center, mode, constant);
+        gpu_single_rotate(thread_id_x, A, B, batch, depth, irows, icols, angle_rad, center, wrapping_mode, constant);
     }
 }
 
 
-__global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int mode, float constant){
+__global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*orows*ocols;
 
     if (thread_id_x < ops){
-        gpu_single_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, new_shape, mode, constant);
+        gpu_single_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, new_shape, wrapping_mode, constant, coordinate_transformation_mode);
     }
 
 }
@@ -236,12 +236,12 @@ __global__ void crop(float* A, float* B, int batch, int depth, int irows, int ic
 }
 
 
-__global__ void crop_scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int mode, float constant){
+__global__ void crop_scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int wrapping_mode, float constant){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
-        gpu_single_crop_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, coords_from, coords_to, mode, constant);
+        gpu_single_crop_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, coords_from, coords_to, wrapping_mode, constant);
     }
 }
 
@@ -281,7 +281,7 @@ __global__ void gpu_pad_back(float* A, float* B, int batch, int depth, int irows
     }
 }
 
-__global__ void shift_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, int mode, float constant, float* rnd){
+__global__ void shift_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, int wrapping_mode, float constant, float* rnd){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
@@ -292,12 +292,12 @@ __global__ void shift_random(float* A, float* B, int batch, int depth, int irows
         int shift_x = (int)(icols * ((factor_x[1]-factor_x[0]) * rnd[b] + factor_x[0]));
         int shift[2] = {shift_y, shift_x};
 
-        gpu_single_shift(thread_id_x, A, B, batch, depth, irows, icols, shift, mode, constant);
+        gpu_single_shift(thread_id_x, A, B, batch, depth, irows, icols, shift, wrapping_mode, constant);
     }
 
 }
 
-__global__ void rotate_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor, int* center, int mode, float constant, float* rnd){
+__global__ void rotate_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor, int* center, int wrapping_mode, float constant, float* rnd){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
@@ -307,11 +307,11 @@ __global__ void rotate_random(float* A, float* B, int batch, int depth, int irow
         float angle = -1.0f * ((factor[1]-factor[0]) * rnd[b] + factor[0]);
         float angle_rad = (float)((-angle) * M_PI/180.0f);  // Convert to radians
 
-        gpu_single_rotate(thread_id_x, A, B, batch, depth, irows, icols, angle_rad, center, mode, constant);
+        gpu_single_rotate(thread_id_x, A, B, batch, depth, irows, icols, angle_rad, center, wrapping_mode, constant);
     }
 }
 
-__global__ void scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd){
+__global__ void scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int wrapping_mode, float constant, int coordinate_transformation_mode, float* rnd){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*orows*ocols;
 
@@ -323,7 +323,7 @@ __global__ void scale_random(float* A, float* B, int batch, int depth, int irows
         int new_shape_x = (int)(icols * scale);
         int new_shape[2] = {new_shape_y, new_shape_x};
 
-        gpu_single_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, new_shape, mode, constant);
+        gpu_single_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, new_shape, wrapping_mode, constant, coordinate_transformation_mode);
     }
 
 }
@@ -376,7 +376,7 @@ __global__ void crop_random(float* A, float* B, int batch, int depth, int irows,
 }
 
 
-__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd) {
+__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int wrapping_mode, float constant, float* rnd) {
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
@@ -399,7 +399,7 @@ __global__ void crop_scale_random(float* A, float* B, int batch, int depth, int 
         int coords_from[2] = {coords_from_y, coords_from_x};
         int coords_to[2] = {coords_to_y, coords_to_x};
 
-        gpu_single_crop_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, coords_from, coords_to, mode, constant);
+        gpu_single_crop_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, coords_from, coords_to, wrapping_mode, constant);
     }
 }
 

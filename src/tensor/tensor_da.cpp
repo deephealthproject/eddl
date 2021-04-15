@@ -107,7 +107,7 @@ void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center
     PROFILING_FOOTER(rotate);
 }
 
-Tensor* Tensor::scale(vector<int> new_shape, WrappingMode mode, float cval, bool keep_size) {
+Tensor* Tensor::scale(vector<int> new_shape, WrappingMode wrapping_mode, float cval, TransformationMode coordinate_transformation_mode, bool keep_size) {
     Tensor *t_new;
 
     if(keep_size){
@@ -117,11 +117,11 @@ Tensor* Tensor::scale(vector<int> new_shape, WrappingMode mode, float cval, bool
         int width = new_shape[1];
         t_new = Tensor::empty({this->shape[0], this->shape[1], height, width});
     }
-    Tensor::scale(this, t_new, new_shape, mode, cval);
+    Tensor::scale(this, t_new, new_shape, wrapping_mode, cval, coordinate_transformation_mode);
     return t_new;
 }
 
-void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode, float cval) {
+void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode wrapping_mode, float cval, TransformationMode coordinate_transformation_mode) {
     // new_shape => {y, x}
     // Parameter check
     if(new_shape[0] <= 0 || new_shape[1] <= 0){
@@ -138,12 +138,12 @@ void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mod
     PROFILING_HEADER_EXTERN(scale);
 
     if (A->isCPU()) {
-        cpu_scale(A, B, std::move(new_shape), mode, cval);
+        cpu_scale(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_scale(A, B, std::move(new_shape), mode, cval);
+        gpu_scale(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
       }
 #endif
 #ifdef cFPGA
@@ -519,15 +519,15 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
     PROFILING_FOOTER(rotate_random);
 }
 
-Tensor* Tensor::scale_random(vector<float> factor, WrappingMode mode, float cval){
+Tensor* Tensor::scale_random(vector<float> factor, WrappingMode mode, float cval, TransformationMode coordinate_transformation_mode){
     // We don't accept keep_size!
 
     Tensor *t_new = Tensor::empty_like(this);
-    Tensor::scale_random(this, t_new, factor, mode, cval);
+    Tensor::scale_random(this, t_new, factor, mode, cval, coordinate_transformation_mode);
     return t_new;
 }
 
-void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode, float cval) {
+void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode, float cval, TransformationMode coordinate_transformation_mode) {
     // Parameter check
     if(factor[0] < 0.0f || factor[1] < 0.0f){
         msg("The scaling factor must be a positive number", "Tensor::scale_random");
@@ -543,12 +543,12 @@ void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMo
     PROFILING_HEADER_EXTERN(scale_random);
 
     if (A->isCPU()) {
-        cpu_scale_random(A, B, std::move(factor), mode, cval);
+        cpu_scale_random(A, B, std::move(factor), mode, cval, coordinate_transformation_mode);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_scale_random(A, B, std::move(factor), mode, cval);
+        gpu_scale_random(A, B, std::move(factor), mode, cval, coordinate_transformation_mode);
       }
 #endif
 #ifdef cFPGA
