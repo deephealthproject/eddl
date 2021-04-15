@@ -89,8 +89,9 @@ public:
     bool reshape;
     WrappingMode da_mode;
     float cval;
+    TransformationMode coordinate_transformation_mode;
 
-    LScale(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, string name, int dev, int mem);
+    LScale(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, TransformationMode coordinate_transformation_modem, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -253,8 +254,9 @@ public:
     vector<float> factor;
     WrappingMode da_mode;
     float cval;
+    TransformationMode coordinate_transformation_mode;
 
-    LScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_mode, float cval, string name, int dev, int mem);
+    LScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_mode, float cval, TransformationMode coordinate_transformation_mode, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
