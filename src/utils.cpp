@@ -438,7 +438,7 @@ vector<int> expand_shape(const vector<int>& ishape, int size){
 
     // Check if it can be expanded
     if(!willExpand){
-        msg("This tensor cannot be expanded. At least one dimension of size 1 is required.", "Tensor::expand");
+        std::cerr << "This tensor cannot be expanded. At least one dimension of size 1 is required. " << "(Tensor::expand)" << std::endl;
     }
 
     return new_shape;
