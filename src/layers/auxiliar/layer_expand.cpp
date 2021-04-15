@@ -26,11 +26,14 @@ LExpand::LExpand(Layer *parent, int size, string name, int dev, int mem) : LinLa
     input = parent->output;
 
     // Build descriptor
-    auto *sd = new ExpandDescriptor(size, input->device);
-    sd->build(input->shape);
+    vector<int> shape_no_batch(input->shape.begin()+1, input->shape.end());
+    sd = new ExpandDescriptor(size, dev);
+    sd->build(shape_no_batch);  // Ignore batch
 
-    // Initialize tensor
-    output = new Tensor(sd->oshape, input->device);
+    // Define output
+    vector<int> oshape(sd->oshape);
+    oshape.insert(oshape.begin() + 0, 1);
+    output=new Tensor(oshape, dev);
 
     parent->addchild(this);
     addparent(parent);
@@ -44,11 +47,11 @@ void LExpand::resize(int batch){
 
 
 void LExpand::forward() {
-    Tensor::expand(this->input, this->output, this->sd);
+    tensorNN::expand(this->input, this->output, this->sd);
 }
 
 void LExpand::backward() {
-    msg("NotImplementedError", "LExpand::backward");
+    tensorNN::expand_back(this->delta, this->parent[0]->delta, this->sd);
 }
 
 
