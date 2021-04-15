@@ -26,6 +26,7 @@
 #include "eddl/layers/layer.h"
 #include "eddl/layers/conv/layer_conv.h"
 #include "eddl/layers/core/layer_core.h"
+#include "eddl/layers/auxiliar/layer_auxiliar.h"
 #include "eddl/layers/da/layer_da.h"
 #include "eddl/layers/fused/layer_fused.h"
 #include "eddl/layers/generators/layer_generators.h"
@@ -1721,7 +1722,7 @@ namespace eddl {
     layer Sum(float k, layer l1);
 
     /**
-      *  @brief Returns a new tensor which indexes the input tensor using the entries in indices
+      *  @brief Returns a new layer which indexes the input tensor using the entries in indices
       *
       *  @param l  Parent layer
       *  @param indices  Vector of indices to be selected
@@ -1731,7 +1732,7 @@ namespace eddl {
     layer Select(layer l, vector<string> indices, string name="");
 
     /**
-      *  @brief Returns a new tensor which indexes the input tensor using the entries in indices.
+      *  @brief Returns a new layer which indexes the input tensor using the entries in indices. (alias for Select)
       *  Alias for Select
       *
       *  @param l  Parent layer
@@ -1740,6 +1741,15 @@ namespace eddl {
       *  @return     A tensor with the selected elements
     */
     layer Slice(layer l, vector<string> indices, string name="");
+
+    /**
+      *  @brief Returns a layer with singleton dimensions expanded to a larger size.
+      *  @param l  Parent layer
+      *  @param size  Size to which expand the singleton dimensions
+      *  @param name  A name for the operation
+      *  @return     A tensor with the selected elements
+    */
+        layer Expand(layer l, int size, string name="");
 
     /**
       *  @brief Permutes the dimensions of the input according to a given pattern.
@@ -1752,7 +1762,7 @@ namespace eddl {
     layer Permute(layer l, vector<int> dims, string name="");
 
     /**
-      *  @brief Split a tensor (layer) into a list of tensors (layers)
+      *  @brief Split a layer into a list of tensors layers
       *
       *  @param l  Parent layer
       *  @param indexes  Split indexes ({20, 60} => {0:20, 20:60, 60:end})
