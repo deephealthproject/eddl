@@ -422,6 +422,74 @@ int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges){
     return addresses;  // Be careful! It's easy to forget about this pointer and have a memory leak
 }
 
+vector<int> expand_shape(const vector<int>& ishape, int size){
+    vector<int> new_shape;
+
+    // Check if there are dimensions to expand
+    bool willExpand = false;
+    for(auto &d : ishape){
+        if (d!=1){
+            new_shape.push_back(d);
+        }else{
+            willExpand = true;
+            new_shape.push_back(size);
+        }
+    }
+
+    // Check if it can be expanded
+    if(!willExpand){
+        msg("This tensor cannot be expanded. At least one dimension of size 1 is required.", "Tensor::expand");
+    }
+
+    return new_shape;
+}
+
+int* expand_indices(const vector<int>& ishape, int size){
+    int* addresses = nullptr;
+    vector<int> oshape = expand_shape(ishape, size);
+
+    // Compute size
+    int isize = shape2size(ishape);
+    int osize = shape2size(oshape);
+
+    vector<int> istride = shape2stride(ishape);
+    vector<int> ostride = shape2stride(oshape);
+    addresses = new int[osize];
+
+    // For each output address (0,1,2,3,...n), compute its indices in input
+    // Then add the minimum of each range, and compute the raw address
+    for(int i=0; i<osize; i++) {
+
+        // Extract indices
+        int A_pos = 0;
+        int B_pos = 0;
+        for(int d=0; d<oshape.size(); d++){
+            // Compute output indices at dimension d
+            int B_idx = (i/ostride[d]) % oshape[d];  // (52 / 32) % 32=> [1, 20]
+            int A_idx;
+
+            // Translate to input
+            if (ishape[d]==1){ // Dimension to be expanded
+                A_idx = 0;
+            }else{
+                A_idx = B_idx;
+            }
+
+            // Compute partial pointers
+            A_pos += A_idx * istride[d];
+            B_pos += B_idx * ostride[d];
+        }
+
+        if(B_pos!=i){
+            int asd = 3;
+        }
+        // Save address translation
+        addresses[i] = A_pos;
+    }
+
+    return addresses;  // Be careful! It's easy to forget about this pointer and have a memory leak
+}
+
 bool is_number(const std::string& s){
     return !s.empty() && std::find_if(s.begin(), s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
 }

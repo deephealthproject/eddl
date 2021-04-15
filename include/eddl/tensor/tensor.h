@@ -2922,11 +2922,28 @@ public:
     static void gather(Tensor *A, Tensor *B, GatherDescriptor *sd);
 
     /**
-      *  @brief Broadcast the input tensor following the given shape and the broadcast rule.
+      *  @brief Returns a new tensor with singleton dimensions expanded to a larger size.
+      *
+      *  @param size number of times to expand axis of dimension 1
+      *  @return     void
+    */
+    Tensor* expand(int size);
+
+    /**
+      *  @brief Returns a new tensor with singleton dimensions expanded to a larger size.
       *
       *  @param A  the source tensor
-      *  @param axis  the axis along which to index
-      *  @param indices  the indices of elements to gather
+      *  @param size number of times to expand axis of dimension 1
+      *  @return     void
+    */
+    static Tensor* expand(Tensor *A, int size);
+
+    /**
+      *  @brief Returns a new tensor with singleton dimensions expanded to a larger size.
+      *
+      *  @param A  source tensor
+      *  @param B  output tensor
+      *  @param sd  Expand descriptor
       *  @return     void
     */
     static void expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);

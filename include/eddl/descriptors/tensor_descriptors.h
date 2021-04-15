@@ -86,9 +86,9 @@ public:
 
 class ExpandDescriptor : public SelDescriptor {
 public:
-    vector<int> dims;
+    int size;
 
-    ExpandDescriptor(const vector<int>& dims, int dev);
+    ExpandDescriptor(int size, int dev);
 
     void build(vector<int> ishape) override;
     void resize(int b) override;

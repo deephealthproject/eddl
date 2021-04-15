@@ -48,6 +48,9 @@ int* permute_indices(const vector<int>& ishape, const vector<int>& dims);
 
 int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges);
 
+vector<int> expand_shape(const vector<int>& ishape, int size);
+int* expand_indices(const vector<int>& ishape, int size);
+
 bool is_number(const std::string& s);
 
 bool pathExists(const std::string &s);
