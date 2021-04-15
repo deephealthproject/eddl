@@ -225,7 +225,7 @@ void cpu_low_mem_conv3D(int batch_size,
 
 void cpu_conv2D(ConvolDescriptor *D)
 {
-    if (1 /* D->mem_level == 2 */) cpu_low_mem_conv3D(D->I->shape[0],
+    if (D->mem_level > 1) cpu_low_mem_conv3D(D->I->shape[0],
         D->iz, 1, D->ir, D->ic, D->I->ptr,
         D->nk, 1, D->kr, D->kc, D->K->ptr,
         1, D->r, D->c, D->O->ptr,
@@ -288,7 +288,7 @@ void cpu_low_mem_conv2D_grad(int batch_size,
 
 void cpu_conv2D_grad(ConvolDescriptor *D)
 {
-    if (1 /* D->mem_level == 2 */) cpu_low_mem_conv2D_grad(D->I->shape[0],
+    if (D->mem_level > 1) cpu_low_mem_conv2D_grad(D->I->shape[0],
         D->iz, D->ir, D->ic, D->I->ptr,
         D->nk, D->kr, D->kc, D->gK->ptr,
         D->r, D->c, D->D->ptr,
@@ -341,7 +341,7 @@ void cpu_low_mem_conv2D_back(int batch_size,
 
 void cpu_conv2D_back(ConvolDescriptor *D)
 {
-    if (1 /* D->mem_level == 2 */) cpu_low_mem_conv2D_back(D->I->shape[0],
+    if (D->mem_level > 1) cpu_low_mem_conv2D_back(D->I->shape[0],
         D->iz, D->ir, D->ic, D->ID->ptr,
         D->nk, D->kr, D->kc, D->K->ptr,
         D->r, D->c, D->D->ptr,
