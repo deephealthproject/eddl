@@ -358,6 +358,13 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
         for (j = 0; j < nout[i].size(); j++)
             noutl.push_back(nout[i][j]);
 
+    if (!decoder_teacher_training) {
+      for (i = 0; i < outl-1; i++) {
+        noutl[i]->addchild(ninl[inl+i+1]);
+        ninl[inl+i+1]->addparent(noutl[i]);
+        }
+    }
+
     Net *rnet=new Net(ninl, noutl);
 
     rnet->din=din;
@@ -479,6 +486,13 @@ Net* Net::unroll_dec(int inl, int outl) {
     for (i = 0; i < outl; i++)
         for (j = 0; j < nout[i].size(); j++)
             noutl.push_back(nout[i][j]);
+
+    if (!decoder_teacher_training) {
+      for (i = 0; i < outl-1; i++) {
+        noutl[i]->addchild(ninl[inl+i+1]);
+        ninl[inl+i+1]->addparent(noutl[i]);
+        }
+    }
 
     Net *rnet=new Net(ninl, noutl);
 
