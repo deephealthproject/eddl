@@ -85,11 +85,14 @@ void ConvolDescriptorT3D::build(Tensor *A) {
 
     I = A;
 
-    nk = ksize[0];
-    kz = A->shape[1];
+    //nk = ksize[0];
+    nk = A->shape[1]; //ksize[0];
+    groups = nk;
+
     kd = ksize[1];
     kr = ksize[2];
     kc = ksize[3];
+    kz = A->shape[1]/groups;
 
     sd = stride[0];
     sr = stride[1];
@@ -229,7 +232,7 @@ void ConvolDescriptorT3D::build(Tensor *A) {
                                     strides,
                                     dilats,
                                     convolution_mode, data_type);
-
+   cudnnSetConvolutionGroupCount(convolution_descriptor, groups);
 
    cudnnCreateTensorDescriptor(&xDesc);
    int dims[5] = {in, iz, id, ir, ic};

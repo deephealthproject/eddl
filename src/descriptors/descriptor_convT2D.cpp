@@ -82,11 +82,12 @@ void ConvolDescriptorT2D::build(Tensor *A) {
     if (A->ndim != 4) msg("Tensors are not 4D", "ConvolDescriptorT2D::build");
 
     I = A;
-
-    nk = ksize[0];
+    
+    nk = A->shape[1]; //ksize[0];
+    groups = nk;
     kr = ksize[1];
     kc = ksize[2];
-    kz = A->shape[1];
+    kz = A->shape[1]/groups;
 
     sr = stride[0];
     sc = stride[1];
@@ -116,6 +117,7 @@ void ConvolDescriptorT2D::build(Tensor *A) {
         if (padding=="same,none") c = compute_output("none", ic, kc, sc);
         else if (padding=="none,same")  c = compute_output("same", ic, kc, sc);
         else c = compute_output(this->padding, ic, kc, sc);
+
 
         // Compute padding
         vector<int> padr = compute_padding(r, ir, kr, sr, this->padding,true);  // Order: [top, bottom]
@@ -208,22 +210,17 @@ void ConvolDescriptorT2D::build(Tensor *A) {
                                     stride[0], stride[1],
                                     1,1,
                                     convolution_mode, data_type);
-
+   cudnnSetConvolutionGroupCount(convolution_descriptor, groups);
 
    cudnnCreateTensorDescriptor(&xDesc);
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
                  in,iz,ir,ic);
-   //std::cout<<"xDesc Sizes:"<<in<<","<<iz<<","<<ir<<","<<ic<<std::endl;
    cudnnCreateFilterDescriptor(&wDesc);
-   //CONV
-   //cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
    //CONVT we need to swap input channels with output so all other swappings (forward and backward functions) matches
-   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, kz, nk, kr, kc);
-   //std::cout<<"wDesc ppSizes:"<<kz<<","<<nk<<","<<kr<<","<<kc<<std::endl;
+   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
 
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
-   //std::cout<<"yDesc Sizes:"<<in<<","<<z<<","<<r<<","<<c<<std::endl;
 
    cudnnCreateTensorDescriptor(&bDesc);
    cudnnSetTensor4dDescriptor(bDesc, tensor_format, data_type, 1, nk,1,1);
