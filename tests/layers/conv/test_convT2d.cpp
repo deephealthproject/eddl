@@ -63,7 +63,7 @@
 //    ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, cd->O, 1e-3f, 0.0f, true, true));
 //
 ////    // Backward
-////    tensorNN::Conv2DT_back(cd);
+////    tensorNN::ConvT2D_back(cd);
 //////    cd->ID->toCPU(); cd->ID->print(2, true);
 ////    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, cd->ID, 1e-3f, 0.0f, true, true));
 //}
@@ -101,14 +101,14 @@
 ////                    cd_gpu->D = Tensor::ones(cd_gpu->O->getShape(), t_gpu->device);
 ////
 ////                    // Forward
-////                    tensorNN::Conv2DT(cd_cpu);
-////                    tensorNN::Conv2DT(cd_gpu);
+////                    tensorNN::ConvT2D(cd_cpu);
+////                    tensorNN::ConvT2D(cd_gpu);
 ////                    Tensor *cd_gpu_O = cd_gpu->O->clone(); cd_gpu_O->toCPU();  // Tensor::equivalent is only for CPU (at the moment)
 ////                    bool test_fwrd = (bool) Tensor::equivalent(cd_cpu->O, cd_gpu_O, 1e-3f, 0.0f, true, true);
 ////
 ////                    // Backward
-////                    tensorNN::Conv2DT_back(cd_cpu);
-////                    tensorNN::Conv2DT_back(cd_gpu);
+////                    tensorNN::ConvT2D_back(cd_cpu);
+////                    tensorNN::ConvT2D_back(cd_gpu);
 ////                    Tensor *cd_gpu_ID = cd_gpu->ID->clone(); cd_gpu_ID->toCPU(); // Tensor::equivalent is only for CPU (at the moment)
 ////                    bool test_bwrd = (bool) Tensor::equivalent(cd_cpu->ID, cd_gpu_ID, 1e-3f, 0.0f, true, true);
 ////
