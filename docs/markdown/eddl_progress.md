@@ -58,7 +58,8 @@
 | Conv3D            |  ⚫️️ | ⚫️  |🟢️️ | 🟢️ | 3D convolution. |
 | Pointwise         | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | 2D pointwise convolution. |
 | DepthwiseConv2D   | 🔴️ | 🔴️  |🔴️ | 🔴️ | 2D depthsise convolution. |
-| TransposedConv2D  | ⚫️️ | ⚫️   |🟢️| 🔴️ | Transposed convolution |
+| TransposedConv2D  | ⚫️️ | ⚫️   |🟢️| 🟢️️ | Transposed convolution |
+| TransposedConv3D  | ⚫️️ | ⚫️   |🟢️| 🟢️ | Transposed convolution |
 | UpSampling        | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]`. |
 
 
@@ -169,7 +170,7 @@ Apply data transformations with random parametrization.
 | Log2          |  🟢️️| 🟢️️ |🟢️️ | ⚫ (Not in ONNX) | |
 | Log10         | 🟢️️ | 🟢️️ |🟢️️ | ⚫ (Not in ONNX) | |
 | Mult          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
-| Pow           | 🔴️ | 🔴️ |🔴️ | 🔴️ | |
+| Pow           | 🟢️️ | 🟢️️ |🟢️️ | 🟢 | |
 | Sqrt          |  🟢️️| 🟢️️ |🟢️️ | 🟢️️ | |
 | Sub           | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
 
