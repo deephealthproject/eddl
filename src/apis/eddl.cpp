@@ -656,8 +656,15 @@ namespace eddl {
     layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
                  const vector<int> &strides, string padding,  bool use_bias,
                  int groups, const vector<int> &dilation_rate,string name){
-      return new LConvT(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+      return new LConvT2D(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
+
+
+    layer ConvT3D(layer parent, int filters, const vector<int> &kernel_size,
+                  const vector<int> &strides, string padding,  bool use_bias,
+                  int groups, const vector<int> &dilation_rate,string name){
+      return new LConvT3D(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
 
   layer Dense(layer parent, int ndim, bool use_bias, string name){
     return new LDense(parent, ndim, use_bias, name, DEV_CPU, 0);
