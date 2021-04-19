@@ -17,22 +17,22 @@
 using namespace std;
 
 
-int LConvT::total_layers = 0;
+int LConvT3D::total_layers = 0;
 
 // constructors and clones
 
-LConvT::LConvT(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
-             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) :
-        LConvT(parent, new ConvolDescriptorT(filters, kernel_size, strides, padding, pads, groups, dilation_rate, use_bias, mem), name, dev, mem) {
+LConvT3D::LConvT3D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
+                   int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) :
+        LConvT3D(parent, new ConvolDescriptorT3D(filters, kernel_size, strides, padding, pads, groups, dilation_rate, use_bias, mem), name, dev, mem) {
 };
 
-LConvT::LConvT(Layer *parent, ConvolDescriptorT *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
-    if (parent->output->ndim != 4) msg("LConvT only works over 4D tensors", "LConvT::LConvT");
+LConvT3D::LConvT3D(Layer *parent, ConvolDescriptorT3D *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+    if (parent->output->ndim != 5) msg("LConvT only works over 5D tensors", "LConvT::LConvT3D");
 
     // Check dev with tensor dev
 
     // Set default name
-    if(name.empty()) this->name = "convT" + to_string(++total_layers);
+    if(name.empty()) this->name = "convT3d" + to_string(++total_layers);
 
     input = parent->output;
     cd = D;
@@ -55,16 +55,16 @@ LConvT::LConvT(Layer *parent, ConvolDescriptorT *D, string name, int dev, int me
 }
 
 
-LConvT::~LConvT(){
+LConvT3D::~LConvT3D(){
     delete cd;
 }
 
 // virtual
-void LConvT::resize(int batch){
+void LConvT3D::resize(int batch){
     cd->resize(batch);
 }
 
-void LConvT::mem_delta(){
+void LConvT3D::mem_delta(){
     if(this->delta == nullptr) {
         // Reserve parent's delta
         parent[0]->mem_delta();
@@ -79,45 +79,45 @@ void LConvT::mem_delta(){
     }
 }
 
-void LConvT::forward() {
-    tensorNN::Conv2DT(this->cd);
+void LConvT3D::forward() {
+    tensorNN::ConvT3D(this->cd);
 }
 
-void LConvT::backward() {
+void LConvT3D::backward() {
     //get gradients with provided delta
-    if (trainable) { tensorNN::Conv2DT_grad(this->cd); }
+    if (trainable) { tensorNN::ConvT3D_grad(this->cd); }
     //else {cout<<name<<" not trainable"<<endl;}
 
     // backprop delta
     if (this->parent.size()) {
-        tensorNN::Conv2DT_back(this->cd);
+        tensorNN::ConvT3D_back(this->cd);
     }
 
     // Regularizer
     if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}
 }
 
-void LConvT::initialize() {
+void LConvT3D::initialize() {
     init->apply(params[0]);  // Conv
     params[1]->fill_(0.0f); // Bias
 }
 
-void LConvT::update_weights(Tensor* w, Tensor* bias) {
+void LConvT3D::update_weights(Tensor* w, Tensor* bias) {
     Tensor::copy( w, cd->K );
     if ( bias != nullptr ) Tensor::copy( bias, cd->bias );
 }
 
-void LConvT::accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {
+void LConvT3D::accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {
     cd->K->add_( gw );
     if ( gbias != nullptr ) cd->bias->add_( gbias );
 }
 
-void LConvT::reset_accumulated_gradients() {
+void LConvT3D::reset_accumulated_gradients() {
     cd->acc_gK->fill_(0.0);
     cd->acc_gbias->fill_(0.0);
 }
 
-void LConvT::apply_accumulated_gradients() {
+void LConvT3D::apply_accumulated_gradients() {
     cd->K->add_( cd->acc_gK );
     cd->bias->add_( cd->acc_gbias );
 
@@ -125,8 +125,8 @@ void LConvT::apply_accumulated_gradients() {
     if(reg!= nullptr) {reg->apply(cd->K);}
 }
 
-Layer *LConvT::share(int c, int bs, vector<Layer *> p) {
-    LConvT *n = new LConvT(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias,  "share_"+to_string(c) + this->name, this->dev, this->mem_level);
+Layer *LConvT3D::share(int c, int bs, vector<Layer *> p) {
+    LConvT3D *n = new LConvT3D(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
 
     n->orig = this;
     n->isshared=true;
@@ -173,8 +173,8 @@ Layer *LConvT::share(int c, int bs, vector<Layer *> p) {
     return n;
 }
 
-Layer *LConvT::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LConvT *n = new LConvT(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias,  this->name, todev, this->mem_level);
+Layer *LConvT3D::clone(int c, int bs, vector<Layer *> p, int todev) {
+    LConvT3D *n = new LConvT3D(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias, this->name, todev, this->mem_level);
     n->trainable = trainable;
     n->do_deletes = false;
 
@@ -192,7 +192,7 @@ Layer *LConvT::clone(int c, int bs, vector<Layer *> p, int todev) {
 }
 
 
-string LConvT::plot(int c) {
+string LConvT3D::plot(int c) {
     string s;
 
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray,shape=box]";
@@ -201,11 +201,11 @@ string LConvT::plot(int c) {
     return s;
 }
 
-void LConvT::reset_name_counter() {
+void LConvT3D::reset_name_counter() {
     total_layers = 0;
 }
 
-void LConvT::enable_distributed() {
+void LConvT3D::enable_distributed() {
     distributed_training = true;
     cd->enable_distributed();
 
