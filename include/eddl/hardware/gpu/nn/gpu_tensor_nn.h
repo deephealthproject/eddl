@@ -90,10 +90,15 @@ void gpu_conv3D(ConvolDescriptor3D *D);
 void gpu_conv3D_grad(ConvolDescriptor3D *D);
 void gpu_conv3D_back(ConvolDescriptor3D *D);
 
-// Conv2DT
-void gpu_conv2DT(ConvolDescriptorT *D);
-void gpu_conv2DT_grad(ConvolDescriptorT *D);
-void gpu_conv2DT_back(ConvolDescriptorT *D);
+// ConvT3D
+void gpu_convT2D(ConvolDescriptorT2D *D);
+void gpu_convT2D_grad(ConvolDescriptorT2D *D);
+void gpu_convT2D_back(ConvolDescriptorT2D *D);
+
+// ConvT3D
+void gpu_convT3D(ConvolDescriptorT3D *D);
+void gpu_convT3D_grad(ConvolDescriptorT3D *D);
+void gpu_convT3D_back(ConvolDescriptorT3D *D);
 
 // MaxPool2D
 void gpu_mpool2D(PoolDescriptor *D);
