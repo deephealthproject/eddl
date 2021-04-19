@@ -64,11 +64,21 @@ Example:
     l = UpSampling2D(l, {2, 2});
     
 
-Convolutional Transpose
-------------------------
+2D Convolutional Transpose
+----------------------------
 
 .. doxygenfunction:: eddl::ConvT2D
 
-.. note::
+.. code-block:: c++
 
-    **Work in progress**. Not yet implemented.
+    l = ConvT2D(l, 32, {3, 3}, {1, 1}, "same");
+
+
+3D Convolutional Transpose
+----------------------------
+
+.. doxygenfunction:: eddl::ConvT3D
+
+.. code-block:: c++
+
+    l = ConvT3D(l, 32, {3, 3, 3}, {1, 1, 1}, "same");
