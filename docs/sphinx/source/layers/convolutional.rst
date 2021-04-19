@@ -31,9 +31,9 @@ Conv3D
 
 .. doxygenfunction:: eddl::Conv3D
 
-.. note::
+.. code-block:: c++
 
-    **Work in progress**. Not yet implemented.
+    l = Conv3D(l, 32, {3, 3, 3}, {1, 1, 1}, "same");
 
 
 Pointwise Convolution 2D
