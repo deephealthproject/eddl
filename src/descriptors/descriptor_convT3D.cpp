@@ -23,12 +23,13 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #endif
 
-ConvolDescriptorT::ConvolDescriptorT() {}
+ConvolDescriptorT3D::ConvolDescriptorT3D() {}
 
-ConvolDescriptorT::ConvolDescriptorT(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
-                 int groups, const vector<int> &dilation_rate, bool use_bias, int mem){
-    if (kernel_size.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptorT::ConvolDescriptorT"); }
-    if (strides.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptorT::ConvolDescriptorT"); }
+
+ConvolDescriptorT3D::ConvolDescriptorT3D(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
+                                         int groups, const vector<int> &dilation_rate, bool use_bias, int mem){
+    if (kernel_size.size() != 3) { msg("Kernels must have 4 dimensions", "ConvolDescriptorT3D::ConvolDescriptorT3D"); }
+    if (strides.size() != 3) { msg("Strides must have 3 dimensions", "ConvolDescriptorT3D::ConvolDescriptorT3D"); }
 
     // Store stuff
     this->filters = filters;
@@ -47,18 +48,19 @@ ConvolDescriptorT::ConvolDescriptorT(int filters, const vector<int> &kernel_size
     stride = vector<int>(strides);
 
     if (!(padding == "custom" || padding=="same" || padding =="none" || padding =="valid" || padding =="zeros" || padding=="same,none" || padding=="none,same")) {
-        msg("Incorrect padding type (" + padding + ")", "ConvolDescriptorT::ConvolDescriptorT");
+        msg("Incorrect padding type (" + padding + ")", "ConvolDescriptorT2D::ConvolDescriptorT2D");
     }
+
 }
 
-
-ConvolDescriptorT::~ConvolDescriptorT(){
+ConvolDescriptorT3D::~ConvolDescriptorT3D(){
     // input, output, delta, params[], and gradients[], acc_gradients[] => deleted in ~Layer()
     if (O->isCPU()) {
-        eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
+        eddl_free(ptrI);
     }
 #ifdef cGPU
 #ifndef cCUDNN
+
     else if (O->isGPU()) {
 
         if (mem_level>1) {
@@ -77,163 +79,183 @@ ConvolDescriptorT::~ConvolDescriptorT(){
 
 }
 
-void ConvolDescriptorT::build(Tensor *A) {
+void ConvolDescriptorT3D::build(Tensor *A) {
 
-    if (A->ndim != 4) msg("Tensors are not 4D", "ConvolDescriptorT::build");
+    if (A->ndim != 5) msg("Tensors are not 5D", "ConvolDescriptorT3D::build");
 
     I = A;
 
     nk = ksize[0];
-    kr = ksize[1];
-    kc = ksize[2];
     kz = A->shape[1];
+    kd = ksize[1];
+    kr = ksize[2];
+    kc = ksize[3];
 
-    sr = stride[0];
-    sc = stride[1];
+    sd = stride[0];
+    sr = stride[1];
+    sc = stride[2];
 
-    in = A->shape[0]; //batch size
     iz = A->shape[1];
-    ir = A->shape[2];
-    ic = A->shape[3];
+    id = A->shape[2];
+    ir = A->shape[3];
+    ic = A->shape[4];
 
     if(this->padding=="custom"){  // Known padding
         // Compute output
         z = nk;
-        vector<int>pr; pr.push_back(pads[0]);pr.push_back(pads[1]);
+
+        vector<int>pd; pd.push_back(pads[0]);pd.push_back(pads[1]);
+        d = compute_output(pd, id, kd, sd);
+
+        vector<int>pr; pr.push_back(pads[2]);pr.push_back(pads[3]);
         r = compute_output(pr, ir, kr, sr);
 
-        vector<int>pc; pc.push_back(pads[2]);pc.push_back(pads[3]);
+        vector<int>pc; pc.push_back(pads[4]);pc.push_back(pads[5]);
         c = compute_output(pc, ic, kc, sc);
 
     }else{  // Common padding (same/zeros)
         // Compute output
+
+        // Channels
         z = nk;
 
+        // Depth
+        if (padding=="same,none") d = compute_output("same", id, kd, sd);
+        else if (padding=="none,same")  d = compute_output("none", id, kd, sd);
+        else d = compute_output(this->padding, id, kd, sd);
+
+        // Rows
         if (padding=="same,none") r = compute_output("same", ir, kr, sr);
         else if (padding=="none,same")  r = compute_output("none", ir, kr, sr);
         else r = compute_output(this->padding, ir, kr, sr);
 
+        // Cols
         if (padding=="same,none") c = compute_output("none", ic, kc, sc);
         else if (padding=="none,same")  c = compute_output("same", ic, kc, sc);
         else c = compute_output(this->padding, ic, kc, sc);
 
         // Compute padding
+        vector<int> padd = compute_padding(d, id, kd, sd, this->padding,true);  // Order: [front, back]
         vector<int> padr = compute_padding(r, ir, kr, sr, this->padding,true);  // Order: [top, bottom]
         vector<int> padc = compute_padding(c, ic, kc, sc, this->padding,false);  // Order: [left, right]
 
         // Set padding
-        this->pads.clear();
-        this->pads = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right
+        pads = {padd[0], padd[1], padr[0], padr[1], padc[0], padc[1]};  // (front, back), (top, bottom), (left, right)
     }
 
 #ifdef cCUDNN
        if(!A->isCPU()){
-           if(pads[0] != pads[1] || pads[2] != pads[3]){
+           if(pads[0] != pads[1] || pads[2] != pads[3] || pads[4] != pads[5]){
              std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
            }
-           if (pads[0] != pads[1]){pads[0] = pads[1];}
+           if (pads[0] != pads[1]){ pads[0] = pads[1];}
            if (pads[2] != pads[3]){ pads[2] = pads[3];}
+           if (pads[4] != pads[5]){ pads[4] = pads[5];}
+
       }
 #endif
 
 
+    paddf = pads[0]; paddb = pads[1];  // depth: front-top
+    padrt = pads[2]; padrb = pads[3];  // rows: top-bottom
+    padcl = pads[4]; padcr = pads[5];  // cols: left-right
 
-    padrt = pads[0]; padrb = pads[1];  // rows: top-bottom
-    padcl = pads[2]; padcr = pads[3];  // cols: left-right
-
-
-
-
-
-    if ((r <= 0) || (c <= 0)) {
+    if ((d <= 0) || (r <= 0) || (c <= 0)) {
+        if(d <= 0) { std::cerr << "'Depth' are reach 0 or less (" << d << ")" << std::endl; }
         if(r <= 0) { std::cerr << "'Rows' are reach 0 or less (" << r << ")" << std::endl; }
         if(c <= 0) { std::cerr << "'Columns' are reach 0 or less (" << c << ")" << std::endl; }
-        msg("Invalid output shape", "ConvolDescriptorT::build");
+        msg("Invalid output shape", "ConvolDescriptorT3D::build");
     }
 
-    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
+    O = new Tensor(vector<int>{A->shape[0], z, d, r, c}, A->device);
 
     // Params
-    K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
+    K = new Tensor(vector<int>{nk, kz, kd, kr, kc}, I->device);
     bias = new Tensor(vector<int>{nk}, I->device);
 
-    gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
+    gK = new Tensor(vector<int>{nk, kz, kd, kr, kc}, I->device);
     gbias = new Tensor(vector<int>{nk}, I->device);
 
     if (I->isCPU()) {
         // mem for ptr, lowering im2col
-        unsigned long int l_size =  (unsigned long)(A->shape[0] * r * c) * (unsigned long)(kr * kc * kz);
-        ptrI=get_fmem(l_size,"ConvolDescriptorT::build");
-        matI=Eigen::Map<Eigen::MatrixXf>(ptrI, r*c,kz*kr*kc);
-	   _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
+        unsigned long int l_size =  (unsigned long)(A->shape[0] * d * r * c) * (unsigned long)(kz * kd* kr * kc);
+        ptrI=get_fmem(l_size,"ConvolDescriptorT3D::build");
+        matI=Eigen::Map<Eigen::MatrixXf>(ptrI, d*r*c,kz*kd*kr*kc);
+	   _profile_add_tensor(A->shape[0] * d * r * c * kz * kd * kr * kc);
     }
 #ifdef cGPU
     else if (I->isGPU()) {
 #ifndef cCUDNN
         if (mem_level>1) {
             // Lowering
-            gpuIB=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
+            gpuIB=new Tensor(vector<int>{d*r*c,kz*kd*kc*kr}, I->device);
         }
         else {
             // Big tensor with all the batch for lowering
-            gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
+            gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kz*kd*kc*kr}, I->device);
             if (mem_level==0)
-                gpuOB=new Tensor(vector<int>{z,A->shape[0]*r*c}, I->device);
+                gpuOB=new Tensor(vector<int>{z,A->shape[0]*d*r*c}, I->device);
         }
 #endif
         // Tensor with variable shared ptr, delete create ptr
-        gpuI=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
+        gpuI=new Tensor(vector<int>{d*r*c,kd*kz*kc*kr}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpuI->ptr);
 
-        gpuO=new Tensor(vector<int>{z,r*c}, I->device);
+        gpuO=new Tensor(vector<int>{z,d*r*c}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpuO->ptr);
 
         //gpu_delete_tensor(gpuI->gpu_device,gpuOB->ptr);
-        gpuD=new Tensor(vector<int>{z,r*c}, I->device);
+        gpuD=new Tensor(vector<int>{z,d*r*c}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpuD->ptr);
 
 
-        gpuK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
+        gpuK=new Tensor(vector<int>{z, kz*kd*kc*kr}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpuK->ptr);
-        gpugK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
+        gpugK=new Tensor(vector<int>{z, kz*kd*kc*kr}, I->device);
         gpu_delete_tensor(gpuI->gpu_device,gpugK->ptr);
     }
 #ifdef cCUDNN
     //CUDNN
-    convolution_mode = CUDNN_CROSS_CORRELATION; //CUDNN_CONVOLUTION; 
+    convolution_mode = CUDNN_CROSS_CORRELATION; //CUDNN_CONVOLUTION;
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
 
     cudnnCreateConvolutionDescriptor(&convolution_descriptor);
-
-    cudnnSetConvolution2dDescriptor(convolution_descriptor,
-                                    pads[0], pads[2],
-                                    stride[0], stride[1],
-                                    1,1,
+    int padding[3] = {pads[0],pads[2],pads[4]};
+    int strides[3] ={sd,sr,sc};
+    int dilats[3] = {1,1,1};
+    cudnnSetConvolutionNdDescriptor(convolution_descriptor,3,
+                                    padding,
+                                    strides,
+                                    dilats,
                                     convolution_mode, data_type);
 
 
    cudnnCreateTensorDescriptor(&xDesc);
-   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                 in,iz,ir,ic);
-   //std::cout<<"xDesc Sizes:"<<in<<","<<iz<<","<<ir<<","<<ic<<std::endl;
-   cudnnCreateFilterDescriptor(&wDesc);
-   //CONV
-   //cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
-   //CONVT we need to swap input channels with output so all other swappings (forward and backward functions) matches
-   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, kz, nk, kr, kc);
-   //std::cout<<"wDesc ppSizes:"<<kz<<","<<nk<<","<<kr<<","<<kc<<std::endl;
+   int dims[5] = {in, iz, id, ir, ic};
+   int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
+   cudnnSetTensorNdDescriptor(xDesc, /*tensor_format,*/ data_type,5,dims,str);
 
+   int ydims[5] = {in,z,d,r,c};
+   int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
    cudnnCreateTensorDescriptor(&yDesc);
-   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
-   //std::cout<<"yDesc Sizes:"<<in<<","<<z<<","<<r<<","<<c<<std::endl;
-
+   cudnnSetTensorNdDescriptor(yDesc,/* tensor_format,*/ data_type, 5, ydims, ystr);
+   
+   int bdims[5] = {1,z,1,1,1};
+   int bstr[5] = {z, 1, 1, 1, 1};
    cudnnCreateTensorDescriptor(&bDesc);
-   cudnnSetTensor4dDescriptor(bDesc, tensor_format, data_type, 1, nk,1,1);
+   cudnnSetTensorNdDescriptor(bDesc,/* tensor_format,*/ data_type, 5, bdims, bstr);
+   
+   int fdims[5] = {nk, kz, kd, kr, kc};
+  // int fstr[5] = {kz*kd*kr*kc,kd*kr*kc,kr*kc,kc,1};
+   cudnnCreateFilterDescriptor(&wDesc);
+   cudnnSetFilterNdDescriptor(wDesc, data_type, tensor_format, 5, fdims);
+
    cudnn_env_init = -1;
    cudnn_conv_back_init = -1;
 
 #endif
+
 #endif
 
 #ifdef cFPGA
@@ -243,46 +265,52 @@ void ConvolDescriptorT::build(Tensor *A) {
 	fpga_ptrI = fpga_create_memory(fpga_sizeI);
 	// We allocate also on cpu so to ease the cpuemu flow
         // mem for ptr, lowering im2col
-        ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptorT::build");
+        ptrI=get_fmem(A->shape[0] * d * r * c * kz * kd * kr * kc,"ConvolDescriptorT3D::build");
     }
 #endif
 }
 
-void ConvolDescriptorT::resize(int b)
+void ConvolDescriptorT3D::resize(int b)
 {
     if (b==O->shape[0]) return;
 
     O->resize(b);
 
 
-    // Prevent overflow. (512*512*512*3*3*3 = 3,623,878,656 > MAX_INT (2,147,483,647))
-    unsigned long int l_size =  (unsigned long)(b * r * c) * (unsigned long)(kr * kc * kz);
+    // Prevent overflow. (512*512*512*512*3*3*3*3 = 3,623,878,656 > MAX_INT (2,147,483,647))
+    unsigned long int l_size =  (unsigned long)(b * d * r * c) * (unsigned long)(kz * kd * kr * kc);
 
     if (I->isCPU()) {
-        eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
-        ptrI=get_fmem(l_size, "ConvolDescriptorT::build");
+        eddl_free(ptrI);
+        ptrI=get_fmem(l_size, "ConvolDescriptorT3D::build");
 	   _profile_add_tensor(l_size);
     }
 #ifdef cGPU
     else if (I->isGPU()) {
 #ifndef cCUDNN
-      if (mem_level<2)
-            gpuIB->resize(b*r*c);
+        if (mem_level<2)
+            gpuIB->resize(b*d*r*c);
         if (mem_level==0) {
             delete gpuOB;
-            gpuOB=new Tensor(vector<int>{z,b*r*c}, I->device);
+            gpuOB=new Tensor(vector<int>{z,b*d*r*c}, I->device);
         }
 #endif
 
 #ifdef cCUDNN
-   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                 b,iz,ir,ic);
+   int dims[5] = {b, iz, id, ir, ic};
+   int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
+   cudnnSetTensorNdDescriptor(xDesc, /*tensor_format,*/ data_type,5,dims,str);
 
-   cudnnCreateTensorDescriptor(&yDesc);
-   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+   int ydims[5] = {b,z,d,r,c};
+   int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
+   cudnnSetTensorNdDescriptor(yDesc, /*tensor_format,*/ data_type, 5, ydims, ystr);
+
+   //cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+
+
 
 #endif
-}
+    }
 #endif
 
 #ifdef cFPGA
@@ -292,23 +320,23 @@ void ConvolDescriptorT::resize(int b)
 	fpga_sizeI = l_size * sizeof(float);
         fpga_ptrI = fpga_create_memory(fpga_sizeI);
         // We do the same on the CPU side (for smooth cpuemu)
-        eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
-        ptrI=get_fmem(l_size, "ConvolDescriptorT::build");
+	    eddl_free(ptrI);
+        ptrI=get_fmem(l_size, "ConvolDescriptorT3D::build");
     }
 #endif
 
 
 }
 
-void ConvolDescriptorT::enable_distributed() {
+void ConvolDescriptorT3D::enable_distributed() {
     // Create and initialize the tensors for accumulating gradients in distributed training
-    acc_gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
+    acc_gK = new Tensor(vector<int>{nk, kz, kd, kr, kc}, I->device);
     acc_gK->fill_(0.0);
     acc_gbias = new Tensor(vector<int>{nk}, I->device);
     acc_gbias->fill_(0.0);
 }
 
-int ConvolDescriptorT::compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate){
+int ConvolDescriptorT3D::compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate){
     if (padding=="same" || padding =="zeros") {
         return input_size*stride;  // inverse
 //        return std::ceil((float)input_size/(float)stride);
@@ -319,18 +347,17 @@ int ConvolDescriptorT::compute_output(const string& padding, int input_size, int
 
     }else{
       cout<<padding<<endl;
-        msg("Incorrect padding type", "ConvolDescriptorT::compute_output");
+        msg("Incorrect padding type", "ConvolDescriptorT3D::compute_output");
     }
     return -1;
 }
 
-int ConvolDescriptorT::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
+int ConvolDescriptorT3D::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
     return (input_size - 1)*stride + (kerkel_size - 1) * dilation_rate + padding[0] + padding[1] - 1;  // Inverse
-
 //    return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
 }
 
-vector<int> ConvolDescriptorT::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding, bool row){
+vector<int> ConvolDescriptorT3D::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding, bool row){
     // Padding order: [left, right] // [top, bottom]
 
     if (padding=="same,none") {
@@ -354,11 +381,11 @@ vector<int> ConvolDescriptorT::compute_padding(int output_size, int input_size, 
         return vector<int>({padl, padr});
 
     }else if(padding =="valid" || padding =="none"){
-        return vector<int>({0, 0});
+        return vector<int>({0, 0, 0});
     }
     else{
         cout<<padding<<endl;
-        msg("Incorrect padding type", "ConvolDescriptorT::compute_padding");
+        msg("Incorrect padding type", "ConvolDescriptorT3D::compute_padding");
     }
 
     return {-1};
