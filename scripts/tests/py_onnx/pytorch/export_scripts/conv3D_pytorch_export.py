@@ -88,13 +88,6 @@ def test(model, device, test_loader):
             data, target = torch.from_numpy(data), torch.from_numpy(target)
             data, target = data.to(device), target.to(device)
             output = model(data)
-            '''
-            data_el_size = 1
-            for dim in data.size()[1:]:
-                data_el_size *= dim
-            test_loss += F.mse_loss(output, target,
-                                    reduction='sum').item() / data_el_size
-            '''
             test_loss += ((target - output)**2).sum()
             current_samples += data.size(0)
 

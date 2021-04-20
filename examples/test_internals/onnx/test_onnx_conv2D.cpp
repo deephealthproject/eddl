@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
     l = AveragePool2D(ReLu(Conv2D(l, 32, {3, 3}, {1, 1}, "valid")), {3, 3}, {2, 2}, "none");
     l = BatchNormalization(l);
     l = GlobalAveragePool2D(ReLu(Conv2D(l, 32, {3, 3}, {1, 1}, "same", false)));
-    l = Squeeze(l);
+    l = Flatten(l);
     layer out = Softmax(Dense(l, num_classes));
 
     model net = Model({in}, {out});
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          sgd(0.001),                // Optimizer
+          adam(0.001),               // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"},  // Metrics
           cs);                       // Computing Service
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
 
   // Build model
   build(net2,
-        sgd(0.001),                // Optimizer
+        adam(0.001),               // Optimizer
         {"softmax_cross_entropy"}, // Losses
         {"categorical_accuracy"},  // Metrics
         cs2,                       // Computing Service

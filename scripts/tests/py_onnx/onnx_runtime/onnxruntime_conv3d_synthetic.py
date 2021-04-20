@@ -59,7 +59,7 @@ def main():
         # Run model
         result = session.run([output_name], {input_name: data})
         pred = np.squeeze(np.array(result), axis=0)
-        total_mse += ((label - pred)**2).sum() #/ (data.size/data.shape[0])
+        total_mse += ((label - pred)**2).sum()
         total_samples += len(data)
 
     final_mse = total_mse / total_samples
