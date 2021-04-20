@@ -251,7 +251,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_sqrt_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::SUB:
-      new_layer = build_diff_layer(node, output_node_map, dev, mem);
+      new_layer = build_diff_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::RMAX:
       new_layer = build_rmax_layer(node, output_node_map, dev, mem);
@@ -302,7 +302,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_scale_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::SLICE:
-      new_layer = build_select_layer(node, constant_node_map, output_node_map, dev, mem);
+      new_layer = build_select_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::EXPAND:
       new_layer = build_expand_layer(node, map_init_values, output_node_map, dev, mem);

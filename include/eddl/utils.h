@@ -75,6 +75,7 @@ WrappingMode getWrappingMode(string mode);
 
 enum TransformationMode {HalfPixel=0, PytorchHalfPixel=1, AlignCorners=2, Asymmetric=3, TFCropAndResize=4};
 TransformationMode getTransformationMode(string mode);
+string getTransformationModeName(TransformationMode mode);
 
 void __show_profile();
 

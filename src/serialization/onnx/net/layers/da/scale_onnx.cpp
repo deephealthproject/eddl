@@ -11,6 +11,7 @@ Layer* build_scale_layer(onnx::NodeProto *node,
 {
       bool reshape_out = true;
       string da_mode("nearest");
+      string transformation_mode("half_pixel");
       float constant = 0.0;
 
       for (int j = 0; j < node->attribute_size(); j++)
@@ -19,10 +20,7 @@ Layer* build_scale_layer(onnx::NodeProto *node,
         string attr_name = attribute.name();
         if (!attr_name.compare("coordinate_transformation_mode"))
         {
-          if (attribute.s().compare("asymmetric"))
-          {
-            msg("In Resize operator, the coordinate transformation mode \"" + attribute.s() + "\" is not supported. It must be \"asymmetric\".", "ONNX::ImportNet");
-          }
+          transformation_mode = attribute.s();
         }
         if (!attr_name.compare("mode"))
         {
@@ -38,19 +36,31 @@ Layer* build_scale_layer(onnx::NodeProto *node,
       Layer *parent = output_node_map[parent_name];
       vector<int> new_shape = parent->getShape();
 
-      string weights_name = node->input(2);
-      float *dim_scales = new float [(&(map_init_values[weights_name]))->size()];
-      COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[weights_name]), dim_scales);
-
-      // Compute new shape by scaling the parent output shape
-      for (int i = 0; i < new_shape.size(); ++i)
+      if (node->input_size() > 3) // Get the new shape directly from input(3)
       {
-        new_shape[i] = new_shape[i] * dim_scales[i];
+          string target_shape_name = node->input(3);
+          float *target_shape = new float [(&(map_init_values[target_shape_name]))->size()];
+          COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[target_shape_name]), target_shape);
+
+          for (int i = 0; i < new_shape.size(); ++i)
+            new_shape[i] = target_shape[i];
+
+          delete [] target_shape;
+      }
+      else // Compute new shape from scale values
+      {
+          string scales_name = node->input(2);
+          float *dim_scales = new float [(&(map_init_values[scales_name]))->size()];
+          COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[scales_name]), dim_scales);
+
+          // Compute new shape by scaling the parent output shape
+          for (int i = 0; i < new_shape.size(); ++i)
+            new_shape[i] = new_shape[i] * dim_scales[i];
+
+          delete [] dim_scales;
       }
 
-      delete [] dim_scales;
-
-      return new LScale(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, TransformationMode::HalfPixel, node->name(), DEV_CPU, 0);
+      return new LScale(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, getTransformationMode(transformation_mode), node->name(), DEV_CPU, 0);
 }
 
 // ONNX export
@@ -74,7 +84,7 @@ void build_resize_node(LScale *layer, onnx::GraphProto *graph)
   onnx::AttributeProto *trans_mode_attr = node->add_attribute();
   trans_mode_attr->set_name("coordinate_transformation_mode");
   trans_mode_attr->set_type(onnx::AttributeProto::STRING);
-  trans_mode_attr->set_s("asymmetric");
+  trans_mode_attr->set_s(getTransformationModeName(layer->coordinate_transformation_mode));
 
   // coordinate_transformation_mode attr
   onnx::AttributeProto *mode_attr = node->add_attribute();
