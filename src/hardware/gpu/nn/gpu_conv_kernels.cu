@@ -199,74 +199,88 @@ __global__ void gpu_low_mem_conv3D(int batch_size,
     output[(((b * num_kernels + nk) * out_depth + k) * out_rows + i) * out_cols + j] = s;
 }
 
-__global__ void gpu_low_mem_conv2D_grad(int batch_size,
-        int channels, int image_rows, int image_cols, const float *image,
-        int num_kernels, int kernel_rows, int kernel_cols, float *kernel,
-        int out_rows, int out_cols, const float *delta,
-        int pad_row, int pad_col,
-        int stride_rows, int stride_cols)
+__global__ void gpu_low_mem_conv3D_grad(int batch_size,
+        int channels, int image_depth, int image_rows, int image_cols, const float *image,
+        int num_kernels, int kernel_depth, int kernel_rows, int kernel_cols, float *kernel,
+        int out_depth, int out_rows, int out_cols, const float *delta,
+        int pad_depth, int pad_row, int pad_col,
+        int stride_depth, int stride_rows, int stride_cols)
 {
     // for (int b = 0; b < batch_size; b++) {
     int b = blockIdx.y;
     /* for (int nk = 0; nk < num_kernels; nk++)
     for (int c = 0; c < channels; c++)
+    for (int z = 0; z < kernel_depth; z++)
     for (int x = 0; x < kernel_rows; x++)
     for (int y = 0; y < kernel_cols; y++) { */
     int nk = blockIdx.x * low_mem_block_size + threadIdx.x;
-    int kernel_size = num_kernels * channels * kernel_rows * kernel_cols;
+    int kernel_size = num_kernels * channels * kernel_depth * kernel_rows * kernel_cols;
     if (nk >= kernel_size) return;
     int y = nk % kernel_cols; nk /= kernel_cols;
     int x = nk % kernel_rows; nk /= kernel_rows;
+    int z = nk % kernel_depth; nk /= kernel_depth;
     int c = nk % channels; nk /= channels;
 
     float s = 0.0;
-    for (int i = 0; i < out_rows; i++) {
-        int px = i * stride_rows - pad_row + x;
-        if (px < 0) continue;
-        if (px >= image_rows) continue;
-        for (int j = 0; j < out_cols; j++) {
-            int py = j * stride_cols - pad_col + y;
-            if (py < 0) continue;
-            if (py >= image_cols) continue;
-            s += image[((b * channels + c) * image_rows + px) * image_cols + py] *
-                delta[((b * num_kernels + nk) * out_rows + i) * out_cols + j];
+    for (int k = 0; k < out_depth; k++) {
+        int pz = k * stride_depth - pad_depth + z;
+        if (pz < 0) continue;
+        if (pz >= image_depth) continue;
+        for (int i = 0; i < out_rows; i++) {
+            int px = i * stride_rows - pad_row + x;
+            if (px < 0) continue;
+            if (px >= image_rows) continue;
+            for (int j = 0; j < out_cols; j++) {
+                int py = j * stride_cols - pad_col + y;
+                if (py < 0) continue;
+                if (py >= image_cols) continue;
+                s += image[(((b * channels + c) * image_depth + pz) * image_rows + px) * image_cols + py] *
+                    delta[(((b * num_kernels + nk) * out_depth + k) * out_rows + i) * out_cols + j];
+            }
         }
     }
-    // kernel[(((nk * channels + c) * kernel_rows + x) * kernel_cols) + y] = s;
+    // kernel[((((nk * channels + c) * kernel_depth + z) * kernel_rows + x) * kernel_cols) + y] = s;
     atomicAdd(kernel + blockIdx.x * low_mem_block_size + threadIdx.x, s);
 }
 
-__global__ void gpu_low_mem_conv2D_back(int batch_size,
-        int channels, int image_rows, int image_cols, float *image,
-        int num_kernels, int kernel_rows, int kernel_cols, const float *kernel,
-        int out_rows, int out_cols, const float *delta,
-        int pad_row, int pad_col,
-        int stride_rows, int stride_cols)
+__global__ void gpu_low_mem_conv3D_back(int batch_size,
+        int channels, int image_depth, int image_rows, int image_cols, float *image,
+        int num_kernels, int kernel_depth, int kernel_rows, int kernel_cols, const float *kernel,
+        int out_depth, int out_rows, int out_cols, const float *delta,
+        int pad_depth, int pad_row, int pad_col,
+        int stride_depth, int stride_rows, int stride_cols)
 {
     // for (int b = 0; b < batch_size; b++)
     int b = blockIdx.y;
     /* for (int c = 0; c < channels; c++)
+    for (int k = 0; k < out_depth; k++)
     for (int i = 0; i < out_rows; i++)
     for (int j = 0; j < out_cols; j++) */
     int c = blockIdx.x * low_mem_block_size + threadIdx.x;
-    int image_size = channels * out_rows * out_cols;
+    int image_size = channels * out_depth * out_rows * out_cols;
     if (c >= image_size) return;
     int j = c % out_cols; c /= out_cols;
     int i = c % out_rows; c /= out_rows;
+    int k = c % out_depth; c /= out_depth;
 
-    for (int x = 0; x < kernel_rows; x++) {
-        int px = i * stride_rows - pad_row + x;
-        if (px < 0) continue;
-        if (px >= image_rows) continue;
-        for (int y = 0; y < kernel_cols; y++) {
-            int py = j * stride_cols - pad_col + y;
-            if (py < 0) continue;
-            if (py >= image_cols) continue;
-            float s = 0.0;
-            for (int nk = 0; nk < num_kernels; nk++)
-                s += delta[((b * num_kernels + nk) * out_rows + i) * out_cols + j]
-                   * kernel[((nk * channels + c) * kernel_rows + x) * kernel_cols + y];
-            atomicAdd(image + ((b * channels + c) * image_rows + px) * image_cols + py, s);
+    for (int z = 0; z < kernel_depth; z++) {
+        int pz = k * stride_depth + z - pad_depth;
+        if (pz < 0) continue;
+        if (pz >= image_depth) continue;
+        for (int x = 0; x < kernel_rows; x++) {
+            int px = i * stride_rows - pad_row + x;
+            if (px < 0) continue;
+            if (px >= image_rows) continue;
+            for (int y = 0; y < kernel_cols; y++) {
+                int py = j * stride_cols - pad_col + y;
+                if (py < 0) continue;
+                if (py >= image_cols) continue;
+                float s = 0.0;
+                for (int nk = 0; nk < num_kernels; nk++)
+                    s += delta[(((b * num_kernels + nk) * out_depth + k) * out_rows + i) * out_cols + j]
+                       * kernel[(((nk * channels + c) * kernel_depth + z) * kernel_rows + x) * kernel_cols + y];
+                atomicAdd(image + (((b * channels + c) * image_depth + pz) * image_rows + px) * image_cols + py, s);
+            }
         }
     }
 }

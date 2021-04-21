@@ -180,7 +180,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
         1, D->r, D->c, D->O->ptr,
         0, D->padrt, D->padcl,
         1, D->sr, D->sc);
-    check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv3D");
+    check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv2D");
   } else if (D->mem_level == 1) {
     for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize) {
       gpu_im2col_low(D,0,b);
@@ -254,12 +254,12 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
     int nb = kernel_size / low_mem_block_size;
     if (kernel_size % low_mem_block_size) nb++;
     dim3 grid(nb, D->I->shape[0]);
-    gpu_low_mem_conv2D_grad<<<grid, low_mem_block_size>>>(D->I->shape[0],
-        D->iz, D->ir, D->ic, D->I->ptr,
-        D->nk, D->kr, D->kc, D->gK->ptr,
-        D->r, D->c, D->D->ptr,
-        D->padrt, D->padcl,
-        D->sr, D->sc);
+    gpu_low_mem_conv3D_grad<<<grid, low_mem_block_size>>>(D->I->shape[0],
+        D->iz, 1, D->ir, D->ic, D->I->ptr,
+        D->nk, 1, D->kr, D->kc, D->gK->ptr,
+        1, D->r, D->c, D->D->ptr,
+        0, D->padrt, D->padcl,
+        1, D->sr, D->sc);
     check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv2D_grad");
   } else if (D->mem_level ==  1) {
     for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize){
@@ -328,12 +328,12 @@ void gpu_conv2D_back(ConvolDescriptor *D){
     int nb = image_size / low_mem_block_size;
     if (image_size % low_mem_block_size) nb++;
     dim3 grid(nb, D->I->shape[0]);
-    gpu_low_mem_conv2D_back<<<grid, low_mem_block_size>>>(D->I->shape[0],
-        D->iz, D->ir, D->ic, D->ID->ptr,
-        D->nk, D->kr, D->kc, D->K->ptr,
-        D->r, D->c, D->D->ptr,
-        D->padrt, D->padcl,
-        D->sr, D->sc);
+    gpu_low_mem_conv3D_back<<<grid, low_mem_block_size>>>(D->I->shape[0],
+        D->iz, 1, D->ir, D->ic, D->ID->ptr,
+        D->nk, 1, D->kr, D->kc, D->K->ptr,
+        1, D->r, D->c, D->D->ptr,
+        0, D->padrt, D->padcl,
+        1, D->sr, D->sc);
     check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv2D_back");
   } else if (D->mem_level == 1) {
     for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize) {
@@ -394,7 +394,18 @@ void gpu_conv3D(ConvolDescriptor3D *D){
                                &alpha, D->yDesc, D->O->ptr),"cudnnAddTensor",__FILE__, __LINE__);
   }
 
-
+#else
+    int output_size = D->nk * D->d * D->r * D->c;
+    int nb = output_size / low_mem_block_size;
+    if (output_size % low_mem_block_size) nb++;
+    dim3 grid(nb, D->I->shape[0]);
+    gpu_low_mem_conv3D<<<grid, low_mem_block_size>>>(D->I->shape[0],
+        D->iz, D->id, D->ir, D->ic, D->I->ptr,
+        D->nk, D->kd, D->kr, D->kc, D->K->ptr,
+        D->d, D->r, D->c, D->O->ptr,
+        D->paddf, D->padrt, D->padcl,
+        D->sd, D->sr, D->sc);
+    check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv3D");
 #endif
 
 }
@@ -415,6 +426,18 @@ void gpu_conv3D_grad(ConvolDescriptor3D *D){
       check_cudnn(cudnnConvolutionBackwardBias(hdnn[device], &alpha, D->yDesc, D->D->ptr,
                                                &beta, D->bDesc, D->gbias->ptr),"cudnnConvolutionBackwardBias",__FILE__, __LINE__);
    }
+#else
+    int kernel_size = D->nk * D->iz * D->kd * D->kr * D->kc;
+    int nb = kernel_size / low_mem_block_size;
+    if (kernel_size % low_mem_block_size) nb++;
+    dim3 grid(nb, D->I->shape[0]);
+    gpu_low_mem_conv3D_grad<<<grid, low_mem_block_size>>>(D->I->shape[0],
+        D->iz, D->id, D->ir, D->ic, D->I->ptr,
+        D->nk, D->kd, D->kr, D->kc, D->gK->ptr,
+        D->d, D->r, D->c, D->D->ptr,
+        D->paddf, D->padrt, D->padcl,
+        D->sd, D->sr, D->sc);
+    check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv2D_grad");
 #endif
 
 }
@@ -430,6 +453,18 @@ void gpu_conv3D_back(ConvolDescriptor3D *D){
                                              D->convolution_descriptor, D->bwd_data_algorithm,
                                              shared_workspace[device], workspace_size[device],
                                              &beta, D->xDesc, D->ID->ptr),"cudnnConvolutionBackwardData",__FILE__, __LINE__);
+#else
+    int image_size = D->iz * D->d * D->r * D->c;
+    int nb = image_size / low_mem_block_size;
+    if (image_size % low_mem_block_size) nb++;
+    dim3 grid(nb, D->I->shape[0]);
+    gpu_low_mem_conv3D_back<<<grid, low_mem_block_size>>>(D->I->shape[0],
+        D->iz, D->id, D->ir, D->ic, D->ID->ptr,
+        D->nk, D->kd, D->kr, D->kc, D->K->ptr,
+        D->d, D->r, D->c, D->D->ptr,
+        D->paddf, D->padrt, D->padcl,
+        D->sd, D->sr, D->sc);
+    check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv3D_back");
 #endif
 
 
