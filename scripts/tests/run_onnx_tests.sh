@@ -191,16 +191,16 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv3D;test_onnx_conv3D;onnxruntime_conv3d_synthetic.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_imdb;test_onnx_gru_imdb;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_imdb;test_onnx_lstm_imdb;onnxruntime_imdb_keras.py,--unsqueeze-input")
-    eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec;test_onnx_lstm_enc_dec;onnxruntime_enc_dec_mnist.py")
-    eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec;test_onnx_gru_enc_dec;onnxruntime_enc_dec_mnist.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec;test_onnx_lstm_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec;test_onnx_gru_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
     # From EDDL CPU to ONNX RT
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv1D_CPU;test_onnx_conv1D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv2D_CPU;test_onnx_conv2D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
     #eddl2onnxrt+=("EDDL_to_ONNXRT_conv3D_CPU;test_onnx_conv3D_cpu;onnxruntime_conv3d_synthetic.py") Conv3D not available for CPU
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_imdb_CPU;test_onnx_gru_imdb_cpu;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_imdb_CPU;test_onnx_lstm_imdb_cpu;onnxruntime_imdb_keras.py,--unsqueeze-input")
-    eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;onnxruntime_enc_dec_mnist.py")
-    eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;onnxruntime_enc_dec_mnist.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
 
     # Run "EDDL export -> ONNX Runtime import" tests and store results
     print_header "EDDL export -> ONNX Runtime import" >> $tests_results_path
