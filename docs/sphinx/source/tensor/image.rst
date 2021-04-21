@@ -71,7 +71,7 @@ Rotate
 Scale
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::scale(vector<int> new_shape, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f, bool keep_size = false)
+.. doxygenfunction:: Tensor::scale(vector<int> new_shape, WrappingMode wrapping_mode = WrappingMode::Constant, float cval = 0.0f, TransformationMode coordinate_transformation_mode = TransformationMode::Asymmetric, bool keep_size = false)
 
 .. code-block:: c++
 
@@ -282,7 +282,7 @@ Rotate Random
 Scale Random
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::scale_random(vector<float> factor, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f)
+.. doxygenfunction:: Tensor::scale_random(vector<float> factor, WrappingMode mode = WrappingMode::Constant, float cval = 0.0f, TransformationMode coordinate_transformation_mode = TransformationMode::Asymmetric)
 
 .. code-block:: c++
 

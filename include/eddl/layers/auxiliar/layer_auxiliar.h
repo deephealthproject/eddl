@@ -131,10 +131,10 @@ public:
 class LExpand : public LinLayer {
 public:
     static int total_layers;
-    vector<int> new_shape;
+    int size;
     ExpandDescriptor *sd;
 
-    LExpand(Layer *parent, vector<int> new_shape, string name, int dev, int mem);
+    LExpand(Layer *parent, int size, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

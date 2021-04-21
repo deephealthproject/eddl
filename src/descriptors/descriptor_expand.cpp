@@ -12,15 +12,15 @@
 #include "eddl/descriptors/tensor_descriptors.h"
 #include "eddl/utils.h"
 
-ExpandDescriptor::ExpandDescriptor(const vector<int>& dims, int dev) : SelDescriptor(dev) {
-    this->dims = vector<int>(dims);
+ExpandDescriptor::ExpandDescriptor(int size, int dev) : SelDescriptor(dev) {
+    this->size = size;
 }
 
 
 void ExpandDescriptor::build(vector<int> ishape){
     // Get input/output shapes
     this->ishape = ishape;
-    this->oshape = permute_shape(ishape, this->dims);
+    this->oshape = expand_shape(ishape, this->size);
 
     // Build indices
     this->build_indices();
@@ -40,5 +40,5 @@ void ExpandDescriptor::build_indices(){
     this->free_memory();
 
     // Compute index translation (output=>input)
-    this->cpu_addresses = permute_indices(this->ishape, this->dims);
+    this->cpu_addresses = expand_indices(this->ishape, this->size);
 }

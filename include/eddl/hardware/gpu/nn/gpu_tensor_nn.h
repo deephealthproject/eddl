@@ -116,8 +116,12 @@ void gpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
 
 void gpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 void gpu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+
+void gpu_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+void gpu_expand_back_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd);
 
 // BN
 void gpu_permute_channels_first(Tensor *A,Tensor *B);

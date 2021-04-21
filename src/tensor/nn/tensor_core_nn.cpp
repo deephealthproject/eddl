@@ -181,4 +181,46 @@ namespace tensorNN {
         PROFILING_FOOTER(set_select_back);
     }
 
+
+
+    void expand(Tensor *A, Tensor* B, ExpandDescriptor *sd){
+
+
+        if (A->isCPU() && B->isCPU()) {
+            cpu_expand_nn(A, B, sd);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            gpu_expand_nn(A, B, sd);
+        }
+#endif
+#ifdef cFPGA
+            else if (A->isFPGA() && B->isFPGA())
+        {
+//            fpga_expand_nn(A, B, sd);
+        }
+#endif
+    }
+
+    void expand_back(Tensor *A, Tensor* B, ExpandDescriptor *sd){
+
+
+        if (A->isCPU() && B->isCPU()) {
+            cpu_expand_back_nn(A, B, sd);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            gpu_expand_back_nn(A, B, sd);
+        }
+#endif
+#ifdef cFPGA
+            else if (A->isFPGA() && B->isFPGA())
+        {
+//           fpga_expand_back_nn(A, B, sd);
+        }
+#endif
+    }
+
 }

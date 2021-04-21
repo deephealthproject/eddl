@@ -162,6 +162,24 @@ Example:
    // ]
 
 
+Expand
+^^^^^^^^^
+
+.. doxygenfunction:: Tensor::expand(int size)
+
+Example:
+
+.. code-block:: c++
+
+    Tensor* t1 = new Tensor( {1, 2, 3}, {3, 1});
+
+    Tensor* new_t = t1->expand(3);
+
+   // Other ways
+   Tensor::expand(t1, size); // static
+
+
+
 Sorting
 ----------
 

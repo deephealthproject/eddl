@@ -1021,6 +1021,10 @@ namespace eddl {
         return new LSelect(l, indices, name, DEV_CPU, 0);
     }
 
+    layer Expand(layer l, int size, string name){
+        return new LExpand(l, size, name, DEV_CPU, 0);
+    }
+
   layer Permute(layer l, vector<int> dims, string name){
     return new LPermute(l, dims, name, DEV_CPU, 0);
   }

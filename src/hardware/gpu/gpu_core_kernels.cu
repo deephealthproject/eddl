@@ -132,7 +132,7 @@ __global__ void gpu_expand(float* A, float* B, long int size, int* indices){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){
-        A[indices[thread_id_x]] = B[thread_id_x];
+        B[thread_id_x] = A[indices[thread_id_x]];
     }
 }
 
