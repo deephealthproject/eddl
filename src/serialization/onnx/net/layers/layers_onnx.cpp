@@ -12,6 +12,7 @@
 #include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv1D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv3D_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/convT_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/upsampling_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool1D_onnx.h"
@@ -57,6 +58,7 @@ map<string, ONNX_LAYERS> create_enum_map()
   map<string, ONNX_LAYERS> map_layers;
   map_layers["BatchNormalization"] = ONNX_LAYERS::BATCHNORM;
   map_layers["Conv"] = ONNX_LAYERS::CONV;
+  map_layers["ConvTranspose"] = ONNX_LAYERS::CONVTRANSPOSE;
   map_layers["Gemm"] = ONNX_LAYERS::DENSE;
   map_layers["Dropout"] = ONNX_LAYERS::DROP;
   map_layers["Reshape"] = ONNX_LAYERS::RESHAPE;
@@ -150,6 +152,9 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       break;
     case ONNX_LAYERS::CONV:
       new_layer = build_conv_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::CONVTRANSPOSE:
+      new_layer = build_convT_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::DENSE:
       new_layer = build_dense_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
@@ -331,6 +336,8 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_conv1D_node(l, graph, gradients);
   else if (LConv3D *l = dynamic_cast<LConv3D *>(layer))
     build_conv3D_node(l, graph, gradients);
+  else if (LConvT2D *l = dynamic_cast<LConvT2D *>(layer))
+    build_convT_node(l, graph, gradients);
   else if (LDense *l = dynamic_cast<LDense *>(layer))
     if (is_recurrent)
       build_dense_with_matmul_node(l, graph, gradients);

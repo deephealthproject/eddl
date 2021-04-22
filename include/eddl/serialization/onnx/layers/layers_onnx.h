@@ -13,6 +13,7 @@ enum ONNX_LAYERS {
   NOT_SUPPORTED,    // To handle not supported nodes
   BATCHNORM,        // OPSET: 9
   CONV,             // OPSET: 11, 1
+  CONVTRANSPOSE,    // OPSET: 11, 1
   DENSE,            // OPSET: 13, 11
   DROP,             // OPSET: 10, 7
   RESHAPE,          // OPSET: 13, 5

@@ -120,16 +120,22 @@ if(BUILD_PROTOBUF)
     target_link_libraries(test_onnx_conv2D eddl)
     add_executable(test_onnx_conv3D "test_internals/onnx/test_onnx_conv3D.cpp")
     target_link_libraries(test_onnx_conv3D eddl)
-   add_executable(test_onnx_lstm_imdb "test_internals/onnx/test_onnx_lstm_imdb.cpp")
+
+    add_executable(test_onnx_convT2D "test_internals/onnx/test_onnx_convT2D.cpp")
+    target_link_libraries(test_onnx_convT2D eddl)
+
+    add_executable(test_onnx_lstm_imdb "test_internals/onnx/test_onnx_lstm_imdb.cpp")
     target_link_libraries(test_onnx_lstm_imdb eddl)
     add_executable(test_onnx_gru_imdb "test_internals/onnx/test_onnx_gru_imdb.cpp")
     target_link_libraries(test_onnx_gru_imdb eddl)
+
     add_executable(test_onnx_lstm_mnist "test_internals/onnx/test_onnx_lstm_mnist.cpp")
     target_link_libraries(test_onnx_lstm_mnist eddl)
     add_executable(test_onnx_gru_mnist "test_internals/onnx/test_onnx_gru_mnist.cpp")
     target_link_libraries(test_onnx_gru_mnist eddl)
     add_executable(test_onnx_rnn_mnist "test_internals/onnx/test_onnx_rnn_mnist.cpp")
     target_link_libraries(test_onnx_rnn_mnist eddl)
+
     add_executable(test_onnx_lstm_enc_dec "test_internals/onnx/test_onnx_lstm_enc_dec.cpp")
     target_link_libraries(test_onnx_lstm_enc_dec eddl)
     add_executable(test_onnx_gru_enc_dec "test_internals/onnx/test_onnx_gru_enc_dec.cpp")
