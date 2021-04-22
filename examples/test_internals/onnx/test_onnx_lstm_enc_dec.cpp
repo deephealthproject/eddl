@@ -62,7 +62,6 @@ int main(int argc, char **argv) {
   x_test->div_(255.0);
 
   float net_loss = -1;
-  float net_acc = -1;
 
   if (!only_import) {
     // Encoder
@@ -104,7 +103,6 @@ int main(int argc, char **argv) {
     // Evaluate
     evaluate(net, {x_test}, {x_test}, batch_size);
     net_loss = get_losses(net->rnet)[0];
-    net_acc = get_metrics(net->rnet)[0];
 
     // Export the model to ONNX
     save_net_to_onnx_file(net, onnx_model_path);

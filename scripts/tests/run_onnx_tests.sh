@@ -115,7 +115,7 @@ scripts_to_run+=("EDDL_to_EDDL_GRU_enc_dec;test_onnx_gru_enc_dec;test_onnx_gru_e
 # From EDDL CPU to EDDL CPU
 scripts_to_run+=("EDDL_to_EDDL_conv1D_CPU;test_onnx_conv1D_cpu;test_onnx_conv1D,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_conv2D_CPU;test_onnx_conv2D_cpu;test_onnx_conv2D,--cpu")
-#scripts_to_run+=("EDDL_to_EDDL_conv3D_CPU;test_onnx_conv3D_cpu;test_onnx_conv3D,--cpu") Conv3D not available for CPU
+scripts_to_run+=("EDDL_to_EDDL_conv3D_CPU;test_onnx_conv3D_cpu;test_onnx_conv3D,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_GRU_imdb_CPU;test_onnx_gru_imdb_cpu;test_onnx_gru_imdb,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_LSTM_imdb_CPU;test_onnx_lstm_imdb_cpu;test_onnx_lstm_imdb,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_GRU_mnist_CPU;test_onnx_gru_mnist_cpu;test_onnx_gru_mnist,--cpu")
@@ -196,7 +196,7 @@ then
     # From EDDL CPU to ONNX RT
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv1D_CPU;test_onnx_conv1D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv2D_CPU;test_onnx_conv2D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
-    #eddl2onnxrt+=("EDDL_to_ONNXRT_conv3D_CPU;test_onnx_conv3D_cpu;onnxruntime_conv3d_synthetic.py") Conv3D not available for CPU
+    eddl2onnxrt+=("EDDL_to_ONNXRT_conv3D_CPU;test_onnx_conv3D_cpu;onnxruntime_conv3d_synthetic.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_imdb_CPU;test_onnx_gru_imdb_cpu;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_imdb_CPU;test_onnx_lstm_imdb_cpu;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
@@ -256,7 +256,7 @@ then
     # From EDDL CPU to ONNX RT
     eddl2pytorch+=("EDDL_to_Pytorch_conv1D_CPU;test_onnx_conv1D_cpu;import_scripts/mnist_pytorch_import.py,--input-1D,--no-channel")
     eddl2pytorch+=("EDDL_to_Pytorch_conv2D_CPU;test_onnx_conv2D_cpu;import_scripts/mnist_pytorch_import.py,--input-1D,--no-channel")
-    #eddl2pytorch+=("EDDL_to_Pytorch_conv3D_CPU;test_onnx_conv3D_cpu;import_scripts/conv3d_synthetic_pytorch_import.py") Conv3D not available for CPU
+    #eddl2pytorch+=("EDDL_to_Pytorch_conv3D_CPU;test_onnx_conv3D_cpu;import_scripts/conv3d_synthetic_pytorch_import.py") TODO: Pytorch synthetic 3D import
     eddl2pytorch+=("EDDL_to_Pytorch_GRU_imdb_CPU;test_onnx_gru_imdb_cpu;import_scripts/imdb_pytorch_import.py,--unsqueeze-input")
     eddl2pytorch+=("EDDL_to_Pytorch_LSTM_imdb_CPU;test_onnx_lstm_imdb_cpu;import_scripts/imdb_pytorch_import.py,--unsqueeze-input")
     eddl2pytorch+=("EDDL_to_Pytorch_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;import_scripts/recurrent_enc_dec_mnist_pytorch_import.py")
@@ -322,7 +322,7 @@ then
     #   Note: The export script is set to "none" because we don't need to execute then again
     pytorch2eddl+=("Pytorch_to_EDDL_conv1D_CPU;test_onnx_pytorch_conv1D;none;test_onnx_conv1D,--import,--cpu")
     pytorch2eddl+=("Pytorch_to_EDDL_conv2D_CPU;test_onnx_pytorch_conv2D;none;test_onnx_conv2D,--import,--cpu")
-    #pytorch2eddl+=("Pytorch_to_EDDL_conv3D_CPU;test_onnx_pytorch_conv3D;none;test_onnx_conv3D,--import,--cpu") Conv3D not available for CPU
+    pytorch2eddl+=("Pytorch_to_EDDL_conv3D_CPU;test_onnx_pytorch_conv3D;none;test_onnx_conv3D,--import,--cpu")
     pytorch2eddl+=("Pytorch_to_EDDL_LSTM_IMDB_CPU;test_onnx_pytorch_LSTM_imdb;none;test_onnx_lstm_imdb,--import,--cpu")
     pytorch2eddl+=("Pytorch_to_EDDL_GRU_IMDB_CPU;test_onnx_pytorch_GRU_imdb;none;test_onnx_gru_imdb,--import,--cpu")
     pytorch2eddl+=("Pytorch_to_EDDL_LSTM_MNIST_CPU;test_onnx_pytorch_LSTM_mnist;none;test_onnx_lstm_mnist,--import,--cpu")
@@ -410,7 +410,7 @@ then
     #   Note: The export script is set to "none" because we don't need to execute then again
     keras2eddl+=("Keras_to_EDDL_conv1D_CPU;test_onnx_keras_conv1D;none;test_onnx_conv1D,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_conv2D_CPU;test_onnx_keras_conv2D;none;test_onnx_conv2D,--import,--cpu")
-    #keras2eddl+=("Keras_to_EDDL_conv3D_CPU;test_onnx_keras_conv3D;none;test_onnx_conv3D,--import,--cpu") Conv3D not available for CPU
+    keras2eddl+=("Keras_to_EDDL_conv3D_CPU;test_onnx_keras_conv3D;none;test_onnx_conv3D,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_LSTM_IMDB_CPU;test_onnx_keras_LSTM_imdb;none;test_onnx_lstm_imdb,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_GRU_IMDB_CPU;test_onnx_keras_GRU_imdb;none;test_onnx_gru_imdb,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_LSTM_MNIST_CPU;test_onnx_keras_LSTM_mnist;none;test_onnx_lstm_mnist,--import,--cpu")
