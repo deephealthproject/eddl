@@ -131,7 +131,8 @@ void ConvolDescriptorT2D::build(Tensor *A) {
 #ifdef cCUDNN
        if(!A->isCPU()){
            if(pads[0] != pads[1] || pads[2] != pads[3]){
-             std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
+              msg("Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later", "convt2d");
+//             std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
            }
            if (pads[0] != pads[1]){pads[0] = pads[1];}
            if (pads[2] != pads[3]){ pads[2] = pads[3];}
