@@ -38,15 +38,27 @@ if(!output->isCPU()){
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
     //BOTH softmax and activations
     cudnnCreateTensorDescriptor(&xDesc);
-    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                 input->shape[0], input->shape[1],
-                 (input->shape.size()> 2) ? input->shape[2]:1,
-                 (input->shape.size()> 3) ? input->shape[3]:1);
     cudnnCreateTensorDescriptor(&yDesc);
-    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
-                 output->shape[0], output->shape[1],
-                 (output->shape.size()> 2) ? output->shape[2]:1,
-                 (output->shape.size()> 3) ? output->shape[3]:1);
+    if (input->shape.size() > 4) { // 5D input
+        int b = input->shape[0]; // batch size
+        int z = input->shape[1]; // channels
+        int d = input->shape[2]; // depth
+        int r = input->shape[3]; // rows
+        int c = input->shape[4]; // cols
+        int ydims[5] = {b,z,d,r,c}; // tensor size
+        int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1}; // tensor strides
+        cudnnSetTensorNdDescriptor(xDesc,/* tensor_format,*/ data_type, 5, ydims, ystr);
+        cudnnSetTensorNdDescriptor(yDesc,/* tensor_format,*/ data_type, 5, ydims, ystr);
+    } else { // 4D or less input
+        cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                     input->shape[0], input->shape[1],
+                     (input->shape.size()> 2) ? input->shape[2]:1,
+                     (input->shape.size()> 3) ? input->shape[3]:1);
+        cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                     output->shape[0], output->shape[1],
+                     (output->shape.size()> 2) ? output->shape[2]:1,
+                     (output->shape.size()> 3) ? output->shape[3]:1);
+    }
 
     if(this->act == "softmax"){
         algorithm = CUDNN_SOFTMAX_ACCURATE;
@@ -125,28 +137,29 @@ else
 }
 #ifdef cCUDNN
 void LActivation::resize(int batch){
-
-//  std::cout<<"Resize layer"<<this->name<<std::endl;
     if (output!=nullptr) {output->resize(batch);}
-//   if(output->isCPU()){std::cout<<"out ES CPUUUU!!!"<<std::endl;}
-//else{std::cout<<"out ES GPU!"<<std::endl;} 
-//   if(input->isCPU()){std::cout<<"in ES CPUUUU!!!"<<std::endl;}
-//else{std::cout<<"in ES GPU!"<<std::endl;} 
- // std::cout<<"Output shape="<<output->shape.size()<<std::endl;
- // std::cout<<"Iutput shape="<<input->shape.size()<<std::endl;
-//}
-//else{std::cout<<"output is null"<<std::endl;}
-if (!output->isCPU()){ 
-   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                 input->shape[0], input->shape[1],
-                 (input->shape.size()> 2) ? input->shape[2]:1,
-                 (input->shape.size()> 3) ? input->shape[3]:1);
-    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
-                 output->shape[0], output->shape[1],
-                 (output->shape.size()> 2) ? output->shape[2]:1,
-                 (output->shape.size()> 3) ? output->shape[3]:1);
-    //    if (delta!=nullptr) { if (!mem_level) delta->resize(batch); }
-}
+    if (!output->isCPU()){
+        if (input->shape.size() > 4) { // 5D input
+            int b = input->shape[0]; // batch size
+            int z = input->shape[1]; // channels
+            int d = input->shape[2]; // depth
+            int r = input->shape[3]; // rows
+            int c = input->shape[4]; // cols
+            int ydims[5] = {b,z,d,r,c}; // tensor size
+            int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1}; // tensor strides
+            cudnnSetTensorNdDescriptor(xDesc,/* tensor_format,*/ data_type, 5, ydims, ystr);
+            cudnnSetTensorNdDescriptor(yDesc,/* tensor_format,*/ data_type, 5, ydims, ystr);
+        } else { // 4D or less input
+           cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
+                         input->shape[0], input->shape[1],
+                         (input->shape.size()> 2) ? input->shape[2]:1,
+                         (input->shape.size()> 3) ? input->shape[3]:1);
+           cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
+                         output->shape[0], output->shape[1],
+                         (output->shape.size()> 2) ? output->shape[2]:1,
+                         (output->shape.size()> 3) ? output->shape[3]:1);
+        }
+    }
 }
 #endif
 
