@@ -91,8 +91,8 @@ void PoolDescriptor::build(Tensor *A) {
               msg("Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later", "pool2d");
                //std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
            }
-           if (pad[0] != pad[1]){pad[0] = pad[1];}
-           if (pad[2] != pad[3]){ pad[2] = pad[3];}
+           if (pad[0] != pad[1]){ pad[0] = pad[1]; }
+           if (pad[2] != pad[3]){ pad[2] = pad[3]; }
       }
 #endif
 

@@ -42,6 +42,11 @@ if(!D->I->isCPU()){
    if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create avg pooling 2D descriptor "<< cudnnGetErrorString(bbb) <<std::endl;
 }
 #endif
+
+    // Check padding asymmetries
+    if(D->pad[0] != D->pad[1] || D->pad[2] != D->pad[3]){
+        msg("Padding asymmetry detected. (top=" + to_string(D->pad[0]) + ", bottom=" + to_string(D->pad[1]) + ", left=" + to_string(D->pad[2]) + ", right=" + to_string(D->pad[3]) + ").\nLayer name: " + this->name, "LAveragePool::LAveragePool");
+    }
 }
 
 
