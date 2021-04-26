@@ -1466,11 +1466,11 @@ namespace eddl {
       *   It takes a list of layers as input and returns a single tensor that is the concatenation of all the input layers.
       *
       *  @param layers  List of layers
-      *  @param axis  Axis along which to concatenate (batch is not ignored)
+      *  @param axis  Axis along which to concatenate (batch is ignored)
       *  @param name  A name for the operation
       *  @return     Output of concatenation operation with all input layers
     */
-    layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
+    layer Concat(const vector<layer> &layers, unsigned int axis=0, string name = "");
     /**
      *  @brief Multiplication of matrices.
      *
