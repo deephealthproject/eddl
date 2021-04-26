@@ -170,9 +170,9 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
 
   if (D->mem_level>1) {
-    int output_size = D->nk * D->r * D->c;
-    int nb = output_size / low_mem_block_size;
-    if (output_size % low_mem_block_size) nb++;
+    int threads = D->nk * D->r * D->c;
+    int nb = threads / low_mem_block_size;
+    if (threads % low_mem_block_size) nb++;
     dim3 grid(nb, D->I->shape[0]);
     gpu_low_mem_conv3D<<<grid, low_mem_block_size>>>(D->I->shape[0],
         D->iz, 1, D->ir, D->ic, D->I->ptr,
@@ -250,9 +250,9 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
   if (D->mem_level < 2) D->gpuI->ptr=D->gpuIB->ptr;
 
   if (D->mem_level>1) {
-    int kernel_size = D->nk * D->iz * D->kr * D->kc;
-    int nb = kernel_size / low_mem_block_size;
-    if (kernel_size % low_mem_block_size) nb++;
+    int threads = D->nk * D->iz * D->kr * D->kc;
+    int nb = threads / low_mem_block_size;
+    if (threads % low_mem_block_size) nb++;
     dim3 grid(nb, D->I->shape[0]);
     gpu_low_mem_conv3D_grad<<<grid, low_mem_block_size>>>(D->I->shape[0],
         D->iz, 1, D->ir, D->ic, D->I->ptr,
