@@ -61,19 +61,12 @@ int main(int argc, char **argv) {
   delete aux_y_values;
 
   float net_loss = -1;
-  float net_acc = -1;
 
   if (!only_import) {
     // Define network
     layer in = Input({channels, depth, height, width});
     layer l = in; // Aux var
 
-    /* To test failed test with ReLu layer
-    l = MaxPool3D(Conv3D(l, 4, {3, 3, 3}, {1, 1, 1}, "valid"), {2, 2, 2}, {2, 2, 2}, "same");
-    l = Conv3D(l, 4, {3, 3, 3}, {2, 2, 2});
-    l = ReLu(l);
-    l = GlobalAveragePool3D(Conv3D(l, 4, {3, 3, 3}, {1, 1, 1}, "valid"));
-    */
     l = MaxPool3D(ReLu(Conv3D(l, 4, {3, 3, 3}, {1, 1, 1}, "valid")), {2, 2, 2}, {2, 2, 2}, "same");
     l = ReLu(Conv3D(l, 4, {3, 3, 3}, {2, 2, 2}));
     l = GlobalAveragePool3D(ReLu(Conv3D(l, 4, {3, 3, 3}, {1, 1, 1}, "valid")));
@@ -104,7 +97,6 @@ int main(int argc, char **argv) {
     // Evaluate
     evaluate(net, {x}, {y}, batch_size);
     net_loss = get_losses(net)[0];
-    net_acc = get_metrics(net)[0];
 
     // Export the model to ONNX
     save_net_to_onnx_file(net, onnx_model_path);

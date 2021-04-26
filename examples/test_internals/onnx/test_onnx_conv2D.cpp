@@ -69,10 +69,11 @@ int main(int argc, char **argv) {
 
     l = Reshape(l, {1, 28, 28});
     l = MaxPool2D(ReLu(Conv2D(l, 32, {3, 3}, {1, 1})), {2, 2}, {2, 2}, "same");
-    l = ReLu(Conv2D(l, 32, {5, 5}, {2, 2}));
+    l = BatchNormalization(l);
     l = AveragePool2D(ReLu(Conv2D(l, 32, {3, 3}, {1, 1}, "valid")), {3, 3}, {2, 2}, "none");
     l = BatchNormalization(l);
-    l = GlobalAveragePool2D(ReLu(Conv2D(l, 32, {3, 3}, {1, 1}, "same", false)));
+    l = GlobalAveragePool2D(ReLu(Conv2D(l, 32, {3, 3}, {2, 2}, "same", false)));
+    l = BatchNormalization(l);
     l = Flatten(l);
     layer out = Softmax(Dense(l, num_classes));
 
