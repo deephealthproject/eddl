@@ -151,3 +151,29 @@ TEST(TensorTestSuite, tensor_nn_full_softmax_nd3){
     int axis = 3;
     test_softmax_nd(axis);
 }
+
+TEST(TensorTestSuite, tensor_nn_repeat_batch){
+    Tensor* t1 = Tensor::arange(0, 9)->unsqueeze(0);
+    Tensor* t_new = Tensor::empty_like(t1); t_new->resize(5); // batch
+    Tensor* t_ref = Tensor::concat({t1, t1, t1, t1, t1}, 0);
+
+    tensorNN::repeat_batch(t1, t_new);
+    ASSERT_TRUE(Tensor::equivalent(t_new, t_ref, 1e-3f, 0.0f, true, true));
+
+    // Test GPU
+#ifdef cGPU
+    // Forward
+    int batch = 128;
+    Tensor* t_cpu_in = Tensor::randn({1, 100, 100});
+    Tensor* t_cpu_out = Tensor::empty_like(t_cpu_in); t_cpu_in->resize(batch);
+
+    Tensor* t_gpu_in = t_cpu_in->clone(); t_gpu_in->toGPU();
+    Tensor* t_gpu_out = t_cpu_out->clone(); t_gpu_out->toGPU();
+
+    tensorNN::repeat_batch(t_cpu_in, t_cpu_out);
+    tensorNN::repeat_batch(t_gpu_in, t_gpu_out);
+
+    t_gpu_out->toCPU();
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_out, t_gpu_out, 1e-3f, 0.0f, true, true));
+#endif
+}
