@@ -1799,7 +1799,7 @@ namespace eddl {
       *  @param indexes  Split indexes ({20, 60} => {0:20, 20:60, 60:end})
       *  @param axis  Which axis to split on (default=-1, last)
       *  @param name  A name for the operation
-      *  @return     Vector of layers
+      *  @return     vector of layers
     */
     vlayer Split(layer l, vector<int> indexes, int axis=-1, string name="");
 
