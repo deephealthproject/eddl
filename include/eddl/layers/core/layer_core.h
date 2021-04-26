@@ -377,4 +377,26 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
+/// Split Layer
+class LSplit : public LinLayer {
+public:
+    static int total_layers;
+    vector<int> indexes;
+    int axis;
+    vector<Layer*> split_layers;
+
+    LSplit(Layer *l, vector<int> indexes, int axis, string name, int dev, int mem);
+
+    ~LSplit() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int b) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
 #endif //EDDL_LAYER_CORE_H
