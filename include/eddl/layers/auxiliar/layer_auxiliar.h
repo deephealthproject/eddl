@@ -96,6 +96,8 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
+    void free_delta() override;
+
     void forward() override;
 
     void backward() override;
