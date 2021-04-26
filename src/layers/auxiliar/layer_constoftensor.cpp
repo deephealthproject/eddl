@@ -22,17 +22,19 @@ int LConstOfTensor::total_layers = 0;
 LConstOfTensor::LConstOfTensor(Tensor *const_tensor, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "const_of_tensor" + to_string(++total_layers);
 
-    this->const_tensor = const_tensor->clone();
-    output = input = this->const_tensor;
+    this->const_tensor = const_tensor;
+    input = const_tensor->unsqueeze(0);
+    output = Tensor::empty_like(const_tensor)->unsqueeze(0);   // Reserve memory and batch
 }
 
-
-// virtual
-void LConstOfTensor::resize(int batch){
+LConstOfTensor::~LConstOfTensor(){
+    if (output!=nullptr) { delete output; output=nullptr; }
+    if (const_tensor!=nullptr) { delete const_tensor; const_tensor=nullptr; }
 }
 
 
 void LConstOfTensor::forward() {
+    tensorNN::repeat_batch(this->const_tensor, output);
 }
 
 void LConstOfTensor::backward() {
