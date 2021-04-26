@@ -52,6 +52,11 @@ LConvT3D::LConvT3D(Layer *parent, ConvolDescriptorT3D *D, string name, int dev, 
 
     parent->addchild(this);
     addparent(parent);
+
+    // Check padding asymmetries
+    if(D->pads[0] != D->pads[1] || D->pads[2] != D->pads[3] || D->pads[4] != D->pads[5]){
+        msg("Padding asymmetry detected. (front=" + to_string(D->pads[0]) + ", back=" + to_string(D->pads[1]) + ", top=" + to_string(D->pads[2]) + ", bottom=" + to_string(D->pads[3]) + ", left=" + to_string(D->pads[4]) + ", right=" + to_string(D->pads[5]) + ").\nLayer name: " + this->name, "LConvT3D::LConvT3D");
+    }
 }
 
 
