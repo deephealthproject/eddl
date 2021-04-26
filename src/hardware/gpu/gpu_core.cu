@@ -337,6 +337,17 @@ void gpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
     check_cuda(cudaDeviceSynchronize(), "gpu_expand");
 }
 
+
+void gpu_repeat_batch(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);  // B is the big one
+    gpu_repeat_batch<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, B->size);
+    check_cuda(cudaDeviceSynchronize(), "gpu_repeat_batch");
+}
+
+
 void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
     int device=A->gpu_device;
     cudaSetDevice(device);
