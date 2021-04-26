@@ -1798,10 +1798,11 @@ namespace eddl {
       *  @param l  Parent layer
       *  @param indexes  Split indexes ({20, 60} => {0:20, 20:60, 60:end})
       *  @param axis  Which axis to split on (default=-1, last)
+      *  @param merge_sublayers  Merge layers symbolically (for the plot)
       *  @param name  A name for the operation
       *  @return     vector of layers
     */
-    vlayer Split(layer l, vector<int> indexes, int axis=-1, string name="");
+    vlayer Split(layer l, vector<int> indexes, int axis=-1, bool merge_sublayers=false, string name="");
 
     // Reduction Layers
 

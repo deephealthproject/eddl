@@ -21,12 +21,13 @@ using namespace std;
 int LSplit::total_layers = 0;
 
 
-LSplit::LSplit(Layer *parent, vector<int> indexes, int axis, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LSplit::LSplit(Layer *parent, vector<int> indexes, int axis, bool merge_sublayers, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     // Set default name
     if(name.empty()) this->name = "split_" + to_string(++total_layers);
 
     this->indexes = vector<int>(indexes);
     this->axis = axis;
+    this->merge_sublayers = merge_sublayers;
 
     // Normalize axis
     if(axis==-1){
@@ -75,8 +76,14 @@ LSplit::LSplit(Layer *parent, vector<int> indexes, int axis, string name, int de
             }
         }
 
+        // Set sublayer name
+        string lname = "split_"+ to_string(total_layers);
+        if(!merge_sublayers){
+            lname +="_"+ to_string(i+1);
+        }
+
         // Add layers
-        split_layers.push_back(new LSelect(parent, sel_rngs, "split_"+ to_string(i+1), DEV_CPU, 0));
+        split_layers.push_back(new LSelect(parent, sel_rngs, lname, DEV_CPU, 0));
     }
 }
 
@@ -98,7 +105,7 @@ Layer *LSplit::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LSplit::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LSplit(p[0], this->indexes, this->axis, name, todev, this->mem_level);
+    auto *n = new LSplit(p[0], this->indexes, this->axis, this->merge_sublayers, name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

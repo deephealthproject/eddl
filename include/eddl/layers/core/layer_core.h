@@ -384,8 +384,9 @@ public:
     vector<int> indexes;
     int axis;
     vector<Layer*> split_layers;
+    bool merge_sublayers;
 
-    LSplit(Layer *l, vector<int> indexes, int axis, string name, int dev, int mem);
+    LSplit(Layer *l, vector<int> indexes, int axis,  bool merge_sublayers, string name, int dev, int mem);
 
     ~LSplit() override;
 

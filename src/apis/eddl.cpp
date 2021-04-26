@@ -1039,8 +1039,8 @@ namespace eddl {
     return new LPermute(l, dims, name, DEV_CPU, 0);
   }
 
-    vlayer Split(layer l, vector<int> indexes, int axis, string name){
-        auto* sl = new LSplit(l, indexes, axis, name, DEV_CPU, 0);
+    vlayer Split(layer l, vector<int> indexes, int axis, bool merge_sublayers, string name){
+        auto* sl = new LSplit(l, indexes, axis, merge_sublayers, name, DEV_CPU, 0);
         return  sl->split_layers;
     }
 
