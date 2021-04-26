@@ -1134,6 +1134,15 @@ namespace eddl {
     */
     layer Transpose(layer parent, string name = "");
 
+    /**
+      *  @brief Const of tensor
+      *
+      *  @param Tensor  Raw tensor
+      *  @param name  A name for the operation
+      *  @return Raw repeated for each batch
+    */
+    layer ConstOfTensor(Tensor* t, string name = "");
+
     // Transformation Layers
     /**
       *  @brief Affine transformation of the image keeping center invariant: rotate+translate+scale+shear.

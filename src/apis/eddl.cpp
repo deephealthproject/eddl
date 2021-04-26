@@ -734,6 +734,9 @@ namespace eddl {
     return new LPermute(parent, dims, name, DEV_CPU, 0);
   }
 
+    layer ConstOfTensor(Tensor* t, string name){
+        return new LConstOfTensor(t, name, DEV_CPU, 0);
+    }
 
   // Transformation Layers
   layer Shift(layer parent, vector<int> shift, string da_mode, float constant, string name){
