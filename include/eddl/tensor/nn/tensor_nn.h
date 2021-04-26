@@ -135,6 +135,8 @@ namespace tensorNN{
     void expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
     void expand_back(Tensor *A, Tensor* B, ExpandDescriptor *sd);
 
+    void repeat_batch(Tensor *A, Tensor* B);
+
 // ***** Permutations for BatchNorm ********************
     void permute_channels_last(Tensor *A,Tensor *B);
     void permute_channels_first(Tensor *A,Tensor *B);

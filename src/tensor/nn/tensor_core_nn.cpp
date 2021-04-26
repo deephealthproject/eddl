@@ -223,4 +223,23 @@ namespace tensorNN {
 #endif
     }
 
+    void repeat_batch(Tensor *A, Tensor* B){
+
+
+        if (A->isCPU() && B->isCPU()) {
+            cpu_repeat_batch(A, B);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            gpu_repeat_batch(A, B);
+        }
+#endif
+#ifdef cFPGA
+        else if (A->isFPGA() && B->isFPGA())
+        {
+        }
+#endif
+    }
+
 }
