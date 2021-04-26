@@ -116,6 +116,8 @@ void cpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd);
 void cpu_expand_back_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd);
 
+void cpu_repeat_batch(Tensor *A, Tensor *B);
+
 // BN
 void cpu_permute_channels_first(Tensor *A,Tensor *B);
 void cpu_permute_channels_last(Tensor *A,Tensor *B);

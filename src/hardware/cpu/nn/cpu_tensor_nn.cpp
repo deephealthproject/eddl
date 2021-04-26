@@ -105,3 +105,12 @@ void cpu_expand_back_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd){
         }
     }
 }
+
+void cpu_repeat_batch(Tensor *A, Tensor *B){
+#pragma omp parallel for
+    for (int b = 0; b < B->shape[0]; b++) {
+        for (int i = 0; i < B->stride[0]; i++) {  // "A" must have batch of size 1
+            B->ptr[b*B->stride[0] + i] = A->ptr[i];
+        }
+    }
+}
