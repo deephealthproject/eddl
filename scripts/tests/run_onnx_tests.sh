@@ -12,8 +12,8 @@
 #     from the "build" directory created for compilation.
 #
 #   - To run the python tests you need to have some python dependecies
-#     installed: tensorflow, pytorch, torchvision, torchtext, onnx, onnxruntime,
-#     onnx2keras, keras2onnx, tqdm.
+#     installed: tensorflow, keras, torch (pytorch), torchvision, torchtext,
+#     onnx, onnxruntime, onnx2keras, keras2onnx, onnx-simplifier, tqdm.
 #
 #   - In case of using a python environment to manage the dependecies
 #     remember to activate it before running the script.
