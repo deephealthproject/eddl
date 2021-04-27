@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
     if (use_cpu)
       cs = CS_CPU();
     else
-      cs = CS_GPU({1}, "low_mem"); // one GPU
+      cs = CS_GPU({1}); // one GPU
 
     // Build model
     build(net,
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
   if (use_cpu)
     cs2 = CS_CPU();
   else
-    cs2 = CS_GPU({1}, "low_mem"); // one GPU
+    cs2 = CS_GPU({1}); // one GPU
 
   // Build model
   build(net2,
