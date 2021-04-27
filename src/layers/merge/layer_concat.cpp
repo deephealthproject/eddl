@@ -25,6 +25,14 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
     // Perform layer checks
     if (parent.empty()) { msg("Error: LConcat layer with empty list"); }
 
+    // Check special cases
+    if(axis==-1){
+        // -1 because last index is shape-1, and -1 (again) to remove the batch component
+        axis = (parent[0]->output->ndim - 1) - 1;
+    }else if(axis<0){
+        msg("The axist must be greater or equal than zero", "LConcat::LConcat");
+    }
+
     this->axis = axis; // batch is not included
 
     if (parent.size() > 1) {
