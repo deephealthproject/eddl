@@ -43,6 +43,7 @@ The code is open source, and `available on github`_.
     :caption: Layers
 
     layers/core.rst
+    layers/auxiliar.rst
     layers/activations.rst
     layers/data_augmentation.rst
     layers/data_transformation.rst

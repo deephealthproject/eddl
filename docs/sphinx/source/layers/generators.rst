@@ -22,8 +22,6 @@ Uniform Generator
 .. doxygenfunction:: UniformGenerator
 
 
-
-
 .. code-block:: c++
 
    layer gin = UniformGenerator(3.0, 10.0, {3, 32, 32});
