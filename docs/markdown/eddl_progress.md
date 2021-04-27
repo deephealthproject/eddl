@@ -24,9 +24,14 @@
 | Slice        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Returns a new layer which indexes the input tensor using the entries in indices. (alias for Select) |
 | Permute   | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️  | Permutes the dimensions of the input according to a given pattern |
 | Split        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Split a layer into a list of tensors layers |
-| Expand        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Returns a layer with singleton dimensions expanded to a larger size |
 | Embedding | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Turns positive integers (indexes) into dense vectors of fixed size; (also known as mapping). e.g. `[[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]` |
 | Transpose | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Permute the last two dimensions |
+| ConstOfTensor | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Repeats a tensor across the batch |
+| Equal | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Return (x1 == x2) element-wise |
+| Expand        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Returns a layer with singleton dimensions expanded to a larger size |
+| Where | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Return elements chosen from x or y depending on condition |
+
+
 
 
 ## Activations
