@@ -235,61 +235,62 @@ then
     # EDDL export -> Pytorch import
     #-------------------------------
 
-    pushd pytorch > /dev/null  # Going to execute Pytorch import scripts
-
-    # eddl2pytorch is a list of triplets to define the tests for exporting from EDDL and importing with Pytorch.
-    # Each postion of the triplet is:
-    #   0: Experiment name to show.
-    #   1: ONNX model name to import (created previously with the EDDL scripts).
-    #   2: Pytorch script and arguments tu execute for the test.
-    # Note:
-    #   - To simulate the list of triplets, the triplets are strings with the elements separated by ";".
-    #   - The script names and the arguments to execute them are separated by ",".
-    eddl2pytorch=()
-    eddl2pytorch+=("EDDL_to_Pytorch_conv1D;test_onnx_conv1D;import_scripts/mnist_pytorch_import.py,--input-1D,--no-channel")
-    eddl2pytorch+=("EDDL_to_Pytorch_conv2D;test_onnx_conv2D;import_scripts/mnist_pytorch_import.py,--input-1D,--no-channel")
-    #eddl2pytorch+=("EDDL_to_Pytorch_conv3D;test_onnx_conv3D;import_scripts/conv3d_synthetic_pytorch_import.py") TODO: Pytorch synthetic 3D import
-    eddl2pytorch+=("EDDL_to_Pytorch_GRU_imdb;test_onnx_gru_imdb;import_scripts/imdb_pytorch_import.py,--unsqueeze-input")
-    eddl2pytorch+=("EDDL_to_Pytorch_LSTM_imdb;test_onnx_lstm_imdb;import_scripts/imdb_pytorch_import.py,--unsqueeze-input")
-    eddl2pytorch+=("EDDL_to_Pytorch_LSTM_enc_dec;test_onnx_lstm_enc_dec;import_scripts/recurrent_enc_dec_mnist_pytorch_import.py")
-    eddl2pytorch+=("EDDL_to_Pytorch_GRU_enc_dec;test_onnx_gru_enc_dec;import_scripts/recurrent_enc_dec_mnist_pytorch_import.py")
-    # From EDDL CPU to ONNX RT
-    eddl2pytorch+=("EDDL_to_Pytorch_conv1D_CPU;test_onnx_conv1D_cpu;import_scripts/mnist_pytorch_import.py,--input-1D,--no-channel")
-    eddl2pytorch+=("EDDL_to_Pytorch_conv2D_CPU;test_onnx_conv2D_cpu;import_scripts/mnist_pytorch_import.py,--input-1D,--no-channel")
-    #eddl2pytorch+=("EDDL_to_Pytorch_conv3D_CPU;test_onnx_conv3D_cpu;import_scripts/conv3d_synthetic_pytorch_import.py") TODO: Pytorch synthetic 3D import
-    eddl2pytorch+=("EDDL_to_Pytorch_GRU_imdb_CPU;test_onnx_gru_imdb_cpu;import_scripts/imdb_pytorch_import.py,--unsqueeze-input")
-    eddl2pytorch+=("EDDL_to_Pytorch_LSTM_imdb_CPU;test_onnx_lstm_imdb_cpu;import_scripts/imdb_pytorch_import.py,--unsqueeze-input")
-    eddl2pytorch+=("EDDL_to_Pytorch_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;import_scripts/recurrent_enc_dec_mnist_pytorch_import.py")
-    eddl2pytorch+=("EDDL_to_Pytorch_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;import_scripts/recurrent_enc_dec_mnist_pytorch_import.py")
-
-    # Run "EDDL export -> Pytorch import" tests and store results
-    print_header "EDDL export -> Pytorch import" >> $tests_results_path
-    for test_data in "${eddl2pytorch[@]}"
-    do
-        IFS=';'; read -r -a test_arr <<< "${test_data}"  # Split string by ";"
-
-        # Get test name to show
-        test_name="${test_arr[0]}"
-
-        # Get paths to onnx file and target metric to get in test
-        model_name="${test_arr[1]}"
-        model_path="${eddl_bin}/model_${model_name}.onnx"
-        model_metric="${eddl_bin}/metric_${model_name}.txt"
-
-        # Get script path and arguments to execute it
-        script_args="${test_arr[2]}"
-        IFS=','; read -r -a script_argv <<< "${script_args}"  # Split string by ","
-        script_call="python ${script_argv[@]} --onnx-file ${model_path} --target-metric ${model_metric}"
-
-        # Execute test
-        echo "Running $test_name"
-        print_header "$script_call" >> ${scripts_output_path}
-        python ${script_argv[0]} ${script_argv[@]:1} --onnx-file ${model_path} --target-metric ${model_metric} &>> ${scripts_output_path}
-        handle_exit_status "$test_name" ${tests_results_path}
-        echo ""
-    done
-
-    popd > /dev/null  # Go back to py_scripts main folder
+#    TODO: Prepare ONNX models in order to import them with Pytorch. Pytorch can't find the initializers in the current location.
+#    pushd pytorch > /dev/null  # Going to execute Pytorch import scripts
+#
+#    # eddl2pytorch is a list of triplets to define the tests for exporting from EDDL and importing with Pytorch.
+#    # Each postion of the triplet is:
+#    #   0: Experiment name to show.
+#    #   1: ONNX model name to import (created previously with the EDDL scripts).
+#    #   2: Pytorch script and arguments tu execute for the test.
+#    # Note:
+#    #   - To simulate the list of triplets, the triplets are strings with the elements separated by ";".
+#    #   - The script names and the arguments to execute them are separated by ",".
+#    eddl2pytorch=()
+#    eddl2pytorch+=("EDDL_to_Pytorch_conv1D;test_onnx_conv1D;import_scripts/mnist_pytorch_import.py,--input-1D,--no-channel")
+#    eddl2pytorch+=("EDDL_to_Pytorch_conv2D;test_onnx_conv2D;import_scripts/mnist_pytorch_import.py,--input-1D,--no-channel")
+#    #eddl2pytorch+=("EDDL_to_Pytorch_conv3D;test_onnx_conv3D;import_scripts/conv3d_synthetic_pytorch_import.py") TODO: Pytorch synthetic 3D import
+#    eddl2pytorch+=("EDDL_to_Pytorch_GRU_imdb;test_onnx_gru_imdb;import_scripts/imdb_pytorch_import.py,--unsqueeze-input")
+#    eddl2pytorch+=("EDDL_to_Pytorch_LSTM_imdb;test_onnx_lstm_imdb;import_scripts/imdb_pytorch_import.py,--unsqueeze-input")
+#    eddl2pytorch+=("EDDL_to_Pytorch_LSTM_enc_dec;test_onnx_lstm_enc_dec;import_scripts/recurrent_enc_dec_mnist_pytorch_import.py")
+#    eddl2pytorch+=("EDDL_to_Pytorch_GRU_enc_dec;test_onnx_gru_enc_dec;import_scripts/recurrent_enc_dec_mnist_pytorch_import.py")
+#    # From EDDL CPU to ONNX RT
+#    eddl2pytorch+=("EDDL_to_Pytorch_conv1D_CPU;test_onnx_conv1D_cpu;import_scripts/mnist_pytorch_import.py,--input-1D,--no-channel")
+#    eddl2pytorch+=("EDDL_to_Pytorch_conv2D_CPU;test_onnx_conv2D_cpu;import_scripts/mnist_pytorch_import.py,--input-1D,--no-channel")
+#    #eddl2pytorch+=("EDDL_to_Pytorch_conv3D_CPU;test_onnx_conv3D_cpu;import_scripts/conv3d_synthetic_pytorch_import.py") TODO: Pytorch synthetic 3D import
+#    eddl2pytorch+=("EDDL_to_Pytorch_GRU_imdb_CPU;test_onnx_gru_imdb_cpu;import_scripts/imdb_pytorch_import.py,--unsqueeze-input")
+#    eddl2pytorch+=("EDDL_to_Pytorch_LSTM_imdb_CPU;test_onnx_lstm_imdb_cpu;import_scripts/imdb_pytorch_import.py,--unsqueeze-input")
+#    eddl2pytorch+=("EDDL_to_Pytorch_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;import_scripts/recurrent_enc_dec_mnist_pytorch_import.py")
+#    eddl2pytorch+=("EDDL_to_Pytorch_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;import_scripts/recurrent_enc_dec_mnist_pytorch_import.py")
+#
+#    # Run "EDDL export -> Pytorch import" tests and store results
+#    print_header "EDDL export -> Pytorch import" >> $tests_results_path
+#    for test_data in "${eddl2pytorch[@]}"
+#    do
+#        IFS=';'; read -r -a test_arr <<< "${test_data}"  # Split string by ";"
+#
+#        # Get test name to show
+#        test_name="${test_arr[0]}"
+#
+#        # Get paths to onnx file and target metric to get in test
+#        model_name="${test_arr[1]}"
+#        model_path="${eddl_bin}/model_${model_name}.onnx"
+#        model_metric="${eddl_bin}/metric_${model_name}.txt"
+#
+#        # Get script path and arguments to execute it
+#        script_args="${test_arr[2]}"
+#        IFS=','; read -r -a script_argv <<< "${script_args}"  # Split string by ","
+#        script_call="python ${script_argv[@]} --onnx-file ${model_path} --target-metric ${model_metric}"
+#
+#        # Execute test
+#        echo "Running $test_name"
+#        print_header "$script_call" >> ${scripts_output_path}
+#        python ${script_argv[0]} ${script_argv[@]:1} --onnx-file ${model_path} --target-metric ${model_metric} &>> ${scripts_output_path}
+#        handle_exit_status "$test_name" ${tests_results_path}
+#        echo ""
+#    done
+#
+#    popd > /dev/null  # Go back to py_scripts main folder
 
     #-------------------------------
     # Pytorch export -> EDDL import
@@ -398,7 +399,7 @@ then
     # Keras -> EDDL
     keras2eddl+=("Keras_to_EDDL_conv1D;test_onnx_keras_conv1D;export_scripts/conv1D_keras_export.py;test_onnx_conv1D,--import")
     keras2eddl+=("Keras_to_EDDL_conv2D;test_onnx_keras_conv2D;export_scripts/conv2D_keras_export.py;test_onnx_conv2D,--import")
-    keras2eddl+=("Keras_to_EDDL_conv3D;test_onnx_keras_conv3D;export_scripts/conv3D_keras_export.py;test_onnx_conv3D,--import")
+    keras2eddl+=("Keras_to_EDDL_conv3D;test_onnx_keras_conv3D;export_scripts/conv3D_keras_export.py;test_onnx_conv3D,--import,--channels-last")
     keras2eddl+=("Keras_to_EDDL_LSTM_IMDB;test_onnx_keras_LSTM_imdb;export_scripts/lstm_keras_export.py;test_onnx_lstm_imdb,--import")
     keras2eddl+=("Keras_to_EDDL_GRU_IMDB;test_onnx_keras_GRU_imdb;export_scripts/gru_keras_export.py;test_onnx_gru_imdb,--import")
     keras2eddl+=("Keras_to_EDDL_LSTM_MNIST;test_onnx_keras_LSTM_mnist;export_scripts/lstm_mnist_keras_export.py;test_onnx_lstm_mnist,--import")
@@ -410,7 +411,7 @@ then
     #   Note: The export script is set to "none" because we don't need to execute then again
     keras2eddl+=("Keras_to_EDDL_conv1D_CPU;test_onnx_keras_conv1D;none;test_onnx_conv1D,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_conv2D_CPU;test_onnx_keras_conv2D;none;test_onnx_conv2D,--import,--cpu")
-    keras2eddl+=("Keras_to_EDDL_conv3D_CPU;test_onnx_keras_conv3D;none;test_onnx_conv3D,--import,--cpu")
+    keras2eddl+=("Keras_to_EDDL_conv3D_CPU;test_onnx_keras_conv3D;none;test_onnx_conv3D,--import,--cpu,--channels-last")
     keras2eddl+=("Keras_to_EDDL_LSTM_IMDB_CPU;test_onnx_keras_LSTM_imdb;none;test_onnx_lstm_imdb,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_GRU_IMDB_CPU;test_onnx_keras_GRU_imdb;none;test_onnx_gru_imdb,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_LSTM_MNIST_CPU;test_onnx_keras_LSTM_mnist;none;test_onnx_lstm_mnist,--import,--cpu")

@@ -24,8 +24,9 @@ using namespace eddl;
 int main(int argc, char **argv) {
   bool use_cpu = false;
   bool only_import = false;
+  bool channels_last = false;
   string onnx_model_path("model_test_onnx_conv3D.onnx");
-  string target_metric_file("metric_test_onnx_conv3D.txt");
+  string target_metric_file("");
   // Process provided args
   for (int i = 1; i < argc; ++i) {
     if (strcmp(argv[i], "--cpu") == 0)
@@ -38,6 +39,8 @@ int main(int argc, char **argv) {
     } else if (strcmp(argv[i], "--target-metric") == 0) {
       target_metric_file = argv[i+1];
       ++i; // Skip metric file path for next iteration
+    } else if (strcmp(argv[i], "--channels-last") == 0) {
+      channels_last = true;
     }
   }
 
@@ -56,6 +59,8 @@ int main(int argc, char **argv) {
   Tensor *aux_x_values = Tensor::linspace(0, 1, n_samples * channels * depth * height * width);
   Tensor *x = Tensor::reshape(aux_x_values, {n_samples, channels, depth, height, width});
   delete aux_x_values;
+  if (channels_last)
+    x->permute_({0, 2, 3, 4, 1});
   Tensor *aux_y_values = Tensor::linspace(0, 1, n_samples * num_classes);
   Tensor *y = Tensor::reshape(aux_y_values, {n_samples, num_classes});
   delete aux_y_values;

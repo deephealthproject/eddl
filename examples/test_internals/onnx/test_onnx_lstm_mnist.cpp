@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
   bool use_cpu = false;
   bool only_import = false;
   string onnx_model_path("model_test_onnx_lstm_mnist.onnx");
-  string target_metric_file("metric_test_onnx_lstm_mnist.txt");
+  string target_metric_file("");
   // Process provided args
   for (int i = 1; i < argc; ++i) {
     if (strcmp(argv[i], "--cpu") == 0)

@@ -20,12 +20,15 @@ parser.add_argument('--output-metric', type=str, default="",
                     help='Output file path to store the metric value obtained in test set')
 args = parser.parse_args()
 
-# Load MNIST data
-# Shape: (n_samples=2, ch=2, depth=8, height=8, width=8)
-x_train = np.arange(1, (2*3*8*8*8)+1).reshape((2, 3, 8, 8, 8)).astype(np.float32)
+# Create synthetic data
+n_samples = 6
+num_classes = 1
+# Shape: (n_samples, ch=3, depth=16, height=16, width=16)
+x_train = np.linspace(0, 1, n_samples*3*16*16*16).reshape((n_samples, 3, 16, 16, 16)).astype(np.float32)
+# (B, C, D, H, W) -> (B, D, H, W, C)
 x_train = np.transpose(x_train, (0, 2, 3, 4, 1))  # Set channel last
-# Shape: (n_samples=2, dim=2)
-y_train = np.arange(1, (2*2)+1).reshape((2, 2)).astype(np.float32)
+# Shape: (n_samples, dim=2)
+y_train = np.linspace(0, 1, n_samples*num_classes).reshape((n_samples, num_classes)).astype(np.float32)
 x_test, y_test = x_train, y_train
 
 print("Train data shape:", x_train.shape)
@@ -34,16 +37,16 @@ print("Test data shape:", x_test.shape)
 print("Test labels shape:", y_test.shape)
 
 model = Sequential()
-model.add(Input(shape=(8, 8, 8, 3), name="linput"))
+model.add(Input(shape=(16, 16, 16, 3), name="linput"))
 model.add(Conv3D(5, 3, padding="same"))
 model.add(MaxPooling3D())
 model.add(Conv3D(10, 3, padding="same"))
 model.add(MaxPooling3D())
 model.add(Flatten())
 model.add(Dense(100))
-model.add(Dense(2))
+model.add(Dense(num_classes))
 
-model.build(input_shape=(8, 8, 8, 3))  # For keras2onnx
+model.build(input_shape=(16, 16, 16, 3))  # For keras2onnx
 
 model.compile(loss='mse',
               optimizer="adam")
