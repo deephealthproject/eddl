@@ -45,8 +45,10 @@ class LWhere : public LinLayer {
 public:
     static int total_layers;
     Tensor* condition;
+    Tensor* t_parent1;
+    Tensor* t_parent2;
 
-    LWhere(Layer *parent, Layer *condition, string name, int dev, int mem);
+    LWhere(Layer *parent1, Layer *parent2, Layer *condition, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
