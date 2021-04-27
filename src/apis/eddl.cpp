@@ -738,6 +738,10 @@ namespace eddl {
         return new LConstOfTensor(t, name, DEV_CPU, 0);
     }
 
+    layer Where(layer parent1, layer parent2, layer condition, string name){
+        return new LWhere(parent1, parent2, condition, name, DEV_CPU, 0);
+    }
+
   // Transformation Layers
   layer Shift(layer parent, vector<int> shift, string da_mode, float constant, string name){
     return new LShift(parent, shift, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);

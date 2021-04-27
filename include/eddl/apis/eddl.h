@@ -1135,13 +1135,24 @@ namespace eddl {
     layer Transpose(layer parent, string name = "");
 
     /**
-      *  @brief Const of tensor
+      *  @brief Given a tensor (constant), this layer outputs the same tensor but repeat across the batch.
       *
       *  @param Tensor  Raw tensor
       *  @param name  A name for the operation
       *  @return Raw repeated for each batch
     */
     layer ConstOfTensor(Tensor* t, string name = "");
+
+    /**
+      *  @brief Return elements chosen from x or y depending on condition.
+      *
+      *  @param parent1  Parent layer
+      *  @param parent2  Parent layer
+      *  @param condition  Condition layer. Where True, selects parent1; where False, selects parent2. (Bool => Float of 0.0s and 1.0s)
+      *  @param name  A name for the operation
+      *  @return Raw repeated for each batch
+    */
+    layer Where(layer parent1, layer parent2, layer condition, string name = "");
 
     // Transformation Layers
     /**
