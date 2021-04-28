@@ -1,8 +1,8 @@
-import numpy as np
 import argparse
-import os
+
+import numpy as np
 from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.layers import Input, ReLU, Conv2D, Conv2DTranspose, MaxPooling2D, Activation
+from tensorflow.keras.layers import Input, ReLU, Conv2D, Conv2DTranspose, MaxPooling2D
 from tensorflow.keras.datasets import mnist
 from keras.utils.np_utils import to_categorical
 import keras2onnx
@@ -59,7 +59,6 @@ model.add(Conv2D(32, 1, padding="same", activation="relu"))
 model.add(Conv2DTranspose(32, 3, strides=(1, 1), padding="valid", activation='relu'))
 model.add(Conv2DTranspose(32, 2, strides=(2, 2), padding="same", activation='relu'))
 model.add(Conv2D(1, 1, padding="same", activation="sigmoid"))
-model.add(Activation('sigmoid'))
 
 model.compile(loss='mse',
               optimizer="adam",

@@ -13,6 +13,7 @@
 #include "eddl/serialization/onnx/layers/conv/conv1D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv3D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/convT_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/convT3D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/upsampling_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool1D_onnx.h"
@@ -338,6 +339,8 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_conv3D_node(l, graph, gradients);
   else if (LConvT2D *l = dynamic_cast<LConvT2D *>(layer))
     build_convT_node(l, graph, gradients);
+  else if (LConvT3D *l = dynamic_cast<LConvT3D *>(layer))
+    build_convT3D_node(l, graph, gradients);
   else if (LDense *l = dynamic_cast<LDense *>(layer))
     if (is_recurrent)
       build_dense_with_matmul_node(l, graph, gradients);

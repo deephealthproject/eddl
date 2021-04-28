@@ -64,14 +64,11 @@ def train(args, model, device, train_loader, optimizer, epoch):
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = torch.from_numpy(data), torch.from_numpy(target)
         data, target = data.to(device), target.to(device)
-        data_el_size = 1
-        for dim in data.size()[1:]:
-            data_el_size *= dim
         optimizer.zero_grad()
         output = model(data)
         loss = F.mse_loss(output, target, reduction='sum')
         loss.backward()
-        loss_acc += loss.item() / data_el_size
+        loss_acc += loss.item()
         current_samples += data.size(0)
         optimizer.step()
         print('\rTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
