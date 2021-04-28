@@ -83,7 +83,7 @@ def test(model, device, test_loader):
 def main():
     # Training settings
     parser = argparse.ArgumentParser(
-        description='PyTorch ConvT encoder-decoder MNIST Example')
+        description='PyTorch ConvT2D encoder-decoder MNIST Example')
     parser.add_argument('--batch-size', type=int, default=100, metavar='N',
                         help='input batch size for training (default: 100)')
     parser.add_argument('--epochs', type=int, default=5, metavar='N',
@@ -94,7 +94,7 @@ def main():
                         help='disables CUDA training')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
-    parser.add_argument('--output-path', type=str, default="onnx_models/convT_enc_dec_mnist.onnx",
+    parser.add_argument('--output-path', type=str, default="onnx_models/convT2D_enc_dec_mnist.onnx",
                         help='Output path to store the onnx file')
     parser.add_argument('--output-metric', type=str, default="",
                         help='Output file path to store the metric value obtained in test set')
