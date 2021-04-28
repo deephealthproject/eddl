@@ -84,7 +84,6 @@ void ConvolDescriptorT2D::build(Tensor *A) {
     I = A;
     
     nk = A->shape[1]; //ksize[0];
-    groups = nk;
     kr = ksize[1];
     kc = ksize[2];
     kz = A->shape[1]/groups;

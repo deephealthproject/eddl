@@ -36,8 +36,10 @@ Layer* build_convT_layer(onnx::NodeProto *node,
     }
     //else if (!attr_name.compare("dilations")) { It isn't implemented in eddl
     //}
-    //else if (!attr_name.compare("group")) { It isn't implemented in eddl
-    //}
+    else if (!attr_name.compare("group"))
+    {
+      groups = attribute.i();
+    }
     else if (!attr_name.compare("kernel_shape"))
     {
       for (int h = 0; h < attribute.ints_size(); h++)
@@ -207,7 +209,7 @@ void build_convT_node(LConvT2D *layer, onnx::GraphProto *graph, bool gradients)
   onnx::AttributeProto *conv_group = node->add_attribute();
   conv_group->set_name("group");
   conv_group->set_type(onnx::AttributeProto::INT);
-  conv_group->set_i(1);
+  conv_group->set_i(layer->cd->groups);
 
   // Attr kernel_shape
   onnx::AttributeProto *conv_kernel_shape = node->add_attribute();
