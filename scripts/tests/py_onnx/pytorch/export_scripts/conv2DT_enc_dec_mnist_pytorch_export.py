@@ -14,7 +14,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
         # Encoder
         self.encoder = nn.Sequential(
-            nn.Conv2d(1, 32, 3, stride=1, padding=2),
+            nn.Conv2d(1, 32, 3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2, 2),
             nn.Conv2d(32, 64, 3, stride=1, padding=0),
@@ -23,13 +23,13 @@ class Net(nn.Module):
         )
         # Decoder
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(64, 64, 3, stride=2, padding=1, output_padding=1),
-            nn.ReLU(),
-            nn.ConvTranspose2d(64, 64, 3, stride=1, padding=0),
+            nn.ConvTranspose2d(64, 64, 2, stride=2, padding=0),
             nn.ReLU(),
             nn.Conv2d(64, 32, 1, stride=1, padding=0),
             nn.ReLU(),
-            nn.ConvTranspose2d(32, 32, 3, stride=2, padding=1, output_padding=1),
+            nn.ConvTranspose2d(32, 32, 3, stride=1, padding=0),
+            nn.ReLU(),
+            nn.ConvTranspose2d(32, 32, 2, stride=2, padding=0),
             nn.ReLU(),
             nn.Conv2d(32, 1, 1, stride=1, padding=0),
             nn.Sigmoid()
@@ -69,7 +69,7 @@ def test(model, device, test_loader):
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
-            data_el_size = data.size(1) * data.size(2)  # 28 * 28 for mnist
+            data_el_size = data.size(2) * data.size(3)  # 28 * 28 for mnist
             output = model(data)
             test_loss += F.mse_loss(output, data, reduction='sum').item() / data_el_size
             current_samples += data.size(0)

@@ -2,7 +2,7 @@ import numpy as np
 import argparse
 import os
 from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.layers import Input, ReLU, Conv2D, Conv2DTranspose, MaxPooling2D
+from tensorflow.keras.layers import Input, ReLU, Conv2D, Conv2DTranspose, MaxPooling2D, Activation
 from tensorflow.keras.datasets import mnist
 from keras.utils.np_utils import to_categorical
 import keras2onnx
@@ -54,11 +54,12 @@ model.add(MaxPooling2D(2, 2))
 model.add(Conv2D(64, 3, padding="valid", activation="relu"))
 model.add(MaxPooling2D(2, 2))
 # Decoder
-model.add(Conv2DTranspose(64, 3, strides=(2, 2), padding="same", activation='relu'))
-model.add(Conv2DTranspose(64, 3, strides=(1, 1), padding="valid", activation='relu'))
+model.add(Conv2DTranspose(64, 2, strides=(2, 2), padding="same", activation='relu'))
 model.add(Conv2D(32, 1, padding="same", activation="relu"))
-model.add(Conv2DTranspose(32, 3, strides=(2, 2), padding="same", activation='relu'))
+model.add(Conv2DTranspose(32, 3, strides=(1, 1), padding="valid", activation='relu'))
+model.add(Conv2DTranspose(32, 2, strides=(2, 2), padding="same", activation='relu'))
 model.add(Conv2D(1, 1, padding="same", activation="sigmoid"))
+model.add(Activation('sigmoid'))
 
 model.compile(loss='mse',
               optimizer="adam",
