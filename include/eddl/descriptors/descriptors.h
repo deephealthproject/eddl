@@ -503,7 +503,7 @@ public:
 class PoolDescriptor3D {
 
 public:
-    Tensor *indX, *indY; // indexes
+    Tensor *indX, *indY, *indZ; // indexes
     vector<int> ksize;
     vector<int> stride;
     vector<int> pad; // {depth-front, depth-back, rows-top, rows-bottom, cols-left, cols-right}
@@ -538,9 +538,6 @@ public:
     cudnnTensorFormat_t tensor_format;
 
 #endif
-
-
-
 
 
     PoolDescriptor3D(const vector<int> &ks, const vector<int> &st, const string& p, int mem=0);

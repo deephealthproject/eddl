@@ -45,6 +45,7 @@ PoolDescriptor3D::PoolDescriptor3D(const vector<int> &ks, const vector<int> &st,
 PoolDescriptor3D::~PoolDescriptor3D(){
     delete indX;
     delete indY;
+    delete indZ;
 }
 
 void PoolDescriptor3D::build(Tensor *A) {
@@ -152,9 +153,6 @@ void PoolDescriptor3D::build(Tensor *A) {
 }
 
 #endif
-
-
-
 
 }
 
