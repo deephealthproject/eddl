@@ -99,9 +99,13 @@ void cpu_mpool2D_back(PoolDescriptor *D);
 void cpu_mpool3D(PoolDescriptor3D *D);
 void cpu_mpool3D_back(PoolDescriptor3D *D);
 
-// AvgPool
+// AvgPool 2D
 void cpu_avgpool2D(PoolDescriptor*D);
 void cpu_avgpool2D_back(PoolDescriptor *D);
+
+// AvgPool 3D
+void cpu_avgpool3D(PoolDescriptor3D *D);
+void cpu_avgpool3D_back(PoolDescriptor3D *D);
 
 // Tensor (special functions that deal with 4D tensors)
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
