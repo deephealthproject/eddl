@@ -237,7 +237,7 @@ namespace tensorNN {
 
 
         if (D->I->isCPU()) {
-            msg("NotImplementedError", "Tensor::AvgPool3D");
+            cpu_avgpool3D(D);
         }
 #ifdef cGPU
         else if (D->I->isGPU())
@@ -266,7 +266,7 @@ namespace tensorNN {
 
 
         if (D->I->isCPU()) {
-            msg("NotImplementedError", "Tensor::AvgPool3D_back");
+            cpu_avgpool3D(D);
         }
 #ifdef cGPU
         else if (D->I->isGPU())
