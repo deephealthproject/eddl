@@ -1,6 +1,6 @@
-import numpy as np
 import argparse
-import os
+
+import numpy as np
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Input, ReLU, Conv2D, Conv2DTranspose, MaxPooling2D
 from tensorflow.keras.datasets import mnist
@@ -8,7 +8,7 @@ from keras.utils.np_utils import to_categorical
 import keras2onnx
 
 # Training settings
-parser = argparse.ArgumentParser(description='Keras ConvT encoder decoder MNIST Example')
+parser = argparse.ArgumentParser(description='Keras ConvT2D encoder decoder MNIST Example')
 parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                     help='input batch size for training (default: 64)')
 parser.add_argument('--epochs', type=int, default=5, metavar='N',
@@ -19,7 +19,7 @@ parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
 parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
-parser.add_argument('--output-path', type=str, default="onnx_models/convT_enc_dec_mnist.onnx",
+parser.add_argument('--output-path', type=str, default="onnx_models/convT2D_enc_dec_mnist.onnx",
                     help='Output path to store the onnx file')
 parser.add_argument('--output-metric', type=str, default="",
                     help='Output file path to store the metric value obtained in test set')
@@ -54,10 +54,10 @@ model.add(MaxPooling2D(2, 2))
 model.add(Conv2D(64, 3, padding="valid", activation="relu"))
 model.add(MaxPooling2D(2, 2))
 # Decoder
-model.add(Conv2DTranspose(64, 3, strides=(2, 2), padding="same", activation='relu'))
-model.add(Conv2DTranspose(64, 3, strides=(1, 1), padding="valid", activation='relu'))
+model.add(Conv2DTranspose(64, 2, strides=(2, 2), padding="same", activation='relu'))
 model.add(Conv2D(32, 1, padding="same", activation="relu"))
-model.add(Conv2DTranspose(32, 3, strides=(2, 2), padding="same", activation='relu'))
+model.add(Conv2DTranspose(32, 3, strides=(1, 1), padding="valid", activation='relu'))
+model.add(Conv2DTranspose(32, 2, strides=(2, 2), padding="same", activation='relu'))
 model.add(Conv2D(1, 1, padding="same", activation="sigmoid"))
 
 model.compile(loss='mse',
@@ -79,6 +79,6 @@ if args.output_metric != "":
         ofile.write(str(eval_loss))
 
 # Convert to ONNX
-onnx_model = keras2onnx.convert_keras(model, "convT_mnist", debug_mode=1)
+onnx_model = keras2onnx.convert_keras(model, "convT2D_mnist", debug_mode=1)
 # Save ONNX to file
 keras2onnx.save_model(onnx_model, args.output_path)

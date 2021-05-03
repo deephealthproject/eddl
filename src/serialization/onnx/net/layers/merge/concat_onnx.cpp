@@ -27,6 +27,23 @@ Layer* build_concat_layer(onnx::NodeProto *node,
     parents.push_back(output_node_map[parent_name]);
   }
 
+  // Convert axis to a positive value
+  if (axis < 0)
+  {
+    int n_input_dims = parents[0]->output->getShape().size();
+    axis = n_input_dims + axis;
+    // Example:
+    //   parent_out: [b, c, h, w] -> n_input_dims = 4
+    //   axis = -3 (to select "c" dimension)
+    //   Compute new value: axis = 4 + (-3) = 1
+  }
+
+  // Sanity check
+  if (axis == 0)
+    msg("Error in Concat layer " + node->name() + ". Concat by the dimension 0 is not allowed.", "ONNX::ImportNet");
+
+  axis = axis - 1; // Convert axis to avoid batch dimension
+
   return new LConcat(parents, axis, node->name(), dev, mem);
 }
 
@@ -49,7 +66,7 @@ void build_concat_node(LConcat *layer, onnx::GraphProto *graph)
   onnx::AttributeProto *concat_axis = node->add_attribute();
   concat_axis->set_name("axis");
   concat_axis->set_type(onnx::AttributeProto::INT);
-  concat_axis->set_i(1);
+  concat_axis->set_i(layer->axis + 1);
 }
 
 #endif // defined(cPROTO)

@@ -85,10 +85,7 @@ void ConvolDescriptorT3D::build(Tensor *A) {
 
     I = A;
 
-    //nk = ksize[0];
-    nk = A->shape[1]; //ksize[0];
-    groups = nk;
-
+    nk = A->shape[1];
     kd = ksize[1];
     kr = ksize[2];
     kc = ksize[3];
@@ -343,11 +340,11 @@ void ConvolDescriptorT3D::enable_distributed() {
 int ConvolDescriptorT3D::compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate){
     if (padding=="same" || padding =="zeros") {
         return input_size*stride;  // inverse
-//        return std::ceil((float)input_size/(float)stride);
+        //return std::ceil((float)input_size/(float)stride);
 
     }else if(padding =="valid" || padding =="none"){
         return input_size*stride + ((kerkel_size - 1) * dilation_rate);  // inverse
-//        return std::ceil(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate)/(float)stride);
+        //return std::ceil(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate)/(float)stride);
 
     }else{
       cout<<padding<<endl;
@@ -357,8 +354,8 @@ int ConvolDescriptorT3D::compute_output(const string& padding, int input_size, i
 }
 
 int ConvolDescriptorT3D::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
-    return (input_size - 1)*stride + (kerkel_size - 1) * dilation_rate + padding[0] + padding[1] - 1;  // Inverse
-//    return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
+    return  stride * (input_size - 1) + ((kerkel_size - 1) * dilation_rate + 1) - padding[0] - padding[1];  // inverse
+    //return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
 }
 
 vector<int> ConvolDescriptorT3D::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding, bool row){
@@ -375,7 +372,7 @@ vector<int> ConvolDescriptorT3D::compute_padding(int output_size, int input_size
 
     if (padding=="same" || padding =="zeros") {
         int pad = (input_size-1) * stride + kerkel_size - output_size;  // Inverse
-//        int pad = (output_size-1) * stride + kerkel_size - input_size;
+        //int pad = (output_size-1) * stride + kerkel_size - input_size;
         pad = std::max(pad, 0);
 
         // Ignore the padding if possible
