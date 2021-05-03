@@ -41,6 +41,36 @@ void add_pixel(int b,int px,int py,int pz,PoolDescriptor *D,int isize,int irsize
   D->ID->ptr[address]+=val;
 }
 
+float get_pixel3d(int in, int iz, int id, int ir, int ic, PoolDescriptor3D *D, int stride_b, int stride_d, int stride_r, int stride_c) {
+    // Check boundaries of the window
+    if (id<0) return 0.0;
+    if (ir<0) return 0.0;
+    if (ic<0) return 0.0;
+
+    if (id>=D->id) return 0.0;
+    if (ir>=D->ir) return 0.0;
+    if (ic>=D->ic) return 0.0;
+
+    // Compute address from indices (row-major)
+    unsigned int address = (in* stride_b) + (iz* stride_d) + (id* stride_r) + (ir* stride_c) + ic;
+    return D->I->ptr[address];
+}
+
+void add_pixel3d(int in, int iz, int id, int ir, int ic, PoolDescriptor3D *D, int stride_b, int stride_d, int stride_r, int stride_c, float val) {
+    // Check boundaries of the window
+    if (id<0) return;
+    if (ir<0) return;
+    if (ic<0) return;
+
+    if (id>=D->id) return;
+    if (ir>=D->ir) return;
+    if (ic>=D->ic) return;
+
+    // Compute address from indices (row-major)
+    unsigned int address = (in* stride_b) + (iz* stride_d) + (id* stride_r) + (ir* stride_c) + ic;
+    D->ID->ptr[address]+=val;
+}
+
 void cpu_mpool2D(PoolDescriptor *D){
     _profile(_CPU_MPOOL2D, 0);
     int isize = D->ir*D->ic*D->iz;
@@ -89,7 +119,7 @@ void cpu_mpool2D_back(PoolDescriptor *D){
     for(int b=0; b<D->I->shape[0]; b++){  // Batches (ob=ib)
         int p=b*D->size; // Kernel's index (opt. shared variable)
 
-        for(int k=0; k<D->iz; k++) { // Depth: front-back (oz=iz)
+        for(int k=0; k<D->iz; k++) { // Channels
             for(int i=-D->padrt; i<=D->ir+D->padrb-D->kr; i+=D->sr) {  // rows: top-bottom
                 for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc, p++) { // cols: left-right
 
@@ -105,11 +135,81 @@ void cpu_mpool2D_back(PoolDescriptor *D){
 }
 
 void cpu_mpool3D(PoolDescriptor3D *D){
+//    _profile(_CPU_MPOOL2D, 0);
+    int stride_b = D->iz*D->id*D->ir*D->ic;
+    int stride_d = D->id*D->ir*D->ic;
+    int stride_r = D->ir*D->ic;
+    int stride_c = D->ic;
 
+
+    #pragma omp parallel for default(none) shared(D, stride_b, stride_d, stride_r, stride_c)
+    for(int b=0; b<D->in; b++){  // Batches
+        int p=b*D->size;  // Kernel's index (opt. shared variable)
+
+        for(int c=0; c<D->iz; c++) { // Channels
+
+            for(int d=-D->paddf; d<=D->id+D->paddb-D->kd; d+=D->sd) {  // Depth: front-back
+                for(int i=-D->padrt; i<=D->ir+D->padrb-D->kr; i+=D->sr) {  // rows: top-bottom
+                    for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc, p++) { // cols: left-right
+
+                        // Get max value in window
+                        float max = CPU_LOWEST_FLOAT;
+                        for(int kd=0; kd<D->kd; kd++){  // depth (kernel): front-back
+                            for(int ki=0; ki<D->kr; ki++){  // rows (kernel): top-bottom
+                                for(int kj=0; kj<D->kc; kj++) { // cols (kernel): left-right
+
+                                    // Get value W[ki,kj] value in window
+                                    float v = get_pixel3d(b, c, d+kd, i+ki, j+kj, D, stride_b, stride_d, stride_r, stride_c);
+                                    if (v>max) {
+                                        max = v;
+                                        D->indZ->ptr[p] = d+kd;
+                                        D->indY->ptr[p] = i+ki;
+                                        D->indX->ptr[p] = j+kj;
+                                    }
+
+                                } // kernel cols
+                            }  // kernel rows
+                        }  // kernel depth
+
+                        // Set output value
+                        D->O->ptr[p] = max;
+
+                    } // cols
+                } // rows
+            } // depth
+        } // channels
+    } // batch
+//    _profile(_CPU_MPOOL3D, 1);
 }
 
 void cpu_mpool3D_back(PoolDescriptor3D *D){
+//    _profile(_CPU_MPOOL3D_BACK, 0);
+    int stride_b = D->iz*D->id*D->ir*D->ic;
+    int stride_d = D->id*D->ir*D->ic;
+    int stride_r = D->ir*D->ic;
+    int stride_c = D->ic;
 
+#pragma omp parallel for default(none) shared(D, stride_b, stride_d, stride_r, stride_c)
+    for(int b=0; b<D->in; b++){  // Batches
+        int p=b*D->size;  // Kernel's index (opt. shared variable)
+
+        for(int c=0; c<D->iz; c++) { // Channels
+            for(int d=-D->paddf; d<=D->id+D->paddb-D->kd; d+=D->sd) {  // Depth: front-back
+                for(int i=-D->padrt; i<=D->ir+D->padrb-D->kr; i+=D->sr) {  // rows: top-bottom
+                    for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc, p++) { // cols: left-right
+
+                        int z = D->indZ->ptr[p];  // previous: d+kd
+                        int y = D->indY->ptr[p];  // previous: i+ki
+                        int x = D->indX->ptr[p];  // previous: j+kj
+                        add_pixel3d(b, c, z, y, x, D, stride_b, stride_d, stride_r, stride_c, D->D->ptr[p]);  // Set input's delta
+
+                    } // cols
+                } // rows
+            } // depth
+        } // channels
+    } // batch
+
+//    _profile(_CPU_MPOOL3D_BACK, 1);
 }
 
 
