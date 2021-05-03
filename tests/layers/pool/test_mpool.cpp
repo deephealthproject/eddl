@@ -377,13 +377,13 @@ TEST(MaxPoolTestSuite, mpool3d_k3x3x3_s3x3x3_pad_valid)
     auto* t_fwrd = new Tensor({1, 1, 1, 1, 1}, ptr_fwrd, DEV_CPU);
 
 
-    // backward
-    auto *ptr_bwrd = new float[5*5]{0, 0, 0, 1, 0,
-                                    0, 1, 0, 0, 0,
-                                    0, 0, 0, 0, 0,
-                                    0, 1, 0, 1, 0,
-                                    0, 0, 0, 0, 0};
-    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
+//    // backward
+//    auto *ptr_bwrd = new float[5*5]{0, 0, 0, 1, 0,
+//                                    0, 1, 0, 0, 0,
+//                                    0, 0, 0, 0, 0,
+//                                    0, 1, 0, 1, 0,
+//                                    0, 0, 0, 0, 0};
+//    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
     auto *pd = new PoolDescriptor3D({3, 3, 3}, {3, 3, 3}, "valid");
@@ -399,10 +399,10 @@ TEST(MaxPoolTestSuite, mpool3d_k3x3x3_s3x3x3_pad_valid)
     pd->O->print(2);
     ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, pd->O, 1e-3f, 0.0f, true, true));
 
-    // Backward
-    tensorNN::MPool3D_back(pd);
-    pd->ID->print(2);
-    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 1e-3f, 0.0f, true, true));
+//    // Backward
+//    tensorNN::MPool3D_back(pd);
+//    pd->ID->print(2);
+//    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 1e-3f, 0.0f, true, true));
 
 }
 
@@ -456,13 +456,13 @@ TEST(MaxPoolTestSuite, mpool3d_k3x3x3_s1x1x1_pad_valid)
     auto* t_fwrd = new Tensor({1, 1, 3, 3, 3}, ptr_fwrd, DEV_CPU);
 
 
-    // backward
-    auto *ptr_bwrd = new float[5*5]{0, 0, 0, 1, 0,
-                                    0, 1, 0, 0, 0,
-                                    0, 0, 0, 0, 0,
-                                    0, 1, 0, 1, 0,
-                                    0, 0, 0, 0, 0};
-    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
+//    // backward
+//    auto *ptr_bwrd = new float[5*5]{0, 0, 0, 1, 0,
+//                                    0, 1, 0, 0, 0,
+//                                    0, 0, 0, 0, 0,
+//                                    0, 1, 0, 1, 0,
+//                                    0, 0, 0, 0, 0};
+//    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
     auto *pd = new PoolDescriptor3D({3, 3, 3}, {1, 1, 1}, "valid");
@@ -478,9 +478,9 @@ TEST(MaxPoolTestSuite, mpool3d_k3x3x3_s1x1x1_pad_valid)
     pd->O->print(2);
     ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, pd->O, 1e-3f, 0.0f, true, true));
 
-    // Backward
-    tensorNN::MPool3D_back(pd);
-    pd->ID->print(2);
-    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 1e-3f, 0.0f, true, true));
+//    // Backward
+//    tensorNN::MPool3D_back(pd);
+//    pd->ID->print(2);
+//    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 1e-3f, 0.0f, true, true));
 
 }
