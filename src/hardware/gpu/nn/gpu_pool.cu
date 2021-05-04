@@ -135,7 +135,11 @@ void gpu_avgpool3D(PoolDescriptor3D *D){
 int device=D->I->gpu_device;
     cudaSetDevice(device);
 
-#ifdef cCUDNN
+#ifndef cCUDNN
+    setDims(D->O);
+    avgpool3d<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0], D->iz, D->id, D->ir,D->ic, D->kd, D->kr, D->kc, D->O->ptr, D->z, D->d, D->r,D->c, D->sd, D->sr, D->sc, D->paddf, D->paddb, D->padrt, D->padrb, D->padcl, D->padcr, D->indX->ptr, D->indY->ptr, D->indZ->ptr);
+    check_cuda(cudaDeviceSynchronize(),"gpu_avgpool3d");
+#else
   float alpha=1.0;
     float beta=0.0;
     check_cudnn(cudnnPoolingForward(hdnn[device], D->poolingDesc,
