@@ -438,7 +438,7 @@ TEST(MaxPoolTestSuite, mpool3d_k3x3x3_s1x1x1_pad_valid)
             -0.04, -2.55, -1.93, 0.21, 1.65,
     };
 
-    auto* t_image = new Tensor({1, 1, 5, 5, 5}, ptr_img, DEV_CPU);
+    auto* t_image = new Tensor({1, 1, 5, 5, 5}, ptr_img, DEV_CPU); // t_image->toGPU();
     t_image->print(2);
 
     // Forward
@@ -453,7 +453,7 @@ TEST(MaxPoolTestSuite, mpool3d_k3x3x3_s1x1x1_pad_valid)
         2.12, 2.12, 2.35,
         2.12, 2.12, 2.12,
     };
-    auto* t_fwrd = new Tensor({1, 1, 3, 3, 3}, ptr_fwrd, DEV_CPU);
+    auto* t_fwrd = new Tensor({1, 1, 3, 3, 3}, ptr_fwrd, DEV_CPU); // t_fwrd->toGPU();
 
 
 //    // backward
@@ -467,11 +467,11 @@ TEST(MaxPoolTestSuite, mpool3d_k3x3x3_s1x1x1_pad_valid)
     // Operation
     auto *pd = new PoolDescriptor3D({3, 3, 3}, {1, 1, 1}, "valid");
     pd->build(t_image);
-    pd->ID = Tensor::zeros(pd->I->getShape());
-    pd->D = Tensor::ones(pd->O->getShape());
-    pd->indX = new Tensor(pd->O->getShape());
-    pd->indY = new Tensor(pd->O->getShape());
-    pd->indZ = new Tensor(pd->O->getShape());
+    pd->ID = Tensor::zeros(pd->I->getShape()); // pd->ID->toGPU();
+    pd->D = Tensor::ones(pd->O->getShape());   // pd->D->toGPU();
+    pd->indX = new Tensor(pd->O->getShape());  // pd->indX->toGPU();
+    pd->indY = new Tensor(pd->O->getShape());  // pd->indY->toGPU();
+    pd->indZ = new Tensor(pd->O->getShape());  // pd->indZ->toGPU();
 
     // Forward
     tensorNN::MPool3D(pd);
@@ -484,3 +484,76 @@ TEST(MaxPoolTestSuite, mpool3d_k3x3x3_s1x1x1_pad_valid)
 //    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 1e-3f, 0.0f, true, true));
 
 }
+
+
+#ifdef cGPU
+TEST(MaxPoolTestSuite, pool3d_cpu_gpu){
+    // Image
+    Tensor* t_cpu = Tensor::randu({1, 3, 10, 10, 10});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    vector<string> padding = {"valid", "same"};
+    vector<int> strides = {1, 2, 3, 5};
+    vector<int> kernels = {1, 2, 3, 5, 7};
+
+    for(auto& p : padding){
+        for(auto& s : strides){
+            for(auto& k : kernels){
+                try{
+                    // CPU Operation
+                    auto *pd_cpu = new PoolDescriptor3D({k, k, k}, {s, s, s}, p);
+                    pd_cpu->build(t_cpu);
+                    pd_cpu->ID = Tensor::zeros(pd_cpu->I->getShape());
+                    pd_cpu->D = Tensor::ones(pd_cpu->O->getShape());
+                    pd_cpu->indX = new Tensor(pd_cpu->O->getShape());
+                    pd_cpu->indY = new Tensor(pd_cpu->O->getShape());
+                    pd_cpu->indZ = new Tensor(pd_cpu->O->getShape());
+                    
+                    // GPU Operation
+                    auto *pd_gpu = new PoolDescriptor3D({k, k, k}, {s, s, s}, p);
+                    pd_gpu->build(t_gpu);
+                    pd_gpu->ID = Tensor::zeros(pd_gpu->I->getShape()); pd_gpu->ID->toGPU();
+                    pd_gpu->D = Tensor::ones(pd_gpu->O->getShape()); pd_gpu->D->toGPU();
+                    pd_gpu->indX = new Tensor(pd_gpu->O->getShape()); pd_gpu->indX->toGPU();
+                    pd_gpu->indY = new Tensor(pd_gpu->O->getShape()); pd_gpu->indY->toGPU();
+                    pd_gpu->indZ = new Tensor(pd_gpu->O->getShape()); pd_gpu->indZ->toGPU();
+
+                    // Forward
+                    tensorNN::MPool3D(pd_cpu);
+                    tensorNN::MPool3D(pd_gpu);
+                    Tensor *pd_gpu_O = pd_gpu->O->clone(); pd_gpu_O->toCPU();  // Tensor::equivalent is only for CPU (at the moment)
+                    bool test_fwrd = (bool) Tensor::equivalent(pd_cpu->O, pd_gpu_O, 1e-1f, 0.0f, true, true);
+
+//                    // Backward
+//                    tensorNN::MPool3D_back(pd_cpu);
+//                    tensorNN::MPool3D_back(pd_gpu);
+//                    Tensor *pd_gpu_ID = pd_gpu->ID->clone(); pd_gpu_ID->toCPU(); // Tensor::equivalent is only for CPU (at the moment)
+                    bool test_bwrd = true; //(bool) Tensor::equivalent(pd_cpu->ID, pd_gpu_ID, 1e-3f, 0.0f, true, true);
+
+                    // Print results to ease debugging
+                    cout << "Testing pool3d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<
+                         " [Forward="<< test_fwrd << "; Backward=" << test_bwrd << "]" << endl;
+
+//                    // Test correctness
+//                    ASSERT_TRUE(test_fwrd);
+//                    ASSERT_TRUE(test_bwrd);
+
+                    delete pd_cpu->ID;
+                    delete pd_cpu->D;
+                    delete pd_cpu;
+
+                    delete pd_gpu->ID;
+                    delete pd_gpu->D;
+                    delete pd_gpu;
+
+                    delete pd_gpu_O;
+//                    delete pd_gpu_ID;
+                }
+                catch (...) {
+                    cout << "[FAILED] Testing pool3d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<endl;
+                }
+            }
+        }
+    }
+}
+#endif
