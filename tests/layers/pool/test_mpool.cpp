@@ -524,19 +524,19 @@ TEST(MaxPoolTestSuite, pool3d_cpu_gpu){
                     Tensor *pd_gpu_O = pd_gpu->O->clone(); pd_gpu_O->toCPU();  // Tensor::equivalent is only for CPU (at the moment)
                     bool test_fwrd = (bool) Tensor::equivalent(pd_cpu->O, pd_gpu_O, 1e-1f, 0.0f, true, true);
 
-//                    // Backward
-//                    tensorNN::MPool3D_back(pd_cpu);
-//                    tensorNN::MPool3D_back(pd_gpu);
-//                    Tensor *pd_gpu_ID = pd_gpu->ID->clone(); pd_gpu_ID->toCPU(); // Tensor::equivalent is only for CPU (at the moment)
-                    bool test_bwrd = true; //(bool) Tensor::equivalent(pd_cpu->ID, pd_gpu_ID, 1e-3f, 0.0f, true, true);
+                    // Backward
+                    tensorNN::MPool3D_back(pd_cpu);
+                    tensorNN::MPool3D_back(pd_gpu);
+                    Tensor *pd_gpu_ID = pd_gpu->ID->clone(); pd_gpu_ID->toCPU(); // Tensor::equivalent is only for CPU (at the moment)
+                    bool test_bwrd = (bool) Tensor::equivalent(pd_cpu->ID, pd_gpu_ID, 1e-3f, 0.0f, true, true);
 
                     // Print results to ease debugging
                     cout << "Testing pool3d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<
                          " [Forward="<< test_fwrd << "; Backward=" << test_bwrd << "]" << endl;
 
-//                    // Test correctness
-//                    ASSERT_TRUE(test_fwrd);
-//                    ASSERT_TRUE(test_bwrd);
+                    // Test correctness
+                    ASSERT_TRUE(test_fwrd);
+                    ASSERT_TRUE(test_bwrd);
 
                     delete pd_cpu->ID;
                     delete pd_cpu->D;
@@ -547,7 +547,7 @@ TEST(MaxPoolTestSuite, pool3d_cpu_gpu){
                     delete pd_gpu;
 
                     delete pd_gpu_O;
-//                    delete pd_gpu_ID;
+                    delete pd_gpu_ID;
                 }
                 catch (...) {
                     cout << "[FAILED] Testing pool3d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<endl;
