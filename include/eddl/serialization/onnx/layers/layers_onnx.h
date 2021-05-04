@@ -65,7 +65,8 @@ enum ONNX_LAYERS {
   ARGMAX,           // OPSET: 13, 12, 11, 1
   RESIZE,           // OPSET: 13
   SLICE,            // OPSET: 13, 11, 10
-  EXPAND            // OPSET: 13, 8 
+  SPLIT,            // OPSET: 13, 11, 2
+  EXPAND            // OPSET: 13, 8
 };
 
 map<string, ONNX_LAYERS> create_enum_map();

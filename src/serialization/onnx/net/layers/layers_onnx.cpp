@@ -9,6 +9,7 @@
 #include "eddl/serialization/onnx/layers/core/permute_onnx.h"
 #include "eddl/serialization/onnx/layers/core/embedding_onnx.h"
 #include "eddl/serialization/onnx/layers/core/select_onnx.h"
+#include "eddl/serialization/onnx/layers/core/split_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv1D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv3D_onnx.h"
@@ -114,6 +115,7 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["ArgMax"] = ONNX_LAYERS::ARGMAX;
   map_layers["Resize"] = ONNX_LAYERS::RESIZE;
   map_layers["Slice"] = ONNX_LAYERS::SLICE;
+  map_layers["Split"] = ONNX_LAYERS::SPLIT;
   map_layers["Expand"] = ONNX_LAYERS::EXPAND;
 
   return map_layers;
@@ -309,6 +311,9 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       break;
     case ONNX_LAYERS::SLICE:
       new_layer = build_select_layer(node, map_init_values, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::SPLIT:
+      new_layer = build_split_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::EXPAND:
       new_layer = build_expand_layer(node, map_init_values, output_node_map, dev, mem);
