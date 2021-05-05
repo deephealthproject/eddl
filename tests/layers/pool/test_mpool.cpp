@@ -486,6 +486,29 @@ TEST(MaxPoolTestSuite, mpool3d_k3x3x3_s1x1x1_pad_valid)
 }
 
 
+TEST(MaxPoolTestSuite, mpool3d_tests)
+{
+    // Image
+//    auto* t_image = Tensor::load("/home/salva/Downloads/maxpool3d2_input.bin");
+//    t_image->print(2);
+//
+//    // Operation
+//    auto *pd = new PoolDescriptor3D({2, 2, 2}, {2, 2, 2}, "same");
+//    pd->build(t_image);
+//    pd->ID = Tensor::zeros(pd->I->getShape());
+//    pd->D = Tensor::ones(pd->O->getShape());
+//    pd->indX = new Tensor(pd->O->getShape());
+//    pd->indY = new Tensor(pd->O->getShape());
+//    pd->indZ = new Tensor(pd->O->getShape());
+//
+//    // Forward
+//    tensorNN::MPool3D(pd);
+//    pd->O->print(2);
+//
+//    int asd = 5;
+
+}
+
 #ifdef cGPU
 TEST(MaxPoolTestSuite, pool3d_cpu_gpu){
     // Image
