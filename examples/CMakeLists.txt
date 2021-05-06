@@ -114,7 +114,10 @@ target_link_libraries(synthetic_imagenet_vgg16_bn eddl)
   target_link_libraries(test4 eddl)
 
 if(BUILD_PROTOBUF)
-    add_executable(test_onnx_conv1D "test_internals/onnx/test_onnx_conv1D.cpp")
+	add_executable(test_onnx_auxiliar "test_internals/onnx/test_onnx_auxiliar_layers.cpp")
+	target_link_libraries(test_onnx_auxiliar eddl)
+
+	add_executable(test_onnx_conv1D "test_internals/onnx/test_onnx_conv1D.cpp")
     target_link_libraries(test_onnx_conv1D eddl)
     add_executable(test_onnx_conv2D "test_internals/onnx/test_onnx_conv2D.cpp")
     target_link_libraries(test_onnx_conv2D eddl)
