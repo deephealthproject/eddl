@@ -64,6 +64,7 @@ enum ONNX_LAYERS {
   RSUM,             // OPSET: 11, 1
   ARGMAX,           // OPSET: 13, 12, 11, 1
   RESIZE,           // OPSET: 13
+  PAD,              // OPSET: 13, 11, 2, 1
   SLICE,            // OPSET: 13, 11, 10
   SPLIT,            // OPSET: 13, 11, 2
   EXPAND            // OPSET: 13, 8

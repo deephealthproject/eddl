@@ -46,6 +46,7 @@
 #include "eddl/serialization/onnx/layers/recurrent/rnn_onnx.h"
 #include "eddl/serialization/onnx/layers/recurrent/cps_onnx.h"
 #include "eddl/serialization/onnx/layers/da/scale_onnx.h"
+#include "eddl/serialization/onnx/layers/da/pad_onnx.h"
 #include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 #include "eddl/serialization/onnx/layers/auxiliar/expand_onnx.h"
 
@@ -114,6 +115,7 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["ReduceSum"] = ONNX_LAYERS::RSUM;
   map_layers["ArgMax"] = ONNX_LAYERS::ARGMAX;
   map_layers["Resize"] = ONNX_LAYERS::RESIZE;
+  map_layers["Pad"] = ONNX_LAYERS::PAD;
   map_layers["Slice"] = ONNX_LAYERS::SLICE;
   map_layers["Split"] = ONNX_LAYERS::SPLIT;
   map_layers["Expand"] = ONNX_LAYERS::EXPAND;
@@ -309,6 +311,9 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
     case ONNX_LAYERS::RESIZE:
       new_layer = build_scale_layer(node, map_init_values, output_node_map, dev, mem);
       break;
+    case ONNX_LAYERS::PAD:
+      new_layer = build_pad_layer(node, map_init_values, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::SLICE:
       new_layer = build_select_layer(node, map_init_values, output_node_map, dev, mem);
       break;
@@ -456,6 +461,8 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_embedding_node(l, graph);
   else if (LScale *l = dynamic_cast<LScale *>(layer))
     build_resize_node(l, graph);
+  else if (LPad *l = dynamic_cast<LPad *>(layer))
+    build_pad_node(l, graph);
   else if (LSelect *l = dynamic_cast<LSelect *>(layer))
     build_select_node(l, graph);
   else if (LExpand *l = dynamic_cast<LExpand *>(layer))
