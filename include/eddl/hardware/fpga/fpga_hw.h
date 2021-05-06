@@ -12,14 +12,13 @@
 #ifndef EDDL_FPGA_HW_H
 #define EDDL_FPGA_HW_H
 
+// --------------------------------------------------------------------------------------------------------
 #include "fpga_profile.h"
-
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"
 #include <ap_fixed.h>                       // Aproximated precision fixed point support
 #include <ap_int.h>                         // Aproximated precision integer support
-
 
 extern cl::CommandQueue *q;
 
@@ -29,7 +28,6 @@ extern cl::CommandQueue *q;
 //#define FPGA_DEBUG_VERBOSE
 
 #include "eddl/hardware/fpga/fpga_enables.h"
-
 
 // ----------------------------------------------------------------------------------------------------------
 // Precision support
@@ -53,7 +51,6 @@ extern cl::CommandQueue *q;
 
 // Debug functions
 void _debug_fpga_funcs(const char *str);
-
 
 // activation kernels (24)
 extern cl::Kernel kernel_relu,   kernel_d_relu,  kernel_thresholded_relu,    kernel_d_thresholded_relu, kernel_leaky_relu,     kernel_d_leaky_relu;
@@ -354,8 +351,6 @@ void fpga_not_equal(Tensor *A, Tensor *B, float v);
 
 // Legacy
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon);
-
-
 
 #endif //EDDL_FPGA_HW_H
 

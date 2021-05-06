@@ -242,27 +242,6 @@ void fpga_cpuemu_conv2D(ConvolDescriptor *D) {
 }
 
 #define MAX_KERNELS 16
-pthread_t th_process_kernel[MAX_KERNELS]; // Threads to control the FPGA kernels
-
-struct args {                             // Arguments for the threads
-  cl::Buffer I;
-  int Irows;
-  int Icols;
-  int Ichannels;
-  int num_rows;
-  int enable_upper_padding;
-  int enable_lower_padding;
-  int global_offset;
-  cl::Buffer K;
-  cl::Buffer B;
-  cl::Buffer O;
-  int Ochannels;
-  int apply_relu;
-  int CPI;
-  int CPO;
-  int kernel_id;
-};
-
 vector<cl::Event> kernel_events(MAX_KERNELS); // Kernel events (completion)
 
 
@@ -275,11 +254,12 @@ vector<cl::Event> kernel_events(MAX_KERNELS); // Kernel events (completion)
 // The output is iterated on the FPGA but the input must be iterated
 // from the CPU
 //
-//void *fpga_conv2D_kernel(void *a) {
 
-void fpga_conv2D_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels, int num_rows, int enable_upper_padding, int enable_lower_padding, int global_offset, cl::Buffer K, cl::Buffer B, cl::Buffer O, int Ochannels, int apply_relu, int CPI, int CPO, int kernel_id) {
+void fpga_conv2D_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels, int num_rows, 
+		        int enable_upper_padding, int enable_lower_padding, int global_offset, 
+			cl::Buffer K, cl::Buffer B, cl::Buffer O, int Ochannels, int apply_relu, int CPI, int CPO, int kernel_id) {
 
- PROFILING_HEADER(fpga_Conv2D);
+  PROFILING_HEADER(fpga_Conv2D);
 
   int KW = 3;                   // kernel width
   int KH = 3;                   // kernel height
@@ -289,13 +269,13 @@ void fpga_conv2D_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels, int n
   // Error variable
   cl_int err;
   
+  // iterations
   int I_ITER = (Ichannels + (CPI-1)) / CPI;
   int O_ITER = (Ochannels + (CPO-1)) / CPO;
 
   // set kernel arguments
   int arg = 0;
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I));
-
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Irows));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Icols));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, num_rows)); 
@@ -318,7 +298,6 @@ void fpga_conv2D_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels, int n
   OCL_CHECK(err, err = kernel_events[kernel_id].wait());
   
   PROFILING_FOOTER(fpga_Conv2D);
-
 }
 
 void fpga_conv2D_launch(cl::Buffer I, int Irows, int Icols, int Ichannels, cl::Buffer K, cl::Buffer B, cl::Buffer O, int Ochannels, int apply_relu, int CPI, int CPO, int num_kernels, int max_rows) {
@@ -338,17 +317,18 @@ void fpga_conv2D_launch(cl::Buffer I, int Irows, int Icols, int Ichannels, cl::B
     int enable_upper_padding_kernel[16];
     int enable_lower_padding_kernel[16];
     int global_offset_kernel[16];
+
     #pragma omp parallel for
     for (int k=0; k<num_kernels; k++) {
       num_rows_kernel[k] = Irows / num_kernels;
       enable_upper_padding_kernel[k] = (k == 0);
       enable_lower_padding_kernel[k] = (k == num_kernels-1);
       global_offset_kernel[k] = Icols * (Irows/num_kernels) * k;
-      fpga_conv2D_kernel(I, Irows, Icols, Ichannels, num_rows_kernel[k], enable_upper_padding_kernel[k], enable_lower_padding_kernel[k], global_offset_kernel[k], K, B, O, Ochannels, apply_relu, CPI, CPO, k);
+      fpga_conv2D_kernel(I, Irows, Icols, Ichannels, num_rows_kernel[k], enable_upper_padding_kernel[k], 
+		         enable_lower_padding_kernel[k], global_offset_kernel[k], K, B, O, Ochannels, apply_relu, CPI, CPO, k);
     }
   }
 }
-
 
 // --------------------------------------------------------------------------------------------
 //
@@ -363,24 +343,24 @@ void fpga_conv2D(ConvolDescriptor *D)
   cl::Event event;
 
   // conv2D parameters
-  int batch_size   = D->I->shape[0];     // batch size
+  int batch_size   = D->I->shape[0];                  // batch size
   cl::Buffer I     = *(cl::Buffer*)D->I->fpga_ptr;    // input activations
-  int Irows        = D->I->shape[2];     // rows of input image
-  int Icols        = D->I->shape[3];     // cols of input image
-  int Ichannels    = D->I->shape[1];     // input channels
+  int Irows        = D->I->shape[2];                  // rows of input image
+  int Icols        = D->I->shape[3];                  // cols of input image
+  int Ichannels    = D->I->shape[1];                  // input channels
   cl::Buffer K     = *(cl::Buffer*)D->K->fpga_ptr;    // kernel
-  int Krows        = D->kr;              // kernel rows
-  int Kcols        = D->kc;              // kernel cols
+  int Krows        = D->kr;                           // kernel rows
+  int Kcols        = D->kc;                           // kernel cols
   cl::Buffer B     = *(cl::Buffer*)D->bias->fpga_ptr; // bias
-  int use_bias     = D->use_bias;        // whether use bias or not
+  int use_bias     = D->use_bias;                     // whether use bias or not
   cl::Buffer O     = *(cl::Buffer*)D->O->fpga_ptr;    // output activations
-  int Orows        = D->O->shape[2];     // rows of output images
-  int Ocols        = D->O->shape[3];     // cols of output images
-  int Ochannels    = D->O->shape[1];     // output channels
-  int padding_rows = D->padrt;           // padding rows (for top and for bottom)
-  int padding_cols = D->padcl;           // padding cols (for left and right)
-  int stride_rows  = D->sr;              // rows stride
-  int stride_cols  = D->sc;              // cols stride
+  int Orows        = D->O->shape[2];                  // rows of output images
+  int Ocols        = D->O->shape[3];                  // cols of output images
+  int Ochannels    = D->O->shape[1];                  // output channels
+  int padding_rows = D->padrt;                        // padding rows (for top and for bottom)
+  int padding_cols = D->padcl;                        // padding cols (for left and right)
+  int stride_rows  = D->sr;                           // rows stride
+  int stride_cols  = D->sc;                           // cols stride
 
   _debug_fpga_funcs("conv2D");
   _profile_fpga(_FPGA_CONV2D, 0);
@@ -391,7 +371,6 @@ void fpga_conv2D(ConvolDescriptor *D)
   //fpga_print_data(D, Kcols, Krows, Ichannels, Ochannels, Icols, Irows);
 
   #ifdef K_ENABLED_CONV2D
-
   // depending on the conv parameters we select the kernel to launch
   if ((stride_rows == 1) && (stride_cols == 1) && (Krows == 3) && (Kcols == 3) && (batch_size == 1) && (padding_rows == 1) && (padding_cols == 1)) {
     // This kernel needs the data kernel in the format GO x GI x CPO x CPI x KH x KW
@@ -431,24 +410,24 @@ void fpga_conv2DReLU(ConvolDescriptor *D)
   cl::Event event;
 
   // conv2D parameters
-  int batch_size   = D->I->shape[0];     // batch size
+  int batch_size   = D->I->shape[0];                  // batch size
   cl::Buffer I     = *(cl::Buffer*)D->I->fpga_ptr;    // input activations
-  int Irows        = D->I->shape[2];     // rows of input image
-  int Icols        = D->I->shape[3];     // cols of input image
-  int Ichannels    = D->I->shape[1];     // input channels
+  int Irows        = D->I->shape[2];                  // rows of input image
+  int Icols        = D->I->shape[3];                  // cols of input image
+  int Ichannels    = D->I->shape[1];                  // input channels
   cl::Buffer K     = *(cl::Buffer*)D->K->fpga_ptr;    // kernel
-  int Krows        = D->kr;              // kernel rows
-  int Kcols        = D->kc;              // kernel cols
+  int Krows        = D->kr;                           // kernel rows
+  int Kcols        = D->kc;                           // kernel cols
   cl::Buffer B     = *(cl::Buffer*)D->bias->fpga_ptr; // bias
-  int use_bias     = D->use_bias;        // whether use bias or not
+  int use_bias     = D->use_bias;                     // whether use bias or not
   cl::Buffer O     = *(cl::Buffer*)D->O->fpga_ptr;    // output activations
-  int Orows        = D->O->shape[2];     // rows of output images
-  int Ocols        = D->O->shape[3];     // cols of output images
-  int Ochannels    = D->O->shape[1];     // output channels
-  int padding_rows = D->padrt;           // padding rows (for top and for bottom)
-  int padding_cols = D->padcl;           // padding cols (for left and right)
-  int stride_rows  = D->sr;              // rows stride
-  int stride_cols  = D->sc;              // cols stride
+  int Orows        = D->O->shape[2];                  // rows of output images
+  int Ocols        = D->O->shape[3];                  // cols of output images
+  int Ochannels    = D->O->shape[1];                  // output channels
+  int padding_rows = D->padrt;                        // padding rows (for top and for bottom)
+  int padding_cols = D->padcl;                        // padding cols (for left and right)
+  int stride_rows  = D->sr;                           // rows stride
+  int stride_cols  = D->sc;                           // cols stride
 
   // depending on the conv parameters we select the kernel to launch
   #ifdef K_ENABLED_CONV2D
