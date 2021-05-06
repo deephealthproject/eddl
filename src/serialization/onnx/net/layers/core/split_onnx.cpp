@@ -35,7 +35,7 @@ Layer* build_split_layer(onnx::NodeProto *node,
   {
     // Get starts indexes
     string starts_node_name = node->input(1);
-      splits_sizes = vf2vi(map_init_values[starts_node_name]);
+    splits_sizes = vf2vi(map_init_values[starts_node_name]);
   }
 
   // Get the input layer
@@ -46,14 +46,31 @@ Layer* build_split_layer(onnx::NodeProto *node,
   if (axis == 0)
     msg("Error: EDDL doesn't support a Split layer that splits_sizes the batch dimension.", "ONNX::ImportNet");
   else if (axis < 0)
-      axis = in_shape.size() + axis; // Convert to positive index
+    axis = in_shape.size() + axis; // Convert to positive index
   axis -= 1; // Remove batch dimension
 
   vector<int> splits_idx; // The final vector to pass to the LSplit constructor
   bool drop_last = false; // In case of not selecting the full axis with the splits we have to drop the reminder elements
   if (splits_sizes.size() == 0)
-    // If the splits_sizes sizes are not provided we split the input in two equal sized tensors
-    splits_idx.push_back(in_shape[axis + 1] / 2);
+  {
+    // If the splits_sizes sizes are not provided we split the input in N equal parts.
+    // Where N is equal to the number of outputs of the node
+    int n_outputs = node->output_size();
+    int axis_dim = in_shape[axis + 1];
+    if (axis_dim % n_outputs)
+      msg("Error in Split node " + node->name() + ". The axis to split must be divisible by the number of outputs.", "ONNX::ImportNet");
+    else
+    {
+      // Set the indexes to create the EDDL Split layer with equal sized tensors
+      int splits_eq_size = axis_dim / n_outputs;
+      int current_index = splits_eq_size;
+      for (int i = 1; i < n_outputs; ++i)
+      {
+        splits_idx.push_back(current_index);
+        current_index += splits_eq_size;
+      }
+    }
+  }
   else if (splits_sizes.size() == 1)
     msg("Error: In Split node " + node->name() + ". Expected 2 or more values in split attribute, got 1.", "ONNX::ImportNet");
   else
