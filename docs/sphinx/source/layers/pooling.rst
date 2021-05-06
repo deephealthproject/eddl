@@ -32,9 +32,9 @@ MaxPooling3D
 .. doxygenfunction:: MaxPool3D
 
 
-.. note::
+.. code-block:: c++
 
-    **Work in progress**. Not yet implemented.
+    l = MaxPool3D(l, {3, 3, 3}, {3, 3, 3}, "same");
 
 
 
@@ -69,9 +69,9 @@ AveragePooling3D
 .. doxygenfunction:: AveragePool3D
 
 
-.. note::
+.. code-block:: c++
 
-    **Work in progress**. Not yet implemented.
+    l = AveragePool3D(l, {3, 3, 3}, {3, 3, 3}, "same");
 
 
 
@@ -106,9 +106,9 @@ GlobalMaxPooling3D
 .. doxygenfunction:: GlobalMaxPool3D
 
 
-.. note::
+.. code-block:: c++
 
-    **Work in progress**. Not yet implemented.
+    l = GlobalMaxPool3D(l);
 
 
 
@@ -143,9 +143,9 @@ GlobalAveragePooling3D
 .. doxygenfunction:: GlobalAveragePool3D
 
 
-.. note::
+.. code-block:: c++
 
-    **Work in progress**. Not yet implemented.
+    l = GlobalAveragePool3D(l);
 
 
 

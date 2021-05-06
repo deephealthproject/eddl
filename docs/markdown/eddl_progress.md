@@ -151,16 +151,16 @@ Apply data transformations with random parametrization.
 | ------------- |------| -----| -----| ------|---------|
 | MaxPool1D           | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D MaxPooling operation |
 | MaxPool2D           | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D MaxPooling operation |
-| MaxPool3D           | ⚫  |  ⚫ | 🟢️️ | 🟢️ | 3D MaxPooling operation |
+| MaxPool3D           | 🟢️️ | 🟢️ | 🟢️️ | 🟢️ | 3D MaxPooling operation |
 | AveragePool1D       | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D AveragePooling operation |
 | AveragePool2D       | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D AveragePooling operation |
-| AveragePool3D       | ⚫  |  ⚫ | 🟢️️ | 🟢️️️ | 3D AveragePooling operation |
+| AveragePool3D       | 🟢️️ | 🟢️ | 🟢️️ | 🟢️️️ | 3D AveragePooling operation |
 | GlobalMaxPool1D     | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D GlobalMaxPooling operation |
 | GlobalMaxPool2D     | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D GlobalMaxPooling operation |
-| GlobalMaxPool3D     | ⚫  |  ⚫ | 🟢️️ | 🟢️️️ | 3D GlobalMaxPooling operation |
+| GlobalMaxPool3D     | 🟢️️ | 🟢️ | 🟢️️ | 🟢️️️ | 3D GlobalMaxPooling operation |
 | GlobalAveragePool1D | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 1D GlobalAveragePooling operation |
 | GlobalAveragePool2D | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️️ | 2D GlobalAveragePooling operation |
-| GlobalAveragePool3D | ⚫  |  ⚫  | 🟢️️ | 🟢️️️ | 3D GlobalAveragePooling operation |
+| GlobalAveragePool3D | 🟢️️ | 🟢️  | 🟢️️ | 🟢️️️ | 3D GlobalAveragePooling operation |
 
 
 ## Operators layers
