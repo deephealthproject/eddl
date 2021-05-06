@@ -65,9 +65,9 @@
 using std::vector;
 
 // data type
-//#define data_type float
+#define data_type float
 //#define data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
-#define data_type ap_int<8>
+//#define data_type ap_int<8>
 
 #define MAX_CONVS        8  // Maximum number of convolutional layers
 #define MAX_KERNELS      4  // Maximum number of kernels implemented
@@ -628,7 +628,7 @@ int main(int argc, char **argv) {
     for (int h=0; h<H; h++) {
       for (int w=0; w<W; w++) {
           data_type value = data_type(i+1); //data_type((i * W * H) + (h * W) + w); //c+1; // (data_type)((c * 25) + (h * W) + w);
-          data_in[addr] = value; //dist(gen); //value;
+          data_in[addr] = dist(gen); //value;
           addr++;
       }
     }

@@ -241,6 +241,31 @@ void fpga_cpuemu_conv2D(ConvolDescriptor *D) {
   fpga_copy_memory_to_fpga(D->ptrI, (cl::Buffer *)D->fpga_ptrI, D->fpga_sizeI);
 }
 
+#define MAX_KERNELS 16
+pthread_t th_process_kernel[MAX_KERNELS]; // Threads to control the FPGA kernels
+
+struct args {                             // Arguments for the threads
+  cl::Buffer I;
+  int Irows;
+  int Icols;
+  int Ichannels;
+  int num_rows;
+  int enable_upper_padding;
+  int enable_lower_padding;
+  int global_offset;
+  cl::Buffer K;
+  cl::Buffer B;
+  cl::Buffer O;
+  int Ochannels;
+  int apply_relu;
+  int CPI;
+  int CPO;
+  int kernel_id;
+};
+
+vector<cl::Event> kernel_events(MAX_KERNELS); // Kernel events (completion)
+
+
 // -------------------------------------------------------------------
 // conv2D_8x8
 //
@@ -250,17 +275,17 @@ void fpga_cpuemu_conv2D(ConvolDescriptor *D) {
 // The output is iterated on the FPGA but the input must be iterated
 // from the CPU
 //
-void fpga_conv2D_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels, cl::Buffer K, cl::Buffer B, cl::Buffer O, int Ochannels, int apply_relu, int CPI, int CPO, int num_kernels, int max_rows) {
+//void *fpga_conv2D_kernel(void *a) {
 
-  PROFILING_HEADER(fpga_Conv2D);
+void fpga_conv2D_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels, int num_rows, int enable_upper_padding, int enable_lower_padding, int global_offset, cl::Buffer K, cl::Buffer B, cl::Buffer O, int Ochannels, int apply_relu, int CPI, int CPO, int kernel_id) {
+
+ PROFILING_HEADER(fpga_Conv2D);
 
   int KW = 3;                   // kernel width
   int KH = 3;                   // kernel height
   int H = Irows;                // input channel height
   int W = Icols;                // input channel width
 
-  // Events
-  vector<cl::Event> kernel_events(16);
   // Error variable
   cl_int err;
   
@@ -269,41 +294,59 @@ void fpga_conv2D_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels, cl::B
 
   // set kernel arguments
   int arg = 0;
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, I));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I));
 
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, Irows));
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, Icols));
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, Irows));   // rows
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, Ichannels));
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, Ochannels));
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, I_ITER));
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, O_ITER));
-
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, apply_relu)); // relu
-
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, K));
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, B));
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, O));
-  int global_offset = 0;
-  int enable_upper_padding = 1;
-  int enable_lower_padding = 1;
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, global_offset));
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, enable_upper_padding));
-  OCL_CHECK(err, err = kernel_conv2D[0].setArg(arg++, enable_lower_padding));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Irows));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Icols));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, num_rows)); 
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Ichannels));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Ochannels));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I_ITER));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, O_ITER));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, apply_relu)); // relu
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, K));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, B));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, O));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, global_offset));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_upper_padding));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_lower_padding));
 
   // Launch the Kernel
-  OCL_CHECK(err, err = (*q).enqueueNDRangeKernel(kernel_conv2D[0], 0, 1, 1, NULL, &kernel_events[0]));
-  set_callback(kernel_events[0], "ooo_queue");
+  OCL_CHECK(err, err = (*q).enqueueNDRangeKernel(kernel_conv2D[kernel_id], 0, 1, 1, NULL, &kernel_events[kernel_id]));
 
-  // we wait the kernels to have completed
-  OCL_CHECK(err, err = kernel_events[0].wait());
-
+  set_callback(kernel_events[kernel_id], "ooo_queue");
+  OCL_CHECK(err, err = kernel_events[kernel_id].wait());
+  
   PROFILING_FOOTER(fpga_Conv2D);
 
 }
 
 void fpga_conv2D_launch(cl::Buffer I, int Irows, int Icols, int Ichannels, cl::Buffer K, cl::Buffer B, cl::Buffer O, int Ochannels, int apply_relu, int CPI, int CPO, int num_kernels, int max_rows) {
-  fpga_conv2D_kernel(I, Irows, Icols, Ichannels, K, B, O, Ochannels, apply_relu, CPI, CPO, num_kernels, max_rows);
+
+  // Depending on the number of kernels available we split the convolution operation into multiple frames, and launch one thread per kernel
+  if (num_kernels == 1) {
+    // just one kernel which handles all the conv operation
+    int num_rows = Irows;
+    int enable_upper_padding = 1;
+    int enable_lower_padding = 1;
+    int global_offset = 0;
+    int kernel_id = 0;
+    fpga_conv2D_kernel(I, Irows, Icols, Ichannels, num_rows, enable_upper_padding, enable_lower_padding, global_offset, K, B, O, Ochannels, apply_relu, CPI, CPO, kernel_id);
+  } else {
+    // several kernels available, let's split the operation in frames
+    int num_rows_kernel[16];
+    int enable_upper_padding_kernel[16];
+    int enable_lower_padding_kernel[16];
+    int global_offset_kernel[16];
+    #pragma omp parallel for
+    for (int k=0; k<num_kernels; k++) {
+      num_rows_kernel[k] = Irows / num_kernels;
+      enable_upper_padding_kernel[k] = (k == 0);
+      enable_lower_padding_kernel[k] = (k == num_kernels-1);
+      global_offset_kernel[k] = Icols * (Irows/num_kernels) * k;
+      fpga_conv2D_kernel(I, Irows, Icols, Ichannels, num_rows_kernel[k], enable_upper_padding_kernel[k], enable_lower_padding_kernel[k], global_offset_kernel[k], K, B, O, Ochannels, apply_relu, CPI, CPO, k);
+    }
+  }
 }
 
 
@@ -408,7 +451,7 @@ void fpga_conv2DReLU(ConvolDescriptor *D)
   int stride_cols  = D->sc;              // cols stride
 
   // depending on the conv parameters we select the kernel to launch
-  #ifdef K_ENABLED_CONV2D_8x8
+  #ifdef K_ENABLED_CONV2D
   if ((stride_rows == 1) && (stride_cols == 1) && (Krows == 3) && (Kcols == 3) && 
       (batch_size == 1) && (padding_rows == 1) && (padding_cols == 1)) {
     // This kernel needs the data kernel in the format GO x GI x CPO x CPI x KH x KW
@@ -419,28 +462,10 @@ void fpga_conv2DReLU(ConvolDescriptor *D)
       K     = *(cl::Buffer*)D->K->fpga_ptr; // read again the pointer since it may be changed
     }
 
-    fpga_conv2D_8x8(I, Irows, Icols, Ichannels, K, B, O, Ochannels, 1);
+    int apply_relu = 1;
+    fpga_conv2D_launch(I, Irows, Icols, Ichannels, K, B, O, Ochannels, apply_relu, k_conv2d_cpi, k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
 
     _profile_fpga_tensor(D->O);
-    return;
-  }
-  #endif
-
-  #ifdef K_ENABLED_CONV2D_4x4
-  if ((stride_rows == 1) && (stride_cols == 1) && (Krows == 3) && (Kcols == 3) && 
-      (batch_size == 1) && (padding_rows == 1) && (padding_cols == 1)) {
-    // This kernel needs the data kernel in the format GO x GI x CPO x CPI x KH x KW
-    // If not converted yet then we do it now
-    if (!D->fpga_kernel_in_fpga_format) {
-      fpga_reshape_kernel_data_convol(D, 3, 3, Ichannels, Ochannels, 4, 4);
-      D->fpga_kernel_in_fpga_format = 1;
-      K     = *(cl::Buffer*)D->K->fpga_ptr; // read again the pointer since it may be changed
-    }
-
-    fpga_conv2D_4x4(I, Irows, Icols, Ichannels, K, B, O, Ochannels, 1);
-
-    _profile_fpga_tensor(D->O);
-    //_profile_fpga_tensor_print(D->O);
     return;
   }
   #endif

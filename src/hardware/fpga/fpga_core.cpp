@@ -459,8 +459,11 @@ void fpga_init(){
 
     #ifdef K_ENABLED_CONV2D
     // We need to instantiate the proper number of kernels, we also take the specifities of the kernels
-    switch (K_VERSION_CONV2D) {
-      case 1: switch (K_SUBVERSION_CONV2D) {
+    int kernel_version = K_VERSION_CONV2D;
+    int kernel_subversion = K_SUBVERSION_CONV2D;
+    printf("kernel version %d.%d\n", kernel_version, kernel_subversion);
+    switch (kernel_version) {
+      case 1: switch (kernel_subversion) {
                 case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_fp32_relu_1kernel.xclbin"; break;
                 case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_apf8_relu_1kernel.xclbin"; break;
                 case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_api8_relu_1kernel.xclbin"; break;
@@ -468,7 +471,7 @@ void fpga_init(){
                 case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_8x8_api8_relu_1kernel.xclbin"; break;
                 case 5: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_fp32_relu_2kernel.xclbin"; break;
                 default: printf("Error, unrecognized conv2d kernel subversion\n"); exit(1); break;
-              }
+              } break;
       default: printf("Error, unrecognized conv2d kernel version\n"); exit(1); break;
     }
     #else
@@ -1129,7 +1132,10 @@ cl::Buffer *fpga_create_tensor(int device, int size)
 #endif
 
     e = fpga_num_buffer_pool_slots;
-    OCL_CHECK(err,buffer = new cl::Buffer(*context,CL_MEM_READ_WRITE, size*sizeof(fpga_data_type), NULL, &err));
+    cl_mem_ext_ptr_t ext = {0};
+    //ext.banks = XCL_MEM_DDR_BANK0;
+    ext.flags  = 0 | XCL_MEM_TOPOLOGY;
+    OCL_CHECK(err,buffer = new cl::Buffer(*context,CL_MEM_EXT_PTR_XILINX | CL_MEM_READ_WRITE, size*sizeof(fpga_data_type), &ext, &err));
     fpga_ptr_buffer_pool[e] = buffer;
     fpga_size_buffer_pool[e] = size;
     fpga_inuse_buffer_pool[e] = 1;
@@ -1326,7 +1332,8 @@ cl::Buffer *fpga_create_memory(long int size) {
     #ifdef FPGA_DEBUG_VERBOSE
     printf("    (creating memory in fpga size %d)\n", size);
     #endif
-    OCL_CHECK(err,buffer = new cl::Buffer(*context,CL_MEM_READ_WRITE, size, NULL, &err));
+
+    OCL_CHECK(err,buffer = new cl::Buffer(*context, CL_MEM_READ_WRITE, size, NULL, &err));
     return buffer;
 }
 

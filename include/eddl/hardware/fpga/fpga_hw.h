@@ -46,10 +46,10 @@ extern cl::CommandQueue *q;
 // from/to the FPGA the precision conversion is performed on a temporary CPU buffer.
 // If float precision is used, then PRECISION_CONVERSION should not be used
 //
-#define PRECISION_CONVERSION
+//#define PRECISION_CONVERSION
 //#define fpga_data_type float
-//#define fpga_data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
-#define fpga_data_type ap_int<8>
+#define fpga_data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
+//#define fpga_data_type ap_int<8>
 
 // Debug functions
 void _debug_fpga_funcs(const char *str);

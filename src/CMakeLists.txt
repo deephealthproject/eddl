@@ -305,7 +305,7 @@ if(USE_FPGA)
 
         target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCL_LIBRARY})
         if(APPLE)
-            target_link_options(${PROJECT_NAME} PUBLIC -framework opencl)
+            target_link_options(${PROJECT_NAME} PUBLIC -framework opencl -lpthread)
         endif()
 
         # TODO: Why this? Flags should be specific
