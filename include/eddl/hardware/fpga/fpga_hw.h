@@ -48,6 +48,11 @@ extern cl::CommandQueue *q;
 //#define fpga_data_type float
 #define fpga_data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
 //#define fpga_data_type ap_int<8>
+//
+//
+
+
+#define MAX_KERNELS 16
 
 // Debug functions
 void _debug_fpga_funcs(const char *str);

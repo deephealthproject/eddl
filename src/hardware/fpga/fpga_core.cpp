@@ -50,6 +50,8 @@ cl::CommandQueue          *q;                         // Command queue
 cl::CommandQueue           com;                       // Command queue
 cl::Program               *program;                   // Program
 
+vector<cl::Event> kernel_events(MAX_KERNELS);         // Kernel events (completion)
+
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // List of all kernels that can be instantiated in the FPGA
 //
