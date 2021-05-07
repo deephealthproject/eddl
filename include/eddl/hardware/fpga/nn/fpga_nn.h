@@ -68,8 +68,8 @@ void fpga_conv2DReLU(ConvolDescriptor *D);
 void fpga_conv2D_grad(ConvolDescriptor *D);
 void fpga_conv2D_back(ConvolDescriptor *D);
 void fpga_reshape_kernel_data_convol(ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO);
-int  fpga_conv2D_v1X(ConvolDescriptor *D);
-int  fpga_conv2D_v2X(ConvolDescriptor *D);
+int  fpga_conv2D_v1X(ConvolDescriptor *D, int enable_relu);
+int  fpga_conv2D_v2X(ConvolDescriptor *D, int enable_relu);
 
 // MaxPool
 void fpga_mpool2D(PoolDescriptor*D);

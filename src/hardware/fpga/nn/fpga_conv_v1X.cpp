@@ -105,7 +105,7 @@ void fpga_conv2D_v1X_launch(cl::Buffer I, int Irows, int Icols, int Ichannels, c
 }
 
 // fpga_conv2D_v1X: Implementation of conv2D kernels (version 1)
-int fpga_conv2D_v1X(ConvolDescriptor *D) {
+int fpga_conv2D_v1X(ConvolDescriptor *D, int enable_relu) {
 
   cl_int err;
   cl::Event event;
@@ -139,9 +139,7 @@ int fpga_conv2D_v1X(ConvolDescriptor *D) {
       D->fpga_kernel_in_fpga_format = 1;
       K     = *(cl::Buffer*)D->K->fpga_ptr; // read again the pointer since it may be changed
     }
-    // in case this conv performs also RELU we change the output tensor
-    if (D->fpga_apply_relu) O = *(cl::Buffer*)D->fpga_relu_ptrO;
-    fpga_conv2D_v1X_launch(I, Irows, Icols, Ichannels, K, B, O, Ochannels, D->fpga_apply_relu, k_conv2d_cpi, k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
+    fpga_conv2D_v1X_launch(I, Irows, Icols, Ichannels, K, B, O, Ochannels, enable_relu, k_conv2d_cpi, k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
     _profile_fpga_tensor(D->O);
     return 1;
   }

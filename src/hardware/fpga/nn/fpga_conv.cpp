@@ -145,8 +145,8 @@ void fpga_conv2D(ConvolDescriptor *D) {
   #ifdef K_ENABLED_CONV2D
   // depending on the conv parameters we select the kernel to launch
   switch (K_VERSION_CONV2D) {
-    case 1 : ret = fpga_conv2D_v1X(D); return; break;
-    case 2 : ret = fpga_conv2D_v2X(D); return; break;
+    case 1 : ret = fpga_conv2D_v1X(D, 0); return; break;
+    case 2 : ret = fpga_conv2D_v2X(D, 0); return; break;
     default: printf("Error, unsupported conv2D kernel version\n"); exit(1); break;
   }
   #endif
@@ -169,54 +169,29 @@ void fpga_conv2D(ConvolDescriptor *D) {
 //
 void fpga_conv2DReLU(ConvolDescriptor *D)
 {
-  printf("function disabled for the moment\n"); exit(1);
-/*  _debug_fpga_funcs("conv2DReLU");
+  _debug_fpga_funcs("conv2DReLU");
 
-  cl_int err;
-  cl::Event event;
+  _profile_fpga(_FPGA_CONV2D, 0);
+  _profile_fpga_tensor(D->I);
+  _profile_fpga_tensor(D->K);
+  _profile_fpga_tensor(D->bias);
 
-  // conv2D parameters
-  int batch_size   = D->I->shape[0];                  // batch size
-  cl::Buffer I     = *(cl::Buffer*)D->I->fpga_ptr;    // input activations
-  int Irows        = D->I->shape[2];                  // rows of input image
-  int Icols        = D->I->shape[3];                  // cols of input image
-  int Ichannels    = D->I->shape[1];                  // input channels
-  cl::Buffer K     = *(cl::Buffer*)D->K->fpga_ptr;    // kernel
-  int Krows        = D->kr;                           // kernel rows
-  int Kcols        = D->kc;                           // kernel cols
-  cl::Buffer B     = *(cl::Buffer*)D->bias->fpga_ptr; // bias
-  int use_bias     = D->use_bias;                     // whether use bias or not
-  cl::Buffer O     = *(cl::Buffer*)D->O->fpga_ptr;    // output activations
-  int Orows        = D->O->shape[2];                  // rows of output images
-  int Ocols        = D->O->shape[3];                  // cols of output images
-  int Ochannels    = D->O->shape[1];                  // output channels
-  int padding_rows = D->padrt;                        // padding rows (for top and for bottom)
-  int padding_cols = D->padcl;                        // padding cols (for left and right)
-  int stride_rows  = D->sr;                           // rows stride
-  int stride_cols  = D->sc;                           // cols stride
+  int ret = 0;
 
-  // depending on the conv parameters we select the kernel to launch
   #ifdef K_ENABLED_CONV2D
-  if ((stride_rows == 1) && (stride_cols == 1) && (Krows == 3) && (Kcols == 3) && 
-      (batch_size == 1) && (padding_rows == 1) && (padding_cols == 1)) {
-    // This kernel needs the data kernel in the format GO x GI x CPO x CPI x KH x KW
-    // If not converted yet then we do it now
-    if (!D->fpga_kernel_in_fpga_format) {
-      fpga_reshape_kernel_data_convol(D, 3, 3, Ichannels, Ochannels, 8, 8);
-      D->fpga_kernel_in_fpga_format = 1;
-      K     = *(cl::Buffer*)D->K->fpga_ptr; // read again the pointer since it may be changed
-    }
-
-    int apply_relu = 1;
-    fpga_conv2D_launch(I, Irows, Icols, Ichannels, K, B, O, Ochannels, apply_relu, k_conv2d_cpi, k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
-
-    _profile_fpga_tensor(D->O);
-    return;
+  // depending on the conv parameters we select the kernel to launch
+  switch (K_VERSION_CONV2D) {
+    case 1 : ret = fpga_conv2D_v1X(D, 1); return; break;
+    case 2 : ret = fpga_conv2D_v2X(D, 1); return; break;
+    default: printf("Error, unsupported conv2D kernel version\n"); exit(1); break;
   }
   #endif
 
-  printf("error, Conv2DReLU cannot be run on FPGA\n");
-  exit(1);*/
+  if (ret == 0) {
+    printf("error, Conv2DReLU cannot be run on FPGA\n");
+    exit(1);
+  }
+
 }
 
 // -----------------------------------------------------------------
