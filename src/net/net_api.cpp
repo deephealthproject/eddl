@@ -178,9 +178,12 @@ void Net::run_snets(void *(*F)(void *t))
 //////// SIMPLE ATOMICS FUNCS
 void Net::setmode(int m) {
   trmode=m;
-  for (int i = 0; i < snets.size(); i++)
-  for (int j = 0; j < snets[i]->layers.size(); j++)
-  snets[i]->layers[j]->setmode(m);
+  for (int i = 0; i < snets.size(); i++){
+      snets[i]->trmode=m;
+      for (int j = 0; j < snets[i]->layers.size(); j++){
+          snets[i]->layers[j]->setmode(m);
+      }
+  }
 }
 
 void Net::clamp(float min,float max)
