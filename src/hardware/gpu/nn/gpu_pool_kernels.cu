@@ -229,7 +229,7 @@ __global__ void maxpool3d(float* I, int batch, int ichannels, int idepth,int iro
 
             float max = GPU_LOWEST_FLOAT;
             //float max = I[i,j];
-            for (int kw = 0; kw < kd; kw++){  // rows (kernel): top-bottom
+            for (int kw = 0; kw < kd; kw++){  // depth (kernel): front-back
                 for (int ki = 0; ki < kr; ki++){  // rows (kernel): top-bottom
                     for (int kj = 0; kj < kc; kj++) {  // cols (kernel): left-right
 
@@ -543,7 +543,7 @@ __global__ void avgpool3d(float* I, int batch, int ichannels, int idepth,int iro
 
             // Sum values window
             float sum = 0.0f;
-            for (int kw = 0; kw < kd; kw++){  // rows (kernel): top-bottom
+            for (int kw = 0; kw < kd; kw++){   // depth (kernel): front-back
                 for (int ki = 0; ki < kr; ki++){  // rows (kernel): top-bottom
                     for (int kj = 0; kj < kc; kj++) {  // cols (kernel): left-right
 
