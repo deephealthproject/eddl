@@ -114,8 +114,8 @@ target_link_libraries(synthetic_imagenet_vgg16_bn eddl)
   target_link_libraries(test4 eddl)
 
 if(BUILD_PROTOBUF)
-	add_executable(test_onnx_auxiliar "test_internals/onnx/test_onnx_auxiliar_layers.cpp")
-	target_link_libraries(test_onnx_auxiliar eddl)
+    add_executable(test_onnx_auxiliar "test_internals/onnx/test_onnx_auxiliar_layers.cpp")
+    target_link_libraries(test_onnx_auxiliar eddl)
 
 	add_executable(test_onnx_conv1D "test_internals/onnx/test_onnx_conv1D.cpp")
     target_link_libraries(test_onnx_conv1D eddl)
@@ -169,7 +169,7 @@ if(BUILD_PROTOBUF)
     target_link_libraries(onnx_export eddl)
 
     add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
-		target_link_libraries(onnx_import eddl)
+    target_link_libraries(onnx_import eddl)
 
     add_executable(onnx_utils_serialization "onnx/4_onnx_utils_serialization.cpp")
     target_link_libraries(onnx_utils_serialization eddl)

@@ -114,6 +114,7 @@ scripts_to_run+=("EDDL_to_EDDL_LSTM_mnist;test_onnx_lstm_mnist;test_onnx_lstm_mn
 scripts_to_run+=("EDDL_to_EDDL_RNN_mnist;test_onnx_rnn_mnist;test_onnx_rnn_mnist")
 scripts_to_run+=("EDDL_to_EDDL_LSTM_enc_dec;test_onnx_lstm_enc_dec;test_onnx_lstm_enc_dec")
 scripts_to_run+=("EDDL_to_EDDL_GRU_enc_dec;test_onnx_gru_enc_dec;test_onnx_gru_enc_dec")
+scripts_to_run+=("EDDL_to_EDDL_auxiliar;test_onnx_auxiliar;test_onnx_auxiliar")
 # From EDDL CPU to EDDL CPU
 scripts_to_run+=("EDDL_to_EDDL_conv1D_CPU;test_onnx_conv1D_cpu;test_onnx_conv1D,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_conv2D_CPU;test_onnx_conv2D_cpu;test_onnx_conv2D,--cpu")
@@ -127,6 +128,7 @@ scripts_to_run+=("EDDL_to_EDDL_LSTM_mnist_CPU;test_onnx_lstm_mnist_cpu;test_onnx
 scripts_to_run+=("EDDL_to_EDDL_RNN_mnist_CPU;test_onnx_rnn_mnist_cpu;test_onnx_rnn_mnist,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;test_onnx_lstm_enc_dec,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;test_onnx_gru_enc_dec,--cpu")
+scripts_to_run+=("EDDL_to_EDDL_auxiliar_CPU;test_onnx_auxiliar_cpu;test_onnx_auxiliar,--cpu")
 
 # Prepare output files
 print_header "ONNX TESTS RESULTS" > $tests_results_path
@@ -199,6 +201,7 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_imdb;test_onnx_lstm_imdb;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec;test_onnx_lstm_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec;test_onnx_gru_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_auxiliar;test_onnx_auxiliar;onnxruntime_mnist.py,--input-1D,--no-channel")
     # From EDDL CPU to ONNX RT
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv1D_CPU;test_onnx_conv1D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv2D_CPU;test_onnx_conv2D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
@@ -209,6 +212,7 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_imdb_CPU;test_onnx_lstm_imdb_cpu;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_auxiliar_CPU;test_onnx_auxiliar_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
 
     # Run "EDDL export -> ONNX Runtime import" tests and store results
     print_header "EDDL export -> ONNX Runtime import" >> $tests_results_path
@@ -329,6 +333,7 @@ then
     pytorch2eddl+=("Pytorch_to_EDDL_RNN_MNIST;test_onnx_pytorch_RNN_mnist;export_scripts/rnn_mnist_pytorch_export.py;test_onnx_rnn_mnist,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_LSTM_enc_dec;test_onnx_pytorch_LSTM_enc_dec;export_scripts/lstm_enc_dec_mnist_pytorch_export.py;test_onnx_lstm_enc_dec,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_GRU_enc_dec;test_onnx_pytorch_GRU_enc_dec;export_scripts/gru_enc_dec_mnist_pytorch_export.py;test_onnx_gru_enc_dec,--import")
+    pytorch2eddl+=("Pytorch_to_EDDL_auxiliar;test_onnx_pytorch_auxiliar;export_scripts/auxiliar_pytorch_export.py;test_onnx_auxiliar,--import")
     # Pytorch -> EDDL CPU
     #   Note: The export script is set to "none" because we don't need to execute then again
     pytorch2eddl+=("Pytorch_to_EDDL_conv1D_CPU;test_onnx_pytorch_conv1D;none;test_onnx_conv1D,--import,--cpu")
@@ -343,6 +348,7 @@ then
     pytorch2eddl+=("Pytorch_to_EDDL_RNN_MNIST_CPU;test_onnx_pytorch_RNN_mnist;none;test_onnx_rnn_mnist,--import,--cpu")
     pytorch2eddl+=("Pytorch_to_EDDL_LSTM_enc_dec_CPU;test_onnx_pytorch_LSTM_enc_dec;none;test_onnx_lstm_enc_dec,--import,--cpu")
     pytorch2eddl+=("Pytorch_to_EDDL_GRU_enc_dec_CPU;test_onnx_pytorch_GRU_enc_dec;none;test_onnx_gru_enc_dec,--import,--cpu")
+    pytorch2eddl+=("Pytorch_to_EDDL_auxiliar_CPU;test_onnx_pytorch_auxiliar;none;test_onnx_auxiliar,--import,--cpu")
 
     # Run "Pytorch export -> EDDL import" tests and store results
     print_header "Pytorch export -> EDDL import" >> $tests_results_path
@@ -421,6 +427,7 @@ then
     keras2eddl+=("Keras_to_EDDL_RNN_MNIST;test_onnx_keras_RNN_mnist;export_scripts/rnn_mnist_keras_export.py;test_onnx_rnn_mnist,--import")
     keras2eddl+=("Keras_to_EDDL_LSTM_enc_dec;test_onnx_keras_LSTM_enc_dec;export_scripts/lstm_enc_dec_mnist_keras_export.py;test_onnx_lstm_enc_dec,--import")
     keras2eddl+=("Keras_to_EDDL_GRU_enc_dec;test_onnx_keras_GRU_enc_dec;export_scripts/gru_enc_dec_mnist_keras_export.py;test_onnx_gru_enc_dec,--import")
+    #keras2eddl+=("Keras_to_EDDL_auxiliar;test_onnx_keras_auxiliar;export_scripts/auxiliar_keras_export.py;test_onnx_auxiliar,--import") Bug keras2onnx in Split node
     # Keras -> EDDL CPU
     #   Note: The export script is set to "none" because we don't need to execute then again
     keras2eddl+=("Keras_to_EDDL_conv1D_CPU;test_onnx_keras_conv1D;none;test_onnx_conv1D,--import,--cpu")
@@ -435,6 +442,7 @@ then
     keras2eddl+=("Keras_to_EDDL_RNN_MNIST_CPU;test_onnx_keras_RNN_mnist;none;test_onnx_rnn_mnist,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_LSTM_enc_dec_CPU;test_onnx_keras_LSTM_enc_dec;none;test_onnx_lstm_enc_dec,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_GRU_enc_dec_CPU;test_onnx_keras_GRU_enc_dec;none;test_onnx_gru_enc_dec,--import,--cpu")
+    #keras2eddl+=("Keras_to_EDDL_auxiliar_CPU;test_onnx_keras_auxiliar;none;test_onnx_auxiliar,--import,--cpu") Bug keras2onnx in Split node
 
     # Run "Keras export -> EDDL import" tests and store results
     print_header "Keras export -> EDDL import" >> $tests_results_path
