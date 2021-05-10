@@ -1,12 +1,34 @@
-from __future__ import print_function
-import os
 import argparse
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-from torch.autograd import Variable
-from torchtext.legacy import datasets, data
+from torch.utils.data import Dataset, DataLoader
+from tensorflow.keras.datasets import imdb
+from tensorflow.keras.preprocessing import sequence
+
+
+class KerasIMDB(Dataset):
+    """A wrapper for the dataset provided by Tensorflow/Keras."""
+
+    def __init__(self, train=True, vocab_size=2000, max_len=250):
+        # Load the data from keras.datasets
+        (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=vocab_size, maxlen=max_len)
+        x_train = sequence.pad_sequences(x_train, maxlen=max_len)
+        x_test = sequence.pad_sequences(x_test, maxlen=max_len)
+
+        if train:
+            self.x = x_train
+            self.y = y_train
+        else:
+            self.x = x_test
+            self.y = y_test
+
+    def __len__(self):
+        return len(self.x)
+
+    def __getitem__(self, idx):
+        x, y = self.x[idx], self.y[idx]
+        return {"input": torch.from_numpy(x), "label": torch.tensor([y]).float()}
 
 
 class Net(nn.Module):
@@ -20,10 +42,10 @@ class Net(nn.Module):
         self.dense = nn.Sequential(
             nn.Linear(hidden_dim, output_dim),
             nn.Sigmoid()
-            )
+        )
 
     def forward(self, x):
-        embedded = self.embedding(x)  
+        embedded = self.embedding(x)
         # embedded = [n_seq, batch_size, n_embedding]
 
         gru_out, h = self.recurrent(embedded)
@@ -42,9 +64,7 @@ def train(args, model, device, train_loader, criterion, optimizer, epoch):
     current_samples = 0
     for batch_idx, batch in enumerate(train_loader):
         optimizer.zero_grad()
-        data, target = batch.text, batch.label.float()
-        data = torch.transpose(data, 0, 1)
-        target = target.view((target.shape[0], 1))
+        data, target = batch["input"].to(device), batch["label"].to(device)
         output = model(data)
         loss = criterion(output, target)
         loss.backward()
@@ -55,8 +75,8 @@ def train(args, model, device, train_loader, criterion, optimizer, epoch):
         if batch_idx % 10 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAcc: {:.2f}%'.format(
                 epoch, batch_idx * len(target), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item(),
-                100. * correct / current_samples))
+                       100. * batch_idx / len(train_loader), loss.item(),
+                       100. * correct / current_samples))
 
 
 def test(model, device, test_loader, criterion):
@@ -65,9 +85,7 @@ def test(model, device, test_loader, criterion):
     correct = 0
     with torch.no_grad():
         for batch in test_loader:
-            data, target = batch.text, batch.label.float()
-            data = torch.transpose(data, 0, 1)
-            target = target.view((target.shape[0], 1))
+            data, target = batch["input"].to(device), batch["label"].to(device)
             output = model(data)
             test_loss += criterion(output, target).item()  # sum up batch loss
             pred = torch.round(output)
@@ -108,21 +126,13 @@ def main():
 
     device = torch.device("cuda" if use_cuda else "cpu")
 
-    # Create data fields for preprocessing
-    TEXT = data.Field()
-    LABEL = data.LabelField()
-    # Create data splits
-    train_data, test_data = datasets.IMDB.splits(TEXT, LABEL)
-    # Create vocabulary
-    TEXT.build_vocab(train_data, max_size = args.vocab_size-2)
-    LABEL.build_vocab(train_data)
-    # Create splits iterators
-    train_iterator, test_iterator = data.BucketIterator.splits(
-        (train_data, test_data),
-        batch_size = args.batch_size,
-        device = device)
+    # Create data generator form the IMDB dataset of Keras
+    imdb_train = KerasIMDB(train=True, vocab_size=args.vocab_size)
+    imdb_test = KerasIMDB(train=False, vocab_size=args.vocab_size)
+    train_iterator = DataLoader(imdb_train, batch_size=args.batch_size)
+    test_iterator = DataLoader(imdb_test, batch_size=args.batch_size)
 
-    model = Net(input_dim=len(TEXT.vocab)).to(device)
+    model = Net(input_dim=args.vocab_size).to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     criterion = nn.BCELoss()
 
@@ -139,6 +149,7 @@ def main():
     # Save to ONNX file
     dummy_input = torch.zeros((args.batch_size, 1000)).long().to(device)
     torch.onnx._export(model, dummy_input, args.output_path, keep_initializers_as_inputs=True, input_names=["input_1"])
+
 
 if __name__ == '__main__':
     main()
