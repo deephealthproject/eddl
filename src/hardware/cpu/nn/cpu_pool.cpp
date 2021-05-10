@@ -143,7 +143,7 @@ void cpu_mpool3D(PoolDescriptor3D *D){
 
 
     #pragma omp parallel for default(none) shared(D, stride_b, stride_d, stride_r, stride_c)
-    for(int b=0; b<D->in; b++){  // Batches
+    for(int b=0; b<D->I->shape[0]; b++){  // Batches
         int p=b*D->size;  // Kernel's index (opt. shared variable)
 
         for(int c=0; c<D->iz; c++) { // Channels
@@ -190,7 +190,7 @@ void cpu_mpool3D_back(PoolDescriptor3D *D){
     int stride_c = D->ic;
 
 #pragma omp parallel for default(none) shared(D, stride_b, stride_d, stride_r, stride_c)
-    for(int b=0; b<D->in; b++){  // Batches
+    for(int b=0; b<D->I->shape[0]; b++){  // Batches
         int p=b*D->size;  // Kernel's index (opt. shared variable)
 
         for(int c=0; c<D->iz; c++) { // Channels
@@ -287,7 +287,7 @@ void cpu_avgpool3D(PoolDescriptor3D *D){
 
 
 #pragma omp parallel for default(none) shared(D, stride_b, stride_d, stride_r, stride_c, ksize)
-    for(int b=0; b<D->in; b++){  // Batches
+    for(int b=0; b<D->I->shape[0]; b++){  // Batches
         int p=b*D->size;  // Kernel's index (opt. shared variable)
 
         for(int c=0; c<D->iz; c++) { // Channels
@@ -330,7 +330,7 @@ void cpu_avgpool3D_back(PoolDescriptor3D *D){
     float ksize = (float)D->kd*D->kr*D->kc;
 
 #pragma omp parallel for default(none) shared(D, stride_b, stride_d, stride_r, stride_c, ksize)
-    for(int b=0; b<D->in; b++){  // Batches
+    for(int b=0; b<D->I->shape[0]; b++){  // Batches
         int p=b*D->size;  // Kernel's index (opt. shared variable)
 
         for(int c=0; c<D->iz; c++) { // Channels
