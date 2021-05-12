@@ -42,7 +42,7 @@ Layer* build_mul_layer(onnx::NodeProto *node,
       }
       else
       {
-        msg("Error: The second imput factor of the Mult layer " + node->name() + " is not valid", "ONNX::ImportNet");
+        msg("Error: The second input factor of the Mult layer " + node->name() + " is not valid", "ONNX::ImportNet");
         return nullptr;
       }
     }
@@ -50,7 +50,9 @@ Layer* build_mul_layer(onnx::NodeProto *node,
 
   Layer *second_operator = output_node_map[second_operator_name];
 
-  return new LMult(first_operator, second_operator, node->name(), dev, mem);
+  vector<Layer *> operators = expand_broadcast({first_operator, second_operator});
+
+  return new LMult(operators[0], operators[1], node->name(), dev, mem);
 }
 
 // ONNX export

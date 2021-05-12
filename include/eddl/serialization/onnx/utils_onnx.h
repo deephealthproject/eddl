@@ -50,4 +50,9 @@ std::vector<int> vf2vi(const std::vector<float> &vf);
 // Synchronize the weights of the snets with the original net
 void collect_params(Net *net);
 
+// Given a vector with 2 layers, compares the output tensors and in case of finding a dimension that differs, uses a
+// LExpand layer to simulate broadcasting. The returned vector will be the original layers or in case of using a LExpand,
+// that layer will be replaced by the LExpand pointer
+vector<Layer *> expand_broadcast(vector<Layer *> layers);
+
 #endif // EDDL_UTILS_ONNX_H

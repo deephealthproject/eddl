@@ -1,5 +1,6 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/utils_onnx.h"
+#include "eddl/layers/auxiliar/layer_auxiliar.h"
 
 void log_string(string log, LOG_LEVEL actual_log_level, LOG_LEVEL string_log_level)
 {
@@ -135,6 +136,40 @@ void collect_params(Net *net)
     for (int i = 0; i < net->layers.size(); i++)
       for (int j = 0; j < net->layers[i]->params.size(); j++)
         collectTensor(net->layers[i], "param", j);
+}
+
+vector<Layer *> expand_broadcast(vector<Layer *> layers)
+{
+  if (layers.size() != 2)
+    msg("Error: Expected 2 layers to check for broadcasting, got " + to_string(layers.size()), "ONNX::expand_broadcast");
+
+  int n_dims0 = layers[0]->output->shape.size();
+  int n_dims1 = layers[1]->output->shape.size();
+  if (n_dims0 != n_dims1)
+    msg("Error: The number of dimensions of the input layers is not the same (" + to_string(n_dims0) + " != " + to_string(n_dims1) + ")",
+        "ONNX::expand_broadcast");
+
+  int new_size = -1; // The new size to use in the LExpand layer
+  // Find the dimension that must be expanded
+  for (int i = 1/*skip batch*/; i < n_dims0; ++i)
+  {
+    int dim0 = layers[0]->output->shape[i];
+    int dim1 = layers[1]->output->shape[i];
+    if (dim0 == dim1)
+      continue;
+    else if (dim0 > dim1 && dim1 == 1)
+    {
+      layers[1] = new LExpand(layers[1], dim0, layers[1]->name + "_expanded", layers[1]->dev, layers[1]->mem_level);
+      break;
+    }
+    else if (dim0 < dim1 && dim0 == 1)
+    {
+      layers[0] = new LExpand(layers[0], dim1, layers[0]->name + "_expanded", layers[0]->dev, layers[0]->mem_level);
+      break;
+    }
+  }
+
+  return layers;
 }
 
 #endif // defined(cPROTO)
