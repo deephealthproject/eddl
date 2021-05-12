@@ -699,7 +699,12 @@ namespace eddl {
     return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
   }
 
-  layer Reshape(layer parent, const vector<int> &shape, string name){
+    layer Resize(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
+        return new LResize(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
+    }
+
+
+    layer Reshape(layer parent, const vector<int> &shape, string name){
     tshape s = vector<int>(shape.begin(), shape.end());
     s.insert(s.begin(), 1);
     return new LReshape(parent, s, name, DEV_CPU, 0);
