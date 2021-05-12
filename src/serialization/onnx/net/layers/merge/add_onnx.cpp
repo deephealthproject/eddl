@@ -3,6 +3,7 @@
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/conv/layer_conv.h"
 #include "eddl/layers/normalization/layer_normalization.h"
+#include "eddl/layers/auxiliar/layer_auxiliar.h"
 
 // ONNX import
 Layer* build_add_layer(onnx::NodeProto *node,
@@ -24,8 +25,10 @@ Layer* build_add_layer(onnx::NodeProto *node,
     if (output_node_map.count(parent_name))
       parents.push_back(output_node_map[parent_name]);
     else if (map_init_values.count(parent_name))
+    {
       parameter_input = true;
-    index_parameter = j;
+      index_parameter = j;
+    }
   }
   
   if (parameter_input)
@@ -92,8 +95,32 @@ Layer* build_add_layer(onnx::NodeProto *node,
 
       return bn;
     }
+    else if (map_init_values.count(node->input(index_parameter)))
+    {
+      log_string("Detected a constant input tensor in the Add node.", log_level, LOG_LEVEL::DEBUG);
+      string tensor_name = node->input(index_parameter);
+      // Create the tensor with the constant values to add
+      vector<float> *tensor_values = &(map_init_values[tensor_name]);
+      vector<int> tensor_shape = map_init_dims[tensor_name];
+      // Check that the tensor shape is valid
+      if (tensor_shape.size() < 2)
+        msg("Error in Add node " + node->name() + ". The number of dimensions of the constant operator must be 2 or higher", "ONNX::ImportNet");
+      else if (tensor_shape[0] != 1)
+        msg("Error in Add node " + node->name() + ". The first dimension (batch) of the constant operator must be 1, got " +
+            to_string(tensor_shape[0]), "ONNX::ImportNet");
+      else
+        tensor_shape.erase(tensor_shape.begin()); // Delete the batch dimension
+
+      Tensor *t = new Tensor(tensor_shape, nullptr, dev);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(tensor_values, t);
+      // Create an auxiliary layer to get the constant values for the Add layer
+      LConstOfTensor *const_layer = new LConstOfTensor(t, tensor_name, dev, mem);
+      delete t; // The tensor is cloned inside the LConstOfTensor constructor
+
+      parents.push_back(const_layer); // Add the layer to the parents of the Add layer
+    }
     else
-      cerr << "Error, add with a parameter input where the other input is not a dense, a convolutional or a batchnorm layer" << endl;
+      msg("Error in Add node " + node->name() + ". Unable to process input " + node->input(index_parameter), "ONNX::ImportNet");
   }
 
   LAdd *actual_layer = new LAdd(parents, node->name(), dev, mem);
