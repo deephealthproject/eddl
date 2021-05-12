@@ -62,6 +62,7 @@ void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don
 void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int wrapping_mode, float constant);
 void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int wrapping_mode, float constant);
 void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
+void cpu_scale_back(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
 void cpu_flip(Tensor *A, Tensor *B, int axis);
 void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse);
 void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int wrapping_mode, float constant);

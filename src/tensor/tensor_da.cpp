@@ -163,6 +163,48 @@ void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode wra
 }
 
 
+void Tensor::scale_back(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode wrapping_mode, float cval, TransformationMode coordinate_transformation_mode) {
+    // new_shape => {y, x}
+    // Parameter check
+    if(new_shape[0] <= 0 || new_shape[1] <= 0){
+        msg("The new shape must be a greater than zero", "Tensor::scale");
+    }
+
+    // Check dimensions
+    if (A->ndim != 4 || B->ndim != 4){
+        msg("This method requires two 4D tensors", "Tensor::scale");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::scale");
+    }
+
+    // Check here if this transformation is implemented (in gpu could be tricky to show useful alerts)
+    if(coordinate_transformation_mode!=TransformationMode::HalfPixel &&
+       coordinate_transformation_mode!=TransformationMode::Asymmetric &&
+       coordinate_transformation_mode!=TransformationMode::AlignCorners){
+        msg("This transformation mode is not implemented (" + to_string(coordinate_transformation_mode) + ")", "Tensor::scale");
+    }
+
+//    PROFILING_HEADER_EXTERN(scale_back);
+
+    if (A->isCPU()) {
+        cpu_scale_back(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        //gpu_scale_back(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
+    }
+#endif
+#ifdef cFPGA
+        else {
+        //fpga_scale(A, B, std::move(new_shape), mode, cval);
+    }
+#endif
+
+//    PROFILING_FOOTER(scale_back);
+}
+
+
 Tensor* Tensor::flip(int axis) {
     Tensor *t_new = Tensor::empty_like(this);
     Tensor::flip(this, t_new, axis);

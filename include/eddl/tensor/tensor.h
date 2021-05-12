@@ -2046,6 +2046,7 @@ public:
     *        - ``TransformationMode::TFCropAndResize``: x_original = length_resized > 1 ? start_x * (length_original - 1) + x_resized * (end_x - start_x) * (length_original - 1) / (length_resized - 1) : 0.5 * (start_x + end_x) * (length_original - 1)
     */
     static void scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
+    static void scale_back(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
 
     /**
     *   @brief Flip the tensor.
