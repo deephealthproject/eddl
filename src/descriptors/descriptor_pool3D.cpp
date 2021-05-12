@@ -112,17 +112,15 @@ void PoolDescriptor3D::build(Tensor *A) {
         msg("Invalid output shape", "PoolDescriptor3D::build");
     }
 
-    O = new Tensor(vector<int>{A->shape[0], z, d, r, c}, A->device);
+    O = Tensor::zeros(vector<int>{A->shape[0], z, d, r, c}, A->device);
 //    if (!mem_level) { D = new Tensor(O->shape, A->device); }
 
 
     // Careful with the "size++" not "useless loop"
-    size=0;
-    for(int k=0;k<iz;k++)
-      for(int w=-paddf;w<=id+paddb-kd;w+=sd)
-          for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
-            for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
-
+    int w = std::floor((id+paddb-kd)-(-paddf)+1/sd);  // max-min+1
+    int i = std::floor((ir+padrb-kr)-(-padrt)+1/sr);  // max-min+1
+    int j = std::floor((id+padcr-kc)-(-padcl)+1/sc);  // max-min+1
+    size=iz * w * i * j;
 
 #ifdef cCUDNN
     if(!O->isCPU()){
