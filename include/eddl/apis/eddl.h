@@ -2291,5 +2291,15 @@ namespace eddl {
 
     // Auxiliary function
     layer _expand3d_to_4d(layer parent, string name);
+
+
+   /**
+     *  @brief Creates a model adapted to FPGA
+     *
+     *  @see
+     *
+     *  @return The new model adapted for FPGA
+   */
+   model model_for_fpga(model m_src);  
 }
 #endif

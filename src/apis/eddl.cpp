@@ -1706,4 +1706,93 @@ namespace eddl {
         return p;
     }
 
+    // model for fpga
+    model model_for_fpga(model m_src) {
+
+      // layer pointers
+      Layer *cl;       // current layer pointer
+      Layer *nl;       // current+1 layer pointer
+      Layer *nnl;      // current+2 layer pointer
+
+      // variables to find layers
+      int found_I;     // current layer is an input layer
+      int found_C;     // current layer is a Convolution
+      int found_nM;    // current+1 layer is a maxpooling layer
+      int found_nR;    // current+1 layer is a ReLU layer
+      int found_nnR;   // current+2 layer is a ReLU layer
+      //
+      int found_CM;    // Layers Convolution+Maxpooling detected
+      int found_CMR;   // Layers Convolution+Maxpooling+ReLU detected
+      printf("model_for_fpga API function\n");
+
+      // number of layers
+      int num_layers = m_src->layers.size();
+      printf("number of layers: %d\n", num_layers);
+
+      // we sweep all the model in search of layers that can be merged
+      int l = 0;
+      while (l<num_layers) {
+
+	// detection stage, we detect any possible type of layer that can be merged
+	// we look into current, current+1 and current+2 layers
+	
+	// Current layer
+	found_C = 0;
+	found_I = 0;
+	cl = m_src->layers[l];
+	if (LConv *dl = dynamic_cast<LConv *>(cl)) found_C = 1;
+	if (LInput *dl = dynamic_cast<LInput *>(cl)) found_I = 1;
+
+	// current+1 layer
+	found_nM = 0;
+	found_nR = 0;
+	if (l<num_layers-1) {
+	  nl = m_src->layers[l+1];
+	  if (LPool *dl = dynamic_cast<LPool *>(nl)) found_nM = 1;
+	  if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_nR = 1;
+	}
+
+	// current+2 layer
+	found_nnR = 0;
+	if (l<num_layers-2) {
+	  nnl = m_src->layers[l+2];
+	  if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "relu") found_nnR = 1; 
+	}
+
+	// Combination of layers detected
+	found_CM = found_C && found_nM;
+	found_CMR = found_C && found_nM && found_nnR;
+
+        // build up stage, we create a merged layer out of our findings
+	//
+	
+	if (found_CMR) {
+	  printf("new layer: CMR\n");
+	  printf(" - merging Conv + Maxpool + ReLU into a single layer\n");
+	  printf(" - adapting conv filters\n");
+	  l=l+3;
+	} else if (found_CM) {
+	  printf("new layer: CM\n");
+	  printf(" - merging Conv + Maxpool into a single layer\n");
+	  printf(" - adapting conv filters\n");
+	  l=l+2;
+	} else if (found_C) {
+	  printf("new layer: C\n");
+	  printf(" - adapting conv filters\n");
+	  l=l+1;
+	} else if (found_I) {
+	  printf("new layer: I\n");
+	  l=l+1;
+	} else {
+	  printf("new layer: unsepecified\n");
+	  l = l + 1;
+	}
+      }
+      exit(1);
+
+      Net *m = new Net();
+
+      return m;
+    }
+
 }//namespace
