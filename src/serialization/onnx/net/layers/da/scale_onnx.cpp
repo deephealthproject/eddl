@@ -64,7 +64,7 @@ Layer* build_scale_layer(onnx::NodeProto *node,
 }
 
 // ONNX export
-void build_resize_node(LScale *layer, onnx::GraphProto *graph)
+void build_resize_node_from_scale(LScale *layer, onnx::GraphProto *graph)
 {
   // Add an empty node to the graph
   onnx::NodeProto *node = graph->add_node();

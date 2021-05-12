@@ -20,7 +20,7 @@ Layer* build_scale_layer(onnx::NodeProto *node,
  */
 
 // OPSET: 13
-void build_resize_node(LScale *layer, onnx::GraphProto *graph);
+void build_resize_node_from_scale(LScale *layer, onnx::GraphProto *graph);
 
 #endif // EDDL_SCALE_ONNX_H
 #endif // cPROTO

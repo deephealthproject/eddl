@@ -10,6 +10,7 @@
 #include "eddl/serialization/onnx/layers/core/embedding_onnx.h"
 #include "eddl/serialization/onnx/layers/core/select_onnx.h"
 #include "eddl/serialization/onnx/layers/core/split_onnx.h"
+#include "eddl/serialization/onnx/layers/core/resize_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv1D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv3D_onnx.h"
@@ -309,7 +310,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_permute_layer(node, output_node_map, recurrent_net, log_level, dev, mem);
       break;
     case ONNX_LAYERS::RESIZE:
-      new_layer = build_scale_layer(node, map_init_values, output_node_map, dev, mem);
+      new_layer = build_resize_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::PAD:
       new_layer = build_pad_layer(node, map_init_values, output_node_map, dev, mem);
@@ -459,8 +460,10 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     handle_copy_states(l, graph);
   else if (LEmbedding *l = dynamic_cast<LEmbedding *>(layer))
     build_embedding_node(l, graph);
-  else if (LScale *l = dynamic_cast<LScale *>(layer))
+  else if (LResize *l = dynamic_cast<LResize *>(layer))
     build_resize_node(l, graph);
+  else if (LScale *l = dynamic_cast<LScale *>(layer))
+    build_resize_node_from_scale(l, graph);
   else if (LPad *l = dynamic_cast<LPad *>(layer))
     build_pad_node(l, graph);
   else if (LSelect *l = dynamic_cast<LSelect *>(layer))
