@@ -134,6 +134,60 @@ __device__ void gpu_single_scale(long int thread_id_x, float* A, float* B, int b
 }
 
 
+__device__ void gpu_single_scale_back(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode){
+    int offsets[2] = {0, 0};
+    offsets[0] = (new_shape[0] - orows)/2.0f;
+    offsets[1] = (new_shape[1] - ocols)/2.0f;
+
+    int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+    int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
+
+    //--------------
+    int b = thread_id_x / B_stride[0] % batch;
+    int c = thread_id_x / B_stride[1] % depth;
+    int Bi = thread_id_x / B_stride[2] % orows;
+    int Bj = thread_id_x / B_stride[3] % ocols;
+    //--------------
+    //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
+
+
+    int Ai = (Bi + offsets[0]);
+    int Aj = (Bj + offsets[1]);
+
+    // Select transformation mode: HalfPixel=0, PytorchHalfPixel=1, AlignCorners=2, Asymmetric=3, TFCropAndResize=4
+    if (coordinate_transformation_mode==0) {
+        float scale_y = (float) new_shape[0] / irows;
+        float scale_x = (float) new_shape[1] / icols;
+        Ai = ((float)Ai + 0.5f) / scale_y - 0.5f;
+        Aj = ((float)Aj + 0.5f) / scale_x - 0.5f;
+    } else if (coordinate_transformation_mode==2) {
+        float scale_y = (float)(new_shape[0]-1) / (irows - 1);
+        float scale_x = (float)(new_shape[1]-1) / (icols - 1);
+        Ai = Ai / scale_y;
+        Aj = Aj / scale_x;
+    } else if (coordinate_transformation_mode==3) {
+        float scale_y = (float) new_shape[0] / irows;
+        float scale_x = (float) new_shape[1] / icols;
+        Ai = Ai / scale_y;
+        Aj = Aj / scale_x;
+    }
+    // If the mode does not exists, must be catched before calling this function
+
+
+    if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols) {
+        int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
+        A[A_pos] += B[thread_id_x];
+    } else {
+        if(wrapping_mode==0){ // Constant
+            // B[thread_id_x] = constant;
+        }else if(wrapping_mode == 5){  // Original
+            A[thread_id_x] += B[thread_id_x];
+        }else{
+            printf("wrapping_mode (%d) not implemented (%s)", wrapping_mode, "Tensor::gpu_single_scale_back");
+        }
+    }
+}
+
 
 __device__ void gpu_single_flip(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int axis, bool apply){
     int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
@@ -235,6 +289,15 @@ __global__ void scale(float* A, float* B, int batch, int depth, int irows, int i
 
 }
 
+__global__ void scale_back(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    long int ops = batch * depth*orows*ocols;
+
+    if (thread_id_x < ops){
+        gpu_single_scale_back(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, new_shape, wrapping_mode, constant, coordinate_transformation_mode);
+    }
+
+}
 
 __global__ void flip(float* A, float* B, int batch, int depth, int irows, int icols, int axis){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;

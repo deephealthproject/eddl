@@ -71,6 +71,20 @@ void gpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, f
     check_cuda(cudaDeviceSynchronize(), "scale");
 }
 
+void gpu_scale_back(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int transformation_mode){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy vector from host to device
+    int *d_new_shape; cudaMalloc((int**)&d_new_shape, new_shape.size()*sizeof(int));
+    cudaMemcpy(d_new_shape, new_shape.data(), new_shape.size()*sizeof(int), cudaMemcpyHostToDevice);
+
+    setDims(B);
+    scale_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_new_shape, wrapping_mode, constant, transformation_mode);
+    check_cuda(cudaDeviceSynchronize(), "scale_back");
+}
+
+
 void gpu_flip(Tensor *A, Tensor *B, int axis){
     int device=A->gpu_device;
     cudaSetDevice(device);

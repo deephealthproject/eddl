@@ -63,6 +63,7 @@ void gpu_rand_normal(Tensor *A, float m, float s);
 void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int wrapping_mode, float constant);
 void gpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int wrapping_mode, float constant);
 void gpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int transformation_mode);
+void gpu_scale_back(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int transformation_mode);
 void gpu_flip(Tensor *A, Tensor *B, int axis);
 void gpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse);
 void gpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int wrapping_mode, float constant);

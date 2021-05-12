@@ -192,7 +192,7 @@ void Tensor::scale_back(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMod
 #ifdef cGPU
     else if (A->isGPU())
     {
-        //gpu_scale_back(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
+        gpu_scale_back(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
     }
 #endif
 #ifdef cFPGA
