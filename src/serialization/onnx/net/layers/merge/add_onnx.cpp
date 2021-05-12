@@ -4,6 +4,7 @@
 #include "eddl/layers/conv/layer_conv.h"
 #include "eddl/layers/normalization/layer_normalization.h"
 #include "eddl/layers/auxiliar/layer_auxiliar.h"
+#include "eddl/layers/operators/layer_operators.h"
 
 // ONNX import
 Layer* build_add_layer(onnx::NodeProto *node,
@@ -110,6 +111,18 @@ Layer* build_add_layer(onnx::NodeProto *node,
             to_string(tensor_shape[0]), "ONNX::ImportNet");
       else
         tensor_shape.erase(tensor_shape.begin()); // Delete the batch dimension
+
+      // Check if the constant tensor has only one number
+      int tensor_size = 1;
+      for (int i : tensor_shape)
+          tensor_size *= i;
+
+      // If it contains just one number we use a Sum layer
+      if (tensor_size == 1 && parents.size() == 1)
+      {
+        log_string("The constant input to the Add node has only one value, going to use a Sum layer...", log_level, LOG_LEVEL::DEBUG);
+        return new LSum(parents[0], tensor_values->at(0), node->name(), dev, mem);
+      }
 
       Tensor *t = new Tensor(tensor_shape, nullptr, dev);
       COPY_FROM_VECTOR_PTR_TO_TENSOR(tensor_values, t);
