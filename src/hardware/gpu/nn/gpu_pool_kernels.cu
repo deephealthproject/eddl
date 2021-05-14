@@ -87,13 +87,13 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
                     int px = j + kj;
                     int py = i + ki;
                     int pz = k;
-                    float v = 0.0;
+                    float v = GPU_LOWEST_FLOAT;
 
                     // Get values
-                    if (px < 0) v = 0.0;
-                    else if (py < 0) v = 0.0;
-                    else if (px >= icols) v = 0.0;
-                    else if (py >= irows) v = 0.0;
+                    if (px < 0) { v = GPU_LOWEST_FLOAT; }
+                    else if (py < 0) { v = GPU_LOWEST_FLOAT; }
+                    else if (px >= icols) { v = GPU_LOWEST_FLOAT; }
+                    else if (py >= irows) { v = GPU_LOWEST_FLOAT; }
                     else {
                         int ptr = (b * ircd) + (pz * irc) + (py * icols) + px;
                         v = I[ptr];
@@ -241,13 +241,13 @@ __global__ void maxpool3d(float* I, int batch, int ichannels, int idepth,int iro
 
 
                         // Get values
-                        float v = 0.0f;
-                        if (i_c < 0) v = 0.0;
-                        else if (i_r < 0) v = 0.0;
-                        else if (i_d < 0) v = 0.0;
-                        else if (i_c >= icols) v = 0.0;
-                        else if (i_r >= irows) v = 0.0;
-                        else if (i_d >= idepth) v = 0.0;
+                        float v = GPU_LOWEST_FLOAT;
+                        if (i_c < 0) { v = GPU_LOWEST_FLOAT; }
+                        else if (i_r < 0) { v = GPU_LOWEST_FLOAT; }
+                        else if (i_d < 0) { v = GPU_LOWEST_FLOAT; }
+                        else if (i_c >= icols) { v = GPU_LOWEST_FLOAT; }
+                        else if (i_r >= irows) { v = GPU_LOWEST_FLOAT; }
+                        else if (i_d >= idepth) { v = GPU_LOWEST_FLOAT; }
                         else {
                             int ptr = (b * icdrc) + (i_z * idrc) + (i_d * irc) + (i_r * ic) + i_c;
                             v = I[ptr];
@@ -555,13 +555,13 @@ __global__ void avgpool3d(float* I, int batch, int ichannels, int idepth,int iro
 
 
                         // Get values
-                        float v = 0.0f;
-                        if (i_c < 0) v = 0.0;
-                        else if (i_r < 0) v = 0.0;
-                        else if (i_d < 0) v = 0.0;
-                        else if (i_c >= icols) v = 0.0;
-                        else if (i_r >= irows) v = 0.0;
-                        else if (i_d >= idepth) v = 0.0;
+                        float v = GPU_LOWEST_FLOAT;
+                        if (i_c < 0) { v = GPU_LOWEST_FLOAT; }
+                        else if (i_r < 0) { v = GPU_LOWEST_FLOAT; }
+                        else if (i_d < 0) { v = GPU_LOWEST_FLOAT; }
+                        else if (i_c >= icols) { v = GPU_LOWEST_FLOAT; }
+                        else if (i_r >= irows) { v = GPU_LOWEST_FLOAT; }
+                        else if (i_d >= idepth) { v = GPU_LOWEST_FLOAT; }
                         else {
                             int ptr = (b * icdrc) + (i_z * idrc) + (i_d * irc) + (i_r * ic) + i_c;
                             v = I[ptr];
@@ -645,7 +645,7 @@ __global__ void avgpool3d_back(float* D, float* ID, int batch, int ichannels, in
             int i_c = indX[p];
 
             // Get values
-            if (i_c < 0) {}
+            if (i_c < 0) { }
             else if (i_r < 0) {}
             else if (i_d < 0)  {}
             else if (i_c >= icols)  {}
