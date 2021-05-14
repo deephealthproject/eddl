@@ -157,7 +157,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_batchnorm_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::CONV:
-      new_layer = build_conv_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      new_layer = build_conv_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::CONVTRANSPOSE:
       new_layer = build_convT_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);

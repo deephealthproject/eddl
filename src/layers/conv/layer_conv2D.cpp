@@ -55,7 +55,9 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
 
     // Check padding asymmetries
     if(D->pads[0] != D->pads[1] || D->pads[2] != D->pads[3]){
-        msg("Padding asymmetry detected. (top=" + to_string(D->pads[0]) + ", bottom=" + to_string(D->pads[1]) + ", left=" + to_string(D->pads[2]) + ", right=" + to_string(D->pads[3]) + ").\nLayer name: " + this->name, "LConv::LConv");
+        string err_msg = "In layer " + name + ": Padding asymmetry detected (top=" + to_string(D->pads[0]) + ", bottom=" + to_string(D->pads[1]) + ", left=" + to_string(D->pads[2]) + ", right=" + to_string(D->pads[3]) + "). "
+                         + "The padding asymmetry is not allowed in a Conv layer, we suggest you to use an explicit padding layer before this layer to fix the asymmetry.";
+        throw AsymmetricPaddingException(err_msg, D->pads);
     }
 }
 

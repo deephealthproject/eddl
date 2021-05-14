@@ -1,12 +1,14 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
 #include "eddl/serialization/onnx/utils_onnx.h"
+#include "eddl/layers/da/layer_da.h"
 
 // ONNX import
 Layer* build_conv_layer(onnx::NodeProto *node,
                         map<string, vector<float>> &map_init_values,
                         map<string, vector<int>> &map_init_dims,
                         map<string, Layer *> &output_node_map,
+                        LOG_LEVEL log_level,
                         int dev,
                         int mem)
 {
@@ -121,7 +123,37 @@ Layer* build_conv_layer(onnx::NodeProto *node,
     if (conv_dim == 1)
       actual_layer = new LConv1D(parent, cd, name, dev, mem);
     else
-      actual_layer = new LConv(parent, cd, name, dev, mem);
+    {
+      try
+      {
+        actual_layer = new LConv(parent, cd, name, dev, mem);
+      }
+      catch (AsymmetricPaddingException& e)
+      {
+          log_string("Detected a padding asymmetry in layer " + name + ". Going to add an explicit Pad layer before to fix it.", log_level, LOG_LEVEL::INFO);
+          // Remove the invalid conv layer from the parent child vector
+          //   Note: Doing the inverse of parent->addchild(this) (done in the LConv constructor)
+          parent->child.pop_back();
+          parent->lout--;
+
+          vector<int> asym_pads = e.get_asymmetric_pads(); // Asymmetric paddings to fix
+          string pad_layer_name = "EDDL_asymmetric_padding_" + name;
+          // Create a parent layer to fix the padding asymmetry
+          actual_layer = new LPad(parent, {asym_pads[0], asym_pads[3], asym_pads[1], asym_pads[2]}, 0.0, pad_layer_name, dev, mem);
+          // Create again the full Conv layer
+          cd = new ConvolDescriptor(filters,
+                                    kernel_shape,
+                                    strides,
+                                   "valid", // As we added the padding layer this must be "valid"
+                                    {0, 0, 0 ,0},
+                                    groups,
+                                    dilation_rate,
+                                    use_bias,
+                                    mem);
+          actual_layer = new LConv(actual_layer, cd, name, dev, mem);
+      }
+    }
+
 
     if (use_bias)
     {

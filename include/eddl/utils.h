@@ -13,6 +13,17 @@
 #include <cstdint> // uint64_t
 #include <vector>
 
+class AsymmetricPaddingException : public std::exception {
+    std::string error_msg; // Error message to show
+    std::vector<int> asymmetric_pads; // To store the padding values that have produced the error
+
+public:
+    AsymmetricPaddingException(std::string msg, const std::vector<int> pads) : error_msg(msg), asymmetric_pads(pads) {}
+
+    std::vector<int> get_asymmetric_pads() { return asymmetric_pads; }
+
+    const char* what() const noexcept override { return error_msg.c_str(); }
+};
 
 using namespace std;
 

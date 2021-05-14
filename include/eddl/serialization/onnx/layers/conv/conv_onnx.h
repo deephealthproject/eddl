@@ -3,6 +3,7 @@
 #define EDDL_CONV_ONNX_H
 #include "eddl/serialization/onnx/onnx.pb.h"
 #include "eddl/layers/conv/layer_conv.h"
+#include "eddl/serialization/onnx/utils_onnx.h"
 
 /*
  * ONNX IMPORT
@@ -15,6 +16,7 @@ Layer* build_conv_layer(onnx::NodeProto *node,
                         map<string, vector<float>> &map_init_values,
                         map<string, vector<int>> &map_init_dims,
                         map<string, Layer *> &output_node_map,
+                        LOG_LEVEL log_level,
                         int dev,
                         int mem);
 
