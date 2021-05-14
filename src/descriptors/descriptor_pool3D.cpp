@@ -117,10 +117,17 @@ void PoolDescriptor3D::build(Tensor *A) {
 
 
     // Careful with the "size++" not "useless loop"
-    int w = std::floor((id+paddb-kd)-(-paddf)+1/sd);  // max-min+1
-    int i = std::floor((ir+padrb-kr)-(-padrt)+1/sr);  // max-min+1
-    int j = std::floor((id+padcr-kc)-(-padcl)+1/sc);  // max-min+1
-    size=iz * w * i * j;
+    size=0;
+    for(int k=0;k<iz;k++)
+        for(int w=-paddf;w<=id+paddb-kd;w+=sd)
+            for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
+                for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
+//    cout << "Size 1: " << size << endl;
+
+//    int w = std::floor(((id+paddb-kd)-(-paddf))/sd) + 1;  // max-min+1
+//    int i = std::floor(((ir+padrb-kr)-(-padrt))/sr) + 1;  // max-min+1
+//    int j = std::floor(((ic+padcr-kc)-(-padcl))/sc) + 1;  // max-min+1
+//    size=iz * w *  i * j;
 
 #ifdef cCUDNN
     if(!O->isCPU()){
