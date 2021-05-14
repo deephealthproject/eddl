@@ -19,10 +19,10 @@
 
 float get_pixel(int b,int px,int py,int pz,PoolDescriptor *D,int isize,int irsize) {
   // Check boundaries of the window
-  if (px<0) return 0.0;
-  if (py<0) return 0.0;
-  if (px>=D->ic) return 0.0;
-  if (py>=D->ir) return 0.0;
+  if (px<0) return MIN_FLOAT;
+  if (py<0) return MIN_FLOAT;
+  if (px>=D->ic) return MIN_FLOAT;
+  if (py>=D->ir) return MIN_FLOAT;
 
   // Compute address from indices (row-major)
   unsigned int address = (b*isize) + (pz*irsize) + (py*D->ic) + px;
@@ -43,13 +43,13 @@ void add_pixel(int b,int px,int py,int pz,PoolDescriptor *D,int isize,int irsize
 
 float get_pixel3d(int in, int iz, int id, int ir, int ic, PoolDescriptor3D *D, int stride_b, int stride_d, int stride_r, int stride_c) {
     // Check boundaries of the window
-    if (id<0) return 0.0;
-    if (ir<0) return 0.0;
-    if (ic<0) return 0.0;
+    if (id<0) return MIN_FLOAT;
+    if (ir<0) return MIN_FLOAT;
+    if (ic<0) return MIN_FLOAT;
 
-    if (id>=D->id) return 0.0;
-    if (ir>=D->ir) return 0.0;
-    if (ic>=D->ic) return 0.0;
+    if (id>=D->id) return MIN_FLOAT;
+    if (ir>=D->ir) return MIN_FLOAT;
+    if (ic>=D->ic) return MIN_FLOAT;
 
     // Compute address from indices (row-major)
     unsigned int address = (in* stride_b) + (iz* stride_d) + (id* stride_r) + (ir* stride_c) + ic;

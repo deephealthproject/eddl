@@ -16,6 +16,10 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
 
+#define MAX_FLOAT std::numeric_limits<float>::max()
+#define MIN_FLOAT -std::numeric_limits<float>::max()
+#define PRECISION_FLOAT -std::numeric_limits<float>::max()
+
 // Aux
 float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize);
 void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize,float val);
