@@ -274,7 +274,7 @@ TEST(AvgPoolTestSuite, avgpool_k3x3_s2x2_pad_same)
 
 
 #ifdef cGPU
-TEST(MaxPoolTestSuite, avgpool_cpu_gpu){
+TEST(AvgPoolTestSuite, avgpool_cpu_gpu){
     // Image
     Tensor* t_cpu = Tensor::randu({1, 3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
@@ -341,7 +341,7 @@ TEST(MaxPoolTestSuite, avgpool_cpu_gpu){
 #endif
 
 
-TEST(MaxPoolTestSuite, avgpool3d_k3x3x3_s3x3x3_pad_valid)
+TEST(AvgPoolTestSuite, avgpool3d_k3x3x3_s3x3x3_pad_valid)
 {
     // Image
     auto *ptr_img = new float[1*1*5*5*5]{
@@ -410,7 +410,7 @@ TEST(MaxPoolTestSuite, avgpool3d_k3x3x3_s3x3x3_pad_valid)
 }
 
 
-TEST(MaxPoolTestSuite, avgpool3d_k3x3x3_s1x1x1_pad_valid)
+TEST(AvgPoolTestSuite, avgpool3d_k3x3x3_s1x1x1_pad_valid)
 {
     // Image
     auto *ptr_img = new float[1*1*5*5*5]{
@@ -508,18 +508,12 @@ TEST(AvgPoolTestSuite, pool3d_cpu_gpu){
                     pd_cpu->build(t_cpu);
                     pd_cpu->ID = Tensor::zeros(pd_cpu->I->getShape());
                     pd_cpu->D = Tensor::ones(pd_cpu->O->getShape());
-                    pd_cpu->indX = new Tensor(pd_cpu->O->getShape());
-                    pd_cpu->indY = new Tensor(pd_cpu->O->getShape());
-                    pd_cpu->indZ = new Tensor(pd_cpu->O->getShape());
 
                     // GPU Operation
                     auto *pd_gpu = new PoolDescriptor3D({k, k, k}, {s, s, s}, p);
                     pd_gpu->build(t_gpu);
                     pd_gpu->ID = Tensor::zeros(pd_gpu->I->getShape()); pd_gpu->ID->toGPU();
                     pd_gpu->D = Tensor::ones(pd_gpu->O->getShape()); pd_gpu->D->toGPU();
-                    pd_gpu->indX = new Tensor(pd_gpu->O->getShape()); pd_gpu->indX->toGPU();
-                    pd_gpu->indY = new Tensor(pd_gpu->O->getShape()); pd_gpu->indY->toGPU();
-                    pd_gpu->indZ = new Tensor(pd_gpu->O->getShape()); pd_gpu->indZ->toGPU();
 
                     // Forward
                     tensorNN::AvgPool3D(pd_cpu);
@@ -531,7 +525,7 @@ TEST(AvgPoolTestSuite, pool3d_cpu_gpu){
                     tensorNN::AvgPool3D_back(pd_cpu);
                     tensorNN::AvgPool3D_back(pd_gpu);
                     Tensor *pd_gpu_ID = pd_gpu->ID->clone(); pd_gpu_ID->toCPU(); // Tensor::equivalent is only for CPU (at the moment)
-                    bool test_bwrd =(bool) Tensor::equivalent(pd_cpu->ID, pd_gpu_ID, 1e-3f, 0.0f, true, true);
+                    bool test_bwrd = (bool) Tensor::equivalent(pd_cpu->ID, pd_gpu_ID, 1e-3f, 0.0f, true, true);
 
                     // Print results to ease debugging
                     cout << "Testing pool3d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<
