@@ -229,18 +229,25 @@ void cpu_avgpool2D(PoolDescriptor *D){
 
                     // Sum values window
                     float sum = 0.0f;
+//                    int ksize_local = 0;
                     for(int ki=0; ki<D->kr; ki++){  // rows (kernel): top-bottom
                         for(int kj=0; kj<D->kc; kj++) { // cols (kernel): left-right
 
-                            // Get value W[ki,kj] value in window
-                            float v = get_pixel(b,j+kj,i+ki, k, D, isize, irsize);
-                            sum += v;
+                            // Check boundaries of the window
+                            int px = j+kj;
+                            int py = i+ki;
+                            if (px>=0 && py>=0 && px<D->ic && py<D->ir){
+                                // Get value W[ki,kj] value in window
+                                sum += get_pixel(b,px,py, k, D, isize, irsize);
+//                                ksize_local += 1;
+                            }
+
 
                         } // kernel cols
                     }  // kernel rows
 
                     // Set output value
-                    D->O->ptr[p]= sum/(float)ksize;
+                    D->O->ptr[p]= sum/(float)ksize;//_local;
 
                 } // cols
             } // rows
@@ -266,7 +273,9 @@ void cpu_avgpool2D_back(PoolDescriptor *D){
                     // Walk kernel window to equally distribute the delta among all the elements
                     for(int ki=0; ki<D->kr; ki++){  // rows (kernel): top-bottom
                         for(int kj=0; kj<D->kc; kj++) { // cols (kernel): left-right
-                            add_pixel(b, j + kj, i + ki, k, D, isize, irsize, D->D->ptr[p]/(float)ksize);
+
+                            float v = D->D->ptr[p]/(float)ksize;  // This should be ksize_local, but storing/computing it would increase the cost
+                            add_pixel(b, j + kj, i + ki, k, D, isize, irsize, v);
                         } // kernel cols
                     }  // kernel rows
 
@@ -298,20 +307,27 @@ void cpu_avgpool3D(PoolDescriptor3D *D){
 
                         // Sum values window
                         float sum = 0.0f;
+//                        int ksize_local = 0;
                         for(int kd=0; kd<D->kd; kd++){  // depth (kernel): front-back
                             for(int ki=0; ki<D->kr; ki++){  // rows (kernel): top-bottom
                                 for(int kj=0; kj<D->kc; kj++) { // cols (kernel): left-right
 
-                                    // Get value W[ki,kj] value in window
-                                    float v = get_pixel3d(b, c, d+kd, i+ki, j+kj, D, stride_b, stride_d, stride_r, stride_c);
-                                    sum += v;
+                                    // Check boundaries of the window
+                                    int id = d+kd;
+                                    int ir = i+ki;
+                                    int ic = j+kj;
+                                    if (id>=0 && ir>=0 && ic>=0 && id<D->id && ir<D->ir && ir<D->ic){
+                                        // Get value W[ki,kj] value in window
+                                        sum += get_pixel3d(b, c, id, ir, ic, D, stride_b, stride_d, stride_r, stride_c);
+//                                        ksize_local += 1;
+                                    }
 
                                 } // kernel cols
                             }  // kernel rows
                         }  // kernel depth
 
                         // Set output value
-                        D->O->ptr[p] = sum/ksize;
+                        D->O->ptr[p] = sum/(float)ksize;//_local;
 
                     } // cols
                 } // rows
@@ -342,7 +358,9 @@ void cpu_avgpool3D_back(PoolDescriptor3D *D){
                         for(int kd=0; kd<D->kd; kd++){  // depth (kernel): front-back
                             for(int ki=0; ki<D->kr; ki++){  // rows (kernel): top-bottom
                                 for(int kj=0; kj<D->kc; kj++) { // cols (kernel): left-right
-                                    add_pixel3d(b, c, d+kd, i+ki, j+kj, D, stride_b, stride_d, stride_r, stride_c, D->D->ptr[p]/ksize);  // Set input's delta
+
+                                    float v = D->D->ptr[p]/(float)ksize;  // This should be ksize_local, but storing/computing it would increase the cost
+                                    add_pixel3d(b, c, d+kd, i+ki, j+kj, D, stride_b, stride_d, stride_r, stride_c, v);  // Set input's delta
                                 } // kernel cols
                             }  // kernel rows
                         }  // kernel depth
