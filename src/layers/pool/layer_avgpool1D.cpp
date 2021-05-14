@@ -29,10 +29,6 @@ LAveragePool1D::LAveragePool1D(Layer *parent, const vector<int> &pool_size, cons
 LAveragePool1D::LAveragePool1D(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem) : LPool1D(parent, D, name, dev, mem) {
     if(name.empty()) this->name = "avgpool1d" + to_string(++total_layers);
 
-    // Params
-    D->indX = new Tensor(D->O->shape, dev);  // Is this needed here?
-    D->indY = new Tensor(D->O->shape, dev);
-
 #ifdef cCUDNN
 if(!D->I->isCPU()){
     D->mode = CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING;
@@ -50,8 +46,6 @@ if(!D->I->isCPU()){
 void LAveragePool1D::resize(int batch){
   LPool1D::resize(batch);
 
-  delete pd->indX; pd->indX = new Tensor(pd->O->shape, dev);
-  delete pd->indY; pd->indY = new Tensor(pd->O->shape, dev);
 }
 
 void LAveragePool1D::forward() {
