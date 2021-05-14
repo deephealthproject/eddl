@@ -316,7 +316,7 @@ void cpu_avgpool3D(PoolDescriptor3D *D){
                                     int id = d+kd;
                                     int ir = i+ki;
                                     int ic = j+kj;
-                                    if (id>=0 && ir>=0 && ic>=0 && id<D->id && ir<D->ir && ir<D->ic){
+                                    if (id>=0 && ir>=0 && ic>=0 && id<D->id && ir<D->ir && ic<D->ic){
                                         // Get value W[ki,kj] value in window
                                         sum += get_pixel3d(b, c, id, ir, ic, D, stride_b, stride_d, stride_r, stride_c);
 //                                        ksize_local += 1;
