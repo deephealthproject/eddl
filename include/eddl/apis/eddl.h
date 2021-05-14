@@ -1972,7 +1972,8 @@ namespace eddl {
      *  @param name  A name for the operation
      *  @return     The result after apply the average pooling operation over the parent layer
    */
-    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
+    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");
+    layer AvgPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");  // Alias
 
     /**
       *  @brief AveragePooling1D operation.
@@ -1985,6 +1986,7 @@ namespace eddl {
       *  @return     The result after apply the average pooling operation over the parent layer
     */
     layer AveragePool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");
+    layer AvgPool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");  // Alias
 
     /**
       *  @brief AveragePooling2D operation.
@@ -1997,6 +1999,7 @@ namespace eddl {
       *  @return     The result after apply the average pooling operation over the parent layer
     */
     layer AveragePool2D(layer parent, vector<int> pool_size = {2, 2}, vector<int> strides = {2, 2}, string padding = "none", string name = "");
+    layer AvgPool2D(layer parent, vector<int> pool_size = {2, 2}, vector<int> strides = {2, 2}, string padding = "none", string name = "");  // Alias
 
     /**
   *  @brief AveragePooling3D operation.
@@ -2009,6 +2012,7 @@ namespace eddl {
   *  @return     The result after apply the average pooling operation over the parent layer
 */
     layer AveragePool3D(layer parent, vector<int> pool_size = {2, 2, 2}, vector<int> strides = {2, 2, 2}, string padding = "none", string name = "");
+    layer AvgPool3D(layer parent, vector<int> pool_size = {2, 2, 2}, vector<int> strides = {2, 2, 2}, string padding = "none", string name = "");  // Alias
 
     /**
       *  @brief GlobalMax pooling operation.
@@ -2054,7 +2058,8 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after applying the global average pooling operation over the parent layer
     */
-    layer GlobalAveragePool(layer parent, string name = ""); // TODO: Deprecated? Generic but not generic... (2D only)
+    layer GlobalAveragePool(layer parent, string name = "");
+    layer GlobalAvgPool(layer parent, string name = "");  // Alias
 
     /**
         *  @brief GlobalAveragePooling1D operation.
@@ -2064,6 +2069,7 @@ namespace eddl {
         *  @return     The result after applying the global average pooling operation over the parent layer
     */
     layer GlobalAveragePool1D(layer parent, string name = "");
+    layer GlobalAvgPool1D(layer parent, string name = "");  // Alias
 
 
     /**
@@ -2074,6 +2080,7 @@ namespace eddl {
         *  @return     The result after applying the global average pooling operation over the parent layer
     */
     layer GlobalAveragePool2D(layer parent, string name = "");
+    layer GlobalAvgPool2D(layer parent, string name = "");  // Alias
 
     /**
         *  @brief GlobalAveragePooling3D operation.
@@ -2083,6 +2090,7 @@ namespace eddl {
         *  @return     The result after applying the global average pooling operation over the parent layer
     */
     layer GlobalAveragePool3D(layer parent, string name = "");
+    layer GlobalAvgPool3D(layer parent, string name = "");
 
     // Recurrent Layers
 

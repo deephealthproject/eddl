@@ -1110,19 +1110,33 @@ namespace eddl {
   layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
     return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
   }
+    layer AvgPool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
+        return  AveragePool(parent, pool_size, strides, padding, name);
+    }
 
   layer AveragePool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
     pool_size.push_back(1);
     strides.push_back(1);
     return new LAveragePool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
   }
+    layer AvgPool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return  AveragePool1D(parent, pool_size, strides, padding, name);
+    }
 
   layer AveragePool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
     return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
   }
 
+    layer AvgPool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return  AveragePool2D(parent, pool_size, strides, padding, name);
+    }
+
   layer AveragePool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
     return new LAveragePool3D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+  }
+
+    layer AvgPool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+      return  AveragePool3D(parent, pool_size, strides, padding, name);
   }
 
 
@@ -1171,6 +1185,9 @@ namespace eddl {
 
     return GlobalAveragePool2D(parent, name);
   }
+    layer GlobalAvgPool(layer parent, string name){
+        return GlobalAveragePool(parent, name);
+    }
 
   layer GlobalAveragePool1D(layer parent, string name){
     // Expands dimensions if needed
@@ -1181,6 +1198,9 @@ namespace eddl {
     if(name.empty()) { name = "GlobalAveragePool1D"; }  // Set default name
     return AveragePool1D(parent, {h},{1}, "none", name);
   }
+    layer GlobalAvgPool1D(layer parent, string name){
+        return GlobalAveragePool1D(parent, name);
+    }
 
   layer GlobalAveragePool2D(layer parent, string name){
     // Check dimension
@@ -1192,6 +1212,9 @@ namespace eddl {
     if(name.empty()) { name = "GlobalAveragePool2D"; }  // Set default name
     return AveragePool(parent, {h,w},{1,1},  "none",name);
   }
+    layer GlobalAvgPool2D(layer parent, string name){
+        return GlobalAveragePool2D(parent, name);
+    }
 
   layer GlobalAveragePool3D(layer parent, string name){
       // Expands dimensions if needed
@@ -1203,6 +1226,10 @@ namespace eddl {
 
       if(name.empty()) { name = "GlobalAveragePool3D"; }  // Set default name
       return AveragePool3D(parent, {d,h,w},{1,1,1}, "none", name);
+  }
+
+    layer GlobalAvgPool3D(layer parent, string name){
+      return GlobalAveragePool3D(parent, name);
   }
 
   // Recurrent Layers
