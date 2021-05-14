@@ -153,7 +153,7 @@ __global__ void maxpool2d_back(float* D, float* ID, int batch,int irows,int icol
             int py = indY[p];
             int pz = k;
 
-            if (px < 0){}
+            if (px < 0){ }
             else if (py < 0){}
             else if (px >= icols){}
             else if (py >= irows){}
@@ -584,7 +584,7 @@ __global__ void avgpool3d_back(float* D, float* ID, int batch, int ichannels, in
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (thread_id_x < ops) {
-        int ksize = kr*kc;
+        int ksize = kd*kr*kc;
 
         // Parse "thread_id_x" to output(b, d, r, c) ****************
         // output pixel at batch=ob, coord=(or,oc) at map=oz
