@@ -43,9 +43,9 @@ PoolDescriptor3D::PoolDescriptor3D(const vector<int> &ks, const vector<int> &st,
 
 
 PoolDescriptor3D::~PoolDescriptor3D(){
-    delete indX;
-    delete indY;
-    delete indZ;
+    if( indX != nullptr) { delete indX; indX= nullptr; }
+    if( indY != nullptr) { delete indY; indY= nullptr; }
+    if( indZ != nullptr) { delete indZ; indZ= nullptr; }
 }
 
 void PoolDescriptor3D::build(Tensor *A) {

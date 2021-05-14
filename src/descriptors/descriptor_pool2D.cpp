@@ -43,8 +43,8 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, con
 
 
 PoolDescriptor::~PoolDescriptor(){
-    delete indX;
-    delete indY;
+    if( indX != nullptr) { delete indX; indX= nullptr; }
+    if( indY != nullptr) { delete indY; indY= nullptr; }
 }
 
 void PoolDescriptor::build(Tensor *A) {

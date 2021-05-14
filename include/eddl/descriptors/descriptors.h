@@ -449,7 +449,6 @@ public:
 class PoolDescriptor {
 
 public:
-    Tensor *indX, *indY; // indexes
     vector<int> ksize;
     vector<int> stride;
     vector<int> pad; // {rows-top, rows-bottom, cols-left, cols-right}
@@ -469,6 +468,10 @@ public:
     Tensor *ID= nullptr;// Delta input map
     Tensor *D = nullptr; // Delta
     Tensor *O= nullptr; // Outputmap
+
+    // Indexes (only used for maxpool)
+    Tensor* indX = nullptr;
+    Tensor* indY = nullptr;
 
 #ifdef cCUDNN
     cudnnPoolingDescriptor_t    poolingDesc;
@@ -503,7 +506,6 @@ public:
 class PoolDescriptor3D {
 
 public:
-    Tensor *indX, *indY, *indZ; // indexes
     vector<int> ksize;
     vector<int> stride;
     vector<int> pad; // {depth-front, depth-back, rows-top, rows-bottom, cols-left, cols-right}
@@ -524,6 +526,11 @@ public:
     Tensor *ID= nullptr;// Delta input map
     Tensor *D = nullptr; // Delta
     Tensor *O= nullptr; // Outputmap
+
+    // Indexes (only used for maxpool)
+    Tensor* indX = nullptr;
+    Tensor* indY = nullptr;
+    Tensor* indZ = nullptr;
 
 #ifdef cCUDNN
     cudnnPoolingDescriptor_t    poolingDesc;
