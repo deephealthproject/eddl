@@ -266,7 +266,7 @@ namespace tensorNN {
 
 
         if (D->I->isCPU()) {
-            cpu_avgpool3D(D);
+            cpu_avgpool3D_back(D);
         }
 #ifdef cGPU
         else if (D->I->isGPU())
