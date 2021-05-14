@@ -50,7 +50,9 @@ class Net(nn.Module):
             nn.AvgPool3d((2, 2, 2), (2, 2, 2)),
             Flatten(),
             nn.Linear(2000, 100),
-            nn.Linear(100, 1)
+            nn.ReLU(),
+            nn.Linear(100, 1),
+            nn.Sigmoid()
         )
 
     def forward(self, x):
