@@ -142,7 +142,7 @@ int device=D->I->gpu_device;
 
 #ifndef cCUDNN
     setDims(D->O);
-    avgpool3d<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0], D->iz, D->id, D->ir,D->ic, D->kd, D->kr, D->kc, D->O->ptr, D->z, D->d, D->r,D->c, D->sd, D->sr, D->sc, D->paddf, D->paddb, D->padrt, D->padrb, D->padcl, D->padcr, D->indX->ptr, D->indY->ptr, D->indZ->ptr);
+    avgpool3d<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0], D->iz, D->id, D->ir,D->ic, D->kd, D->kr, D->kc, D->O->ptr, D->z, D->d, D->r,D->c, D->sd, D->sr, D->sc, D->paddf, D->paddb, D->padrt, D->padrb, D->padcl, D->padcr);
     check_cuda(cudaDeviceSynchronize(),"gpu_avgpool3d");
 #else
   float alpha=1.0;
@@ -160,7 +160,7 @@ int device=D->I->gpu_device;
 
 #ifndef cCUDNN
     setDims(D->D)
-    avgpool3d_back<<<dimGrid,dimBlock>>>(D->D->ptr, D->ID->ptr, D->I->shape[0], D->iz, D->id, D->ir,D->ic, D->kd, D->kr, D->kc, D->O->ptr, D->z, D->d, D->r,D->c, D->sd, D->sr, D->sc, D->paddf, D->paddb, D->padrt, D->padrb, D->padcl, D->padcr, D->indX->ptr, D->indY->ptr, D->indZ->ptr);
+    avgpool3d_back<<<dimGrid,dimBlock>>>(D->D->ptr, D->ID->ptr, D->I->shape[0], D->iz, D->id, D->ir,D->ic, D->kd, D->kr, D->kc, D->O->ptr, D->z, D->d, D->r,D->c, D->sd, D->sr, D->sc, D->paddf, D->paddb, D->padrt, D->padrb, D->padcl, D->padcr);
 
     check_cuda(cudaDeviceSynchronize(),"gpu_avgpool3d_back");
 #else

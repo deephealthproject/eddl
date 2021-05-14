@@ -481,7 +481,7 @@ __global__ void avgpool2d_back(float* D, float* ID, int batch,int irows,int icol
 }
 
 // AvgPool 3D
-__global__ void avgpool3d(float* I, int batch, int ichannels, int idepth,int irows,int icols,  int kd, int kr, int kc, float* O, int ochannels, int odepth, int orows, int ocols,  int sd, int sr, int sc, int paddf, int paddb, int padrt, int padrb, int padcl, int padcr, float* indX, float* indY, float* indZ){
+__global__ void avgpool3d(float* I, int batch, int ichannels, int idepth,int irows,int icols,  int kd, int kr, int kc, float* O, int ochannels, int odepth, int orows, int ocols,  int sd, int sr, int sc, int paddf, int paddb, int padrt, int padrb, int padcl, int padcr){
 
     long int ops = batch * ochannels * odepth * orows * ocols;
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
@@ -578,7 +578,7 @@ __global__ void avgpool3d(float* I, int batch, int ichannels, int idepth,int iro
     }
 }
 
-__global__ void avgpool3d_back(float* D, float* ID, int batch, int ichannels, int idepth,int irows,int icols,  int kd, int kr, int kc, float* O, int ochannels, int odepth, int orows, int ocols,  int sd, int sr, int sc, int paddf, int paddb, int padrt, int padrb, int padcl, int padcr, float* indX, float* indY, float* indZ){
+__global__ void avgpool3d_back(float* D, float* ID, int batch, int ichannels, int idepth,int irows,int icols,  int kd, int kr, int kc, float* O, int ochannels, int odepth, int orows, int ocols,  int sd, int sr, int sc, int paddf, int paddb, int padrt, int padrb, int padcl, int padcr){
 
     long int ops = batch * ochannels * odepth * orows * ocols;
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
