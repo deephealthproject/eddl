@@ -638,22 +638,30 @@ __global__ void avgpool3d_back(float* D, float* ID, int batch, int ichannels, in
         // Check bounds
         if (d <= max_d && i <= max_i && j <= max_j){
 
-            // Get value W[ki,kj] value in window
-            int i_z = k;
-            int i_d = indZ[p];
-            int i_r = indY[p];
-            int i_c = indX[p];
+            for (int kw = 0; kw < kd; kw++) {  // depth (kernel): front-back
+                for (int ki = 0; ki < kr; ki++) {  // rows (kernel): top-bottom
+                    for (int kj = 0; kj < kc; kj++) {  // cols (kernel): left-right
 
-            // Get values
-            if (i_c < 0) {}
-            else if (i_r < 0) {}
-            else if (i_d < 0)  {}
-            else if (i_c >= icols)  {}
-            else if (i_r >= irows)  {}
-            else if (i_d >= idepth)  {}
-            else {
-                int ptr = (b * icdrc) + (i_z * idrc) + (i_d * irc) + (i_r * ic) + i_c;
-                atomicAdd(&ID[ptr], D[p]/(float)ksize);
+                        // Get value W[ki,kj] value in window
+                        int i_z = k;
+                        int i_d = d + kw;
+                        int i_r = i + ki;
+                        int i_c = j + kj;
+
+                        // Get values
+                        if (i_c < 0) {}
+                        else if (i_r < 0) {}
+                        else if (i_d < 0) {}
+                        else if (i_c >= icols) {}
+                        else if (i_r >= irows) {}
+                        else if (i_d >= idepth) {}
+                        else {
+                            int ptr = (b * icdrc) + (i_z * idrc) + (i_d * irc) + (i_r * ic) + i_c;
+                            atomicAdd(&ID[ptr], D[p]/(float)ksize);
+                        }
+
+                    }
+                }
             }
         }
     }
