@@ -18,7 +18,8 @@
 #include "eddl/utils.h"
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
-
+extern void fpga_reshape_kernel(ConvolDescriptor *src_D, ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO);
+extern void _profile_fpga_tensor(Tensor *t);
 using namespace std;
 
 ////////////////////////////////////////////////////////
@@ -1706,93 +1707,188 @@ namespace eddl {
         return p;
     }
 
+
+    void filter_IHW_to_GIHWCPI(float *src_ptr, float *dst_ptr, int src_I, int src_O, int dst_I, int dst_O, int KH, int KW, int CPI, int CPO) {
+      int GI      = dst_I / CPI;
+      int GO      = dst_O / CPO;
+
+      memset(dst_ptr, 0, sizeof(float) * KW * KH * dst_I * dst_O);
+
+      for (int i=0; i < src_I; i++) {
+        for (int o=0; o < src_O; o++) {
+          for (int kh=0; kh<KH; kh++) {
+            for (int kw=0; kw<KW; kw++) {
+              int gi = i / CPI;
+              int cpi = i % CPI;
+              int go = o / CPO;
+              int cpo = o % CPO;
+              int in_addr = (o * KW * KH * src_I) + (i * KW * KH) + (kh * KW) + kw;
+              int out_addr = (go * GI * CPO * CPI * KH * KW) + (gi * CPO * CPI * KH * KW) + (cpo * CPI * KH * KW) + (cpi * KH * KW) + (kh * KW) + kw;
+              dst_ptr[out_addr] = src_ptr[in_addr];
+            }
+          }
+        }
+      }
+    }
+
     // model for fpga
     model model_for_fpga(model m_src) {
 
+      // constants
+      const int KH = 3;
+      const int KW = 3;
+      const int CPI = 4;
+      const int CPO = 4;
+
       // layer pointers
-      Layer *cl;       // current layer pointer
-      Layer *nl;       // current+1 layer pointer
-      Layer *nnl;      // current+2 layer pointer
+      Layer *cl;         // current layer pointer
+      Layer *nl;         // current+1 layer pointer
+      Layer *nnl;        // current+2 layer pointer
+      layer first;       // first layer
+      layer last;        // last layer
+      layer prev_layer;  // for network building process (previous layer)
 
       // variables to find layers
       int found_I;     // current layer is an input layer
       int found_C;     // current layer is a Convolution
+      int found_M;     // current layer is maxpool
+      int found_R;     // current layer is relu
+      int found_S;     // current layer is softmax
+      int found_D;     // current layer is dense
+      int found_Reshape; // current layer is reshape
       int found_nM;    // current+1 layer is a maxpooling layer
       int found_nR;    // current+1 layer is a ReLU layer
       int found_nnR;   // current+2 layer is a ReLU layer
       //
       int found_CM;    // Layers Convolution+Maxpooling detected
       int found_CMR;   // Layers Convolution+Maxpooling+ReLU detected
-      printf("model_for_fpga API function\n");
+
+      // associated layers
+      int associated_layer[100];
+
+      // New model
+      Net *net = new Net();
 
       // number of layers
       int num_layers = m_src->layers.size();
       printf("number of layers: %d\n", num_layers);
 
       // we sweep all the model in search of layers that can be merged
-      int l = 0;
-      while (l<num_layers) {
+      int l_src = 0;
+      int l_dst = 0;
+      while (l_src<num_layers) {
 
-	// detection stage, we detect any possible type of layer that can be merged
-	// we look into current, current+1 and current+2 layers
+	    // detection stage, we detect any possible type of layer that can be merged
+	    // we look into current, current+1 and current+2 layers
 	
-	// Current layer
-	found_C = 0;
-	found_I = 0;
-	cl = m_src->layers[l];
-	if (LConv *dl = dynamic_cast<LConv *>(cl)) found_C = 1;
-	if (LInput *dl = dynamic_cast<LInput *>(cl)) found_I = 1;
+  	    // Current layer
+	    found_C = 0; found_I = 0; found_R = 0; found_S = 0; found_M = 0; found_Reshape = 0; found_D = 0;
+	    cl = m_src->layers[l_src];
+	    if (LConv *dl = dynamic_cast<LConv *>(cl)) found_C = 1;
+	    if (LInput *dl = dynamic_cast<LInput *>(cl)) found_I = 1;
+        if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "relu") found_R = 1;
+        if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "softmax") found_S = 1;
+        if (LPool *dl = dynamic_cast<LPool *>(cl)) found_M = 1;
+        if (LReshape *dl = dynamic_cast<LReshape *>(cl)) found_Reshape = 1;
+        if (LDense *dl = dynamic_cast<LDense *>(cl)) found_D = 1;
 
-	// current+1 layer
-	found_nM = 0;
-	found_nR = 0;
-	if (l<num_layers-1) {
-	  nl = m_src->layers[l+1];
-	  if (LPool *dl = dynamic_cast<LPool *>(nl)) found_nM = 1;
-	  if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_nR = 1;
-	}
+	    // current+1 layer
+	    found_nM = 0;
+	    found_nR = 0;
+	    if (l_src<num_layers-1) {
+	      nl = m_src->layers[l_src+1];
+	      if (LPool *dl = dynamic_cast<LPool *>(nl)) found_nM = 1;
+	      if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_nR = 1;
+  	    }
 
-	// current+2 layer
-	found_nnR = 0;
-	if (l<num_layers-2) {
-	  nnl = m_src->layers[l+2];
-	  if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "relu") found_nnR = 1; 
-	}
+	    // current+2 layer
+	    found_nnR = 0;
+	    if (l_src<num_layers-2) {
+	      nnl = m_src->layers[l_src+2];
+	      if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "relu") found_nnR = 1; 
+	    }
 
-	// Combination of layers detected
-	found_CM = found_C && found_nM;
-	found_CMR = found_C && found_nM && found_nnR;
+	    // Combination of layers detected (for the moment they are disabled)
+	    //found_CM = found_C && found_nM;
+	    //found_CMR = found_C && found_nM && found_nnR;
 
         // build up stage, we create a merged layer out of our findings
-	//
-	
-	if (found_CMR) {
-	  printf("new layer: CMR\n");
-	  printf(" - merging Conv + Maxpool + ReLU into a single layer\n");
-	  printf(" - adapting conv filters\n");
-	  l=l+3;
-	} else if (found_CM) {
-	  printf("new layer: CM\n");
-	  printf(" - merging Conv + Maxpool into a single layer\n");
-	  printf(" - adapting conv filters\n");
-	  l=l+2;
-	} else if (found_C) {
-	  printf("new layer: C\n");
-	  printf(" - adapting conv filters\n");
-	  l=l+1;
-	} else if (found_I) {
-	  printf("new layer: I\n");
-	  l=l+1;
-	} else {
-	  printf("new layer: unsepecified\n");
-	  l = l + 1;
-	}
+    	if (found_CMR) {
+          printf("instantiating CMR layer\n");
+          // new layer to be called (Laura)
+          associated_layer[l_dst] = l_src;
+	    } else if (found_CM) {
+          printf("instantiating CM layer\n");
+          // new layer to be called (Laura)
+          associated_layer[l_dst] = l_src;
+	    } else if (found_C) {
+          printf("instantiating C layer\n");
+	      LConv *layer_src = (LConv *)cl;
+          //  int Itarget = ((I + CPI - 1) / CPI) * CPI;
+          //  int Otarget = ((O + CPO - 1) / CPO) * CPO;
+	      prev_layer = Conv(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
+	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->name);
+          associated_layer[l_dst] = l_src;
+	    } else if (found_R) {
+          printf("instantiating R layer\n");
+	      prev_layer = ReLu(prev_layer);
+	    } else if (found_M) {
+          printf("instantiating M layer\n");
+          LPool *layer_src = (LPool *)cl;
+	      prev_layer = MaxPool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride);
+	    } else if (found_I) {
+          printf("instantiating I layer\n");
+	      prev_layer = Input({3, 224, 224});     // TOFIX
+        } else if (found_Reshape) {
+          printf("instantiating Reshape layer\n");
+          LReshape *layer_src = (LReshape *)cl;
+          prev_layer = Reshape(prev_layer, { -1 }/*layer_src->ls*/);   // TOFIX
+        } else  if (found_D) {
+          printf("instantiating Dense layer\n");
+          LDense *layer_src = (LDense *)cl;
+          prev_layer = Dense(prev_layer, layer_src->ndim);
+        } else if (found_S) {
+          printf("instantiating Softmax layer\n");
+          prev_layer = Softmax(prev_layer);
+        } else {
+	      printf("Error, unidentified layer\n");
+          exit(1);
+	    }
+
+        if (l_src == 0) first = prev_layer;
+        last = prev_layer;
+        l_dst++;
+        if (found_CMR) l_src += 3; else if (found_CM) l_src += 2; else l_src++;
+      }
+
+      // now we create the model
+      net = Model({ first }, { last });
+      build(net, sgd(0.001f, 0.9f),{"soft_cross_entropy"}, {"categorical_accuracy"}, CS_FPGA({1}));
+      summary(net);
+
+      // now we adapt the filters
+      for (int l=0; l<l_dst; l++) {
+        Layer *cl = net->layers[l];
+        if (LConv *conv = dynamic_cast<LConv *>(cl)) {
+          // filter copy and adaptation
+          printf("adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+          LConv *layer_src = dynamic_cast<LConv *>(m_src->layers[associated_layer[l]]);
+          collectTensor(layer_src, "param", 0);
+	      float *ptr_src = layer_src->cd->K->ptr;
+  	      LConv *layer_dst = dynamic_cast<LConv *>(net->layers[l]);
+          float *ptr_dst = layer_dst->cd->K->ptr;
+	      int src_I                = layer_src->cd->I->shape[1];
+          int src_O                = layer_src->cd->O->shape[1];
+	      int dst_I                = layer_dst->cd->I->shape[1];
+          int dst_O                = layer_dst->cd->O->shape[1];
+	      printf("I %d O %d -> I %d O %d\n", src_I, src_O, dst_I, dst_O);
+          filter_IHW_to_GIHWCPI(ptr_src, ptr_dst, src_I, src_O, dst_I, dst_O, KH, KW, CPI, CPO);
+          distributeTensor(layer_dst, "param", 0);
+        }
       }
       exit(1);
 
-      Net *m = new Net();
-
-      return m;
-    }
+      return net;
+    }  
 
 }//namespace

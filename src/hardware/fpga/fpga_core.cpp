@@ -336,8 +336,8 @@ void _profile_fpga(int f_id, int end) {
   #ifdef FPGA_DEBUG
   char func_name[50];
   _profile_fpga_funcname(f_id, func_name);
-  if (!end) printf("%s\n", func_name);
-  if (end)  printf("\n");
+  if (!end) printf("FPGA_DEBUG: Function %s starts\n", func_name);
+  if (end)  printf("FPGA_DEBUG: Function %s ends\n", func_name);
   #endif
 
   num_instances_fpga[f_id]++;
@@ -433,7 +433,7 @@ void _show_profile_fpga() {
 void _profile_fpga_add_tensor(int size) {
   mb_memory_needed_fpga += (float)size / 1024.0 / 1024.0;
   num_tensors_created++;
-  #ifdef FPGA_DEBUG
+  #ifdef FPGA_DEBUG_VERBOSE
   printf("    (accumulated tensor memory %f MB)\n", mb_memory_needed_fpga);
   #endif
 }
@@ -1247,9 +1247,6 @@ cl::Buffer *fpga_create_tensor(int device, int size) {
   cl::Buffer *buffer;
   cl_int err;
 
-  #ifdef FPGA_DEBUG
-  printf("    (creating tensor in fpga, size %d)\n", size);
-  #endif
   _profile_fpga_add_tensor(size*sizeof(fpga_data_type));
 
   // search an available slot
@@ -1258,11 +1255,16 @@ cl::Buffer *fpga_create_tensor(int device, int size) {
     if (!fpga_inuse_buffer_pool[e] && !fpga_free_buffer_pool[e] & (fpga_size_buffer_pool[e] == size)) break;
   }
   if (e!=fpga_num_buffer_pool_slots) {
-    #ifdef FPGA_DEBUG
+    #ifdef FPGA_DEBUG_VERBOSE
     printf("    reasigning buffer pool entry\n");
     #endif
   
     fpga_inuse_buffer_pool[e] = 1;
+
+    #ifdef FPGA_DEBUG
+    printf("FPGA_DEBUG: Allocation of tensor. Size %12d elements. Address %p. Pool entry %4d\n", size, fpga_ptr_buffer_pool[e], e);
+    #endif
+
     return fpga_ptr_buffer_pool[e];
   }
   
@@ -1273,7 +1275,7 @@ cl::Buffer *fpga_create_tensor(int device, int size) {
   }
 
   // buffer pool slot creation
-  #ifdef FPGA_DEBUG
+  #ifdef FPGA_DEBUG_VERBOSE
   printf("Creating new buffer pool entry\n");
   #endif
 
@@ -1287,6 +1289,10 @@ cl::Buffer *fpga_create_tensor(int device, int size) {
   fpga_inuse_buffer_pool[e] = 1;
   fpga_free_buffer_pool[e] = 0;
   fpga_num_buffer_pool_slots++;
+
+  #ifdef FPGA_DEBUG
+  printf("FPGA_DEBUG: Allocation of tensor. Size %12d elements. Address %p. Pool entry %4d\n", size, fpga_ptr_buffer_pool[e], e);
+  #endif
 
   return fpga_ptr_buffer_pool[e];
 }
@@ -1348,8 +1354,8 @@ void fpga_copy_fpga(Tensor *A, Tensor *B) {
 }
 
 void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (copy to fpga: tensor id %d, size %d, from_cpu_ptr %p)\n", A->fpga_tensor_id, A->size, nptr);
+  #ifdef FPGA_DEBUG
+  printf("FPGA_DEBUG: Copy CPU->FPGA. Addr: %p->%p. tensor_id %4d. Size %4d\n", nptr, A->fpga_ptr, A->fpga_tensor_id, A->size);
   #endif
 
   #ifdef PRECISION_CONVERSION
@@ -1392,8 +1398,8 @@ void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {
 }
 
 void fpga_copy_from_fpga(Tensor *A,float *nptr, int cvt) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (copy from fpga: tensor id %d, size %d, to_cpu_ptr %p)\n", A->fpga_tensor_id, A->size, nptr);
+  #ifdef FPGA_DEBUG
+  printf("FPGA_DEBUG: Copy FPGA->CPU. Addr: %p->%p. tensor_id %4d. Size %4d\n", A->fpga_ptr, nptr, A->fpga_tensor_id, A->size);
   #endif
 
   #ifdef PRECISION_CONVERSION
