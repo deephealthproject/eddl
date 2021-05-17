@@ -70,6 +70,10 @@ void gpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
 void gpu_pad(Tensor *A, Tensor *B, vector<int> pads);
 void gpu_pad_back(Tensor *A, Tensor *B, vector<int> pads);
 
+// GPU: Data transformations (3D Optimized) ********************************************
+void gpu_scale3d(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int transformation_mode);
+void gpu_scale3d_back(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int transformation_mode);
+
 // GPU: Data augmentations (2D Optimized) ********************************************
 void gpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int wrapping_mode, float constant);
 void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int wrapping_mode, float constant);
