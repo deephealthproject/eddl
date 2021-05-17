@@ -1058,7 +1058,7 @@ namespace eddl {
     layer Input(const vector<int> &shape, string name = "");
 
     /**
-      *  @brief Upsampling layer.
+      *  @brief 2D Upsampling layer.
       *
       *  @details
       *   Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
@@ -1070,9 +1070,21 @@ namespace eddl {
       *  @return     Output layer after upsampling operation
     */
     layer UpSampling2D(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
-
-    // Legacy
     layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
+
+    /**
+      *  @brief 3D Upsampling layer. Similar to Resize but for 3D images
+      *
+      *  @param parent  Parent layer
+      *  @param new_shape  Vector with layer/images desired new shape
+      *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively
+      *  @param coordinate_transformation_mode  This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
+      *  @return     Output of scale transformation
+    */
+    layer UpSampling3D(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string coordinate_transformation_mode="asymmetric", string name="");
+
 
     /**
       *  @brief Resize the input image to the given size. `[height, width]`. Same as the Scale layer, but with the backward operation supported
