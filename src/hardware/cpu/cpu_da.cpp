@@ -188,6 +188,130 @@ void cpu_single_scale_back(int b, int* offsets, Tensor *A, Tensor *B, vector<int
 //    _profile(_CPU_SINGLE_SCALE_BACK, 1);
 }
 
+
+void cpu_single_scale3d(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode){
+//    _profile(_CPU_SINGLE_SCALE_3D, 0);
+
+    for(int c=0; c<B->shape[1]; c++) {
+
+        for(int Bk=0; Bk<B->shape[2];Bk++) {
+            for(int Bi=0; Bi<B->shape[3];Bi++) {
+                for(int Bj=0; Bj<B->shape[4];Bj++) {
+                    int Ak = (Bk + offsets[0]);
+                    int Ai = (Bi + offsets[1]);
+                    int Aj = (Bj + offsets[2]);
+
+                    // Select transformation mode: HalfPixel=0, PytorchHalfPixel=1, AlignCorners=2, Asymmetric=3, TFCropAndResize=4
+                    if (coordinate_transformation_mode==TransformationMode::HalfPixel) {
+                        float scale_z = (float) new_shape[0] / A->shape[2];
+                        float scale_y = (float) new_shape[1] / A->shape[3];
+                        float scale_x = (float) new_shape[2] / A->shape[4];
+
+                        Ak = ((float)Ak + 0.5f) / scale_z - 0.5f;
+                        Ai = ((float)Ai + 0.5f) / scale_y - 0.5f;
+                        Aj = ((float)Aj + 0.5f) / scale_x - 0.5f;
+                    } else if (coordinate_transformation_mode==TransformationMode::AlignCorners) {
+                        float scale_z = (float)(new_shape[0]-1) / (A->shape[2] - 1);
+                        float scale_y = (float)(new_shape[1]-1) / (A->shape[3] - 1);
+                        float scale_x = (float)(new_shape[2]-1) / (A->shape[4] - 1);
+                        Ak = Ak / scale_z;
+                        Ai = Ai / scale_y;
+                        Aj = Aj / scale_x;
+                    } else if (coordinate_transformation_mode==TransformationMode::Asymmetric) {
+                        float scale_z = (float) new_shape[0] / A->shape[2];
+                        float scale_y = (float) new_shape[1] / A->shape[3];
+                        float scale_x = (float) new_shape[2] / A->shape[4];
+                        Ak = Ak / scale_z;
+                        Ai = Ai / scale_y;
+                        Aj = Aj / scale_x;
+                    }else {
+                        msg("coordinate_transformation_mode (" + to_string(coordinate_transformation_mode) + ") not implemented", "Tensor::cpu_single_scale3d");
+                    }
+
+                    int B_pos = b * B->stride[0] + c * B->stride[1] + Bk * B->stride[2] + Bi * B->stride[3] + Bj * B->stride[4];
+                    if (Ak >= 0 && Ak < A->shape[2] && Ai >= 0 && Ai < A->shape[3] && Aj >= 0 && Aj < A->shape[4]) {
+                        int A_pos = b * A->stride[0] + c * A->stride[1] + Ak * A->stride[2] + Ai * A->stride[3] + Aj * A->stride[4];
+                        B->ptr[B_pos] = A->ptr[A_pos];
+                    } else {
+
+                        if(wrapping_mode == WrappingMode::Constant){  // Constant
+                            B->ptr[B_pos] = constant;
+                        }else if(wrapping_mode == WrappingMode::Original){  // Original
+                            B->ptr[B_pos] = A->ptr[B_pos];
+                        }else{
+                            msg("wrapping_mode (" + to_string(wrapping_mode) + ") not implemented", "Tensor::cpu_single_scale3d");
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+//    _profile(_CPU_SINGLE_SCALE, 1);
+}
+
+
+void cpu_single_scale3d_back(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode){
+//    _profile(_CPU_SINGLE_SCALE_BACK, 0);
+
+    for(int c=0; c<B->shape[1]; c++) {
+
+        for(int Bk=0; Bk<B->shape[2];Bk++) {
+            for(int Bi=0; Bi<B->shape[3];Bi++) {
+                for(int Bj=0; Bj<B->shape[4];Bj++) {
+                    int Ak = (Bk + offsets[0]);
+                    int Ai = (Bi + offsets[1]);
+                    int Aj = (Bj + offsets[2]);
+
+                    // Select transformation mode: HalfPixel=0, PytorchHalfPixel=1, AlignCorners=2, Asymmetric=3, TFCropAndResize=4
+                    if (coordinate_transformation_mode==TransformationMode::HalfPixel) {
+                        float scale_z = (float) new_shape[0] / A->shape[2];
+                        float scale_y = (float) new_shape[1] / A->shape[3];
+                        float scale_x = (float) new_shape[2] / A->shape[4];
+
+                        Ak = ((float)Ak + 0.5f) / scale_z - 0.5f;
+                        Ai = ((float)Ai + 0.5f) / scale_y - 0.5f;
+                        Aj = ((float)Aj + 0.5f) / scale_x - 0.5f;
+                    } else if (coordinate_transformation_mode==TransformationMode::AlignCorners) {
+                        float scale_z = (float)(new_shape[0]-1) / (A->shape[2] - 1);
+                        float scale_y = (float)(new_shape[1]-1) / (A->shape[3] - 1);
+                        float scale_x = (float)(new_shape[2]-1) / (A->shape[4] - 1);
+                        Ak = Ak / scale_z;
+                        Ai = Ai / scale_y;
+                        Aj = Aj / scale_x;
+                    } else if (coordinate_transformation_mode==TransformationMode::Asymmetric) {
+                        float scale_z = (float) new_shape[0] / A->shape[2];
+                        float scale_y = (float) new_shape[1] / A->shape[3];
+                        float scale_x = (float) new_shape[2] / A->shape[4];
+                        Ak = Ak / scale_z;
+                        Ai = Ai / scale_y;
+                        Aj = Aj / scale_x;
+                    }else {
+                        msg("coordinate_transformation_mode (" + to_string(coordinate_transformation_mode) + ") not implemented", "Tensor::cpu_single_scale3d");
+                    }
+
+                    int B_pos = b * B->stride[0] + c * B->stride[1] + Bk * B->stride[2] + Bi * B->stride[3] + Bj * B->stride[4];
+                    if (Ak >= 0 && Ak < A->shape[2] && Ai >= 0 && Ai < A->shape[3] && Aj >= 0 && Aj < A->shape[4]) {
+                        int A_pos = b * A->stride[0] + c * A->stride[1] + Ak * A->stride[2] + Ai * A->stride[3] + Aj * A->stride[4];
+                        A->ptr[A_pos] += B->ptr[B_pos];
+                    } else {
+
+                        if(wrapping_mode == WrappingMode::Constant){  // Constant
+                            //B->ptr[B_pos] = constant;
+                        }else if(wrapping_mode == WrappingMode::Original){  // Original
+                            A->ptr[B_pos] += B->ptr[B_pos];
+                        }else{
+                            msg("wrapping_mode (" + to_string(wrapping_mode) + ") not implemented", "Tensor::cpu_single_scale3d_back");
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+//    _profile(_CPU_SINGLE_SCALE_BACK, 1);
+}
+
 void cpu_single_flip(int b, bool apply, Tensor *A, Tensor *B, int axis){
     _profile(_CPU_SINGLE_FLIP, 0);
 
@@ -536,4 +660,53 @@ void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<floa
         cpu_single_crop(b, offsets, A, B, {coords_from_y, coords_from_x}, {coords_to_y, coords_to_x}, constant, true);
     }
     _profile(_CPU_CUTOUT_RANDOM, 0);
+}
+
+void cpu_scale3d(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode){
+    // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.zoom.html
+    // I use "new_shape" because I might want to keep the shape of B, but thinking of it as a bigger/smaller matrix
+    // If the new_shape is smaller than B, performs a downscale with padding
+    // For cases:
+    // A=5x5x5; B=10x10x10; new_size=10x10x10 => Normal zoom
+    // A=5x5x5; B=5x5x5; new_size=5x5x5 => Normal zoom-out
+    // A=10x10x10; B=10x10x10; new_size=5x5x5 => Zoom-out centered
+    // A=5x5x5; B=5x5x5; new_size=10x10x10 => Zoom in window
+
+//    _profile(_CPU_SCALE_3D, 0);
+    // Center crop (if the the crop is smaller than B)
+    int offsets[3] = {0, 0, 0};
+    offsets[0] = (new_shape[0] - B->shape[2])/2.0f;
+    offsets[1] = (new_shape[1] - B->shape[3])/2.0f;
+    offsets[2] = (new_shape[2] - B->shape[4])/2.0f;
+
+    #pragma omp parallel for
+    for(int b=0; b<B->shape[0]; b++) {
+        cpu_single_scale3d(b, offsets, A, B, new_shape, wrapping_mode, constant, coordinate_transformation_mode);
+    }
+//    _profile(_CPU_SCALE_3D, 1);
+}
+
+
+void cpu_scale3d_back(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode){
+    // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.zoom.html
+    // I use "new_shape" because I might want to keep the shape of B, but thinking of it as a bigger/smaller matrix
+    // If the new_shape is smaller than B, performs a downscale with padding
+    // For cases:
+    // A=5x5x5; B=10x10x10; new_size=10x10x10 => Normal zoom
+    // A=5x5x5; B=5x5x5; new_size=5x5x5 => Normal zoom-out
+    // A=10x10x10; B=10x10x10; new_size=5x5x5 => Zoom-out centered
+    // A=5x5x5; B=5x5x5; new_size=10x10x10 => Zoom in window
+
+//    _profile(_CPU_SCALE3D_BACK, 0);
+    // Center crop (if the the crop is smaller than B)
+    int offsets[3] = {0, 0, 0};
+    offsets[0] = (new_shape[0] - B->shape[2])/2.0f;
+    offsets[1] = (new_shape[1] - B->shape[3])/2.0f;
+    offsets[2] = (new_shape[2] - B->shape[4])/2.0f;
+
+    #pragma omp parallel for
+    for(int b=0; b<B->shape[0]; b++) {
+        cpu_single_scale3d_back(b, offsets, A, B, new_shape, wrapping_mode, constant, coordinate_transformation_mode);
+    }
+//    _profile(_CPU_SCALE3D_BACK, 1);
 }

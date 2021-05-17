@@ -58,7 +58,6 @@ void cpu_rand_binary(Tensor *A, float v);
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
 
 // CPU: Data transformations (2D Optimized) ********************************************
-// CPU: Data transformations (2D Optimized) ********************************************
 void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int wrapping_mode, float constant);
 void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int wrapping_mode, float constant);
 void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
@@ -68,6 +67,10 @@ void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
 void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int wrapping_mode, float constant);
 void cpu_pad(Tensor *A, Tensor *B, vector<int> pads);
 void cpu_pad_back(Tensor *A, Tensor *B, vector<int> pads);
+
+// CPU: Data transformations (3D Optimized) ********************************************
+void cpu_scale3d(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
+void cpu_scale3d_back(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
 
 // CPU: Data augmentations (2D Optimized) ********************************************
 void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int wrapping_mode, float constant);
