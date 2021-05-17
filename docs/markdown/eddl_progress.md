@@ -30,6 +30,7 @@
 | Equal | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Return (x1 == x2) element-wise |
 | Expand        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Returns a layer with singleton dimensions expanded to a larger size |
 | Where | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Return elements chosen from x or y depending on condition |
+| Resize          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Resize the input image to the given size. `[height, width]` |
 
 
 
@@ -65,7 +66,8 @@
 | DepthwiseConv2D   | 🔴️ | 🔴️  |🔴️ | 🔴️ | 2D depthsise convolution |
 | TransposedConv2D  | ⚫️️ | ⚫️   |🟢️| 🔴️️ | 2D Transposed convolution |
 | TransposedConv3D  | ⚫️️ | ⚫️   |🟢️| 🔴️ | 3D Transposed convolution |
-| UpSampling        | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
+| UpSampling2D        | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
+| UpSampling3D        | 🟢️️ | 🟢️️ |🟢️️ | ️️🔴 | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
 
 
 ## Data transformation/augmentation
@@ -86,7 +88,7 @@ Deterministic transformations
 | HorizontalFlip | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Horizontally flip the given image |
 | Pad            | 🟢️️ | 🟢️️ |🟢️️| ⚫️ | Pad the given image on all sides with the given "pad" value |
 | Rotate         | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Rotate the image by angle |
-| Scale          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Resize the input image to the given size. `[height, width]` |
+| Scale          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Resize the input image to the given size. `[height, width]`. Does not include backward (see Resize) |
 | Shift          | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Shift the input image `[a, b]` |
 | VerticallyFlip | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Vertically flip the given image |
 | Normalize      | ⚫ | ⚫️ |⚫️ | ⚫️ | Normalize an image with mean and standard deviation |
