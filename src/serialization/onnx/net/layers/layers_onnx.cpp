@@ -17,6 +17,7 @@
 #include "eddl/serialization/onnx/layers/conv/convT_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/convT3D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/upsampling2D_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/upsampling3D_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool1D_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool3D_onnx.h"
@@ -379,6 +380,8 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_permute_node(l, graph);
   else if (LUpSampling *l = dynamic_cast<LUpSampling *>(layer))
     build_upsample_node(l, graph);
+  else if (LUpSampling3D *l = dynamic_cast<LUpSampling3D *>(layer))
+    build_resize_node_from_upsampling3D(l, graph);
   else if (LActivation *l = dynamic_cast<LActivation *>(layer))
     // Check the type of activation layer
     if (!l->act.compare("relu"))

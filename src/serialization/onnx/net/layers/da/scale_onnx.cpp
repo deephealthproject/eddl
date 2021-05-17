@@ -1,6 +1,7 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/da/scale_onnx.h"
 #include "eddl/serialization/onnx/utils_onnx.h"
+#include "eddl/layers/core/layer_core.h"
 
 // ONNX import
 Layer* build_scale_layer(onnx::NodeProto *node,
@@ -9,58 +10,61 @@ Layer* build_scale_layer(onnx::NodeProto *node,
                          int dev,
                          int mem)
 {
-      bool reshape_out = true;
-      string da_mode("nearest");
-      string transformation_mode("half_pixel");
-      float constant = 0.0;
+  bool reshape_out = true;
+  string da_mode("nearest");
+  string transformation_mode("half_pixel");
+  float constant = 0.0;
 
-      for (int j = 0; j < node->attribute_size(); j++)
-      { // Set the attributes
-        onnx::AttributeProto attribute = node->attribute(j);
-        string attr_name = attribute.name();
-        if (!attr_name.compare("coordinate_transformation_mode"))
-        {
-          transformation_mode = attribute.s();
-        }
-        if (!attr_name.compare("mode"))
-        {
-          if (attribute.s().compare("nearest"))
-          {
-            // ONNX only supports: "nearest", "linear" and "cubic".
-            msg("In Resize operator, the mode \"" + attribute.s() + "\" is not supported. It must be \"nearest\".", "ONNX::ImportNet");
-          }
-        }
-      }
-
-      string parent_name = node->input(0);
-      Layer *parent = output_node_map[parent_name];
-      vector<int> new_shape = parent->getShape();
-
-      if (node->input_size() > 3) // Get the new shape directly from input(3)
+  for (int j = 0; j < node->attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node->attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("coordinate_transformation_mode"))
+    {
+      transformation_mode = attribute.s();
+    }
+    if (!attr_name.compare("mode"))
+    {
+      if (attribute.s().compare("nearest"))
       {
-          string target_shape_name = node->input(3);
-          float *target_shape = new float [(&(map_init_values[target_shape_name]))->size()];
-          COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[target_shape_name]), target_shape);
-
-          for (int i = 0; i < new_shape.size(); ++i)
-            new_shape[i] = target_shape[i];
-
-          delete [] target_shape;
+        // ONNX only supports: "nearest", "linear" and "cubic".
+        msg("In Resize operator, the mode \"" + attribute.s() + "\" is not supported. It must be \"nearest\".", "ONNX::ImportNet");
       }
-      else // Compute new shape from scale values
-      {
-          string scales_name = node->input(2);
-          float *dim_scales = new float [(&(map_init_values[scales_name]))->size()];
-          COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[scales_name]), dim_scales);
+    }
+  }
 
-          // Compute new shape by scaling the parent output shape
-          for (int i = 0; i < new_shape.size(); ++i)
-            new_shape[i] = new_shape[i] * dim_scales[i];
+  string parent_name = node->input(0);
+  Layer *parent = output_node_map[parent_name];
+  vector<int> new_shape = parent->getShape();
 
-          delete [] dim_scales;
-      }
+  if (node->input_size() > 3) // Get the new shape directly from input(3)
+  {
+    string target_shape_name = node->input(3);
+    float *target_shape = new float [(&(map_init_values[target_shape_name]))->size()];
+    COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[target_shape_name]), target_shape);
 
-      return new LScale(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, getTransformationMode(transformation_mode), node->name(), DEV_CPU, 0);
+    for (int i = 0; i < new_shape.size(); ++i)
+      new_shape[i] = target_shape[i];
+
+    delete [] target_shape;
+  }
+  else // Compute new shape from scale values
+  {
+    string scales_name = node->input(2);
+    float *dim_scales = new float [(&(map_init_values[scales_name]))->size()];
+    COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[scales_name]), dim_scales);
+
+    // Compute new shape by scaling the parent output shape
+    for (int i = 0; i < new_shape.size(); ++i)
+      new_shape[i] = new_shape[i] * dim_scales[i];
+
+    delete [] dim_scales;
+  }
+
+  if (new_shape.size() == 5) // 3D input. We have to create a UpSampling3D layer instead of a Scale layer
+    return new LUpSampling3D(parent, {new_shape[2], new_shape[3], new_shape[4]}, reshape_out, getWrappingMode(da_mode), constant, getTransformationMode(transformation_mode), node->name(), DEV_CPU, 0);
+  else
+    return new LScale(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, getTransformationMode(transformation_mode), node->name(), DEV_CPU, 0);
 }
 
 // ONNX export

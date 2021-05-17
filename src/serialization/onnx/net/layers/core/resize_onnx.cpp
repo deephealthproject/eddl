@@ -60,7 +60,10 @@ Layer* build_resize_layer(onnx::NodeProto *node,
     delete [] dim_scales;
   }
 
-  return new LResize(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, getTransformationMode(transformation_mode), node->name(), DEV_CPU, 0);
+  if (new_shape.size() == 5) // 3D input. We have to create a UpSampling3D layer instead of a Scale layer
+    return new LUpSampling3D(parent, {new_shape[2], new_shape[3], new_shape[4]}, reshape_out, getWrappingMode(da_mode), constant, getTransformationMode(transformation_mode), node->name(), DEV_CPU, 0);
+  else
+    return new LResize(parent, {new_shape[2], new_shape[3]}, reshape_out, getWrappingMode(da_mode), constant, getTransformationMode(transformation_mode), node->name(), DEV_CPU, 0);
 }
 
 // ONNX export
