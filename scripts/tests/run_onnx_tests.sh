@@ -330,7 +330,7 @@ then
     pytorch2eddl+=("Pytorch_to_EDDL_conv3D;test_onnx_pytorch_conv3D;export_scripts/conv3D_pytorch_export.py;test_onnx_conv3D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_convT2D;test_onnx_pytorch_convT2D;export_scripts/convT2D_enc_dec_mnist_pytorch_export.py;test_onnx_convT2D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_convT3D;test_onnx_pytorch_convT3D;export_scripts/convT3D_enc_dec_synthetic_pytorch_export.py;test_onnx_convT3D,--import")
-    pytorch2eddl+=("Pytorch_to_EDDL_upsample2D;test_onnx_pytorch_upsample2D;export_scripts/upsample2D_enc_dec_mnist_pytorch_import;test_onnx_upsample2D,--import")
+    pytorch2eddl+=("Pytorch_to_EDDL_upsample2D;test_onnx_pytorch_upsample2D;export_scripts/upsample2D_enc_dec_mnist_pytorch_export.py;test_onnx_upsample2D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_LSTM_IMDB;test_onnx_pytorch_LSTM_imdb;export_scripts/lstm_pytorch_export.py;test_onnx_lstm_imdb,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_GRU_IMDB;test_onnx_pytorch_GRU_imdb;export_scripts/gru_pytorch_export.py;test_onnx_gru_imdb,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_LSTM_MNIST;test_onnx_pytorch_LSTM_mnist;export_scripts/lstm_mnist_pytorch_export.py;test_onnx_lstm_mnist,--import")
