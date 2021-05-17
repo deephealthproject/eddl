@@ -228,6 +228,29 @@ public:
 
 };
 
+/// UpSampling3D Layer
+class LUpSampling3D : public LinLayer {
+public:
+    static int total_layers;
+    vector<int> new_shape;
+    bool reshape;
+    WrappingMode da_mode;
+    float cval;
+    TransformationMode coordinate_transformation_mode;
+
+    LUpSampling3D(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, TransformationMode coordinate_transformation_modem, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+};
+
 /// Resize Layer
 class LResize : public LinLayer {
 public:
