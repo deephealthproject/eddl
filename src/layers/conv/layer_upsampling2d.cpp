@@ -23,7 +23,7 @@ LUpSampling::LUpSampling(Layer *parent, const vector<int> &size, string interpol
     this->size = size;
     this->interpolation = interpolation;
 
-    if(name.empty()) this->name = "upsampling" + to_string(++total_layers);
+    if(name.empty()) this->name = "upsampling2d" + to_string(++total_layers);
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], input->shape[1], input->shape[2]*size[0], input->shape[3]*size[1]}, dev);
@@ -44,14 +44,14 @@ void LUpSampling::backward() {
 }
 
 Layer *LUpSampling::share(int c, int bs, vector<Layer *> p) {
-    LUpSampling *n = new LUpSampling(p[0], this->size, this->interpolation, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LUpSampling(p[0], this->size, this->interpolation, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LUpSampling::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LUpSampling *n = new LUpSampling(p[0], this->size, this->interpolation,  name, todev, this->mem_level);
+    auto *n = new LUpSampling(p[0], this->size, this->interpolation,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;
