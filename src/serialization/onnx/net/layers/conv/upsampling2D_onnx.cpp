@@ -1,13 +1,13 @@
 #if defined(cPROTO)
-#include "eddl/serialization/onnx/layers/conv/upsampling_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/upsampling2D_onnx.h"
 
 // ONNX import
-Layer* build_upsampling_layer(onnx::NodeProto *node,
-                              map<string, vector<float>> &map_init_values,
-                              map<string, vector<int>> &map_init_dims,
-                              map<string, Layer *> &output_node_map,
-                              int dev,
-                              int mem)
+Layer* build_upsampling2D_layer(onnx::NodeProto *node,
+                                map<string, vector<float>> &map_init_values,
+                                map<string, vector<int>> &map_init_dims,
+                                map<string, Layer *> &output_node_map,
+                                int dev,
+                                int mem)
 {
   string interpolation_mode;
   float batch_scale;

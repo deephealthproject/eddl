@@ -16,7 +16,7 @@
 #include "eddl/serialization/onnx/layers/conv/conv3D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/convT_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/convT3D_onnx.h"
-#include "eddl/serialization/onnx/layers/conv/upsampling_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/upsampling2D_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool1D_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool3D_onnx.h"
@@ -166,7 +166,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_dense_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::UPSAMPLING:
-      new_layer = build_upsampling_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      new_layer = build_upsampling2D_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::DROP:
       new_layer = build_dropout_layer(node, output_node_map, dev, mem);
