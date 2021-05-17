@@ -37,8 +37,6 @@ namespace tensorNN {
 
 
     void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
-        // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
-
         if ((A->device != B->device)) msg("Tensors in different devices", "Tensor::Repeat_NN");
         if (A->ndim != B->ndim) msg("Incompatible dims", "Tensor::Repeat");
 
@@ -69,7 +67,6 @@ namespace tensorNN {
     }
 
     void d_repeat_nn(Tensor *D, Tensor *A, vector<int> size) {
-        // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
         if ((D->device != A->device)) msg("Tensors in different devices", "Tensor::D_Repeat_NN");
 
         PROFILING_HEADER(d_repeat_nn);
