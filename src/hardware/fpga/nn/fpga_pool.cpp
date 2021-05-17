@@ -83,13 +83,13 @@ void fpga_cpuemu_mpool2D(PoolDescriptor *D) {
   } // batch
 
   fpga_copy_to_fpga(D->O->ptr, D->O, 0);
-
 }
 
 void fpga_mpool2D(PoolDescriptor *D){
     _debug_fpga_funcs("mpool2D");
     _profile_fpga(_FPGA_MPOOL2D, 0);
     _profile_fpga_tensor(D->I);
+    _profile_fpga_tensor(D->O);
     if (fpga_set_cpuemu_mpool2D == 1) {
         fpga_cpuemu_mpool2D(D);
     } else {

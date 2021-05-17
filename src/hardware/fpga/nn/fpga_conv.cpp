@@ -29,6 +29,7 @@ PROFILING_ENABLE_EXTERN(fpga_reshape_kernel_data_convol);
 // where I = GI * CPI and O = GO * CPO
 void fpga_reshape_kernel_data_convol(ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO) {
 
+  return;
   _debug_fpga_funcs("reshape_kernel_convol");
   PROFILING_HEADER(fpga_reshape_kernel_data_convol);
 

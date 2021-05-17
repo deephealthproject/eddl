@@ -32,6 +32,7 @@ PROFILING_ENABLE_EXTERN(select);
 PROFILING_ENABLE_EXTERN(select_back);
 PROFILING_ENABLE_EXTERN(set_select);
 PROFILING_ENABLE_EXTERN(set_select_back);
+PROFILING_ENABLE_EXTERN(transform);
 
 namespace tensorNN {
 
@@ -179,5 +180,32 @@ namespace tensorNN {
 #endif
         PROFILING_FOOTER(set_select_back);
     }
+
+    void transform(Tensor *A, Tensor* B, int mode) {
+
+        PROFILING_HEADER(transform);
+
+        if (A->isCPU() && B->isCPU()) {
+            printf("Error, transform_nn not implemented in CPU\n");
+            exit(1);
+            //cpu_transform_nn(A, B, mode);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            printf("Error, transform_nn not implemented in GPU\n");
+            exit(1);
+//            gpu_transform_nn(A, B, mode);
+        }
+#endif
+#ifdef cFPGA
+        else if (A->isFPGA() && B->isFPGA())
+        {
+            fpga_transform_nn(A, B, mode);
+        }
+#endif
+        PROFILING_FOOTER(transform);
+    }
+
 
 }

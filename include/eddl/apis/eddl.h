@@ -1057,6 +1057,17 @@ namespace eddl {
     */
     layer Reshape(layer parent, const vector<int> &shape, string name = "");
 
+
+    /**
+      *  @brief Transforms an input to an output format
+      *
+      *  @param parent  Parent layer
+      *  @param mode Mode (0 = CHW to GHWC; 1 = GHWC to CHW)
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Transform(layer parent, int mode, string name = "");
+
     /**
       *  @brief Flattens the input. Does not affect the batch size.
       *

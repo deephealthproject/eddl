@@ -113,6 +113,7 @@ namespace tensorNN{
     void select_back(Tensor *A, Tensor* B, SelDescriptor *sd);
     void set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
     void set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd);
+    void transform(Tensor *A, Tensor *B, int mode);
 
 // ***** Permutations for BatchNorm ********************
     void permute_channels_last(Tensor *A,Tensor *B);

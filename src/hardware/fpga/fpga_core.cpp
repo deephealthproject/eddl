@@ -327,6 +327,7 @@ void _profile_fpga_funcname(int i, char *name) {
       case _FPGA_REPEAT_NN              : strcpy(name, "repeat_nn"); break;
       case _FPGA_D_REPEAT_NN            : strcpy(name, "d_repeat_nn"); break;
       case _FPGA_SUM_2                  : strcpy(name, "sum_2"); break;
+      case _FPGA_TRANSFORM              : strcpy(name, "transform"); break;
       default                          : strcpy(name, "?????"); break;
   }
 }
@@ -369,14 +370,14 @@ void _profile_fpga_tensor(Tensor *T) {
   avg = sum / (float)T->size;
 
   // Now, we print the information (related tensor information and statistics of the tensor)
-  printf("  - Tensor id %3d ", T->fpga_tensor_id);
+  printf("FPGA_DEBUG: Tensor: %3d ", T->fpga_tensor_id);
   printf(" size %10d ", T->size);
-  printf(" size_fpga %10d ", T->fpga_size);
-  printf(" shape0 %6d ", T->shape[0]);
-  if (T->ndim>=2) printf(" shape1 %6d ", T->shape[1]); else printf("               ");
-  if (T->ndim>=3) printf(" shape2 %6d ", T->shape[2]); else printf("               ");
-  if (T->ndim>=4) printf(" shape3 %6d ", T->shape[3]); else printf("               ");
-  printf(" (cpu_ptr %p). ", T->ptr);
+  //printf(" size_fpga %10d ", T->fpga_size);
+  printf(" shape ");
+  if (T->ndim==1) printf("%d", T->shape[0]);
+  if (T->ndim==2) printf("%dx%d", T->shape[0], T->shape[1]);
+  if (T->ndim==3) printf("%dx%dx%d", T->shape[0], T->shape[1], T->shape[2]);
+  if (T->ndim==3) printf("%dx%dx%dx%d", T->shape[0], T->shape[1], T->shape[2], T->shape[3]);
   printf(" Min %8.4f Max %8.4f Avg %8.4f\n", min, max, avg);
   #endif
 }
@@ -1747,3 +1748,79 @@ void fpga_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivativ
 }
 
 #endif
+
+// -----------------------------------------------------------------
+// transform_nn
+//
+void fpga_transform_nn(Tensor *A, Tensor *B, int mode) {
+  _profile_fpga(_FPGA_TRANSFORM, 0);
+  _profile_fpga_tensor(A);
+
+  int CPI = 4;
+
+  if (mode == 1) {
+
+    // transformation from CHW to GHWC
+    fpga_copy_from_fpga(A, A->ptr);
+    int B_in = A->shape[0];
+    int C_in = A->shape[1];
+    int H_in = A->shape[2];
+    int W_in = A->shape[3];
+    int C_out = B->shape[1];
+    // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
+
+    float *ptr_src = A->ptr;
+    float *ptr_dst = B->ptr;
+
+    memset(ptr_dst, 0, C_out * H_in * W_in * B_in * sizeof(float));
+
+    for (int b=0; b<B_in; b++) {
+      for (int c=0; c<C_in; c++) {
+        for (int h=0; h<H_in; h++) {
+          for (int w=0; w<W_in; w++) {
+            int addr_src = (b * C_in * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
+            int g = c / CPI;
+            int cpi = c % CPI; 
+            int addr_dst = (b * C_out * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
+            ptr_dst[addr_dst] = ptr_src[addr_src];
+          }
+        }
+      }
+    }
+    fpga_copy_to_fpga(B->ptr, B);
+
+  } else {
+    // transformation from GHWC to CHW
+
+    fpga_copy_from_fpga(A, A->ptr);
+    int B_in = A->shape[0];
+    int C_in = A->shape[1];
+    int H_in = A->shape[2];
+    int W_in = A->shape[3];
+    int C_out = B->shape[1];
+    // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
+
+    float *ptr_src = A->ptr;
+    float *ptr_dst = B->ptr;
+
+    memset(ptr_dst, 0, C_out * H_in * W_in * B_in * sizeof(float));
+
+    for (int b=0; b<B_in; b++) {
+      for (int c=0; c<C_in; c++) {
+        for (int h=0; h<H_in; h++) {
+          for (int w=0; w<W_in; w++) {
+            int g = c / CPI;
+            int cpi = c % CPI; 
+            int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
+            int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
+            ptr_dst[addr_dst] = ptr_src[addr_src];
+          }
+        }
+      }
+    }
+    fpga_copy_to_fpga(B->ptr, B);
+  }
+
+  _profile_fpga(_FPGA_TRANSFORM, 1);
+  _profile_fpga_tensor(B);
+}

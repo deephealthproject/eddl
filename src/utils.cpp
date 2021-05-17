@@ -667,6 +667,7 @@ PROFILING_ENABLE(select);
 PROFILING_ENABLE(select_back);
 PROFILING_ENABLE(set_select);
 PROFILING_ENABLE(set_select_back);
+PROFILING_ENABLE(transform);
 // metrics
 PROFILING_ENABLE(accuracy);
 PROFILING_ENABLE(bin_accuracy);
@@ -839,6 +840,7 @@ void __show_profile() {
   PROFILING_PRINTF(select_back);
   PROFILING_PRINTF(set_select);
   PROFILING_PRINTF(set_select_back);
+  PROFILING_PRINTF(transform);
   // metrics
   PROFILING_PRINTF(accuracy);
   PROFILING_PRINTF(bin_accuracy);

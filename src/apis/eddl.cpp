@@ -715,6 +715,10 @@ namespace eddl {
         return new LReshape(parent, s, name, DEV_CPU, 0);
     }
 
+    layer Transform(layer parent, int mode, string name) {
+        return new LTransform(parent, mode, name, DEV_CPU, 0);
+    }
+
     layer Flatten(layer parent, string name){
         return Reshape(parent, {-1}, name);
     }
@@ -1766,6 +1770,9 @@ namespace eddl {
       // associated layers
       int associated_layer[100];
 
+      // transform mode activated
+      int ghwc_enabled = 0;
+
       // New model
       Net *net = new Net();
 
@@ -1809,8 +1816,26 @@ namespace eddl {
 	    }
 
 	    // Combination of layers detected (for the moment they are disabled)
-	    //found_CM = found_C && found_nM;
-	    //found_CMR = found_C && found_nM && found_nnR;
+	    found_CM = found_C && found_nM;
+	    found_CMR = found_C && found_nM && found_nnR;
+
+        // data layer transform
+        if (found_CMR || found_CM || found_C || found_M) {
+          if (!ghwc_enabled) {
+            // we add transform layer
+            prev_layer = Transform(prev_layer, 1);
+            ghwc_enabled = 1;
+            l_dst++;
+          }
+        }
+        if (found_Reshape || found_D || found_R || found_M) {
+          if (ghwc_enabled) {
+             // we add a detransform layer
+             prev_layer = Transform(prev_layer, 0);
+             ghwc_enabled = 0;
+             l_dst++;
+          }
+        }
 
         // build up stage, we create a merged layer out of our findings
     	if (found_CMR) {
@@ -1873,8 +1898,9 @@ namespace eddl {
           // filter copy and adaptation
           printf("adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
           LConv *layer_src = dynamic_cast<LConv *>(m_src->layers[associated_layer[l]]);
-          collectTensor(layer_src, "param", 0);
-	      float *ptr_src = layer_src->cd->K->ptr;
+          //collectTensor(layer_src, "param", 0);
+	      float *ptr_src = layer_src->params[0]->ptr; //cd->K->ptr;
+          //_profile_fpga_tensor(layer_src->cd->K);
   	      LConv *layer_dst = dynamic_cast<LConv *>(net->layers[l]);
           float *ptr_dst = layer_dst->cd->K->ptr;
 	      int src_I                = layer_src->cd->I->shape[1];
@@ -1884,10 +1910,9 @@ namespace eddl {
 	      printf("I %d O %d -> I %d O %d\n", src_I, src_O, dst_I, dst_O);
           filter_IHW_to_GIHWCPI(ptr_src, ptr_dst, src_I, src_O, dst_I, dst_O, KH, KW, CPI, CPO);
           distributeTensor(layer_dst, "param", 0);
+          //_profile_fpga_tensor(layer_dst->cd->K);
         }
       }
-      exit(1);
-
       return net;
     }  
 

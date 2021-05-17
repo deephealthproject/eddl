@@ -377,4 +377,27 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
+/// Transform Layer
+class LTransform : public LinLayer {
+public:
+    static int total_layers;
+    int mode;
+
+    PermuteDescriptor *sd;
+
+    LTransform(Layer *l, int mode, string name, int dev, int mem);
+
+    ~LTransform() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int b) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
 #endif //EDDL_LAYER_CORE_H

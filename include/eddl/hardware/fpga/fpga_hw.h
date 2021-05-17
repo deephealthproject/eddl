@@ -45,8 +45,8 @@ extern cl::CommandQueue *q;
 // If float precision is used, then PRECISION_CONVERSION should not be used
 //
 //#define PRECISION_CONVERSION
-//#define fpga_data_type float
-#define fpga_data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
+#define fpga_data_type float
+//#define fpga_data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
 //#define fpga_data_type ap_int<8>
 //
 //
@@ -353,6 +353,8 @@ void fpga_less(Tensor *A, Tensor *B, float v);
 void fpga_less_equal(Tensor *A, Tensor *B, float v);
 void fpga_equal(Tensor *A, Tensor *B, float v);
 void fpga_not_equal(Tensor *A, Tensor *B, float v);
+
+void fpga_transform_nn(Tensor *A, Tensor *B, int mode);
 
 // Legacy
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon);
