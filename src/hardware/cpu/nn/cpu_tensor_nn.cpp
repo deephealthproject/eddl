@@ -11,7 +11,6 @@
 
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
     _profile(_CPU_REPEAT_NN, 0);
-    // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
 #pragma omp parallel for
     for(int i=0; i<B->size; i++){
         // Get row/col of Tensor B
@@ -31,8 +30,6 @@ void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
 void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
     _profile(_CPU_D_REPEAT_NN, 0);
-    // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
-    ////#pragma omp parallel for
 
 #pragma omp parallel for
     for(int i=0; i<D->size; i++){
