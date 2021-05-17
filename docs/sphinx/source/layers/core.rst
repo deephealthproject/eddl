@@ -206,3 +206,17 @@ Example:
 .. code-block:: c++
 
    l = Transpose(l);
+
+
+Resize
+-------
+
+Same as Scale but with support for backward operation.
+
+.. doxygenfunction:: Resize
+
+Example:
+
+.. code-block:: c++
+
+   l = Resize(l, {35, 35});
