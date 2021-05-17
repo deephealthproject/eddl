@@ -129,7 +129,10 @@ if(BUILD_PROTOBUF)
     add_executable(test_onnx_convT3D "test_internals/onnx/test_onnx_convT3D.cpp")
     target_link_libraries(test_onnx_convT3D eddl)
 
-    add_executable(test_onnx_lstm_imdb "test_internals/onnx/test_onnx_lstm_imdb.cpp")
+	add_executable(test_onnx_upsample2D "test_internals/onnx/test_onnx_upsample2D.cpp")
+	target_link_libraries(test_onnx_upsample2D eddl)
+
+	add_executable(test_onnx_lstm_imdb "test_internals/onnx/test_onnx_lstm_imdb.cpp")
     target_link_libraries(test_onnx_lstm_imdb eddl)
     add_executable(test_onnx_gru_imdb "test_internals/onnx/test_onnx_gru_imdb.cpp")
     target_link_libraries(test_onnx_gru_imdb eddl)
