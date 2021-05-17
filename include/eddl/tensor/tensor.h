@@ -2343,6 +2343,27 @@ public:
     */
     static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float cval=0.0f);
 
+    /**
+    *   @brief Scale the tensor. The array is scaled using spline interpolation.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param new_shape Vector with the target size.
+    *   @param wrapping_mode Must be one of the following:
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+    *        - ``TransformationMode::HalfPixel``: x_original = (x_resized + 0.5) / scale - 0.5
+    *        - ``TransformationMode::PytorchHalfPixel``: x_original = length_resized > 1 ? (x_resized + 0.5) / scale - 0.5 : 0
+    *        - ``TransformationMode::AlignCorners``: x_original = x_resized * (length_original - 1) / (length_resized - 1)
+    *        - ``TransformationMode::Asymmetric``: x_original = x_resized / scale
+    *        - ``TransformationMode::TFCropAndResize``: x_original = length_resized > 1 ? start_x * (length_original - 1) + x_resized * (end_x - start_x) * (length_original - 1) / (length_resized - 1) : 0.5 * (start_x + end_x) * (length_original - 1)
+    */
+    static void scale3d(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
+    static void scale3d_back(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
 
     // Linear algebra *****************************
 

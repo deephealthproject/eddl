@@ -791,3 +791,87 @@ void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<
 
   PROFILING_FOOTER(cutout_random);
 }
+
+void Tensor::scale3d(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode wrapping_mode, float cval, TransformationMode coordinate_transformation_mode) {
+    // new_shape => {y, x}
+    // Parameter check
+    if(new_shape[0] <= 0 || new_shape[1] <= 0  || new_shape[2] <= 0){
+        msg("The new shape must be a greater than zero", "Tensor::scale3d");
+    }
+
+    // Check dimensions
+    if (A->ndim != 5 || B->ndim != 5){
+        msg("This method requires two 5D tensors", "Tensor::scale3d");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::scale3d");
+    }
+
+    // Check here if this transformation is implemented (in gpu could be tricky to show useful alerts)
+    if(coordinate_transformation_mode!=TransformationMode::HalfPixel &&
+       coordinate_transformation_mode!=TransformationMode::Asymmetric &&
+       coordinate_transformation_mode!=TransformationMode::AlignCorners){
+        msg("This transformation mode is not implemented (" + to_string(coordinate_transformation_mode) + ")", "Tensor::scale3d");
+    }
+
+//    PROFILING_HEADER_EXTERN(scale3d);
+
+    if (A->isCPU()) {
+        cpu_scale3d(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        gpu_scale3d(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
+    }
+#endif
+#ifdef cFPGA
+        else {
+        fpga_scale3d(A, B, std::move(new_shape), mode, cval);
+    }
+#endif
+
+//    PROFILING_FOOTER(scale3d);
+}
+
+
+void Tensor::scale3d_back(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode wrapping_mode, float cval, TransformationMode coordinate_transformation_mode) {
+    // new_shape => {y, x}
+    // Parameter check
+    if(new_shape[0] <= 0 || new_shape[1] <= 0  || new_shape[2] <= 0){
+        msg("The new shape must be a greater than zero", "Tensor::scale3d");
+    }
+
+    // Check dimensions
+    if (A->ndim != 5 || B->ndim != 5){
+        msg("This method requires two 5D tensors", "Tensor::scale3d");
+    } else if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::scale3d");
+    }
+
+    // Check here if this transformation is implemented (in gpu could be tricky to show useful alerts)
+    if(coordinate_transformation_mode!=TransformationMode::HalfPixel &&
+       coordinate_transformation_mode!=TransformationMode::Asymmetric &&
+       coordinate_transformation_mode!=TransformationMode::AlignCorners){
+        msg("This transformation mode is not implemented (" + to_string(coordinate_transformation_mode) + ")", "Tensor::scale3d");
+    }
+
+//    PROFILING_HEADER_EXTERN(scale_back);
+
+    if (A->isCPU()) {
+        cpu_scale3d_back(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        gpu_scale3d_back(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
+    }
+#endif
+#ifdef cFPGA
+    else {
+        //fpga_scale3d(A, B, std::move(new_shape), mode, cval);
+    }
+#endif
+
+//    PROFILING_FOOTER(scale3d_back);
+}
+
