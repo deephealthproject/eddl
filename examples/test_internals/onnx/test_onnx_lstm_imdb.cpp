@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
   download_imdb_2000();
 
   // Settings
-  int epochs = 2;
+  int epochs = use_cpu ? 1 : 2;
   int batch_size = 100;
   int length = 250;
   int embdim = 33;

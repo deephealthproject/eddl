@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
   }
 
   // Settings
-  int epochs = 2;
+  int epochs = use_cpu ? 1 : 2;
   int batch_size = 100;
 
   // Download mnist
