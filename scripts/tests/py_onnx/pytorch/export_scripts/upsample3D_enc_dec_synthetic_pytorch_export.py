@@ -5,7 +5,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torchvision import datasets, transforms
 import numpy as np
 
 
@@ -23,12 +22,12 @@ class Net(nn.Module):
         )
         # Decoder
         self.decoder = nn.Sequential(
-            nn.ConvTranspose3d(64, 64, 2, stride=2, padding=0),
+            nn.Conv3d(64, 64, 3, stride=1, padding=1),
             nn.ReLU(),
-            nn.Conv3d(64, 32, 1, stride=1, padding=0),
+            nn.Upsample(scale_factor=2),
+            nn.Conv3d(64, 32, 3, stride=1, padding=1),
             nn.ReLU(),
-            nn.ConvTranspose3d(32, 32, 2, stride=2, padding=0),
-            nn.ReLU(),
+            nn.Upsample(scale_factor=2),
             nn.Conv3d(32, 3, 1, stride=1, padding=0),
             nn.Sigmoid()
         )
@@ -110,7 +109,7 @@ def test(model, device, test_loader):
 def main():
     # Training settings
     parser = argparse.ArgumentParser(
-        description='PyTorch ConvT3D encoder-decoder with synthetic data example')
+        description='PyTorch Conv3D+Upsample encoder-decoder with synthetic data example')
     parser.add_argument('--batch-size', type=int, default=2, metavar='N',
                         help='input batch size for training (default: 2)')
     parser.add_argument('--epochs', type=int, default=5, metavar='N',
@@ -121,7 +120,7 @@ def main():
                         help='disables CUDA training')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
-    parser.add_argument('--output-path', type=str, default="onnx_models/convT3D_enc_dec_synthetic.onnx",
+    parser.add_argument('--output-path', type=str, default="onnx_models/upsample3D_enc_dec_synthetic.onnx",
                         help='Output path to store the onnx file')
     parser.add_argument('--output-metric', type=str, default="",
                         help='Output file path to store the metric value obtained in test set')

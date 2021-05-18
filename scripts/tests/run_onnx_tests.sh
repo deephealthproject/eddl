@@ -108,6 +108,7 @@ scripts_to_run+=("EDDL_to_EDDL_conv3D;test_onnx_conv3D;test_onnx_conv3D")
 scripts_to_run+=("EDDL_to_EDDL_convT2D;test_onnx_convT2D;test_onnx_convT2D")
 scripts_to_run+=("EDDL_to_EDDL_convT3D;test_onnx_convT3D;test_onnx_convT3D")
 scripts_to_run+=("EDDL_to_EDDL_upsample2D;test_onnx_upsample2D;test_onnx_upsample2D")
+scripts_to_run+=("EDDL_to_EDDL_upsample3D;test_onnx_upsample3D;test_onnx_upsample3D")
 scripts_to_run+=("EDDL_to_EDDL_GRU_imdb;test_onnx_gru_imdb;test_onnx_gru_imdb")
 scripts_to_run+=("EDDL_to_EDDL_LSTM_imdb;test_onnx_lstm_imdb;test_onnx_lstm_imdb")
 scripts_to_run+=("EDDL_to_EDDL_GRU_mnist;test_onnx_gru_mnist;test_onnx_gru_mnist")
@@ -123,6 +124,7 @@ scripts_to_run+=("EDDL_to_EDDL_conv3D_CPU;test_onnx_conv3D_cpu;test_onnx_conv3D,
 #scripts_to_run+=("EDDL_to_EDDL_convT2D_CPU;test_onnx_convT2D_cpu;test_onnx_convT2D,--cpu") ConvT2D not available in CPU
 #scripts_to_run+=("EDDL_to_EDDL_convT3D_CPU;test_onnx_convT3D_cpu;test_onnx_convT3D,--cpu") ConvT3D not available in CPU
 scripts_to_run+=("EDDL_to_EDDL_upsample2D_CPU;test_onnx_upsample2D_cpu;test_onnx_upsample2D,--cpu")
+scripts_to_run+=("EDDL_to_EDDL_upsample3D_CPU;test_onnx_upsample3D_cpu;test_onnx_upsample3D,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_GRU_imdb_CPU;test_onnx_gru_imdb_cpu;test_onnx_gru_imdb,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_LSTM_imdb_CPU;test_onnx_lstm_imdb_cpu;test_onnx_lstm_imdb,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_GRU_mnist_CPU;test_onnx_gru_mnist_cpu;test_onnx_gru_mnist,--cpu")
@@ -200,6 +202,7 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_convT2D;test_onnx_convT2D;onnxruntime_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_convT3D;test_onnx_convT3D;onnxruntime_enc_dec_synthetic3D.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_upsample2D;test_onnx_upsample2D;onnxruntime_enc_dec_mnist.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_upsample3D;test_onnx_upsample3D;onnxruntime_enc_dec_synthetic3D.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_imdb;test_onnx_gru_imdb;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_imdb;test_onnx_lstm_imdb;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec;test_onnx_lstm_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
@@ -212,6 +215,7 @@ then
     #eddl2onnxrt+=("EDDL_to_ONNXRT_convT2D_CPU;test_onnx_convT2D_cpu;onnxruntime_enc_dec_mnist.py") ConvT2D not available in CPU
     #eddl2onnxrt+=("EDDL_to_ONNXRT_convT3D_CPU;test_onnx_convT3D_cpu;onnxruntime_enc_dec_synthetic3D.py") ConvT3D not available in CPU
     eddl2onnxrt+=("EDDL_to_ONNXRT_upsample2D_CPU;test_onnx_upsample2D_cpu;onnxruntime_enc_dec_mnist.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_upsample3D_CPU;test_onnx_upsample3D_cpu;onnxruntime_enc_dec_synthetic3D.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_imdb_CPU;test_onnx_gru_imdb_cpu;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_imdb_CPU;test_onnx_lstm_imdb_cpu;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
@@ -331,6 +335,7 @@ then
     pytorch2eddl+=("Pytorch_to_EDDL_convT2D;test_onnx_pytorch_convT2D;export_scripts/convT2D_enc_dec_mnist_pytorch_export.py;test_onnx_convT2D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_convT3D;test_onnx_pytorch_convT3D;export_scripts/convT3D_enc_dec_synthetic_pytorch_export.py;test_onnx_convT3D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_upsample2D;test_onnx_pytorch_upsample2D;export_scripts/upsample2D_enc_dec_mnist_pytorch_export.py;test_onnx_upsample2D,--import")
+    pytorch2eddl+=("Pytorch_to_EDDL_upsample3D;test_onnx_pytorch_upsample3D;export_scripts/upsample3D_enc_dec_synthetic_pytorch_export.py;test_onnx_upsample3D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_LSTM_IMDB;test_onnx_pytorch_LSTM_imdb;export_scripts/lstm_pytorch_export.py;test_onnx_lstm_imdb,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_GRU_IMDB;test_onnx_pytorch_GRU_imdb;export_scripts/gru_pytorch_export.py;test_onnx_gru_imdb,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_LSTM_MNIST;test_onnx_pytorch_LSTM_mnist;export_scripts/lstm_mnist_pytorch_export.py;test_onnx_lstm_mnist,--import")
@@ -347,6 +352,7 @@ then
     #pytorch2eddl+=("Pytorch_to_EDDL_convT2D_CPU;test_onnx_pytorch_convT2D;none;test_onnx_convT2D,--import,--cpu") ConvT2D not available in CPU
     #pytorch2eddl+=("Pytorch_to_EDDL_convT3D_CPU;test_onnx_pytorch_convT3D;none;test_onnx_convT3D,--import,--cpu") ConvT3D not available in CPU
     pytorch2eddl+=("Pytorch_to_EDDL_upsample2D_CPU;test_onnx_pytorch_upsample2D;none;test_onnx_upsample2D,--import,--cpu")
+    pytorch2eddl+=("Pytorch_to_EDDL_upsample3D_CPU;test_onnx_pytorch_upsample3D;none;test_onnx_upsample3D,--import,--cpu")
     pytorch2eddl+=("Pytorch_to_EDDL_LSTM_IMDB_CPU;test_onnx_pytorch_LSTM_imdb;none;test_onnx_lstm_imdb,--import,--cpu")
     pytorch2eddl+=("Pytorch_to_EDDL_GRU_IMDB_CPU;test_onnx_pytorch_GRU_imdb;none;test_onnx_gru_imdb,--import,--cpu")
     pytorch2eddl+=("Pytorch_to_EDDL_LSTM_MNIST_CPU;test_onnx_pytorch_LSTM_mnist;none;test_onnx_lstm_mnist,--import,--cpu")
@@ -427,6 +433,7 @@ then
     keras2eddl+=("Keras_to_EDDL_convT2D;test_onnx_keras_convT2D;export_scripts/convT2D_enc_dec_mnist_keras_export.py;test_onnx_convT2D,--import")
     keras2eddl+=("Keras_to_EDDL_convT3D;test_onnx_keras_convT3D;export_scripts/convT3D_enc_dec_synthetic_keras_export.py;test_onnx_convT3D,--import,--channels-last")
     keras2eddl+=("Keras_to_EDDL_upsample2D;test_onnx_keras_upsample2D;export_scripts/upsample2D_enc_dec_mnist_keras_export.py;test_onnx_upsample2D,--import")
+    keras2eddl+=("Keras_to_EDDL_upsample3D;test_onnx_keras_upsample3D;export_scripts/upsample3D_enc_dec_synthetic_keras_export.py;test_onnx_upsample3D,--import")
     keras2eddl+=("Keras_to_EDDL_LSTM_IMDB;test_onnx_keras_LSTM_imdb;export_scripts/lstm_keras_export.py;test_onnx_lstm_imdb,--import")
     keras2eddl+=("Keras_to_EDDL_GRU_IMDB;test_onnx_keras_GRU_imdb;export_scripts/gru_keras_export.py;test_onnx_gru_imdb,--import")
     keras2eddl+=("Keras_to_EDDL_LSTM_MNIST;test_onnx_keras_LSTM_mnist;export_scripts/lstm_mnist_keras_export.py;test_onnx_lstm_mnist,--import")
@@ -443,6 +450,7 @@ then
     #keras2eddl+=("Keras_to_EDDL_convT2D_CPU;test_onnx_keras_convT2D;none;test_onnx_convT2D,--import,--cpu") ConvT2D not available in CPU
     #keras2eddl+=("Keras_to_EDDL_convT3D_CPU;test_onnx_keras_convT3D;none;test_onnx_convT3D,--import,--cpu,--channels-last") ConvT3D not available in CPU
     keras2eddl+=("Keras_to_EDDL_upsample2D_CPU;test_onnx_keras_upsample2D;none;test_onnx_upsample2D,--import,--cpu")
+    keras2eddl+=("Keras_to_EDDL_upsample3D_CPU;test_onnx_keras_upsample3D;none;test_onnx_upsample3D,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_LSTM_IMDB_CPU;test_onnx_keras_LSTM_imdb;none;test_onnx_lstm_imdb,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_GRU_IMDB_CPU;test_onnx_keras_GRU_imdb;none;test_onnx_gru_imdb,--import,--cpu")
     keras2eddl+=("Keras_to_EDDL_LSTM_MNIST_CPU;test_onnx_keras_LSTM_mnist;none;test_onnx_lstm_mnist,--import,--cpu")
