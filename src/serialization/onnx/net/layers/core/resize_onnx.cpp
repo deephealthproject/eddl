@@ -115,7 +115,7 @@ void build_resize_node(LResize *layer, onnx::GraphProto *graph)
   scales->add_float_data(1);                                                 // Batch
   scales->add_float_data(1);                                                 // Channels
   scales->add_float_data(layer->new_shape[0] / layer->input->getShape()[2]); // H
-  scales->add_float_data(layer->new_shape[1] / layer->input->getShape()[3]); // H
+  scales->add_float_data(layer->new_shape[1] / layer->input->getShape()[3]); // W
 }
 
 #endif // defined(cPROTO)
