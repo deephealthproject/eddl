@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Convolutions &mdash; EDDL  documentation</title>
@@ -90,27 +91,28 @@
               
             
             
-              <p class="caption"><span class="caption-text">Installation</span></p>
+              <p><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Get started</span></p>
+<p><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Videotutorials</span></p>
+<p><span class="caption-text">Videotutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Layers</span></p>
+<p><span class="caption-text">Layers</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auxiliar.html">Auxiliar Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="activations.html">Activations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_augmentation.html">Data augmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_transformation.html">Data transformation</a></li>
@@ -119,8 +121,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#conv2d">Conv2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#conv3d">Conv3D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pointwise-convolution-2d">Pointwise Convolution 2D</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#d-upsampling">2D Upsampling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#convolutional-transpose">Convolutional Transpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#d-upsampling">2D UpSampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">3D UpSampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#d-convolutional-transpose">2D Convolutional Transpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">3D Convolutional Transpose</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="noise.html">Noise Layers</a></li>
@@ -132,21 +136,21 @@
 <li class="toctree-l1"><a class="reference internal" href="reduction.html">Reduction Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rnn.html">Recurrent</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Model</span></p>
+<p><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Training</span></p>
+<p><span class="caption-text">Training</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Test &amp; Score</span></p>
+<p><span class="caption-text">Test &amp; Score</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Bundle</span></p>
+<p><span class="caption-text">Bundle</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/losses.html">Losses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/metrics.html">Metrics</a></li>
@@ -154,7 +158,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/initializers.html">Initializers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/optimizers.html">Optimizers</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Computing Services</span></p>
+<p><span class="caption-text">Computing Services</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html">CPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
@@ -162,12 +166,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#serialization">Serialization</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Datasets</span></p>
+<p><span class="caption-text">Model Zoo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../models_zoo/classification.html">Classification</a></li>
+</ul>
+<p><span class="caption-text">Datasets</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Tensor</span></p>
+<p><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
@@ -242,9 +250,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="convolutions">
+  <section id="convolutions">
 <h1>Convolutions<a class="headerlink" href="#convolutions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="conv1d">
+<section id="conv1d">
 <h2>Conv1D<a class="headerlink" href="#conv1d" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6Conv1DE5layeri6vectorIiE6vectorIiE6stringbiK6vectorIiE6string">
@@ -273,8 +281,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="conv2d">
+</section>
+<section id="conv2d">
 <h2>Conv2D<a class="headerlink" href="#conv2d" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6Conv2DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string">
@@ -303,8 +311,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="conv3d">
+</section>
+<section id="conv3d">
 <h2>Conv3D<a class="headerlink" href="#conv3d" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6Conv3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string">
@@ -329,12 +337,11 @@
 </p>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Work in progress</strong>. Not yet implemented.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Conv3D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="s">&quot;same&quot;</span><span class="p">);</span>
+</pre></div>
 </div>
-</div>
-<div class="section" id="pointwise-convolution-2d">
+</section>
+<section id="pointwise-convolution-2d">
 <h2>Pointwise Convolution 2D<a class="headerlink" href="#pointwise-convolution-2d" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl15PointwiseConv2DE5layeriRK6vectorIiEbiRK6vectorIiE6string">
@@ -361,13 +368,14 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">PointwiseConv2D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="d-upsampling">
-<h2>2D Upsampling<a class="headerlink" href="#d-upsampling" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="d-upsampling">
+<h2>2D UpSampling<a class="headerlink" href="#d-upsampling" title="Permalink to this headline">¶</a></h2>
+<p>Soon to be deprecated. We recommend the use of the Resize layer.</p>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl12UpSampling2DE5layerRK6vectorIiE6string6string">
 <span id="_CPPv3N4eddl12UpSampling2DE5layerRK6vectorIiE6string6string"></span><span id="_CPPv2N4eddl12UpSampling2DE5layerRK6vectorIiE6string6string"></span><span id="eddl::UpSampling2D__layer.vector:i:CR.string.string"></span><span class="target" id="namespaceeddl_1adff6c2bedae54264b004a6cbc15c95d3"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">UpSampling2D</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>size</em>, string <em>interpolation</em> = &quot;nearest&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12UpSampling2DE5layerRK6vectorIiE6string6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Upsampling layer. </p>
+<dd><p>2D Upsampling layer. </p>
 <p>Identical to the <code class="docutils literal notranslate"><span class="pre">scale</span></code> transformation, the only difference is that <code class="docutils literal notranslate"><span class="pre">upsampling</span></code> repeats its rows/columns <em>n</em> times, while scaling uses a proportion.</p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Output layer after upsampling operation </p>
@@ -383,21 +391,45 @@
 </p>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In future versions this function will call <code class="docutils literal notranslate"><span class="pre">scale</span></code> instead of <code class="docutils literal notranslate"><span class="pre">repeat</span></code></p>
-</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">UpSampling2D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="convolutional-transpose">
-<h2>Convolutional Transpose<a class="headerlink" href="#convolutional-transpose" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id1">
+<h2>3D UpSampling<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>UpSampling for 3D images</p>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string">
-<span id="_CPPv3N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string"></span><span id="_CPPv2N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string"></span><span id="eddl::ConvT2D__layer.i.vector:i:CR.vector:i:CR.string.vector:i:CR.vector:i:CR.b.string"></span><span class="target" id="namespaceeddl_1a54715a91e808e82da09fac8e201add38"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ConvT2D</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>output_padding</em>, string <em>padding</em> = &quot;same&quot;, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, bool <em>use_bias</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Transposed convolution layer (sometimes called Deconvolution). </p>
+<dt id="_CPPv4N4eddl12UpSampling3DE5layer6vectorIiEb6stringf6string6string">
+<span id="_CPPv3N4eddl12UpSampling3DE5layer6vectorIiEb6stringf6string6string"></span><span id="_CPPv2N4eddl12UpSampling3DE5layer6vectorIiEb6stringf6string6string"></span><span id="eddl::UpSampling3D__layer.vector:i:.b.string.float.string.string"></span><span class="target" id="namespaceeddl_1a11bb458ab02aead4d12f2ce248ebda24"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">UpSampling3D</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>new_shape</em>, bool <em>reshape</em> = true, string <em>da_mode</em> = &quot;constant&quot;, float <em>constant</em> = 0.0f, string <em>coordinate_transformation_mode</em> = &quot;asymmetric&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12UpSampling3DE5layer6vectorIiEb6stringf6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>3D Upsampling layer. Similar to Resize but for 3D images </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of scale transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_shape</span></code>: Vector with layer/images desired new shape </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reshape</span></code>: If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale&lt;100%: scale + padding; scale &gt;100%: crop + scale) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coordinate_transformation_mode</span></code>: This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">UpSampling3D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">});</span>
+</pre></div>
+</div>
+</section>
+<section id="d-convolutional-transpose">
+<h2>2D Convolutional Transpose<a class="headerlink" href="#d-convolutional-transpose" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string">
+<span id="_CPPv3N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="eddl::ConvT2D__layer.i.vector:i:CR.vector:i:CR.string.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1a2a8470fc918e08480ca42d1c35af4b4f"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ConvT2D</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, string <em>padding</em> = &quot;same&quot;, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7ConvT2DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>2D Transposed convolution layer (sometimes called Deconvolution). </p>
 <p>The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.</p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Output layer after upsampling operation </p>
@@ -418,12 +450,41 @@
 </p>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Work in progress</strong>. Not yet implemented.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ConvT2D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="s">&quot;same&quot;</span><span class="p">);</span>
+</pre></div>
 </div>
+</section>
+<section id="id2">
+<h2>3D Convolutional Transpose<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string">
+<span id="_CPPv3N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="eddl::ConvT3D__layer.i.vector:i:CR.vector:i:CR.string.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1a6e4dd5250c66275c308b1ad32afeb044"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ConvT3D</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, string <em>padding</em> = &quot;same&quot;, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>3D Transposed convolution layer (sometimes called Deconvolution). </p>
+<p>The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output layer after upsampling operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: The dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: The height and width of the 2D convolution window </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_padding</span></code>: The amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “valid” or “same” </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: The dilation rate to use for dilated convolution. Spacing between kernel elements </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: The strides of the convolution along the height and width </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ConvT3D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="s">&quot;same&quot;</span><span class="p">);</span>
+</pre></div>
 </div>
-</div>
+</section>
+</section>
 
 
            </div>

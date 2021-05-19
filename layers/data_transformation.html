@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Data transformation &mdash; EDDL  documentation</title>
@@ -90,45 +91,42 @@
               
             
             
-              <p class="caption"><span class="caption-text">Installation</span></p>
+              <p><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Get started</span></p>
+<p><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Videotutorials</span></p>
+<p><span class="caption-text">Videotutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Layers</span></p>
+<p><span class="caption-text">Layers</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auxiliar.html">Auxiliar Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="activations.html">Activations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_augmentation.html">Data augmentation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data transformation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#affine">Affine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#crop">Crop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#centeredcrop">CenteredCrop</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#colorjitter">ColorJitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cropscale">CropScale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cutout">Cutout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#flip">Flip</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#grayscale">Grayscale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#horizontalflip">HorizontalFlip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pad">Pad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#rotate">Rotate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scale">Scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#shift">Shift</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#verticalflip">VerticalFlip</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#normalize">Normalize</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="convolutional.html">Convolutions</a></li>
@@ -141,21 +139,21 @@
 <li class="toctree-l1"><a class="reference internal" href="reduction.html">Reduction Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rnn.html">Recurrent</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Model</span></p>
+<p><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Training</span></p>
+<p><span class="caption-text">Training</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Test &amp; Score</span></p>
+<p><span class="caption-text">Test &amp; Score</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Bundle</span></p>
+<p><span class="caption-text">Bundle</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/losses.html">Losses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/metrics.html">Metrics</a></li>
@@ -163,7 +161,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/initializers.html">Initializers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/optimizers.html">Optimizers</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Computing Services</span></p>
+<p><span class="caption-text">Computing Services</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html">CPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
@@ -171,12 +169,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#serialization">Serialization</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Datasets</span></p>
+<p><span class="caption-text">Model Zoo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../models_zoo/classification.html">Classification</a></li>
+</ul>
+<p><span class="caption-text">Datasets</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Tensor</span></p>
+<p><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
@@ -251,47 +253,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="data-transformation">
+  <section id="data-transformation">
 <h1>Data transformation<a class="headerlink" href="#data-transformation" title="Permalink to this headline">¶</a></h1>
 <p>Deterministic transformations.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Work in progress</strong>. Not all transformation modes are implemented.</p>
-<p>Currently implemented:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">original</span></code> (for rotation): The input is extended by filling all values beyond the edge with the original values</p></li>
-</ul>
-</div>
-<div class="section" id="affine">
-<h2>Affine<a class="headerlink" href="#affine" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl6AffineE5layerffff6string">
-<span id="_CPPv3N4eddl6AffineE5layerffff6string"></span><span id="_CPPv2N4eddl6AffineE5layerffff6string"></span><span id="eddl::Affine__layer.float.float.float.float.string"></span><span class="target" id="namespaceeddl_1adc31eed3b873c2b154560c5b4be6d12e"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Affine</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>angle</em> = 0, float <em>translate</em> = 0, float <em>scale</em> = 0, float <em>shear</em> = 0, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6AffineE5layerffff6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Affine transformation of the image keeping center invariant: rotate+translate+scale+shear. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Output of affine transformation </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">angle</span></code>: Angle factor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">translate</span></code>: Translate factor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">scale</span></code>: Scaling factor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">shear</span></code>: Shear factor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Not implemented yet</strong></p>
-<p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations">https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations</a></p>
-</div>
-</div>
-<div class="section" id="crop">
+<section id="crop">
 <h2>Crop<a class="headerlink" href="#crop" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4CropE5layer6vectorIiE6vectorIiEbf6string">
@@ -317,8 +282,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Crop</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">},{</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="centeredcrop">
+</section>
+<section id="centeredcrop">
 <h2>CenteredCrop<a class="headerlink" href="#centeredcrop" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl12CenteredCropE5layer6vectorIiEbf6string">
@@ -343,36 +308,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">CenteredCrop</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="colorjitter">
-<h2>ColorJitter<a class="headerlink" href="#colorjitter" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl11ColorJitterE5layerffff6string">
-<span id="_CPPv3N4eddl11ColorJitterE5layerffff6string"></span><span id="_CPPv2N4eddl11ColorJitterE5layerffff6string"></span><span id="eddl::ColorJitter__layer.float.float.float.float.string"></span><span class="target" id="namespaceeddl_1a8597b11e48dec84dec771b52e50f0b3a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ColorJitter</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>brightness</em> = 0, float <em>contrast</em> = 0, float <em>saturation</em> = 0, float <em>hue</em> = 0, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11ColorJitterE5layerffff6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Randomly change the brightness, contrast and saturation of an image. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Output of color jitter transformation </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">brightness</span></code>: How much to jitter brightness. brightness_factor is chosen uniformly from [max(0, 1 - brightness), 1 + brightness] or the given [min, max]. Should be non negative numbers </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">contrast</span></code>: How much to jitter contrast. contrast_factor is chosen uniformly from [max(0, 1 - contrast), 1 + contrast] or the given [min, max]. Should be non negative numbers </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">saturation</span></code>: How much to jitter saturation. saturation_factor is chosen uniformly from [max(0, 1 - saturation), 1 + saturation] or the given [min, max]. Should be non negative numbers </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">hue</span></code>: How much to jitter hue. hue_factor is chosen uniformly from [-hue, hue] or the given [min, max]. Should have 0&lt;= hue &lt;= 0.5 or -0.5 &lt;= min &lt;= max &lt;= 0.5 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Not implemented yet</strong></p>
-<p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations">https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations</a></p>
-</div>
-</div>
-<div class="section" id="cropscale">
+</section>
+<section id="cropscale">
 <h2>CropScale<a class="headerlink" href="#cropscale" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string">
@@ -398,8 +335,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">CropScale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">},{</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="cutout">
+</section>
+<section id="cutout">
 <h2>Cutout<a class="headerlink" href="#cutout" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6CutoutE5layer6vectorIiE6vectorIiEf6string">
@@ -424,8 +361,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Cutout</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="flip">
+</section>
+<section id="flip">
 <h2>Flip<a class="headerlink" href="#flip" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4FlipE5layeri6string">
@@ -448,32 +385,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Flip</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="grayscale">
-<h2>Grayscale<a class="headerlink" href="#grayscale" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl9GrayscaleE5layer6string">
-<span id="_CPPv3N4eddl9GrayscaleE5layer6string"></span><span id="_CPPv2N4eddl9GrayscaleE5layer6string"></span><span id="eddl::Grayscale__layer.string"></span><span class="target" id="namespaceeddl_1a1430da4391416d07e33fb08d434f111a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Grayscale</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9GrayscaleE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Convert image to grayscale. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Output of grayscale transformation </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Not implemented yet</strong></p>
-<p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations">https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations</a></p>
-</div>
-</div>
-<div class="section" id="horizontalflip">
+</section>
+<section id="horizontalflip">
 <h2>HorizontalFlip<a class="headerlink" href="#horizontalflip" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl14HorizontalFlipE5layer6string">
@@ -495,8 +408,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">HorizontalFlip</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="pad">
+</section>
+<section id="pad">
 <h2>Pad<a class="headerlink" href="#pad" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3PadE5layer6vectorIiEf6string">
@@ -507,7 +420,7 @@
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: Padding on each border </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: Padding on each border (top-bottom, left-right) or (top, right, bottom, left) </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: pads with a constant value </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
@@ -516,13 +429,11 @@
 </p>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Not implemented yet</strong></p>
-<p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations">https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations</a></p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Pad</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">});</span>
+</pre></div>
 </div>
-</div>
-<div class="section" id="rotate">
+</section>
+<section id="rotate">
 <h2>Rotate<a class="headerlink" href="#rotate" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6RotateE5layerf6vectorIiE6stringf6string">
@@ -547,12 +458,12 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Rotate</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="scale">
+</section>
+<section id="scale">
 <h2>Scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl5ScaleE5layer6vectorIiEb6stringf6string">
-<span id="_CPPv3N4eddl5ScaleE5layer6vectorIiEb6stringf6string"></span><span id="_CPPv2N4eddl5ScaleE5layer6vectorIiEb6stringf6string"></span><span id="eddl::Scale__layer.vector:i:.b.string.float.string"></span><span class="target" id="namespaceeddl_1abcd68f88956aa441dc61f78970483416"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Scale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>new_shape</em>, bool <em>reshape</em> = true, string <em>da_mode</em> = &quot;constant&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ScaleE5layer6vectorIiEb6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N4eddl5ScaleE5layer6vectorIiEb6stringf6string6string">
+<span id="_CPPv3N4eddl5ScaleE5layer6vectorIiEb6stringf6string6string"></span><span id="_CPPv2N4eddl5ScaleE5layer6vectorIiEb6stringf6string6string"></span><span id="eddl::Scale__layer.vector:i:.b.string.float.string.string"></span><span class="target" id="namespaceeddl_1ab2c0c587aba80ced58091c41048a2e5c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Scale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>new_shape</em>, bool <em>reshape</em> = true, string <em>da_mode</em> = &quot;constant&quot;, float <em>constant</em> = 0.0f, string <em>coordinate_transformation_mode</em> = &quot;asymmetric&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ScaleE5layer6vectorIiEb6stringf6string6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Resize the input image to the given size. <code class="docutils literal notranslate"><span class="pre">[height,</span> <span class="pre">width]</span></code>. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Output of scale transformation </p>
@@ -563,6 +474,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">reshape</span></code>: If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale&lt;100%: scale + padding; scale &gt;100%: crop + scale) </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirror”, “reflect”, “wrap”, “original”) </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coordinate_transformation_mode</span></code>: This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor. </p></li>
 </ul>
 </dd>
 </dl>
@@ -573,8 +485,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">35</span><span class="p">,</span><span class="mi">35</span><span class="p">},</span> <span class="nb">false</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="shift">
+</section>
+<section id="shift">
 <h2>Shift<a class="headerlink" href="#shift" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5ShiftE5layer6vectorIiE6stringf6string">
@@ -594,8 +506,8 @@
 </p>
 </dd></dl>
 
-</div>
-<div class="section" id="verticalflip">
+</section>
+<section id="verticalflip">
 <h2>VerticalFlip<a class="headerlink" href="#verticalflip" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl12VerticalFlipE5layer6string">
@@ -617,32 +529,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">VerticalFlip</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="normalize">
-<h2>Normalize<a class="headerlink" href="#normalize" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl9NormalizeE5layer6string">
-<span id="_CPPv3N4eddl9NormalizeE5layer6string"></span><span id="_CPPv2N4eddl9NormalizeE5layer6string"></span><span id="eddl::Normalize__layer.string"></span><span class="target" id="namespaceeddl_1a2e0ab61a4313bdb6fc8fbb5645fd5618"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Normalize</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9NormalizeE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Normalize an image with mean and standard deviation. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Output of normalize transformation </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Not implemented yet</strong></p>
-<p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations">https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations</a></p>
-</div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

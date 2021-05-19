@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Creation Routines &mdash; EDDL  documentation</title>
@@ -90,27 +91,28 @@
               
             
             
-              <p class="caption"><span class="caption-text">Installation</span></p>
+              <p><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Get started</span></p>
+<p><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Videotutorials</span></p>
+<p><span class="caption-text">Videotutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Layers</span></p>
+<p><span class="caption-text">Layers</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../layers/core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/auxiliar.html">Auxiliar Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/activations.html">Activations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/data_augmentation.html">Data augmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/data_transformation.html">Data transformation</a></li>
@@ -124,21 +126,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduction Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Model</span></p>
+<p><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Training</span></p>
+<p><span class="caption-text">Training</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Test &amp; Score</span></p>
+<p><span class="caption-text">Test &amp; Score</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Bundle</span></p>
+<p><span class="caption-text">Bundle</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/losses.html">Losses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/metrics.html">Metrics</a></li>
@@ -146,7 +148,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/initializers.html">Initializers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/optimizers.html">Optimizers</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Computing Services</span></p>
+<p><span class="caption-text">Computing Services</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html">CPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
@@ -154,12 +156,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#serialization">Serialization</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Datasets</span></p>
+<p><span class="caption-text">Model Zoo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../models_zoo/classification.html">Classification</a></li>
+</ul>
+<p><span class="caption-text">Datasets</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Tensor</span></p>
+<p><span class="caption-text">Tensor</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Creation Routines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#constructors">Constructors</a></li>
@@ -270,9 +276,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="creation-routines">
+  <section id="creation-routines">
 <h1>Creation Routines<a class="headerlink" href="#creation-routines" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="constructors">
+<section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Permalink to this headline">¶</a></h2>
 <p>Create an uninitialized tensor</p>
 <dl class="cpp function">
@@ -332,11 +338,11 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="constructors-initializers">
+</section>
+<section id="constructors-initializers">
 <h2>Constructors &amp; Initializers<a class="headerlink" href="#constructors-initializers" title="Permalink to this headline">¶</a></h2>
 <p>Create tensor from generators</p>
-<div class="section" id="empty">
+<section id="empty">
 <h3>empty<a class="headerlink" href="#empty" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5emptyERK6vectorIiEi">
@@ -361,8 +367,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="empty-like">
+</section>
+<section id="empty-like">
 <h3>empty_like<a class="headerlink" href="#empty-like" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor10empty_likeEP6Tensor">
@@ -387,8 +393,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="zeros">
+</section>
+<section id="zeros">
 <h3>zeros<a class="headerlink" href="#zeros" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5zerosERK6vectorIiEi">
@@ -413,8 +419,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="zeros-like">
+</section>
+<section id="zeros-like">
 <h3>zeros_like<a class="headerlink" href="#zeros-like" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor10zeros_likeEP6Tensor">
@@ -439,8 +445,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="ones">
+</section>
+<section id="ones">
 <h3>ones<a class="headerlink" href="#ones" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4onesERK6vectorIiEi">
@@ -465,8 +471,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="ones-like">
+</section>
+<section id="ones-like">
 <h3>ones_like<a class="headerlink" href="#ones-like" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor9ones_likeEP6Tensor">
@@ -491,8 +497,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="full">
+</section>
+<section id="full">
 <h3>full<a class="headerlink" href="#full" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4fullERK6vectorIiEfi">
@@ -518,8 +524,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="full-like">
+</section>
+<section id="full-like">
 <h3>full_like<a class="headerlink" href="#full-like" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor9full_likeEP6Tensorf">
@@ -545,8 +551,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="eye">
+</section>
+<section id="eye">
 <h3>eye<a class="headerlink" href="#eye" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3eyeEiii">
@@ -580,8 +586,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="identity">
+</section>
+<section id="identity">
 <h3>identity<a class="headerlink" href="#identity" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8identityEii">
@@ -607,12 +613,12 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="constructors-from-existing-data">
+</section>
+</section>
+<section id="constructors-from-existing-data">
 <h2>Constructors from existing data<a class="headerlink" href="#constructors-from-existing-data" title="Permalink to this headline">¶</a></h2>
 <p>Create tensor from existing data</p>
-<div class="section" id="clone">
+<section id="clone">
 <h3>clone<a class="headerlink" href="#clone" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5cloneEv">
@@ -638,8 +644,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="reallocate">
+</section>
+<section id="reallocate">
 <h3>reallocate<a class="headerlink" href="#reallocate" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor10reallocateEP6TensorRK6vectorIiE">
@@ -705,8 +711,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="copy">
+</section>
+<section id="copy">
 <h3>copy<a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4copyEP6TensorP6Tensor">
@@ -753,12 +759,12 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="constructors-from-numerical-ranges">
+</section>
+</section>
+<section id="constructors-from-numerical-ranges">
 <h2>Constructors from numerical ranges<a class="headerlink" href="#constructors-from-numerical-ranges" title="Permalink to this headline">¶</a></h2>
 <p>Create tensor from numerical ranges</p>
-<div class="section" id="arange">
+<section id="arange">
 <h3>arange<a class="headerlink" href="#arange" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6arangeEfffi">
@@ -782,8 +788,8 @@
 <span class="c1">// [1.00 1.50 2.00 2.50 3.00 3.50]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="range">
+</section>
+<section id="range">
 <h3>range<a class="headerlink" href="#range" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5rangeEfffi">
@@ -807,8 +813,8 @@
 <span class="c1">// [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="linspace">
+</section>
+<section id="linspace">
 <h3>linspace<a class="headerlink" href="#linspace" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8linspaceEffii">
@@ -832,8 +838,8 @@
 <span class="c1">// [3.00, 4.75, 6.50, 8.25, 10.00]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="logspace">
+</section>
+<section id="logspace">
 <h3>logspace<a class="headerlink" href="#logspace" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor8logspaceEffifi">
@@ -858,8 +864,8 @@
 <span class="c1">// [1.2589, 2.1135, 3.5481, 5.9566, 10.0000]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="geomspace">
+</section>
+<section id="geomspace">
 <h3>geomspace<a class="headerlink" href="#geomspace" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor9geomspaceEffii">
@@ -883,12 +889,12 @@
 <span class="c1">// [1.0, 10.0, 100.0]</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="constructors-from-random-generators">
+</section>
+</section>
+<section id="constructors-from-random-generators">
 <h2>Constructors from random generators<a class="headerlink" href="#constructors-from-random-generators" title="Permalink to this headline">¶</a></h2>
 <p>Create tensor from generators</p>
-<div class="section" id="randu">
+<section id="randu">
 <h3>randu<a class="headerlink" href="#randu" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5randuERK6vectorIiEi">
@@ -914,8 +920,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="randn">
+</section>
+<section id="randn">
 <h3>randn<a class="headerlink" href="#randn" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5randnERK6vectorIiEi">
@@ -940,9 +946,9 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="constructors-of-matrices">
+</section>
+</section>
+<section id="constructors-of-matrices">
 <h2>Constructors of matrices<a class="headerlink" href="#constructors-of-matrices" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4diagEi">
@@ -982,8 +988,8 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

@@ -130,6 +130,54 @@ Example:
    l = Select(l, {"-1", "20:100", "50:-10", ":"});
 
 
+Slice
+---------------
+
+Alias for Select
+Selects a subset of the output tensor using indices (similar to Numpy; the batch is ignored)
+
+.. doxygenfunction:: eddl::Slice
+
+
+Example:
+
+.. code-block:: c++
+
+   l = Slice(l, {"-1", "20:100", "50:-10", ":"});
+
+
+Expand
+---------------
+
+Returns a layer with singleton dimensions expanded to a larger size.
+
+.. doxygenfunction:: eddl::Expand(layer l, int size, string name="")
+
+
+Example:
+
+.. code-block:: c++
+
+    // {3, 1, 5, 1, 5} and size=100 => {3, 100, 5, 100, 5}
+   l = Expand(l, 100);
+
+Split
+---------------
+
+
+Split a tensor (layer) into a list of tensors (layers). (The batch is ignored).
+The indexes mark the split points.
+
+.. doxygenfunction:: eddl::Split
+
+
+Example:
+
+.. code-block:: c++
+
+    // e.g.: l=> Output shape: {B, 3, 32, 32}
+    // vl: {l1, l2, l3}; l1= {B, :1, 32, 32}, l2= {B, 1:2, 32, 32}, l3= {B, 2:, 32, 32}
+   vector<layer> vl = Split(l, {1,2}, 0);
 
 Permute
 ---------------
@@ -158,3 +206,17 @@ Example:
 .. code-block:: c++
 
    l = Transpose(l);
+
+
+Resize
+-------
+
+Same as Scale but with support for backward operation.
+
+.. doxygenfunction:: Resize
+
+Example:
+
+.. code-block:: c++
+
+   l = Resize(l, {35, 35});

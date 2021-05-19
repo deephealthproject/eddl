@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Optimizers &mdash; EDDL  documentation</title>
@@ -90,27 +91,28 @@
               
             
             
-              <p class="caption"><span class="caption-text">Installation</span></p>
+              <p><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Get started</span></p>
+<p><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Videotutorials</span></p>
+<p><span class="caption-text">Videotutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Layers</span></p>
+<p><span class="caption-text">Layers</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../layers/core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/auxiliar.html">Auxiliar Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/activations.html">Activations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/data_augmentation.html">Data augmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/data_transformation.html">Data transformation</a></li>
@@ -124,21 +126,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduction Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Model</span></p>
+<p><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Training</span></p>
+<p><span class="caption-text">Training</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Test &amp; Score</span></p>
+<p><span class="caption-text">Test &amp; Score</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Bundle</span></p>
+<p><span class="caption-text">Bundle</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="losses.html">Losses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
@@ -157,7 +159,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Computing Services</span></p>
+<p><span class="caption-text">Computing Services</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html">CPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html#gpu">GPU</a></li>
@@ -165,12 +167,16 @@
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html#compss">COMPSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html#serialization">Serialization</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Datasets</span></p>
+<p><span class="caption-text">Model Zoo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../models_zoo/classification.html">Classification</a></li>
+</ul>
+<p><span class="caption-text">Datasets</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Tensor</span></p>
+<p><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
@@ -245,9 +251,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="optimizers">
+  <section id="optimizers">
 <h1>Optimizers<a class="headerlink" href="#optimizers" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="adadelta">
+<section id="adadelta">
 <h2>Adadelta<a class="headerlink" href="#adadelta" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl8adadeltaEffff">
@@ -274,8 +280,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">adadelta</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.000001</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="adam">
+</section>
+<section id="adam">
 <h2>Adam<a class="headerlink" href="#adam" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4adamEfffffb">
@@ -303,8 +309,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">adam</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="adagrad">
+</section>
+<section id="adagrad">
 <h2>Adagrad<a class="headerlink" href="#adagrad" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7adagradEfff">
@@ -331,8 +337,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">adagrad</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.000001</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="adamax">
+</section>
+<section id="adamax">
 <h2>Adamax<a class="headerlink" href="#adamax" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6adamaxEfffff">
@@ -359,8 +365,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">adamax</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">,</span> <span class="mf">0.000001</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="nadam">
+</section>
+<section id="nadam">
 <h2>Nadam<a class="headerlink" href="#nadam" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5nadamEfffff">
@@ -387,8 +393,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">nadam</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">,</span> <span class="mf">0.0000001</span><span class="p">,</span> <span class="mf">0.004</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="rmsprop">
+</section>
+<section id="rmsprop">
 <h2>RMSProp<a class="headerlink" href="#rmsprop" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7rmspropEffff">
@@ -415,8 +421,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="sgd-stochastic-gradient-descent">
+</section>
+<section id="sgd-stochastic-gradient-descent">
 <h2>SGD (Stochastic Gradient Descent)<a class="headerlink" href="#sgd-stochastic-gradient-descent" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3sgdEfffb">
@@ -441,8 +447,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">sgd</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="export-to-file">
+</section>
+<section id="export-to-file">
 <h2>Export to file<a class="headerlink" href="#export-to-file" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv427save_optimizer_to_onnx_fileP9Optimizer6string">
@@ -465,8 +471,8 @@
 <span class="n">save_optimizer_to_onnx_file</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="s">&quot;my_opt.onnx&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="import-from-file">
+</section>
+<section id="import-from-file">
 <h2>Import from file<a class="headerlink" href="#import-from-file" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv431import_optimizer_from_onnx_file6string">
@@ -487,8 +493,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="n">opt</span> <span class="o">=</span> <span class="n">import_optimizer_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_opt.onnx&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

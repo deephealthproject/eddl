@@ -3,27 +3,6 @@ Data transformation
 
 Deterministic transformations.
 
-.. note::
-
-    **Work in progress**. Not all transformation modes are implemented.
-
-    Currently implemented:
-
-    - ``constant``: The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter.
-    - ``original`` (for rotation): The input is extended by filling all values beyond the edge with the original values
-
-
-Affine
--------
-
-.. doxygenfunction:: Affine
-
-.. note::
-
-    **Not implemented yet**
-
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations
-
 
 
 Crop
@@ -50,20 +29,6 @@ Example:
 
    l = CenteredCrop(l, {24,24});
    
-
-
-
-ColorJitter
----------------
-
-.. doxygenfunction:: ColorJitter
-
-.. note::
-
-    **Not implemented yet**
-
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations
-
 
 
 CropScale
@@ -108,20 +73,6 @@ Example:
 
 
 
-Grayscale
----------
-
-.. doxygenfunction:: Grayscale
-
-
-.. note::
-
-    **Not implemented yet**
-
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations
- 
-
-
 HorizontalFlip
 ---------------------
 
@@ -141,12 +92,9 @@ Pad
 
 .. doxygenfunction:: Pad
 
-.. note::
+.. code-block:: c++
 
-    **Not implemented yet**
-
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations
-
+   l = Pad(l, {50, 50});
 
 
 
@@ -194,14 +142,4 @@ Example:
 
    l = VerticalFlip(l);
 
-Normalize
----------
-
-.. doxygenfunction:: Normalize
-
-.. note::
-
-    **Not implemented yet**
-
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations
 

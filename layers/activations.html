@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Activations &mdash; EDDL  documentation</title>
@@ -42,7 +43,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Data augmentation" href="data_augmentation.html" />
-    <link rel="prev" title="Core" href="core.html" /> 
+    <link rel="prev" title="Auxiliar Layers" href="auxiliar.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,27 +91,28 @@
               
             
             
-              <p class="caption"><span class="caption-text">Installation</span></p>
+              <p><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Get started</span></p>
+<p><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Videotutorials</span></p>
+<p><span class="caption-text">Videotutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Layers</span></p>
+<p><span class="caption-text">Layers</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auxiliar.html">Auxiliar Layers</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Activations</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#softmax">Softmax</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sigmoid">Sigmoid</a></li>
@@ -138,21 +140,21 @@
 <li class="toctree-l1"><a class="reference internal" href="reduction.html">Reduction Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rnn.html">Recurrent</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Model</span></p>
+<p><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Training</span></p>
+<p><span class="caption-text">Training</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Test &amp; Score</span></p>
+<p><span class="caption-text">Test &amp; Score</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Bundle</span></p>
+<p><span class="caption-text">Bundle</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/losses.html">Losses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/metrics.html">Metrics</a></li>
@@ -160,7 +162,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/initializers.html">Initializers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/optimizers.html">Optimizers</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Computing Services</span></p>
+<p><span class="caption-text">Computing Services</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html">CPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
@@ -168,12 +170,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#serialization">Serialization</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Datasets</span></p>
+<p><span class="caption-text">Model Zoo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../models_zoo/classification.html">Classification</a></li>
+</ul>
+<p><span class="caption-text">Datasets</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Tensor</span></p>
+<p><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
@@ -248,9 +254,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="activations">
+  <section id="activations">
 <h1>Activations<a class="headerlink" href="#activations" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="softmax">
+<section id="softmax">
 <h2>Softmax<a class="headerlink" href="#softmax" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7SoftmaxE5layeri6string">
@@ -276,8 +282,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Softmax</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="sigmoid">
+</section>
+<section id="sigmoid">
 <h2>Sigmoid<a class="headerlink" href="#sigmoid" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7SigmoidE5layer6string">
@@ -302,8 +308,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Sigmoid</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="relu">
+</section>
+<section id="relu">
 <h2>ReLu<a class="headerlink" href="#relu" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4ReLuE5layer6string">
@@ -332,8 +338,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="thresholded-relu">
+</section>
+<section id="thresholded-relu">
 <h2>Thresholded ReLu<a class="headerlink" href="#thresholded-relu" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl15ThresholdedReLuE5layerf6string">
@@ -361,8 +367,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ThresholdedReLu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="leaky-relu">
+</section>
+<section id="leaky-relu">
 <h2>Leaky ReLu<a class="headerlink" href="#leaky-relu" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl9LeakyReLuE5layerf6string">
@@ -392,8 +398,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">LeakyReLu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="elu">
+</section>
+<section id="elu">
 <h2>ELu<a class="headerlink" href="#elu" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3EluE5layerf6string">
@@ -421,8 +427,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Elu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="selu">
+</section>
+<section id="selu">
 <h2>SeLu<a class="headerlink" href="#selu" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4SeluE5layer6string">
@@ -450,8 +456,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Selu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="exponential">
+</section>
+<section id="exponential">
 <h2>Exponential<a class="headerlink" href="#exponential" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl11ExponentialE5layer6string">
@@ -474,8 +480,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Exponential</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="softplus">
+</section>
+<section id="softplus">
 <h2>Softplus<a class="headerlink" href="#softplus" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl8SoftplusE5layer6string">
@@ -498,8 +504,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Softplus</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="softsign">
+</section>
+<section id="softsign">
 <h2>Softsign<a class="headerlink" href="#softsign" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl8SoftsignE5layer6string">
@@ -522,8 +528,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Softsign</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="linear">
+</section>
+<section id="linear">
 <h2>Linear<a class="headerlink" href="#linear" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6LinearE5layerf6string">
@@ -547,8 +553,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="tanh">
+</section>
+<section id="tanh">
 <h2>Tanh<a class="headerlink" href="#tanh" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4TanhE5layer6string">
@@ -573,8 +579,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Tanh</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -587,7 +593,7 @@
         <a href="data_augmentation.html" class="btn btn-neutral float-right" title="Data augmentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="core.html" class="btn btn-neutral float-left" title="Core" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="auxiliar.html" class="btn btn-neutral float-left" title="Auxiliar Layers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

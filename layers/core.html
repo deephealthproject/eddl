@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Core &mdash; EDDL  documentation</title>
@@ -41,7 +42,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Activations" href="activations.html" />
+    <link rel="next" title="Auxiliar Layers" href="auxiliar.html" />
     <link rel="prev" title="Showcase" href="../videotutorials/usage.html" /> 
 </head>
 
@@ -90,25 +91,25 @@
               
             
             
-              <p class="caption"><span class="caption-text">Installation</span></p>
+              <p><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Get started</span></p>
+<p><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Videotutorials</span></p>
+<p><span class="caption-text">Videotutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Layers</span></p>
+<p><span class="caption-text">Layers</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Core</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#dense">Dense</a></li>
@@ -120,10 +121,15 @@
 <li class="toctree-l2"><a class="reference internal" href="#input">Input</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dropout">Dropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#select">Select</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#slice">Slice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#expand">Expand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#split">Split</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#permute">Permute</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#transpose">Transpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resize">Resize</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="auxiliar.html">Auxiliar Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="activations.html">Activations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_augmentation.html">Data augmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_transformation.html">Data transformation</a></li>
@@ -137,21 +143,21 @@
 <li class="toctree-l1"><a class="reference internal" href="reduction.html">Reduction Layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rnn.html">Recurrent</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Model</span></p>
+<p><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Training</span></p>
+<p><span class="caption-text">Training</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Test &amp; Score</span></p>
+<p><span class="caption-text">Test &amp; Score</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Bundle</span></p>
+<p><span class="caption-text">Bundle</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/losses.html">Losses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/metrics.html">Metrics</a></li>
@@ -159,7 +165,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/initializers.html">Initializers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/optimizers.html">Optimizers</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Computing Services</span></p>
+<p><span class="caption-text">Computing Services</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html">CPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
@@ -167,12 +173,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#serialization">Serialization</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Datasets</span></p>
+<p><span class="caption-text">Model Zoo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../models_zoo/classification.html">Classification</a></li>
+</ul>
+<p><span class="caption-text">Datasets</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Tensor</span></p>
+<p><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
@@ -247,9 +257,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="core">
+  <section id="core">
 <h1>Core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="dense">
+<section id="dense">
 <h2>Dense<a class="headerlink" href="#dense" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5DenseE5layerib6string">
@@ -273,8 +283,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="embedding">
+</section>
+<section id="embedding">
 <h2>Embedding<a class="headerlink" href="#embedding" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl9EmbeddingE5layeriiib6string">
@@ -299,8 +309,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="reshape">
+</section>
+<section id="reshape">
 <h2>Reshape<a class="headerlink" href="#reshape" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7ReshapeE5layerRK6vectorIiE6string">
@@ -326,8 +336,8 @@
 <span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">-1</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="flatten">
+</section>
+<section id="flatten">
 <h2>Flatten<a class="headerlink" href="#flatten" title="Permalink to this headline">¶</a></h2>
 <p>Transforms the input tensor into a 1D-tensor. Alias for <code class="docutils literal notranslate"><span class="pre">Reshape(l,</span> <span class="pre">{-1})</span></code>.</p>
 <dl class="cpp function">
@@ -350,8 +360,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Flatten</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="squeeze">
+</section>
+<section id="squeeze">
 <h2>Squeeze<a class="headerlink" href="#squeeze" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7SqueezeE5layeri6string">
@@ -378,8 +388,8 @@
 <span class="n">l</span> <span class="o">=</span> <span class="n">Squeeze</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>  <span class="c1">// ([B,] 32, 1, 5, 1) =&gt; ([B,] 32, 1, 5)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="unsqueeze">
+</section>
+<section id="unsqueeze">
 <h2>Unsqueeze<a class="headerlink" href="#unsqueeze" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl9UnsqueezeE5layeri6string">
@@ -406,8 +416,8 @@
 <span class="n">l</span> <span class="o">=</span> <span class="n">Unsqueeze</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>  <span class="c1">// ([B,] 5) =&gt; ([B,] 5, 1)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="input">
+</section>
+<section id="input">
 <h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5InputERK6vectorIiE6string">
@@ -429,8 +439,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="dropout">
+</section>
+<section id="dropout">
 <h2>Dropout<a class="headerlink" href="#dropout" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7DropoutE5layerfb6string">
@@ -455,14 +465,14 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="select">
+</section>
+<section id="select">
 <h2>Select<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h2>
 <p>Selects a subset of the output tensor using indices (similar to Numpy; the batch is ignored)</p>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6SelectE5layer6vectorI6stringE6string">
 <span id="_CPPv3N4eddl6SelectE5layer6vectorI6stringE6string"></span><span id="_CPPv2N4eddl6SelectE5layer6vectorI6stringE6string"></span><span id="eddl::Select__layer.vector:string:.string"></span><span class="target" id="namespaceeddl_1ae68ca3efc10e726dad867a83d0274b3c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Select</code><span class="sig-paren">(</span>layer <em>l</em>, vector&lt;string&gt; <em>indices</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6SelectE5layer6vectorI6stringE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Returns a new tensor which indexes the input tensor using the entries in indices. </p>
+<dd><p>Returns a new layer which indexes the input tensor using the entries in indices. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>A tensor with the selected elements </p>
 </dd>
@@ -480,8 +490,90 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;-1&quot;</span><span class="p">,</span> <span class="s">&quot;20:100&quot;</span><span class="p">,</span> <span class="s">&quot;50:-10&quot;</span><span class="p">,</span> <span class="s">&quot;:&quot;</span><span class="p">});</span>
 </pre></div>
 </div>
+</section>
+<section id="slice">
+<h2>Slice<a class="headerlink" href="#slice" title="Permalink to this headline">¶</a></h2>
+<p>Alias for Select
+Selects a subset of the output tensor using indices (similar to Numpy; the batch is ignored)</p>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5SliceE5layer6vectorI6stringE6string">
+<span id="_CPPv3N4eddl5SliceE5layer6vectorI6stringE6string"></span><span id="_CPPv2N4eddl5SliceE5layer6vectorI6stringE6string"></span><span id="eddl::Slice__layer.vector:string:.string"></span><span class="target" id="namespaceeddl_1a9e29e135e1e619b7375c2e4f4899bea8"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Slice</code><span class="sig-paren">(</span>layer <em>l</em>, vector&lt;string&gt; <em>indices</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5SliceE5layer6vectorI6stringE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a new layer which indexes the input tensor using the entries in indices. (alias for Select) Alias for Select. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the selected elements </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of indices to be selected </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Slice</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;-1&quot;</span><span class="p">,</span> <span class="s">&quot;20:100&quot;</span><span class="p">,</span> <span class="s">&quot;50:-10&quot;</span><span class="p">,</span> <span class="s">&quot;:&quot;</span><span class="p">});</span>
+</pre></div>
 </div>
-<div class="section" id="permute">
+</section>
+<section id="expand">
+<h2>Expand<a class="headerlink" href="#expand" title="Permalink to this headline">¶</a></h2>
+<p>Returns a layer with singleton dimensions expanded to a larger size.</p>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl6ExpandE5layeri6string">
+<span id="_CPPv3N4eddl6ExpandE5layeri6string"></span><span id="_CPPv2N4eddl6ExpandE5layeri6string"></span><span id="eddl::Expand__layer.i.string"></span><span class="target" id="namespaceeddl_1a7c379d27544bf92e7dac510fa3ed2aba"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Expand</code><span class="sig-paren">(</span>layer <em>l</em>, int <em>size</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6ExpandE5layeri6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a layer with singleton dimensions expanded to a larger size. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A tensor with the selected elements </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: Size to which expand the singleton dimensions </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span> <span class="c1">// {3, 1, 5, 1, 5} and size=100 =&gt; {3, 100, 5, 100, 5}</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Expand</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="split">
+<h2>Split<a class="headerlink" href="#split" title="Permalink to this headline">¶</a></h2>
+<p>Split a tensor (layer) into a list of tensors (layers). (The batch is ignored).
+The indexes mark the split points.</p>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5SplitE5layer6vectorIiEib6string">
+<span id="_CPPv3N4eddl5SplitE5layer6vectorIiEib6string"></span><span id="_CPPv2N4eddl5SplitE5layer6vectorIiEib6string"></span><span id="eddl::Split__layer.vector:i:.i.b.string"></span><span class="target" id="namespaceeddl_1a564091d104e4f37910e82c2a03ed3af2"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Split</code><span class="sig-paren">(</span>layer <em>l</em>, vector&lt;int&gt; <em>indexes</em>, int <em>axis</em> = -1, bool <em>merge_sublayers</em> = false, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5SplitE5layer6vectorIiEib6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Split a layer into a list of tensors layers. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>vector of layers </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">indexes</span></code>: Split indexes ({20, 60} =&gt; {0:20, 20:60, 60:end}) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Which axis to split on (default=-1, last) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">merge_sublayers</span></code>: Merge layers symbolically (for the plot) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span> <span class="c1">// e.g.: l=&gt; Output shape: {B, 3, 32, 32}</span>
+ <span class="c1">// vl: {l1, l2, l3}; l1= {B, :1, 32, 32}, l2= {B, 1:2, 32, 32}, l3= {B, 2:, 32, 32}</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="n">vl</span> <span class="o">=</span> <span class="n">Split</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="permute">
 <h2>Permute<a class="headerlink" href="#permute" title="Permalink to this headline">¶</a></h2>
 <p>Permute the axes of the output tensor (the batch is ignored)</p>
 <dl class="cpp function">
@@ -505,8 +597,8 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Permute</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="transpose">
+</section>
+<section id="transpose">
 <h2>Transpose<a class="headerlink" href="#transpose" title="Permalink to this headline">¶</a></h2>
 <p>Permute the last two axes of the output tensor. Alias for <code class="docutils literal notranslate"><span class="pre">Permute(l,</span> <span class="pre">{0,</span> <span class="pre">2,</span> <span class="pre">1})</span></code>.</p>
 <dl class="cpp function">
@@ -529,8 +621,36 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Transpose</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </div>
+</section>
+<section id="resize">
+<h2>Resize<a class="headerlink" href="#resize" title="Permalink to this headline">¶</a></h2>
+<p>Same as Scale but with support for backward operation.</p>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl6ResizeE5layer6vectorIiEb6stringf6string6string">
+<span id="_CPPv3N4eddl6ResizeE5layer6vectorIiEb6stringf6string6string"></span><span id="_CPPv2N4eddl6ResizeE5layer6vectorIiEb6stringf6string6string"></span><span id="eddl::Resize__layer.vector:i:.b.string.float.string.string"></span><span class="target" id="namespaceeddl_1a8e23a22c7e27d67bd35ac9f4aa2513bb"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Resize</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>new_shape</em>, bool <em>reshape</em> = true, string <em>da_mode</em> = &quot;constant&quot;, float <em>constant</em> = 0.0f, string <em>coordinate_transformation_mode</em> = &quot;asymmetric&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6ResizeE5layer6vectorIiEb6stringf6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Resize the input image to the given size. <code class="docutils literal notranslate"><span class="pre">[height,</span> <span class="pre">width]</span></code>. Same as the Scale layer, but with the backward operation supported. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of scale transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_shape</span></code>: Vector with layer/images desired new shape </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reshape</span></code>: If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale&lt;100%: scale + padding; scale &gt;100%: crop + scale) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coordinate_transformation_mode</span></code>: This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Resize</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">35</span><span class="p">,</span> <span class="mi">35</span><span class="p">});</span>
+</pre></div>
 </div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -540,7 +660,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="activations.html" class="btn btn-neutral float-right" title="Activations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="auxiliar.html" class="btn btn-neutral float-right" title="Auxiliar Layers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../videotutorials/usage.html" class="btn btn-neutral float-left" title="Showcase" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
