@@ -7,188 +7,140 @@
 * All rights reserved
 */
 
-#include <stdexcept>
 
-#include "eddl/descriptors/descriptors.h"
-#include "eddl/tensor/tensor_reduction.h"
-
-
-#ifdef cGPU
-#include "eddl/hardware/gpu/gpu_tensor.h"
-#include "eddl/hardware/gpu/gpu_hw.h"
-#endif
+#include "eddl/descriptors/tensor_descriptors.h"
+#include "eddl/utils.h"
+#include <algorithm>
 
 
-MapReduceDescriptor::MapReduceDescriptor(Tensor *A,vector<int> axis)
-{
-  ind=get_reduction_map(A,axis);
-  gind=nullptr;
+ReduceDescriptor2::ReduceDescriptor2(const vector<int>& axis, bool keepdims, int dev) : TensorDescriptor(dev) {
+    this->axis = axis;
+    this->keepdims = keepdims;
 }
 
-MapReduceDescriptor::~MapReduceDescriptor(){
-  if (ind != nullptr) eddl_free(ind);
-  ind = nullptr;
+ReduceDescriptor2::~ReduceDescriptor2(){
+    // For FPGA?
 }
 
-ReduceDescriptor::ReduceDescriptor() {}
+void ReduceDescriptor2::compute_output(){
+    if (this->keepdims){
+        this->oshape = vector<int>(this->ishape);
+    }else{
+        this->oshape = vector<int>();
 
-ReduceDescriptor::ReduceDescriptor(Tensor *A, vector<int> axis, string mode, bool keepdims){
-  this->axis=axis;
-  this->keepdims=keepdims;
-  ind=nullptr;
-  factor=100;
+        // Get output shape: {5, 3, 2} (axis=1) => {5, 2}
+        for(int i= 0; i<this->ishape.size(); i++) {
 
-
-  if (axis.size()>=A->ndim){
-      msg("axis must be lower than tensor dim","ReduceDescriptor");
-  }
-
-  for(int i=0;i<axis.size();i++){
-      if (axis[i]>=A->ndim) {
-          throw std::runtime_error("axis " + std::to_string(axis[i]-1) + " >= dim=" + std::to_string(A->ndim-1));
-      }
-  }
-
-  // Select mode (TODO: enumerations are preferred)
-  if (mode=="mean") m=0;
-  else if (mode=="sum") m=1;
-  else if (mode=="max") m=2;
-  else if (mode=="min") m=3;
-  else{
-      msg("Incorrect reduction mode", "ReduceDescriptor");
-  }
-
-
-  tshape os;
-
-  if (keepdims){
-    os=A->shape;
-  }
-  else {
-      // Get output shape: {5, 3, 2} (axis=1) => {5, 2}
-    for(int i=0;i<A->ndim;i++) {
-      if (find(axis.begin(), axis.end(), i) == axis.end())
-          os.push_back(A->shape[i]);
+            // Check if axis i (pos) is going to be reduced
+            if (find(this->axis.begin(), this->axis.end(), i) == this->axis.end())
+                this->oshape.push_back(this->ishape[i]);
+        }
     }
-  }
-
-
-  int dev=A->device;
-
-  I=A;
-  O=new Tensor(os,dev);
-//  D=new Tensor(os,dev);
-
-  if ((m==2)||(m==3))
-   S=new Tensor(os,dev);
-  else S=nullptr;
-
-  build_index();
-
 }
 
-ReduceDescriptor::~ReduceDescriptor(){
-//    delete S;
-//    delete[] ind;
-//    delete[] red;
-}
+void ReduceDescriptor2::build_indices() {
+    vector<int> istride = shape2stride(this->ishape);
 
-void ReduceDescriptor::build_index() {
-  // indexes
-  // get indexes for reduction
-  index.clear();
+    // indexes
+    // get indexes for reduction
+    index.clear();
 
-  vector<int> ind;
-  ind.push_back(0);
-  for(int i=0;i<I->ndim;i++) {
-      // Check if "this" dimension is going to be reduced
-      bool isFound = find(axis.begin(), axis.end(), i) != axis.end();
-      if (!isFound) {  // Dims to not be reduced...
-          int s=ind.size();
-          for(int j=0;j<s;j++){
-              for(int k=0; k<I->shape[i]-1; k++){
-                  ind.push_back(ind[j]+(k+1)*I->stride[i]);
-              }
-          }
-      }
-  }
+    vector<int> ind;
+    ind.push_back(0);
+    for(int i=0; i<this->ishape.size(); i++) {
+        // Check if "this" dimension is going to be reduced
+        bool isFound = find(axis.begin(), axis.end(), i) != axis.end();
+        if (!isFound) {  // Dims to not be reduced...
+            int s=ind.size();
+            for(int j=0;j<s;j++){
+                for(int k=0; k<this->ishape[i]-1; k++){
+                    ind.push_back(ind[j]+(k+1)*istride[i]);
+                }
+            }
+        }
+    }
 
-  sort(ind.begin(), ind.end());
+    sort(ind.begin(), ind.end());
 
-  // reduce through axis to be reduced
-  float max,sum;
-  int imax;
-  for(int i=0;i<ind.size();i++){
-      // get axis to be reduced
-      index.push_back(vector<int>());
+    // reduce through axis to be reduced
+    float max,sum;
+    int imax;
+    for(int i=0;i<ind.size();i++){
+        // get axis to be reduced
+        index.push_back(vector<int>());
 
-      index[i].push_back(ind[i]);
-      for(int l=0;l<I->ndim;l++) {
-          // Check if "this" dimension is going to be reduced
-          bool isFound = find(axis.begin(), axis.end(), l) != axis.end();
-          if (isFound) {  // Dims to be reduced...
-              int s=index[i].size();
-              for(int j=0;j<s;j++){
-                  for(int k=0;k<I->shape[l]-1;k++){
-                      index[i].push_back(index[i][j]+(k+1)*I->stride[l]);
-                  }
-              }
-          }
-      }
+        index[i].push_back(ind[i]);
+        for(int l=0;l<this->ishape.size();l++) {
+            // Check if "this" dimension is going to be reduced
+            bool isFound = find(axis.begin(), axis.end(), l) != axis.end();
+            if (isFound) {  // Dims to be reduced...
+                int s=index[i].size();
+                for(int j=0;j<s;j++){
+                    for(int k=0;k<this->ishape[l]-1;k++){
+                        index[i].push_back(index[i][j]+(k+1)*istride[l]);
+                    }
+                }
+            }
+        }
 
     }
-    //////
 }
 
+void ReduceDescriptor2::build(const vector<int>& t_ishape){
+    this->ishape = vector<int>(t_ishape);
 
-void ReduceDescriptor::resize(int b)
-{
-  int i;
+    // Check dims
+    if (this->axis.size() >= ishape.size()){
+        msg("axis must be lower than tensor dim","ReduceDescriptor");
+    }
 
-  for(i=0;i<axis.size();i++){
-    if (axis[i]==0) break;
-  }
+    // Check axis to reduce
+    for(int i=0; i<this->axis.size(); i++){
+        if (this->axis[i] >= this->ishape.size()) {
+            throw std::runtime_error("axis " + std::to_string(axis[i]-1) + " >= dim=" + std::to_string(this->ishape.size()-1));
+        }
+    }
 
+    // Compute output dimension
+    compute_output();
 
-  if ((keepdims)||(i==axis.size())) {
-    O->resize(b);
-//    D->resize(b);
-    if ((m==2)||(m==3))
-      S->resize(b);
-  }
-  ind=nullptr;
-  build_index();
+    // Compute indices to reduce
+    build_indices();
+
+    // Compute size reduction
+    this->size_reduction = (int)shape2size(this->ishape)/shape2size(this->oshape);
 }
 
+void ReduceDescriptor2::resize(int b){
+    // Delete previous allocations
+    this->free_memory();
 
+    this->ishape[0] = b;
+    this->oshape[0] = b;
 
+    this->build(this->ishape);
 
+}
 
+void ReduceDescriptor2::build_map(bool reverse){
+    this->free_memory();
 
+    int size = shape2size(this->ishape);
+    this->cpu_addresses = new int[size];
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////
+    if (!reverse){ // Non-contiguous addresses to reduce.
+        #pragma omp parallel for
+        for(int i=0; i<index.size(); i++) {  // Reduce index
+            for(int j=0; j<index[i].size(); j++){  // Addresses to reduce
+                cpu_addresses[index[i][j]] = i;  // A[Original address to reduce] = reduction address
+            }
+        }
+    }else{ // Contiguous addresses to reduce.
+        int k=0;
+        for(int i=0; i<index.size(); i++) {  // Reduce index
+            for(int j=0; j<index[i].size(); j++){  // Addresses to reduce
+                cpu_addresses[k++] = index[i][j];  // A[0,1,2...] = [Original address to reduce]
+            }
+        }
+    }
+}

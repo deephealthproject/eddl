@@ -138,3 +138,44 @@ void gpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
     gpu_set_select_back_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
     check_cuda(cudaDeviceSynchronize(), "gpu_set_select_back_nn");
 }
+
+
+void gpu_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy indices from host to device
+    if(sd->gpu_addresses == nullptr){
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->stride[0]*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, B->stride[0]*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
+
+    setDims(B);  // B is the larger one
+    gpu_expand_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
+    check_cuda(cudaDeviceSynchronize(), "gpu_expand_nn");
+}
+
+void gpu_expand_back_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy indices from host to device
+    if(sd->gpu_addresses == nullptr){
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->stride[0]*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, B->stride[0]*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
+
+    setDims(A); // A is the larger one
+    gpu_expand_back_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
+    check_cuda(cudaDeviceSynchronize(), "gpu_expand_back_nn");
+}

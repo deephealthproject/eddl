@@ -2008,7 +2008,7 @@ public:
     /**
     *   @brief Scale the tensor. The array is scaled using spline interpolation.
     *   @param new_shape Vector with the target size.
-    *   @param mode Must be one of the following:
+    *   @param wrapping_mode Must be one of the following:
     *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
     *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
     *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
@@ -2016,17 +2016,22 @@ public:
     *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+    *   @param coordinate_transformation_mode This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
+    *        - ``TransformationMode::HalfPixel``: x_original = (x_resized + 0.5) / scale - 0.5
+    *        - ``TransformationMode::PytorchHalfPixel``: x_original = length_resized > 1 ? (x_resized + 0.5) / scale - 0.5 : 0
+    *        - ``TransformationMode::AlignCorners``: x_original = x_resized * (length_original - 1) / (length_resized - 1)
+    *        - ``TransformationMode::Asymmetric``: x_original = x_resized / scale
+    *        - ``TransformationMode::TFCropAndResize``: x_original = length_resized > 1 ? start_x * (length_original - 1) + x_resized * (end_x - start_x) * (length_original - 1) / (length_resized - 1) : 0.5 * (start_x + end_x) * (length_original - 1)
     *   @param keep_size Keep original size
     */
-    Tensor* scale(vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, bool keep_size=false);
-
+    Tensor* scale(vector<int> new_shape, WrappingMode wrapping_mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric, bool keep_size=false);
 
     /**
     *   @brief Scale the tensor. The array is scaled using spline interpolation.
     *   @param A Input tensor.
     *   @param B Output tensor.
     *   @param new_shape Vector with the target size.
-    *   @param mode Must be one of the following:
+    *   @param wrapping_mode Must be one of the following:
     *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
     *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
     *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
@@ -2034,8 +2039,14 @@ public:
     *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+    *        - ``TransformationMode::HalfPixel``: x_original = (x_resized + 0.5) / scale - 0.5
+    *        - ``TransformationMode::PytorchHalfPixel``: x_original = length_resized > 1 ? (x_resized + 0.5) / scale - 0.5 : 0
+    *        - ``TransformationMode::AlignCorners``: x_original = x_resized * (length_original - 1) / (length_resized - 1)
+    *        - ``TransformationMode::Asymmetric``: x_original = x_resized / scale
+    *        - ``TransformationMode::TFCropAndResize``: x_original = length_resized > 1 ? start_x * (length_original - 1) + x_resized * (end_x - start_x) * (length_original - 1) / (length_resized - 1) : 0.5 * (start_x + end_x) * (length_original - 1)
     */
-    static void scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+    static void scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
+    static void scale_back(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
 
     /**
     *   @brief Flip the tensor.
@@ -2123,6 +2134,22 @@ public:
     */
     static void cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval=0.0f);
 
+    /**
+   *   @brief Pads a tensor.
+   *   @param pads Padding on each border (top-bottom, left-right) or (top, right, bottom, left)
+   *   @param cval Value to fill the padded region
+   */
+    Tensor* pad(vector<int> pads, float cval=0.0f);
+
+    /**
+    *   @brief Pads a tensor.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param pads Padding on each border (top-bottom, left-right) or (top, right, bottom, left)
+    */
+    static void pad(Tensor *A, Tensor *B, vector<int> pads);
+    static void pad_back(Tensor *A, Tensor *B, vector<int> pads);
+
     // ***** Data augmentation *****************************
 
 
@@ -2203,8 +2230,14 @@ public:
      *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
      *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
      *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+   *   @param coordinate_transformation_mode This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
+    *        - ``TransformationMode::HalfPixel``: x_original = (x_resized + 0.5) / scale - 0.5
+    *        - ``TransformationMode::PytorchHalfPixel``: x_original = length_resized > 1 ? (x_resized + 0.5) / scale - 0.5 : 0
+    *        - ``TransformationMode::AlignCorners``: x_original = x_resized * (length_original - 1) / (length_resized - 1)
+    *        - ``TransformationMode::Asymmetric``: x_original = x_resized / scale
+    *        - ``TransformationMode::TFCropAndResize``: x_original = length_resized > 1 ? start_x * (length_original - 1) + x_resized * (end_x - start_x) * (length_original - 1) / (length_resized - 1) : 0.5 * (start_x + end_x) * (length_original - 1)
      */
-    Tensor* scale_random(vector<float> factor, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+    Tensor* scale_random(vector<float> factor, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
 
 
     /**
@@ -2220,8 +2253,14 @@ public:
     *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
     *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
     *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+   *   @param coordinate_transformation_mode This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
+    *        - ``TransformationMode::HalfPixel``: x_original = (x_resized + 0.5) / scale - 0.5
+    *        - ``TransformationMode::PytorchHalfPixel``: x_original = length_resized > 1 ? (x_resized + 0.5) / scale - 0.5 : 0
+    *        - ``TransformationMode::AlignCorners``: x_original = x_resized * (length_original - 1) / (length_resized - 1)
+    *        - ``TransformationMode::Asymmetric``: x_original = x_resized / scale
+    *        - ``TransformationMode::TFCropAndResize``: x_original = length_resized > 1 ? start_x * (length_original - 1) + x_resized * (end_x - start_x) * (length_original - 1) / (length_resized - 1) : 0.5 * (start_x + end_x) * (length_original - 1)
     */
-    static void scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+    static void scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
 
     /**
     *   @brief Flip the tensor with some probability.
@@ -2304,6 +2343,27 @@ public:
     */
     static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float cval=0.0f);
 
+    /**
+    *   @brief Scale the tensor. The array is scaled using spline interpolation.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param new_shape Vector with the target size.
+    *   @param wrapping_mode Must be one of the following:
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
+    *        - ``TransformationMode::HalfPixel``: x_original = (x_resized + 0.5) / scale - 0.5
+    *        - ``TransformationMode::PytorchHalfPixel``: x_original = length_resized > 1 ? (x_resized + 0.5) / scale - 0.5 : 0
+    *        - ``TransformationMode::AlignCorners``: x_original = x_resized * (length_original - 1) / (length_resized - 1)
+    *        - ``TransformationMode::Asymmetric``: x_original = x_resized / scale
+    *        - ``TransformationMode::TFCropAndResize``: x_original = length_resized > 1 ? start_x * (length_original - 1) + x_resized * (end_x - start_x) * (length_original - 1) / (length_resized - 1) : 0.5 * (start_x + end_x) * (length_original - 1)
+    */
+    static void scale3d(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
+    static void scale3d_back(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Constant, float cval=0.0f, TransformationMode coordinate_transformation_mode=TransformationMode::Asymmetric);
 
     // Linear algebra *****************************
 
@@ -2884,11 +2944,28 @@ public:
     static void gather(Tensor *A, Tensor *B, GatherDescriptor *sd);
 
     /**
-      *  @brief Broadcast the input tensor following the given shape and the broadcast rule.
+      *  @brief Returns a new tensor with singleton dimensions expanded to a larger size.
+      *
+      *  @param size number of times to expand axis of dimension 1
+      *  @return     void
+    */
+    Tensor* expand(int size);
+
+    /**
+      *  @brief Returns a new tensor with singleton dimensions expanded to a larger size.
       *
       *  @param A  the source tensor
-      *  @param axis  the axis along which to index
-      *  @param indices  the indices of elements to gather
+      *  @param size number of times to expand axis of dimension 1
+      *  @return     void
+    */
+    static Tensor* expand(Tensor *A, int size);
+
+    /**
+      *  @brief Returns a new tensor with singleton dimensions expanded to a larger size.
+      *
+      *  @param A  source tensor
+      *  @param B  output tensor
+      *  @param sd  Expand descriptor
       *  @return     void
     */
     static void expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);

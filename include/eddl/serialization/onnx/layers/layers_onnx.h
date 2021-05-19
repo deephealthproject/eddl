@@ -13,6 +13,7 @@ enum ONNX_LAYERS {
   NOT_SUPPORTED,    // To handle not supported nodes
   BATCHNORM,        // OPSET: 9
   CONV,             // OPSET: 11, 1
+  CONVTRANSPOSE,    // OPSET: 11, 1
   DENSE,            // OPSET: 13, 11
   DROP,             // OPSET: 10, 7
   RESHAPE,          // OPSET: 13, 5
@@ -63,7 +64,10 @@ enum ONNX_LAYERS {
   RSUM,             // OPSET: 11, 1
   ARGMAX,           // OPSET: 13, 12, 11, 1
   RESIZE,           // OPSET: 13
-  SLICE             // OPSET: 13, 11, 10
+  PAD,              // OPSET: 13, 11, 2, 1
+  SLICE,            // OPSET: 13, 11, 10
+  SPLIT,            // OPSET: 13, 11, 2
+  EXPAND            // OPSET: 13, 8
 };
 
 map<string, ONNX_LAYERS> create_enum_map();

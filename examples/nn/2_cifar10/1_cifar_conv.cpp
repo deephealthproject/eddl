@@ -49,6 +49,9 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
+//  vlayer vl = Split(l, {1,2}, 0);  // Debugging
+//  l = Concat(vl, 1);
+
   l=MaxPool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
   l=MaxPool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
   l=MaxPool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});

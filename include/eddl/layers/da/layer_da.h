@@ -89,8 +89,9 @@ public:
     bool reshape;
     WrappingMode da_mode;
     float cval;
+    TransformationMode coordinate_transformation_mode;
 
-    LScale(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, string name, int dev, int mem);
+    LScale(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, TransformationMode coordinate_transformation_modem, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -179,6 +180,26 @@ public:
 };
 
 
+/// Pad Layer
+class LPad : public LinLayer {  // Cannot inherit from LDataAugmentation because the backward
+public:
+    static int total_layers;
+    vector<int> padding;
+    float constant = 0.0f;
+
+    LPad(Layer *parent, vector<int> padding, float constant, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+};
+
 
 /// Shift Layer
 class LShiftRandom : public LDataAugmentation {
@@ -233,8 +254,9 @@ public:
     vector<float> factor;
     WrappingMode da_mode;
     float cval;
+    TransformationMode coordinate_transformation_mode;
 
-    LScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_mode, float cval, string name, int dev, int mem);
+    LScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_mode, float cval, TransformationMode coordinate_transformation_mode, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

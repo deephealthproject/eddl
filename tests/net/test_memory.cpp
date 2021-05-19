@@ -271,54 +271,54 @@ layer ResBlock(layer l, int filters,int half, int expand=0){
     if (expand) return ReLu(Sum(BG(Conv(in,4*filters,{1,1},{1,1},"same",false)),l));
     else return ReLu(Sum(in,l));
 }
-
-TEST(NetTestSuite, net_delete_cifar_resnet50_da_bg){
-    int num_classes = 10;
-
-    // network
-    layer in=Input({3,32,32});
-    layer l=in;
-
-    // Data augmentation
-    l = RandomCropScale(l, {0.8f, 1.0f});
-    l = RandomHorizontalFlip(l);
-
-    // Resnet-50
-
-    l=ReLu(BG(Conv(l,64,{3,3},{1,1},"same",false))); //{1,1}
-    //l=MaxPool(l,{3,3},{1,1},"same");
-
-    for(int i=0;i<3;i++)
-        l=ResBlock(l, 64, 0, i==0); // not half but expand the first
-
-    for(int i=0;i<4;i++)
-        l=ResBlock(l, 128,i==0);
-
-    for(int i=0;i<6;i++)
-        l=ResBlock(l, 256,i==0);
-
-    for(int i=0;i<3;i++)
-        l=ResBlock(l,512,i==0);
-
-    l=MaxPool(l,{4,4});  // should be avgpool
-
-    l=Reshape(l,{-1});
-
-    layer out=Activation(Dense(l,num_classes),"softmax");
-
-    // net define input and output layers list
-    model net=Model({in},{out});
-
-
-    // Build model
-    build(net,
-          sgd(0.001,0.9), // Optimizer
-          {"categorical_cross_entropy"}, // Losses
-          {"categorical_accuracy"}, // Metrics
-          CS_CPU()
-    );
-    delete net;
-}
+//
+//TEST(NetTestSuite, net_delete_cifar_resnet50_da_bg){
+//    int num_classes = 10;
+//
+//    // network
+//    layer in=Input({3,32,32});
+//    layer l=in;
+//
+//    // Data augmentation
+//    l = RandomCropScale(l, {0.8f, 1.0f});
+//    l = RandomHorizontalFlip(l);
+//
+//    // Resnet-50
+//
+//    l=ReLu(BG(Conv(l,64,{3,3},{1,1},"same",false))); //{1,1}
+//    //l=MaxPool(l,{3,3},{1,1},"same");
+//
+//    for(int i=0;i<3;i++)
+//        l=ResBlock(l, 64, 0, i==0); // not half but expand the first
+//
+//    for(int i=0;i<4;i++)
+//        l=ResBlock(l, 128,i==0);
+//
+//    for(int i=0;i<6;i++)
+//        l=ResBlock(l, 256,i==0);
+//
+//    for(int i=0;i<3;i++)
+//        l=ResBlock(l,512,i==0);
+//
+//    l=MaxPool(l,{4,4});  // should be avgpool
+//
+//    l=Reshape(l,{-1});
+//
+//    layer out=Activation(Dense(l,num_classes),"softmax");
+//
+//    // net define input and output layers list
+//    model net=Model({in},{out});
+//
+//
+//    // Build model
+//    build(net,
+//          sgd(0.001,0.9), // Optimizer
+//          {"categorical_cross_entropy"}, // Losses
+//          {"categorical_accuracy"}, // Metrics
+//          CS_CPU()
+//    );
+//    delete net;
+//}
 
 // Auxiliary function for: net_delete_drive_seg
 layer UNetWithPadding(layer x, bool use_concat){
@@ -396,42 +396,42 @@ TEST(NetTestSuite, net_delete_drive_seg_da) {
     delete danet;
 }
 
-TEST(NetTestSuite, net_delete_drive_seg_concat) {
-    int input_size = 584/4;
-    int crop_size = 512/4;
-
-    // Build SegNet
-    bool use_concat = true;
-    layer in=Input({3,crop_size,crop_size});
-    layer out=Sigmoid(UNetWithPadding(in, use_concat));
-    model segnet=Model({in},{out});
-    build(segnet,
-          adam(0.00001), // Optimizer
-          {"mse"}, // Losses
-          {"mse"}, // Metrics
-          CS_CPU()
-    );
-    delete segnet;
-}
-
-
-TEST(NetTestSuite, net_delete_drive_seg_sum){
-    int input_size = 584/4;
-    int crop_size = 512/4;
-
-    // Build SegNet
-    bool use_concat = false;
-    layer in=Input({3,crop_size,crop_size});
-    layer out=Sigmoid(UNetWithPadding(in, use_concat));
-    model segnet=Model({in},{out});
-    build(segnet,
-          adam(0.00001), // Optimizer
-          {"mse"}, // Losses
-          {"mse"}, // Metrics
-          CS_CPU()
-    );
-    delete segnet;
-}
+//TEST(NetTestSuite, net_delete_drive_seg_concat) {
+//    int input_size = 584/4;
+//    int crop_size = 512/4;
+//
+//    // Build SegNet
+//    bool use_concat = true;
+//    layer in=Input({3,crop_size,crop_size});
+//    layer out=Sigmoid(UNetWithPadding(in, use_concat));
+//    model segnet=Model({in},{out});
+//    build(segnet,
+//          adam(0.00001), // Optimizer
+//          {"mse"}, // Losses
+//          {"mse"}, // Metrics
+//          CS_CPU()
+//    );
+//    delete segnet;
+//}
+//
+//
+//TEST(NetTestSuite, net_delete_drive_seg_sum){
+//    int input_size = 584/4;
+//    int crop_size = 512/4;
+//
+//    // Build SegNet
+//    bool use_concat = false;
+//    layer in=Input({3,crop_size,crop_size});
+//    layer out=Sigmoid(UNetWithPadding(in, use_concat));
+//    model segnet=Model({in},{out});
+//    build(segnet,
+//          adam(0.00001), // Optimizer
+//          {"mse"}, // Losses
+//          {"mse"}, // Metrics
+//          CS_CPU()
+//    );
+//    delete segnet;
+//}
 
 
 

@@ -92,6 +92,16 @@ namespace tensorNN{
     void Conv3D_grad(ConvolDescriptor3D *D);
     void Conv3D_back(ConvolDescriptor3D *D);
 
+    // ConvT2D
+    void ConvT2D(ConvolDescriptorT2D *D);
+    void ConvT2D_grad(ConvolDescriptorT2D *D);
+    void ConvT2D_back(ConvolDescriptorT2D *D);
+
+    // ConvT3D
+    void ConvT3D(ConvolDescriptorT3D *D);
+    void ConvT3D_grad(ConvolDescriptorT3D *D);
+    void ConvT3D_back(ConvolDescriptorT3D *D);
+
     // MaxPool2D
     void MPool2D(PoolDescriptor *D);
     void MPool2D_back(PoolDescriptor *D);
@@ -100,9 +110,13 @@ namespace tensorNN{
     void MPool3D(PoolDescriptor3D *D);
     void MPool3D_back(PoolDescriptor3D *D);
 
-// AvgPool
+    // AvgPool2D
     void AvgPool2D(PoolDescriptor *D);
     void AvgPool2D_back(PoolDescriptor *D);
+
+    // AvgPool3D
+    void AvgPool3D(PoolDescriptor3D *D);
+    void AvgPool3D_back(PoolDescriptor3D *D);
 
     // ***** Deep Learning: Fused *****************************
     // Conv2D + Activation
@@ -114,8 +128,14 @@ namespace tensorNN{
 
     void select(Tensor *A, Tensor* B, SelDescriptor *sd);
     void select_back(Tensor *A, Tensor* B, SelDescriptor *sd);
+
     void set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
     void set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd);
+
+    void expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+    void expand_back(Tensor *A, Tensor* B, ExpandDescriptor *sd);
+
+    void repeat_batch(Tensor *A, Tensor* B);
 
 // ***** Permutations for BatchNorm ********************
     void permute_channels_last(Tensor *A,Tensor *B);

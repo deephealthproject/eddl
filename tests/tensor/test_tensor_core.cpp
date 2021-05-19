@@ -132,3 +132,29 @@ TEST(TensorTestSuite, tensor_unsqueeze) {
     Tensor* t1_dim0 = t1->unsqueeze(2);
     ASSERT_TRUE(t1_dim0->shape == vector<int>({2, 3, 1, 4}));
 }
+
+TEST(TensorTestSuite, tensor_expand) {
+    // Original
+    Tensor* t1 = new Tensor( {1, 2, 3}, {3, 1});
+
+    Tensor *t1_ref = new Tensor({
+        1.00, 1.00, 1.00,
+        2.00, 2.00, 2.00,
+        3.00, 3.00, 3.00}, {3, 3}, DEV_CPU);
+
+    Tensor* new_t = t1->expand(3);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
+
+    // Test GPU
+#ifdef cGPU
+    // Test #1
+    Tensor* t1_cpu = Tensor::randn({10, 1, 10, 15, 1, 10, 1});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    t1_cpu = t1_cpu->expand(3);
+    t1_gpu = t1_gpu->expand(3); t1_gpu->toCPU();
+    ASSERT_TRUE(Tensor::equivalent(t1_cpu, t1_gpu, 1e-3f, 0.0f, true, true));
+
+    delete t1_cpu;
+    delete t1_gpu;
+#endif
+}

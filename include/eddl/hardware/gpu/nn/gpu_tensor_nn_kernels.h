@@ -81,15 +81,27 @@ __global__ void gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *b
 __global__ void gpu_im2col_k(float* I, float *ptrI, int b,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int padrt,int padrb,int padcl,int padcr,int col2im);
 __global__ void gpu_im2col_k_low(float* I, int b, float *ptrI, int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int padrt,int padrb,int padcl,int padcr,int col2im);
 
+const int low_mem_block_size = 256;
+__global__ void gpu_low_mem_conv3D(int batch_size, int channels, int image_depth, int image_rows, int image_cols, const float *image, int num_kernels, int kernel_depth, int kernel_rows, int kernel_cols, const float *kernel, int out_depth, int out_rows, int out_cols, float *output, int pad_depth, int pad_row, int pad_col, int stride_depth, int stride_rows, int stride_cols);
+__global__ void gpu_low_mem_conv3D_grad(int batch_size, int channels, int image_depth, int image_rows, int image_cols, const float *image, int num_kernels, int kernel_depth, int kernel_rows, int kernel_cols, float *kernel, int out_depth, int out_rows, int out_cols, const float *delta, int pad_depth, int pad_row, int pad_col, int stride_depth, int stride_rows, int stride_cols);
+__global__ void gpu_low_mem_conv3D_back(int batch_size, int channels, int image_depth, int image_rows, int image_cols, float *image, int num_kernels, int kernel_depth, int kernel_rows, int kernel_cols, const float *kernel, int out_depth, int out_rows, int out_cols, const float *delta, int pad_depth, int pad_row, int pad_col, int stride_depth, int stride_rows, int stride_cols);
 
 // GPU: Pool
-// MaxPool
+// MaxPool 2D
 __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt,int padrb,int padcl,int padcr, float* indX, float* indY);
 __global__ void maxpool2d_back(float* D, float* ID, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt, int padrb,int padcl, int padcr,float* indX, float* indY);
 
-// AvgPool
+// MaxPool 3D
+__global__ void maxpool3d(float* I, int batch, int ichannels, int idepth,int irows,int icols,  int kd, int kr, int kc, float* O, int ochannels, int odepth, int orows, int ocols,  int sd, int sr, int sc, int paddf, int paddb, int padrt, int padrb, int padcl, int padcr, float* indX, float* indY, float* indZ);
+__global__ void maxpool3d_back(float* D, float* ID, int batch, int ichannels, int idepth,int irows,int icols,  int kd, int kr, int kc, float* O, int ochannels, int odepth, int orows, int ocols,  int sd, int sr, int sc, int paddf, int paddb, int padrt, int padrb, int padcl, int padcr, float* indX, float* indY, float* indZ);
+
+// AvgPool 2D
 __global__ void avgpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt, int padrb,int padcl, int padcr);
 __global__ void avgpool2d_back(float* D, float* ID, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt, int padrb,int padcl, int padcr);
+
+// AvgPool 3D
+__global__ void avgpool3d(float* I, int batch, int ichannels, int idepth,int irows,int icols,  int kd, int kr, int kc, float* O, int ochannels, int odepth, int orows, int ocols,  int sd, int sr, int sc, int paddf, int paddb, int padrt, int padrb, int padcl, int padcr);
+__global__ void avgpool3d_back(float* D, float* ID, int batch, int ichannels, int idepth,int irows,int icols,  int kd, int kr, int kc, float* O, int ochannels, int odepth, int orows, int ocols,  int sd, int sr, int sc, int paddf, int paddb, int padrt, int padrb, int padcl, int padcr);
 
 
 // GPU: Tensor
@@ -101,6 +113,9 @@ __global__ void gpu_select_back_nn(float *A, float* B, long int size, int* indic
 
 __global__ void gpu_set_select_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
 __global__ void gpu_set_select_back_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
+
+__global__ void gpu_expand_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
+__global__ void gpu_expand_back_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
 
 // BN
 __global__ void bn_permute_channels_first(float *src, float *dest,int b,int z,int r,int c,long int size);

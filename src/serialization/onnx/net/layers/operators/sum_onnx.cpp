@@ -54,10 +54,10 @@ void build_sum_node(LSum *layer, onnx::GraphProto *graph)
     string value_name(layer->name + "_value");
     node->add_input(value_name); // Add the value initializer as input
     // Create the value initializer
-    onnx::TensorProto *mult_value = graph->add_initializer();
-    mult_value->set_name(value_name);
-    mult_value->set_data_type(onnx::TensorProto::FLOAT);
-    mult_value->add_float_data(layer->val);
+    onnx::TensorProto *sum_value = graph->add_initializer();
+    sum_value->set_name(value_name);
+    sum_value->set_data_type(onnx::TensorProto::FLOAT);
+    sum_value->add_float_data(layer->val);
   }
 }
 

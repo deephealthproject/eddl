@@ -358,7 +358,6 @@ namespace eddl {
   }
   vlayer forward(model net,vector<Layer*> in)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->reset();
     net->forward(in);
 
@@ -366,7 +365,6 @@ namespace eddl {
   }
   vlayer forward(model net,vector<Tensor*> in)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->reset();
     net->forward(in);
 
@@ -375,7 +373,6 @@ namespace eddl {
 
   vlayer forward(model net,int b)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->resize(b);
     net->reset();
     net->forward();
@@ -385,7 +382,6 @@ namespace eddl {
   }
   vlayer forward(model net)
   {
-    net->setmode(TSMODE); // TO BE REVIEWED 2021-02-13
     net->reset();
     net->forward();
 
@@ -656,18 +652,19 @@ namespace eddl {
     return new LConv(parent, filters, {1, 1}, strides, "none", {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
-  // Legacy
-  layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
-	      const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
-	      const vector<int> &strides, bool use_bias, string name){
-    return new LConvT(parent, filters, kernel_size, output_padding, padding, dilation_rate, strides, use_bias, name, DEV_CPU, 0);
+
+    layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
+                 const vector<int> &strides, string padding,  bool use_bias,
+                 int groups, const vector<int> &dilation_rate,string name){
+      return new LConvT2D(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
-  layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
-                const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
-                const vector<int> &strides, bool use_bias, string name){
-    return new LConvT(parent, filters, kernel_size, output_padding, padding, dilation_rate, strides, use_bias, name, DEV_CPU, 0);
-  }
+
+    layer ConvT3D(layer parent, int filters, const vector<int> &kernel_size,
+                  const vector<int> &strides, string padding,  bool use_bias,
+                  int groups, const vector<int> &dilation_rate,string name){
+      return new LConvT3D(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
 
   layer Dense(layer parent, int ndim, bool use_bias, string name){
     return new LDense(parent, ndim, use_bias, name, DEV_CPU, 0);
@@ -702,7 +699,16 @@ namespace eddl {
     return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
   }
 
-  layer Reshape(layer parent, const vector<int> &shape, string name){
+    layer UpSampling3D(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
+        return new LUpSampling3D(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
+    }
+
+    layer Resize(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
+        return new LResize(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
+    }
+
+
+    layer Reshape(layer parent, const vector<int> &shape, string name){
     tshape s = vector<int>(shape.begin(), shape.end());
     s.insert(s.begin(), 1);
     return new LReshape(parent, s, name, DEV_CPU, 0);
@@ -737,6 +743,13 @@ namespace eddl {
     return new LPermute(parent, dims, name, DEV_CPU, 0);
   }
 
+    layer ConstOfTensor(Tensor* t, string name){
+        return new LConstOfTensor(t, name, DEV_CPU, 0);
+    }
+
+    layer Where(layer parent1, layer parent2, layer condition, string name){
+        return new LWhere(parent1, parent2, condition, name, DEV_CPU, 0);
+    }
 
   // Transformation Layers
   layer Shift(layer parent, vector<int> shift, string da_mode, float constant, string name){
@@ -746,8 +759,8 @@ namespace eddl {
     return new LRotate(parent, angle, offset_center, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
   }
 
-  layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name){
-    return new LScale(parent, new_shape, reshape, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
+  layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
+    return new LScale(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
   }
 
   layer Flip(layer parent, int axis, string name){
@@ -788,6 +801,10 @@ namespace eddl {
     return new LCutout(parent, from_coords, to_coords, constant, name, DEV_CPU, 0);
   }
 
+    layer Pad(layer parent, vector<int> pads, float constant, string name){
+        return new LPad(parent, pads, constant, name, DEV_CPU, 0);
+    }
+
   // Data augmentation Layers
   layer RandomShift(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name){
     return new LShiftRandom(parent, factor_x, factor_y, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
@@ -797,8 +814,8 @@ namespace eddl {
     return new LRotateRandom(parent, factor, offset_center, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
   }
 
-  layer RandomScale(layer parent, vector<float> factor, string da_mode, float constant, string name){
-    return new LScaleRandom(parent, factor, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
+  layer RandomScale(layer parent, vector<float> factor, string da_mode, float constant, string coordinate_transformation_mode, string name){
+    return new LScaleRandom(parent, factor, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
   }
 
   layer RandomFlip(layer parent, int axis, string name){
@@ -1023,9 +1040,22 @@ namespace eddl {
     return new LSelect(l, indices, name, DEV_CPU, 0);
   }
 
+    layer Slice(layer l, vector<string> indices, string name){
+        return new LSelect(l, indices, name, DEV_CPU, 0);
+    }
+
+    layer Expand(layer l, int size, string name){
+        return new LExpand(l, size, name, DEV_CPU, 0);
+    }
+
   layer Permute(layer l, vector<int> dims, string name){
     return new LPermute(l, dims, name, DEV_CPU, 0);
   }
+
+    vlayer Split(layer l, vector<int> indexes, int axis, bool merge_sublayers, string name){
+        auto* sl = new LSplit(l, indexes, axis, merge_sublayers, name, DEV_CPU, 0);
+        return  sl->split_layers;
+    }
 
   // Reduction Layers
   layer ReduceMean(layer l, const vector<int> axis, bool keepdims){
@@ -1084,20 +1114,33 @@ namespace eddl {
   layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
     return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
   }
+    layer AvgPool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
+        return  AveragePool(parent, pool_size, strides, padding, name);
+    }
 
   layer AveragePool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
     pool_size.push_back(1);
     strides.push_back(1);
     return new LAveragePool1D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
   }
+    layer AvgPool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return  AveragePool1D(parent, pool_size, strides, padding, name);
+    }
 
   layer AveragePool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
     return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
   }
 
+    layer AvgPool2D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+        return  AveragePool2D(parent, pool_size, strides, padding, name);
+    }
+
   layer AveragePool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
-    msg("Not implemented error", "AveragePool3D");
-    return nullptr;
+    return new LAveragePool3D(parent, pool_size, strides, padding, name, DEV_CPU, 0);
+  }
+
+    layer AvgPool3D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+      return  AveragePool3D(parent, pool_size, strides, padding, name);
   }
 
 
@@ -1146,6 +1189,9 @@ namespace eddl {
 
     return GlobalAveragePool2D(parent, name);
   }
+    layer GlobalAvgPool(layer parent, string name){
+        return GlobalAveragePool(parent, name);
+    }
 
   layer GlobalAveragePool1D(layer parent, string name){
     // Expands dimensions if needed
@@ -1156,6 +1202,9 @@ namespace eddl {
     if(name.empty()) { name = "GlobalAveragePool1D"; }  // Set default name
     return AveragePool1D(parent, {h},{1}, "none", name);
   }
+    layer GlobalAvgPool1D(layer parent, string name){
+        return GlobalAveragePool1D(parent, name);
+    }
 
   layer GlobalAveragePool2D(layer parent, string name){
     // Check dimension
@@ -1167,10 +1216,24 @@ namespace eddl {
     if(name.empty()) { name = "GlobalAveragePool2D"; }  // Set default name
     return AveragePool(parent, {h,w},{1,1},  "none",name);
   }
+    layer GlobalAvgPool2D(layer parent, string name){
+        return GlobalAveragePool2D(parent, name);
+    }
 
   layer GlobalAveragePool3D(layer parent, string name){
-    msg("Not implemented error", "GlobalAveragePool3D");
-    return nullptr;
+      // Expands dimensions if needed
+      if (parent->output->ndim!=5) msg("GlobalAveragePool3D only works over 5D tensors","GlobalAveragePool3D");
+
+      int d=parent->output->shape[2];
+      int h=parent->output->shape[3];
+      int w=parent->output->shape[4];
+
+      if(name.empty()) { name = "GlobalAveragePool3D"; }  // Set default name
+      return AveragePool3D(parent, {d,h,w},{1,1,1}, "none", name);
+  }
+
+    layer GlobalAvgPool3D(layer parent, string name){
+      return GlobalAveragePool3D(parent, name);
   }
 
   // Recurrent Layers
@@ -1393,7 +1456,7 @@ namespace eddl {
   vector<Tensor*> getStates(layer l1){
     vector<Tensor*> n;
     for(int i=0;i<l1->states.size();i++) {
-      collectTensor(l1,"states",i);
+      collectTensor(l1,"state",i);
       n.push_back(l1->states[i]->clone());
     }
     return n;

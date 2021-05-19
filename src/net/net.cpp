@@ -68,6 +68,7 @@ Net::Net() {
     isencoder=false;
     isrecurrent=false;
     isresized=false;
+    decoder_teacher_training=true;
     decsize=1;
     do_compserv_delete = true;
     do_optimizer_delete = true;

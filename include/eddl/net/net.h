@@ -59,6 +59,7 @@ public:
     bool isdecoder;
     bool isencoder;
     bool isresized;
+    bool decoder_teacher_training;
     int decsize;
 
     vector<int> devsel;

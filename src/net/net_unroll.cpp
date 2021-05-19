@@ -257,6 +257,7 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
                 nlayers[i].push_back(nin[i][j]);
             }
         }
+        
 
         // rest of layers
         for (j = 0; j < layers.size(); j++) {
@@ -293,8 +294,8 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
                 else {
                     vlayer par;
                     for (l = 0; l < layers[j]->parent.size(); l++) {
-                        if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
-                        else par.push_back(nlayers[i][ind]);
+                        if (isInorig(layers[j]->parent[l], nlayers[i], ind)) 
+                          par.push_back(nlayers[i][ind]);
                     }
 
                     if ((l == layers[j]->parent.size())||(layers[j]->isdecoder)) {
@@ -314,6 +315,19 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
 
                         }
                         else {
+                            int backi=i;
+                            while (par.size()<layers[j]->parent.size()) {
+                              for (l = 0; l < layers[j]->parent.size(); l++) {
+                               if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) 
+                                  if (isInorig(layers[j]->parent[l], nlayers[backi], ind)) {
+                                    par.push_back(nlayers[backi][ind]);
+                                  }
+                              }
+                              backi--;
+                              if (backi<0) 
+                                msg("Unexpected error","unroll");
+                             }
+                                
                             nlayers[i].push_back(layers[j]->share(i, batch_size, par));
                         }
                     }
@@ -343,6 +357,13 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
     for (i = 0; i < outl; i++)
         for (j = 0; j < nout[i].size(); j++)
             noutl.push_back(nout[i][j]);
+
+    if (!decoder_teacher_training) {
+      for (i = 0; i < outl-1; i++) {
+        noutl[i]->addchild(ninl[inl+i+1]);
+        ninl[inl+i+1]->addparent(noutl[i]);
+        }
+    }
 
     Net *rnet=new Net(ninl, noutl);
 
@@ -465,6 +486,13 @@ Net* Net::unroll_dec(int inl, int outl) {
     for (i = 0; i < outl; i++)
         for (j = 0; j < nout[i].size(); j++)
             noutl.push_back(nout[i][j]);
+
+    if (!decoder_teacher_training) {
+      for (i = 0; i < outl-1; i++) {
+        noutl[i]->addchild(ninl[inl+i+1]);
+        ninl[inl+i+1]->addparent(noutl[i]);
+        }
+    }
 
     Net *rnet=new Net(ninl, noutl);
 

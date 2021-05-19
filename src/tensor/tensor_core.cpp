@@ -775,6 +775,26 @@ void Tensor::gather(Tensor *A, Tensor *B, GatherDescriptor *sd){
 #endif
 }
 
+Tensor* Tensor::expand(int size){
+    return Tensor::expand(this, size);
+}
+
+
+Tensor* Tensor::expand(Tensor *A, int size){
+    // Build descriptor
+    auto *sd = new ExpandDescriptor(size, A->device);
+    sd->build(A->shape);
+
+    // Initialize tensor
+    auto* t = new Tensor(sd->oshape, A->device);
+
+    // Perform select
+    Tensor::expand(A, t, sd);
+
+    delete sd;
+    return t;
+}
+
 void Tensor::expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
     if (A->isCPU() && B->isCPU()) {
         cpu_expand(A, B, sd);

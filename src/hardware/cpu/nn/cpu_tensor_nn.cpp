@@ -11,7 +11,6 @@
 
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
     _profile(_CPU_REPEAT_NN, 0);
-    // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
 #pragma omp parallel for
     for(int i=0; i<B->size; i++){
         // Get row/col of Tensor B
@@ -31,8 +30,6 @@ void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
 void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
     _profile(_CPU_D_REPEAT_NN, 0);
-    // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
-    ////#pragma omp parallel for
 
 #pragma omp parallel for
     for(int i=0; i<D->size; i++){
@@ -84,6 +81,33 @@ void cpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
     for (int b = 0; b < B->shape[0]; b++) {
         for (int i = 0; i < B->stride[0]; i++) {
             B->ptr[b*B->stride[0] + i] += A->ptr[b*A->stride[0] + sd->cpu_addresses[i]];
+        }
+    }
+}
+
+void cpu_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd){
+#pragma omp parallel for
+    for (int b = 0; b < B->shape[0]; b++) {
+        for (int i = 0; i < B->stride[0]; i++) {
+            B->ptr[b*B->stride[0] + i] = A->ptr[b*A->stride[0] + sd->cpu_addresses[i]];
+        }
+    }
+}
+
+void cpu_expand_back_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd){
+#pragma omp parallel for
+    for (int b = 0; b < A->shape[0]; b++) {
+        for (int i = 0; i < A->stride[0]; i++) {  // walk stride
+            B->ptr[b*B->stride[0] + sd->cpu_addresses[i]] += A->ptr[b*A->stride[0] + i];  // delta_parent += delta
+        }
+    }
+}
+
+void cpu_repeat_batch(Tensor *A, Tensor *B){
+#pragma omp parallel for
+    for (int b = 0; b < B->shape[0]; b++) {
+        for (int i = 0; i < B->stride[0]; i++) {  // "A" must have batch of size 1
+            B->ptr[b*B->stride[0] + i] = A->ptr[i];
         }
     }
 }

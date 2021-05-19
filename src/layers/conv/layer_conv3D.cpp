@@ -26,7 +26,6 @@ LConv3D::LConv3D(Layer *parent, const vector<int> &ks, const vector<int> &st,
 
 LConv3D::LConv3D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
              int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv3D(parent, new ConvolDescriptor3D(filters, kernel_size, strides, padding, pads, use_bias, mem), name, dev, mem) {
-    // TODO: Implement (Fix initialization)
 };
 
 LConv3D::LConv3D(Layer *parent, ConvolDescriptor3D *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
@@ -55,6 +54,11 @@ LConv3D::LConv3D(Layer *parent, ConvolDescriptor3D *D, string name, int dev, int
 
     parent->addchild(this);
     addparent(parent);
+
+    // Check padding asymmetries
+    if(D->pad[0] != D->pad[1] || D->pad[2] != D->pad[3] || D->pad[4] != D->pad[5]){
+        msg("Padding asymmetry detected. (front=" + to_string(D->pad[0]) + ", back=" + to_string(D->pad[1]) + ", top=" + to_string(D->pad[2]) + ", bottom=" + to_string(D->pad[3]) + ", left=" + to_string(D->pad[4]) + ", right=" + to_string(D->pad[5]) + ").\nLayer name: " + this->name, "LConv3D::LConv3D");
+    }
 }
 
 

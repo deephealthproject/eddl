@@ -22,21 +22,32 @@ int LConstOfTensor::total_layers = 0;
 LConstOfTensor::LConstOfTensor(Tensor *const_tensor, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "const_of_tensor" + to_string(++total_layers);
 
-    this->const_tensor = const_tensor->clone();
-    output = input = this->const_tensor;
+    this->const_tensor = const_tensor->clone(); this->const_tensor->toDevice(dev);
+    input = output = Tensor::empty_like(this->const_tensor)->unsqueeze(0);   // Reserve memory and batch
+}
+
+LConstOfTensor::~LConstOfTensor(){
+    if (output!=nullptr) { delete output; output=nullptr; }
+    if (const_tensor!=nullptr) { delete const_tensor; const_tensor=nullptr; }
 }
 
 
-// virtual
-void LConstOfTensor::resize(int batch){
-}
+void LConstOfTensor::free_delta(){
 
+    // DO NOT DELETE DELTA
+    // There will be problems with network concatenation
+    // [Input1]->[Net1]=>[Input2]->[Net2]->[Cost. func]
+    // "=>" is a copyTensor(delta2, delta1)
+    // If delta2 is deleted after the backward of Input2, there will be nothing to copy
+
+    delta->fill_(0.0);
+}
 
 void LConstOfTensor::forward() {
+    tensorNN::repeat_batch(this->const_tensor, output);
 }
 
 void LConstOfTensor::backward() {
-    msg("NotImplementedError", "LConstOfTensor::backward");
 }
 
 

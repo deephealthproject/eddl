@@ -16,6 +16,10 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
 
+#define MAX_FLOAT std::numeric_limits<float>::max()
+#define MIN_FLOAT -std::numeric_limits<float>::max()
+#define PRECISION_FLOAT -std::numeric_limits<float>::max()
+
 // Aux
 float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize);
 void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize,float val);
@@ -99,9 +103,13 @@ void cpu_mpool2D_back(PoolDescriptor *D);
 void cpu_mpool3D(PoolDescriptor3D *D);
 void cpu_mpool3D_back(PoolDescriptor3D *D);
 
-// AvgPool
+// AvgPool 2D
 void cpu_avgpool2D(PoolDescriptor*D);
 void cpu_avgpool2D_back(PoolDescriptor *D);
+
+// AvgPool 3D
+void cpu_avgpool3D(PoolDescriptor3D *D);
+void cpu_avgpool3D_back(PoolDescriptor3D *D);
 
 // Tensor (special functions that deal with 4D tensors)
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
@@ -109,8 +117,14 @@ void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
 
 void cpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 void cpu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+
+void cpu_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+void cpu_expand_back_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+
+void cpu_repeat_batch(Tensor *A, Tensor *B);
 
 // BN
 void cpu_permute_channels_first(Tensor *A,Tensor *B);

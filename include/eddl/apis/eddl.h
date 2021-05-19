@@ -26,6 +26,7 @@
 #include "eddl/layers/layer.h"
 #include "eddl/layers/conv/layer_conv.h"
 #include "eddl/layers/core/layer_core.h"
+#include "eddl/layers/auxiliar/layer_auxiliar.h"
 #include "eddl/layers/da/layer_da.h"
 #include "eddl/layers/fused/layer_fused.h"
 #include "eddl/layers/generators/layer_generators.h"
@@ -961,6 +962,49 @@ namespace eddl {
                  int groups = 1, const vector<int> &dilation_rate = {1, 1, 1}, string name = "");
 
     /**
+   *  @brief 2D Transposed convolution layer (sometimes called Deconvolution).
+   *
+   *  @details
+   *   The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.
+   *
+   *  @param parent  Parent layer
+   *  @param filters  The dimensionality of the output space (i.e. the number of output filters in the convolution)
+   *  @param kernel_size  The height and width of the 2D convolution window
+   *  @param output_padding  The amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension
+   *  @param padding  One of "valid" or "same"
+   *  @param dilation_rate  The dilation rate to use for dilated convolution. Spacing between kernel elements
+   *  @param strides  The strides of the convolution along the height and width
+   *  @param use_bias  Boolean, whether the layer uses a bias vector
+   *  @param name  A name for the operation
+   *  @return     Output layer after upsampling operation
+ */
+
+  layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
+                 const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+                 int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    /**
+ *  @brief 3D Transposed convolution layer (sometimes called Deconvolution).
+ *
+ *  @details
+ *   The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.
+ *
+ *  @param parent  Parent layer
+ *  @param filters  The dimensionality of the output space (i.e. the number of output filters in the convolution)
+ *  @param kernel_size  The height and width of the 2D convolution window
+ *  @param output_padding  The amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension
+ *  @param padding  One of "valid" or "same"
+ *  @param dilation_rate  The dilation rate to use for dilated convolution. Spacing between kernel elements
+ *  @param strides  The strides of the convolution along the height and width
+ *  @param use_bias  Boolean, whether the layer uses a bias vector
+ *  @param name  A name for the operation
+ *  @return     Output layer after upsampling operation
+*/
+    layer ConvT3D(layer parent, int filters, const vector<int> &kernel_size,
+                  const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+                  int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    /**
       *  @brief Pointwise 2D convolution
       *
       *  @param parent  Parent layer
@@ -1014,7 +1058,7 @@ namespace eddl {
     layer Input(const vector<int> &shape, string name = "");
 
     /**
-      *  @brief Upsampling layer.
+      *  @brief 2D Upsampling layer.
       *
       *  @details
       *   Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
@@ -1026,9 +1070,34 @@ namespace eddl {
       *  @return     Output layer after upsampling operation
     */
     layer UpSampling2D(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
-
-    // Legacy
     layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
+
+    /**
+      *  @brief 3D Upsampling layer. Similar to Resize but for 3D images
+      *
+      *  @param parent  Parent layer
+      *  @param new_shape  Vector with layer/images desired new shape
+      *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively
+      *  @param coordinate_transformation_mode  This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
+      *  @return     Output of scale transformation
+    */
+    layer UpSampling3D(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string coordinate_transformation_mode="asymmetric", string name="");
+
+
+    /**
+      *  @brief Resize the input image to the given size. `[height, width]`. Same as the Scale layer, but with the backward operation supported
+      *
+      *  @param parent  Parent layer
+      *  @param new_shape  Vector with layer/images desired new shape
+      *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively
+      *  @param coordinate_transformation_mode  This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
+      *  @return     Output of scale transformation
+    */
+    layer Resize(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string coordinate_transformation_mode="asymmetric", string name="");
 
     /**
       *  @brief Reshapes an output to a certain shape.
@@ -1070,33 +1139,6 @@ namespace eddl {
     layer Unsqueeze(layer parent, int axis=0, string name = "");
 
     /**
-      *  @brief Transposed convolution layer (sometimes called Deconvolution).
-      *
-      *  @details
-      *   The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.
-      *
-      *  @param parent  Parent layer
-      *  @param filters  The dimensionality of the output space (i.e. the number of output filters in the convolution)
-      *  @param kernel_size  The height and width of the 2D convolution window
-      *  @param output_padding  The amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension
-      *  @param padding  One of "valid" or "same"
-      *  @param dilation_rate  The dilation rate to use for dilated convolution. Spacing between kernel elements
-      *  @param strides  The strides of the convolution along the height and width
-      *  @param use_bias  Boolean, whether the layer uses a bias vector
-      *  @param name  A name for the operation
-      *  @return     Output layer after upsampling operation
-    */
-    layer ConvT2D(layer parent, int filters, const vector<int> &kernel_size,
-                const vector<int> &output_padding, string padding = "same",
-                const vector<int> &dilation_rate = {1, 1},
-                const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
-    // Legacy
-    layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
-                  const vector<int> &output_padding, string padding = "same",
-                  const vector<int> &dilation_rate = {1, 1},
-                  const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
-
-    /**
       *  @brief Turns positive integers (indexes) into dense vectors of fixed size. eg. [[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]
       *
       *  @param parent Parent layer
@@ -1116,6 +1158,26 @@ namespace eddl {
       *  @return     Output of transpose operation
     */
     layer Transpose(layer parent, string name = "");
+
+    /**
+      *  @brief Given a tensor (constant), this layer outputs the same tensor but repeat across the batch.
+      *
+      *  @param Tensor  Raw tensor
+      *  @param name  A name for the operation
+      *  @return Raw repeated for each batch
+    */
+    layer ConstOfTensor(Tensor* t, string name = "");
+
+    /**
+      *  @brief Return elements chosen from x or y depending on condition.
+      *
+      *  @param parent1  Parent layer
+      *  @param parent2  Parent layer
+      *  @param condition  Condition layer. Where True, selects parent1; where False, selects parent2. (Bool => Float of 0.0s and 1.0s)
+      *  @param name  A name for the operation
+      *  @return Raw repeated for each batch
+    */
+    layer Where(layer parent1, layer parent2, layer condition, string name = "");
 
     // Transformation Layers
     /**
@@ -1226,12 +1288,12 @@ namespace eddl {
       *  @brief Pad the given image on all sides with the given `pad` value.
       *
       *  @param parent  Parent layer
-      *  @param padding  Padding on each border
+      *  @param padding  Padding on each border (top-bottom, left-right) or (top, right, bottom, left)
       *  @param constant  pads with a constant value
       *  @param name  A name for the operation
       *  @return     Padded image
     */
-    layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
+    layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name="");
 
     /**
       *  @brief Rotate the image by angle.
@@ -1253,9 +1315,10 @@ namespace eddl {
       *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
       *  @param da_mode  One of "nearest", "constant", (ToDo: "mirror", "reflect", "wrap", "original")
       *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively
+      *  @param coordinate_transformation_mode  This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
       *  @return     Output of scale transformation
     */
-    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string name="");
+    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="constant", float constant=0.0f, string coordinate_transformation_mode="asymmetric", string name="");
 
     /**
       *  @brief Shift the input image `[a, b]`.
@@ -1381,9 +1444,10 @@ namespace eddl {
       *  @param factor  Vector of factor size range new shape
       *  @param da_mode  One of "nearest"
       *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @param coordinate_transformation_mode  This attribute describes how to transform the coordinate in the resized tensor to the coordinate in the original tensor.
       *  @return     Output of scale transformation
     */
-    layer RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string name= "");
+    layer RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string coordinate_transformation_mode="asymmetric", string name= "");
 
     /**
       *  @brief Shift the input image randomly in range `[a, b]`.
@@ -1438,11 +1502,12 @@ namespace eddl {
       *   It takes a list of layers as input and returns a single tensor that is the concatenation of all the input layers.
       *
       *  @param layers  List of layers
-      *  @param axis  Axis along which to concatenate
+      *  @param axis  Axis along which to concatenate (batch is ignored; "-1" selects last axis)
       *  @param name  A name for the operation
       *  @return     Output of concatenation operation with all input layers
     */
-    layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
+    layer Concat(const vector<layer> &layers, unsigned int axis=0, string name = "");
+
     /**
      *  @brief Multiplication of matrices.
      *
@@ -1725,7 +1790,7 @@ namespace eddl {
     layer Sum(float k, layer l1);
 
     /**
-      *  @brief Returns a new tensor which indexes the input tensor using the entries in indices
+      *  @brief Returns a new layer which indexes the input tensor using the entries in indices
       *
       *  @param l  Parent layer
       *  @param indices  Vector of indices to be selected
@@ -1733,6 +1798,26 @@ namespace eddl {
       *  @return     A tensor with the selected elements
     */
     layer Select(layer l, vector<string> indices, string name="");
+
+    /**
+      *  @brief Returns a new layer which indexes the input tensor using the entries in indices. (alias for Select)
+      *  Alias for Select
+      *
+      *  @param l  Parent layer
+      *  @param indices  Vector of indices to be selected
+      *  @param name  A name for the operation
+      *  @return     A tensor with the selected elements
+    */
+    layer Slice(layer l, vector<string> indices, string name="");
+
+    /**
+      *  @brief Returns a layer with singleton dimensions expanded to a larger size.
+      *  @param l  Parent layer
+      *  @param size  Size to which expand the singleton dimensions
+      *  @param name  A name for the operation
+      *  @return     A tensor with the selected elements
+    */
+        layer Expand(layer l, int size, string name="");
 
     /**
       *  @brief Permutes the dimensions of the input according to a given pattern.
@@ -1743,6 +1828,18 @@ namespace eddl {
       *  @return     The permuted tensor.
     */
     layer Permute(layer l, vector<int> dims, string name="");
+
+    /**
+      *  @brief Split a layer into a list of tensors layers
+      *
+      *  @param l  Parent layer
+      *  @param indexes  Split indexes ({20, 60} => {0:20, 20:60, 60:end})
+      *  @param axis  Which axis to split on (default=-1, last)
+      *  @param merge_sublayers  Merge layers symbolically (for the plot)
+      *  @param name  A name for the operation
+      *  @return     vector of layers
+    */
+    vlayer Split(layer l, vector<int> indexes, int axis=-1, bool merge_sublayers=false, string name="");
 
     // Reduction Layers
 
@@ -1887,7 +1984,8 @@ namespace eddl {
      *  @param name  A name for the operation
      *  @return     The result after apply the average pooling operation over the parent layer
    */
-    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");  // TODO: Deprecated? Generic but not generic... (2D only)
+    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");
+    layer AvgPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");  // Alias
 
     /**
       *  @brief AveragePooling1D operation.
@@ -1900,6 +1998,7 @@ namespace eddl {
       *  @return     The result after apply the average pooling operation over the parent layer
     */
     layer AveragePool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");
+    layer AvgPool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");  // Alias
 
     /**
       *  @brief AveragePooling2D operation.
@@ -1912,6 +2011,7 @@ namespace eddl {
       *  @return     The result after apply the average pooling operation over the parent layer
     */
     layer AveragePool2D(layer parent, vector<int> pool_size = {2, 2}, vector<int> strides = {2, 2}, string padding = "none", string name = "");
+    layer AvgPool2D(layer parent, vector<int> pool_size = {2, 2}, vector<int> strides = {2, 2}, string padding = "none", string name = "");  // Alias
 
     /**
   *  @brief AveragePooling3D operation.
@@ -1924,6 +2024,7 @@ namespace eddl {
   *  @return     The result after apply the average pooling operation over the parent layer
 */
     layer AveragePool3D(layer parent, vector<int> pool_size = {2, 2, 2}, vector<int> strides = {2, 2, 2}, string padding = "none", string name = "");
+    layer AvgPool3D(layer parent, vector<int> pool_size = {2, 2, 2}, vector<int> strides = {2, 2, 2}, string padding = "none", string name = "");  // Alias
 
     /**
       *  @brief GlobalMax pooling operation.
@@ -1969,7 +2070,8 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     The result after applying the global average pooling operation over the parent layer
     */
-    layer GlobalAveragePool(layer parent, string name = ""); // TODO: Deprecated? Generic but not generic... (2D only)
+    layer GlobalAveragePool(layer parent, string name = "");
+    layer GlobalAvgPool(layer parent, string name = "");  // Alias
 
     /**
         *  @brief GlobalAveragePooling1D operation.
@@ -1979,6 +2081,7 @@ namespace eddl {
         *  @return     The result after applying the global average pooling operation over the parent layer
     */
     layer GlobalAveragePool1D(layer parent, string name = "");
+    layer GlobalAvgPool1D(layer parent, string name = "");  // Alias
 
 
     /**
@@ -1989,6 +2092,7 @@ namespace eddl {
         *  @return     The result after applying the global average pooling operation over the parent layer
     */
     layer GlobalAveragePool2D(layer parent, string name = "");
+    layer GlobalAvgPool2D(layer parent, string name = "");  // Alias
 
     /**
         *  @brief GlobalAveragePooling3D operation.
@@ -1998,6 +2102,7 @@ namespace eddl {
         *  @return     The result after applying the global average pooling operation over the parent layer
     */
     layer GlobalAveragePool3D(layer parent, string name = "");
+    layer GlobalAvgPool3D(layer parent, string name = "");
 
     // Recurrent Layers
 
@@ -2030,18 +2135,6 @@ namespace eddl {
 
     layer States(const vector<int> &shape, string name = "");
 
-    /**
-      *  @brief Upsampling layer.
-      *
-      *  @details
-      *   Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
-      *
-      *  @param parent  Parent layer
-      *  @param size  Vector of 2 integers. The upsampling factors for rows and columns
-      *  @param interpolation  A string, one of "nearest" or "bilinear"
-      *  @param name  A name for the operation
-      *  @return     Output layer after upsampling operation
-    */
     /**
       *  @brief Gated Recurrent Unit (GRU).
       *
@@ -2219,12 +2312,82 @@ namespace eddl {
     // MODELS
     ///////////////////////////////////////
     void download_model(string name,string link);
+
+    /**
+      *  @brief Returns a VGG16 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A VGG16 Net* with the desired topology
+    */
     Net* download_vgg16(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a ResNet18 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A ResNet18 Net* with the desired topology
+    */
     Net* download_resnet18(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a ResNet34 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A ResNet34 Net* with the desired topology
+    */
     Net* download_resnet34(bool top=true, vector<int> input_shape={}); 
+
+    /**
+      *  @brief Returns a ResNet50 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A ResNet50 Net* with the desired topology
+    */
     Net* download_resnet50(bool top=true, vector<int> input_shape={}); 
+
+    /**
+      *  @brief Returns a ResNet101 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A ResNet101 Net* with the desired topology
+    */
     Net* download_resnet101(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a ResNet152 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A ResNet152 Net* with the desired topology
+    */
     Net* download_resnet152(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a DenseNet121 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A DenseNet121 Net* with the desired topology
+    */
     Net* download_densenet121(bool top=true, vector<int> input_shape={});
 
     ///////////////////////////////////////

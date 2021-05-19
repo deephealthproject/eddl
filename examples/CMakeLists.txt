@@ -70,6 +70,9 @@ target_link_libraries(cifar_resnet_da_bn eddl)
 add_executable(cifar_resnet50_da_bn "nn/2_cifar10/7_cifar_resnet50_da_bn.cpp")
 target_link_libraries(cifar_resnet50_da_bn eddl)
 
+add_executable(cifar_avgpool3d "nn/2_cifar10/8_cifar_avgpool3d.cpp")
+target_link_libraries(cifar_avgpool3d eddl)
+
 # EXAMPLES: Drive segmentation ****************************************************
 add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
 target_link_libraries(drive_seg eddl)
@@ -110,6 +113,44 @@ target_link_libraries(synthetic_imagenet_vgg16_bn eddl)
   add_executable(test4 "test_internals/test4.cpp")
   target_link_libraries(test4 eddl)
 
+if(BUILD_PROTOBUF)
+    add_executable(test_onnx_auxiliar "test_internals/onnx/test_onnx_auxiliar_layers.cpp")
+    target_link_libraries(test_onnx_auxiliar eddl)
+
+	add_executable(test_onnx_conv1D "test_internals/onnx/test_onnx_conv1D.cpp")
+    target_link_libraries(test_onnx_conv1D eddl)
+    add_executable(test_onnx_conv2D "test_internals/onnx/test_onnx_conv2D.cpp")
+    target_link_libraries(test_onnx_conv2D eddl)
+    add_executable(test_onnx_conv3D "test_internals/onnx/test_onnx_conv3D.cpp")
+    target_link_libraries(test_onnx_conv3D eddl)
+
+    add_executable(test_onnx_convT2D "test_internals/onnx/test_onnx_convT2D.cpp")
+    target_link_libraries(test_onnx_convT2D eddl)
+    add_executable(test_onnx_convT3D "test_internals/onnx/test_onnx_convT3D.cpp")
+    target_link_libraries(test_onnx_convT3D eddl)
+
+	add_executable(test_onnx_upsample2D "test_internals/onnx/test_onnx_upsample2D.cpp")
+	target_link_libraries(test_onnx_upsample2D eddl)
+	add_executable(test_onnx_upsample3D "test_internals/onnx/test_onnx_upsample3D.cpp")
+	target_link_libraries(test_onnx_upsample3D eddl)
+
+	add_executable(test_onnx_lstm_imdb "test_internals/onnx/test_onnx_lstm_imdb.cpp")
+    target_link_libraries(test_onnx_lstm_imdb eddl)
+    add_executable(test_onnx_gru_imdb "test_internals/onnx/test_onnx_gru_imdb.cpp")
+    target_link_libraries(test_onnx_gru_imdb eddl)
+
+    add_executable(test_onnx_lstm_mnist "test_internals/onnx/test_onnx_lstm_mnist.cpp")
+    target_link_libraries(test_onnx_lstm_mnist eddl)
+    add_executable(test_onnx_gru_mnist "test_internals/onnx/test_onnx_gru_mnist.cpp")
+    target_link_libraries(test_onnx_gru_mnist eddl)
+    add_executable(test_onnx_rnn_mnist "test_internals/onnx/test_onnx_rnn_mnist.cpp")
+    target_link_libraries(test_onnx_rnn_mnist eddl)
+
+    add_executable(test_onnx_lstm_enc_dec "test_internals/onnx/test_onnx_lstm_enc_dec.cpp")
+    target_link_libraries(test_onnx_lstm_enc_dec eddl)
+    add_executable(test_onnx_gru_enc_dec "test_internals/onnx/test_onnx_gru_enc_dec.cpp")
+    target_link_libraries(test_onnx_gru_enc_dec eddl)
+endif()
 
 # EXAMPLES: Tensor ****************************************************
 add_executable(tensor_ops "tensor/eddl_ops.cpp")
@@ -121,6 +162,9 @@ target_link_libraries(tensor_image eddl)
 add_executable(tensor_io "tensor/eddl_io.cpp")
 target_link_libraries(tensor_io eddl)
 
+add_executable(tensor_dev_tests "tensor/eddl_dev_tests.cpp")
+target_link_libraries(tensor_dev_tests eddl)
+
 # EXAMPLES: ONNX ******************************************************************
 if(BUILD_PROTOBUF)
     add_executable(onnx_pointer "onnx/1_onnx_pointer.cpp")
@@ -130,7 +174,7 @@ if(BUILD_PROTOBUF)
     target_link_libraries(onnx_export eddl)
 
     add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
-		target_link_libraries(onnx_import eddl)
+    target_link_libraries(onnx_import eddl)
 
     add_executable(onnx_utils_serialization "onnx/4_onnx_utils_serialization.cpp")
     target_link_libraries(onnx_utils_serialization eddl)

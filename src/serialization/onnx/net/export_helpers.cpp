@@ -6,7 +6,7 @@
 onnx::ModelProto build_onnx_model(Net *net, bool gradients)
 {
   string producer_name("EDDL");
-  string producer_version("0.1"); // ????????????????
+  string producer_version("1.0");
   // Create the empty Model in onnx
   onnx::ModelProto model;
   model.set_ir_version(onnx::Version::IR_VERSION);

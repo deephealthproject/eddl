@@ -9,12 +9,21 @@
 #include "eddl/serialization/onnx/layers/core/permute_onnx.h"
 #include "eddl/serialization/onnx/layers/core/embedding_onnx.h"
 #include "eddl/serialization/onnx/layers/core/select_onnx.h"
+#include "eddl/serialization/onnx/layers/core/split_onnx.h"
+#include "eddl/serialization/onnx/layers/core/resize_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv1D_onnx.h"
-#include "eddl/serialization/onnx/layers/conv/upsampling_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/conv3D_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/convT_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/convT3D_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/upsampling2D_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/upsampling3D_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/avgpool_onnx.h"
+#include "eddl/serialization/onnx/layers/pool/avgpool1D_onnx.h"
+#include "eddl/serialization/onnx/layers/pool/avgpool3D_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/maxpool_onnx.h"
 #include "eddl/serialization/onnx/layers/pool/maxpool1D_onnx.h"
+#include "eddl/serialization/onnx/layers/pool/maxpool3D_onnx.h"
 #include "eddl/serialization/onnx/layers/normalization/batchnorm_onnx.h"
 #include "eddl/serialization/onnx/layers/merge/concat_onnx.h"
 #include "eddl/serialization/onnx/layers/merge/add_onnx.h"
@@ -39,7 +48,9 @@
 #include "eddl/serialization/onnx/layers/recurrent/rnn_onnx.h"
 #include "eddl/serialization/onnx/layers/recurrent/cps_onnx.h"
 #include "eddl/serialization/onnx/layers/da/scale_onnx.h"
+#include "eddl/serialization/onnx/layers/da/pad_onnx.h"
 #include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
+#include "eddl/serialization/onnx/layers/auxiliar/expand_onnx.h"
 
 /*
  * ONNX IMPORT
@@ -52,6 +63,7 @@ map<string, ONNX_LAYERS> create_enum_map()
   map<string, ONNX_LAYERS> map_layers;
   map_layers["BatchNormalization"] = ONNX_LAYERS::BATCHNORM;
   map_layers["Conv"] = ONNX_LAYERS::CONV;
+  map_layers["ConvTranspose"] = ONNX_LAYERS::CONVTRANSPOSE;
   map_layers["Gemm"] = ONNX_LAYERS::DENSE;
   map_layers["Dropout"] = ONNX_LAYERS::DROP;
   map_layers["Reshape"] = ONNX_LAYERS::RESHAPE;
@@ -105,7 +117,10 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["ReduceSum"] = ONNX_LAYERS::RSUM;
   map_layers["ArgMax"] = ONNX_LAYERS::ARGMAX;
   map_layers["Resize"] = ONNX_LAYERS::RESIZE;
+  map_layers["Pad"] = ONNX_LAYERS::PAD;
   map_layers["Slice"] = ONNX_LAYERS::SLICE;
+  map_layers["Split"] = ONNX_LAYERS::SPLIT;
+  map_layers["Expand"] = ONNX_LAYERS::EXPAND;
 
   return map_layers;
 }
@@ -143,7 +158,10 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_batchnorm_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::CONV:
-      new_layer = build_conv_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      new_layer = build_conv_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
+      break;
+    case ONNX_LAYERS::CONVTRANSPOSE:
+      new_layer = build_convT_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::DENSE:
       new_layer = build_dense_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
@@ -245,7 +263,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_sqrt_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::SUB:
-      new_layer = build_diff_layer(node, output_node_map, dev, mem);
+      new_layer = build_diff_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::RMAX:
       new_layer = build_rmax_layer(node, output_node_map, dev, mem);
@@ -293,10 +311,19 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_permute_layer(node, output_node_map, recurrent_net, log_level, dev, mem);
       break;
     case ONNX_LAYERS::RESIZE:
-      new_layer = build_scale_layer(node, map_init_values, output_node_map, dev, mem);
+      new_layer = build_resize_layer(node, map_init_values, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::PAD:
+      new_layer = build_pad_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::SLICE:
-      new_layer = build_select_layer(node, constant_node_map, output_node_map, dev, mem);
+      new_layer = build_select_layer(node, map_init_values, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::SPLIT:
+      new_layer = build_split_layer(node, map_init_values, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::EXPAND:
+      new_layer = build_expand_layer(node, map_init_values, output_node_map, dev, mem);
       break;
     default:
       msg("Error: The ONNX node type " + layer_type_name + " is not supported!", "ONNX::ImportNet");
@@ -320,6 +347,12 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_conv_node(l, graph, gradients);
   else if (LConv1D *l = dynamic_cast<LConv1D *>(layer))
     build_conv1D_node(l, graph, gradients);
+  else if (LConv3D *l = dynamic_cast<LConv3D *>(layer))
+    build_conv3D_node(l, graph, gradients);
+  else if (LConvT2D *l = dynamic_cast<LConvT2D *>(layer))
+    build_convT_node(l, graph, gradients);
+  else if (LConvT3D *l = dynamic_cast<LConvT3D *>(layer))
+    build_convT3D_node(l, graph, gradients);
   else if (LDense *l = dynamic_cast<LDense *>(layer))
     if (is_recurrent)
       build_dense_with_matmul_node(l, graph, gradients);
@@ -329,8 +362,14 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_maxpool_node(l, graph);
   else if (LMaxPool1D *l = dynamic_cast<LMaxPool1D *>(layer))
     build_maxpool1D_node(l, graph);
+  else if (LMaxPool3D *l = dynamic_cast<LMaxPool3D *>(layer))
+    build_maxpool3D_node(l, graph);
   else if (LAveragePool *l = dynamic_cast<LAveragePool *>(layer))
     build_averagepool_node(l, graph);
+  else if (LAveragePool1D *l = dynamic_cast<LAveragePool1D *>(layer))
+    build_averagepool1D_node(l, graph);
+  else if (LAveragePool3D *l = dynamic_cast<LAveragePool3D *>(layer))
+    build_averagepool3D_node(l, graph);
   else if (LReshape *l = dynamic_cast<LReshape *>(layer))
     build_reshape_node(l, graph);
   else if (LSqueeze *l = dynamic_cast<LSqueeze *>(layer))
@@ -341,6 +380,8 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_permute_node(l, graph);
   else if (LUpSampling *l = dynamic_cast<LUpSampling *>(layer))
     build_upsample_node(l, graph);
+  else if (LUpSampling3D *l = dynamic_cast<LUpSampling3D *>(layer))
+    build_resize_node_from_upsampling3D(l, graph);
   else if (LActivation *l = dynamic_cast<LActivation *>(layer))
     // Check the type of activation layer
     if (!l->act.compare("relu"))
@@ -422,10 +463,16 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     handle_copy_states(l, graph);
   else if (LEmbedding *l = dynamic_cast<LEmbedding *>(layer))
     build_embedding_node(l, graph);
-  else if (LScale *l = dynamic_cast<LScale *>(layer))
+  else if (LResize *l = dynamic_cast<LResize *>(layer))
     build_resize_node(l, graph);
+  else if (LScale *l = dynamic_cast<LScale *>(layer))
+    build_resize_node_from_scale(l, graph);
+  else if (LPad *l = dynamic_cast<LPad *>(layer))
+    build_pad_node(l, graph);
   else if (LSelect *l = dynamic_cast<LSelect *>(layer))
     build_select_node(l, graph);
+  else if (LExpand *l = dynamic_cast<LExpand *>(layer))
+    build_expand_node(l, graph);
   else
   {
     cout << "The layer " << layer->name << "has no OpType in Onnx." << endl;

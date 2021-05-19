@@ -43,8 +43,9 @@ PoolDescriptor3D::PoolDescriptor3D(const vector<int> &ks, const vector<int> &st,
 
 
 PoolDescriptor3D::~PoolDescriptor3D(){
-    delete indX;
-    delete indY;
+    if( indX != nullptr) { delete indX; indX= nullptr; }
+    if( indY != nullptr) { delete indY; indY= nullptr; }
+    if( indZ != nullptr) { delete indZ; indZ= nullptr; }
 }
 
 void PoolDescriptor3D::build(Tensor *A) {
@@ -89,13 +90,14 @@ void PoolDescriptor3D::build(Tensor *A) {
         pad = {padd[0], padd[1], padr[0], padr[1], padc[0], padc[1]};  // (front, back), (top, bottom), (left, right)
     }
 
-    paddf = pad[0]; paddb = pad[1];  // depth: front-top
-    padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
-    padcl = pad[2]; padcr = pad[3];  // cols: left-right
+    paddf = pad[0]; paddb = pad[1];  // depth: front-back
+    padrt = pad[2]; padrb = pad[3];  // rows: top-bottom
+    padcl = pad[4]; padcr = pad[5];  // cols: left-right
 #ifdef cCUDNN
        if(!A->isCPU()){
            if(pad[0] != pad[1] || pad[2] != pad[3] || pad[4] != pad[5]){
-               std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
+             msg("Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later", "pool3d");
+               //std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
            }
            if (pad[0] != pad[1]){pad[0] = pad[1];}
            if (pad[2] != pad[3]){ pad[2] = pad[3];}
@@ -110,17 +112,22 @@ void PoolDescriptor3D::build(Tensor *A) {
         msg("Invalid output shape", "PoolDescriptor3D::build");
     }
 
-    O = new Tensor(vector<int>{A->shape[0], z, d, r, c}, A->device);
+    O = Tensor::zeros(vector<int>{A->shape[0], z, d, r, c}, A->device);
 //    if (!mem_level) { D = new Tensor(O->shape, A->device); }
 
 
     // Careful with the "size++" not "useless loop"
     size=0;
     for(int k=0;k<iz;k++)
-      for(int w=-paddf;w<=id+paddb-kd;w+=sd)
-          for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
-            for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
+        for(int w=-paddf;w<=id+paddb-kd;w+=sd)
+            for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
+                for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
+//    cout << "Size 1: " << size << endl;
 
+//    int w = std::floor(((id+paddb-kd)-(-paddf))/sd) + 1;  // max-min+1
+//    int i = std::floor(((ir+padrb-kr)-(-padrt))/sr) + 1;  // max-min+1
+//    int j = std::floor(((ic+padcr-kc)-(-padcl))/sc) + 1;  // max-min+1
+//    size=iz * w *  i * j;
 
 #ifdef cCUDNN
     if(!O->isCPU()){
@@ -151,9 +158,6 @@ void PoolDescriptor3D::build(Tensor *A) {
 }
 
 #endif
-
-
-
 
 }
 

@@ -45,8 +45,10 @@ class LWhere : public LinLayer {
 public:
     static int total_layers;
     Tensor* condition;
+    Tensor* t_parent1;
+    Tensor* t_parent2;
 
-    LWhere(Layer *parent, Layer *condition, string name, int dev, int mem);
+    LWhere(Layer *parent1, Layer *parent2, Layer *condition, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -90,12 +92,13 @@ public:
     Tensor *const_tensor;
 
     LConstOfTensor(Tensor* const_tensor, string name, int dev, int mem);
+    ~LConstOfTensor() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+    void free_delta() override;
 
     void forward() override;
 
@@ -131,10 +134,10 @@ public:
 class LExpand : public LinLayer {
 public:
     static int total_layers;
-    vector<int> new_shape;
+    int size;
     ExpandDescriptor *sd;
 
-    LExpand(Layer *parent, vector<int> new_shape, string name, int dev, int mem);
+    LExpand(Layer *parent, int size, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

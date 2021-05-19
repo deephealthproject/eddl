@@ -228,6 +228,52 @@ public:
 
 };
 
+/// UpSampling3D Layer
+class LUpSampling3D : public LinLayer {
+public:
+    static int total_layers;
+    vector<int> new_shape;
+    bool reshape;
+    WrappingMode da_mode;
+    float cval;
+    TransformationMode coordinate_transformation_mode;
+
+    LUpSampling3D(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, TransformationMode coordinate_transformation_modem, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+};
+
+/// Resize Layer
+class LResize : public LinLayer {
+public:
+    static int total_layers;
+    vector<int> new_shape;
+    bool reshape;
+    WrappingMode da_mode;
+    float cval;
+    TransformationMode coordinate_transformation_mode;
+
+    LResize(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, TransformationMode coordinate_transformation_modem, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+};
+
 /// Squeeze Layer
 class LSqueeze : public LinLayer {
 public:
@@ -377,4 +423,27 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
+/// Split Layer
+class LSplit : public LinLayer {
+public:
+    static int total_layers;
+    vector<int> indexes;
+    int axis;
+    vector<Layer*> split_layers;
+    bool merge_sublayers;
+
+    LSplit(Layer *l, vector<int> indexes, int axis,  bool merge_sublayers, string name, int dev, int mem);
+
+    ~LSplit() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int b) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
 #endif //EDDL_LAYER_CORE_H

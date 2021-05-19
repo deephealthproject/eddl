@@ -37,8 +37,6 @@ namespace tensorNN {
 
 
     void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
-        // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
-
         if ((A->device != B->device)) msg("Tensors in different devices", "Tensor::Repeat_NN");
         if (A->ndim != B->ndim) msg("Incompatible dims", "Tensor::Repeat");
 
@@ -69,7 +67,6 @@ namespace tensorNN {
     }
 
     void d_repeat_nn(Tensor *D, Tensor *A, vector<int> size) {
-        // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
         if ((D->device != A->device)) msg("Tensors in different devices", "Tensor::D_Repeat_NN");
 
         PROFILING_HEADER(d_repeat_nn);
@@ -179,6 +176,67 @@ namespace tensorNN {
         }
 #endif
         PROFILING_FOOTER(set_select_back);
+    }
+
+
+
+    void expand(Tensor *A, Tensor* B, ExpandDescriptor *sd){
+
+
+        if (A->isCPU() && B->isCPU()) {
+            cpu_expand_nn(A, B, sd);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            gpu_expand_nn(A, B, sd);
+        }
+#endif
+#ifdef cFPGA
+            else if (A->isFPGA() && B->isFPGA())
+        {
+//            fpga_expand_nn(A, B, sd);
+        }
+#endif
+    }
+
+    void expand_back(Tensor *A, Tensor* B, ExpandDescriptor *sd){
+
+
+        if (A->isCPU() && B->isCPU()) {
+            cpu_expand_back_nn(A, B, sd);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            gpu_expand_back_nn(A, B, sd);
+        }
+#endif
+#ifdef cFPGA
+            else if (A->isFPGA() && B->isFPGA())
+        {
+//           fpga_expand_back_nn(A, B, sd);
+        }
+#endif
+    }
+
+    void repeat_batch(Tensor *A, Tensor* B){
+
+
+        if (A->isCPU() && B->isCPU()) {
+            cpu_repeat_batch(A, B);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            gpu_repeat_batch(A, B);
+        }
+#endif
+#ifdef cFPGA
+        else if (A->isFPGA() && B->isFPGA())
+        {
+        }
+#endif
     }
 
 }

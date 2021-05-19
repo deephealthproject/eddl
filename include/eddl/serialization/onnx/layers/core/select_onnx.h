@@ -10,7 +10,7 @@
 
 // OPSET: 13, 11, 10
 Layer* build_select_layer(onnx::NodeProto *node,
-                          map<string, onnx::NodeProto *> &constant_node_map, 
+                          map<string, vector<float>> &map_init_values,
                           map<string, Layer *> &output_node_map,
                           int dev,
                           int mem);

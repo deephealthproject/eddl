@@ -24,7 +24,7 @@
 #endif
 
 
-void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int mode, float constant){
+void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int wrapping_mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -34,11 +34,11 @@ void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int mode, float consta
     int *d_shift; cudaMalloc((int**)&d_shift, 2*sizeof(int));
     cudaMemcpy(d_shift, t_shift.data(), 2*sizeof(int), cudaMemcpyHostToDevice);
 
-    shift<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_shift, mode, constant);
+    shift<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_shift, wrapping_mode, constant);
     check_cuda(cudaDeviceSynchronize(), "shift");
 }
 
-void gpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant){
+void gpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int wrapping_mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -53,12 +53,12 @@ void gpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, in
     cudaMemcpy(d_center, center, 2*sizeof(int), cudaMemcpyHostToDevice);
 
     setDims(B);
-    rotate<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], angle_rad, d_center, mode, constant);
+    rotate<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], angle_rad, d_center, wrapping_mode, constant);
     check_cuda(cudaDeviceSynchronize(), "rotate");
 
 }
 
-void gpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant){
+void gpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int transformation_mode){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -67,9 +67,23 @@ void gpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float cons
     cudaMemcpy(d_new_shape, new_shape.data(), new_shape.size()*sizeof(int), cudaMemcpyHostToDevice);
 
     setDims(B);
-    scale<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_new_shape, mode, constant);
+    scale<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_new_shape, wrapping_mode, constant, transformation_mode);
     check_cuda(cudaDeviceSynchronize(), "scale");
 }
+
+void gpu_scale_back(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int transformation_mode){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy vector from host to device
+    int *d_new_shape; cudaMalloc((int**)&d_new_shape, new_shape.size()*sizeof(int));
+    cudaMemcpy(d_new_shape, new_shape.data(), new_shape.size()*sizeof(int), cudaMemcpyHostToDevice);
+
+    setDims(B);
+    scale_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_new_shape, wrapping_mode, constant, transformation_mode);
+    check_cuda(cudaDeviceSynchronize(), "scale_back");
+}
+
 
 void gpu_flip(Tensor *A, Tensor *B, int axis){
     int device=A->gpu_device;
@@ -108,7 +122,7 @@ void gpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
     check_cuda(cudaDeviceSynchronize(), "crop");
 }
 
-void gpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int mode, float constant){
+void gpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int wrapping_mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -122,12 +136,38 @@ void gpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
     int *d_coords_to; cudaMalloc((int**)&d_coords_to, coords_to.size()*sizeof(int));
     cudaMemcpy(d_coords_to, coords_to.data(), coords_to.size()*sizeof(int), cudaMemcpyHostToDevice);
 
-    crop_scale<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_coords_from, d_coords_to, mode, constant);
+    crop_scale<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_coords_from, d_coords_to, wrapping_mode, constant);
     check_cuda(cudaDeviceSynchronize(), "crop_scale");
 }
 
 
-void gpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant){
+void gpu_pad(Tensor *A, Tensor *B, vector<int> pads){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    int padt = pads[0];
+    int padl = pads[3];
+
+    gpu_pad<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], padt, padl);
+    check_cuda(cudaDeviceSynchronize(), "gpu_pad");
+}
+
+void gpu_pad_back(Tensor *A, Tensor *B, vector<int> pads){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    int padt = pads[0];
+    int padl = pads[3];
+
+    gpu_pad_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], padt, padl);
+    check_cuda(cudaDeviceSynchronize(), "gpu_pad_back");
+}
+
+void gpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int wrapping_mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -144,7 +184,7 @@ void gpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float
     float* d_rnd = gpu_get_uniforms(N_rnd);
 
     setDims(B);
-    shift_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_factor_x, d_factor_y, mode, constant, d_rnd);
+    shift_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_factor_x, d_factor_y, wrapping_mode, constant, d_rnd);
     check_cuda(cudaDeviceSynchronize(), "shift_random");
 
      // Free memory
@@ -153,7 +193,7 @@ void gpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float
     cudaFree(d_rnd);
 }
 
-void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int mode, float constant){
+void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int wrapping_mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -176,7 +216,7 @@ void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> o
     float* d_rnd = gpu_get_uniforms(N_rnd);
 
     setDims(B);
-    rotate_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_factor, d_center, mode, constant, d_rnd);
+    rotate_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_factor, d_center, wrapping_mode, constant, d_rnd);
     check_cuda(cudaDeviceSynchronize(), "rotate_random");
 
     // Free memory
@@ -186,7 +226,7 @@ void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> o
 
 }
 
-void gpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
+void gpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int wrapping_mode, float constant, int transformation_mode){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -199,7 +239,7 @@ void gpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, floa
     float* d_rnd = gpu_get_uniforms(N_rnd);
 
     setDims(B);
-    scale_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_factor, mode, constant, d_rnd);
+    scale_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_factor, wrapping_mode, constant, transformation_mode, d_rnd);
     check_cuda(cudaDeviceSynchronize(), "scale_random");
 
     // Free memory
@@ -240,7 +280,7 @@ void gpu_crop_random(Tensor *A, Tensor *B){
 }
 
 
-void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
+void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int wrapping_mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -253,7 +293,7 @@ void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode,
     float* d_rnd = gpu_get_uniforms(N_rnd);
     
     setDims(B);
-    crop_scale_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_factor, mode, constant, d_rnd);
+    crop_scale_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_factor, wrapping_mode, constant, d_rnd);
     check_cuda(cudaDeviceSynchronize(), "crop_scale_random");
 
     // Free memory
@@ -287,4 +327,30 @@ void gpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<floa
     cudaFree(d_factor_x);
     cudaFree(d_factor_y);
     cudaFree(d_rnd);
+}
+
+void gpu_scale3d(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int transformation_mode){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy vector from host to device
+    int *d_new_shape; cudaMalloc((int**)&d_new_shape, new_shape.size()*sizeof(int));
+    cudaMemcpy(d_new_shape, new_shape.data(), new_shape.size()*sizeof(int), cudaMemcpyHostToDevice);
+
+    setDims(B);
+    scale3d<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], A->shape[4], B->shape[2], B->shape[3], B->shape[4], d_new_shape, wrapping_mode, constant, transformation_mode);
+    check_cuda(cudaDeviceSynchronize(), "scale3d");
+}
+
+void gpu_scale3d_back(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int transformation_mode){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy vector from host to device
+    int *d_new_shape; cudaMalloc((int**)&d_new_shape, new_shape.size()*sizeof(int));
+    cudaMemcpy(d_new_shape, new_shape.data(), new_shape.size()*sizeof(int), cudaMemcpyHostToDevice);
+
+    setDims(B);
+    scale3d_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], A->shape[4], B->shape[2], B->shape[3], B->shape[4], d_new_shape, wrapping_mode, constant, transformation_mode);
+    check_cuda(cudaDeviceSynchronize(), "scale3d_back");
 }
