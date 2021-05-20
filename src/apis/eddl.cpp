@@ -1849,8 +1849,6 @@ namespace eddl {
 	    } else if (found_C) {
           printf("instantiating C layer\n");
 	      LConv *layer_src = (LConv *)cl;
-          //  int Itarget = ((I + CPI - 1) / CPI) * CPI;
-          //  int Otarget = ((O + CPO - 1) / CPO) * CPO;
 	      prev_layer = Conv(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
 	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->name);
           associated_layer[l_dst] = l_src;
@@ -1910,7 +1908,6 @@ namespace eddl {
 	      printf("I %d O %d -> I %d O %d\n", src_I, src_O, dst_I, dst_O);
           filter_IHW_to_GIHWCPI(ptr_src, ptr_dst, src_I, src_O, dst_I, dst_O, KH, KW, CPI, CPO);
           distributeTensor(layer_dst, "param", 0);
-          //_profile_fpga_tensor(layer_dst->cd->K);
         }
       }
       return net;
