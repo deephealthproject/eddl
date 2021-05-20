@@ -481,6 +481,7 @@ void fpga_init(){
     // Version 2: Kernels with GIHWCPI format 
     case 2: switch (kernel_subversion) {
 	      case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_1kernel.xclbin"; break;
+        case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_1kernel.xclbin"; break;
 	      default: printf("Error, unrecognized conv2d kernel subversion\n"); exit(1); break;
 	    }
 	    break;

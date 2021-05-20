@@ -1214,6 +1214,21 @@ namespace eddl {
       return new LCopyStates({parent},"getstates", DEV_CPU,0);
     }
 
+    ///////////////////////////////////////
+    //  FUSED LAYERS
+    ///////////////////////////////////////
+
+    layer ConvSTM(layer parent, int filters, const vector<int> &kernel_size,
+		const vector<int> &strides, string padding, bool use_bias,
+		int groups, const vector<int> &dilation_rate, string name){
+        return new LConvSTM(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
+
+    layer ConvMaxPool(layer parent, int filters, const vector<int> &kernel_size,
+		const vector<int> &strides, string padding, bool use_bias,
+		int groups, const vector<int> &dilation_rate, string name){
+        return new LConvMaxPool(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
 
     bool isrec(layer l)
     {

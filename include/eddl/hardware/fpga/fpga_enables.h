@@ -64,7 +64,7 @@
 //Conv
 #define K_ENABLED_CONV2D 
 #define K_VERSION_CONV2D     2
-#define K_SUBVERSION_CONV2D  0
+#define K_SUBVERSION_CONV2D  1
 
 //#define K_ENALBED_CONV2D_GRAD
 //#define K_ENABLED_CONV2D_BACK

@@ -1,12 +1,3 @@
-/*
-* FPGA support for EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), GAP research group
-* Date: June 2020
-* Author: GAP Research Group (UPV), contact: carlherlu@gap.upv.es, jflich@disca.upv.es
-* All rights reserved
-*/
-
 #ifdef cFPGA
 
 #include <cstdio>      /* printf, scanf, NULL */
@@ -19,31 +10,30 @@
 
 extern vector<cl::Event> kernel_events; // Kernel events (completion)
 
-PROFILING_ENABLE_EXTERN(fpga_Conv2D);
-
+PROFILING_ENABLE_EXTERN(fpga_Conv2D_STM);
 // -----------------------------------------------------------------
-// conv2D version 2X of kernels
+// conv + stm of kernels
 //
 //
 
-// fpga_conv2D_v2X_kernel: This function launches the kernel execution on the FPGA
-void fpga_conv2D_v2X_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels, 
+// fpga_conv_stm_kernel: This function launches the kernel execution on the FPGA
+void fpga_conv_stm_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels, 
 			    cl::Buffer K, cl::Buffer B, cl::Buffer O, int Ochannels, int CPI, int CPO, 
-			    int first_o_iter, int last_o_iter, int enable_relu, int enable_maxp, int kernel_id) {
+			    int first_o_iter, int last_o_iter, int kernel_id) {
 
-  PROFILING_HEADER(fpga_Conv2D);
+  PROFILING_HEADER(fpga_Conv2D_STM);
 
-  int KW = 3;                   // kernel width
-  int KH = 3;                   // kernel height
+  int enable_relu = 0;
+  int enable_stm = 1;
   int H = Irows;                // input channel height
   int W = Icols;                // input channel width
   int global_offset = 0;
   int enable_upper_padding = 1;
   int enable_lower_padding = 1;
   int enable_avgp = 0;
+  int enable_maxp = 0;
   int enable_clipping = 0;
   int enable_shift = 0;
-  int enable_stm = 0;
   int enable_add = 0;
   int min_clip = 0;
   int max_clip = 0;
@@ -58,8 +48,10 @@ void fpga_conv2D_v2X_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels,
 
   // set kernel arguments
   int arg = 0;
+
+  cl::Buffer d_buffer;
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I)); //TODO
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Irows));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Icols));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Irows)); 
@@ -92,20 +84,20 @@ void fpga_conv2D_v2X_kernel(cl::Buffer I, int Irows, int Icols, int Ichannels,
   set_callback(kernel_events[kernel_id], "ooo_queue");
   OCL_CHECK(err, err = kernel_events[kernel_id].wait());
   
-  PROFILING_FOOTER(fpga_Conv2D);
+  PROFILING_FOOTER(fpga_Conv2D_STM);
 }
 
 // fgpa_conv2D_v2X_launch: This function launches all the possible conv2D kernels
-void fpga_conv2D_v2X_launch(cl::Buffer I, int Irows, int Icols, int Ichannels, 
+void fpga_conv_stm_launch(cl::Buffer I, int Irows, int Icols, int Ichannels, 
 		            cl::Buffer K, cl::Buffer B, cl::Buffer O, int Ochannels, 
-			    int CPI, int CPO, int num_kernels, int max_rows, int enable_relu, int enable_maxp) {
+			    int CPI, int CPO, int num_kernels, int max_rows) {
 
   // Depending on the number of kernels available we split the convolution operation into multiple frames, and launch one thread per kernel
   if (num_kernels == 1) {
     // just one kernel which handles all the conv operation
     int first_o_iter = 0;
     int last_o_iter = ((Ochannels + (CPO-1)) / CPO) - 1;
-    fpga_conv2D_v2X_kernel(I, Irows, Icols, Ichannels, K, B, O, Ochannels, CPI, CPO, first_o_iter, last_o_iter, enable_relu, enable_maxp, 0);
+    fpga_conv_stm_kernel(I, Irows, Icols, Ichannels, K, B, O, Ochannels, CPI, CPO, first_o_iter, last_o_iter, 0);
   } else {
     // several kernels available, let's split the operation in sets of output channels
     int O_ITER = (Ochannels + (CPO-1)) / CPO;
@@ -125,17 +117,13 @@ void fpga_conv2D_v2X_launch(cl::Buffer I, int Irows, int Icols, int Ichannels,
     for (int k=0; k<num_kernels_to_launch; k++) {
       int first_o_iter = o_iter_per_kernel * k;
       int last_o_iter = first_o_iter + o_iter_per_kernel - 1;
-      fpga_conv2D_v2X_kernel(I, Irows, Icols, Ichannels, K, B, O, Ochannels, CPI, CPO, first_o_iter, last_o_iter, enable_relu, enable_maxp, k);
+      fpga_conv_stm_kernel(I, Irows, Icols, Ichannels, K, B, O, Ochannels, CPI, CPO, first_o_iter, last_o_iter,  k);
     }
   }
 }
 
-// fpga_conv2D_v2X: Implementation of conv2D kernels (version 1)
-int fpga_conv2D_v2X(ConvolDescriptor *D, int enable_relu) {
-
-  cl_int err;
-  cl::Event event;
-
+//Transform de ConvolDescriptor in OpenCL variables
+void fpga_conv_stm_transform(ConvolDescriptor *D) {
   // conv2D parameters
   int batch_size   = D->I->shape[0];                  // batch size
   cl::Buffer I     = *(cl::Buffer*)D->I->fpga_ptr;    // input activations
@@ -166,12 +154,8 @@ int fpga_conv2D_v2X(ConvolDescriptor *D, int enable_relu) {
       K     = *(cl::Buffer*)D->K->fpga_ptr; // read again the pointer since it may be changed
     }
     int enable_maxp = 0;
-    fpga_conv2D_v2X_launch(I, Irows, Icols, Ichannels, K, B, O, Ochannels, k_conv2d_cpi, k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows, enable_relu, enable_maxp);
+    fpga_conv_stm_launch(I, Irows, Icols, Ichannels, K, B, O, Ochannels, k_conv2d_cpi, k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
     _profile_fpga_tensor(D->O);
-    return 1;
   }
-
-  return 0;
 }
-
 #endif

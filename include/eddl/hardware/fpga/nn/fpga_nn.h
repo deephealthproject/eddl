@@ -93,4 +93,11 @@ void fpga_permute_channels_first(Tensor *A,Tensor *B);
 void fpga_permute_channels_last(Tensor *A,Tensor *B);
 void fpga_permute_batch_first(Tensor *A,Tensor *B);
 void fpga_permute_batch_last(Tensor *A,Tensor *B);
+
+//Fused
+void fpga_conv_stm(ConvolDescriptor *D);
+void fpga_conv_stm_transform(ConvolDescriptor *D);
+
+void fpga_conv_maxpool(ConvolDescriptor *D);
+void fpga_conv_maxpool_transform(ConvolDescriptor *D);
 #endif //EDDL_FPGA_NN_H
