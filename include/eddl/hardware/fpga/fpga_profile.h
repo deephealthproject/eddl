@@ -157,9 +157,11 @@
 #define _FPGA_FLIP                  146
 #define _FPGA_SUM_2                 147
 #define _FPGA_TRANSFORM             148
-#define _NUM_FPGA_FUNCS             150
-#define _FPGA_CONV2D_STM            151
-#define _FPGA_CONV2D_MAXPOOL        152
+#define _FPGA_CONV2D_STM            149
+#define _FPGA_CONV2D_MAXPOOL        150
+
+
+#define _NUM_FPGA_FUNCS             151
 
 
 extern int num_instances_fpga[_NUM_FPGA_FUNCS];
