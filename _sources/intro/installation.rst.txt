@@ -1,7 +1,7 @@
 .. raw:: html
 
    <style>
-   .rst-content .section>img {
+   #installation > img {
        width: 30px;
        margin-bottom: 0;
        margin-top: 0;
