@@ -35,9 +35,9 @@ layer ResBlock(layer l, int filters,int nconv,int half) {
     l=ReLu(Conv(l,filters,{3,3},{1,1}));
 
   if (half)
-    return Sum(Conv(in,filters,{1,1},{2,2}),l);
+    return Add(Conv(in,filters,{1,1},{2,2}),l);
   else
-    return Sum(l,in);
+    return Add(l,in);
 }
 
 int main(int argc, char **argv){
@@ -61,6 +61,9 @@ int main(int argc, char **argv){
   layer l=in;
 
   l=ReLu(Conv(l,64,{3,3},{1,1}));
+
+  // Add explicit padding to avoid the asymmetric padding in the Conv layers
+  l = Pad(l, {0, 1, 1, 0});
 
   l=ResBlock(l, 64,2,1);//<<<-- output half size
   l=ResBlock(l, 64,2,0);

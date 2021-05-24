@@ -85,6 +85,9 @@ int main(int argc, char **argv){
   l=ReLu(BG(Conv(l,64,{3,3},{1,1},"same",false))); //{1,1}
   //l=MaxPool(l,{3,3},{1,1},"same");
 
+  // Add explicit padding to avoid the asymmetric padding in the Conv layers
+  l = Pad(l, {0, 1, 1, 0});
+
   for(int i=0;i<3;i++)
     l=ResBlock(l, 64, 0, i==0); // not half but expand the first
 
