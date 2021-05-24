@@ -1230,6 +1230,12 @@ namespace eddl {
         return new LConvMaxPool(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
+    layer ConvReLUMaxPool(layer parent, int filters, const vector<int> &kernel_size,
+		const vector<int> &strides, string padding, bool use_bias,
+		int groups, const vector<int> &dilation_rate, string name){
+        return new LConvReLUMaxPool(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
+
     bool isrec(layer l)
     {
       if (l->isrecurrent) return true;

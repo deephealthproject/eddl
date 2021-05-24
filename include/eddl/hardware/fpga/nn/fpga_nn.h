@@ -100,4 +100,7 @@ void fpga_conv_stm_transform(ConvolDescriptor *D);
 
 void fpga_conv_maxpool(ConvolDescriptor *D);
 void fpga_conv_maxpool_transform(ConvolDescriptor *D);
+
+void fpga_conv_relu_maxpool(ConvolDescriptor *D);
+void fpga_conv_relu_maxpool_transform(ConvolDescriptor *D);
 #endif //EDDL_FPGA_NN_H

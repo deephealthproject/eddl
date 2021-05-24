@@ -112,6 +112,9 @@ namespace tensorNN{
 
    // Conv2D + Maxpooling
    void conv_maxpool(ConvolDescriptor *D);
+
+   //Conv2D + ReLU + Maxpooling
+   void conv_relu_maxpool(ConvolDescriptor *D);
 // ***** Tensor operations *****************************
     void repeat_nn(Tensor *A, Tensor *B, vector<int> size);
     void d_repeat_nn(Tensor *D, Tensor *P, vector<int> size);

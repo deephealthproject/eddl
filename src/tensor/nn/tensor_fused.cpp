@@ -86,4 +86,25 @@ void conv_maxpool(ConvolDescriptor *D) {
 
 }
 
+// Conv2D + ReLU + Maxpool
+void conv_relu_maxpool(ConvolDescriptor *D) {
+    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::conv2d_activation");
+
+    if (D->I->isCPU()) {
+        msg("NotImplementedError", "Tensor::conv2d_activation");
+    }
+#ifdef cGPU
+    else if (D->I->isGPU())
+      {
+          msg("NotImplementedError", "Tensor::conv2d_activation");
+      }
+#endif
+#ifdef cFPGA
+    else {
+        fpga_conv_relu_maxpool(D);  
+    }
+#endif
+
+}
+
 }

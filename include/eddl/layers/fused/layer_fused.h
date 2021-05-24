@@ -121,4 +121,52 @@ public:
 };
 
 
+/// LConvReLUMaxPool Layer
+class LConvReLUMaxPool : public LinLayer {
+public:
+    static int total_layers;
+
+    ConvolDescriptor *cd;
+
+
+    // constructors and clones
+    LConvReLUMaxPool(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides,
+                      string padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
+
+    LConvReLUMaxPool(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
+
+    // Destructor
+    ~LConvReLUMaxPool();
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void mem_delta() override;
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    void initialize() override;
+
+	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+
+	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+
+	void reset_accumulated_gradients() override;
+
+	void apply_accumulated_gradients() override;
+
+    string plot(int c) override;
+
+	static void reset_name_counter();
+
+	void enable_distributed() override;
+
+};
+
 #endif //EDDL_LAYER_FUSED_CONV_STM
