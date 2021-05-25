@@ -19,7 +19,7 @@ using namespace std;
 
 int LWhere::total_layers = 0;
 
-LWhere::LWhere(Layer *parent1, Layer *parent2, Layer *condition, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LWhere::LWhere(Layer *parent1, Layer *parent2, Layer *condition, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if(name.empty()) this->name = "where" + to_string(++total_layers);
 
     input = parent1->output; // Useless without a backward
@@ -50,7 +50,7 @@ void LWhere::forward() {
 }
 
 void LWhere::backward() {
-    msg("NotImplementedError", "LWhere::backward");
+    Tensor::where_back(this->condition, parent[0]->delta, parent[1]->delta, this->delta);
 }
 
 

@@ -2440,6 +2440,7 @@ public:
     *   @param C A tensor with elements from ``A`` if ``condition`` holds and from ``B`` otherwise..
     */
     static void where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
+    static void where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D);
 
     Tensor* mask_indices(Tensor *mask, Tensor *A);  // where(x > 0, x[random], y[ones])
     static void mask_indices(Tensor *mask, Tensor *A, Tensor *B);

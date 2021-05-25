@@ -73,7 +73,7 @@ Example:
 
 .. code-block:: c++
 
-   l = UpSampling3D(l, {32, 32});
+   l = UpSampling3D(l, {32, 32, 32});
 
 
 2D Convolutional Transpose

@@ -16,6 +16,7 @@
 #include <cstdio>
 
 #include "eddl/layers/layer.h"
+#include "eddl/layers/merge/layer_merge.h"
 
 using namespace std;
 
@@ -41,7 +42,7 @@ public:
 
 
 /// Where Layer
-class LWhere : public LinLayer {
+class LWhere : public MLayer {
 public:
     static int total_layers;
     Tensor* condition;
