@@ -50,7 +50,7 @@ void LWhere::forward() {
 }
 
 void LWhere::backward() {
-    msg("NotImplementedError", "LWhere::backward");
+    Tensor::where_back(this->condition, parent[0]->delta, parent[1]->delta, this->delta);
 }
 
 
