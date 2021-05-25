@@ -91,3 +91,23 @@ void Tensor::where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C){
       }
 #endif
 }
+
+void Tensor::where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D){
+    checkCompatibility(PD_A, PD_B, D, "Tensor::where_back");
+
+    if (condition->isCPU() && PD_A->isCPU() && PD_B->isCPU()) {
+        cpu_where_back(condition, PD_A, PD_B, D);
+    }
+#ifdef cGPU
+    else if (condition->isGPU() && PD_A->isGPU() && PD_B->isGPU())
+    {
+        //gpu_where_back(condition, PD_A, PD_B, D);
+    }
+#endif
+#ifdef cFPGA
+    else if (condition->isFPGA() && A->isFPGA() && B->isFPGA())
+      {
+        fpga_where_back(condition, A, B, C);
+      }
+#endif
+}

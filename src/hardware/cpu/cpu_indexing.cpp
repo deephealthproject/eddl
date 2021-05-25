@@ -48,3 +48,14 @@ void cpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C){
         }
     }
 }
+
+void cpu_where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D){
+#pragma omp parallel for
+    for (int i = 0; i < PD_A->size; ++i){
+        if((bool) condition->ptr[i]){
+            PD_A->ptr[i] += D->ptr[i];
+        }else{
+            PD_B->ptr[i] += D->ptr[i];
+        }
+    }
+}

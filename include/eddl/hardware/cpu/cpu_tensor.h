@@ -199,6 +199,7 @@ float cpu_norm_(float *ptr, int size, int *map, string ord);
 // CPU: Logic functions: Truth value testing
 std::pair<unsigned int*, int> cpu_nonzero(Tensor *A);
 void cpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
+void cpu_where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D);
 
 // CPU: Logic functions: Truth value testing
 bool cpu_all(Tensor *A);
