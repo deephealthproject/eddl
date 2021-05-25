@@ -324,12 +324,12 @@
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: Vector of 2 integers, specifying the height and width of the 2D convolution window </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Vector of 2 integers, specifying the strides of the convolution along the height and width </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: Vector of 3 integers, specifying the depth, height and width of the 3D convolution window </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Vector of 3 integers, specifying the strides of the convolution along the depth, height and width </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “none”, “valid” or “same” </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code>: Number of blocked connections from input channels to output channels </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: Vector of 2 integers, specifying the dilation rate to use for dilated convolution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: Vector of 3 integers, specifying the dilation rate to use for dilated convolution </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
 </dd>
@@ -420,7 +420,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">UpSampling3D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">UpSampling3D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">});</span>
 </pre></div>
 </div>
 </section>
@@ -438,7 +438,6 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: The dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: The height and width of the 2D convolution window </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">output_padding</span></code>: The amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “valid” or “same” </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: The dilation rate to use for dilated convolution. Spacing between kernel elements </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: The strides of the convolution along the height and width </p></li>
@@ -458,7 +457,7 @@
 <h2>3D Convolutional Transpose<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string">
-<span id="_CPPv3N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="eddl::ConvT3D__layer.i.vector:i:CR.vector:i:CR.string.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1a6e4dd5250c66275c308b1ad32afeb044"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ConvT3D</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, string <em>padding</em> = &quot;same&quot;, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="eddl::ConvT3D__layer.i.vector:i:CR.vector:i:CR.string.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1a3ae874fdafa2ee7f0263ae03f21ae96f"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ConvT3D</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1, 1}, string <em>padding</em> = &quot;same&quot;, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7ConvT3DE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>3D Transposed convolution layer (sometimes called Deconvolution). </p>
 <p>The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.</p>
 <p><dl class="simple">
@@ -467,11 +466,10 @@
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: The dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: The height and width of the 2D convolution window </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">output_padding</span></code>: The amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: The depth, height and width of the 3D convolution window </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “valid” or “same” </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: The dilation rate to use for dilated convolution. Spacing between kernel elements </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: The strides of the convolution along the height and width </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: The strides of the convolution along the depth, height and width </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
 </ul>
