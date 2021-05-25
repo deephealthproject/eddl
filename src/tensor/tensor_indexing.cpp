@@ -101,7 +101,7 @@ void Tensor::where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D
 #ifdef cGPU
     else if (condition->isGPU() && PD_A->isGPU() && PD_B->isGPU())
     {
-        //gpu_where_back(condition, PD_A, PD_B, D);
+        gpu_where_back(condition, PD_A, PD_B, D);
     }
 #endif
 #ifdef cFPGA

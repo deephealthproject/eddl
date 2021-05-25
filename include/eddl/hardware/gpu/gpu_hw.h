@@ -191,6 +191,7 @@ void gpu_norm(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, string ord);
 
 // Generating index arrays *****************************
 void gpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
+void gpu_where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D);
 
 // GPU: Logic functions: Truth value testing
 bool gpu_all(Tensor *A);

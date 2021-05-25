@@ -25,3 +25,15 @@ __global__ void gpu_where(float *condition, float *A, float *B, float *C, long i
         }
     }
 }
+
+__global__ void gpu_where_back(float *condition, float *PD_A, float *PD_B, float *D, long int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        if((bool) condition[thread_id_x]){
+            PD_A[thread_id_x] += D[thread_id_x];
+        }else{
+            PD_B[thread_id_x] += D[thread_id_x];
+        }
+    }
+}

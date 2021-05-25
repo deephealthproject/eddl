@@ -20,7 +20,7 @@
 #include "eddl/descriptors/descriptors.h"
 
 
-// CPU: Logic functions: Comparisons
+// GPU: Logic functions: Comparisons
 void gpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C){
     int device=A->gpu_device;
     cudaSetDevice(device);
@@ -29,4 +29,16 @@ void gpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C){
 
     gpu_where<<<dimGrid,dimBlock>>>(condition->ptr, A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "gpu_where");
+}
+
+
+// GPU: Logic functions: Comparisons
+void gpu_where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D){
+    int device=PD_A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(PD_A);
+
+    gpu_where_back<<<dimGrid,dimBlock>>>(condition->ptr, PD_A->ptr, PD_B->ptr, D->ptr, PD_A->size);
+    check_cuda(cudaDeviceSynchronize(), "gpu_where_back");
 }
