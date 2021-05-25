@@ -24,9 +24,9 @@ int LNorm::total_layers = 0;
 
 LNorm::LNorm(Layer *parent, float epsilon, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
-    vector<int> axis;
-    if (parent->output->ndim == 2) axis.push_back(1);
-    else if (parent->output->ndim == 4) {axis.push_back(1);axis.push_back(2);axis.push_back(3);}
+    vector<int> axis; // To store the axis to reduce (starting from the next dimension of the batch)
+    if (parent->output->ndim == 2) axis.push_back(0);
+    else if (parent->output->ndim == 4) {axis.push_back(0);axis.push_back(1);axis.push_back(2);}
     else msg("LNorm only works over 2D or 4D tensors", "LNorm");
 
     if(name.empty()) this->name = "norm" + to_string(++total_layers);
