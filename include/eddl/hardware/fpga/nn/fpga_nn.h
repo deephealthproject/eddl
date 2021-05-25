@@ -95,12 +95,13 @@ void fpga_permute_batch_first(Tensor *A,Tensor *B);
 void fpga_permute_batch_last(Tensor *A,Tensor *B);
 
 //Fused
+void fpga_conv_transform(ConvolDescriptor *D, int enable_relu, int enable_stm, int global_offset, 
+                     int enable_upper_padding, int enable_lower_padding, int enable_maxp, 
+                     int enable_avgp, int enable_clipping, int enable_shift, int enable_add, 
+                     int min_clip, int max_clip, int dir_shift, int pos_shift);
 void fpga_conv_stm(ConvolDescriptor *D);
-void fpga_conv_stm_transform(ConvolDescriptor *D);
 
 void fpga_conv_maxpool(ConvolDescriptor *D);
-void fpga_conv_maxpool_transform(ConvolDescriptor *D);
 
 void fpga_conv_relu_maxpool(ConvolDescriptor *D);
-void fpga_conv_relu_maxpool_transform(ConvolDescriptor *D);
 #endif //EDDL_FPGA_NN_H

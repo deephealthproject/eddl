@@ -1769,6 +1769,7 @@ namespace eddl {
       Layer *cl;         // current layer pointer
       Layer *nl;         // current+1 layer pointer
       Layer *nnl;        // current+2 layer pointer
+      Layer *nnnl;        // current+3 layer pointer
       layer first;       // first layer
       layer last;        // last layer
       layer prev_layer;  // for network building process (previous layer)
@@ -1783,11 +1784,15 @@ namespace eddl {
       int found_Reshape; // current layer is reshape
       int found_nM;    // current+1 layer is a maxpooling layer
       int found_nR;    // current+1 layer is a ReLU layer
-      int found_nnR;   // current+2 layer is a ReLU layer
+      int found_nSp;   // current+1 layer is a Sofplus layer
+      int found_nnM;   // current+2 layer is a maxpooling layer
+      int found_nnT;   // current+2 layer is a Tanh layer
+      int found_nnnM;  // current+3 layer is a Mult layer
       //
+      //int found_CR;    // Layers Convolution+Relu detected
       int found_CM;    // Layers Convolution+Maxpooling detected
-      int found_CMR;   // Layers Convolution+Maxpooling+ReLU detected
-
+      int found_CRM;   // Layers Convolution+ReLU+Maxpooling detected
+      int found_CSTM;  // Layers Convolution+Softplus+Tanh+Mult detected
       // associated layers
       int associated_layer[100];
 
@@ -1823,25 +1828,37 @@ namespace eddl {
 	    // current+1 layer
 	    found_nM = 0;
 	    found_nR = 0;
+        found_nSp = 0;
 	    if (l_src<num_layers-1) {
 	      nl = m_src->layers[l_src+1];
 	      if (LPool *dl = dynamic_cast<LPool *>(nl)) found_nM = 1;
 	      if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_nR = 1;
+          if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "softplus") found_nSp = 1; //TODO: check softplus name
   	    }
 
 	    // current+2 layer
-	    found_nnR = 0;
+	    found_nnM = 0;
+        found_nnT = 0;
 	    if (l_src<num_layers-2) {
 	      nnl = m_src->layers[l_src+2];
-	      if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "relu") found_nnR = 1; 
+	      if (LPool *dl = dynamic_cast<LPool *>(nnl)) found_nnM = 1; 
+          if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "tanh") found_nnT = 1; //TODO: check tanh name
+	    }
+
+        // current+3 layer
+	    found_nnnM = 0;
+	    if (l_src<num_layers-3) {
+	      nnnl = m_src->layers[l_src+3];
+          //TODO: mult layer no available yet
 	    }
 
 	    // Combination of layers detected (for the moment they are disabled)
 	    found_CM = found_C && found_nM;
-	    found_CMR = found_C && found_nM && found_nnR;
+	    found_CRM = found_C && found_nR && found_nnM;
+        found_CSTM = found_C && found_nSp && found_nnT && found_nnnM;
 
         // data layer transform
-        if (found_CMR || found_CM || found_C || found_M) {
+        if (found_CSTM || found_CRM || found_CM || found_C || found_M) {
           if (!ghwc_enabled) {
             // we add transform layer
             prev_layer = Transform(prev_layer, 1);
@@ -1859,13 +1876,23 @@ namespace eddl {
         }
 
         // build up stage, we create a merged layer out of our findings
-    	if (found_CMR) {
-          printf("instantiating CMR layer\n");
-          // new layer to be called (Laura)
+    	if (found_CRM) {
+          printf("instantiating CRM layer\n");
+          LConvReLUMaxPool *layer_src = (LConvReLUMaxPool *)cl;
+	      prev_layer = ConvReLUMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
+	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->name);
           associated_layer[l_dst] = l_src;
 	    } else if (found_CM) {
           printf("instantiating CM layer\n");
-          // new layer to be called (Laura)
+          LConvMaxPool *layer_src = (LConvMaxPool *)cl;
+	      prev_layer = ConvMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
+	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->name);
+          associated_layer[l_dst] = l_src;
+        } else if (found_CSTM) {
+          printf("instantiating CSTM layer\n");
+	      LConvSTM *layer_src = (LConvSTM *)cl;
+	      prev_layer = ConvSTM(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
+	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->name);
           associated_layer[l_dst] = l_src;
 	    } else if (found_C) {
           printf("instantiating C layer\n");
@@ -1902,7 +1929,7 @@ namespace eddl {
         if (l_src == 0) first = prev_layer;
         last = prev_layer;
         l_dst++;
-        if (found_CMR) l_src += 3; else if (found_CM) l_src += 2; else l_src++;
+        if (found_CSTM) l_src += 4; else if (found_CRM) l_src += 3; else if (found_CM) l_src += 2; else l_src++;
       }
 
       // now we create the model
