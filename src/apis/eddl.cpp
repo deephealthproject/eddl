@@ -1157,7 +1157,7 @@ namespace eddl {
     int h=parent->output->shape[2];
 
     if (name.empty()) { name = "GlobalMaxPool1D"; }  // Set default name
-    return MaxPool1D(parent, {h},{1}, name);
+    return MaxPool1D(parent, {h}, {1}, "none", name);
   }
 
   layer GlobalMaxPool2D(layer parent, string name){
