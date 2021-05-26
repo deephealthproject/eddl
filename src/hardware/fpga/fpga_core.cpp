@@ -316,6 +316,7 @@ void _profile_fpga_funcname(int i, char *name) {
       case _FPGA_PERMUTE_BATCH_FIRST    : strcpy(name, "permute_batch_first"); break;
       case _FPGA_IM2COL                 : strcpy(name, "im2col"); break;
       case _FPGA_CONV2D                 : strcpy(name, "conv2d"); break;
+      case _FPGA_CONV2D_RELU             : strcpy(name, "conv2d_relu"); break;
       case _FPGA_CONV2D_STM             : strcpy(name, "conv2d_stm"); break;
       case _FPGA_CONV2D_MAXPOOL         : strcpy(name, "conv2d_maxpool"); break;
       case _FPGA_CONV2D_RELU_MAXPOOL    : strcpy(name, "conv2d_relu_maxpool"); break;

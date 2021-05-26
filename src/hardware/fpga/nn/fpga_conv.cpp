@@ -19,7 +19,7 @@
 #include "eddl/profiling.h"
 
 PROFILING_ENABLE_EXTERN(fpga_reshape_kernel_data_convol);
-
+PROFILING_ENABLE_EXTERN(fpga_Conv2D);
 // -----------------------------------------------------------------
 // fpga_reshape_kernel_data_convol
 //
@@ -37,8 +37,8 @@ void fpga_reshape_kernel_data_convol(ConvolDescriptor *D, int KW, int KH, int I,
   // if O < CPO then we need to adapt to size O
   int Itarget = ((I + CPI - 1) / CPI) * CPI;
   int Otarget = ((O + CPO - 1) / CPO) * CPO;
-//  int Itarget = I < CPI ? CPI : I;
-//  int Otarget = O < CPO ? CPO : O;
+  //  int Itarget = I < CPI ? CPI : I;
+  //  int Otarget = O < CPO ? CPO : O;
 
   int GI = Itarget / CPI;
   int GO = Otarget / CPO;
@@ -143,14 +143,26 @@ void fpga_conv2D(ConvolDescriptor *D) {
 
   int ret = 0;
 
-  #ifdef K_ENABLED_CONV2D
-  // depending on the conv parameters we select the kernel to launch
-  switch (K_VERSION_CONV2D) {
-    case 1 : ret = fpga_conv2D_v1X(D, 0); return; break;
-    case 2 : ret = fpga_conv2D_v2X(D, 0); return; break;
-    default: printf("Error, unsupported conv2D kernel version\n"); exit(1); break;
-  }
-  #endif
+  int enable_relu = 0;
+  int enable_stm = 0;
+  int global_offset = 0;
+  int enable_upper_padding = 1;
+  int enable_lower_padding = 1;
+  int enable_avgp = 0;
+  int enable_maxp = 0;
+  int enable_clipping = 0;
+  int enable_shift = 0;
+  int enable_add = 0;
+  int min_clip = 0;
+  int max_clip = 0;
+  int dir_shift = 0;
+  int pos_shift = 0;
+
+  PROFILING_HEADER(fpga_Conv2D);
+  ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, global_offset, 
+      enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
+      enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
+  PROFILING_FOOTER(fpga_Conv2D);
 
   if (ret == 0) {
     // we do not have any suitable Conv implementation on FPGA, then revert to CPU
@@ -160,39 +172,6 @@ void fpga_conv2D(ConvolDescriptor *D) {
   // profiling
   _profile_fpga_tensor(D->O);
   _profile_fpga_tensor_print(D->O);
-}
-
-// --------------------------------------------------------------------------------------------
-//
-// fpga_conv2DReLU
-//
-// Conv2D + ReLUA
-//
-void fpga_conv2DReLU(ConvolDescriptor *D)
-{
-  _debug_fpga_funcs("conv2DReLU");
-
-  _profile_fpga(_FPGA_CONV2D, 0);
-  _profile_fpga_tensor(D->I);
-  _profile_fpga_tensor(D->K);
-  _profile_fpga_tensor(D->bias);
-
-  int ret = 0;
-
-  #ifdef K_ENABLED_CONV2D
-  // depending on the conv parameters we select the kernel to launch
-  switch (K_VERSION_CONV2D) {
-    case 1 : ret = fpga_conv2D_v1X(D, 1); return; break;
-    case 2 : ret = fpga_conv2D_v2X(D, 1); return; break;
-    default: printf("Error, unsupported conv2D kernel version\n"); exit(1); break;
-  }
-  #endif
-
-  if (ret == 0) {
-    printf("error, Conv2DReLU cannot be run on FPGA\n");
-    exit(1);
-  }
-
 }
 
 // -----------------------------------------------------------------

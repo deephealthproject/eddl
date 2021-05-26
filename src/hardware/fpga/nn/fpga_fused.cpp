@@ -13,12 +13,13 @@
 #include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
 
-#include "eddl/hardware/fpga/fpga_hw.h"   // for buffer copies
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
+#include "eddl/hardware/fpga/fpga_hw.h"   // for buffer copies
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"  // for cpu emulation purposes
 #include "eddl/profiling.h"
 
 PROFILING_ENABLE_EXTERN(fpga_Conv2D_MAXPOOL);
+PROFILING_ENABLE_EXTERN(fpga_Conv2D_RELU);
 PROFILING_ENABLE_EXTERN(fpga_Conv2D_STM);
 PROFILING_ENABLE_EXTERN(fpga_Conv2D_RELU_MAXPOOL);
 
@@ -33,6 +34,8 @@ void fpga_conv_maxpool(ConvolDescriptor *D)
   _profile_fpga_tensor(D->I);
   _profile_fpga_tensor(D->K);
   _profile_fpga_tensor(D->bias);
+
+  int ret = 0;
 
   int enable_relu = 0;
   int enable_stm = 0;
@@ -50,14 +53,64 @@ void fpga_conv_maxpool(ConvolDescriptor *D)
   int pos_shift = 0;
 
   PROFILING_HEADER(fpga_Conv2D_MAXPOOL);
-  fpga_conv_transform(D, enable_relu, enable_stm, global_offset, 
+  ret = fpga_k_conv(D, NULL, enable_relu, enable_stm, global_offset, 
       enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
       enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
   PROFILING_FOOTER(fpga_Conv2D_MAXPOOL);
 
+    if (ret == 0) {
+    printf("error, Conv2DMaxpool cannot be run on FPGA\n");
+    exit(1);
+  }
+
   // profiling
   _profile_fpga_tensor(D->O);
   _profile_fpga_tensor_print(D->O);
+}
+
+// --------------------------------------------------------------------------------------------
+// Conv2D + ReLU
+//
+void fpga_conv2DReLU(ConvolDescriptor *D)
+{
+  _debug_fpga_funcs("conv2DReLU");
+  _profile_fpga(_FPGA_CONV2D_RELU, 0);
+  _profile_fpga_tensor(D->I);
+  _profile_fpga_tensor(D->K);
+  _profile_fpga_tensor(D->bias);
+
+  int ret = 0;
+
+  int enable_relu = 1;
+  int enable_stm = 0;
+  int global_offset = 0;
+  int enable_upper_padding = 1;
+  int enable_lower_padding = 1;
+  int enable_avgp = 0;
+  int enable_maxp = 0;
+  int enable_clipping = 0;
+  int enable_shift = 0;
+  int enable_add = 0;
+  int min_clip = 0;
+  int max_clip = 0;
+  int dir_shift = 0;
+  int pos_shift = 0;
+
+  PROFILING_HEADER(fpga_Conv2D_RELU);
+  ret = fpga_k_conv(D, NULL, enable_relu, enable_stm, global_offset, 
+      enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
+      enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
+  PROFILING_FOOTER(fpga_Conv2D_RELU);
+
+  if (ret == 0) {
+    printf("error, Conv2DReLU cannot be run on FPGA\n");
+    exit(1);
+  }
+
+  // profiling
+  _profile_fpga_tensor(D->O);
+  _profile_fpga_tensor_print(D->O);
+
 }
 
 // -----------------------------------------------------------------
@@ -71,6 +124,8 @@ void fpga_conv_relu_maxpool(ConvolDescriptor *D)
   _profile_fpga_tensor(D->I);
   _profile_fpga_tensor(D->K);
   _profile_fpga_tensor(D->bias);
+
+  int ret = 0;
 
   int enable_relu = 1;
   int enable_stm = 0;
@@ -88,10 +143,15 @@ void fpga_conv_relu_maxpool(ConvolDescriptor *D)
   int pos_shift = 0;
 
   PROFILING_HEADER(fpga_Conv2D_RELU_MAXPOOL);
-  fpga_conv_transform(D, enable_relu, enable_stm, global_offset, 
+  ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, global_offset, 
       enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
       enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
   PROFILING_FOOTER(fpga_Conv2D_RELU_MAXPOOL);
+
+  if (ret == 0) {
+    printf("error, Conv2DReLUMaxpool cannot be run on FPGA\n");
+    exit(1);
+  }
 
   // profiling
   _profile_fpga_tensor(D->O);
@@ -111,6 +171,8 @@ void fpga_conv_stm(ConvolDescriptor *D)
   _profile_fpga_tensor(D->K);
   _profile_fpga_tensor(D->bias);
 
+  int ret = 0;
+
   int enable_relu = 0;
   int enable_stm = 1;
   int global_offset = 0;
@@ -127,10 +189,15 @@ void fpga_conv_stm(ConvolDescriptor *D)
   int pos_shift = 0;
 
   PROFILING_HEADER(fpga_Conv2D_STM);
-  fpga_conv_transform(D, enable_relu, enable_stm, global_offset, 
+  ret = fpga_k_conv(D, NULL, enable_relu, enable_stm, global_offset, 
       enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
       enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
   PROFILING_FOOTER(fpga_Conv2D_STM);
+
+  if (ret == 0) {
+    printf("error, Conv2DSTM cannot be run on FPGA\n");
+    exit(1);
+  }
 
   // profiling
   _profile_fpga_tensor(D->O);

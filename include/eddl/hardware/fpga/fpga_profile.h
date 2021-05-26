@@ -160,8 +160,9 @@
 #define _FPGA_CONV2D_STM            149
 #define _FPGA_CONV2D_MAXPOOL        150
 #define _FPGA_CONV2D_RELU_MAXPOOL   151
+#define _FPGA_CONV2D_RELU           152
 
-#define _NUM_FPGA_FUNCS             152
+#define _NUM_FPGA_FUNCS             153
 
 extern int num_instances_fpga[_NUM_FPGA_FUNCS];
 void _profile_fpga(int f_id, int end);

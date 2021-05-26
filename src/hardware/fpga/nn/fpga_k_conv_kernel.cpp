@@ -14,7 +14,7 @@ extern vector<cl::Event> kernel_events; // Kernel events (completion)
 // conv kernels
 //
 //
-
+    
 // fpga_conv_kernel: This function launches the kernel execution on the FPGA
 void fpga_conv_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, int Ichannels, int Ochannels,
                      int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, cl::Buffer K, cl::Buffer B,
@@ -107,7 +107,7 @@ void fpga_conv_launch(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
 }
 
 //Transform de ConvolDescriptor in OpenCL variables
-void fpga_conv_transform(ConvolDescriptor *D, int enable_relu, int enable_stm, int global_offset, 
+int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_stm, int global_offset, 
                      int enable_upper_padding, int enable_lower_padding, int enable_maxp, 
                      int enable_avgp, int enable_clipping, int enable_shift, int enable_add, 
                      int min_clip, int max_clip, int dir_shift, int pos_shift) {
@@ -133,13 +133,6 @@ void fpga_conv_transform(ConvolDescriptor *D, int enable_relu, int enable_stm, i
 
   // This family of kernels need strides of 1x1, kernels of 1x1, padding of 1x1, and batch size 1
   if ((stride_rows == 1) && (stride_cols == 1) && (Krows == 3) && (Kcols == 3) && (batch_size == 1) && (padding_rows == 1) && (padding_cols == 1)) {
-    // This kernel needs the data kernel in the format GO x GI x CPO x CPI x KH x KW
-    // If not converted yet then we do it now
-    if (!D->fpga_kernel_in_fpga_format) {
-      fpga_reshape_kernel_data_convol(D, 3, 3, Ichannels, Ochannels, k_conv2d_cpi, k_conv2d_cpo);
-      D->fpga_kernel_in_fpga_format = 1;
-      K     = *(cl::Buffer*)D->K->fpga_ptr; // read again the pointer since it may be changed
-    }
 
     // Creating dummy buffer for add buffer
     cl::Buffer *I_add = fpga_create_memory(sizeof(float));
@@ -150,6 +143,9 @@ void fpga_conv_transform(ConvolDescriptor *D, int enable_relu, int enable_stm, i
         k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
 
     _profile_fpga_tensor(D->O);
+    return 1;
   }
+
+  return 0;
 }
 #endif
