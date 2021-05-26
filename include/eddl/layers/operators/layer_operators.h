@@ -228,8 +228,8 @@ public:
 class LPow : public OperatorLayer {
 public:
     static int total_layers;
+    float exponent;
 
-    LPow(Layer *l1, Layer *l2, string name, int dev, int mem);
     LPow(Layer *l, float k, string name, int dev, int mem);
 
     void forward() override;

@@ -36,8 +36,18 @@ TEST(Convol2DTestSuite, output_size)
         for(auto& is : input_sizes){
             for(auto& s : strides){
                 for(auto& k : kernels){
-                    int o = ConvolDescriptor::compute_output(p, is, k, s);
-                    ASSERT_EQ(o, output_sizes[i++]);
+                    // Check output size
+                    int os = ConvolDescriptor::compute_output(p, is, k, s);
+                    ASSERT_EQ(os, output_sizes[i++]);
+
+//                    // Check output2intput
+//                    int is2 = ConvolDescriptor::compute_input(p, os, k, s);
+////                    ASSERT_EQ(is2, is);
+//                    if (is2!=is){
+//                        int asdasd =3;
+//                        int is3 = ConvolDescriptor::compute_input(p, os, k, s);
+//                        cout<< "nope"<<endl;
+//                    }
                 }
             }
         }

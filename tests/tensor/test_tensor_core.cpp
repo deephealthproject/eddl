@@ -19,14 +19,14 @@ TEST(TensorTestSuite, tensor_math_sort) {
                             {4}, DEV_CPU);
 
     Tensor *new_t = t1->sort(false, true);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({1.2097, 0.5962, -0.1372, -0.5792,},
                                 {4}, DEV_CPU);
 
     new_t = t1->sort(true, true);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -40,14 +40,14 @@ TEST(TensorTestSuite, tensor_math_sort) {
     Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
     t1_cpu->sort_(false, true);
     t1_gpu->sort_(false, true); t1_gpu->toCPU();
-    ASSERT_TRUE(Tensor::equivalent(t1_cpu, t1_gpu, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_cpu, t1_gpu, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor* t2_cpu = Tensor::randu({10000});
     Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
     t2_cpu->sort_(true, false);
     t2_gpu->sort_(true, false); t2_gpu->toCPU();
-    ASSERT_TRUE(Tensor::equivalent(t2_cpu, t2_gpu, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_cpu, t2_gpu, 1e-3f, 0.0f, true, true));
 
     delete t1_cpu;
     delete t1_gpu;
@@ -67,13 +67,13 @@ TEST(TensorTestSuite, tensor_math_argsort) {
                             {4}, DEV_CPU);
 
     Tensor *new_t = t1->argsort(false, true);
-    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor *t2_ref = new Tensor({0, 3, 1, 2}, {4}, DEV_CPU);
 
     new_t = t1->argsort(true, false);
-    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t, 1e-3f, 0.0f, true, true));
 
     delete t1_ref;
     delete t1;
@@ -88,14 +88,14 @@ TEST(TensorTestSuite, tensor_math_argsort) {
     Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
     t1_cpu = t1_cpu->argsort(false, true);
     t1_gpu = t1_gpu->argsort(false, true); t1_gpu->toCPU();
-    ASSERT_TRUE(Tensor::equivalent(t1_cpu, t1_gpu, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t1_cpu, t1_gpu, 1e-3f, 0.0f, true, true));
 
     // Test #2
     Tensor* t2_cpu = Tensor::randn({10000});
     Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
     t2_cpu = t2_cpu->argsort(true, true);
     t2_gpu = t2_gpu->argsort(true, true); t2_gpu->toCPU();
-    ASSERT_TRUE(Tensor::equivalent(t2_cpu, t2_gpu, 10e-4));
+    ASSERT_TRUE(Tensor::equivalent(t2_cpu, t2_gpu, 1e-3f, 0.0f, true, true));
 
     delete t1_cpu;
     delete t1_gpu;
@@ -131,4 +131,30 @@ TEST(TensorTestSuite, tensor_unsqueeze) {
 
     Tensor* t1_dim0 = t1->unsqueeze(2);
     ASSERT_TRUE(t1_dim0->shape == vector<int>({2, 3, 1, 4}));
+}
+
+TEST(TensorTestSuite, tensor_expand) {
+    // Original
+    Tensor* t1 = new Tensor( {1, 2, 3}, {3, 1});
+
+    Tensor *t1_ref = new Tensor({
+        1.00, 1.00, 1.00,
+        2.00, 2.00, 2.00,
+        3.00, 3.00, 3.00}, {3, 3}, DEV_CPU);
+
+    Tensor* new_t = t1->expand(3);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 1e-3f, 0.0f, true, true));
+
+    // Test GPU
+#ifdef cGPU
+    // Test #1
+    Tensor* t1_cpu = Tensor::randn({10, 1, 10, 15, 1, 10, 1});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    t1_cpu = t1_cpu->expand(3);
+    t1_gpu = t1_gpu->expand(3); t1_gpu->toCPU();
+    ASSERT_TRUE(Tensor::equivalent(t1_cpu, t1_gpu, 1e-3f, 0.0f, true, true));
+
+    delete t1_cpu;
+    delete t1_gpu;
+#endif
 }

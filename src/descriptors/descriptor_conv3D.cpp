@@ -25,11 +25,12 @@
 
 ConvolDescriptor3D::ConvolDescriptor3D() {}
 
-ConvolDescriptor3D::ConvolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem) {
+ConvolDescriptor3D::ConvolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, bool ub, int mem) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());
     mem_level=mem;
+    use_bias = ub;
 
     this->padding = "custom";
 
@@ -37,7 +38,7 @@ ConvolDescriptor3D::ConvolDescriptor3D(const vector<int> &ks, const vector<int> 
     if (stride.size() != 3) msg("Strides must have 3 dimensions", "ConvolDescriptor3D::ConvolDescriptor3D");
 }
 
-ConvolDescriptor3D::ConvolDescriptor3D(int filters, const vector<int> &ks, const vector<int> &st, const string& p, bool ub, int mem) {
+ConvolDescriptor3D::ConvolDescriptor3D(int filters, const vector<int> &ks, const vector<int> &st, const string& p, const vector<int> &pads, bool ub, int mem) {
     if (ks.size() != 3) { msg("Kernels must have 4 dimensions", "ConvolDescriptor3D::ConvolDescriptor3D"); }
     if (st.size() != 3) { msg("Strides must have 3 dimensions", "ConvolDescriptor3D::ConvolDescriptor3D"); }
 
@@ -45,10 +46,11 @@ ConvolDescriptor3D::ConvolDescriptor3D(int filters, const vector<int> &ks, const
     ksize = vector<int>(ks);
     ksize.insert(ksize.begin(), 1, filters);
     stride = vector<int>(st.begin(), st.end());
+    pad = vector<int>(pads);
     use_bias=ub;
     mem_level=mem;
 
-    if (p=="same" || p =="none" || p =="valid" || p =="zeros" || p=="same,none" || p=="none,same") {
+    if (p=="same" || p =="none" || p =="valid" || p =="zeros" || p =="custom" || p=="same,none" || p=="none,same") {
         this->padding=p;
     }else{
         cout<<p<<endl;
@@ -150,9 +152,10 @@ void ConvolDescriptor3D::build(Tensor *A) {
 #ifdef cCUDNN
        if(!A->isCPU()){
            if(pad[0] != pad[1] || pad[2] != pad[3] || pad[4] != pad[5]){
-             std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
+              msg("Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later", "conv3d");
+             //std::cout<<"Warning: asymmetric padding not supported by cuDNN... fixing ... potential shapes mismatch later"<<std::endl;
            }
-           if (pad[0] != pad[1]){pad[0] = pad[1];}
+           if (pad[0] != pad[1]){ pad[0] = pad[1];}
            if (pad[2] != pad[3]){ pad[2] = pad[3];}
            if (pad[4] != pad[5]){ pad[4] = pad[5];}
 
@@ -161,8 +164,8 @@ void ConvolDescriptor3D::build(Tensor *A) {
 
 
     paddf = pad[0]; paddb = pad[1];  // depth: front-top
-    padrt = pad[1]; padrb = pad[2];  // rows: top-bottom
-    padcl = pad[3]; padcr = pad[4];  // cols: left-right
+    padrt = pad[2]; padrb = pad[3];  // rows: top-bottom
+    padcl = pad[4]; padcr = pad[5];  // cols: left-right
 
     if ((d <= 0) || (r <= 0) || (c <= 0)) {
         if(d <= 0) { std::cerr << "'Depth' are reach 0 or less (" << d << ")" << std::endl; }
@@ -220,7 +223,7 @@ void ConvolDescriptor3D::build(Tensor *A) {
     }
 #ifdef cCUDNN
     //CUDNN
-    convolution_mode = CUDNN_CONVOLUTION; //CUDNN_CROSS_CORRELATION
+    convolution_mode = CUDNN_CROSS_CORRELATION; //CUDNN_CONVOLUTION;
     data_type = CUDNN_DATA_FLOAT;
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
 

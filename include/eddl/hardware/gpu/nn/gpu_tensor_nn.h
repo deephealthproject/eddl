@@ -80,7 +80,7 @@ void gpu_d_binary_cross_entropy(Tensor* y_true, Tensor* y_pred, Tensor* delta);
 void gpu_accuracy(Tensor *A,Tensor *B,int *acc);
 void gpu_bin_accuracy(Tensor *A,Tensor *B,int *acc);
 
-// Conv3D
+// Conv2D
 void gpu_conv2D(ConvolDescriptor *D);
 void gpu_conv2D_grad(ConvolDescriptor *D);
 void gpu_conv2D_back(ConvolDescriptor *D);
@@ -89,6 +89,16 @@ void gpu_conv2D_back(ConvolDescriptor *D);
 void gpu_conv3D(ConvolDescriptor3D *D);
 void gpu_conv3D_grad(ConvolDescriptor3D *D);
 void gpu_conv3D_back(ConvolDescriptor3D *D);
+
+// ConvT3D
+void gpu_convT2D(ConvolDescriptorT2D *D);
+void gpu_convT2D_grad(ConvolDescriptorT2D *D);
+void gpu_convT2D_back(ConvolDescriptorT2D *D);
+
+// ConvT3D
+void gpu_convT3D(ConvolDescriptorT3D *D);
+void gpu_convT3D_grad(ConvolDescriptorT3D *D);
+void gpu_convT3D_back(ConvolDescriptorT3D *D);
 
 // MaxPool2D
 void gpu_mpool2D(PoolDescriptor *D);
@@ -101,6 +111,9 @@ void gpu_mpool3D_back(PoolDescriptor3D *D);
 // AvgPool
 void gpu_avgpool2D(PoolDescriptor *D);
 void gpu_avgpool2D_back(PoolDescriptor *D);
+// AvgPool3D
+void gpu_avgpool3D(PoolDescriptor3D *D);
+void gpu_avgpool3D_back(PoolDescriptor3D *D);
 
 // Tensor
 void gpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
@@ -108,8 +121,12 @@ void gpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
 
 void gpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 void gpu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+
+void gpu_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+void gpu_expand_back_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd);
 
 // BN
 void gpu_permute_channels_first(Tensor *A,Tensor *B);

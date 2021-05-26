@@ -67,6 +67,8 @@ Net::Net() {
     isdecoder=false;
     isencoder=false;
     isrecurrent=false;
+    isresized=false;
+    decoder_teacher_training=true;
     decsize=1;
     do_compserv_delete = true;
     do_optimizer_delete = true;
@@ -88,7 +90,7 @@ Net::Net(vlayer in, vlayer out):Net() {
     for (int i = 0; i < lout.size(); i++) {
         walk_back(lout[i]);
     }
-    
+
     for(auto l:layersf) layers.push_back(l);
     for(auto l:layersb) if (!inNet(l)) layers.push_back(l);
 
@@ -243,7 +245,7 @@ void Net::walk(Layer *l,vlayer lout) {
 
 /////////////////////////////////////////
 void Net::walk_back(Layer *l) {
-    
+
     if (!inNetB(l)) {
         layersb.push_back(l);
         l->net=this;
@@ -263,7 +265,7 @@ string Net::summary() {
     ss << "-------------------------------------------------------------------------------" << endl;
 
     int maxl=0;
-    for (auto & l : vfts) 
+    for (auto & l : vfts)
       if (l->name.length() > maxl) maxl=l->name.length();
 
     int tot_size=0;

@@ -91,17 +91,17 @@ void fpga_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, i
 // -----------------------------------------------------------------
 // scale
 //
-void fpga_cpuemu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant) {
+void fpga_cpuemu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant, int coordinate_transformation_mode) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_scale(A, B, new_shape, mode, constant);
+  cpu_scale(A, B, new_shape, mode, constant, coordinate_transformation_mode);
   fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant){
+void fpga_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant, int coordinate_transformation_mode){
 	printf("fpga_scale\n");
   _profile_fpga(_FPGA_SCALE, 0);
 #ifndef K_ENABLED_SCALE
-  fpga_cpuemu_scale(A, B, new_shape, mode, constant);
+  fpga_cpuemu_scale(A, B, new_shape, mode, constant, coordinate_transformation_mode);
 #else
   printf("fpga_scale ate not implemented yet\n"); exit(1);
 #endif
@@ -210,16 +210,16 @@ void fpga_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> 
 // -----------------------------------------------------------------
 // scale_random
 //
-void fpga_cpuemu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
+void fpga_cpuemu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant, int coordinate_transformation_mode){
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_scale_random(A, B, factor, mode, constant);
+  cpu_scale_random(A, B, factor, mode, constant, coordinate_transformation_mode);
   fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
+void fpga_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant, int coordinate_transformation_mode){
   _profile_fpga(_FPGA_SCALE_RANDOM, 0);
 #ifndef K_ENABLED_SCALE_RANDOM
-  fpga_cpuemu_scale_random(A, B, factor, mode, constant);
+  fpga_cpuemu_scale_random(A, B, factor, mode, constant, coordinate_transformation_mode);
 #else
   printf("fpga_scale_random is not implemented yet\n"); exit(1);
 #endif

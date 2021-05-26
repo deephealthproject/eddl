@@ -10,6 +10,7 @@
 
 // OPSET: 13, 7
 Layer* build_diff_layer(onnx::NodeProto *node,
+                        map<string, vector<float>> &map_init_values,
                         map<string, Layer *> &output_node_map,
                         int dev,
                         int mem);

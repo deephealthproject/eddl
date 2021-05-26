@@ -41,6 +41,9 @@ void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
+void cpu_gather(Tensor *A, Tensor *B, GatherDescriptor *sd);
+void cpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+
 void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false); // TODO: Legacy
 void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0,bool mask_zeros=false); // TODO: Legacy
 
@@ -59,21 +62,27 @@ void cpu_rand_binary(Tensor *A, float v);
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
 
 // CPU: Data transformations (2D Optimized) ********************************************
-// CPU: Data transformations (2D Optimized) ********************************************
-void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant);
-void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant);
-void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant);
+void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int wrapping_mode, float constant);
+void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int wrapping_mode, float constant);
+void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
+void cpu_scale_back(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
 void cpu_flip(Tensor *A, Tensor *B, int axis);
 void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse);
-void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int mode, float constant);
+void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int wrapping_mode, float constant);
+void cpu_pad(Tensor *A, Tensor *B, vector<int> pads);
+void cpu_pad_back(Tensor *A, Tensor *B, vector<int> pads);
+
+// CPU: Data transformations (3D Optimized) ********************************************
+void cpu_scale3d(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
+void cpu_scale3d_back(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
 
 // CPU: Data augmentations (2D Optimized) ********************************************
-void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant);
-void cpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int mode, float constant);
-void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant);
+void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int wrapping_mode, float constant);
+void cpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int wrapping_mode, float constant);
+void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int wrapping_mode, float constant, int coordinate_transformation_mode);
 void cpu_flip_random(Tensor *A, Tensor *B, int axis);
 void cpu_crop_random(Tensor *A, Tensor *B);
-void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant);
+void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int wrapping_mode, float constant);
 void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
 
 // CPU: Math (in-place)
@@ -194,6 +203,7 @@ float cpu_norm_(float *ptr, int size, int *map, string ord);
 // CPU: Logic functions: Truth value testing
 std::pair<unsigned int*, int> cpu_nonzero(Tensor *A);
 void cpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
+void cpu_where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D);
 
 // CPU: Logic functions: Truth value testing
 bool cpu_all(Tensor *A);
@@ -213,29 +223,28 @@ void cpu_logical_not(Tensor *A, Tensor *B);
 void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
 
 // CPU: Logic functions: Comparisons
+bool cpu_allclose_verbose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
 
 void cpu_greater(Tensor *A, Tensor *B, float v);
+
 void cpu_greater(Tensor *A, Tensor *B, Tensor *C);
-
 void cpu_greater_equal(Tensor *A, Tensor *B, float v);
+
 void cpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
-
 void cpu_less(Tensor *A, Tensor *B, float v);
+
 void cpu_less(Tensor *A, Tensor *B, Tensor *C);
-
 void cpu_less_equal(Tensor *A, Tensor *B, float v);
+
 void cpu_less_equal(Tensor *A, Tensor *B, Tensor *C);
-
 void cpu_equal(Tensor *A, Tensor *B, float v);
+
 void cpu_equal(Tensor *A, Tensor *B, Tensor *C);
-
 void cpu_not_equal(Tensor *A, Tensor *B, float v);
-void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
-// Legacy
-int cpu_allclose_verbose(Tensor *A, Tensor *B, float epsilon);
+void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
 
 

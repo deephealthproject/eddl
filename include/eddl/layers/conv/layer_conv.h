@@ -133,11 +133,11 @@ public:
     ConvolDescriptor3D *cd;
 
     // constructors and clones
-    LConv3D(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev, int mem);
+    LConv3D(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, bool use_bias, string name, int dev, int mem);
 
     LConv3D(Layer *parent, int filters, const vector<int> &ks, const vector<int> &st,const vector<int> &p, string name, int dev, int mem);
 
-    LConv3D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
+    LConv3D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
           int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
 
     // Destructor
@@ -177,33 +177,97 @@ public:
 };
 
 /// ConvT2D Layer
-class LConvT : public LinLayer {
+class LConvT2D : public LinLayer {
 public:
     static int total_layers;
-    ConvolDescriptor *cd;
+
+    ConvolDescriptorT2D *cd;
 
     // constructors and clones
-    LConvT(Layer *parent, int filters, const vector<int> &kernel_size,
-           const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
-           const vector<int> &strides, bool use_bias, string name, int dev, int mem);
+    LConvT2D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
+             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
 
-    LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
+    LConvT2D(Layer *parent, ConvolDescriptorT2D *cd, string name, int dev, int mem);
 
     // Destructor
-    ~LConvT();
+    ~LConvT2D();
 
-//    Layer *share(int c, int bs, vector<Layer *> p) override;
-//
-//    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-//
-//    // Params are in ConvolDescriptor
-//
-//    // implementation
-//    void forward() override;
-//
-//    void backward() override;
-//
-//    string plot(int c) override;
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void mem_delta() override;
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    void initialize() override;
+
+    void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+
+    void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
+    string plot(int c) override;
+
+    static void reset_name_counter();
+
+    void enable_distributed() override;
+
+};
+
+
+/// ConvT3D Layer
+class LConvT3D : public LinLayer {
+public:
+    static int total_layers;
+
+    ConvolDescriptorT3D *cd;
+
+    // constructors and clones
+    LConvT3D(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
+             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
+
+    LConvT3D(Layer *parent, ConvolDescriptorT3D *cd, string name, int dev, int mem);
+
+    // Destructor
+    ~LConvT3D();
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void mem_delta() override;
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    void initialize() override;
+
+    void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+
+    void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
+    string plot(int c) override;
+
+    static void reset_name_counter();
+
+    void enable_distributed() override;
 
 };
 
@@ -231,53 +295,5 @@ public:
     string plot(int c) override;
 
 };
-
-/// Conv2D+RELU Layer
-class LConvReLU : public LinLayer {
-public:
-    static int total_layers;
-	bool distributed_training;
-
-    ConvolDescriptor *cd;
-
-    LConvReLU(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
-          int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
-
-    LConvReLU(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
-
-   // Destructor
-    ~LConvReLU();
-
-    Layer *share(int c, int bs, vector<Layer *> p) override;
-
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-    void mem_delta() override;
-
-    // implementation
-    void forward() override;
-
-    void backward() override;
-
-    void resize(int batch) override;
-
-    void initialize() override;
-
-	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
-
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
-
-	void reset_accumulated_gradients() override;
-
-	void apply_accumulated_gradients() override;
-
-    string plot(int c) override;
-
-	static void reset_name_counter();
-
-	void enable_distributed() override;
-
-};
-
 
 #endif //EDDL_LAYER_CONV_H

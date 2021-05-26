@@ -25,7 +25,15 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
     // Perform layer checks
     if (parent.empty()) { msg("Error: LConcat layer with empty list"); }
 
-    this->axis = axis;
+    // Check special cases
+    if(axis==-1){
+        // -1 because last index is shape-1, and -1 (again) to remove the batch component
+        axis = (parent[0]->output->ndim - 1) - 1;
+    }else if(axis<0){
+        msg("The axist must be greater or equal than zero", "LConcat::LConcat");
+    }
+
+    this->axis = axis; // batch is not included
 
     if (parent.size() > 1) {
 
@@ -39,7 +47,7 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
         // Check dimensions (10, 5, 3, 3) + (10, 2, 3, 3) => (10, 7, 3, 3)
         for (int i = 0; i < parent.size() - 1; ++i){
             for (int d = 0; d < ndim; ++d) {
-                if (d != this->axis && parent[i]->output->shape[d] != parent[i + 1]->output->shape[d]) {
+                if (d != (this->axis+1) && parent[i]->output->shape[d] != parent[i + 1]->output->shape[d]) {
                     msg("Error: LConcat layers with different size in dim 1 (" +
                     to_string(parent[i]->output->shape[d])  + "!=" +
                     to_string(parent[i + 1]->output->shape[d]) + ")");
@@ -54,12 +62,12 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
     // Sum depth dimensions to know the final dimension [2+2+6=10]
     int t = 0;
     for (int i = 0; i < parent.size(); ++i) {
-        t += parent[i]->output->shape[axis];
+        t += parent[i]->output->shape[this->axis+1];
     }
 
     // Set new shape
     vector<int> new_shape = parent[0]->output->getShape();
-    new_shape[axis] = t;
+    new_shape[this->axis+1] = t;
 
     input = parent[0]->output;
     output = new Tensor(new_shape, dev);
@@ -79,7 +87,7 @@ void LConcat::forward() {
     for (auto & p : this->parent) { outputs.push_back(p->output); }
 
     // Perform concatenation
-    Tensor::concat(outputs, this->axis, this->output);
+    Tensor::concat(outputs, this->axis+1, this->output);
 }
 
 
@@ -92,11 +100,10 @@ void LConcat::backward() {
     }
 
     // Perform concat (back)
-    Tensor::concat_back(this->delta, deltas, this->axis);
+    Tensor::concat_back(this->delta, deltas, this->axis+1);
 }
 
 Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
-
     auto *n = new LConcat(p, this->axis, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
@@ -104,7 +111,6 @@ Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LConcat::clone(int c, int bs, vector<Layer *> p, int todev) {
-
     auto *n = new LConcat(p, this->axis, name, todev,mem_level);
     n->orig = this;
 

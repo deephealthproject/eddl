@@ -758,6 +758,60 @@ void Tensor::set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 
 }
 
+void Tensor::gather(Tensor *A, Tensor *B, GatherDescriptor *sd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_gather(A, B, sd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_gather(A, B, sd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+        printf("fpga_gather not implemented yet\n"); exit(1);
+    }
+#endif
+}
+
+Tensor* Tensor::expand(int size){
+    return Tensor::expand(this, size);
+}
+
+
+Tensor* Tensor::expand(Tensor *A, int size){
+    // Build descriptor
+    auto *sd = new ExpandDescriptor(size, A->device);
+    sd->build(A->shape);
+
+    // Initialize tensor
+    auto* t = new Tensor(sd->oshape, A->device);
+
+    // Perform select
+    Tensor::expand(A, t, sd);
+
+    delete sd;
+    return t;
+}
+
+void Tensor::expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_expand(A, B, sd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_expand(A, B, sd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+        printf("fpga_expand not implemented yet\n"); exit(1);
+    }
+#endif
+}
+
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros) {
     ///////////////////////////////////////
     /// Select from A to B, A is bigger

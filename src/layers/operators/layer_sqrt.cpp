@@ -34,15 +34,13 @@ int LSqrt::total_layers = 0;
 
       input=l->output;
       output = new Tensor(l->output->shape, dev);
-//      if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
       l->addchild(this);
       addparent(l);
   }
 
   void LSqrt::forward() {
-      Tensor::copy(parent[0]->output, output);
-      output->sqrt_();
+      Tensor::sqrt(parent[0]->output, output);
   }
 
   void LSqrt::backward() {
@@ -59,8 +57,7 @@ int LSqrt::total_layers = 0;
   }
 
   Layer *LSqrt::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LSqrt *n;
-    n = new LSqrt(p[0], "clone_" + to_string(c) + name, todev, this->mem_level);
+    auto *n = new LSqrt(p[0], "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
   }

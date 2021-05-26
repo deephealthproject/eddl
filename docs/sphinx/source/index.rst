@@ -43,6 +43,7 @@ The code is open source, and `available on github`_.
     :caption: Layers
 
     layers/core.rst
+    layers/auxiliar.rst
     layers/activations.rst
     layers/data_augmentation.rst
     layers/data_transformation.rst
@@ -96,6 +97,13 @@ The code is open source, and `available on github`_.
     :caption: Computing Services
 
     bundle/computing_service.rst
+
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Model Zoo
+
+    models_zoo/classification.rst
 
 
 .. toctree::

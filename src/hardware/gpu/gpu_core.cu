@@ -296,6 +296,58 @@ void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     check_cuda(cudaDeviceSynchronize(), "set_select_back");
 }
 
+void gpu_gather(Tensor *A, Tensor *B, GatherDescriptor *sd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy indices from host to device
+    if(sd->gpu_addresses == nullptr){
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->size*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, B->size*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
+
+    setDims(B);  // B is the small
+    gpu_gather<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses);
+    check_cuda(cudaDeviceSynchronize(), "gpu_gather");
+}
+
+
+void gpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy indices from host to device
+    if(sd->gpu_addresses == nullptr){
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->size*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, B->size*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
+
+    setDims(B);  // B is the small
+    gpu_expand<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses);
+    check_cuda(cudaDeviceSynchronize(), "gpu_expand");
+}
+
+
+void gpu_repeat_batch(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);  // B is the big one
+    gpu_repeat_batch<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, B->size);
+    check_cuda(cudaDeviceSynchronize(), "gpu_repeat_batch");
+}
+
+
 void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
     int device=A->gpu_device;
     cudaSetDevice(device);

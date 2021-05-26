@@ -1,3 +1,5 @@
+#ifdef cPROTO
+
 #include <gtest/gtest.h>
 #include <random>
 #include <string>
@@ -84,12 +86,12 @@ TEST(ONNXTestSuite, onnx_import){
         auto& _imp = *net_import->layers[i];
         ASSERT_TRUE(typeid(_exp).name() == typeid(_imp).name());
 		for(int j=0; j<net_export->layers[i]->params.size(); j++){
-        	ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->params[j], net_import->layers[i]->params[j]));
+        	ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->params[j], net_import->layers[i]->params[j], 1e-3f, 0.0f, true, true));
 		}
 
         // Check array content
-        //ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->input, net_import->layers[i]->input));
-        //ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->output, net_import->layers[i]->output));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->input, net_import->layers[i]->input, 1e-3f, 0.0f, true, true));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->output, net_import->layers[i]->output, 1e-3f, 0.0f, true, true));
     }
 
     // Tests input layers
@@ -105,8 +107,8 @@ TEST(ONNXTestSuite, onnx_import){
 
 
         // Check array content
-        //ASSERT_TRUE(Tensor::equivalent(net_export->lin[i]->input, net_import->lin[i]->input));
-        //ASSERT_TRUE(Tensor::equivalent(net_export->lin[i]->output, net_import->lin[i]->output));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->lin[i]->input, net_import->lin[i]->input, 1e-3f, 0.0f, true, true));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->lin[i]->output, net_import->lin[i]->output, 1e-3f, 0.0f, true, true));
     }
 
 
@@ -123,9 +125,10 @@ TEST(ONNXTestSuite, onnx_import){
         ASSERT_TRUE(typeid(_exp).name() == typeid(_imp).name());
 
         // Check array content
-        //ASSERT_TRUE(Tensor::equivalent(net_export->lout[i]->input, net_import->lout[i]->input));
-        //ASSERT_TRUE(Tensor::equivalent(net_export->lout[i]->output, net_import->lout[i]->output));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->lout[i]->input, net_import->lout[i]->input, 1e-3f, 0.0f, true, true));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->lout[i]->output, net_import->lout[i]->output, 1e-3f, 0.0f, true, true));
     }
 
 }
 
+#endif

@@ -41,6 +41,11 @@ __global__ void set_select_back(float *A, float* B, long int size, int* indices)
 __global__ void select_rows(float *A, float* B, int rowsize, int size, int* indices, int ini,bool mask_zeros);  // TODO: Legacy
 __global__ void deselect_rows(float *A, float* B, int rowsize, int size, int* indices, int ini,int inc,bool mask_zeros);  // TODO: Legacy
 
+__global__ void gpu_gather(float *A, float* B, long int size, int* indices);
+__global__ void gpu_expand(float *A, float* B, long int size, int* indices);
+
+__global__ void gpu_repeat_batch(float *A, float* B, long int A_size, long int B_size);
+
 __global__ void concat(float *dest, float *src, unsigned int src_size, unsigned int src_stride, unsigned int dest_stride, bool derivative);
 
 // GPU: Create
@@ -57,20 +62,27 @@ __global__ void random_uniform(curandState_t* states, float* numbers);
 //void gpu_rand_normal(Tensor *A, float m, float s);
 
 // GPU: Data transformations (2D Optimized) ********************************************
-__global__ void shift(float *A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);
-__global__ void rotate(float *A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant);
-__global__ void scale(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int mode, float constant);
+__global__ void shift(float *A, float* B, int batch, int depth, int irows, int icols, int* shift, int wrapping_mode, float constant);
+__global__ void rotate(float *A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int wrapping_mode, float constant);
+__global__ void scale(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
+__global__ void scale_back(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
 __global__ void flip(float *A, float* B, int batch, int depth, int irows, int icols, int axis);
 __global__ void crop(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int* offsets, float constant, bool inverse);
-__global__ void crop_scale(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int mode, float constant);
+__global__ void crop_scale(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int wrapping_mode, float constant);
+__global__ void gpu_pad(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int padt, int padl);
+__global__ void gpu_pad_back(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int padt, int padl);
+
+// GPU: Data transformations (3D Optimized) ********************************************
+__global__ void scale3d(float *A, float* B, int batch, int channels, int idepth, int irows, int icols, int odepth, int orows, int ocols, int* new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
+__global__ void scale3d_back(float *A, float* B, int batch, int channels, int idepth, int irows, int icols, int odepth, int orows, int ocols, int* new_shape, int wrapping_mode, float constant, int coordinate_transformation_mode);
 
 // GPU: Data augmentations (2D Optimized) ********************************************
-__global__ void shift_random(float *A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, int mode, float constant, float* rnd);
-__global__ void rotate_random(float *A, float* B, int batch, int depth, int irows, int icols, float* factor, int* offset_center, int mode, float constant, float* rnd);
-__global__ void scale_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
+__global__ void shift_random(float *A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, int wrapping_mode, float constant, float* rnd);
+__global__ void rotate_random(float *A, float* B, int batch, int depth, int irows, int icols, float* factor, int* offset_center, int wrapping_mode, float constant, float* rnd);
+__global__ void scale_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int wrapping_mode, float constant, int coordinate_transformation_mode, float* rnd);
 __global__ void flip_random(float *A, float* B, int batch, int depth, int irows, int icols, int axis, float* rnd);
 __global__ void crop_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* rnd);
-__global__ void crop_scale_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
+__global__ void crop_scale_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int wrapping_mode, float constant, float* rnd);
 __global__ void cutout_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, float* rnd);
 
 // GPU: Math (in-place)
@@ -159,6 +171,7 @@ __global__ void gpu_norm_fro(float *A, float *B, int *map, int size, int size_re
 
 // Generating index arrays *****************************
 __global__ void gpu_where(float *condition, float *A, float *B, float *C, long int size);
+__global__ void gpu_where_back(float *condition, float *PD_A, float *PD_B, float *D, long int size);
 
 // GPU: Logic functions: Comparisons
 __global__ void gpu_isfinite(float *A, float *B, long int size);

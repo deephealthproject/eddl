@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/layers/conv/layer_conv.h"
+#include "eddl/layers/fused/layer_fused.h"
 
 using namespace std;
 

@@ -42,6 +42,7 @@ Layer::Layer(string name, int dev, int mem) {
     this->do_deletes = true;
 
     this->orig = nullptr;
+    this->sorig = nullptr;
     this->net = nullptr;
 
     this->reg = nullptr;
@@ -126,10 +127,9 @@ void Layer::mem_delta_parent(){
 
 void Layer::mem_delta(){
     // Reserve space for the delta
-    if(this->delta == nullptr)
+    if(this->delta == nullptr){
         this->delta = Tensor::zeros(this->output->shape, this->output->device);
-
-
+    }
 }
 
 void Layer::free_delta(){
@@ -149,10 +149,9 @@ void Layer::set_mem_level(int mem){
 }
 
 void Layer::resize(int batch){
-//    cout<<name<<" resizing\n";
-    if (output!=nullptr) output->resize(batch);
-//    if (delta!=nullptr) { if (!mem_level) delta->resize(batch); }
-
+    if (output!=nullptr) {
+        output->resize(batch);
+    }
 }
 
 void Layer::setTrainable(bool value){

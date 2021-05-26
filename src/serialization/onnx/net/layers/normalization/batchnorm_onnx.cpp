@@ -46,26 +46,26 @@ Layer* build_batchnorm_layer(onnx::NodeProto *node,
 
   bool affine = true; // The ONNX operator description does not have an "affine" attribute. We have to assume that this will be allways true.
 
-  Layer *actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
+  LBatchNorm *actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
 
   Tensor *scale_tensor = new Tensor(scale_dims, nullptr, dev);
   COPY_FROM_VECTOR_PTR_TO_TENSOR(scale_weights, scale_tensor);
-  Tensor::copy(scale_tensor, ((LBatchNorm *)(actual_layer))->bn_g);
+  Tensor::copy(scale_tensor, actual_layer->bn_g);
   delete scale_tensor;
 
   Tensor *bias_tensor = new Tensor(bias_dims, nullptr, dev);
   COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_weights, bias_tensor);
-  Tensor::copy(bias_tensor, ((LBatchNorm *)(actual_layer))->bn_b);
+  Tensor::copy(bias_tensor, actual_layer->bn_b);
   delete bias_tensor;
 
   Tensor *mean_tensor = new Tensor(mean_dims, nullptr, dev);
   COPY_FROM_VECTOR_PTR_TO_TENSOR(mean_weights, mean_tensor);
-  Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->mean);
+  Tensor::copy(mean_tensor, actual_layer->mean);
   delete mean_tensor;
 
   Tensor *variance_tensor = new Tensor(variance_dims, nullptr, dev);
   COPY_FROM_VECTOR_PTR_TO_TENSOR(variance_weights, variance_tensor);
-  Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->variance);
+  Tensor::copy(variance_tensor, actual_layer->variance);
   delete variance_tensor;
 
   return actual_layer;

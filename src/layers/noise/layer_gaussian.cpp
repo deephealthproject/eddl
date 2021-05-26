@@ -23,10 +23,8 @@ LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev,
     if(name.empty()) this->name = "gaussiannoise" + to_string(++total_layers);
     this->stdev = stdev;
 
-    // TODO: Implement
     input = parent->output;
     output = new Tensor(input->shape, dev);
-//    delta = parent->delta;
     noise = new Tensor(input->shape, dev);
 
     parent->addchild(this);

@@ -28,6 +28,8 @@ extern void _show_profile_fpga();
 
 #define VERBOSE 0
 
+int verboserec=1;
+
 using namespace std;
 using namespace std::chrono;
 
@@ -176,9 +178,12 @@ void Net::run_snets(void *(*F)(void *t))
 //////// SIMPLE ATOMICS FUNCS
 void Net::setmode(int m) {
   trmode=m;
-  for (int i = 0; i < snets.size(); i++)
-  for (int j = 0; j < snets[i]->layers.size(); j++)
-  snets[i]->layers[j]->setmode(m);
+  for (int i = 0; i < snets.size(); i++){
+      snets[i]->trmode=m;
+      for (int j = 0; j < snets[i]->layers.size(); j++){
+          snets[i]->layers[j]->setmode(m);
+      }
+  }
 }
 
 void Net::clamp(float min,float max)
@@ -263,6 +268,7 @@ void Net::forward(vector<Tensor*> in)
 {
 
   if (isrecurrent) {
+    verboserec=0;
     forward_recurrent(in);
   }
   else {
@@ -378,6 +384,7 @@ void Net::backward(vector<Tensor *> target)
     if (rnet==nullptr) {
       msg("Error backward without previous forward","backward_recurrent");
     }
+    verboserec=0;
     backward_recurrent(target);
   }
   else  {
@@ -556,30 +563,59 @@ void Net::compute_loss()
     inferenced_samples+=batch_size;
   }
 }
-void Net::print_loss(int b)
+
+
+void Net::print_loss(int b,int nb)
 {
   int p = 0;
 
   if (isrecurrent) {
-    if (rnet!=nullptr) rnet->print_loss(b);
+    if (rnet!=nullptr) rnet->print_loss(b,nb);
   }
   else {
-    fprintf(stdout,"Batch %d ",b);
+
+
+    if (nb!=-1) {
+      int pc=((b+1)*20)/nb;
+      if (b>=nb) pc=20;
+
+      printf("[");
+    
+      set_text_green();
+      for(int k=0;k<pc;k++) printf("X");
+
+      if (pc<20) {
+        if (b%4<2) printf("/");
+        else printf("\\");
+      }
+
+      set_text_red();
+      for(int k=pc+1;k<20;k++) printf("-");
+
+      set_text_default();
+      printf("] ");
+    }
+
+    fprintf(stdout,"%d ",b);
 
     int length=decsize;
     for (int k = 0; k < lout.size(); k+=decsize) {
-
       string name=lout[k]->name;
+      if (lout[k]->sorig!=nullptr)
+         name=lout[k]->sorig->name;
 
-      fprintf(stdout, "%s ( ", name.c_str());
+      fprintf(stdout, "%s[", name.c_str());
       if (losses.size()>=(k+1)) {
-        fprintf(stdout, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
+        //fprintf(stdout, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
+        fprintf(stdout, "loss=%1.3f ", total_loss[k] / (length*inferenced_samples));
+
       }
       if (this->metrics.size()>=(k+1)) {
-        fprintf(stdout, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
+        //fprintf(stdout, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
+        fprintf(stdout, "metric=%1.3f", total_metric[k] / (length*inferenced_samples));
       }
 
-      fprintf(stdout, ") -- ");
+      fprintf(stdout, "] ");
 
 
       if ((flog_tr!=nullptr)&&(trmode)) {
@@ -790,7 +826,6 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     msg("different number of samples in output tensor", "Net.fit");
 
 
-
     // Set batch size
     resize(batch);
 
@@ -826,7 +861,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
         train_batch(tin, tout, sind);
 
-        print_loss(j+1);
+        print_loss(j+1,num_batches);
 
         high_resolution_clock::time_point e2 = high_resolution_clock::now();
         duration<double> epoch_time_span = e2 - e1;
@@ -888,7 +923,7 @@ void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, 
     if (yt[i]->shape[0]!=outl)
     msg("Output tensors with different time steps","fit_recurrent");
   }
-  cout<<"Vec2Seq "<<inl<<" to "<<outl<<"\n";
+  if (verboserec) cout<<"Vec2Seq "<<inl<<" to "<<outl<<"\n";
 
   int offset;
   for(i=0;i<yt.size();i++) {
@@ -988,7 +1023,7 @@ void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &ou
     msg("Output tensors with different time steps","fit_recurrent");
   }
 
-  cout<<"Seq2Seq "<<inl<<" to "<<outl<<"\n";
+  if (verboserec) cout<<"Seq2Seq "<<inl<<" to "<<outl<<"\n";
 
   for(i=0;i<yt.size();i++) {
     offset=yt[i]->size/yt[i]->shape[0];
@@ -1082,10 +1117,11 @@ void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, 
     }
   }
 
-  if (outl>1)
-    cout<<"Synchronous Seq2Seq "<<inl<<" to "<<outl<<"\n";
-  else
-    cout<<"Recurrent "<<inl<<" to "<<outl<<"\n";
+  if (verboserec)
+    if (outl>1)
+      cout<<"Synchronous Seq2Seq "<<inl<<" to "<<outl<<"\n";
+    else
+      cout<<"Recurrent "<<inl<<" to "<<outl<<"\n";
 
   for(i=0;i<yt.size();i++) {
     offset=yt[i]->size/yt[i]->shape[0];
@@ -1163,7 +1199,50 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
 
 // TODO:  train_batch_recurrent
 /////////////////////////////////////////
+void Net::train_batch_recurrent(vtensor tin, vtensor tout,vind sind, int eval) {
+  int i, j, k, n;
+
+  // prepare data for unroll net
+  vtensor xt;
+  vtensor xtd;
+  vtensor yt;
+
+  vtensor toutr;
+  vtensor tinr;
+
+  int inl;
+  int outl;
+
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
+
+  build_rnet(inl,outl);
+
+  rnet->train_batch(tinr,toutr,sind,eval);
+
+  if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
+
+
+  for(i=0;i<xt.size();i++)
+    delete xt[i];
+  xt.clear();
+
+  for(i=0;i<yt.size();i++)
+    delete yt[i];
+  yt.clear();
+
+}
+
+
 void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
+
+  if (isrecurrent) {
+    verboserec=0;
+    train_batch_recurrent(X,Y,sind,eval);
+  }
+  else{
 
   if (batch_size!=sind.size()) resize(sind.size());
 
@@ -1217,7 +1296,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 #ifdef cFPGA
   _show_profile_fpga();
 #endif
-
+}
 }
 
 
@@ -1249,6 +1328,7 @@ void Net::evaluate(vtensor tin, vtensor tout,int bs) {
     msg("different number of samples in output tensor", "Net.evaluate");
 
     if (bs!=-1) resize(bs);
+    else if (!isresized) resize(10);  // to avoid some issues when no previous fit is performed, TODO
 
     printf("Evaluate with batch size %d\n",batch_size);
 
@@ -1268,7 +1348,7 @@ void Net::evaluate(vtensor tin, vtensor tout,int bs) {
 
       train_batch(tin, tout, sind, 1);
 
-      print_loss(j+1);
+      print_loss(j+1,n / batch_size);
       fprintf(stdout, "\r");
       fflush(stdout);
     }

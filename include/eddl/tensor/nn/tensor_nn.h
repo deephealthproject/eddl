@@ -93,6 +93,16 @@ namespace tensorNN{
     void Conv3D_grad(ConvolDescriptor3D *D);
     void Conv3D_back(ConvolDescriptor3D *D);
 
+    // ConvT2D
+    void ConvT2D(ConvolDescriptorT2D *D);
+    void ConvT2D_grad(ConvolDescriptorT2D *D);
+    void ConvT2D_back(ConvolDescriptorT2D *D);
+
+    // ConvT3D
+    void ConvT3D(ConvolDescriptorT3D *D);
+    void ConvT3D_grad(ConvolDescriptorT3D *D);
+    void ConvT3D_back(ConvolDescriptorT3D *D);
+
     // MaxPool2D
     void MPool2D(PoolDescriptor *D);
     void MPool2D_back(PoolDescriptor *D);
@@ -101,12 +111,19 @@ namespace tensorNN{
     void MPool3D(PoolDescriptor3D *D);
     void MPool3D_back(PoolDescriptor3D *D);
 
-// AvgPool
+    // AvgPool2D
     void AvgPool2D(PoolDescriptor *D);
     void AvgPool2D_back(PoolDescriptor *D);
 
+    // AvgPool3D
+    void AvgPool3D(PoolDescriptor3D *D);
+    void AvgPool3D_back(PoolDescriptor3D *D);
+
 // ***** Deep Learning: Fused *****************************
-     
+
+    // Conv2D + Activation
+    void conv2d_activation(string act, ConvolDescriptor *D);
+
    // Conv2D + Softplus + Tanh + Mut
    void conv_stm(ConvolDescriptor *D);
 
@@ -115,15 +132,22 @@ namespace tensorNN{
 
    //Conv2D + ReLU + Maxpooling
    void conv_relu_maxpool(ConvolDescriptor *D);
+
 // ***** Tensor operations *****************************
     void repeat_nn(Tensor *A, Tensor *B, vector<int> size);
     void d_repeat_nn(Tensor *D, Tensor *P, vector<int> size);
 
     void select(Tensor *A, Tensor* B, SelDescriptor *sd);
     void select_back(Tensor *A, Tensor* B, SelDescriptor *sd);
+
     void set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
     void set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd);
     void transform(Tensor *A, Tensor *B, int mode);
+
+    void expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+    void expand_back(Tensor *A, Tensor* B, ExpandDescriptor *sd);
+
+    void repeat_batch(Tensor *A, Tensor* B);
 
 // ***** Permutations for BatchNorm ********************
     void permute_channels_last(Tensor *A,Tensor *B);

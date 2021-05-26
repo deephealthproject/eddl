@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
     l = LeakyReLu(Dense(l, 32));
     //l = L2(RNN(l, 128, "relu"),0.001);
     l = L2(LSTM(l, 128),0.001);
+    layer ls=l;
     l = LeakyReLu(Dense(l, 32));
 
     layer out = Softmax(Dense(l, num_classes));
@@ -115,7 +116,13 @@ int main(int argc, char **argv) {
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net,{x_train}, {y_train}, batch_size, 1);
-      evaluate(net, {x_test}, {y_test});
+      evaluate(net, {x_test}, {y_test},100);
+
+      Tensor *input=getInput(ls);
+      input->info();
+      Tensor *out=getOutput(ls);
+      out->info();
+      
     }
  
     delete x_train;

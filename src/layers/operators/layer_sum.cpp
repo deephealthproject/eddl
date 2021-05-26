@@ -39,7 +39,6 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(
     input=l1->output;
 
     output = new Tensor(l1->output->shape, dev);
-//    if (!mem_level) { delta = new Tensor(l1->output->shape, dev); }
 
     l1->addchild(this);
     l2->addchild(this);
@@ -66,7 +65,6 @@ LSum::LSum(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(nam
     input=l->output;
 
     output = new Tensor(l->output->shape, dev);
-//    if (!mem_level) { delta = new Tensor(l->output->shape, dev); }
 
     l->addchild(this);
     addparent(l);
@@ -75,9 +73,7 @@ LSum::LSum(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(nam
 void LSum::forward() {
     if (binary) Tensor::add(1.0, parent[0]->output, 1.0, parent[1]->output, output, 0);
     else {
-        Tensor::copy(parent[0]->output, output);
-        output->add_(val);
-
+        Tensor::add(parent[0]->output, output, val);
     }
 }
 

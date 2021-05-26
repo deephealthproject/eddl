@@ -19,7 +19,7 @@ using namespace std;
 
 int LScaleRandom::total_layers = 0;
 
-LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_mode, float cval, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
+LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_mode, float cval, TransformationMode coordinate_transformation_mode, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "scale_random" + to_string(++total_layers);
 
     output = new Tensor(input->shape, dev);
@@ -28,6 +28,7 @@ LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_
     this->factor = std::move(factor);
     this->cval = cval;
     this->da_mode = da_mode;
+    this->coordinate_transformation_mode = coordinate_transformation_mode;
 
     parent->addchild(this);
     addparent(parent);
@@ -38,7 +39,7 @@ LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_
 
 void LScaleRandom::forward() {
   if (mode == TRMODE) {
-    Tensor::scale_random(this->input, this->output, this->factor, this->da_mode, this->cval);
+    Tensor::scale_random(this->input, this->output, this->factor, this->da_mode, this->cval, this->coordinate_transformation_mode);
   } else {
     Tensor::copy(input, output);
   }
@@ -50,14 +51,14 @@ void LScaleRandom::backward() {
 
 
 Layer *LScaleRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->cval, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->cval, this->coordinate_transformation_mode, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LScaleRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->cval,  name, todev, this->mem_level);
+    auto *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->cval, this->coordinate_transformation_mode, name, todev, this->mem_level);
     n->orig = this;
 
     return n;

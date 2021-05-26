@@ -29,8 +29,9 @@ LMaxPool3D::LMaxPool3D(Layer *parent, PoolDescriptor3D *D, const string& name, i
     if(name.empty()) this->name = "maxpool3d" + to_string(++total_layers);
 
     // Params
-    D->indX = new Tensor(D->O->shape, dev);  // Is this needed here?
+    D->indX = new Tensor(D->O->shape, dev);
     D->indY = new Tensor(D->O->shape, dev);
+    D->indZ = new Tensor(D->O->shape, dev);
 #ifdef cCUDNN
    if(!D->I->isCPU()){
 
@@ -50,6 +51,7 @@ void LMaxPool3D::resize(int batch){
 
   delete pd->indX; pd->indX = new Tensor(pd->O->shape, dev);
   delete pd->indY; pd->indY = new Tensor(pd->O->shape, dev);
+  delete pd->indZ; pd->indZ = new Tensor(pd->O->shape, dev);
 }
 
 void LMaxPool3D::forward() {

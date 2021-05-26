@@ -48,9 +48,6 @@ LConv1D::LConv1D(Layer *parent, ConvolDescriptor *D, string name, int dev, int m
     out_shape.pop_back();
     output = new Tensor(out_shape, cd->O);
 
-//  delta = cd->D;
-//  cd->ID = parent->delta;
-
     params.push_back(cd->K);
     params.push_back(cd->bias);
 

@@ -192,7 +192,7 @@ void fpga_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Do
 // CPU: Data transformations (2D Optimized) ********************************************
 void fpga_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant);
 void fpga_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant);
-void fpga_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant);
+void fpga_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant, int coordinate_transformation_mode);
 void fpga_flip(Tensor *A, Tensor *B, int axis);
 void fpga_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse);
 void fpga_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int mode, float constant);
@@ -200,7 +200,7 @@ void fpga_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> 
 // CPU: Data augmentations (2D Optimized) ********************************************
 void fpga_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant);
 void fpga_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int mode, float constant);
-void fpga_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant);
+void fpga_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant, int coordinate_transformation_mode);
 void fpga_flip_random(Tensor *A, Tensor *B, int axis);
 void fpga_crop_random(Tensor *A, Tensor *B);
 void fpga_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant);

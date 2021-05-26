@@ -15,7 +15,7 @@ Layer* build_mul_layer(onnx::NodeProto *node,
   Layer *first_operator = output_node_map[first_operator_name];
 
   string second_operator_name = node->input(1);
-  if(map_init_dims.count(second_operator_name))
+  if(map_init_values.count(second_operator_name))
   {
     // Detect pattern for applying scale and bias of batchnorm using Mult
     // and Add operators
@@ -42,7 +42,7 @@ Layer* build_mul_layer(onnx::NodeProto *node,
       }
       else
       {
-        msg("Error: The divisor input of the Div layer " + node->name() + " is not valid", "ONNX::ImportNet");
+        msg("Error: The second input factor of the Mult layer " + node->name() + " is not valid", "ONNX::ImportNet");
         return nullptr;
       }
     }
@@ -50,7 +50,9 @@ Layer* build_mul_layer(onnx::NodeProto *node,
 
   Layer *second_operator = output_node_map[second_operator_name];
 
-  return new LMult(first_operator, second_operator, node->name(), dev, mem);
+  vector<Layer *> operators = expand_broadcast({first_operator, second_operator});
+
+  return new LMult(operators[0], operators[1], node->name(), dev, mem);
 }
 
 // ONNX export

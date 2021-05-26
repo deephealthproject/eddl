@@ -30,12 +30,9 @@ LPool3D::LPool3D(Layer *parent, PoolDescriptor3D *D, string name, int dev, int m
     pd->build(input);
 
     output = pd->O;
-//    delta = pd->D;
-//    pd->ID = parent->delta;
 
     parent->addchild(this);
     addparent(parent);
-
 }
 
 LPool3D::~LPool3D(){

@@ -20,16 +20,6 @@ using namespace std;
 
 int LSelect::total_layers = 0;
 
-/**
-  @brief Computes the absolute value of a Layer
-
-  @param l a Layer.
-  @param name a name for the operation (predefined as 'abs+TotaLSelectLayers')
-  @param dev which computing service utilize
-
-  @returns the absolute value of each element in l
-
-  */
 LSelect::LSelect(Layer *parent, vector<string> indices, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     // Set default name
     if(name.empty()) this->name = "select_" + to_string(++total_layers);
@@ -46,7 +36,6 @@ LSelect::LSelect(Layer *parent, vector<string> indices, string name, int dev, in
     vector<int> oshape(sd->oshape);
     oshape.insert(oshape.begin() + 0, 1);
     output=new Tensor(oshape, dev);
-//    delta=new Tensor(sd->oshape, dev);
 
     parent->addchild(this);
     addparent(parent);

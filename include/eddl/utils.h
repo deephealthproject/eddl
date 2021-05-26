@@ -13,10 +13,25 @@
 #include <cstdint> // uint64_t
 #include <vector>
 
+class AsymmetricPaddingException : public std::exception {
+    std::string error_msg; // Error message to show
+    std::vector<int> asymmetric_pads; // To store the padding values that have produced the error
+
+public:
+    AsymmetricPaddingException(std::string msg, const std::vector<int> pads) : error_msg(msg), asymmetric_pads(pads) {}
+
+    std::vector<int> get_asymmetric_pads() { return asymmetric_pads; }
+
+    const char* what() const noexcept override { return error_msg.c_str(); }
+};
 
 using namespace std;
 
 void msg(const string& text, const string& title="");
+
+void set_text_green();
+void set_text_red();
+void set_text_default();
 
 void * eddl_malloc(size_t size, const string & str_info = "");
 
@@ -44,6 +59,9 @@ int* permute_indices(const vector<int>& ishape, const vector<int>& dims);
 
 int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges);
 
+vector<int> expand_shape(const vector<int>& ishape, int size);
+int* expand_indices(const vector<int>& ishape, int size);
+
 bool is_number(const std::string& s);
 
 bool pathExists(const std::string &s);
@@ -65,6 +83,10 @@ string printVector(vector<T> myvector){
 
 enum WrappingMode {Constant=0, Reflect=1, Nearest=2, Mirror=3, Wrap=4, Original=5};
 WrappingMode getWrappingMode(string mode);
+
+enum TransformationMode {HalfPixel=0, PytorchHalfPixel=1, AlignCorners=2, Asymmetric=3, TFCropAndResize=4};
+TransformationMode getTransformationMode(string mode);
+string getTransformationModeName(TransformationMode mode);
 
 void __show_profile();
 

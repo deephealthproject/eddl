@@ -28,7 +28,7 @@ LDropout::LDropout(Layer *parent, float df, bool iw, string name, int dev, int m
 
     input = parent->output;
     output = new Tensor(input->shape, dev);
-    //    delta = new Tensor(output->shape, dev);
+
 
     mask = new Tensor(input->shape, dev);
 
