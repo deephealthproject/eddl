@@ -249,7 +249,7 @@
            <div itemprop="articleBody">
             
   <style>
-#installation > img {
+#installation img {
     width: 30px;
     margin-bottom: 0;
     margin-top: 0;
@@ -359,6 +359,11 @@ brew install eddl
 <p>MacOS</p>
 </div>
 </div>
+<div class="item sphinx-data-tab-1-2 docutils container">
+<div class="docutils container">
+<p>Windows</p>
+</div>
+</div>
 </div>
 <div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-1-0 active docutils container">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source code</span>
@@ -397,6 +402,24 @@ conda activate eddl
 mkdir build
 <span class="nb">cd</span> build
 cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
+
+make install
+</pre></div>
+</div>
+</div>
+<div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-1-2 docutils container">
+<div class="highlight-batch notranslate"><div class="highlight"><pre><span></span># Download source code
+git clone https://github.com/deephealthproject/eddl.git
+<span class="k">cd</span> eddl/
+
+# Install dependencies
+conda env create -f environment.yml
+conda activate eddl
+
+# Build and install
+<span class="k">mkdir</span> build
+<span class="k">cd</span> build
+cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
 
 make install
 </pre></div>
