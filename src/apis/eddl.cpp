@@ -873,12 +873,6 @@ namespace eddl {
     return new LSubtract(layers, name, DEV_CPU, 0);
   }
 
-  layer ConvReLU(layer parent, int filters, const vector<int> &kernel_size,
-             const vector<int> &strides, string padding,  bool use_bias,
-             int groups, const vector<int> &dilation_rate,string name){
-      return new LConvReLU(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
-  }
-
   // Noise Layers
   layer GaussianNoise(layer parent, float stdev, string name){
     return new LGaussianNoise(parent, stdev, name, DEV_CPU, 0);
@@ -1616,22 +1610,37 @@ namespace eddl {
   //  FUSED LAYERS
   ///////////////////////////////////////
 
+  layer ConvReLU(layer parent, int filters, const vector<int> &kernel_size,
+             const vector<int> &strides, string padding,  bool use_bias,
+             int groups, const vector<int> &dilation_rate,string name){
+      return new LConvReLU(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+  }
+
   layer ConvSTM(layer parent, int filters, const vector<int> &kernel_size,
 	      const vector<int> &strides, string padding, bool use_bias,
 	      int groups, const vector<int> &dilation_rate, string name){
     return new LConvSTM(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
-  layer ConvMaxPool(layer parent, int filters, const vector<int> &kernel_size,
-	const vector<int> &strides, string padding, bool use_bias,
-	int groups, const vector<int> &dilation_rate, string name){
-      return new LConvMaxPool(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+  layer ConvSTMAdd(const vector<layer> &layers, int filters, const vector<int> &kernel_size,
+	      const vector<int> &strides, string padding, bool use_bias,
+	      int groups, const vector<int> &dilation_rate, string name){
+          
+    return new LConvSTMAdd(layers, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
-  
+
+  layer ConvMaxPool(layer parent, int filters, const vector<int> &kernel_size,
+	      const vector<int> &conv_strides, string conv_padding, const vector<int> &pool_size, 
+        const vector<int> &pool_strides, string pool_padding, bool use_bias,
+	      int groups, const vector<int> &dilation_rate, string name){
+    return new LConvMaxPool(parent, filters, kernel_size, conv_strides, conv_padding, {}, groups, dilation_rate, pool_size, pool_strides, pool_padding, use_bias, name, DEV_CPU, 0);
+  }
+
   layer ConvReLUMaxPool(layer parent, int filters, const vector<int> &kernel_size,
-	const vector<int> &strides, string padding, bool use_bias,
-	int groups, const vector<int> &dilation_rate, string name){
-      return new LConvReLUMaxPool(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+	      const vector<int> &conv_strides, string conv_padding, const vector<int> &pool_size, 
+        const vector<int> &pool_strides, string pool_padding, bool use_bias,
+	      int groups, const vector<int> &dilation_rate, string name){
+    return new LConvReLUMaxPool(parent, filters, kernel_size, conv_strides, conv_padding, {}, groups, dilation_rate, pool_size, pool_strides, pool_padding, use_bias, name, DEV_CPU, 0);
   }
 
   ///////////////////////////////////////
@@ -1946,7 +1955,7 @@ namespace eddl {
       int found_nnT;   // current+2 layer is a Tanh layer
       int found_nnnM;  // current+3 layer is a Mult layer
       //
-      //int found_CR;    // Layers Convolution+Relu detected
+      int found_CR;    // Layers Convolution+Relu detected
       int found_CM;    // Layers Convolution+Maxpooling detected
       int found_CRM;   // Layers Convolution+ReLU+Maxpooling detected
       int found_CSTM;  // Layers Convolution+Softplus+Tanh+Mult detected
@@ -1967,65 +1976,67 @@ namespace eddl {
       int l_src = 0;
       int l_dst = 0;
       while (l_src<num_layers) {
-
-	    // detection stage, we detect any possible type of layer that can be merged
-	    // we look into current, current+1 and current+2 layers
+        //printf("  in layer: %d\n", l_src);
+	      // detection stage, we detect any possible type of layer that can be merged
+	      // we look into current, current+1 and current+2 layers
 	
   	    // Current layer
-	    found_C = 0; found_I = 0; found_R = 0; found_S = 0; found_M = 0; found_Reshape = 0; found_D = 0;
-	    cl = m_src->layers[l_src];
-	    if (LConv *dl = dynamic_cast<LConv *>(cl)) found_C = 1;
-	    if (LInput *dl = dynamic_cast<LInput *>(cl)) found_I = 1;
+	      found_C = 0; found_I = 0; found_R = 0; found_S = 0; found_M = 0; found_Reshape = 0; found_D = 0;
+	      cl = m_src->layers[l_src];
+	      if (LConv *dl = dynamic_cast<LConv *>(cl)) found_C = 1;
+	      if (LInput *dl = dynamic_cast<LInput *>(cl)) found_I = 1;
         if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "relu") found_R = 1;
         if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "softmax") found_S = 1;
         if (LPool *dl = dynamic_cast<LPool *>(cl)) found_M = 1;
         if (LReshape *dl = dynamic_cast<LReshape *>(cl)) found_Reshape = 1;
         if (LDense *dl = dynamic_cast<LDense *>(cl)) found_D = 1;
 
-	    // current+1 layer
-	    found_nM = 0;
-	    found_nR = 0;
+	      // current+1 layer
+	      found_nM = 0;
+	      found_nR = 0;
         found_nSp = 0;
-	    if (l_src<num_layers-1) {
-	      nl = m_src->layers[l_src+1];
-	      if (LPool *dl = dynamic_cast<LPool *>(nl)) found_nM = 1;
-	      if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_nR = 1;
-          if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "softplus") found_nSp = 1; //TODO: check softplus name
+	      if (l_src<num_layers-1) {
+	        nl = m_src->layers[l_src+1];
+	        if (LPool *dl = dynamic_cast<LPool *>(nl)) found_nM = 1;
+	        if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_nR = 1;
+          if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "softplus") found_nSp = 1; 
   	    }
 
-	    // current+2 layer
-	    found_nnM = 0;
-        found_nnT = 0;
-	    if (l_src<num_layers-2) {
-	      nnl = m_src->layers[l_src+2];
-	      if (LPool *dl = dynamic_cast<LPool *>(nnl)) found_nnM = 1; 
-          if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "tanh") found_nnT = 1; //TODO: check tanh name
-	    }
+	      // current+2 layer
+	      found_nnM = 0;
+          found_nnT = 0;
+	      if (l_src<num_layers-2) {
+	        nnl = m_src->layers[l_src+2];
+	        if (LPool *dl = dynamic_cast<LPool *>(nnl)) found_nnM = 1; 
+          if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "tanh") found_nnT = 1; 
+	      }
 
         // current+3 layer
-	    found_nnnM = 0;
-	    if (l_src<num_layers-3) {
-	      nnnl = m_src->layers[l_src+3];
-          //TODO: mult layer no available yet
-	    }
+	      found_nnnM = 0;
+	      if (l_src<num_layers-3) {
+	        nnnl = m_src->layers[l_src+3];
+          if (LActivation *dl = dynamic_cast<LActivation *>(nnnl)) if (dl->act == "mul2D") found_nnnM = 1; //TODO not sure
+	      }
 
-	    // Combination of layers detected (for the moment they are disabled)
-	    found_CM = found_C && found_nM;
-	    found_CRM = found_C && found_nR && found_nnM;
+	      // Combination of layers detected (for the moment they are disabled)
+	      found_CM = found_C && found_nM;
+	      found_CRM = found_C && found_nR && found_nnM;
+        found_CR = !found_CRM && found_C && found_nR;
         found_CSTM = found_C && found_nSp && found_nnT && found_nnnM;
 
         // data layer transform
-        if (found_CSTM || found_CRM || found_CM || found_C || found_M) {
+        if (found_C || found_CR || found_CM || found_CRM || found_CSTM ) {
           if (!ghwc_enabled) {
+            printf("instantiating Transform,1 layer\n");
             // we add transform layer
             prev_layer = Transform(prev_layer, 1);
             ghwc_enabled = 1;
             l_dst++;
           }
-        }
-        if (found_Reshape || found_D || found_R || found_M) {
+        } else {
           if (ghwc_enabled) {
              // we add a detransform layer
+             printf("instantiating Transform,0 layer\n");
              prev_layer = Transform(prev_layer, 0);
              ghwc_enabled = 0;
              l_dst++;
@@ -2033,66 +2044,130 @@ namespace eddl {
         }
 
         // build up stage, we create a merged layer out of our findings
-    	if (found_CRM) {
-          printf("instantiating CRM layer\n");
-          LConvReLUMaxPool *layer_src = (LConvReLUMaxPool *)cl;
-	      prev_layer = ConvReLUMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
-	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->name);
+        if (found_CR) {
+          printf("instantiating CR layer\n");
+          LConv *layer_src = (LConv *)cl;    
+
+          prev_layer = new LConvReLU(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+                                layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
+                                 "",DEV_CPU, layer_src->cd->mem_level);
+
           associated_layer[l_dst] = l_src;
-	    } else if (found_CM) {
+
+        } else if (found_CM) {
           printf("instantiating CM layer\n");
-          LConvMaxPool *layer_src = (LConvMaxPool *)cl;
-	      prev_layer = ConvMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
-	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->name);
+          LConv *layer_src = (LConv *)cl;
+          LPool *n_layer_src = (LPool *)nl;
+
+          if(n_layer_src->pd->padding =="custom") {
+            prev_layer = new LConvMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+                                layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
+                                n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
+                                "",DEV_CPU, layer_src->cd->mem_level);
+          } 
+          else {
+	          prev_layer = new LConvMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+                                layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
+                                n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->padding, layer_src->cd->use_bias,
+                                "",DEV_CPU, layer_src->cd->mem_level);
+          }
           associated_layer[l_dst] = l_src;
-        } else if (found_CSTM) {
+
+    	  } else if (found_CRM) {
+          printf("instantiating CRM layer %d\n", found_nnM);
+
+          LConv *layer_src = (LConv *)cl;
+
+          std::cout << layer_src->cd->padding << " cl padding \n";
+
+          LPool *n_layer_src = (LPool *)nnl;
+
+          if(n_layer_src->pd->padding =="custom") {
+                printf(" CRM Maxpool pads = %d x %d x %d x %d\n", n_layer_src->pd->pad[0], n_layer_src->pd->pad[1], n_layer_src->pd->pad[2], n_layer_src->pd->pad[3]);
+
+            prev_layer = new LConvReLUMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+                                layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
+                                n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
+                                "",DEV_CPU, layer_src->cd->mem_level);
+          } 
+          else {
+	          prev_layer = new LConvReLUMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+                                layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
+                                n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->padding, layer_src->cd->use_bias,
+                                "",DEV_CPU, layer_src->cd->mem_level);
+          }
+          associated_layer[l_dst] = l_src;
+
+	      } else if (found_CSTM) {
           printf("instantiating CSTM layer\n");
-	      LConvSTM *layer_src = (LConvSTM *)cl;
-	      prev_layer = ConvSTM(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
-	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->name);
+	        LConv *layer_src = (LConv *)cl;
+	        prev_layer = ConvSTM(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
+	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate);
           associated_layer[l_dst] = l_src;
-	    } else if (found_C) {
+
+	      } else if (found_C) {
           printf("instantiating C layer\n");
-	      LConv *layer_src = (LConv *)cl;
-	      prev_layer = Conv(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
-	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->name);
+	        LConv *layer_src = (LConv *)cl;
+	        prev_layer = Conv(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding, 
+	                        layer_src->cd->use_bias, layer_src->cd->groups, layer_src->cd->dilation_rate);
           associated_layer[l_dst] = l_src;
-	    } else if (found_R) {
+
+	      } else if (found_R) {
           printf("instantiating R layer\n");
-	      prev_layer = ReLu(prev_layer);
-	    } else if (found_M) {
+	        prev_layer = ReLu(prev_layer);
+
+	      } else if (found_M) {
           printf("instantiating M layer\n");
           LPool *layer_src = (LPool *)cl;
-	      prev_layer = MaxPool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride);
-	    } else if (found_I) {
+          if(layer_src->pd->padding =="custom") {
+	          prev_layer = new LMaxPool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, layer_src->name, DEV_CPU, 0);
+          } 
+          else {
+	          prev_layer = new LMaxPool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, layer_src->name, DEV_CPU, 0);
+          }
+	      } else if (found_I) {
           printf("instantiating I layer\n");
-	      prev_layer = Input({3, 224, 224});     // TOFIX
+	        prev_layer = Input({3, 224, 224});     // TOFIX
+
         } else if (found_Reshape) {
           printf("instantiating Reshape layer\n");
           LReshape *layer_src = (LReshape *)cl;
           prev_layer = Reshape(prev_layer, { -1 }/*layer_src->ls*/);   // TOFIX
+
         } else  if (found_D) {
           printf("instantiating Dense layer\n");
           LDense *layer_src = (LDense *)cl;
           prev_layer = Dense(prev_layer, layer_src->ndim);
+
         } else if (found_S) {
           printf("instantiating Softmax layer\n");
           prev_layer = Softmax(prev_layer);
+
         } else {
-	      printf("Error, unidentified layer\n");
-          exit(1);
-	    }
+	        printf("Error, unidentified layer\n");
+            exit(1);
+	      }
+
+        //printf("\n\n\n FROM:\n\n");
+        //cl ->info();
+
+        //printf("\n\n\n TO:\n\n");
+        //prev_layer->info();
+
 
         if (l_src == 0) first = prev_layer;
         last = prev_layer;
         l_dst++;
-        if (found_CSTM) l_src += 4; else if (found_CRM) l_src += 3; else if (found_CM) l_src += 2; else l_src++;
+        if (found_CSTM) l_src += 4; else if (found_CRM) l_src += 3; else if (found_CM || found_CR) l_src += 2; else l_src++; 
       }
+      //printf("end layers\n");
 
       // now we create the model
       net = Model({ first }, { last });
+      //printf("before build\n\n\n");
       build(net, sgd(0.001f, 0.9f),{"soft_cross_entropy"}, {"categorical_accuracy"}, CS_FPGA({1}));
       summary(net);
+      //printf("after summary\n");
 
       // now we adapt the filters
       for (int l=0; l<l_dst; l++) {
@@ -2102,15 +2177,15 @@ namespace eddl {
           printf("adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
           LConv *layer_src = dynamic_cast<LConv *>(m_src->layers[associated_layer[l]]);
           //collectTensor(layer_src, "param", 0);
-	      float *ptr_src = layer_src->params[0]->ptr; //cd->K->ptr;
+	        float *ptr_src = layer_src->params[0]->ptr; //cd->K->ptr;
           //_profile_fpga_tensor(layer_src->cd->K);
   	      LConv *layer_dst = dynamic_cast<LConv *>(net->layers[l]);
           float *ptr_dst = layer_dst->cd->K->ptr;
-	      int src_I                = layer_src->cd->I->shape[1];
+	        int src_I                = layer_src->cd->I->shape[1];
           int src_O                = layer_src->cd->O->shape[1];
-	      int dst_I                = layer_dst->cd->I->shape[1];
+	        int dst_I                = layer_dst->cd->I->shape[1];
           int dst_O                = layer_dst->cd->O->shape[1];
-	      printf("I %d O %d -> I %d O %d\n", src_I, src_O, dst_I, dst_O);
+	        printf("I %d O %d -> I %d O %d\n", src_I, src_O, dst_I, dst_O);
           filter_IHW_to_GIHWCPI(ptr_src, ptr_dst, src_I, src_O, dst_I, dst_O, KH, KW, CPI, CPO);
           distributeTensor(layer_dst, "param", 0);
         }

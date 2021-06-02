@@ -792,6 +792,7 @@ PROFILING_ENABLE(fpga_reshape_input_data_convol);
 PROFILING_ENABLE(fpga_reshape_kernel_data_convol);
 PROFILING_ENABLE(fpga_Conv2D);
 PROFILING_ENABLE(fpga_Conv2D_STM);
+PROFILING_ENABLE(fpga_Conv2D_STM_ADD);
 PROFILING_ENABLE(fpga_Conv2D_MAXPOOL);
 PROFILING_ENABLE(fpga_Conv2D_RELU_MAXPOOL);
 PROFILING_ENABLE(fpga_Conv2D_RELU);
@@ -969,6 +970,7 @@ void __show_profile() {
   PROFILING_PRINTF(fpga_reshape_kernel_data_convol);
   PROFILING_PRINTF(fpga_Conv2D);
   PROFILING_PRINTF(fpga_Conv2D_STM);
+  PROFILING_PRINTF(fpga_Conv2D_STM_ADD);
   PROFILING_PRINTF(fpga_Conv2D_MAXPOOL);
   PROFILING_PRINTF(fpga_Conv2D_RELU_MAXPOOL);
   PROFILING_ENABLE(fpga_Conv2D_RELU);

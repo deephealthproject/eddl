@@ -22,22 +22,43 @@ int LConvReLUMaxPool::total_layers = 0;
 // constructors and clones
 
 LConvReLUMaxPool::LConvReLUMaxPool(Layer *parent, int filters, const vector<int> &kernel_size,
-                                     const vector<int> &strides, string padding, const vector<int> &pads,
-                                     int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) :
-        LConvReLUMaxPool(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, pads, groups, dilation_rate, use_bias, mem), name, dev, mem) {
+                                     const vector<int> &conv_strides, string conv_padding, const vector<int> &pads,
+                                     int groups, const vector<int> &dilation_rate, const vector<int> &pool_size, const vector<int> &pool_strides, string pool_padding, bool use_bias, string name, int dev, int mem) : 
+        LConvReLUMaxPool(parent, new ConvolDescriptor(filters, kernel_size, conv_strides, conv_padding, pads, groups, dilation_rate, use_bias, mem), new PoolDescriptor(pool_size, pool_strides, pool_padding, mem), name, dev, mem) {
 };
 
-LConvReLUMaxPool::LConvReLUMaxPool(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LConvReLUMaxPool::LConvReLUMaxPool(Layer *parent, int filters, const vector<int> &kernel_size,
+                                     const vector<int> &conv_strides, string conv_padding, const vector<int> &pads,
+                                     int groups, const vector<int> &dilation_rate, const vector<int> &pool_size, const vector<int> &pool_strides, const vector<int> &pool_padding, bool use_bias, string name, int dev, int mem) : 
+        LConvReLUMaxPool(parent, new ConvolDescriptor(filters, kernel_size, conv_strides, conv_padding, pads, groups, dilation_rate, use_bias, mem), new PoolDescriptor(pool_size, pool_strides, pool_padding, mem), name, dev, mem) {
+};
+
+LConvReLUMaxPool::LConvReLUMaxPool(Layer *parent, ConvolDescriptor *D, PoolDescriptor *P, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if (parent->output->ndim != 4) msg("LConvReLUMaxPool only works over 4D tensors", "LConvReLUMaxPool::LConvReLUMaxPool");
 
     // Set default name
-    if(name.empty()) this->name = "ConvReLuMaxPool" + to_string(++total_layers);
+    if(name.empty()) this->name = "conv_relu_maxpool_" + to_string(++total_layers);
 
-    input = parent->output;
+    input = parent->output;  
+  
+    //Conv
     cd = D;
     cd->build(input);
 
-    output = cd->O;
+    //Pooling
+    pd = P;
+
+    //To calculate the output dims we need to pass the output dimensions from the conv
+    pd->build(cd->O);
+
+    //The real output dimensions come from the pooling descriptor
+    cd->O = pd->O;
+
+    cd->O->shape[1] = pd->O->shape[1];
+    cd->O->shape[2] = pd->O->shape[2];
+    cd->O->shape[3] = pd->O->shape[3];
+
+    output = pd->O;
 
     params.push_back(cd->K);
     params.push_back(cd->bias);
@@ -116,7 +137,7 @@ void LConvReLUMaxPool::apply_accumulated_gradients() {
 }
 
 Layer *LConvReLUMaxPool::share(int c, int bs, vector<Layer *> p) {
-    LConvReLUMaxPool *n = new LConvReLUMaxPool(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LConvReLUMaxPool *n = new LConvReLUMaxPool(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, pd->ksize , pd->stride, pd->padding, cd->use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
 
     n->orig = this;
     n->isshared=true;
@@ -164,7 +185,7 @@ Layer *LConvReLUMaxPool::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LConvReLUMaxPool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LConvReLUMaxPool *n = new LConvReLUMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, cd->use_bias, this->name, todev, this->mem_level);
+    LConvReLUMaxPool *n = new LConvReLUMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, pd->ksize, pd->stride, pd->padding, cd->use_bias, this->name, todev, this->mem_level);
     n->trainable = trainable;
     n->do_deletes = false;
 

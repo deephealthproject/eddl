@@ -23,69 +23,26 @@
 
 using namespace std;
 
-
-/// Conv + Softplus + Tanh + Mult Layer
-class LConvSTM : public LinLayer {
-public:
-    static int total_layers;
-
-    ConvolDescriptor *cd;
-
-
-    // constructors and clones
-    LConvSTM(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides,
-                      string padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
-
-    LConvSTM(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
-
-    // Destructor
-    ~LConvSTM();
-
-    Layer *share(int c, int bs, vector<Layer *> p) override;
-
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-    void mem_delta() override;
-
-    // implementation
-    void forward() override;
-
-    void backward() override;
-
-    void resize(int batch) override;
-
-    void initialize() override;
-
-	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
-
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
-
-	void reset_accumulated_gradients() override;
-
-	void apply_accumulated_gradients() override;
-
-    string plot(int c) override;
-
-	static void reset_name_counter();
-
-	void enable_distributed() override;
-
-};
-
 /// Conv + MaxPool Layer
 class LConvMaxPool : public LinLayer {
 public:
     static int total_layers;
 
     ConvolDescriptor *cd;
-
+    PoolDescriptor *pd;
 
     // constructors and clones
-    LConvMaxPool(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides,
-                      string padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
+    LConvMaxPool(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &conv_strides,
+                        string conv_padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, 
+                        const vector<int> &pool_size, const vector<int> &pool_strides, string pool_padding, bool use_bias, string name, int dev, int mem);
 
-    LConvMaxPool(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
+    LConvMaxPool(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &conv_strides,
+                        string conv_padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, 
+                        const vector<int> &pool_size, const vector<int> &pool_strides, const vector<int> &pool_padding, bool use_bias, string name, int dev, int mem);
 
+
+    LConvMaxPool(Layer *parent, ConvolDescriptor *D, PoolDescriptor *P, string name, int dev, int mem);
+ 
     // Destructor
     ~LConvMaxPool();
 
@@ -173,14 +130,20 @@ public:
     static int total_layers;
 
     ConvolDescriptor *cd;
-
+    PoolDescriptor *pd;
 
     // constructors and clones
-    LConvReLUMaxPool(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides,
-                      string padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
+    LConvReLUMaxPool(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &conv_strides,
+                        string conv_padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, 
+                        const vector<int> &pool_size, const vector<int> &pool_strides, string pool_padding, bool use_bias, string name, int dev, int mem);
 
-    LConvReLUMaxPool(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
+    LConvReLUMaxPool(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &conv_strides,
+                        string conv_padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, 
+                        const vector<int> &pool_size, const vector<int> &pool_strides, const vector<int>  &pool_padding, bool use_bias, string name, int dev, int mem);
 
+
+    LConvReLUMaxPool(Layer *parent, ConvolDescriptor *D, PoolDescriptor *P, string name, int dev, int mem);
+    
     // Destructor
     ~LConvReLUMaxPool();
 
@@ -262,5 +225,86 @@ public:
 	void enable_distributed() override;
 
 };
+
+/// Conv + Softplus + Tanh + Mult Layer
+class LConvSTM : public LinLayer {
+public:
+    static int total_layers;
+
+    ConvolDescriptor *cd;
+
+
+    // constructors and clones
+    LConvSTM(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides,
+                      string padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
+
+    LConvSTM(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
+
+    // Destructor
+    ~LConvSTM();
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void mem_delta() override;
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    void initialize() override;
+
+	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+
+	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+
+	void reset_accumulated_gradients() override;
+
+	void apply_accumulated_gradients() override;
+
+    string plot(int c) override;
+
+	static void reset_name_counter();
+
+	void enable_distributed() override;
+
+};
+
+/// Conv + Softplus + Tanh + Mult + Add Layer
+class LConvSTMAdd : public MLayer {
+public:
+    static int total_layers;
+
+    ConvolDescriptor *cd;
+
+
+    // constructors and clones
+    LConvSTMAdd(vector<Layer *> parent, int filters, const vector<int> &kernel_size, const vector<int> &strides,
+                      string padding, const vector<int> &pads, int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
+
+    LConvSTMAdd(vector<Layer *> parent, ConvolDescriptor *cd, string name, int dev, int mem);
+
+    // Destructor
+    ~LConvSTMAdd();
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+
+};
+
 
 #endif //EDDL_LAYER_FUSED

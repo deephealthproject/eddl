@@ -100,6 +100,8 @@ void fpga_conv_relu_maxpool(ConvolDescriptor *D);
 
 void fpga_conv_stm(ConvolDescriptor *D);
 
+void fpga_conv_stm_add(ConvolDescriptor *D, Tensor *Add);
+
 int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_stm, int global_offset, 
                      int enable_upper_padding, int enable_lower_padding, int enable_maxp, 
                      int enable_avgp, int enable_clipping, int enable_shift, int enable_add, 

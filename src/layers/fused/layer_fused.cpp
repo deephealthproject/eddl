@@ -33,7 +33,7 @@ LConv2dActivation::LConv2dActivation(Layer *parent, string act, ConvolDescriptor
     this->act=act;
 
     // Set default name
-    if(name.empty()) this->name = "conv2d_relu" + to_string(++total_layers);
+    if(name.empty()) this->name = "conv2d_relu_" + to_string(++total_layers);
 
     input = parent->output;
     cd = D;

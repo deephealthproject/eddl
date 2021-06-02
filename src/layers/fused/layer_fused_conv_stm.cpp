@@ -31,7 +31,7 @@ LConvSTM::LConvSTM(Layer *parent, ConvolDescriptor *D, string name, int dev, int
     if (parent->output->ndim != 4) msg("LConvSTM only works over 4D tensors", "LConvSTM::LConvSTM");
 
     // Set default name
-    if(name.empty()) this->name = "convSTM" + to_string(++total_layers);
+    if(name.empty()) this->name = "convSTM_" + to_string(++total_layers);
 
     input = parent->output;
     cd = D;

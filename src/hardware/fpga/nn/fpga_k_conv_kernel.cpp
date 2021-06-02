@@ -130,22 +130,25 @@ int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_st
   int padding_cols = D->padcl;                        // padding cols (for left and right)
   int stride_rows  = D->sr;                           // rows stride
   int stride_cols  = D->sc;                           // cols stride
+  cl::Buffer I_add;                                   // input add data
 
+ // printf("D->O->shape[0] = %d\n D->O->shape[1] = %d\n D->O->shape[2] = %d\n D->I->shape[1] = %d\n ",D->O->shape[0], D->O->shape[1],D->O->shape[2],D->I->shape[1]);
   // This family of kernels need strides of 1x1, kernels of 1x1, padding of 1x1, and batch size 1
   if ((stride_rows == 1) && (stride_cols == 1) && (Krows == 3) && (Kcols == 3) && (batch_size == 1) && (padding_rows == 1) && (padding_cols == 1)) {
-
-    // Creating dummy buffer for add buffer
-    cl::Buffer *I_add = fpga_create_memory(sizeof(float));
-
-    fpga_conv_launch(I, *I_add, Irows, Icols, Irows, Ichannels, Ochannels, enable_relu, enable_stm, K,
-        B, O, global_offset, enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
-        enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, k_conv2d_cpi,
-        k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
-
+    
+    if(enable_add)  I_add = *(cl::Buffer*) ADD->fpga_ptr;
+    else I_add = *(cl::Buffer*) fpga_create_memory(sizeof(float)); // Creating dummy buffer for add buffer
+    printf("kernels %d \n",k_conv2d_num_kernels );
+    fpga_conv_launch(I, I_add, Irows, Icols, Irows, Ichannels, Ochannels, enable_relu, enable_stm, K,
+          B, O, global_offset, enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
+          enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, k_conv2d_cpi,
+          k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
+    
     _profile_fpga_tensor(D->O);
     return 1;
   }
-
+printf("(stride_rows == %d (1)) && (stride_cols == %d (1)) && (Krows == %d (3)) && (Kcols == %d (3)) && (batch_size == %d (1)) && (batch_size == %d (1)) && (padding_cols == %d (1)\n",
+stride_rows, stride_cols,Krows,Kcols,batch_size,batch_size, padding_cols);
   return 0;
 }
 #endif
