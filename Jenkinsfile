@@ -15,7 +15,9 @@ pipeline {
                             steps {
                                 timeout(60) {
                                     echo 'Building..'
-                                    cmakeBuild buildDir: 'build', cmakeArgs: '-DBUILD_TARGET=CPU -DBUILD_SUPERBUILD=ON -DBUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=CPU -DBUILD_SUPERBUILD=ON -DBUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
+                                        [args: '--parallel 4', withCmake: true]
+                                    ]
                                 }
                             }
                         }
@@ -23,7 +25,7 @@ pipeline {
                             steps {
                                 timeout(15) {
                                     echo 'Testing..'
-                                    ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
+                                    ctest arguments: '-C Release -VV', installation: 'InSearchPath', workingDir: 'build'
                                 }
                             }
                         }
@@ -43,7 +45,9 @@ pipeline {
                             steps {
                                 timeout(60) {
                                     echo 'Building..'
-                                    cmakeBuild buildDir: 'build', cmakeArgs: '-DBUILD_TARGET=CPU -DBUILD_SHARED_LIBS=OFF -DBUILD_SUPERBUILD=ON -DBUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=CPU -DBUILD_SHARED_LIBS=OFF -DBUILD_SUPERBUILD=ON -DBUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
+                                        [args: '--config Release --parallel 4', withCmake: true]
+                                    ]
                                 }
                             }
                         }
@@ -51,7 +55,7 @@ pipeline {
                             steps {
                                 timeout(15) {
                                     echo 'Testing..'
-                                    bat 'cd build && ctest -C Debug -VV'
+                                    bat 'cd build && ctest -C Release -VV'
                                 }
                             }
                         }
@@ -75,7 +79,9 @@ pipeline {
                             steps {
                                 timeout(60) {
                                     echo 'Building..'
-                                    cmakeBuild buildDir: 'build', cmakeArgs: '-DBUILD_TARGET=GPU -DBUILD_TESTS=ON -DBUILD_SUPERBUILD=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=GPU -DBUILD_TESTS=ON -DBUILD_SUPERBUILD=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
+                                        [args: '--parallel 4', withCmake: true]
+                                    ]
                                 }
                             }
                         }
@@ -83,7 +89,7 @@ pipeline {
                             steps {
                                 timeout(15) {
                                     echo 'Testing..'
-                                    ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
+                                    ctest arguments: '-C Release -VV', installation: 'InSearchPath', workingDir: 'build'
                                 }
                             }
                         }
@@ -103,7 +109,9 @@ pipeline {
                             steps {
                                 timeout(60) {
                                     echo 'Building..'
-                                    cmakeBuild buildDir: 'build', cmakeArgs: '-DBUILD_TARGET=GPU -DBUILD_TESTS=ON -DBUILD_SUPERBUILD=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=GPU -DBUILD_TESTS=ON -DBUILD_SUPERBUILD=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
+                                        [args: '--config Release --parallel 4', withCmake: true]
+                                    ]
                                 }
                             }
                         }
@@ -111,7 +119,7 @@ pipeline {
                             steps {
                                 timeout(15) {
                                     echo 'Testing..'
-                                    bat 'cd build && ctest -C Debug -VV'
+                                    bat 'cd build && ctest -C Release -VV'
                                 }
                             }
                         }
