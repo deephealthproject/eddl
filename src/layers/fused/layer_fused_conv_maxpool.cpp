@@ -44,12 +44,10 @@ LConvMaxPool::LConvMaxPool(Layer *parent, ConvolDescriptor *D,  PoolDescriptor *
 
     //Conv
     cd = D;
-    
+    cd->ksize[0] =ceil((float)cd->ksize[0]/CPO) * CPO;
     cd->build(input);
-printf("before pd = p\n");
     //Pooling
     pd = P;
-printf("after pd = p\n");
     //To calculate the output dims we need to pass the output dimensions from the conv
     pd->build(cd->O);
 
@@ -139,7 +137,15 @@ void LConvMaxPool::apply_accumulated_gradients() {
 }
 
 Layer *LConvMaxPool::share(int c, int bs, vector<Layer *> p) {
-    LConvMaxPool *n = new LConvMaxPool(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, pd->ksize , pd->stride, pd->padding, cd->use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LConvMaxPool *n;
+    if(pd->padding =="custom") {
+        n = new LConvMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, 
+                    pd->ksize, pd->stride, pd->pad, cd->use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    } 
+    else {
+        n = new LConvMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, 
+                    pd->ksize, pd->stride, pd->padding, cd->use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    }
 
     n->orig = this;
     n->isshared=true;
@@ -187,7 +193,15 @@ Layer *LConvMaxPool::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LConvMaxPool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LConvMaxPool *n = new LConvMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, pd->ksize, pd->stride, pd->padding, cd->use_bias, this->name, todev, this->mem_level);
+    LConvMaxPool *n;
+    if(pd->padding =="custom") {
+        n = new LConvMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, 
+                    pd->ksize, pd->stride, pd->pad, cd->use_bias, this->name, todev, this->mem_level);
+    } 
+    else {
+        n = new LConvMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, 
+                    pd->ksize, pd->stride, pd->padding, cd->use_bias, this->name, todev, this->mem_level);
+    }
     n->trainable = trainable;
     n->do_deletes = false;
 

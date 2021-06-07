@@ -26,7 +26,6 @@ LConvReLU::LConvReLU(Layer *parent, int filters, const vector<int> &kernel_size,
 
 LConvReLU::LConvReLU(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if (parent->output->ndim != 4) msg("LConvReLU only works over 4D tensors", "LConvReLU::LConvReLU");
-
     // Check dev with tensor dev
 
     // Set default name
@@ -34,7 +33,7 @@ LConvReLU::LConvReLU(Layer *parent, ConvolDescriptor *D, string name, int dev, i
 
     input = parent->output;
     cd = D;
-
+    cd->ksize[0] =ceil((float)cd->ksize[0]/CPO) * CPO;
     cd->build(input);
 
     output = cd->O;
@@ -55,6 +54,13 @@ LConvReLU::LConvReLU(Layer *parent, ConvolDescriptor *D, string name, int dev, i
 
     parent->addchild(this);
     addparent(parent);
+
+    // Check padding asymmetries
+    if(D->pads[0] != D->pads[1] || D->pads[2] != D->pads[3]){
+        string err_msg = "In layer " + this->name + ": Padding asymmetry detected (top=" + to_string(D->pads[0]) + ", bottom=" + to_string(D->pads[1]) + ", left=" + to_string(D->pads[2]) + ", right=" + to_string(D->pads[3]) + "). "
+                         + "The padding asymmetry is not allowed in a Conv layer, we suggest you to use an explicit padding layer before this layer to fix the asymmetry.";
+        throw AsymmetricPaddingException(err_msg, D->pads);
+    }
 }
 
 
@@ -84,7 +90,7 @@ void LConvReLU::mem_delta(){
 }
 
 void LConvReLU::forward() {
-    tensorNN::Conv2DReLU(this->cd);
+    tensorNN::conv_relu(this->cd);
 }
 
 void LConvReLU::backward() {

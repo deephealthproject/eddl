@@ -368,7 +368,7 @@ namespace eddl {
   {
     net->reset();
     net->forward(in);
-
+ 
     return getOut(net);
   }
 
@@ -1970,13 +1970,11 @@ namespace eddl {
 
       // number of layers
       int num_layers = m_src->layers.size();
-      printf("number of layers: %d\n", num_layers);
 
       // we sweep all the model in search of layers that can be merged
       int l_src = 0;
       int l_dst = 0;
       while (l_src<num_layers) {
-        //printf("  in layer: %d\n", l_src);
 	      // detection stage, we detect any possible type of layer that can be merged
 	      // we look into current, current+1 and current+2 layers
 	
@@ -2004,7 +2002,7 @@ namespace eddl {
 
 	      // current+2 layer
 	      found_nnM = 0;
-          found_nnT = 0;
+        found_nnT = 0;
 	      if (l_src<num_layers-2) {
 	        nnl = m_src->layers[l_src+2];
 	        if (LPool *dl = dynamic_cast<LPool *>(nnl)) found_nnM = 1; 
@@ -2047,11 +2045,9 @@ namespace eddl {
         if (found_CR) {
           printf("instantiating CR layer\n");
           LConv *layer_src = (LConv *)cl;    
-
           prev_layer = new LConvReLU(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
                                  "",DEV_CPU, layer_src->cd->mem_level);
-
           associated_layer[l_dst] = l_src;
 
         } else if (found_CM) {
@@ -2078,13 +2074,9 @@ namespace eddl {
 
           LConv *layer_src = (LConv *)cl;
 
-          std::cout << layer_src->cd->padding << " cl padding \n";
-
           LPool *n_layer_src = (LPool *)nnl;
 
           if(n_layer_src->pd->padding =="custom") {
-                printf(" CRM Maxpool pads = %d x %d x %d x %d\n", n_layer_src->pd->pad[0], n_layer_src->pd->pad[1], n_layer_src->pd->pad[2], n_layer_src->pd->pad[3]);
-
             prev_layer = new LConvReLUMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
                                 n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
@@ -2148,46 +2140,60 @@ namespace eddl {
             exit(1);
 	      }
 
-        //printf("\n\n\n FROM:\n\n");
-        //cl ->info();
-
-        //printf("\n\n\n TO:\n\n");
-        //prev_layer->info();
-
-
         if (l_src == 0) first = prev_layer;
         last = prev_layer;
         l_dst++;
         if (found_CSTM) l_src += 4; else if (found_CRM) l_src += 3; else if (found_CM || found_CR) l_src += 2; else l_src++; 
       }
-      //printf("end layers\n");
 
       // now we create the model
       net = Model({ first }, { last });
-      //printf("before build\n\n\n");
       build(net, sgd(0.001f, 0.9f),{"soft_cross_entropy"}, {"categorical_accuracy"}, CS_FPGA({1}));
       summary(net);
-      //printf("after summary\n");
 
       // now we adapt the filters
-      for (int l=0; l<l_dst; l++) {
+      for (int l=0; l<l_dst; l++) { 
         Layer *cl = net->layers[l];
-        if (LConv *conv = dynamic_cast<LConv *>(cl)) {
+        if (LConvReLU *conv = dynamic_cast<LConvReLU *>(cl)) {
           // filter copy and adaptation
-          printf("adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
-          LConv *layer_src = dynamic_cast<LConv *>(m_src->layers[associated_layer[l]]);
-          //collectTensor(layer_src, "param", 0);
-	        float *ptr_src = layer_src->params[0]->ptr; //cd->K->ptr;
-          //_profile_fpga_tensor(layer_src->cd->K);
-  	      LConv *layer_dst = dynamic_cast<LConv *>(net->layers[l]);
+          printf("LConvReLU adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+          LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
+          collectTensor(layer_src, "param", 0);
+	        float *ptr_src_k = layer_src->params[0]->ptr; //cd->K->ptr;
+
+  	      LConvReLU *layer_dst = (LConvReLU *) net->layers[l];
           float *ptr_dst = layer_dst->cd->K->ptr;
+          
 	        int src_I                = layer_src->cd->I->shape[1];
           int src_O                = layer_src->cd->O->shape[1];
 	        int dst_I                = layer_dst->cd->I->shape[1];
           int dst_O                = layer_dst->cd->O->shape[1];
-	        printf("I %d O %d -> I %d O %d\n", src_I, src_O, dst_I, dst_O);
-          filter_IHW_to_GIHWCPI(ptr_src, ptr_dst, src_I, src_O, dst_I, dst_O, KH, KW, CPI, CPO);
+         
+          printf("in K %d %d %d %d\n", layer_src->cd->K->shape[0],layer_src->cd->K->shape[1],layer_src->cd->K->shape[2],layer_src->cd->K->shape[3]);
+	        printf("out K %d %d %d %d\n", layer_dst->cd->K->shape[0],layer_dst->cd->K->shape[1],layer_dst->cd->K->shape[2],layer_src->cd->K->shape[3]);
+          printf("I %d O %d -> I %d O %d\n", src_I, src_O, dst_I, dst_O);
+          
+          filter_IHW_to_GIHWCPI(ptr_src_k, ptr_dst, src_I, src_O, dst_I, dst_O, KH, KW, CPI, CPO);
           distributeTensor(layer_dst, "param", 0);
+
+        } else if (LConvReLUMaxPool *conv = dynamic_cast<LConvReLUMaxPool *>(cl)){
+            // filter copy and adaptation
+            printf("LConvReLUMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+            LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
+            collectTensor(layer_src, "param", 0);
+	          float *ptr_src_k = layer_src->params[0]->ptr; //cd->K->ptr;
+
+  	        LConvReLUMaxPool *layer_dst = (LConvReLUMaxPool *) net->layers[l];
+            float *ptr_dst = layer_dst->cd->K->ptr;
+
+	          int src_I                = layer_src->cd->I->shape[1];
+            int src_O                = layer_src->cd->O->shape[1];
+	          int dst_I                = layer_dst->cd->I->shape[1];
+            int dst_O                = layer_dst->cd->O->shape[1];
+	          printf("I %d O %d -> I %d O %d\n", src_I, src_O, dst_I, dst_O);
+            
+            filter_IHW_to_GIHWCPI(ptr_src_k, ptr_dst, src_I, src_O, dst_I, dst_O, KH, KW, CPI, CPO);
+            distributeTensor(layer_dst, "param", 0);
         }
       }
       return net;

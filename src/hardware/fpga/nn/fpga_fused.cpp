@@ -72,9 +72,9 @@ void fpga_conv_maxpool(ConvolDescriptor *D)
 // --------------------------------------------------------------------------------------------
 // Conv2D + ReLU
 //
-void fpga_conv2DReLU(ConvolDescriptor *D)
+void fpga_conv_relu(ConvolDescriptor *D)
 {
-  _debug_fpga_funcs("conv2DReLU");
+  _debug_fpga_funcs("fpga_conv_relu");
   _profile_fpga(_FPGA_CONV2D_RELU, 0);
   _profile_fpga_tensor(D->I);
   _profile_fpga_tensor(D->K);

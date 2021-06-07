@@ -35,6 +35,7 @@ LConvSTM::LConvSTM(Layer *parent, ConvolDescriptor *D, string name, int dev, int
 
     input = parent->output;
     cd = D;
+    cd->ksize[0] =ceil((float)cd->ksize[0]/CPO) * CPO;
     cd->build(input);
 
     output = cd->O;

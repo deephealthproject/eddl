@@ -13,6 +13,8 @@
 #include <iostream>
 
 #include "eddl/layers/fused/layer_fused.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#include "eddl/hardware/fpga/fpga_hw.h"   // for buffer copies
 
 using namespace std;
 
@@ -43,6 +45,7 @@ LConvReLUMaxPool::LConvReLUMaxPool(Layer *parent, ConvolDescriptor *D, PoolDescr
   
     //Conv
     cd = D;
+    cd->ksize[0] =ceil((float)cd->ksize[0]/CPO) * CPO;
     cd->build(input);
 
     //Pooling
@@ -137,8 +140,15 @@ void LConvReLUMaxPool::apply_accumulated_gradients() {
 }
 
 Layer *LConvReLUMaxPool::share(int c, int bs, vector<Layer *> p) {
-    LConvReLUMaxPool *n = new LConvReLUMaxPool(p[0], cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, pd->ksize , pd->stride, pd->padding, cd->use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
-
+    LConvReLUMaxPool *n;
+    if(pd->padding =="custom") {
+        n = new LConvReLUMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, 
+                    pd->ksize, pd->stride, pd->pad, cd->use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    } 
+    else {
+        n = new LConvReLUMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, 
+                    pd->ksize, pd->stride, pd->padding, cd->use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    }
     n->orig = this;
     n->isshared=true;
     n->trainable = trainable;
@@ -185,7 +195,15 @@ Layer *LConvReLUMaxPool::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LConvReLUMaxPool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LConvReLUMaxPool *n = new LConvReLUMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, pd->ksize, pd->stride, pd->padding, cd->use_bias, this->name, todev, this->mem_level);
+    LConvReLUMaxPool *n;
+    if(pd->padding =="custom") {
+        n = new LConvReLUMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, 
+                    pd->ksize, pd->stride, pd->pad, cd->use_bias, this->name, todev, this->mem_level);
+    } 
+    else {
+        n = new LConvReLUMaxPool(p[0],cd->filters, cd->kernel_size, cd->strides, cd->padding, cd->pads, cd->groups, cd->dilation_rate, 
+                    pd->ksize, pd->stride, pd->padding, cd->use_bias, this->name, todev, this->mem_level);
+    }
     n->trainable = trainable;
     n->do_deletes = false;
 

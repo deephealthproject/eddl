@@ -94,7 +94,7 @@ void fpga_permute_batch_last(Tensor *A,Tensor *B);
 //Fused
 void fpga_conv_maxpool(ConvolDescriptor *D);
 
-void fpga_conv2DReLU(ConvolDescriptor *D);
+void fpga_conv_relu(ConvolDescriptor *D);
 
 void fpga_conv_relu_maxpool(ConvolDescriptor *D);
 

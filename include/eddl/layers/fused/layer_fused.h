@@ -23,6 +23,7 @@
 
 using namespace std;
 
+const int CPO = 4;
 /// Conv + MaxPool Layer
 class LConvMaxPool : public LinLayer {
 public:
