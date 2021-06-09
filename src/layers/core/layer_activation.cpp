@@ -62,7 +62,9 @@ if(!output->isCPU()){
 
     if(this->act == "softmax"){
         algorithm = CUDNN_SOFTMAX_ACCURATE;
-        softmax_mode = CUDNN_SOFTMAX_MODE_INSTANCE;
+        softmax_mode = (output->shape.size() > 2)
+                     ? CUDNN_SOFTMAX_MODE_CHANNEL
+                     : CUDNN_SOFTMAX_MODE_INSTANCE;
 
     }
     else{
@@ -186,7 +188,7 @@ if(!this->input->isCPU())
         cudnnStatus_t st = cudnnActivationForward(hdnn[this->input->gpu_device], activationDesc, &alpha, xDesc, this->input->ptr,
                                &beta, yDesc, this->output->ptr);
         if( st != CUDNN_STATUS_SUCCESS) std::cout<<"ACT: " <<cudnnGetErrorString(st)<<std::endl;
-    }    
+    }
 }
 else
 #endif
