@@ -39,7 +39,7 @@ LConvReLUMaxPool::LConvReLUMaxPool(Layer *parent, ConvolDescriptor *D, PoolDescr
     if (parent->output->ndim != 4) msg("LConvReLUMaxPool only works over 4D tensors", "LConvReLUMaxPool::LConvReLUMaxPool");
 
     // Set default name
-    if(name.empty()) this->name = "conv_relu_maxpool_" + to_string(++total_layers);
+    if(name.empty()) this->name = "fpga_conv_relu_maxpool_" + to_string(++total_layers);
 
     input = parent->output;  
   

@@ -29,7 +29,7 @@ LConvReLU::LConvReLU(Layer *parent, ConvolDescriptor *D, string name, int dev, i
     // Check dev with tensor dev
 
     // Set default name
-    if(name.empty()) this->name = "conv2d_relu_" + to_string(++total_layers);
+    if(name.empty()) this->name = "fpga_conv2d_relu_" + to_string(++total_layers);
 
     input = parent->output;
     cd = D;

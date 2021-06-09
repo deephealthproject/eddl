@@ -400,13 +400,20 @@ void _profile_fpga_tensor_print(Tensor *T) {
     for (int d1=0; d1<d1_max; d1++) {
     for (int d2=0; d2<d2_max; d2++) {
     for (int d3=0; d3<d3_max; d3++) {
+    
+    //for (int d0=0; d0<T->shape[0]; d0++) {
+    //for (int d1=0; d1<T->shape[1]; d1++) {
+    //for (int d2=0; d2<T->shape[2]; d2++) {
+    //for (int d3=0; d3<T->shape[3]; d3++) {
       int a = (d0 * T->shape[1] * T->shape[2] * T->shape[3]) + (d1 * T->shape[2] * T->shape[3]) + (d2 * T->shape[3]) + d3;
       printf("%f ", T->ptr[a]);
+      
     }
+    //printf("\n\n");
     }
-    printf("\n");
+    //printf("\n---\n");
     }
-    printf("\n");
+    //printf("\n--\n--\n");
     }
   }
   #endif
@@ -1796,7 +1803,6 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int mode) {
 
   } else {
     // transformation from GHWC to CHW
-
     fpga_copy_from_fpga(A, A->ptr);
     int B_in = A->shape[0];
     int C_in = A->shape[1];
@@ -1828,4 +1834,52 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int mode) {
 
   _profile_fpga(_FPGA_TRANSFORM, 1);
   _profile_fpga_tensor(B);
+}
+
+
+void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B) {
+
+      float *src_ptr = A->ptr;
+      float *dst_ptr = B->ptr;
+
+      int src_I = A->shape[1];
+      int src_O = A->shape[0];
+
+      int dst_I = B->shape[1];
+      int dst_O = B->shape[0];
+
+      int KH = A->shape[2];
+      int KW = A->shape[3];
+
+      int CPI = 4;  
+      int CPO = 4;
+
+      int GI      = dst_I / CPI;
+      int GO      = dst_O / CPO;
+      memset(dst_ptr, 0, sizeof(float) * KW * KH * dst_I * dst_O);
+
+      for (int i=0; i < src_I; i++) {
+        for (int o=0; o < src_O; o++) {
+          for (int kh=0; kh<KH; kh++) {
+            for (int kw=0; kw<KW; kw++) {
+              int gi = i / CPI;
+              int cpi = i % CPI;
+              int go = o / CPO;
+              int cpo = o % CPO;
+              int in_addr = (o * KW * KH * src_I) + (i * KW * KH) + (kh * KW) + kw;
+              int out_addr = (go * GI * CPO * CPI * KH * KW) + (gi * CPO * CPI * KH * KW) + 
+                  (cpo * CPI * KH * KW) + (cpi * KH * KW) + (kh * KW) + kw;
+              dst_ptr[out_addr] = src_ptr[in_addr];
+            }
+          }
+        }
+      }
+  }
+
+void tensor_padded(Tensor *A, Tensor *B) {
+  memset(B->ptr, 0, sizeof(float) * B->size);
+  #pragma omp parallel for
+  for (int i = 0; i < A->size; i++){
+      B->ptr[i] = A->ptr[i];
+  }
 }

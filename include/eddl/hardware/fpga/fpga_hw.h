@@ -22,10 +22,10 @@
 
 extern cl::CommandQueue *q;
 
-//#define FPGA_DEBUG
-//#define FPGA_DEBUG_TENSORS
-//#define FPGA_DEBUG_FUNCS
-//#define FPGA_DEBUG_VERBOSE
+#define FPGA_DEBUG
+#define FPGA_DEBUG_TENSORS
+#define FPGA_DEBUG_FUNCS
+#define FPGA_DEBUG_VERBOSE
 
 #include "eddl/hardware/fpga/fpga_enables.h"
 
@@ -356,6 +356,8 @@ void fpga_not_equal(Tensor *A, Tensor *B, float v);
 
 void fpga_transform_nn(Tensor *A, Tensor *B, int mode);
 
+void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B);
+void tensor_padded(Tensor *A, Tensor *B);
 // Legacy
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon);
 

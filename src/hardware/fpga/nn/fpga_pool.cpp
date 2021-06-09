@@ -166,17 +166,21 @@ void fpga_mpool2D_back(PoolDescriptor *D){
 // avgpool2D
 //
 void fpga_cpuemu_avgpool2D(PoolDescriptor *D) {
-    printf("fpga_cpuemu_avgpool2D not implemented yet\n");
-    exit(1);
+    _profile(_CPU_AVGPOOL2D, 0);
+    fpga_copy_from_fpga(D->I, D->I->ptr, 0);
+    cpu_avgpool2D(D);
+    fpga_copy_to_fpga(D->O->ptr, D->O, 0);
+    _profile(_CPU_AVGPOOL2D, 1);
 }
 
 void fpga_avgpool2D(PoolDescriptor *D){
     _profile_fpga(_FPGA_AVGPOOL2D, 0);
-    if (fpga_set_cpuemu_avgpool2D == 1) {
-        fpga_cpuemu_avgpool2D(D);
-    } else {
-        printf("fpga_avgpool2D not implemented yet\n"); exit(1);
-    }
+
+    #ifndef K_ENABLED_AVGPOOL2D
+    fpga_cpuemu_avgpool2D(D);
+    #else
+    printf("fpga_avgpool2D not implemented yet\n"); exit(1);
+    #endif
     _profile_fpga(_FPGA_AVGPOOL2D, 1);
 }
 

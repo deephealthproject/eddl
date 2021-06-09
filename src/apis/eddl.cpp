@@ -17,6 +17,7 @@
 #include "eddl/apis/eddl.h"
 #include "eddl/utils.h"
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
+#include "eddl/hardware/fpga/fpga_hw.h"
 
 extern void fpga_reshape_kernel(ConvolDescriptor *src_D, ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO);
 extern void _profile_fpga_tensor(Tensor *t);
@@ -1898,30 +1899,6 @@ namespace eddl {
     return p;
   }
 
-
-    void filter_IHW_to_GIHWCPI(float *src_ptr, float *dst_ptr, int src_I, int src_O, int dst_I, int dst_O, int KH, int KW, int CPI, int CPO) {
-      int GI      = dst_I / CPI;
-      int GO      = dst_O / CPO;
-
-      memset(dst_ptr, 0, sizeof(float) * KW * KH * dst_I * dst_O);
-
-      for (int i=0; i < src_I; i++) {
-        for (int o=0; o < src_O; o++) {
-          for (int kh=0; kh<KH; kh++) {
-            for (int kw=0; kw<KW; kw++) {
-              int gi = i / CPI;
-              int cpi = i % CPI;
-              int go = o / CPO;
-              int cpo = o % CPO;
-              int in_addr = (o * KW * KH * src_I) + (i * KW * KH) + (kh * KW) + kw;
-              int out_addr = (go * GI * CPO * CPI * KH * KW) + (gi * CPO * CPI * KH * KW) + (cpo * CPI * KH * KW) + (cpi * KH * KW) + (kh * KW) + kw;
-              dst_ptr[out_addr] = src_ptr[in_addr];
-            }
-          }
-        }
-      }
-    }
-
     // model for fpga
     model model_for_fpga(model m_src) {
 
@@ -1944,6 +1921,7 @@ namespace eddl {
       int found_I;     // current layer is an input layer
       int found_C;     // current layer is a Convolution
       int found_M;     // current layer is maxpool
+      int found_A;     // current layer is avgpool
       int found_R;     // current layer is relu
       int found_S;     // current layer is softmax
       int found_D;     // current layer is dense
@@ -1977,16 +1955,17 @@ namespace eddl {
       while (l_src<num_layers) {
 	      // detection stage, we detect any possible type of layer that can be merged
 	      // we look into current, current+1 and current+2 layers
-	
+        
   	    // Current layer
-	      found_C = 0; found_I = 0; found_R = 0; found_S = 0; found_M = 0; found_Reshape = 0; found_D = 0;
+	      found_C = 0; found_I = 0; found_R = 0; found_S = 0; found_M = 0; found_A = 0; found_Reshape = 0; found_D = 0;
 	      cl = m_src->layers[l_src];
+
 	      if (LConv *dl = dynamic_cast<LConv *>(cl)) found_C = 1;
 	      if (LInput *dl = dynamic_cast<LInput *>(cl)) found_I = 1;
         if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "relu") found_R = 1;
         if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "softmax") found_S = 1;
-        if (LPool *dl = dynamic_cast<LPool *>(cl)) found_M = 1;
-        if (LReshape *dl = dynamic_cast<LReshape *>(cl)) found_Reshape = 1;
+        if (LMaxPool *dl = dynamic_cast<LMaxPool *>(cl)) found_M = 1;
+        if (LAveragePool *dl = dynamic_cast<LAveragePool *>(cl)) found_A = 1;        if (LReshape *dl = dynamic_cast<LReshape *>(cl)) found_Reshape = 1;
         if (LDense *dl = dynamic_cast<LDense *>(cl)) found_D = 1;
 
 	      // current+1 layer
@@ -1995,7 +1974,7 @@ namespace eddl {
         found_nSp = 0;
 	      if (l_src<num_layers-1) {
 	        nl = m_src->layers[l_src+1];
-	        if (LPool *dl = dynamic_cast<LPool *>(nl)) found_nM = 1;
+	        if (LMaxPool *dl = dynamic_cast<LMaxPool *>(nl)) found_nM = 1;
 	        if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_nR = 1;
           if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "softplus") found_nSp = 1; 
   	    }
@@ -2005,7 +1984,7 @@ namespace eddl {
         found_nnT = 0;
 	      if (l_src<num_layers-2) {
 	        nnl = m_src->layers[l_src+2];
-	        if (LPool *dl = dynamic_cast<LPool *>(nnl)) found_nnM = 1; 
+	        if (LMaxPool *dl = dynamic_cast<LMaxPool *>(nnl)) found_nnM = 1; 
           if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "tanh") found_nnT = 1; 
 	      }
 
@@ -2107,33 +2086,51 @@ namespace eddl {
 	      } else if (found_R) {
           printf("instantiating R layer\n");
 	        prev_layer = ReLu(prev_layer);
+          associated_layer[l_dst] = l_src;
 
 	      } else if (found_M) {
           printf("instantiating M layer\n");
-          LPool *layer_src = (LPool *)cl;
+          LMaxPool *layer_src = (LMaxPool *)cl;
           if(layer_src->pd->padding =="custom") {
 	          prev_layer = new LMaxPool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, layer_src->name, DEV_CPU, 0);
           } 
           else {
 	          prev_layer = new LMaxPool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, layer_src->name, DEV_CPU, 0);
           }
+          associated_layer[l_dst] = l_src;
+
+        } else if (found_A) {
+          printf("instantiating A layer\n");
+          LAveragePool *layer_src = (LAveragePool *)cl;
+          if(layer_src->pd->padding =="custom") {
+	          prev_layer = new LAveragePool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, layer_src->name, DEV_CPU, 0);
+          } 
+          else {
+	          prev_layer = new LAveragePool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, layer_src->name, DEV_CPU, 0);
+          }
+          associated_layer[l_dst] = l_src;
+
 	      } else if (found_I) {
           printf("instantiating I layer\n");
 	        prev_layer = Input({3, 224, 224});     // TOFIX
+          associated_layer[l_dst] = l_src;
 
         } else if (found_Reshape) {
           printf("instantiating Reshape layer\n");
           LReshape *layer_src = (LReshape *)cl;
           prev_layer = Reshape(prev_layer, { -1 }/*layer_src->ls*/);   // TOFIX
+          associated_layer[l_dst] = l_src;
 
         } else  if (found_D) {
           printf("instantiating Dense layer\n");
           LDense *layer_src = (LDense *)cl;
           prev_layer = Dense(prev_layer, layer_src->ndim);
+          associated_layer[l_dst] = l_src;
 
         } else if (found_S) {
           printf("instantiating Softmax layer\n");
           prev_layer = Softmax(prev_layer);
+          associated_layer[l_dst] = l_src;
 
         } else {
 	        printf("Error, unidentified layer\n");
@@ -2151,49 +2148,106 @@ namespace eddl {
       build(net, sgd(0.001f, 0.9f),{"soft_cross_entropy"}, {"categorical_accuracy"}, CS_FPGA({1}));
       summary(net);
 
-      // now we adapt the filters
+      // now we adapt the filters and bias
       for (int l=0; l<l_dst; l++) { 
+        // filter and bias copy and adaptation
         Layer *cl = net->layers[l];
         if (LConvReLU *conv = dynamic_cast<LConvReLU *>(cl)) {
-          // filter copy and adaptation
           printf("LConvReLU adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
-          LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
-          collectTensor(layer_src, "param", 0);
-	        float *ptr_src_k = layer_src->params[0]->ptr; //cd->K->ptr;
-
-  	      LConvReLU *layer_dst = (LConvReLU *) net->layers[l];
-          float *ptr_dst = layer_dst->cd->K->ptr;
-          
-	        int src_I                = layer_src->cd->I->shape[1];
-          int src_O                = layer_src->cd->O->shape[1];
-	        int dst_I                = layer_dst->cd->I->shape[1];
-          int dst_O                = layer_dst->cd->O->shape[1];
          
-          printf("in K %d %d %d %d\n", layer_src->cd->K->shape[0],layer_src->cd->K->shape[1],layer_src->cd->K->shape[2],layer_src->cd->K->shape[3]);
-	        printf("out K %d %d %d %d\n", layer_dst->cd->K->shape[0],layer_dst->cd->K->shape[1],layer_dst->cd->K->shape[2],layer_src->cd->K->shape[3]);
-          printf("I %d O %d -> I %d O %d\n", src_I, src_O, dst_I, dst_O);
+          LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
+          LConvReLU *layer_dst = (LConvReLU *) net->layers[l];
           
-          filter_IHW_to_GIHWCPI(ptr_src_k, ptr_dst, src_I, src_O, dst_I, dst_O, KH, KW, CPI, CPO);
+          //filter
+          collectTensor(layer_src, "param", 0);
+          filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
           distributeTensor(layer_dst, "param", 0);
 
-        } else if (LConvReLUMaxPool *conv = dynamic_cast<LConvReLUMaxPool *>(cl)){
-            // filter copy and adaptation
+          //bias
+          collectTensor(layer_src, "param", 1);
+          tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+          distributeTensor(layer_dst, "param", 1);
+
+        } else if (LConvMaxPool *conv = dynamic_cast<LConvMaxPool *>(cl)) {
+            printf("LConvMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+            LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
+  	        LConvMaxPool *layer_dst = (LConvMaxPool *) net->layers[l];
+
+            //filter
+            collectTensor(layer_src, "param", 0);
+            filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
+            distributeTensor(layer_dst, "param", 0);
+
+            //bias
+            collectTensor(layer_src, "param", 1);
+            tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+            distributeTensor(layer_dst, "param", 1);
+            
+        } else if (LConvReLUMaxPool *conv = dynamic_cast<LConvReLUMaxPool *>(cl)) {
             printf("LConvReLUMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
             LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
-            collectTensor(layer_src, "param", 0);
-	          float *ptr_src_k = layer_src->params[0]->ptr; //cd->K->ptr;
-
   	        LConvReLUMaxPool *layer_dst = (LConvReLUMaxPool *) net->layers[l];
-            float *ptr_dst = layer_dst->cd->K->ptr;
 
-	          int src_I                = layer_src->cd->I->shape[1];
-            int src_O                = layer_src->cd->O->shape[1];
-	          int dst_I                = layer_dst->cd->I->shape[1];
-            int dst_O                = layer_dst->cd->O->shape[1];
-	          printf("I %d O %d -> I %d O %d\n", src_I, src_O, dst_I, dst_O);
-            
-            filter_IHW_to_GIHWCPI(ptr_src_k, ptr_dst, src_I, src_O, dst_I, dst_O, KH, KW, CPI, CPO);
+            //filter
+            collectTensor(layer_src, "param", 0);
+            filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
             distributeTensor(layer_dst, "param", 0);
+  
+            //bias
+            collectTensor(layer_src, "param", 1);
+            tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+            distributeTensor(layer_dst, "param", 1);
+
+        } else if (LConvSTM *conv = dynamic_cast<LConvSTM *>(cl)) {
+            printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+            LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
+  	        LConvSTM *layer_dst = (LConvSTM *) net->layers[l];
+
+            //filter
+            collectTensor(layer_src, "param", 0);
+            filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
+            distributeTensor(layer_dst, "param", 0);
+  
+            //bias
+            collectTensor(layer_src, "param", 1);
+            tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+            distributeTensor(layer_dst, "param", 1);
+
+        } else if (LConvSTMAdd *conv = dynamic_cast<LConvSTMAdd *>(cl)) {
+            printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+            LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
+  	        LConvSTMAdd *layer_dst = (LConvSTMAdd *) net->layers[l];
+
+            //filter
+            collectTensor(layer_src, "param", 0);
+            filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
+            distributeTensor(layer_dst, "param", 0);
+  
+            //bias
+            collectTensor(layer_src, "param", 1);
+            tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+            distributeTensor(layer_dst, "param", 1);
+        } else if (LDense *dl = dynamic_cast<LDense *>(cl)) {
+            printf("LDense adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+            LDense *layer_src = (LDense *) m_src->layers[associated_layer[l]];
+  	        LDense *layer_dst = (LDense *) net->layers[l]; 
+
+            //w
+            collectTensor(layer_src, "param", 0);
+            tensor_padded(layer_src->W, layer_dst->W);
+            distributeTensor(layer_dst, "param", 0);
+            
+            //bias
+            collectTensor(layer_src, "param", 1);
+            tensor_padded(layer_src->bias, layer_dst->bias);
+            distributeTensor(layer_dst, "param", 1);
+      
+            printf("TENSOR  dense pointer %p,\n",layer_dst->W->ptr);
+
+            //printf("info src\n");
+            //layer_src->info();
+            //printf("LAYERinfo dst\n");
+            //layer_dst->info();
         }
       }
       return net;
