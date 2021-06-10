@@ -24,7 +24,7 @@ void build_conv1D_node(LConv1D *layer, onnx::GraphProto *graph, bool gradients)
   onnx::AttributeProto *conv_dilations = node->add_attribute();
   conv_dilations->set_name("dilations");
   conv_dilations->set_type(onnx::AttributeProto::INTS);
-  conv_dilations->add_ints(1);
+  conv_dilations->add_ints(layer->cd->dilation_rate[0]);
 
   //Attr group
   onnx::AttributeProto *conv_group = node->add_attribute();

@@ -21,7 +21,7 @@ Layer* build_conv_layer(onnx::NodeProto *node,
   bool use_bias = node->input_size() > 2;
   int conv_dim = 2; // Number of dimension of the convolution (1, 2 or 3)
   int groups = 1;
-  vector<int> dilation_rate = {1, 1};
+  vector<int> dilation_rate;
 
   for (int j = 0; j < node->attribute_size(); j++)
   { // Set the attributes
@@ -36,8 +36,10 @@ Layer* build_conv_layer(onnx::NodeProto *node,
       else if (!attribute.s().compare("SAME_UPPER"))
         auto_pad_option = "same";
     }
-    //else if (!attr_name.compare("dilations")) { It isn't implemented in eddl
-    //}
+    else if (!attr_name.compare("dilations")) {
+      for (int h = 0; h < attribute.ints_size(); h++)
+        dilation_rate.push_back(attribute.ints(h));
+    }
     //else if (!attr_name.compare("group")) { It isn't implemented in eddl
     //}
     else if (!attr_name.compare("kernel_shape"))
@@ -97,6 +99,13 @@ Layer* build_conv_layer(onnx::NodeProto *node,
   else if (parent_shape.size() == 5)
     conv_dim = 3;
 
+  if (dilation_rate.size() == 0)
+    for (int i = 0; i < conv_dim; ++i)
+      dilation_rate.push_back(1);
+  else if (dilation_rate.size() != conv_dim)
+    msg("Error in layer " + name + + ", the number of values in the dilations attribute (" + to_string(dilation_rate.size()) +
+        ") doesn't match the number of dimensions of the convolutional layer (" + to_string(conv_dim) + ").");
+
   Layer *actual_layer;
   if (conv_dim < 3) // Handle Conv1D and Conv2D (they use the same ConvolDescriptor)
   {
@@ -108,6 +117,7 @@ Layer* build_conv_layer(onnx::NodeProto *node,
       dims.push_back(1);
       pads.push_back(0);
       pads.push_back(0);
+      dilation_rate.push_back(1);
     }
 
     ConvolDescriptor *cd = new ConvolDescriptor(filters,
@@ -176,6 +186,7 @@ Layer* build_conv_layer(onnx::NodeProto *node,
                                                     strides,
                                                     auto_pad_option,
                                                     pads,
+                                                    dilation_rate,
                                                     use_bias,
                                                     mem);
 
@@ -223,8 +234,7 @@ void build_conv_node(LConv *layer, onnx::GraphProto *graph, bool gradients)
   onnx::AttributeProto *conv_dilations = node->add_attribute();
   conv_dilations->set_name("dilations");
   conv_dilations->set_type(onnx::AttributeProto::INTS);
-  vector<int> vdilations{1, 1};
-  for (int i : vdilations)
+  for (int i : layer->cd->dilation_rate)
   {
     conv_dilations->add_ints(i);
   }

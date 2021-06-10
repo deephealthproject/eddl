@@ -623,6 +623,7 @@ namespace eddl {
                int groups, vector<int> dilation_rate,string name){
     kernel_size.push_back(1);
     strides.push_back(1);
+    dilation_rate.push_back(1);
     return new LConv1D(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
