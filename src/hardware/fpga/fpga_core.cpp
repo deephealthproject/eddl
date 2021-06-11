@@ -409,13 +409,29 @@ void _profile_fpga_tensor_print(Tensor *T) {
       printf("%f ", T->ptr[a]);
       
     }
+    //printf("\n");
+    }
     //printf("\n\n");
     }
-    //printf("\n---\n");
+    //printf("\n\n\n");
     }
-    //printf("\n--\n--\n");
+  }  else if(T->ndim==2) {
+       for (int d0=0; d0<d1_max; d0++) {
+       for (int d1=0; d1<d2_max; d1++) {
+       //for (int d0=0; d0<T->shape[0]; d0++) {
+       //for (int d1=0; d1<T->shape[1]; d1++) {
+         int a = (d0 * T->shape[1]) + d1;
+         printf("%f ", T->ptr[a]);
+       }
+       printf("\n\n");
     }
-  }
+
+  } else if(T->ndim==1) {
+    for (int d0=0; d0<T->shape[0]; d0++) {
+      printf("%f ", T->ptr[0]);
+    }
+    printf("\n\n");
+    }
   #endif
 }
 

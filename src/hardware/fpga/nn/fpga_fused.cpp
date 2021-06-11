@@ -30,7 +30,7 @@ PROFILING_ENABLE_EXTERN(fpga_Conv2D_RELU_MAXPOOL);
 void fpga_conv_maxpool(ConvolDescriptor *D)
 {
     // debug and profiling
-  _debug_fpga_funcs("conv_maxpool");
+  _debug_fpga_funcs("fpga_conv2D_maxpool");
   _profile_fpga(_FPGA_CONV2D_MAXPOOL, 0);
   _profile_fpga_tensor(D->I);
   _profile_fpga_tensor(D->K);
@@ -74,7 +74,7 @@ void fpga_conv_maxpool(ConvolDescriptor *D)
 //
 void fpga_conv_relu(ConvolDescriptor *D)
 {
-  _debug_fpga_funcs("fpga_conv_relu");
+  _debug_fpga_funcs("fpga_conv2D_relu");
   _profile_fpga(_FPGA_CONV2D_RELU, 0);
   _profile_fpga_tensor(D->I);
   _profile_fpga_tensor(D->K);
@@ -120,7 +120,7 @@ void fpga_conv_relu(ConvolDescriptor *D)
 void fpga_conv_relu_maxpool(ConvolDescriptor *D)
 {
     // debug and profiling
-  _debug_fpga_funcs("conv_relu_maxpool");
+  _debug_fpga_funcs("fpga_conv2D_relu_maxpool");
   _profile_fpga(_FPGA_CONV2D_RELU_MAXPOOL, 0);
   _profile_fpga_tensor(D->I);
   _profile_fpga_tensor(D->K);
@@ -166,7 +166,7 @@ void fpga_conv_stm(ConvolDescriptor *D)
 {
 
     // debug and profiling
-  _debug_fpga_funcs("conv_stm");
+  _debug_fpga_funcs("fpga_conv2D_stm");
   _profile_fpga(_FPGA_CONV2D_STM, 0);
   _profile_fpga_tensor(D->I);
   _profile_fpga_tensor(D->K);
@@ -212,7 +212,7 @@ void fpga_conv_stm_add(ConvolDescriptor *D, Tensor *Add)
 {
 
     // debug and profiling
-  _debug_fpga_funcs("conv_stm_add");
+  _debug_fpga_funcs("fpga_conv2D_stm_add");
   _profile_fpga(_FPGA_CONV2D_STM_ADD, 0);
   _profile_fpga_tensor(D->I);
   _profile_fpga_tensor(D->K);

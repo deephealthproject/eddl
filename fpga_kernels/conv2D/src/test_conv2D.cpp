@@ -701,7 +701,6 @@ int main(int argc, char **argv) {
   OCL_CHECK(err, buffer_i = new cl::Buffer(context, CL_MEM_EXT_PTR_XILINX | CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_data_in_bytes, &data_in_ddr, &err));
 
   for (int conv=0; conv<CONVS; conv++) {
-    printf("conv %d\n", conv);
     OCL_CHECK(err, buffer_o[conv] = new cl::Buffer(context, CL_MEM_EXT_PTR_XILINX | CL_MEM_WRITE_ONLY  | CL_MEM_USE_HOST_PTR , size_output_in_bytes, &out_ddr[conv], &err));
     OCL_CHECK(err, buffer_k[conv] = new cl::Buffer(context, CL_MEM_EXT_PTR_XILINX | CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_kernel_in_bytes, &kernel_ddr[conv], &err));
     OCL_CHECK(err, buffer_bias[conv] = new cl::Buffer(context, CL_MEM_EXT_PTR_XILINX | CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR , size_bias_in_bytes, &bias_ddr[conv], &err));
@@ -719,7 +718,6 @@ int main(int argc, char **argv) {
   OCL_CHECK(err, err = write_events[0].wait());
 
   for (int conv=0; conv<CONVS; conv++) {
-    printf("hola conv %d\n", conv);
     OCL_CHECK(err, err = q.enqueueMigrateMemObjects( {*buffer_k[conv]}, 0 /*0 means from host*/, NULL, &write_events[0]));
     set_callback(write_events[0], "ooo_queue");
     OCL_CHECK(err, err = write_events[0].wait());

@@ -18,6 +18,7 @@
 #include "eddl/utils.h"
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 #include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 extern void fpga_reshape_kernel(ConvolDescriptor *src_D, ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO);
 extern void _profile_fpga_tensor(Tensor *t);
@@ -1337,10 +1338,10 @@ namespace eddl {
 
       vector<int> shape;
       for(auto l: n->rnet->layers)
-	if (l->sorig==l1) {
-	  if (length==0) shape=l->output->shape;
-	  length++;
-	}
+	      if (l->sorig==l1) {
+	        if (length==0) shape=l->output->shape;
+	        length++;
+	      }
 
       shape.insert(shape.begin(), length);
       // length x batch x dim_layer
@@ -1348,22 +1349,22 @@ namespace eddl {
 
       int i=0;
       for(auto l: n->rnet->layers)
-	if (l->sorig==l1) {
-	  Tensor *out=getOutput(l);
-	  shape[0]=1;
-	  out->reshape_(shape);
+	      if (l->sorig==l1) {
+	        Tensor *out=getOutput(l);
+	        shape[0]=1;
+	        out->reshape_(shape);
 
-	  // put into output
-	  vector<string> s;
-	  s.push_back(to_string(i));
-	  for(int j=1;j<shape.size();j++) s.push_back(":");
+	        // put into output
+	        vector<string> s;
+	        s.push_back(to_string(i));
+	        for(int j=1;j<shape.size();j++) s.push_back(":");
 
-	  output->set_select(s, out);
+	        output->set_select(s, out);
 
-	  s.clear();
-	  i++;
-	  delete out;
-	}
+	        s.clear();
+	        i++;
+	        delete out;
+	      }
       return output;
     }
   }
@@ -2237,12 +2238,27 @@ namespace eddl {
             tensor_padded(layer_src->W, layer_dst->W);
             distributeTensor(layer_dst, "param", 0);
             
+            //distribute to cpu
+            //this is the same functionality as the di
+            Layer *sl=nullptr;
+            Net *sn=layer_dst->net;
+            for(int j=0;j<sn->snets[0]->layers.size();j++)
+            if (sn->snets[0]->layers[j]->orig==layer_dst) {
+                sl=sn->snets[0]->layers[j];
+                break;
+            }
+            
             //bias
             collectTensor(layer_src, "param", 1);
             tensor_padded(layer_src->bias, layer_dst->bias);
             distributeTensor(layer_dst, "param", 1);
-      
-            printf("TENSOR  dense pointer %p,\n",layer_dst->W->ptr);
+            sn=layer_dst->net;
+            for(int j=0;j<sn->snets[0]->layers.size();j++)
+            if (sn->snets[0]->layers[j]->orig==layer_dst) {
+                sl=sn->snets[0]->layers[j];
+                break;
+            }
+            cpu_copy(layer_dst->params[1],sl->params[1]);
 
             //printf("info src\n");
             //layer_src->info();

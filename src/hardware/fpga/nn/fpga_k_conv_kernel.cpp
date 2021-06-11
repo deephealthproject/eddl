@@ -132,12 +132,6 @@ int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_st
   int stride_cols  = D->sc;                           // cols stride
   cl::Buffer I_add;                                   // input add data
 
-
-  //printf("\n\nDEBUG: INPUT %x OUTPUT %x KERNEL %x BIAS %x\n", D->I->fpga_ptr, D->O->fpga_ptr, D->K->fpga_ptr, D->bias->fpga_ptr);
-  //printf("\n\nenable relu %d enable_max %d\n KERNEL\n", enable_relu, enable_maxp);
-  //_profile_fpga_tensor(D->K);
-  //_profile_fpga_tensor_print(D->K);
-  //printf("D->O->shape[0] = %d\n D->O->shape[1] = %d\n D->O->shape[2] = %d\n D->I->shape[1] = %d\n ",D->O->shape[0], D->O->shape[1],D->O->shape[2],D->I->shape[1]);
   // This family of kernels need strides of 1x1, kernels of 1x1, padding of 1x1, and batch size 1
   if ((stride_rows == 1) && (stride_cols == 1) && (Krows == 3) && (Kcols == 3) && (batch_size == 1) && (padding_rows == 1) && (padding_cols == 1)) {
     
@@ -147,9 +141,6 @@ int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_st
           B, O, global_offset, enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
           enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, k_conv2d_cpi,
           k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
-    //printf("\n\nOUTPUT\n");
-    //  _profile_fpga_tensor(D->O);
-    //_profile_fpga_tensor_print(D->O);
 
     return 1;
   }
