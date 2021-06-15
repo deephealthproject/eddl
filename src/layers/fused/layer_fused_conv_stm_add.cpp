@@ -20,24 +20,23 @@ LConvSTMAdd::LConvSTMAdd(vector<Layer *> parent, int filters, const vector<int> 
 
 LConvSTMAdd::LConvSTMAdd(vector<Layer *> parent, ConvolDescriptor *D, string name, int dev, int mem) : MLayer(name, dev, mem){
     if (parent.size() == 0) msg("Error: LConvSTMAdd layer with empty list");
-    if (parent.size() > 2)  msg("Error: LConvSTMAdd layer only supports two parent layers");
+    if (parent.size() != 2)  msg("Error: LConvSTMAdd layer only supports two parent layers");
 
     if(name.empty()) this->name = "conv2d_stm_add_" + to_string(++total_layers);
 
-    if (parent.size() > 1)
     if (parent[0]->output->ndim != 4 || parent[1]->output->ndim != 4) 
         msg("LConvSTMAdd only works over 4D tensors", "LConvSTMAdd::LConvSTMAdd");
-    if (!Tensor::sameShape(parent[0]->output, parent[1]->output)) {
-        parent[0]->output->info();
-        parent[1]->output->info();
-        msg("Error: LConvSTMAdd layers with different tensor shape");
-    }
-
+    
     input = parent[0]->output;
-
     cd = D;
     cd->ksize[0] =ceil((float)cd->ksize[0]/CPO) * CPO;
     cd->build(input);
+
+    if (!Tensor::sameShape(cd->O, parent[1]->output)) {
+        cd->O->info();
+        parent[1]->output->info();
+        msg("Error: LConvSTMAdd layers with different tensor shape");
+    }
 
     output = new Tensor(parent[0]->output->shape, dev);
 
