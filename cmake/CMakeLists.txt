@@ -125,6 +125,7 @@ else()
     set(Protobuf_ROOT "${EP_BASE_DIR}/protobuf" PARENT_SCOPE)
     set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include" PARENT_SCOPE)
     set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc" PARENT_SCOPE)
+    set(Protobuf_USE_STATIC_LIBS ON PARENT_SCOPE) # Always static when superbuild is enabled
 endif()
 add_custom_target(protobuf_files
 	protoc --cpp_out=../src/serialization/onnx ../src/serialization/onnx/onnx.proto
