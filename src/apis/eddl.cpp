@@ -1329,7 +1329,7 @@ namespace eddl {
       return l1->output->clone();  // Why not return addresses so that we can easily avoid potential memory leaks?
     }
     else {
-      cout<<"get output from recurrent"<<endl;
+      //cout<<"get output from recurrent"<<endl;
       int length=0;
 
       vector<int> shape;
