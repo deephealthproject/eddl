@@ -1438,7 +1438,7 @@ vtensor Net::predict(vtensor tin) {
     return predict_recurrent(tin);
   }
   else {
-    cout<<"Predict "<<tin[0]->shape[0]<<" samples\n";
+    // cout<<"Predict "<<tin[0]->shape[0]<<" samples\n";
 
     setmode(TSMODE);
 
