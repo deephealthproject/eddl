@@ -1413,7 +1413,12 @@ vtensor Net::predict_recurrent(vtensor tin) {
 
   prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
 
+  build_rnet(inl,outl);
+
   out=rnet->predict(tinr);
+
+  for(int i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(int i=0;i<toutr.size();i++) delete(toutr[i]);
 
   for(int i=0;i<xt.size();i++)
     delete xt[i];
