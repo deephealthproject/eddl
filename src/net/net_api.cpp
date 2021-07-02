@@ -1435,6 +1435,7 @@ vtensor Net::predict(vtensor tin) {
   vtensor out;
 
   if (isrecurrent) {
+    verboserec=0;
     return predict_recurrent(tin);
   }
   else {
