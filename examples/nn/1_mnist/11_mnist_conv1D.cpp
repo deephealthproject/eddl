@@ -13,6 +13,7 @@
 
 #include "eddl/apis/eddl.h"
 
+#include <mpi.h>
 
 using namespace eddl;
 
@@ -25,6 +26,9 @@ using namespace eddl;
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
+
+ init_distributed(&argc, &argv,8);
+
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -115,6 +119,8 @@ int main(int argc, char **argv) {
     delete x_test;
     delete y_test;
     delete net;
+    
+      end_distributed();
     
     return EXIT_SUCCESS;
 }

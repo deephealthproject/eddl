@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <mpi.h>
 
 #include "eddl/apis/eddl.h"
 
@@ -32,6 +33,27 @@ layer Normalization(layer l)
 int main(int argc, char **argv){
     bool testing = false;
     bool use_cpu = false;
+       int id;
+    int n_procs;
+  
+   init_distributed(&argc, &argv,2);
+//  ierr = MPI_Init ( &argc, &argv );
+   //  Get the number of processes.
+    MPI_Comm_size ( MPI_COMM_WORLD, &n_procs );
+    //  Get the individual process ID.
+    MPI_Comm_rank ( MPI_COMM_WORLD, &id );
+    
+    if ( id == 0 ) 
+  {
+    cout << "\n";
+    cout << "P" << id << ":  MPI - Master process:\n";
+    cout << "P" << id << ":    C++/MPI version\n";
+    cout << "P" << id << ":    An MPI example program.\n";
+    cout << "\n";
+    cout << "P" << id << ":    The number of processes is " << n_procs << "\n";
+    cout << "\n";
+  }
+    
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -141,5 +163,7 @@ int main(int argc, char **argv){
   delete y_test;
   delete net;
 
+  end_distributed();
+  
   return EXIT_SUCCESS;
 }

@@ -13,11 +13,15 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+#include <mpi.h>
 
 #include "eddl/apis/eddl.h"
 #include "eddl/utils.h"
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
+
+int use_mpi=0;
+int mpi_avg=1;
 
 using namespace std;
 
@@ -301,6 +305,22 @@ namespace eddl {
   vector<Tensor *>  predict(model m, const vector<Tensor *> &in)
   {
     return m->predict(in);
+  }
+
+  void init_distributed(int *argc, char ***argv, int avg) {
+    MPI_Init(argc,argv);
+    use_mpi=1;
+    mpi_avg=avg;
+   //  Get the number of processes.
+    //MPI_Comm_size ( MPI_COMM_WORLD, n_procs );
+    //  Get the individual process ID.
+    //MPI_Comm_rank ( MPI_COMM_WORLD, id );
+  }
+  
+  
+  void end_distributed(){
+    if (use_mpi)
+        MPI_Finalize();
   }
 
   // Finer methods
@@ -1614,7 +1634,7 @@ namespace eddl {
 
     if (!exist(name)) {
       cout<<name<<" x\n";
-      cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link+"/"+name;
+      cmd = "wget -q https://www.dropbox.com/s/"+link+"/"+name;
       int status = system(cmd.c_str());
       if (status < 0){
 	msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
@@ -1805,7 +1825,7 @@ namespace eddl {
     for(int i=0;i<link.size();i++) {
       if (!exist(file[i])) {
         cout<<file[i]<<" x\n";
-        cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
+        cmd = "wget -q https://www.dropbox.com/s/"+link[i]+"/"+file[i];
         int status = system(cmd.c_str());
         if (status < 0){
           msg("Error executing wget.  Is it installed?", "eddl.download_"+name);

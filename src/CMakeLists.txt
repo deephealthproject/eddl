@@ -356,6 +356,25 @@ if(BUILD_DIST)
     target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENSSL_LIBRARIES})
 endif()
 
+## Handle MPI
+find_package(MPI)
+# Handle special peak6 case
+#if (NOT MPI_C_LIBRARIES)
+if (NOT MPI_FOUND)
+#    if (EXISTS "/usr/lib64/openmpi3/lib/libmpi.so")
+#        set (MPI_C_LIBRARIES "/usr/lib64/openmpi3/lib/libmpi.so")
+#        set (MPI_INCLUDE_PATH "/usr/include/openmpi3-x86_64")
+#    endif()
+endif()
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${MPI_INCLUDE_PATH})
+target_link_libraries(${PROJECT_NAME} PUBLIC  ${MPI_CXX_LIBRARIES})
+message ("-MPI include: " ${MPI_INCLUDE_PATH})
+message ("-MPI lib: " ${MPI_C_LIBRARIES})
+message ("-MPI lib: " ${MPI_CXX_LIBRARIES})
+message ("-----")
+
+
 ###########################################################################
 ################################## WINDOWS ################################
 ###########################################################################

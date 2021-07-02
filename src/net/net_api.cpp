@@ -21,6 +21,7 @@
 #include "eddl/system_info.h"
 #include "eddl/utils.h"
 
+#include <mpi.h>
 
 #ifdef cFPGA
 extern void _show_profile_fpga();
@@ -32,6 +33,9 @@ int verboserec=1;
 
 using namespace std;
 using namespace std::chrono;
+
+extern int use_mpi;
+extern int mpi_avg;
 
 /////////////////////////////////////////
 //// THREADS
@@ -791,12 +795,26 @@ void Net::delta()
 //////// HIGHER LEVEL FUNCS
 void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
   int i, j, k, n;
+  int ii,jj;
+  int id;
+  int n_procs;
+
+  #define SIZE 8
+  float ptr[SIZE];
+
 
   if (isrecurrent) {
     fit_recurrent(tin, tout, batch, epochs);
   }
   else{
 
+     
+//     for (i = 1; i < SIZE; i++) ptr[i]=(float) i;
+    if (use_mpi) {
+        MPI_Comm_size ( MPI_COMM_WORLD, &n_procs );
+        MPI_Comm_rank ( MPI_COMM_WORLD, &id );
+    }
+    
     // Check current optimizer
     if (optimizer == nullptr)
     msg("Net is not build", "Net.fit");
@@ -843,36 +861,74 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     int num_batches = n / batch_size;
 
     // Train network
-    fprintf(stdout, "%d epochs of %d batches of size %d\n", epochs, num_batches, batch_size);
-    for (i = 0; i < epochs; i++) {
-      high_resolution_clock::time_point e1 = high_resolution_clock::now();
-      fprintf(stdout, "Epoch %d\n", i + 1);
-
+     if (use_mpi && (id==0)) {
+         fprintf(stdout, "%d epochs of %d batches of size %d\n", epochs, num_batches, batch_size);
+     }
+      for (i = 0; i < epochs; i++) {
+             high_resolution_clock::time_point e1 = high_resolution_clock::now();
+       if (use_mpi && (id==0)) {
+            fprintf(stdout, "Epoch %d\n", i + 1);
+       }
       reset_loss();
 
       // For each batch
-      for (j = 0; j < num_batches; j++) {
+      for (j = 0; j < (num_batches/n_procs); j++) {
 
+         // printf("Batch nr %d\n", j);
         // Set random indices
+// TODO assign indices to MPI processes
         for (k = 0; k < batch_size; k++) sind[k] = rand() % n;
 
         // Train batch
         tr_batches++;
 
         train_batch(tin, tout, sind);
+        // synchronize  
 
-        print_loss(j+1,num_batches);
 
-        high_resolution_clock::time_point e2 = high_resolution_clock::now();
-        duration<double> epoch_time_span = e2 - e1;
-        fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count()/(j+1));
-        fflush(stdout);
+        // TODO: MPI average        
 
+        if (use_mpi) {
+            if ((j % mpi_avg)==0) {
+            printf("Proc %d Sincronizando %d\n", id, j);
+                for(ii=0; ii<this->layers.size(); ii++){
+                    for(jj=0; jj<this->layers[ii]->params.size(); jj++){
+                        
+                        float* myptr=this->layers[ii]->params[jj]->ptr;
+                        int count=this->layers[ii]->params[jj]->size;
+                        printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
+                        if (count!=0) {
+                            MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD); 
+                            this->layers[ii]->params[jj]->div_(n_procs);
+                        }
+                            
+                        //  for (int ss=0; ss<count; ss++) printf("%4f", myptr[ss] );
+                    } 
+                }
+            }
+        }
+        
+        //MPI_Allreduce(MPI_IN_PLACE, ptr, SIZE, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD); 
+     	//for (i = 1; i < SIZE; i++)
+	//	if (ptr[i]==j*n_procs*i) printf("ERROR ===========\n");
+  
+        if (use_mpi && (id==0)) {
+            print_loss(j+1,num_batches);
+        }    
+            high_resolution_clock::time_point e2 = high_resolution_clock::now();
+            duration<double> epoch_time_span = e2 - e1;
+        if (use_mpi && (id==0)) {
+            fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count()/((j+1)*n_procs));
+            fflush(stdout);
+        }    
+          
 
       }
-      high_resolution_clock::time_point e2 = high_resolution_clock::now();
-      duration<double> epoch_time_span = e2 - e1;
-      fprintf(stdout, "\n%1.4f secs/epoch\n", epoch_time_span.count());
+            high_resolution_clock::time_point e2 = high_resolution_clock::now();
+            duration<double> epoch_time_span = e2 - e1;
+      if (use_mpi && (id==0)) {
+            fprintf(stdout, "\n%1.4f secs/epoch\n", epoch_time_span.count());
+      }
     }
     fflush(stdout);
   }
