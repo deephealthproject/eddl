@@ -227,7 +227,7 @@ vector<vtensor> Net::get_parameters(bool deepcopy){
     return net_params;
 }
 
-void Net::set_parameters(const vector<vtensor>& new_params){
+void Net::set_parameters(const vector<vtensor>& new_params) {
     // Check the number of layers
     if(new_params.size() != this->layers.size()){
         msg("AssertionError: The number of layers in params does not match the number of layers in this network ("
@@ -249,14 +249,17 @@ void Net::set_parameters(const vector<vtensor>& new_params){
     }
 
     // Set layer params
-    for(int i=0; i<this->layers.size(); i++){
+    for (int layer_index = 0; layer_index < this->layers.size(); ++layer_index) {
 
         // Copy current params
-        for(int j=0; j<this->layers[i]->params.size(); j++){
-            Tensor::copy(new_params[i][j], this->layers[i]->params[j]);
-            sync_weights();  // Send CPU tensors to devices
+        for (int param_index = 0; param_index < this->layers[layer_index]->params.size(); ++param_index) {
+            Tensor::copy(new_params[layer_index][param_index], this->layers[layer_index]->params[param_index]);
+            // sync_weights();  // Send CPU tensors to devices -- 2021-07-05 to be definitively removed because it does just the opposite we need here
+            // copy-back to devices
+            for (int snet_index = 0; snet_index < snets.size(); ++snet_index) {
+                Tensor::copy(this->layers[layer_index]->params[param_index], snets[snet_index]->layers[layer_index]->params[param_index]);
+            }
         }
-
     }
 }
 
