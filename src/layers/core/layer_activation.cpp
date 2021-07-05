@@ -142,7 +142,7 @@ void LActivation::resize(int batch){
     if (output!=nullptr) {output->resize(batch);}
     if (!output->isCPU()){
         if (input->shape.size() > 4) { // 5D input
-            int b = input->shape[0]; // batch size
+            int b = input->shape[0]; // batch size -- does this be updated to be 'batch'? Like this: b = input->shape[0] = batch
             int z = input->shape[1]; // channels
             int d = input->shape[2]; // depth
             int r = input->shape[3]; // rows

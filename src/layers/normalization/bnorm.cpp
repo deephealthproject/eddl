@@ -32,7 +32,8 @@ void rsum(Tensor *A, Tensor *b, Tensor *ones, Tensor *mem,int p)
   if (p) Tensor::mult2D(ones,0,b,0,mem,0);
   else Tensor::mult2D(b,0,ones,0,mem,0);
 
-  A->Tensor::add(1.0,A,1.0,mem,A,0);
+  //A->Tensor::add(1.0,A,1.0,mem,A,0);
+  Tensor::add(1.0,A,1.0,mem,A,0);
   b->reshape_({s});
 
 }
@@ -49,7 +50,8 @@ void rdiff(Tensor *A, Tensor *b, Tensor *ones,Tensor *mem,int p)
   if (p) Tensor::mult2D(ones,0,b,0,mem,0);
   else Tensor::mult2D(b,0,ones,0,mem,0);
 
-  A->Tensor::add(1.0,A,-1.0,mem,A,0);
+  //A->Tensor::add(1.0,A,-1.0,mem,A,0);
+  Tensor::add(1.0,A,-1.0,mem,A,0);
   b->reshape_({s});
 
 }
@@ -137,37 +139,77 @@ void BN_forward(Tensor *input,Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Ten
 
   if (trmode) {
 
+    Tensor *temporary=new Tensor({N,M},input->device);
+
     // mean
-    cmean(input,bn_mean,ones);
+    cmean(input, bn_mean, ones);
 
-    // in=in-mean
-    rdiff(input,bn_mean,ones,var);
+    Tensor::copy(input, temporary);
 
-    Tensor::copy(input,var);
+    // in = in - mean
+    rdiff(temporary, bn_mean, ones, var);
+
+    Tensor::copy(temporary, var);
+
+    delete temporary;
 
     // variance
     var->sqr_();
-    cmean(var,bn_var,ones);
+    cmean(var, bn_var, ones);
 
     // Update global statistics
-    if (momentum!=0.0) {
-      Tensor::add(momentum, mean, (1.0-momentum), bn_mean,mean,0);
-      Tensor::add(momentum, variance, (1.0-momentum), bn_var,variance,0);
+    if (momentum != 0.0) {
+      Tensor::add(momentum, mean,     (1.0 - momentum), bn_mean, mean,     0);
+      Tensor::add(momentum, variance, (1.0 - momentum), bn_var,  variance, 0);
+
+      Tensor::copy(mean,     bn_mean);
+      Tensor::copy(variance, bn_var);
     }
 
     // sd=sqrt(var+epsilon)
     bn_var->add_(epsilon);
     bn_var->sqrt_();
 
-    // in/sd
-    rdiv(input,bn_var,ones,var); //in=(x-mean)/sd
-  }
-  else {
-    rdiff(input,mean,ones,var);
-    Tensor::copy(variance,bn_var);
-    bn_var->add_(epsilon);
-    bn_var->sqrt_();
-    rdiv(input,bn_var,ones,var);
+    // in = in - mean
+    rdiff(input, bn_mean, ones, var);
+    // in / sd
+    rdiv(input, bn_var, ones, var); //in=(x-mean)/sd
+
+
+    std::cerr << "hola que aze" << std::endl << std::flush;
+
+  } else {
+
+    if (momentum != 0.0) {
+
+        std::cerr << "hola caracola" << std::endl << std::flush;
+
+        rdiff(input, mean, ones, var);
+        Tensor::copy(variance, bn_var);
+        bn_var->add_(epsilon);
+        bn_var->sqrt_();
+        rdiv(input, bn_var, ones, var);
+
+    } else {
+
+        std::cerr << "hola coca cola" << std::endl << std::flush;
+
+        // mean
+        cmean(input, bn_mean, ones);
+        // in = in - mean
+        rdiff(input, bn_mean, ones, var);
+
+        Tensor::copy(input, var);
+
+        // variance
+        var->sqr_();
+        cmean(var, bn_var, ones);
+        // sd = sqrt(var + epsilon)
+        bn_var->add_(epsilon);
+        bn_var->sqrt_();
+
+        rdiv(input, bn_var, ones, var);
+    }
   }
 
 

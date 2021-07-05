@@ -119,8 +119,10 @@ __global__ void gpu_batchnorm_forward_2(int z, float inv_N, float *mean, float *
             if (momentum != 0.0) {
                 global_mean[j] = momentum * global_mean[j] + (1.0 - momentum) * mean[j];
                 global_variance[j] = momentum * global_variance[j] + (1.0 - momentum) * variance[j];
+                variance[j] = sqrt(global_variance[j] + epsilon); // if momentum then use the global_variance
+            } else {
+                variance[j] = sqrt(variance[j] + epsilon);
             }
-            variance[j] = sqrt(variance[j] + epsilon);
         } else {
             variance[j] = sqrt(global_variance[j] + epsilon);
         }

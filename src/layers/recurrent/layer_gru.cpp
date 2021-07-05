@@ -111,6 +111,18 @@ void LGRU::mem_delta() {
         if (this->verbosity_level >= 2) {
             std::cout << "Booked delta for: " + this->name << std::endl;
         }
+    } else if (this->delta->shape[0] != this->output->shape[0]) {
+
+        for (int i = 0; i < this->delta_states.size(); ++i)
+            this->delta_states[i]->resize(this->output->shape[0]);
+        // we do the previous for loop just in case, but in the current
+        // implementation only next commented line is required
+        //this->delta->resize(this->output->shape[0]);
+        
+
+        if (this->verbosity_level >= 2) {
+            std::cout << "Resized delta for: " + this->name << std::endl;
+        }
     }
 }
 

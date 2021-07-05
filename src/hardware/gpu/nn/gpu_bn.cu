@@ -75,7 +75,7 @@ void gpu_batchnorm_forward(int gpu_device, int b, int z, int rc,
     if (rcz % batch_norm_block_size) num_blocks++;
     int num_blocks_z = z / batch_norm_block_size;
     if (z % batch_norm_block_size) num_blocks_z++;
-    if (trmode) {
+    if (trmode || momentum == 0.0) { // if momentum is zero, then compute mean and variance always
         // compute mean and variance
         // for (int j = 0; j < z; j++) mean[j] = variance[j] = 0.0;
         check_cuda(cudaMemset(mean, 0, z * sizeof(float)), "gpu_batchnorm_forward");
