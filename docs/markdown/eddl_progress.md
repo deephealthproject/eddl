@@ -67,7 +67,7 @@
 | TransposedConv2D  | ⚫️️ | ⚫️   |🟢️| 🔴️️ | 2D Transposed convolution |
 | TransposedConv3D  | ⚫️️ | ⚫️   |🟢️| 🔴️ | 3D Transposed convolution |
 | UpSampling2D        | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
-| UpSampling3D        | 🟢️️ | 🟢️️ |🟢️️ | ️️🔴 | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
+| UpSampling3D        | 🟢️️ | 🟢️️ | 🟢️️ | ️️🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
 
 
 ## Data transformation/augmentation
@@ -253,7 +253,7 @@ Apply data transformations with random parametrization.
 | MSLE                    | ⚫️    | ⚫️️  | Mean Squared Logarithmic Error |
 | Min                     | 🟢️️ | 🟢️️ | 🟢️️ | Minimum Error |
 | Hinge                   | ⚫ | ⚫ | ⚫ | Hinge Error |
-| Dice                    | 🟢️️ | 🟢️️   🟢️️  | Dice loss |
+| Dice                    | 🟢️️ | 🟢️️ | 🟢️️ | Dice loss |
 | SoftCrossEntropy        | 🟢️️ | 🟢️️ | 🟢️️ | Soft-Categorical Cross-Entropy Error |
 
 
