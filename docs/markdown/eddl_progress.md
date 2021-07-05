@@ -64,8 +64,8 @@
 | Conv3D            |  ⚫️️ | ⚫️  |🟢️️ | 🟢️ | 3D convolution |
 | Pointwise         | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | 2D pointwise convolution |
 | DepthwiseConv2D   | 🔴️ | 🔴️  |🔴️ | 🔴️ | 2D depthsise convolution |
-| TransposedConv2D  | ⚫️️ | ⚫️   |🟢️| 🔴️️ | 2D Transposed convolution |
-| TransposedConv3D  | ⚫️️ | ⚫️   |🟢️| 🔴️ | 3D Transposed convolution |
+| TransposedConv2D  | ⚫️️ | ⚫️   |🟢️| 🟢️ | 2D Transposed convolution |
+| TransposedConv3D  | ⚫️️ | ⚫️   |🟢️| 🟢️ | 3D Transposed convolution |
 | UpSampling2D        | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
 | UpSampling3D        | 🟢️️ | 🟢️️ | 🟢️️ | ️️🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
 
@@ -86,7 +86,7 @@ Deterministic transformations
 | Flip           | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Flip the given image at `axis=n` |
 | Grayscale      | ⚫️ | ⚫️ |⚫️ | ⚫️️ | Convert image to grayscale |
 | HorizontalFlip | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Horizontally flip the given image |
-| Pad            | 🟢️️ | 🟢️️ |🟢️️| ⚫️ | Pad the given image on all sides with the given "pad" value |
+| Pad            | 🟢️️ | 🟢️️ |🟢️️| 🟢️ | Pad the given image on all sides with the given "pad" value |
 | Rotate         | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Rotate the image by angle |
 | Scale          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Resize the input image to the given size. `[height, width]`. Does not include backward (see Resize) |
 | Shift          | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Shift the input image `[a, b]` |
