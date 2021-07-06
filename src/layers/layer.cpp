@@ -179,7 +179,7 @@ void Layer::reset() {
         delta->fill_(0.0);
         for(int i=0;i<states.size();i++)
             states[i]->fill_(0.0);
-        for(int i=0;i<states.size();i++)
+        for(int i=0;i<delta_states.size();i++)
             delta_states[i]->fill_(0.0);
     }
     detached=false;
