@@ -130,6 +130,8 @@ void cpu_batchnorm_forward(int b, int z, int rc,
            and abort execution making the user aware that momentum for BatchNormalization must be in the range [0.9, 0.9999]
         */
         for (int j = 0; j < z; j++) mean[j] = variance[j] = 0.0;
+        // warning: using omp in the next loop can lead to unstable computations of mean and variance
+        // gpu version protects it with atomicAdd()
         #pragma omp parallel for
         for (int k = 0; k < rcz; k += block_size)
             for (int i = 0; i < b; i++) {
