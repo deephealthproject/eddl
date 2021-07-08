@@ -124,8 +124,11 @@ void cpu_batchnorm_forward(int b, int z, int rc,
     const int block_size = 256;
     int rcz = rc * z;
     if (trmode || momentum == 0.0) {
-        // compute mean and variance 
-        // note that if momemtum is zero the mean and variance of the current batch are also computed in inference mode
+        // compute mean and variance
+        /* note that if momemtum is zero the mean and variance of the current batch are also computed in inference mode,
+           but working with momentum < 0.9 has no sense, constructor of BatchNormalization class should raise an error
+           and abort execution making the user aware that momentum for BatchNormalization must be in the range [0.9, 0.9999]
+        */
         for (int j = 0; j < z; j++) mean[j] = variance[j] = 0.0;
         #pragma omp parallel for
         for (int k = 0; k < rcz; k += block_size)
@@ -150,18 +153,14 @@ void cpu_batchnorm_forward(int b, int z, int rc,
             variance[j] = sqrt(variance[j] + epsilon);
         }
     }
-    // else -- this else must be removed because either in training and inference
-    //         the updated global_mean and global_variance must be used
-    {
-        // just update variance from the global variance if momentum is != 0.0, 
-        // otherwise the mean and variance of the current batch are use, which are
-        // computed in the previous block, that will be executed if in TRMODE or mometum is zero
-        if (momentum != 0.0) {
-            mean = global_mean;
-            #pragma omp parallel for
-            for (int j = 0; j < z; j++) {
-                variance[j] = sqrt(global_variance[j] + epsilon);
-            }
+    if (momentum != 0.0) {
+        // just update variance from the global variance if momentum is != 0.0,
+        // otherwise the mean and variance of the current batch are used, which are
+        // computed in the previous block, that will be executed if in TRMODE or momemtum is zero
+        mean = global_mean;
+        #pragma omp parallel for
+        for (int j = 0; j < z; j++) {
+            variance[j] = sqrt(global_variance[j] + epsilon);
         }
     }
     // normalization
@@ -172,11 +171,9 @@ void cpu_batchnorm_forward(int b, int z, int rc,
             for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
                 int j = (k + l) / rc;
                 float o = (input[p] - mean[j]) / variance[j];
+                opa[p] = o;
                 // affine transformation
-                if (affine_g != NULL) {
-                    opa[p] = o;
-                    output[p] = o * affine_g[j] + affine_b[j];
-                } else output[p] = o;
+                output[p] = (affine_g == nullptr) ? o : o * affine_g[j] + affine_b[j];
             }
         }
 }

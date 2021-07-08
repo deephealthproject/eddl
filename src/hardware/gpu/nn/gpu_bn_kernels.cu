@@ -140,11 +140,9 @@ __global__ void gpu_batchnorm_forward_3(int b, int rc, int rcz, float *input, fl
         for (int i = 0, p = k; i < b; i++, p += rcz) {
             // for (int l = 0; l < batch_norm_block_size && k + l < rcz; l++, p++) {
             float o = (input[p] - m) / v;
+            opa[p] = o;
             // affine transformation
-            if (affine_g != NULL) {
-                opa[p] = o;
-                output[p] = o * affine_g[j] + affine_b[j];
-            } else output[p] = o;
+            output[p] = (affine_g == nullptr) ? o : o * affine_g[j] + affine_b[j];
         }
     }
 }
