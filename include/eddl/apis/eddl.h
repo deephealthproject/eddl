@@ -448,7 +448,7 @@ namespace eddl {
      */
     void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int bs = -1);
 
-    void init_distributed(int *argc, char ***argv, int mpi_avg);
+    void init_distributed(int *argc, char ***argv, int mpi_avg, int* id);
     void end_distributed();
 
     /**

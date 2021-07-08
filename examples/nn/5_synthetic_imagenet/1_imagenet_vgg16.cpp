@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <mpi.h>
 
 #include "eddl/apis/eddl.h"
 
@@ -33,6 +34,10 @@ layer Block3_2(layer l,int filters) {
 int main(int argc, char **argv){
   bool testing = false;
   bool use_cpu = false;
+  int id;
+  
+  init_distributed(&argc, &argv, 64, &id);
+  
   for (int i = 1; i < argc; ++i) {
       if (strcmp(argv[i], "--testing") == 0) testing = true;
       else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -100,6 +105,8 @@ int main(int argc, char **argv){
     fit(net,{x_train},{y_train},batch_size, 1);
     // Evaluate test
   }
+  
+  end_distributed();
 
   delete x_train;
   delete y_train;

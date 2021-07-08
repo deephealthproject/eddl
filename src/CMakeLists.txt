@@ -374,6 +374,22 @@ message ("-MPI lib: " ${MPI_C_LIBRARIES})
 message ("-MPI lib: " ${MPI_CXX_LIBRARIES})
 message ("-----")
 
+## Handle NCCL
+find_package(NCCL)
+# Handle special peak6 case
+#if (NOT MPI_C_LIBRARIES)
+if (NOT NCCL_FOUND)
+    if (EXISTS "/usr/lib64/libnccl.so")
+        set (NCCL_LIBRARIES "/usr/lib64/libnccl.so")
+        set (NCCL_INCLUDE_PATH "/usr/include")
+    endif()
+endif()
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${NCCL_INCLUDE_PATH})
+target_link_libraries(${PROJECT_NAME} PUBLIC  ${NCCL_LIBRARIES})
+message ("-NCCL include: " ${NCCL_INCLUDE_PATH})
+message ("-NCCL lib: " ${NCCL_LIBRARIES})
+message ("-----")
 
 ###########################################################################
 ################################## WINDOWS ################################

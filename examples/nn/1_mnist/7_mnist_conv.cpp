@@ -26,8 +26,9 @@ using namespace eddl;
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
+    int id;
     
-    init_distributed(&argc, &argv,8);
+    init_distributed(&argc, &argv,8, &id);
     
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
@@ -78,6 +79,7 @@ int main(int argc, char **argv) {
           cs);
 
     // View model
+          if (id==0)
     summary(net);
 
     // Load dataset

@@ -27,26 +27,9 @@ int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
     int id;
-    int n_procs;
   
-   init_distributed(&argc, &argv,8);
-//  ierr = MPI_Init ( &argc, &argv );
-   //  Get the number of processes.
-    MPI_Comm_size ( MPI_COMM_WORLD, &n_procs );
-    //  Get the individual process ID.
-    MPI_Comm_rank ( MPI_COMM_WORLD, &id );
+   init_distributed(&argc, &argv, 64, &id);
 
-    
-  if ( id == 0 ) 
-  {
-    cout << "\n";
-    cout << "P" << id << ":  MPI - Master process:\n";
-    cout << "P" << id << ":    C++/MPI version\n";
-    cout << "P" << id << ":    An MPI example program.\n";
-    cout << "\n";
-    cout << "P" << id << ":    The number of processes is " << n_procs << "\n";
-    cout << "\n";
-  }
 
     
     for (int i = 1; i < argc; ++i) {
@@ -97,7 +80,7 @@ int main(int argc, char **argv) {
 //    toGPU(net, {1}, 100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
     // View model
-          if (id==0)
+        if (id==0)
           summary(net);
     
     // Load dataset
@@ -144,13 +127,7 @@ int main(int argc, char **argv) {
     end_distributed();
     //
 
-  if ( id == 0 )
-  {
-    cout << "\n";
-    cout << "P" << id << ":  MPI:\n";
-    cout << "P" << id << ":    Normal end of execution.\n";
-    cout << "\n";
-  }
+
     
     return EXIT_SUCCESS;
 }
