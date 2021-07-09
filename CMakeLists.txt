@@ -16,6 +16,8 @@ option(BUILD_DIST "Compile for a distributed execution" OFF)
 option(BUILD_RUNTIME "Compile runtime" OFF)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 option(BUILD_SANITIZERS "Flag to compile with sanitizers information" OFF)
+option(BUILD_MPI "Compile using MPI" ON)
+option(BUILD_NCCL "Compile using NCCL" ON)
 
 if(WIN32)
     option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" OFF)

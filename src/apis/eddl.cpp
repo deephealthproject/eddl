@@ -13,7 +13,9 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+#ifdef cMPI
 #include <mpi.h>
+#endif
 
 #define MPICHECK(cmd) do {                          \
   int e = cmd;                                      \
@@ -43,9 +45,8 @@
 } while(0)
 
 
-//#define NCCL_SUPPORT
 
-#ifdef NCCL_SUPPORT
+#ifdef cNCCL
 #include <nccl.h>
 #endif
 
@@ -56,7 +57,7 @@
 
 int use_mpi = 0;
 int mpi_avg = 1;
-#ifdef NCCL_SUPPORT
+#ifdef cNCCL
 // NCCL
 ncclUniqueId nccl_id;
 ncclComm_t nccl_comm;

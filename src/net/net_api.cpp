@@ -21,11 +21,12 @@
 #include "eddl/system_info.h"
 #include "eddl/utils.h"
 
+#ifdef cMPI
 #include <mpi.h>
+#endif
 
-#define NCCL_SUPPORT
 
-#ifdef NCCL_SUPPORT
+#ifdef cNCCL
 #include <nccl.h>
 #endif
 
@@ -43,7 +44,7 @@ using namespace std::chrono;
 extern int use_mpi;
 extern int mpi_avg;
 
-#ifdef NCCL_SUPPORT
+#ifdef cNCCL
 // NCCL
 extern ncclUniqueId nccl_id;
 extern ncclComm_t nccl_comm;

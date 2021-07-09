@@ -16,6 +16,9 @@ SET(USE_CUDA OFF)
 SET(USE_CUDNN OFF)
 SET(USE_FPGA OFF)
 SET(USE_PROTOBUF OFF)
+SET(USE_MPI OFF)
+SET(USE_NCCL OFF)
+
 
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
@@ -356,40 +359,34 @@ if(BUILD_DIST)
     target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENSSL_LIBRARIES})
 endif()
 
-## Handle MPI
+# MPI ***************************************
 find_package(MPI)
-# Handle special peak6 case
-#if (NOT MPI_C_LIBRARIES)
-if (NOT MPI_FOUND)
-#    if (EXISTS "/usr/lib64/openmpi3/lib/libmpi.so")
-#        set (MPI_C_LIBRARIES "/usr/lib64/openmpi3/lib/libmpi.so")
-#        set (MPI_INCLUDE_PATH "/usr/include/openmpi3-x86_64")
-#    endif()
+if (MPI_FOUND)
+    SET(USE_MPI ON) # Local's scope
+    target_include_directories(${PROJECT_NAME} PUBLIC ${MPI_INCLUDE_PATH})
+    target_link_libraries(${PROJECT_NAME} PUBLIC  ${MPI_CXX_LIBRARIES})
+else()
+#    message(FATAL_ERROR "MPI was not found by CMake.")
+    message(WARNING "MPI was not found by CMake.")
 endif()
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${MPI_INCLUDE_PATH})
-target_link_libraries(${PROJECT_NAME} PUBLIC  ${MPI_CXX_LIBRARIES})
-message ("-MPI include: " ${MPI_INCLUDE_PATH})
-message ("-MPI lib: " ${MPI_C_LIBRARIES})
-message ("-MPI lib: " ${MPI_CXX_LIBRARIES})
-message ("-----")
-
-## Handle NCCL
+# NCCL ***************************************
 find_package(NCCL)
-# Handle special peak6 case
-#if (NOT MPI_C_LIBRARIES)
 if (NOT NCCL_FOUND)
     if (EXISTS "/usr/lib64/libnccl.so")
+        set (NCCL_FOUND ON)
         set (NCCL_LIBRARIES "/usr/lib64/libnccl.so")
         set (NCCL_INCLUDE_PATH "/usr/include")
     endif()
 endif()
-
-target_include_directories(${PROJECT_NAME} PUBLIC ${NCCL_INCLUDE_PATH})
-target_link_libraries(${PROJECT_NAME} PUBLIC  ${NCCL_LIBRARIES})
-message ("-NCCL include: " ${NCCL_INCLUDE_PATH})
-message ("-NCCL lib: " ${NCCL_LIBRARIES})
-message ("-----")
+if (NCCL_FOUND)
+    SET(USE_MPI ON) # Local's scope
+    target_include_directories(${PROJECT_NAME} PUBLIC ${NCCL_INCLUDE_PATH})
+    target_link_libraries(${PROJECT_NAME} PUBLIC  ${NCCL_LIBRARIES})
+else()
+#    message(FATAL_ERROR "NCCL was not found by CMake.")
+    message(WARNING "NCCL was not found by CMake.")
+endif()
 
 ###########################################################################
 ################################## WINDOWS ################################
@@ -439,6 +436,12 @@ if(USE_CUDNN)
 endif()
 if(USE_FPGA)
     add_definitions(-DcFPGA)
+endif()
+if(USE_MPI)
+    add_definitions(-DcMPI)
+endif()
+if(USE_NCCL)
+    add_definitions(-DcNCCL)
 endif()
 
 ##########################################################################
@@ -516,6 +519,20 @@ if(USE_FPGA)
     message(STATUS "OpenCL version: " ${OpenCL_VERSION_MAJOR} )
     message(STATUS "OpenCL include: " ${OpenCL_INCLUDE_DIRS} )
     message(STATUS "OpenCL libraries: " ${OpenCL_LIBRARIES} )
+endif()
+message(STATUS "-------------------------------------------" )
+message(STATUS "MPI enabled: " ${USE_MPI} )
+if(USE_MPI)
+    message(STATUS "MPI version: " ${MPI_CXX_VERSION} )
+    message(STATUS "MPI include: " ${MPI_INCLUDE_PATH} )
+    message(STATUS "MPI libraries: " ${MPI_CXX_LIBRARIES} )
+endif()
+message(STATUS "-------------------------------------------" )
+message(STATUS "NCCL enabled: " ${USE_NCCL} )
+if(USE_NCCL)
+    message(STATUS "NCCL version: " ${NCCL_VERSION_MAJOR} )
+    message(STATUS "NCCL include: " ${NCCL_INCLUDE_PATH} )
+    message(STATUS "NCCL libraries: " ${NCCL_LIBRARIES} )
 endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 root dir: " ${Eigen3_DIR} )
