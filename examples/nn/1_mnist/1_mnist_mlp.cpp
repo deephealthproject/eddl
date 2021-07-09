@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     bool use_cpu = false;
     int id;
   
-   init_distributed(&argc, &argv, 64, &id);
+   init_distributed(&argc, &argv, 8, &id);
 
 
     

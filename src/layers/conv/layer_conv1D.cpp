@@ -167,6 +167,8 @@ Layer *LConv1D::share(int c, int bs, vector<Layer *> p) {
     n->params.clear();
 
 
+    //n->cd->K = params[0];
+    //n->cd->bias = params[1];
     n->cd->K = cd->K;
     n->cd->bias = cd->bias;
 

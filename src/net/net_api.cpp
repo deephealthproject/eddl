@@ -34,6 +34,7 @@
 extern void _show_profile_fpga();
 #endif
 
+
 #define VERBOSE 0
 
 int verboserec = 1;
@@ -915,34 +916,36 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                 if (use_mpi) {
                     if (((j + 1) % mpi_avg) == 0) {
                         //printf("Proc %d Sincronizando %d\n", id, j);
-                        for (ii = 0; ii<this->layers.size(); ii++) {
-                            for (jj = 0; jj<this->layers[ii]->params.size(); jj++) {
+                        for (ii = 0; ii< snets[0]->layers.size(); ii++) {
+                            for (jj = 0; jj< snets[0]->layers[ii]->params.size(); jj++) {
 
-                                myptr = this->layers[ii]->params[jj]->ptr;
-                                count = this->layers[ii]->params[jj]->size;
+                                myptr= snets[0]->layers[ii]->params[jj]->ptr;
+                                count = snets[0]->layers[ii]->params[jj]->size;
                                 //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
                                 if (count != 0) {
-                                    //MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
+                                   // MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
 
 
-                                    //#ifdef NCCL_SUPPORT
                                     CUDACHECK(cudaSetDevice(0));
                                     NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
                                     //completing NCCL operation by synchronizing on the CUDA stream
-                                    CUDACHECK(cudaSetDevice(0));
+                                    //CUDACHECK(cudaSetDevice(0));
                                     CUDACHECK(cudaStreamSynchronize(cuda_stream));
-                                    //#endif
 
                                     /*
                                    printf("NCCL Sincronizando proc %d batch %d\n", id, j);
-                                  NCCLCHECK(ncclAllReduce((const void*)sendbuff[0], (void*)sendbuff[0], SIZE, ncclFloat, ncclSum, nccl_comm, cuda_stream));
+                                   NCCLCHECK(ncclAllReduce((const void*)sendbuff[0], (void*)sendbuff[0], SIZE, ncclFloat, ncclSum, nccl_comm, cuda_stream));
                                    CUDACHECK(cudaSetDevice(0));
                                    CUDACHECK(cudaStreamSynchronize(cuda_stream));
                                      */
-                                    this->layers[ii]->params[jj]->div_(n_procs);
+                                    snets[0]->layers[ii]->params[jj]->div_(n_procs);
                                 }
-
+                                // OJO solo se puede hacer printf si el objeto está en CPU
+                                //if (ii==7) {
+                                //  printf("\n ii=%d jj=%d count=%d .....", ii,jj,count);  
                                 //  for (int ss=0; ss<count; ss++) printf("%4f", myptr[ss] );
+                                //}
+                                
                             }
                         }
                     }
