@@ -953,7 +953,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                 //	if (ptr[i]==j*n_procs*i) printf("ERROR ===========\n");
 
                 if (id == 0) {
-                    print_loss(batches, num_batches);
+                    print_loss(batches, num_batches/n_procs);
                     //print_loss(j+1,num_batches);
                 }
                 high_resolution_clock::time_point e2 = high_resolution_clock::now();
