@@ -373,6 +373,7 @@ endif()
 # NCCL ***************************************
 find_package(NCCL)
 if (NOT NCCL_FOUND)
+    # Local search 
     if (EXISTS "/usr/lib64/libnccl.so")
         set (NCCL_FOUND ON)
         set (NCCL_LIBRARIES "/usr/lib64/libnccl.so")
@@ -380,7 +381,7 @@ if (NOT NCCL_FOUND)
     endif()
 endif()
 if (NCCL_FOUND)
-    SET(USE_MPI ON) # Local's scope
+    SET(USE_NCCL ON) # Local's scope
     target_include_directories(${PROJECT_NAME} PUBLIC ${NCCL_INCLUDE_PATH})
     target_link_libraries(${PROJECT_NAME} PUBLIC  ${NCCL_LIBRARIES})
 else()
