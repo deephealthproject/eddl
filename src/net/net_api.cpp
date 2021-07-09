@@ -922,17 +922,16 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                                 count = this->layers[ii]->params[jj]->size;
                                 //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
                                 if (count != 0) {
-                                    MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
+                                    //MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
 
-                                    /*
-                                    #ifdef NCCL_SUPPORT
-                                        CUDACHECK(cudaSetDevice(0));
-                                        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream)); 
-                                        //completing NCCL operation by synchronizing on the CUDA stream
-                                        CUDACHECK(cudaSetDevice(0));
-                                        CUDACHECK(cudaStreamSynchronize(cuda_stream));
-                                    #endif
-                                     */
+
+                                    //#ifdef NCCL_SUPPORT
+                                    CUDACHECK(cudaSetDevice(0));
+                                    NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
+                                    //completing NCCL operation by synchronizing on the CUDA stream
+                                    CUDACHECK(cudaSetDevice(0));
+                                    CUDACHECK(cudaStreamSynchronize(cuda_stream));
+                                    //#endif
 
                                     /*
                                    printf("NCCL Sincronizando proc %d batch %d\n", id, j);

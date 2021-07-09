@@ -381,17 +381,17 @@ namespace eddl {
         if (*id == 0)
             fprintf(stdout, "[DISTR] %d procs, sync every %d batches \n", n_procs, mpi_avg);
 
-#ifdef NCCL_SUPPORT
-        printf("===== Inicializando NCCL ========");
+#ifdef cNCCL
         //NCCL
         //get NCCL unique ID at rank 0 and broadcast it to all others
-        if (id == 0) ncclGetUniqueId(&nccl_id);
+        if (*id == 0) ncclGetUniqueId(&nccl_id);
         MPICHECK(MPI_Bcast(&nccl_id, sizeof (nccl_id), MPI_BYTE, 0, MPI_COMM_WORLD));
         //picking a GPU based on localRank, allocate device buffers
         CUDACHECK(cudaStreamCreate(&cuda_stream));
         //initializing NCCL
-        NCCLCHECK(ncclCommInitRank(&nccl_comm, n_procs, nccl_id, id));
-
+        NCCLCHECK(ncclCommInitRank(&nccl_comm, n_procs, nccl_id, *id));
+        if (*id == 0)
+            fprintf(stdout, "[DISTR] NCCL initialized %d procs\n", n_procs);
 #endif
     }
 
@@ -402,14 +402,17 @@ namespace eddl {
             //  Get the individual process ID.
             MPI_Comm_rank(MPI_COMM_WORLD, &id);
 
-            if (id == 0)
-                fprintf(stdout, "[DISTR] End\n");
 
-#ifdef NCCL_SUPPORT
+
+#ifdef cNCCL
             //finalizing NCCL
             ncclCommDestroy(nccl_comm);
+            if (id == 0)
+                fprintf(stdout, "[DISTR] NCCL End\n");
 #endif
 
+            if (id == 0)
+                fprintf(stdout, "[DISTR] End\n");
             MPI_Finalize();
         }
     }
