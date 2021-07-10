@@ -144,11 +144,9 @@ void BN_forward(Tensor *input,Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Ten
     cmean(input, bn_mean, ones);
 
     // in = in - mean
-    rdiff(temporary, bn_mean, ones, var);
+    rdiff(input, bn_mean, ones, var);
 
-    Tensor::copy(temporary, var);
-
-    delete temporary;
+    Tensor::copy(input, var);
 
     // variance
     var->sqr_();
@@ -158,9 +156,6 @@ void BN_forward(Tensor *input,Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Ten
     if (momentum != 0.0) {
         Tensor::add(momentum, mean,     (1.0 - momentum), bn_mean, mean,     0);
         Tensor::add(momentum, variance, (1.0 - momentum), bn_var,  variance, 0);
-
-        Tensor::copy(mean,     bn_mean); // use the global mean for the current batch
-        Tensor::copy(variance, bn_var);  // use the global var for the current batch
     }
 
     // sd = sqrt(var + epsilon)
@@ -175,38 +170,14 @@ void BN_forward(Tensor *input,Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Ten
 
   } else {
 
-    if (momentum != 0.0) {
-
-        Tensor::copy(variance, bn_var);
-        bn_var->add_(epsilon);
-        bn_var->sqrt_();
-        // x = in - global_mean
-        rdiff(input, mean, ones, var);
-        // x = x / global_sd
-        rdiv(input, bn_var, ones, var);
-        // now: in = (in - global_mean) / global_sd
-
-    } else {
-
-        // mean
-        cmean(input, bn_mean, ones);
-
-        // x = in - current_batch_mean
-        rdiff(input, bn_mean, ones, var);
-
-        Tensor::copy(input, var);
-
-        // variance
-        var->sqr_();
-        cmean(var, bn_var, ones);
-        // sd = sqrt(var + epsilon)
-        bn_var->add_(epsilon);
-        bn_var->sqrt_();
-
-        // x = x / current_batch_sd
-        rdiv(input, bn_var, ones, var);
-        // now: in = (in - current_batch_mean) / current_batch_sd
-    }
+    Tensor::copy(variance, bn_var);
+    bn_var->add_(epsilon);
+    bn_var->sqrt_();
+    // x = in - global_mean
+    rdiff(input, mean, ones, var);
+    // x = x / global_sd
+    rdiv(input, bn_var, ones, var);
+    // now: in = (in - global_mean) / global_sd
   }
 
 
