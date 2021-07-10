@@ -10,8 +10,8 @@ Layer* build_batchnorm_layer(onnx::NodeProto *node,
                              int dev,
                              int mem)
 {
-  float epsilon = 1e-03f; // Default value: keep it updated with the default value set in the API
-  float momentum = 0.99;  // Default value: keep it updated with the default value set in the API
+  float epsilon = 1e-05f; // Default value according to ONNX standard
+  float momentum = 0.9f;  // Default value according to ONNX standard
   for (int j = 0; j < node->attribute_size(); j++)
   { // Set the attributes
   onnx::AttributeProto attribute = node->attribute(j);
@@ -102,7 +102,7 @@ void build_batchnorm_node(LBatchNorm *layer, onnx::GraphProto *graph)
   momentum_attr->set_type(onnx::AttributeProto::FLOAT);
   momentum_attr->set_f(layer->momentum);
 
-  int n_features = layer->input->getShape()[1]; // TO-REVIEW 2021-07-05: is this correct in the case layer->input->shape.size() > 2?
+  int n_features = layer->input->getShape()[1];
 
   // Scale input
   onnx::TensorProto *scale = graph->add_initializer();

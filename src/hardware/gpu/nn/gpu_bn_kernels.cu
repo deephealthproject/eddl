@@ -119,12 +119,10 @@ __global__ void gpu_batchnorm_forward_2(int z, float inv_N, float *mean, float *
             if (momentum != 0.0) {
                 global_mean[j] = momentum * global_mean[j] + (1.0 - momentum) * mean[j];
                 global_variance[j] = momentum * global_variance[j] + (1.0 - momentum) * variance[j];
-                variance[j] = sqrt(global_variance[j] + epsilon); // if momentum then use the global_variance
-            } else {
-                variance[j] = sqrt(variance[j] + epsilon);
             }
+            variance[j] = sqrt(variance[j] + epsilon); // use current batch variance in training
         } else {
-            variance[j] = sqrt(global_variance[j] + epsilon);
+            variance[j] = sqrt(global_variance[j] + epsilon); // use global variance in inference
         }
     }
 }
@@ -140,9 +138,12 @@ __global__ void gpu_batchnorm_forward_3(int b, int rc, int rcz, float *input, fl
         for (int i = 0, p = k; i < b; i++, p += rcz) {
             // for (int l = 0; l < batch_norm_block_size && k + l < rcz; l++, p++) {
             float o = (input[p] - m) / v;
-            opa[p] = o;
-            // affine transformation
-            output[p] = (affine_g == nullptr) ? o : o * affine_g[j] + affine_b[j];
+            if (affine_g != nullptr){
+                opa[p] = o;
+                output[p] = o * affine_g[j] + affine_b[j]; // apply the affine transformation
+            } else {
+                output[p] = o;
+            }
         }
     }
 }

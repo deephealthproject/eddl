@@ -123,12 +123,8 @@ void cpu_batchnorm_forward(int b, int z, int rc,
 {
     const int block_size = 256;
     int rcz = rc * z;
-    if (trmode || momentum == 0.0) {
+    if (trmode) {
         // compute mean and variance
-        /* note that if momemtum is zero the mean and variance of the current batch are also computed in inference mode,
-           but working with momentum < 0.9 has no sense, constructor of BatchNormalization class should raise an error
-           and abort execution making the user aware that momentum for BatchNormalization must be in the range [0.9, 0.9999]
-        */
         for (int j = 0; j < z; j++) mean[j] = variance[j] = 0.0;
         // warning: using omp in the next loop can lead to unstable computations of mean and variance
         // gpu version protects it with atomicAdd()
@@ -154,8 +150,7 @@ void cpu_batchnorm_forward(int b, int z, int rc,
             }
             variance[j] = sqrt(variance[j] + epsilon);
         }
-    }
-    if (momentum != 0.0) {
+    } else {
         // just update variance from the global variance if momentum is != 0.0,
         // otherwise the mean and variance of the current batch are used, which are
         // computed in the previous block, that will be executed if in TRMODE or momemtum is zero
@@ -173,14 +168,20 @@ void cpu_batchnorm_forward(int b, int z, int rc,
             for (int l = 0; l < block_size && k + l < rcz; l++, p++) {
                 int j = (k + l) / rc;
                 float o = (input[p] - mean[j]) / variance[j];
-                opa[p] = o;
-                // affine transformation
-                output[p] = (affine_g == nullptr) ? o : o * affine_g[j] + affine_b[j];
+                if (affine_g != nullptr) {
+                    opa[p] = o;
+                    output[p] = o * affine_g[j] + affine_b[j]; // apply affine transformation
+                } else {
+                    output[p] = o;
+                }
             }
         }
 }
 
-void cpu_batchnorm_backward(int b, int z, int rc, float *delta, float *opa, float *pdelta, float *gbn_g, float *gbn_b, float *bn_g, float *variance, float *mean1, float *mean2)
+void cpu_batchnorm_backward(int b, int z, int rc,
+                            float *delta, float *opa, float *pdelta,
+                            float *gbn_g, float *gbn_b, float *bn_g,
+                            float *variance, float *mean1, float *mean2)
 {
     const int block_size = 256;
     int rcz = rc * z;
@@ -188,6 +189,8 @@ void cpu_batchnorm_backward(int b, int z, int rc, float *delta, float *opa, floa
     if (bn_g != NULL) { // affine
         // compute mean
         for (int j = 0; j < z; j++) mean1[j] = mean2[j] = 0.0;
+        // warning: using omp in the next loop can lead to unstable computations of mean and variance
+        // gpu version protects it with atomicAdd()
         #pragma omp parallel for
         for (int k = 0; k < rcz; k += block_size)
             for (int i = 0; i < b; i++) {
@@ -211,6 +214,8 @@ void cpu_batchnorm_backward(int b, int z, int rc, float *delta, float *opa, floa
     } else {
         // compute mean
         for (int j = 0; j < z; j++) mean1[j] = mean2[j] = 0.0;
+        // warning: using omp in the next loop can lead to unstable computations of mean and variance
+        // gpu version protects it with atomicAdd()
         #pragma omp parallel for
         for (int k = 0; k < rcz; k += block_size)
             for (int i = 0; i < b; i++) {

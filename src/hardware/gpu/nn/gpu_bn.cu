@@ -75,7 +75,7 @@ void gpu_batchnorm_forward(int gpu_device, int b, int z, int rc,
     if (rcz % batch_norm_block_size) num_blocks++;
     int num_blocks_z = z / batch_norm_block_size;
     if (z % batch_norm_block_size) num_blocks_z++;
-    if (trmode || momentum == 0.0) { // if momentum is zero, then compute mean and variance always, but this would not be allowed, no sense
+    if (trmode) {
         // compute mean and variance
         // for (int j = 0; j < z; j++) mean[j] = variance[j] = 0.0;
         check_cuda(cudaMemset(mean, 0, z * sizeof(float)), "gpu_batchnorm_forward");
@@ -84,10 +84,7 @@ void gpu_batchnorm_forward(int gpu_device, int b, int z, int rc,
         gpu_batchnorm_forward_1<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, input, mean, variance);
         gpu_batchnorm_forward_2<<<num_blocks_z, batch_norm_block_size>>>(z, 1.0 / (b * rc), mean, variance, momentum, global_mean, global_variance, epsilon);
         // normalization
-        if (momentum == 0.0)
-            gpu_batchnorm_forward_3<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, input, mean, variance, affine_g, affine_b, opa, output);
-        else
-            gpu_batchnorm_forward_3<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, input, global_mean, variance, affine_g, affine_b, opa, output);
+        gpu_batchnorm_forward_3<<<num_blocks, batch_norm_block_size>>>(b, rc, rcz, input, mean, variance, affine_g, affine_b, opa, output);
     } else {
         gpu_batchnorm_forward_2<<<num_blocks_z, batch_norm_block_size>>>(z, 1.0 / (b * rc), NULL, variance, momentum, NULL, global_variance, epsilon);
         // normalization

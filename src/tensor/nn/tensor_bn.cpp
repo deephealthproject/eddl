@@ -115,10 +115,10 @@ namespace tensorNN {
     }
 
     void BatchNormForward(Tensor *input, Tensor *output, Tensor *opa,
-            Tensor *mean, Tensor *variance,
-            Tensor *bn_g, Tensor *bn_b,
-            Tensor *bn_mean, Tensor *bn_var,
-            bool trmode, float epsilon, float momentum)
+                            Tensor *mean, Tensor *variance,
+                            Tensor *bn_g, Tensor *bn_b,
+                            Tensor *bn_mean, Tensor *bn_var,
+                            bool trmode, float epsilon, float momentum)
     {
 
         if (input->isCPU()) {
@@ -142,9 +142,10 @@ namespace tensorNN {
         }
     }
 
-    void BatchNormBackward(Tensor *delta, Tensor *opa, Tensor *pdelta, Tensor *gbn_g,
-            Tensor *gbn_b, Tensor *bn_g, Tensor *bn_var,
-            Tensor *work1, Tensor *work2)
+    void BatchNormBackward(Tensor *delta, Tensor *opa, Tensor *pdelta,
+                            Tensor *gbn_g, Tensor *gbn_b, Tensor *bn_g,
+                            Tensor *bn_var,
+                            Tensor *work1, Tensor *work2)
     {
         if (delta->isCPU()) {
             cpu_batchnorm_backward(delta->shape[0], delta->shape[1],
