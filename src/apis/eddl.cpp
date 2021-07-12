@@ -20,7 +20,7 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
-extern void fpga_reshape_kernel(ConvolDescriptor *src_D, ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO);
+extern void fpga_reshape_kernel(ConvolDescriptor *src_D, ConvolDescriptor *D, int KW, int KH, int I, int O);
 extern void _profile_fpga_tensor(Tensor *t);
 using namespace std;
 
@@ -2004,8 +2004,6 @@ namespace eddl {
       // constants
       const int KH = 3;
       const int KW = 3;
-      const int CPI = 4;
-      const int CPO = 4;
 
       // layer pointers
       Layer *cl;         // current layer pointer
@@ -2260,7 +2258,7 @@ namespace eddl {
           fpga_layer_model.push_back(prev_layer);
 
         } else if (found_A) {
-          printf("instantiating A layer\n");
+          printf("instantiating AveragePool layer\n");
           LAveragePool *layer_src = (LAveragePool *)cl;
           if(layer_src->pd->padding =="custom") {
 	          prev_layer = new LAveragePool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);

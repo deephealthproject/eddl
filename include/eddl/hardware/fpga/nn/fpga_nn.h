@@ -66,7 +66,7 @@ int fpga_bin_accuracy(Tensor *A, Tensor *B);
 void fpga_conv2D(ConvolDescriptor *D);
 void fpga_conv2D_grad(ConvolDescriptor *D);
 void fpga_conv2D_back(ConvolDescriptor *D);
-void fpga_reshape_kernel_data_convol(ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO);
+void fpga_reshape_kernel_data_convol(ConvolDescriptor *D, int KW, int KH, int I, int O);
 
 // MaxPool
 void fpga_mpool2D(PoolDescriptor*D);

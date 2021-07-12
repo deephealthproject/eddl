@@ -27,12 +27,15 @@ PROFILING_ENABLE_EXTERN(fpga_Conv2D);
 // proper geometry expected by the FPGA kernels. 
 // An input of format O x KH x KW x I is adapted to GO x GI x CPO x CPI x KH x KW
 // where I = GI * CPI and O = GO * CPO
-void fpga_reshape_kernel_data_convol(ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO) {
+void fpga_reshape_kernel_data_convol(ConvolDescriptor *D, int KW, int KH, int I, int O) {
 
   return;
   _debug_fpga_funcs("reshape_kernel_convol");
   PROFILING_HEADER(fpga_reshape_kernel_data_convol);
 
+  int CPI = k_conv2d_cpi;
+  int CPO = k_conv2d_cpo;
+  
   // if I < CPI then we need to adapt to size I
   // if O < CPO then we need to adapt to size O
   int Itarget = ((I + CPI - 1) / CPI) * CPI;

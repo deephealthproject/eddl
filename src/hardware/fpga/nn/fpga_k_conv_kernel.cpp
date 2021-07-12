@@ -20,7 +20,7 @@ void fpga_conv_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
                      int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, cl::Buffer K, cl::Buffer B,
                      cl::Buffer O, int global_offset, int enable_upper_padding, int enable_lower_padding,
 			         int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, 
-			         int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
+			         int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift, int kernel_id) {
   
   // Error variable
   cl_int err;
@@ -28,6 +28,8 @@ void fpga_conv_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
   // set kernel arguments
   int arg = 0;
 
+  int CPI = k_conv2d_cpi;
+  int CPO = k_conv2d_cpo;
   // input iterations
   int I_ITER = (Ichannels + (CPI-1)) / CPI;
 
@@ -71,7 +73,11 @@ void fpga_conv_launch(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
                      int enable_relu, int enable_stm, cl::Buffer K, cl::Buffer B,
                      cl::Buffer O, int global_offset, int enable_upper_padding, int enable_lower_padding,
 			         int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, 
-			         int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int num_kernels, int max_rows) {
+			         int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift, int num_kernels, int max_rows) {
+  
+  int CPI = k_conv2d_cpi;
+  int CPO = k_conv2d_cpo;   
+
   // Depending on the number of kernels available we split the convolution operation into multiple frames, and launch one thread per kernel
   if (num_kernels == 1) {
     // just one kernel which handles all the conv operation
@@ -79,29 +85,46 @@ void fpga_conv_launch(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
     int last_o_iter = ((Ochannels + (CPO-1)) / CPO) - 1;
     fpga_conv_kernel(I, I_add, H, W, rows, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu,
         enable_stm, K, B, O, global_offset, enable_upper_padding, enable_lower_padding, enable_maxp,
-		enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, 0);
+		enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, 0);
   } else {
     // several kernels available, let's split the operation in sets of output channels
     int O_ITER = (Ochannels + (CPO-1)) / CPO;
     // let's compute number of channels per kernel and number of final kernels to launch
     int num_kernels_to_launch;
     int o_iter_per_kernel;
+    int extra_iter = 0;
+
     if (O_ITER < num_kernels) {
       num_kernels_to_launch = 1;
       o_iter_per_kernel = O_ITER;
     } else {
       num_kernels_to_launch = num_kernels;
       o_iter_per_kernel = O_ITER / num_kernels;
+      if(O_ITER > o_iter_per_kernel * num_kernels) extra_iter = O_ITER - o_iter_per_kernel * num_kernels;
     }
+
+    #ifdef DEBUG_FPGA
+    printf("FPGA_DEBUG: kernels = %d | total iterations %d | iterations by each kernel %d | extra iterations %d\n");
+    #endif
 
     // Let's launch the kernels
     #pragma omp parallel for
     for (int k=0; k<num_kernels_to_launch; k++) {
-      int first_o_iter = o_iter_per_kernel * k;
-      int last_o_iter = first_o_iter + o_iter_per_kernel - 1;
+      int first_o_iter, last_o_iter;
+      if(k == 0) {
+        first_o_iter = o_iter_per_kernel * k;
+        last_o_iter = first_o_iter + o_iter_per_kernel + extra_iter - 1;
+      } else {
+        first_o_iter = o_iter_per_kernel * k + extra_iter ;
+        last_o_iter = first_o_iter + o_iter_per_kernel - 1;
+      }
+    
+    #ifdef DEBUG_FPGA
+    printf("FPGA_DEBUG: kernel %d -> first_o_iter %d last_o_iter %d\n",k, first_o_iter, last_o_iter);
+    #endif
       fpga_conv_kernel(I, I_add, H, W, rows, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu,
               enable_stm, K, B, O, global_offset, enable_upper_padding, enable_lower_padding, enable_maxp,
-		          enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, k);    
+		          enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, k);    
     }
   }
 }
@@ -139,8 +162,7 @@ int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_st
     else I_add = *(cl::Buffer*) fpga_create_memory(sizeof(float)); // Creating dummy buffer for add buffer
     fpga_conv_launch(I, I_add, Irows, Icols, Irows, Ichannels, Ochannels, enable_relu, enable_stm, K,
           B, O, global_offset, enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
-          enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, k_conv2d_cpi,
-          k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
+          enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, k_conv2d_num_kernels, k_conv2d_max_rows);
 
     return 1;
   }

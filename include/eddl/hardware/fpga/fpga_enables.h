@@ -64,7 +64,7 @@
 //Conv
 #define K_ENABLED_CONV2D 
 #define K_VERSION_CONV2D     2
-#define K_SUBVERSION_CONV2D  1
+#define K_SUBVERSION_CONV2D  2
 
 //#define K_ENALBED_CONV2D_GRAD
 //#define K_ENABLED_CONV2D_BACK
@@ -102,7 +102,7 @@
 
 //Losses
 //#define K_ENABLED_CENT
-//#define K_ENABLED_BIN_CENT    // duda
+//#define K_ENABLED_BIN_CENT    
 
 // indexing
 //#define K_ENABLED_WHERE

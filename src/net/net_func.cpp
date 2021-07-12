@@ -232,7 +232,7 @@ void distributeTensor(Layer *l,string tname, int p)
             Tensor::select(l->delta, sl->delta, sind, start, end);
         }
         else if (tname=="param") {
-            cout<<"Distribute param "<<p<<" to device "<<i<<endl;
+            //cout<<"Distribute param "<<p<<" to device "<<i<<endl;
             Tensor::copy(l->params[p],sl->params[p]);
         }
         else if (tname=="gradient") {
