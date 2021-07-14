@@ -1935,11 +1935,77 @@ namespace eddl {
     return found;
   }
 
+    Layer * get_fpga_n_parent_layer_from_cpu_layer(int n, layer cpu_layer, model net, vector<int>  associated_layer, vector<Layer *>  fpga_layer_model) {   
+    int cpu_layer_position;
 
-  vector<Layer *> get_fpga_layer_from_cpu_layer(layer cpu_layer, model net, vector<int>  associated_layer, vector<Layer *>  fpga_layer_model) {   
+    //get the input parent layer positions from the CPU model
+    cpu_layer_position = get_layer_number(cpu_layer->parent[n], net);
+
+    int l_fpga = -1;
+    //printf("******** SEARCHING %d\n", cpu_layer_position);
+    //printf("******** ASSOCIATE %d FPGA %d\n", associated_layer.size(),fpga_layer_model.size());
+    for(int i = 0; i < associated_layer.size(); i++) {
+      //cout << "l_dst " << i << fpga_layer_model[i]->name << " l_src " << associated_layer[i] << cpu_layer->parent[n]->name <<"\n";
+      if(LConv *dl = dynamic_cast<LConv *>(cpu_layer->parent[n])) {  
+        if (cpu_layer_position == associated_layer[i]){
+            l_fpga = i;
+            break;
+        }
+      } else {
+        if(LConvSTM *sl = dynamic_cast<LConvSTM *>(fpga_layer_model[i])) {
+            if (cpu_layer_position == (associated_layer[i] + 3)) {
+                l_fpga = i;
+                break;
+            }
+        } else if(LConvSTMAdd *sl = dynamic_cast<LConvSTMAdd *>(fpga_layer_model[i])) {
+          if (cpu_layer_position == (associated_layer[i] + 4)) {
+            l_fpga = i;
+            break;
+          }
+        } else if(LConvReLU *sl = dynamic_cast<LConvReLU *>(fpga_layer_model[i])) {
+          if (cpu_layer_position == (associated_layer[i] + 1)) {
+                l_fpga = i;
+                break;
+          }
+        } else if(LConvReLUMaxPool *sl = dynamic_cast<LConvReLUMaxPool *>(fpga_layer_model[i])) {
+          if (cpu_layer_position == (associated_layer[i] + 2)) {
+                l_fpga = i;
+                break;
+              }
+        } else if(LConvMaxPool *sl = dynamic_cast<LConvMaxPool *>(fpga_layer_model[i])) {
+          if (cpu_layer_position == (associated_layer[i] + 1)) {
+                l_fpga = i;
+                break;
+          }
+        } else if (cpu_layer_position == associated_layer[i]){
+          l_fpga = i;
+          break;
+        }
+      }
+    } 
+
+        if(l_fpga == -1)
+          msg("associated layer not found in fpga model","Model_for_fpga");
+        //else printf("FOUND %d\n", l_fpga);
+        return fpga_layer_model[l_fpga];
+  }
+
+
+  vector<Layer *> get_fpga_all_parent_layers_from_cpu_layer(layer cpu_layer, model net, vector<int>  associated_layer, vector<Layer *>  fpga_layer_model) {   
     vector<int> cpu_layer_position;
     vector<Layer *> fpga_layers;
+  
+    for(int j = 0; j<cpu_layer->parent.size();j++){
+      Layer *act = get_fpga_n_parent_layer_from_cpu_layer(j, cpu_layer, net, associated_layer, fpga_layer_model);
+      fpga_layers.push_back(act);
+    }        
+    return fpga_layers;
+  }
 
+  vector<Layer *> get_fpga_far_parent_layers_from_cpu_layer(layer cpu_layer, model net, vector<int>  associated_layer, vector<Layer *>  fpga_layer_model) {   
+    vector<int> cpu_layer_position;
+    vector<Layer *> fpga_layers;
+    Layer *act;
     int closest_layer, closest_layer_position;
 
     //get the inputs parent layers positions from the CPU model
@@ -1959,47 +2025,15 @@ namespace eddl {
     }
     for(int j = 0; j<cpu_layer->parent.size();j++){
       if(j != closest_layer) {
-        int l_fpga = -1;
-        for(int i = 0; i < associated_layer.size(); i++) {
-          //cout << "l_dst " << i << fpga_layer_model[i]->name << " l_src " << associated_layer[i] << cpu_layer->parent[j]->name <<"\n";
-          //if the cpu input layer is a LMult layer, we can find the respective
-          //FPGA layer in the position associated_layer[i] + 3 due to Conv + Softmax + Tanh + Mult
-          if(LMult *dl = dynamic_cast<LMult *>(cpu_layer->parent[j])) {  
-            if(LConvSTM *sl = dynamic_cast<LConvSTM *>(fpga_layer_model[i])) {
-              if (cpu_layer_position[j] == (associated_layer[i] + 3)) {
-                  l_fpga = i;
-                  break;
-              }
-            }
-          }
-          //if the cpu input layer is a LAdd layer, we can find the respective
-          //FPGA layer in the position associated_layer[i] + 4 due to Conv + Softmax + Tanh + Mult + Add
-          else if(LAdd *dl = dynamic_cast<LAdd *>(cpu_layer->parent[j])) {
-              if(LConvSTMAdd *sl = dynamic_cast<LConvSTMAdd *>(fpga_layer_model[i])) {
-                if (cpu_layer_position[j] == (associated_layer[i] + 4)){
-                  l_fpga = i;
-                  break;
-                }
-              }
-          } 
-          else if (cpu_layer_position[j] == associated_layer[i]){
-              l_fpga = i;
-              break;
-          }
-        }
-
-        if(l_fpga == -1)
-          msg("associated layer not found in fpga model","Model_for_fpga");
-
-        fpga_layers.push_back(fpga_layer_model[l_fpga]);
+        act = get_fpga_n_parent_layer_from_cpu_layer(j, cpu_layer, net, associated_layer, fpga_layer_model);
+        fpga_layers.push_back(act);
       }
     }        
     return fpga_layers;
   }
 
-
     // model for fpga
-    model model_for_fpga(model m_src) {
+  model model_for_fpga(model m_src) {
 
       // constants
       const int KH = 3;
@@ -2019,23 +2053,32 @@ namespace eddl {
 
       // variables to find layers
       int found_I;     // current layer is an input layer
-      int found_C;     // current layer is a Convolution
-      int found_M;     // current layer is maxpool
-      int found_A;     // current layer is avgpool
-      int found_R;     // current layer is relu
-      int found_LR;     // current layer is Leakyrelu
-      int found_S;     // current layer is softmax
-      int found_D;     // current layer is dense
-      int found_Reshape; // current layer is reshape
-      int found_Concat; // current layer is concat
-      int found_Expand; // current layer is expand
+      int found_C;     // current layer is a Convolution layer
+      int found_M;     // current layer is a maxpool layer
+      int found_A;     // current layer is an avgpool layer
+      int found_R;     // current layer is a relu layer
+      int found_LR;     // current layer is a Leakyrelu layer
+      int found_S;     // current layer is a softmax layer
+      int found_D;     // current layer is a dense layer
+      int found_Reshape; // current layer is a reshape layer
+      int found_Concat; // current layer is a concat layer
+      int found_Expand; // current layer is an expand layer
+      int found_Slice; //current layer is a Slice layer
+      int found_Sig;   //current layer is a Sigmoid layer
+      int found_Mult;  //current layer is a Mult layer
+      int found_div;  //current layer is a Div layer
+      int found_Sub;   //current layer is a Sub layer
+      int found_Exp;   //current layer is a Exp layer
+      int found_Trans;   //current layer is a Transpose layer
+      int found_Add;   // current layer is an add layer
+      int found_ConstofTensor; // current layer is constoftensor layer
       int found_nM;    // current+1 layer is a maxpooling layer
       int found_nR;    // current+1 layer is a ReLU layer
       int found_nSp;   // current+1 layer is a Sofplus layer
       int found_nnM;   // current+2 layer is a maxpooling layer
       int found_nnT;   // current+2 layer is a Tanh layer
-      int found_nnnM;  // current+3 layer is a Mult layer
-      int found_nnnnA;  // current+3 layer is a Add layer
+      int found_nnnMult;  // current+3 layer is a Mult layer
+      int found_nnnnA;  // current+3 layer is an Add layer
       //
       int found_CR;    // Layers Convolution+Relu detected
       int found_CM;    // Layers Convolution+Maxpooling detected
@@ -2058,31 +2101,65 @@ namespace eddl {
       // number of layers
       int num_layers = m_src->layers.size();
 
+      // the previous layer is a transform layer
+      int prev_transform = 0;
+
       // we sweep all the model in search of layers that can be merged
       int l_src = 0;
       int l_dst = 0;
 
       while (l_src<num_layers) {
-        //printf("layer dst %d src %d\n",l_dst, l_src);
+        printf("layer dst %d src %d\n",l_dst, l_src);
 	      // detection stage, we detect any possible type of layer that can be merged
 	      // we look into current, current+1 and current+2 layers
         
   	    // Current layer
-	      found_C = 0; found_I = 0; found_LR = 0; found_R = 0; found_S = 0; found_M = 0; found_A = 0; found_Reshape = 0; found_D = 0; found_Concat = 0; found_Expand = 0;
+	      found_C = 0; found_I = 0; found_LR = 0; found_R = 0; found_S = 0; found_M = 0; found_A = 0; found_Reshape = 0; found_D = 0; found_Concat = 0; found_Expand = 0; 
+        found_Slice = 0; found_Sig = 0; found_Mult = 0; found_Sub = 0; found_Exp = 0; found_Trans = 0; found_Add = 0; found_ConstofTensor = 0; found_div = 0;
 	      cl = m_src->layers[l_src];
+
+        if (cl->parent.size() > 0) {
+          cout << "\n\nLAYER: "<<cl->name<<" <- (parent) " << cl->parent[0]->name << "\n";
+        } else cout << "\n\nLAYER: "<<cl->name<<" without parents" << "\n";
+
+
+        //si es expanded se ha creado mediante mult por lo que no la procesamos
+        //pero necesitamos referenciarla
+        if(cl->name.find("_expand") != string::npos) {
+          printf("enter\n");
+                 
+          if(l_src + 1<num_layers ) {
+            associated_layer.push_back(l_src);
+            fpga_layer_model.push_back(prev_layer);
+            l_src++;
+            cl = m_src->layers[l_src];
+             if (l_src > 0) {
+               cout << "\n\nLAYER: "<<cl->name<<" <- (parent) " << cl->parent[0]->name << "\n";
+               }
+          } else break; //CHECK
+        } else printf("no found\n");
 
 	      if (LConv *dl = dynamic_cast<LConv *>(cl)) found_C = 1;
 	      if (LInput *dl = dynamic_cast<LInput *>(cl)) found_I = 1;
         if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "relu") found_R = 1;
         if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "leaky_relu") found_LR = 1;        
         if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "softmax") found_S = 1;
+        if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "sigmoid") found_Sig = 1;
         if (LMaxPool *dl = dynamic_cast<LMaxPool *>(cl)) found_M = 1;
         if (LAveragePool *dl = dynamic_cast<LAveragePool *>(cl)) found_A = 1;        if (LReshape *dl = dynamic_cast<LReshape *>(cl)) found_Reshape = 1;
         if (LDense *dl = dynamic_cast<LDense *>(cl)) found_D = 1;
         if (LConcat *dl = dynamic_cast<LConcat *>(cl)) found_Concat = 1;
         if (LExpand *dl = dynamic_cast<LExpand *>(cl)) found_Expand = 1;
-
-	      // current+1 layer
+        if (LSelect *dl = dynamic_cast<LSelect *>(cl)) found_Slice = 1;
+        if (LMult *dl = dynamic_cast<LMult *>(cl)) found_Mult = 1;
+        if (LDiv *dl = dynamic_cast<LDiv *>(cl)) found_div = 1;
+        if (LDiff *dl = dynamic_cast<LDiff *>(cl)) found_Sub = 1;
+        if (LExp *dl = dynamic_cast<LExp *>(cl)) found_Exp = 1;
+        if (LPermute *dl = dynamic_cast<LPermute *>(cl)) found_Trans = 1;
+	      if (LAdd *dl = dynamic_cast<LAdd *>(cl)) found_Add = 1;
+        if (LConstOfTensor *dl = dynamic_cast<LConstOfTensor *>(cl)) found_ConstofTensor = 1;
+        
+        // current+1 layer
 	      found_nM = 0;
 	      found_nR = 0;
         found_nSp = 0;
@@ -2103,56 +2180,74 @@ namespace eddl {
 	      }
 
         // current+3 layer
-	      found_nnnM = 0;
+	      found_nnnMult = 0;
 	      if (l_src<num_layers-3) {
 	        nnnl = m_src->layers[l_src+3]; 
-          if (LMult *dl = dynamic_cast<LMult *>(nnnl)) found_nnnM = 1; //TODO not sure
+          if (LMult *dl = dynamic_cast<LMult *>(nnnl)) found_nnnMult = 1; 
 	      }
 
         // current+4 layer
 	      found_nnnnA = 0;
 	      if (l_src<num_layers-4) {
 	        nnnnl = m_src->layers[l_src+4]; 
-          if (LAdd *dl = dynamic_cast<LAdd *>(nnnnl)) found_nnnnA = 1; //TODO not sure
+          if (LAdd *dl = dynamic_cast<LAdd *>(nnnnl)) found_nnnnA = 1; 
 	      }
 
 	      // Combination of layers detected (for the moment they are disabled)
 	      found_CM = found_C && found_nM;
 	      found_CRM = found_C && found_nR && found_nnM;
         found_CR = !found_CRM && found_C && found_nR;
-        found_CSTMA = found_C && found_nSp && found_nnT && found_nnnM && found_nnnnA;
-        found_CSTM = !found_CSTMA && found_C && found_nSp && found_nnT && found_nnnM;
+        found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA;
+        found_CSTM = !found_CSTMA && found_C && found_nSp && found_nnT && found_nnnMult;
 
         // data layer transform
         if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA) {
           if (!ghwc_enabled) {
             printf("instantiating Transform,1 layer\n");
             // we add transform layer
-            prev_layer = Transform(prev_layer, 1);
+            Layer *fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, cl, m_src, associated_layer, fpga_layer_model);  
+            prev_layer = Transform(fpga_parent, 1);
             ghwc_enabled = 1;
-            fpga_layer_model.push_back(prev_layer);
-            associated_layer.push_back(l_src);
+            prev_transform = 1;
+            //fpga_layer_model.push_back(prev_layer);
+            //associated_layer.push_back(l_src);
             l_dst++;
+            //problema, si dos capas tienen como padre una transform solo la primera hereda de esta
+            //solucion: algun map para decir si tiene o no transform
+              cout << "(parent,1)"<< fpga_parent->name << " \n ";
           }
         } else {
           if (ghwc_enabled) {
              // we add a detransform layer
-             printf("instantiating Transform,0 layer\n");
-             prev_layer = Transform(prev_layer, 0);
+            printf("instantiating Transform,0 layer\n");
+            Layer *fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, cl, m_src, associated_layer, fpga_layer_model);  
+             prev_layer = Transform(fpga_parent, 0);
              ghwc_enabled = 0;
-             fpga_layer_model.push_back(prev_layer);
-             associated_layer.push_back(l_src);
+             prev_transform = 1;
+             //fpga_layer_model.push_back(prev_layer);
+             //associated_layer.push_back(l_src);
+                           cout << "(parent,0)"<< fpga_parent->name << " \n ";
+
              l_dst++;
           }
         }
 
+
         // build up stage, we create a merged layer out of our findings
         if (found_CR) {
           printf("instantiating CR layer\n");
-          LConv *layer_src = (LConv *)cl;    
-          prev_layer = new LConvReLU(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+          LConv *layer_src = (LConv *)cl;
+
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+          
+          prev_layer = new LConvReLU(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
                                  "",DEV_CPU, layer_src->cd->mem_level);
+          
           associated_layer.push_back(l_src);
           fpga_layer_model.push_back(prev_layer);
 
@@ -2161,14 +2256,20 @@ namespace eddl {
           LConv *layer_src = (LConv *)cl;
           LPool *n_layer_src = (LPool *)nl;
 
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+          
           if(n_layer_src->pd->padding =="custom") {
-            prev_layer = new LConvMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+            prev_layer = new LConvMaxPool(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
                                 n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
                                 "",DEV_CPU, layer_src->cd->mem_level);
           } 
           else {
-	          prev_layer = new LConvMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+	          prev_layer = new LConvMaxPool(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
                                 n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->padding, layer_src->cd->use_bias,
                                 "",DEV_CPU, layer_src->cd->mem_level);
@@ -2180,14 +2281,21 @@ namespace eddl {
           printf("instantiating CRM layer %d\n", found_nnM);
           LConv *layer_src = (LConv *)cl;
           LPool *n_layer_src = (LPool *)nnl;
+
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+  
           if(n_layer_src->pd->padding =="custom") {
-            prev_layer = new LConvReLUMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+            prev_layer = new LConvReLUMaxPool(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
                                 n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
                                 "",DEV_CPU, layer_src->cd->mem_level);
           } 
           else {
-	          prev_layer = new LConvReLUMaxPool(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+	          prev_layer = new LConvReLUMaxPool(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
                                 n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->padding, layer_src->cd->use_bias,
                                 "",DEV_CPU, layer_src->cd->mem_level);
@@ -2198,7 +2306,14 @@ namespace eddl {
 	      } else if (found_CSTM) {
           printf("instantiating CSTM layer\n");
 	        LConv *layer_src = (LConv *)cl;
-          prev_layer = new LConvSTM(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+                            cout << "(parent)"<< fpga_parent->name << " \n ";
+
+          prev_layer = new LConvSTM(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
                                  "",DEV_CPU, layer_src->cd->mem_level);
           associated_layer.push_back(l_src);
@@ -2213,22 +2328,36 @@ namespace eddl {
           if (nnnn_layer_src->parent.size() != 2) msg("Error: LAdd layer with more than two parents is not supported in the FPGA ");
 
           //we apply the convolutional and stm module to the previous layer
-          parent.push_back(prev_layer);
+            //then, we add the second input which corresponds to the output of the farthest layer 
           
-          //then, we add the second input which corresponds to the output of the farthest layer 
-          vector<Layer *> second_input = get_fpga_layer_from_cpu_layer(nnnn_layer_src, m_src, associated_layer, fpga_layer_model);  
-          parent.push_back(second_input[0]);
+          if(prev_transform) {
+            parent.push_back(prev_layer);
+            prev_transform = 0;
+          } else {
+            Layer *conv_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);
+            parent.push_back(conv_parent);
+          }
+
+          vector<Layer *> add_layer = get_fpga_far_parent_layers_from_cpu_layer(nnnn_layer_src, m_src, associated_layer, fpga_layer_model);  
+          parent.push_back(add_layer[0]);                      
 
           prev_layer = new LConvSTMAdd(parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
                                  "",DEV_CPU, layer_src->cd->mem_level);
+
           associated_layer.push_back(l_src);
           fpga_layer_model.push_back(prev_layer);
 
 	      } else if (found_C) {
           printf("instantiating C layer\n");
 	        LConv *layer_src = (LConv *)cl;
-          prev_layer = new LConv(prev_layer, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+
+          prev_layer = new LConv(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
                                  "",DEV_CPU, layer_src->cd->mem_level);
           associated_layer.push_back(l_src);
@@ -2236,25 +2365,41 @@ namespace eddl {
 
 	      } else if (found_R) {
           printf("instantiating R layer\n");
-	        prev_layer = ReLu(prev_layer);
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, cl, m_src, associated_layer, fpga_layer_model);  
+	        prev_layer = ReLu(fpga_parent);
           associated_layer.push_back(l_src);
           fpga_layer_model.push_back(prev_layer);
         
         } else if (found_LR) { 
           printf("instantiating LeakyReLU layer\n");
           LActivation *layer_src = (LActivation *)cl;
-	        prev_layer = LeakyReLu(prev_layer, layer_src->params[0], "");
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+	        prev_layer = LeakyReLu(fpga_parent, layer_src->params[0], "");
           associated_layer.push_back(l_src);
           fpga_layer_model.push_back(prev_layer);
 
 	      } else if (found_M) {
           printf("instantiating M layer\n");
           LMaxPool *layer_src = (LMaxPool *)cl;
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+
           if(layer_src->pd->padding =="custom") {
-	          prev_layer = new LMaxPool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
+	          prev_layer = new LMaxPool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
           } 
           else {
-	          prev_layer = new LMaxPool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
+	          prev_layer = new LMaxPool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
           }
           associated_layer.push_back(l_src);
           fpga_layer_model.push_back(prev_layer);
@@ -2262,11 +2407,16 @@ namespace eddl {
         } else if (found_A) {
           printf("instantiating A layer\n");
           LAveragePool *layer_src = (LAveragePool *)cl;
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
           if(layer_src->pd->padding =="custom") {
-	          prev_layer = new LAveragePool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
+	          prev_layer = new LAveragePool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
           } 
           else {
-	          prev_layer = new LAveragePool(prev_layer, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
+	          prev_layer = new LAveragePool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
           }
           associated_layer.push_back(l_src);
           fpga_layer_model.push_back(prev_layer);
@@ -2280,50 +2430,83 @@ namespace eddl {
         } else if (found_Reshape) {
           printf("instantiating Reshape layer\n");
           LReshape *layer_src = (LReshape *)cl;
-          
+
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+
           long int elements = 1;
           for (int i = 1; i < layer_src->ls.size(); i++) {
+            printf(" %d\n", layer_src->ls[i]);
             elements = elements * layer_src->ls[i];
           }
+            printf("ls input size %d\n", layer_src->ls.size());
 
-          if(layer_src->ls[1] == elements) {
-            prev_layer = Reshape(prev_layer, { -1 });
+          if(layer_src->ls[1] == elements && layer_src->ls.size() < 3 ) {
+                        printf("DINSls input size %d\n", layer_src->ls.size());
+
+            prev_layer = Reshape(fpga_parent, { -1 });
           } else {
             vector<int> shape;
             for (int i = 1; i < layer_src->ls.size(); i++)
               shape.push_back(layer_src->ls[i]);
 
-            prev_layer = Reshape(prev_layer, shape);
+            prev_layer = Reshape(fpga_parent, shape);
           }
           
-          //prev_layer = Reshape(prev_layer, { -1 }/*layer_src->ls*/);   // TOFIX
           associated_layer.push_back(l_src);
           fpga_layer_model.push_back(prev_layer);
 
         } else  if (found_D) {
           printf("instantiating Dense layer\n");
           LDense *layer_src = (LDense *)cl;
-          prev_layer = Dense(prev_layer, layer_src->ndim);
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+          prev_layer = Dense(fpga_parent, layer_src->ndim);
           associated_layer.push_back(l_src);
           fpga_layer_model.push_back(prev_layer);
 
         } else if (found_S) {
           printf("instantiating Softmax layer\n");
-          prev_layer = Softmax(prev_layer);
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, cl, m_src, associated_layer, fpga_layer_model);  
+          prev_layer = Softmax(fpga_parent);
           associated_layer.push_back(l_src);
           fpga_layer_model.push_back(prev_layer);
 
         } else if (found_Concat) {
           printf("instantiating Concat layer\n");
           LConcat *layer_src = (LConcat *)cl;
-
           vector<Layer *> parent;
-          vector<Layer *> second_input = get_fpga_layer_from_cpu_layer(layer_src, m_src, associated_layer, fpga_layer_model);  
-          parent.push_back(prev_layer);
-          for(int i = 0; i<layer_src->parent.size()-1 ;i++){
-            parent.push_back(second_input[i]);
-          }
+          
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            vector<Layer *> second_input = get_fpga_far_parent_layers_from_cpu_layer(cl, m_src, associated_layer, fpga_layer_model);  
+            parent.push_back(prev_layer);
 
+            for(int i = 0; i<layer_src->parent.size()-1 ;i++){
+              parent.push_back(second_input[i]);
+            }
+
+            prev_transform = 0;
+          }
+          else {
+            vector<Layer *> parents_layers = get_fpga_all_parent_layers_from_cpu_layer(layer_src, m_src, associated_layer, fpga_layer_model);  
+
+            for(int i = 0; i<layer_src->parent.size();i++){
+              cout << parents_layers[i]->name << " \n ";
+              parent.push_back(parents_layers[i]);
+            }
+          }
           prev_layer = Concat(parent, layer_src->axis, "");
 
           associated_layer.push_back(l_src);
@@ -2332,15 +2515,201 @@ namespace eddl {
         } else  if (found_Expand) { 
           printf("instantiating Expand layer\n");
           LExpand *layer_src = (LExpand *)cl;
-          prev_layer = Expand(prev_layer, layer_src->size, "");
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+          prev_layer = Expand(fpga_parent, layer_src->size, "");
+          associated_layer.push_back(l_src);
+          fpga_layer_model.push_back(prev_layer);
+
+        } else  if (found_Slice) { 
+          printf("instantiating Slice layer\n");
+          LSelect *layer_src = (LSelect *)cl;
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+          prev_layer = Slice(fpga_parent, layer_src->sd->indices, "");
+          associated_layer.push_back(l_src);
+          fpga_layer_model.push_back(prev_layer);  
+
+        } else if (found_Sig) {
+          printf("instantiating Sigmoid layer\n");
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, cl, m_src, associated_layer, fpga_layer_model);  
+	        prev_layer = Sigmoid(fpga_parent);
+          associated_layer.push_back(l_src);
+          fpga_layer_model.push_back(prev_layer);
+        
+        } else if (found_Mult) {
+          printf("instantiating Mult layer\n");
+          LMult *layer_src = (LMult *)cl;
+          if(layer_src->parent.size() < 2) {
+             Layer *fpga_parent;
+            if(prev_transform) {
+              fpga_parent = prev_layer;
+              prev_transform = 0;
+            } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+
+            prev_layer = Mult(fpga_parent, layer_src->val);
+          } else if(layer_src->parent.size() == 2) {
+              vector<Layer *> parent;
+              Layer *fpga_parent;
+
+              if(prev_transform) {
+                fpga_parent = prev_layer;
+                vector<Layer *> second_input = get_fpga_far_parent_layers_from_cpu_layer(cl, m_src, associated_layer, fpga_layer_model);  
+                parent.push_back(prev_layer);
+                parent.push_back(second_input[0]);
+                prev_transform = 0;
+              } else {
+                vector<Layer *> parents_layers = get_fpga_all_parent_layers_from_cpu_layer(layer_src, m_src, associated_layer, fpga_layer_model);  
+                for(int i = 0; i<layer_src->parent.size();i++){
+                  parent.push_back(parents_layers[i]);
+                }
+              }
+              vector<Layer *> operators = expand_broadcast(parent);
+              prev_layer = Mult(operators[0], operators[1]);
+          } else  msg("Error, Mult layer is only supported in FPGA with one or two parents","Model_for_fpga");
+          
+          associated_layer.push_back(l_src);
+          fpga_layer_model.push_back(prev_layer);
+
+        } else if (found_div) {
+          printf("instantiating Div layer\n");
+          LDiv *layer_src = (LDiv *)cl;
+          if(layer_src->parent.size() < 2) {
+             Layer *fpga_parent;
+            if(prev_transform) {
+              fpga_parent = prev_layer;
+              prev_transform = 0;
+            } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+
+            prev_layer = Div(fpga_parent, layer_src->val);
+          } else if(layer_src->parent.size() == 2) {
+              vector<Layer *> parent;
+              Layer *fpga_parent;
+
+              if(prev_transform) {
+                fpga_parent = prev_layer;
+                vector<Layer *> second_input = get_fpga_far_parent_layers_from_cpu_layer(cl, m_src, associated_layer, fpga_layer_model);  
+                parent.push_back(prev_layer);
+                parent.push_back(second_input[0]);
+                prev_transform = 0;
+              } else {
+                vector<Layer *> parents_layers = get_fpga_all_parent_layers_from_cpu_layer(layer_src, m_src, associated_layer, fpga_layer_model);  
+                for(int i = 0; i<layer_src->parent.size();i++){
+                  parent.push_back(parents_layers[i]);
+                }
+              }
+              vector<Layer *> operators = expand_broadcast(parent);
+              prev_layer = Div(operators[0], operators[1]);
+          } else  msg("Error, Mult layer is only supported in FPGA with one or two parents","Model_for_fpga");
+          
+          associated_layer.push_back(l_src);
+          fpga_layer_model.push_back(prev_layer);
+
+        } else if (found_Add) {
+          printf("instantiating Add layer\n");
+          vector<Layer *> parent;
+          Layer *fpga_parent;
+
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            vector<Layer *> second_input = get_fpga_far_parent_layers_from_cpu_layer(cl, m_src, associated_layer, fpga_layer_model);  
+            parent.push_back(prev_layer);
+            parent.push_back(second_input[0]);
+            prev_transform = 0;
+          } else {
+            vector<Layer *> parents_layers = get_fpga_all_parent_layers_from_cpu_layer(cl, m_src, associated_layer, fpga_layer_model);  
+            for(int i = 0; i<cl->parent.size();i++){
+              parent.push_back(parents_layers[i]);
+            }
+          }
+          
+          prev_layer = Add(parent);
+                    
+          associated_layer.push_back(l_src);
+          fpga_layer_model.push_back(prev_layer);
+
+        } else if (found_Sub) {
+          printf("instantiating Sub layer\n");
+          LDiff *layer_src = (LDiff *)cl;
+          if(!layer_src->parent.size()) msg("Error, Sub layer with more than one parent is not supported","Model_for_fpga");
+
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, layer_src, m_src, associated_layer, fpga_layer_model);  
+
+
+          prev_layer = Sub(fpga_parent, layer_src->val);
+          associated_layer.push_back(l_src);
+          fpga_layer_model.push_back(prev_layer);
+        
+        } else  if (found_Exp) { 
+          printf("instantiating Exp layer\n");
+
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, cl, m_src, associated_layer, fpga_layer_model);  
+        
+          prev_layer = Exp(fpga_parent);
+          associated_layer.push_back(l_src);
+          fpga_layer_model.push_back(prev_layer);
+
+        } else  if (found_Trans) { 
+          printf("instantiating Transpose layer\n");
+
+          Layer *fpga_parent;
+          if(prev_transform) {
+            fpga_parent = prev_layer;
+            prev_transform = 0;
+          } else fpga_parent = get_fpga_n_parent_layer_from_cpu_layer(0, cl, m_src, associated_layer, fpga_layer_model);  
+
+          prev_layer = Transpose(fpga_parent);
+          associated_layer.push_back(l_src);
+          fpga_layer_model.push_back(prev_layer);
+
+        } else  if (found_ConstofTensor) { 
+          printf("instantiating ConstofTensor layer\n");
+          LConstOfTensor *layer_src = (LConstOfTensor *)cl;
+          Layer *fpga_parent;
+          prev_layer = ConstOfTensor(layer_src->const_tensor, layer_src->name);
+
           associated_layer.push_back(l_src);
           fpga_layer_model.push_back(prev_layer);
 
         } else {
           cout<<"searching "<<cl->name<<"\n";
           msg("Error, unidentified layer","Model_for_fpga");
-            exit(1);
+          exit(1);
 	      }
+
+/***************/
+printf("total cpu layers %d\n", l_src);
+if (l_src > 0)cout << prev_layer->name << " -->";
+
+if (l_src > 0){
+  for (int i = 0; i < prev_layer->input->shape.size(); i++)
+    printf(" %d ", prev_layer->input->shape[i]);
+  printf("  =>  ");
+
+  for (int i = 0; i < prev_layer->input->shape.size(); i++)
+    printf(" %d ", prev_layer->output->shape[i]);
+  
+    printf("\n");
+}
+/***************/
 
         if (l_src == 0) first = prev_layer;
         last = prev_layer;
@@ -2353,13 +2722,14 @@ namespace eddl {
       build(net, sgd(0.001f, 0.9f),{"soft_cross_entropy"}, {"categorical_accuracy"}, CS_FPGA({1}));
       summary(net);
 
-      // now we adapt the filters and bias
+printf("FIN MODEL\n");
+
+       // now we adapt the filters and bias
       for (int l=0; l<l_dst; l++) { 
         // filter and bias copy and adaptation
         Layer *cl = net->layers[l];
         if (LConvReLU *conv = dynamic_cast<LConvReLU *>(cl)) {
-          printf("LConvReLU adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
-         
+          //printf("LConvReLU adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
           LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
           LConvReLU *layer_dst = (LConvReLU *) net->layers[l];
           
@@ -2374,7 +2744,7 @@ namespace eddl {
           distributeTensor(layer_dst, "param", 1);
 
         } else if (LConvMaxPool *conv = dynamic_cast<LConvMaxPool *>(cl)) {
-            printf("LConvMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+            //printf("LConvMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
             LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
   	        LConvMaxPool *layer_dst = (LConvMaxPool *) net->layers[l];
 
@@ -2389,7 +2759,7 @@ namespace eddl {
             distributeTensor(layer_dst, "param", 1);
             
         } else if (LConvReLUMaxPool *conv = dynamic_cast<LConvReLUMaxPool *>(cl)) {
-            printf("LConvReLUMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+            //printf("LConvReLUMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
             LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
   	        LConvReLUMaxPool *layer_dst = (LConvReLUMaxPool *) net->layers[l];
 
@@ -2404,7 +2774,7 @@ namespace eddl {
             distributeTensor(layer_dst, "param", 1);
 
         } else if (LConvSTM *conv = dynamic_cast<LConvSTM *>(cl)) {
-            printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+            //printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
             LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
   	        LConvSTM *layer_dst = (LConvSTM *) net->layers[l];
 
@@ -2419,7 +2789,7 @@ namespace eddl {
             distributeTensor(layer_dst, "param", 1);
 
         } else if (LConvSTMAdd *conv = dynamic_cast<LConvSTMAdd *>(cl)) {
-            printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+            //printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
             LConv *layer_src = (LConv *) m_src->layers[associated_layer[l]];
   	        LConvSTMAdd *layer_dst = (LConvSTMAdd *) net->layers[l];
 
@@ -2433,7 +2803,7 @@ namespace eddl {
             tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
             distributeTensor(layer_dst, "param", 1);
         } else if (LDense *dl = dynamic_cast<LDense *>(cl)) {
-            printf("LDense adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+            //printf("LDense adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
             LDense *layer_src = (LDense *) m_src->layers[associated_layer[l]];
   	        LDense *layer_dst = (LDense *) net->layers[l]; 
 
@@ -2442,28 +2812,10 @@ namespace eddl {
             tensor_padded(layer_src->W, layer_dst->W);
             distributeTensor(layer_dst, "param", 0);
             
-            //distribute to cpu
-            //this is the same functionality as the di
-           /* Layer *sl=nullptr;
-            Net *sn=layer_dst->net;
-            for(int j=0;j<sn->snets[0]->layers.size();j++)
-            if (sn->snets[0]->layers[j]->orig==layer_dst) {
-                sl=sn->snets[0]->layers[j];
-                break;
-            }*/
-            
             //bias
             collectTensor(layer_src, "param", 1);
             tensor_padded(layer_src->bias, layer_dst->bias);
             distributeTensor(layer_dst, "param", 1);
-           /* sn=layer_dst->net;
-            for(int j=0;j<sn->snets[0]->layers.size();j++)
-            if (sn->snets[0]->layers[j]->orig==layer_dst) {
-                sl=sn->snets[0]->layers[j];
-                break;
-            }
-            cpu_copy(layer_dst->params[1],sl->params[1]);*/
-
         }
       }
       return net;
