@@ -389,7 +389,7 @@ void LBatchNorm::backward() {
                                 bnScaleBiasMeanVarDesc,
                                 bn_g->ptr, gbn_g->ptr, gbn_b->ptr,
                                 epsilon, bn_mean->ptr, bn_var->ptr);
-        i f(nnn != CUDNN_STATUS_SUCCESS)
+        if(nnn != CUDNN_STATUS_SUCCESS)
             std::cout   << "Error bwd BN  "
                         << cudnnGetErrorString(nnn)
                         << std::endl;
