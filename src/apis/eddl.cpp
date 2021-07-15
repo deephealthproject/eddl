@@ -2141,9 +2141,30 @@ int current_associated_layers = 0;
         found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA;
         found_CSTM = !found_CSTMA && found_C && found_nSp && found_nnT && found_nnnMult;
 
-        // data layer transform
-        if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL) {
-	        // all these layers need the GHWC format at the input, therefore we check if the
+        // data layer transform: Layers ran on the FPGA need to have their inputs in GHWC format, 
+	// the remaining layers need to have their inputs in NCHW format
+	// One exception is the Concat layer that is equivalent in both formats but all its inputs
+	// must be in the same format
+	if (found_Concat) { 
+	  // all its inputs must be in the same format
+	  int format = 0;
+	  Layer *parent_layer = fn_get_associated_layer(cl->parent[0], format, &dummy);
+	  if (parent_layer == NULL) format = 1;
+	  for (int x=0; x<cl->parent.size(); x++) {
+	    parent_layer = fn_get_associated_layer(cl->parent[x], format, &dummy);
+	    if (parent_layer == NULL) {
+	      // we add a transform layer
+	      parent_layer = fn_get_associated_layer(cl->parent[x], format==0?1:0, &dummy);
+	      printf("%3d: TRANSFORM  : prev %d\n", l_dst, dummy);
+	      Layer *new_parent_layer = Transform(parent_layer, format);
+	      fn_set_associated_layer(cl->parent[x], new_parent_layer, format, l_dst);
+	      l_dst++;
+	    }
+	  }
+	} else {
+	  
+          if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL) {
+ 	        // all these layers need the GHWC format at the input, therefore we check if the
 	        // previous layer is in GHWC format and if not we add a transform layer
 	        //
 	        for (int x=0; x<cl->parent.size(); x++) {
@@ -2156,8 +2177,8 @@ int current_associated_layers = 0;
 	                  fn_set_associated_layer(cl->parent[x], new_parent_layer, 1, l_dst);
                     l_dst++;
 	                }
-          }
-        } else {
+            }
+          } else {
 	        // The rest of layers need the CHW format at the inputs, therefore we check if the
 	        // previous layers are in CHW format and if not we add a transform layer
 	        //
@@ -2166,12 +2187,13 @@ int current_associated_layers = 0;
 	          if (parent_layer == NULL) {
 	            // we add a transform layer
 	            parent_layer = fn_get_associated_layer(cl->parent[x], 1, &dummy);
-	            printf("%3d: TRANSFORM  : prev %d\n", l_dst, dummy);
+	            printf("%3d: TRANSFORM : prev %d\n", l_dst, dummy);
 	            Layer *new_parent_layer = Transform(parent_layer, 0);
 	            fn_set_associated_layer(cl->parent[x], new_parent_layer, 0, l_dst);
               l_dst++;
 
-	          }
+              }
+            }
           }
         }
 
@@ -2464,9 +2486,13 @@ int current_associated_layers = 0;
 	      // dst parent layer
         vector<Layer *> parent;
         vector<int> dummy_vect;
+	// the input format can be either GHWC or NCWH, but only one of them
+	// we need to select which one
+	int format = 0;
+	if (fn_get_associated_layer(cl->parent[0], format, &dummy) == NULL) format = 1;
         for(int p = 0; p < cl->parent.size();p++) {
           int dummy_el;
-          parent.push_back(fn_get_associated_layer(cl->parent[p], 0, &dummy_el));
+          parent.push_back(fn_get_associated_layer(cl->parent[p], format, &dummy_el));
           dummy_vect.push_back(dummy_el);
         }
 	      printf("%3d: CONCAT     : prevs ", l_dst);
@@ -2476,7 +2502,7 @@ int current_associated_layers = 0;
         printf("\n");
 	      //
         prev_layer = Concat(parent, layer_src->axis, "");
-	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      fn_set_associated_layer(cl, prev_layer, format, l_dst);
         l_dst++;
 
       } else  if (found_Expand) { 
