@@ -2003,6 +2003,7 @@ int current_associated_layers = 0;
       int found_ConstofTensor; // current layer is constoftensor layer
       int found_nM;    // current+1 layer is a maxpooling layer
       int found_nR;    // current+1 layer is a ReLU layer
+      int found_nL;    // current+1 layer is a LeakyReLU layer
       int found_nSp;   // current+1 layer is a Sofplus layer
       int found_nnM;   // current+2 layer is a maxpooling layer
       int found_nnT;   // current+2 layer is a Tanh layer
@@ -2014,6 +2015,7 @@ int current_associated_layers = 0;
       int found_CRM;   // Layers Convolution+ReLU+Maxpooling detected
       int found_CSTM;  // Layers Convolution+Softplus+Tanh+Mult detected
       int found_CSTMA; // Layers Convolution+Softplus+Tanh+Mult+Add detected
+      int found_CL;    // Layers Convolution+LeakyReLU detected
 
       // Vector of FPGA layers to easly identify the layers for the add and concat functions
       vector<Layer *>  fpga_layer_model; 
@@ -2070,7 +2072,7 @@ int current_associated_layers = 0;
                cout << "\n\nLAYER: "<<cl->name<<" <- (parent) " << cl->parent[0]->name << "\n";
                }
           } else break; //CHECK
-        } else printf("no found\n");*/
+        } else printf("no found\n")*/;
 
 	// detection flags
         if (LConv *dl = dynamic_cast<LConv *>(cl)) found_C = 1;
@@ -2096,12 +2098,14 @@ int current_associated_layers = 0;
         // current+1 layer
 	found_nM = 0;
 	found_nR = 0;
+	found_nL = 0;
         found_nSp = 0;
 	if (l_src<num_layers-1) {
 	  nl = m_src->layers[l_src+1];
 	  if (LMaxPool *dl = dynamic_cast<LMaxPool *>(nl)) found_nM = 1;
 	  if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_nR = 1;
           if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "softplus") found_nSp = 1; 
+	  if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "leaky_relu") found_nL = 1;
   	}
 
 	// current+2 layer
@@ -2131,11 +2135,12 @@ int current_associated_layers = 0;
 	found_CM = found_C && found_nM;
 	found_CRM = found_C && found_nR && found_nnM;
         found_CR = !found_CRM && found_C && found_nR;
+	//found_CL = found_C && found_nL;
         found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA;
         found_CSTM = !found_CSTMA && found_C && found_nSp && found_nnT && found_nnnMult;
 
         // data layer transform
-        if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA) {
+        if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL) {
 	  // all these layers need the GHWC format at the input, therefore we check if the
 	  // previous layer is in GHWC format and if not we add a transform layer
 	  //
@@ -2184,6 +2189,25 @@ int current_associated_layers = 0;
 	  fn_set_associated_layer(cl, prev_layer, 1, l_dst);
 	  fn_set_associated_layer(nl, prev_layer, 1, l_dst);
 	  l_dst++;
+
+	} else if (found_CL) {
+
+	  // 
+	  // Convolution + LeakyReLU fused layer
+	  //
+	  // source layer
+	  //
+          LConv *layer_src = (LConv *)cl;
+          // dst parent layer
+          Layer *fpga_parent;
+          fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+          printf("%3d: CL          : prev %d\n", l_dst, dummy);
+	  // Canbiar por una LConvLeakyReLU !!!!!!! Laura
+          prev_layer = new LConvReLU(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+                                layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
+          fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+          fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+          l_dst++;
         
 	} else if (found_CM) {
 	
@@ -2631,7 +2655,7 @@ if (l_src > 0){
 
         if (l_src == 0) first = prev_layer;
         last = prev_layer;
-        if (found_CSTMA) l_src += 5; else if (found_CSTM) l_src += 4; else if (found_CRM) l_src += 3; else if (found_CM || found_CR) l_src += 2; else l_src++; 
+        if (found_CSTMA) l_src += 5; else if (found_CSTM) l_src += 4; else if (found_CRM) l_src += 3; else if (found_CM || found_CR || found_CL) l_src += 2; else l_src++; 
       }
 
       printf("End parsing/creating new network\n");
