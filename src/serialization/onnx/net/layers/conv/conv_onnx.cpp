@@ -35,6 +35,8 @@ Layer* build_conv_layer(onnx::NodeProto *node,
         auto_pad_option = "valid";
       else if (!attribute.s().compare("SAME_UPPER"))
         auto_pad_option = "same";
+      else if (!attribute.s().compare("SAME_LOWER"))
+          auto_pad_option = "same";
     }
     else if (!attr_name.compare("dilations")) {
       for (int h = 0; h < attribute.ints_size(); h++)
