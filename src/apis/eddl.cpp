@@ -1909,6 +1909,8 @@ struct {
   int   layer_id_chw;
 } associated_layers[MAX_ASSOCIATED_LAYERS];
 
+int associated_source_layer[MAX_ASSOCIATED_LAYERS];
+
 int current_associated_layers = 0;
 
   void fn_set_associated_layer(Layer *src, Layer *dst, int ghwc_format, int layer_id) {
@@ -2020,9 +2022,6 @@ int current_associated_layers = 0;
       // Vector of FPGA layers to easly identify the layers for the add and concat functions
       vector<Layer *>  fpga_layer_model; 
       
-      // associated layers
-      vector<int>  associated_layer;
-
       // transform mode activated
       int ghwc_enabled = 0;
 
@@ -2213,6 +2212,7 @@ int current_associated_layers = 0;
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
 	  fn_set_associated_layer(cl, prev_layer, 1, l_dst);
 	  fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+	  associated_source_layer[l_dst] = l_src;
 	  l_dst++;
 
 	} else if (found_CL) {
@@ -2232,6 +2232,7 @@ int current_associated_layers = 0;
                                 layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
           fn_set_associated_layer(cl, prev_layer, 1, l_dst);
           fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+	  associated_source_layer[l_dst] = l_src;
           l_dst++;
         
 	      } else if (found_CM) {
@@ -2260,6 +2261,7 @@ int current_associated_layers = 0;
           }
 	        fn_set_associated_layer(cl, prev_layer, 1, l_dst);
 	        fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+		associated_source_layer[l_dst] = l_src;
 	        l_dst++;
 
     	} else if (found_CRM) {
@@ -2289,6 +2291,7 @@ int current_associated_layers = 0;
 	      fn_set_associated_layer(cl, prev_layer, 1, l_dst);
 	      fn_set_associated_layer(nl, prev_layer, 1, l_dst);
 	      fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
 	    } else if (found_CSTM) {
@@ -2309,6 +2312,7 @@ int current_associated_layers = 0;
 	      fn_set_associated_layer(nl, prev_layer, 1, l_dst);
 	      fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
 	      fn_set_associated_layer(nnnl, prev_layer, 1, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else if (found_CSTMA) {
@@ -2332,6 +2336,7 @@ int current_associated_layers = 0;
 	      fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
 	      fn_set_associated_layer(nnnl, prev_layer, 1, l_dst);
 	      fn_set_associated_layer(nnnnl, prev_layer, 1, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else if (found_C) {
@@ -2349,6 +2354,7 @@ int current_associated_layers = 0;
                               layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
                                "",DEV_CPU, layer_src->cd->mem_level);
 	      fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
       
       } else if (found_R) {
@@ -2361,6 +2367,7 @@ int current_associated_layers = 0;
         printf("%3d: RELU       : prev %d\n", l_dst, dummy);
 	      prev_layer = ReLu(fpga_parent);
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
         
       } else if (found_LR) { 
@@ -2375,6 +2382,7 @@ int current_associated_layers = 0;
 	      printf("%3d: LeakyReLU  : prev %d\n", l_dst, dummy);
 	      prev_layer = LeakyReLu(fpga_parent, layer_src->params[0], "");
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
 	    } else if (found_M) {
@@ -2393,6 +2401,7 @@ int current_associated_layers = 0;
 	        prev_layer = new LMaxPool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
         }
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else if (found_A) {
@@ -2411,6 +2420,7 @@ int current_associated_layers = 0;
 	        prev_layer = new LAveragePool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
         }
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else if (found_I) {
@@ -2421,6 +2431,7 @@ int current_associated_layers = 0;
         printf("%3d: I\n", l_dst);
 	      prev_layer = Input({cl->input->shape[1],cl->input->shape[2],cl->input->shape[3]});
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else if (found_Reshape) {
@@ -2447,6 +2458,7 @@ int current_associated_layers = 0;
           prev_layer = Reshape(fpga_parent, shape);
         }
     	  fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	  associated_source_layer[l_dst] = l_src;
     	  l_dst++;
 
       } else  if (found_D) {
@@ -2462,6 +2474,7 @@ int current_associated_layers = 0;
 
         prev_layer = Dense(fpga_parent, layer_src->ndim);
     	  fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	  associated_source_layer[l_dst] = l_src;
     	  l_dst++;
 
       } else if (found_S) {
@@ -2474,6 +2487,7 @@ int current_associated_layers = 0;
         printf("%3d: Softmax           : prev %d\n", l_dst, dummy);
         prev_layer = Softmax(fpga_parent);
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else if (found_Concat) {
@@ -2503,6 +2517,7 @@ int current_associated_layers = 0;
 	      //
         prev_layer = Concat(parent, layer_src->axis, "");
 	      fn_set_associated_layer(cl, prev_layer, format, l_dst);
+	      associated_source_layer[l_dst] = l_src;
         l_dst++;
 
       } else  if (found_Expand) { 
@@ -2517,6 +2532,7 @@ int current_associated_layers = 0;
 	      printf("%3d: EXPAND     : prev %d\n", l_dst, dummy);
         prev_layer = Expand(fpga_parent, layer_src->size, "");
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else  if (found_Slice) { 
@@ -2531,6 +2547,7 @@ int current_associated_layers = 0;
         prev_layer = Slice(fpga_parent, layer_src->sd->indices, "");
 	      printf("%3d: SLICE      : prev %d\n", l_dst, dummy);
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else if (found_Sig) {
@@ -2543,6 +2560,7 @@ int current_associated_layers = 0;
 	      printf("%3d: SIGMOID    : prev %d\n", l_dst, dummy);
 	      prev_layer = Sigmoid(fpga_parent);
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
         
       } else if (found_Mult) {
@@ -2569,6 +2587,7 @@ int current_associated_layers = 0;
           prev_layer = Mult(operators[0], operators[1]);
         } else  msg("Error, Mult layer is only supported in FPGA with one or two parents","Model_for_fpga");
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else if (found_div) {
@@ -2594,6 +2613,7 @@ int current_associated_layers = 0;
           prev_layer = Div(operators[0], operators[1]);
         } else  msg("Error, Mult layer is only supported in FPGA with one or two parents","Model_for_fpga");
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else if (found_Add) {
@@ -2616,6 +2636,7 @@ int current_associated_layers = 0;
         printf("\n");
         prev_layer = Add(parent);
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else if (found_Sub) {
@@ -2632,6 +2653,7 @@ int current_associated_layers = 0;
 	      printf("%3d: SUB        : prev %d\n", l_dst, dummy);
         prev_layer = Sub(fpga_parent, layer_src->val);
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
         
         //cout << "Sub new layer from " << layer_src->name << "\n";
@@ -2645,6 +2667,7 @@ int current_associated_layers = 0;
         printf("%3d: EXP        : prev %d\n", l_dst, dummy);
         prev_layer = Exp(fpga_parent);
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else  if (found_Trans) { 
@@ -2657,6 +2680,7 @@ int current_associated_layers = 0;
         printf("%3d: TRANSPOSE  : prev %d\n", l_dst, dummy);
         prev_layer = Transpose(fpga_parent);
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else  if (found_ConstofTensor) { 
@@ -2669,6 +2693,7 @@ int current_associated_layers = 0;
         prev_layer = ConstOfTensor(layer_src->const_tensor, layer_src->name);
         printf("%3d: ConstTens  : prev %d\n", l_dst, dummy);        
 	      fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	      associated_source_layer[l_dst] = l_src;
 	      l_dst++;
 
       } else {
@@ -2696,9 +2721,9 @@ printf("FIN MODEL\n");
         // filter and bias copy and adaptation
         Layer *cl = net->layers[l];
         if (LConvReLU *conv = dynamic_cast<LConvReLU *>(cl)) { 
-          printf("LConvReLU adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
+          printf("LConvReLU adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
           //error aqui
-          LConv *layer_src = (LConv *) associated_layers[l].src;
+          LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
           LConvReLU *layer_dst = (LConvReLU *) net->layers[l];
           
           //filter
@@ -2712,8 +2737,8 @@ printf("FIN MODEL\n");
           distributeTensor(layer_dst, "param", 1);
 
         } else if (LConvMaxPool *conv = dynamic_cast<LConvMaxPool *>(cl)) {
-            printf("LConvMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
-            LConv *layer_src = (LConv *) associated_layers[l].src;
+            printf("LConvMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+            LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
   	        LConvMaxPool *layer_dst = (LConvMaxPool *) net->layers[l];
 
             //filter
@@ -2727,8 +2752,8 @@ printf("FIN MODEL\n");
             distributeTensor(layer_dst, "param", 1);
             
         } else if (LConvReLUMaxPool *conv = dynamic_cast<LConvReLUMaxPool *>(cl)) {
-            printf("LConvReLUMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
-            LConv *layer_src = (LConv *) associated_layers[l].src;
+            printf("LConvReLUMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+            LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
   	        LConvReLUMaxPool *layer_dst = (LConvReLUMaxPool *) net->layers[l];
 
             //filter
@@ -2742,10 +2767,9 @@ printf("FIN MODEL\n");
             distributeTensor(layer_dst, "param", 1);
 
         } else if (LConvSTM *conv = dynamic_cast<LConvSTM *>(cl)) {
-            printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
-	    cout << cl->name << "\n";
-            LConv *layer_src = (LConv *) associated_layers[l].src;
-  	        LConvSTM *layer_dst = (LConvSTM *) net->layers[l];
+            printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+	    LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
+	    LConvSTM *layer_dst = (LConvSTM *) net->layers[l];
 
             //filter
             collectTensor(layer_src, "param", 0);
@@ -2757,9 +2781,12 @@ printf("FIN MODEL\n");
             tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
             distributeTensor(layer_dst, "param", 1);
 
+	    printf("fin STM\n");
+	    fflush(stdout);
+
         } else if (LConvSTMAdd *conv = dynamic_cast<LConvSTMAdd *>(cl)) {
-            printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
-            LConv *layer_src = (LConv *) associated_layers[l].src;
+            printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+            LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
   	        LConvSTMAdd *layer_dst = (LConvSTMAdd *) net->layers[l];
 
             //filter
@@ -2772,8 +2799,8 @@ printf("FIN MODEL\n");
             tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
             distributeTensor(layer_dst, "param", 1);
         } else if (LDense *dl = dynamic_cast<LDense *>(cl)) {
-            printf("LDense adapting parameters for layer %d (associated layer %d)\n", l, associated_layer[l]);
-            LDense *layer_src = (LDense *) associated_layers[l].src;
+            printf("LDense adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+            LDense *layer_src = (LDense *) m_src->layers[associated_source_layer[l]];
   	        LDense *layer_dst = (LDense *) net->layers[l]; 
 
             //w
