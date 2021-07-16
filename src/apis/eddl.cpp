@@ -693,23 +693,44 @@ namespace eddl {
   }
   // Legacy
   layer UpSampling(layer parent, const vector<int> &size, string interpolation, string name){
-    return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
+    return UpSampling2D(parent, size, interpolation, name);
   }
 
   layer UpSampling2D(layer parent, const vector<int> &size, string interpolation, string name){
-    return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
+    // interpolation param is deprecated, we only accept "nearest"
+    if (interpolation != "nearest")
+      std::cerr << "Warning: In UpSampling2D the interpolation type \"" << interpolation << "\" is not valid. Only \"nearest\" is available.\n";
+
+    const vector<int> parent_shape = parent->output->getShape();
+    // Parent output must be of shape (batch, channels, height, width)
+    if (parent_shape.size() != 4)
+      msg("The number of dimensions of the input tensor must be 4", "EDDL::UpSampling2D");
+
+    // Only height and width scale values
+    if (size.size() != 2)
+      msg("The number of dimensions of the \"size\" parameter must be 2", "EDDL::UpSampling2D");
+
+    // Get the target output shape by applying the scale factor to the input
+    vector<int> target_shape;
+    for (const int i : {2, 3}) { // Loop through 2:height and 3:width dimensions (0:batch, 1:channels)
+      const int dim_scale = size[i-2];
+      if (dim_scale < 1)
+        msg("The scale factors in \"size\" parameter must be greater or equal to 1", "EDDL::UpSampling2D");
+      target_shape.push_back(parent_shape[i] * dim_scale);
+    }
+
+    return new LResize(parent, target_shape, true, getWrappingMode("nearest"), 0.0f, getTransformationMode("asymmetric"), name, DEV_CPU, 0);
   }
 
-    layer UpSampling3D(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
-        return new LUpSampling3D(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
-    }
+  layer UpSampling3D(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
+    return new LUpSampling3D(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
+  }
 
-    layer Resize(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
-        return new LResize(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
-    }
+  layer Resize(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
+    return new LResize(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
+  }
 
-
-    layer Reshape(layer parent, const vector<int> &shape, string name){
+  layer Reshape(layer parent, const vector<int> &shape, string name){
     tshape s = vector<int>(shape.begin(), shape.end());
     s.insert(s.begin(), 1);
     return new LReshape(parent, s, name, DEV_CPU, 0);
