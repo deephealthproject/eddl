@@ -71,11 +71,11 @@ int main(int argc, char **argv) {
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           CS_CPU(4), // CPU with maximum threads availables
-		  true
+		  true // initialize weights randomly
     );
 
 	void* serialized_net;
-	size_t model_size = serialize_net_to_onnx_pointer(net, serialized_net, false );
+	size_t model_size = serialize_net_to_onnx_pointer(net, serialized_net, false ); // serialize weights
 
     // View model
     summary(net);
@@ -116,13 +116,13 @@ int main(int argc, char **argv) {
 	// Export
 	//save_net_to_onnx_file(net, path);
 	void* serialized_gradients;
-	size_t gradients_size = serialize_net_to_onnx_pointer(net, serialized_gradients, true );
+	size_t gradients_size = serialize_net_to_onnx_pointer(net, serialized_gradients, true ); // serialize gradients
 	//std::string* model_string = serialize_net_to_onnx_string(net);
 	
 	cout << "Exported gradients" << endl;
 
 	void * serialized_net_once_trained;
-	size_t snot_size = serialize_net_to_onnx_pointer( net, serialized_net_once_trained, false );
+	size_t snot_size = serialize_net_to_onnx_pointer( net, serialized_net_once_trained, false ); // serialize weights
 
 
 
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           CS_CPU(4), // CPU with maximum threads availables
-		  false
+		  false // not to initialize weights
     );
 
 	//resize_model(imported_net, batch_size);
@@ -229,6 +229,8 @@ int main(int argc, char **argv) {
     // Evaluate
 	cout << "Evaluating test after new weights" << endl;
     evaluate(imported_net, {x_test}, {y_test});
+
+	net->reset_accumulated_gradients();
 
 	for( int k=0; k < 10; k++ ) {
 		// Train

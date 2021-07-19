@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - defaults
   - anaconda
+  - menpo
 dependencies:
   - cmake>=3.17.2
   - eigen==3.3.7
@@ -11,8 +12,8 @@ dependencies:
   - zlib==1.2.11
   - openssl==1.1.1i
   - gtest==1.10.0
-  - graphviz==2.42.3  # Build & Run
-  - wget==1.20.1
+  - graphviz==2.42.3|2.47.2  # Build & Run
+  - wget==1.20.1|1.16.3
   - doxygen==1.9.1  # Docs
   - python==3.8.6
   - pip==21.0.1

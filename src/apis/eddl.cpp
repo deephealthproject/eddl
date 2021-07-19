@@ -626,6 +626,7 @@ namespace eddl {
 						   int groups, vector<int> dilation_rate,string name){
     kernel_size.push_back(1);
     strides.push_back(1);
+    dilation_rate.push_back(1);
     return new LConv1D(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
@@ -695,21 +696,42 @@ namespace eddl {
   }
   // Legacy
   layer UpSampling(layer parent, const vector<int> &size, string interpolation, string name){
-    return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
+    return UpSampling2D(parent, size, interpolation, name);
   }
 
   layer UpSampling2D(layer parent, const vector<int> &size, string interpolation, string name){
-    return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
+    // interpolation param is deprecated, we only accept "nearest"
+    if (interpolation != "nearest")
+      std::cerr << "Warning: In UpSampling2D the interpolation type \"" << interpolation << "\" is not valid. Only \"nearest\" is available.\n";
+
+    const vector<int> parent_shape = parent->output->getShape();
+    // Parent output must be of shape (batch, channels, height, width)
+    if (parent_shape.size() != 4)
+      msg("The number of dimensions of the input tensor must be 4", "EDDL::UpSampling2D");
+
+    // Only height and width scale values
+    if (size.size() != 2)
+      msg("The number of dimensions of the \"size\" parameter must be 2", "EDDL::UpSampling2D");
+
+    // Get the target output shape by applying the scale factor to the input
+    vector<int> target_shape;
+    for (const int i : {2, 3}) { // Loop through 2:height and 3:width dimensions (0:batch, 1:channels)
+      const int dim_scale = size[i-2];
+      if (dim_scale < 1)
+        msg("The scale factors in \"size\" parameter must be greater or equal to 1", "EDDL::UpSampling2D");
+      target_shape.push_back(parent_shape[i] * dim_scale);
+    }
+
+    return new LResize(parent, target_shape, true, getWrappingMode("nearest"), 0.0f, getTransformationMode("asymmetric"), name, DEV_CPU, 0);
   }
 
   layer UpSampling3D(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
-			return new LUpSampling3D(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
+    return new LUpSampling3D(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
   }
 
   layer Resize(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
-			return new LResize(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
+    return new LResize(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
   }
-
 
   layer Reshape(layer parent, const vector<int> &shape, string name){
     tshape s = vector<int>(shape.begin(), shape.end());
@@ -1333,39 +1355,39 @@ namespace eddl {
 			return l1->output->clone();  // Why not return addresses so that we can easily avoid potential memory leaks?
     }
     else {
-			cout<<"get output from recurrent"<<endl;
-			int length=0;
+      //cout<<"get output from recurrent"<<endl;
+      int length=0;
 
-			vector<int> shape;
-			for(auto l: n->rnet->layers)
-				if (l->sorig==l1) {
-				  if (length==0) shape=l->output->shape;
-				  length++;
-				}
+      vector<int> shape;
+      for(auto l: n->rnet->layers)
+	if (l->sorig==l1) {
+	  if (length==0) shape=l->output->shape;
+	  length++;
+	}
 
-			shape.insert(shape.begin(), length);
-			// length x batch x dim_layer
-			Tensor *output=new Tensor(shape,DEV_CPU);
+      shape.insert(shape.begin(), length);
+      // length x batch x dim_layer
+      Tensor *output=new Tensor(shape,DEV_CPU);
 
-			int i=0;
-			for(auto l: n->rnet->layers)
-				if (l->sorig==l1) {
-				  Tensor *out=getOutput(l);
-				  shape[0]=1;
-				  out->reshape_(shape);
+      int i=0;
+      for(auto l: n->rnet->layers)
+	if (l->sorig==l1) {
+	  Tensor *out=getOutput(l);
+	  shape[0]=1;
+	  out->reshape_(shape);
 
-				  // put into output
-				  vector<string> s;
-				  s.push_back(to_string(i));
-				  for(int j=1;j<shape.size();j++) s.push_back(":");
+	  // put into output
+	  vector<string> s;
+	  s.push_back(to_string(i));
+	  for(int j=1;j<shape.size();j++) s.push_back(":");
 
-				  output->set_select(s, out);
+	  output->set_select(s, out);
 
-				  s.clear();
-				  i++;
-				  delete out;
-				}
-			return output;
+	  s.clear();
+	  i++;
+	  delete out;
+	}
+      return output;
     }
   }
 
@@ -2817,10 +2839,10 @@ void get_fpga_model_params(Net * fpga_model) {
 			// now we create the model
 			net = Model({ first }, { last });
 			build(net, sgd(0.001f, 0.9f),{"soft_cross_entropy"}, {"categorical_accuracy"}, CS_FPGA({1}));
-			summary(net);
+		//	summary(net);
 
 printf("FIN MODEL\n");
-get_fpga_model_params(net);
+//get_fpga_model_params(net);
 			 // now we adapt the filters and bias
 			for (int l=0; l<l_dst; l++) {
 	printf("layer %d\n", l);
@@ -2828,18 +2850,27 @@ get_fpga_model_params(net);
 			  Layer *cl = net->layers[l];
         if (LConv *conv = dynamic_cast<LConv*>(cl)) { 
 			    printf("LConv adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
-			    //error aqui
 			    LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
 			    LConv *layer_dst = (LConv *) net->layers[l];
-			    
+
+          int fpga_conv = 1;
+          //only strides equal to one are suported in the FPGA
+					for(int s = 0; s < layer_src->cd->strides.size(); s++) {
+						if (layer_dst->cd->strides[s] != 1) fpga_conv = 0;
+					}
+          //only kernel dimensions equal to 3 are suported in the FPGA
+          for(int s = 0; s < layer_src->cd->kernel_size.size(); s++) {
+						if (layer_dst->cd->kernel_size[s] != 3) fpga_conv = 0;
+					}
+
 			    //filter
 			    collectTensor(layer_src, "param", 0);
-			    filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
+			    if(fpga_conv) filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
 			    distributeTensor(layer_dst, "param", 0);
-
+          
 			    //bias
 			    collectTensor(layer_src, "param", 1);
-			    tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+			    if(fpga_conv) tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
 			    distributeTensor(layer_dst, "param", 1);
 
 			  } else if (LConvReLU *conv = dynamic_cast<LConvReLU *>(cl)) { 
@@ -2904,7 +2935,7 @@ get_fpga_model_params(net);
 						distributeTensor(layer_dst, "param", 1);
 
 	    printf("fin STM\n");
-	    fflush(stdout);
+	    //fflush(stdout);
 
 			  } else if (LConvSTMAdd *conv = dynamic_cast<LConvSTMAdd *>(cl)) {
 						printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);

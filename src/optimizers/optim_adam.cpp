@@ -64,6 +64,11 @@ void Adam::setlayers(vlayer l) {
     // create momemtum tensors
     for (int i = 0; i < layers.size(); i++)
         for (int j = 0; j < layers[i]->get_trainable_params_count(); j++) {
+            mT.push_back(  Tensor::zeros_like(layers[i]->gradients[j]));
+            vT.push_back(  Tensor::zeros_like(layers[i]->gradients[j]));
+            mCap.push_back(Tensor::zeros_like(layers[i]->gradients[j]));
+            vCap.push_back(Tensor::zeros_like(layers[i]->gradients[j]));
+            /*
             mT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
             mT.back()->fill_(0.0);
             vT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
@@ -72,6 +77,7 @@ void Adam::setlayers(vlayer l) {
             mCap.back()->fill_(0.0);
             vCap.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
             vCap.back()->fill_(0.0);
+            */
         }
 
 }

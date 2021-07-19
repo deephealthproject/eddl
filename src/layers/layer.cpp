@@ -127,8 +127,10 @@ void Layer::mem_delta_parent(){
 
 void Layer::mem_delta(){
     // Reserve space for the delta
-    if(this->delta == nullptr){
+    if(this->delta == nullptr) {
         this->delta = Tensor::zeros(this->output->shape, this->output->device);
+    } else if (this->delta->shape[0] != this->output->shape[0]) {
+        this->delta->resize(this->output->shape[0]);
     }
 }
 
@@ -177,7 +179,7 @@ void Layer::reset() {
         delta->fill_(0.0);
         for(int i=0;i<states.size();i++)
             states[i]->fill_(0.0);
-        for(int i=0;i<states.size();i++)
+        for(int i=0;i<delta_states.size();i++)
             delta_states[i]->fill_(0.0);
     }
     detached=false;
