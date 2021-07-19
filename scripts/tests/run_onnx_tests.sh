@@ -24,7 +24,6 @@ print_help() {
     echo "Script Arguments:"
     echo "  -p PATH  Path to the folder with python test scripts"
     echo "  -e  Only execute EDDL export -> EDDL import tests"
-    echo "  -d  To execute the EDDL scripts just with the default device"
     echo "  -h  To show this help message =)"
 }
 
