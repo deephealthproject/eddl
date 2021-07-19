@@ -1960,9 +1960,54 @@ int current_associated_layers = 0;
     exit(1);
   }
 
+void get_fpga_model_params(Net * fpga_model) {
+	int num_layers = fpga_model->layers.size();  // number of layers  
+  Layer *cl; // current layer pointer
+  for(int l = 0; l < num_layers; l++) {
+    cl = fpga_model->layers[l];
+    if (LConv *dl = dynamic_cast<LConv *>(cl)) {
+      LConv *layer_dst = (LConv *) cl;
+      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1, /*&enable_relu*/ 0, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 0,
+       0, /*&enable_add*/ 0, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+    } else if (LConvMaxPool *conv = dynamic_cast<LConvMaxPool *>(cl)) {
+      LConvMaxPool *layer_dst = (LConvMaxPool *) cl;
+      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1, /*&enable_relu*/ 0, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 1,
+       0, /*&enable_add*/ 0, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+    } else if(LConvReLUMaxPool *conv = dynamic_cast<LConvReLUMaxPool *>(cl)) {
+      LConvReLUMaxPool *layer_dst = (LConvReLUMaxPool *) cl;
+      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1,/*&enable_relu*/ 1, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 1,
+       0, /*&enable_add*/ 0, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+    } else if(LConvReLU *conv = dynamic_cast<LConvReLU *>(cl)) {
+      LConvReLU *layer_dst = (LConvReLU *) cl;
+      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1, /*&enable_relu*/ 1, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 0,
+       0, /*&enable_add*/ 0, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+    } else if(LConvSTM *conv = dynamic_cast<LConvSTM *>(cl)) {
+      LConvSTM *layer_dst = (LConvSTM *) cl;
+      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1, /*&enable_relu*/ 0, /*&enable_stm*/ 1, /*&enable_maxpooling*/ 0,
+       0, /*&enable_add*/ 0, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+    } else if(LConvSTMAdd *conv = dynamic_cast<LConvSTMAdd *>(cl)) {
+      LConvSTMAdd *layer_dst = (LConvSTMAdd *) cl;
+      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1, /*&enable_relu*/ 0, /*&enable_stm*/ 1, /*&enable_maxpooling*/ 0,
+       0, /*&enable_add*/ 1, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+    }
+  }
+}
+
     // model for fpga
   model model_for_fpga(model m_src) {
-
+    #ifdef cFPGA
 			int dummy;
 			int dummy1;
 
@@ -2775,7 +2820,7 @@ int current_associated_layers = 0;
 			summary(net);
 
 printf("FIN MODEL\n");
-
+get_fpga_model_params(net);
 			 // now we adapt the filters and bias
 			for (int l=0; l<l_dst; l++) {
 	printf("layer %d\n", l);
@@ -2893,6 +2938,9 @@ printf("FIN MODEL\n");
 			}
       printf("End adapting parameters\n");
 			return net;
+      #else
+      msg("Error, FPGA is not activated","model_for_fpga");
+      #endif
     }  
 
 }//namespace
