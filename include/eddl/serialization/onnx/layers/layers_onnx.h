@@ -23,7 +23,7 @@ enum ONNX_LAYERS {
   TRANSPOSE,        // OPSET: 13, 1
   UPSAMPLING,       // OPSET: 9 (Op deprecated in ONNX)
   MAXPOOL,          // OPSET: 12, 11, 10, 8, 1
-  AVGPOOL,          // OPSET: 11, 10, 7, 1 - TODO: testing
+  AVGPOOL,          // OPSET: 11, 10, 7, 1
   GLOBAVGPOOL,      // OPSET: 1
   GLOBMAXPOOL,      // OPSET: 1
   RELU,             // OPSET: 14, 13, 6
@@ -63,11 +63,12 @@ enum ONNX_LAYERS {
   RMEAN,            // OPSET: 13, 11, 1
   RSUM,             // OPSET: 11, 1
   ARGMAX,           // OPSET: 13, 12, 11, 1
-  RESIZE,           // OPSET: 13
+  RESIZE,           // OPSET: 11
   PAD,              // OPSET: 13, 11, 2, 1
   SLICE,            // OPSET: 13, 11, 10
   SPLIT,            // OPSET: 13, 11, 2
-  EXPAND            // OPSET: 13, 8
+  EXPAND,           // OPSET: 13, 8
+  CONSTANT          // OPSET: 13, 12, 11, 9, 1
 };
 
 map<string, ONNX_LAYERS> create_enum_map();

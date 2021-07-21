@@ -215,7 +215,7 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_imdb;test_onnx_lstm_imdb;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec;test_onnx_lstm_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec;test_onnx_gru_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
-    eddl2onnxrt+=("EDDL_to_ONNXRT_auxiliar;test_onnx_auxiliar;onnxruntime_mnist.py,--input-1D,--no-channel")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_auxiliar;test_onnx_auxiliar;onnxruntime_mnist.py,--input-1D,--no-channel,--batch-size,100")
     # From EDDL CPU to ONNX RT
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv1D_CPU;test_onnx_conv1D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv2D_CPU;test_onnx_conv2D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
@@ -231,7 +231,7 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_imdb_CPU;test_onnx_lstm_imdb_cpu;onnxruntime_imdb_keras.py,--unsqueeze-input")
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
-    eddl2onnxrt+=("EDDL_to_ONNXRT_auxiliar_CPU;test_onnx_auxiliar_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_auxiliar_CPU;test_onnx_auxiliar_cpu;onnxruntime_mnist.py,--input-1D,--no-channel,--batch-size,100")
 
     # Run "EDDL export -> ONNX Runtime import" tests and store results
     print_header "EDDL export -> ONNX Runtime import" >> $tests_results_path
