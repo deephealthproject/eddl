@@ -1984,47 +1984,64 @@ int current_associated_layers = 0;
 
 void get_fpga_model_params(Net * fpga_model) {
 	int num_layers = fpga_model->layers.size();  // number of layers  
+
+  FILE *fptr;
+  fptr = fopen("/home/laumecha/params_vgg16.data","w");
+
+  if(fptr == NULL)
+  {
+     printf("Error!");   
+     exit(1);             
+  }
+
   Layer *cl; // current layer pointer
   for(int l = 0; l < num_layers; l++) {
     cl = fpga_model->layers[l];
     if (LConv *dl = dynamic_cast<LConv *>(cl)) {
       LConv *layer_dst = (LConv *) cl;
-      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      fprintf(fptr,"ENABLE %d CPU %d DET 1 %dx%dx%dx%d KH %d KW %d PT %d PB %d PL %d PR %d SH %d SW %d RELU %d RELU_FACTOR 0 STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
       1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
-      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1, /*&enable_relu*/ 0, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 0,
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->pads[0], layer_dst->cd->pads[1], layer_dst->cd->pads[2], layer_dst->cd->pads[3], layer_dst->cd->sr, layer_dst->cd->sc, /*&enable_relu*/ 0, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 0,
        0, /*&enable_add*/ 0, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+
     } else if (LConvMaxPool *conv = dynamic_cast<LConvMaxPool *>(cl)) {
       LConvMaxPool *layer_dst = (LConvMaxPool *) cl;
-      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      fprintf(fptr,"ENABLE %d CPU %d DET 1 %dx%dx%dx%d KH %d KW %d PT %d PB %d PL %d PR %d SH %d SW %d RELU %d RELU_FACTOR 0 STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
       1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
-      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1, /*&enable_relu*/ 0, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 1,
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->pads[0], layer_dst->cd->pads[1], layer_dst->cd->pads[2], layer_dst->cd->pads[3], layer_dst->cd->sr, layer_dst->cd->sc, /*&enable_relu*/ 0, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 1,
        0, /*&enable_add*/ 0, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+
     } else if(LConvReLUMaxPool *conv = dynamic_cast<LConvReLUMaxPool *>(cl)) {
       LConvReLUMaxPool *layer_dst = (LConvReLUMaxPool *) cl;
-      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      fprintf(fptr,"ENABLE %d CPU %d DET 1 %dx%dx%dx%d KH %d KW %d PT %d PB %d PL %d PR %d SH %d SW %d RELU %d RELU_FACTOR 0 STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
       1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
-      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1,/*&enable_relu*/ 1, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 1,
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->pads[0], layer_dst->cd->pads[1], layer_dst->cd->pads[2], layer_dst->cd->pads[3], layer_dst->cd->sr, layer_dst->cd->sc,/*&enable_relu*/ 1, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 1,
        0, /*&enable_add*/ 0, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+       
     } else if(LConvReLU *conv = dynamic_cast<LConvReLU *>(cl)) {
       LConvReLU *layer_dst = (LConvReLU *) cl;
-      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      fprintf(fptr,"ENABLE %d CPU %d DET 1 %dx%dx%dx%d KH %d KW %d PT %d PB %d PL %d PR %d SH %d SW %d RELU %d RELU_FACTOR 0 STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
       1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
-      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1, /*&enable_relu*/ 1, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 0,
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->pads[0], layer_dst->cd->pads[1], layer_dst->cd->pads[2], layer_dst->cd->pads[3], layer_dst->cd->sr, layer_dst->cd->sc, /*&enable_relu*/ 1, /*&enable_stm*/ 0, /*&enable_maxpooling*/ 0,
        0, /*&enable_add*/ 0, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+
     } else if(LConvSTM *conv = dynamic_cast<LConvSTM *>(cl)) {
       LConvSTM *layer_dst = (LConvSTM *) cl;
-      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      fprintf(fptr,"ENABLE %d CPU %d DET 1 %dx%dx%dx%d KH %d KW %d PT %d PB %d PL %d PR %d SH %d SW %d RELU %d RELU_FACTOR 0 STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
       1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
-      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1, /*&enable_relu*/ 0, /*&enable_stm*/ 1, /*&enable_maxpooling*/ 0,
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->pads[0], layer_dst->cd->pads[1], layer_dst->cd->pads[2], layer_dst->cd->pads[3], layer_dst->cd->sr, layer_dst->cd->sc, /*&enable_relu*/ 0, /*&enable_stm*/ 1, /*&enable_maxpooling*/ 0,
        0, /*&enable_add*/ 0, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+
     } else if(LConvSTMAdd *conv = dynamic_cast<LConvSTMAdd *>(cl)) {
       LConvSTMAdd *layer_dst = (LConvSTMAdd *) cl;
-      printf("ENABLE %d CPU %d %dx%dx%dx%d KH %d KW %d SH %d SW %d PH %d PW %d EUP %d ELP %d RELU %d STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
+      fprintf(fptr,"ENABLE %d CPU %d DET 1 %dx%dx%dx%d KH %d KW %d PT %d PB %d PL %d PR %d SH %d SW %d RELU %d RELU_FACTOR 0 STM %d MAXPOOL %d AVGPOOL %d ADD %d SHIFT %d DIRECTION_SHIFT %d POS_SHIFT %d CLIP %d MINCLIP %d MAXCLIP %d\n",
       1, 1, layer_dst->cd->I->shape[2] , layer_dst->cd->I->shape[3], layer_dst->cd->I->shape[1], layer_dst->cd->O->shape[1],
-      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->sr, layer_dst->cd->sc, layer_dst->cd->padrt, layer_dst->cd->padcl,1, 1, /*&enable_relu*/ 0, /*&enable_stm*/ 1, /*&enable_maxpooling*/ 0,
+      layer_dst->cd->kr, layer_dst->cd->kc, layer_dst->cd->pads[0], layer_dst->cd->pads[1], layer_dst->cd->pads[2], layer_dst->cd->pads[3], layer_dst->cd->sr, layer_dst->cd->sc, /*&enable_relu*/ 0, /*&enable_stm*/ 1, /*&enable_maxpooling*/ 0,
        0, /*&enable_add*/ 1, /*&enable_shift*/ 0, /*&dir_shift*/ 0, /*&pos_shift*/ 0,0,0,0);
+
     }
   }
+  fclose(fptr);
 }
 
     // model for fpga
@@ -2090,6 +2107,7 @@ void get_fpga_model_params(Net * fpga_model) {
 			//
 			int supported_stride; //Stride is supported in the FPGA
       int supported_kernel; //Kernel size is supported in the FPGA
+      int supported_padding; //Padding size is supported in the FPGA
 			// Vector of FPGA layers to easly identify the layers for the add and concat functions
 			vector<Layer *>  fpga_layer_model; 
 		
@@ -2128,7 +2146,7 @@ void get_fpga_model_params(Net * fpga_model) {
 			  found_Slice = 0; found_Sig = 0; found_Mult = 0; found_Sub = 0; found_Exp = 0; found_Trans = 0; found_Add = 0; found_ConstofT = 0; found_div = 0; found_Sp = 0;
         found_Tanh = 0;
 
-				supported_stride = 1; supported_kernel = 1;
+				supported_stride = 1; supported_kernel = 1; supported_padding = 1;
 
 				cl = m_src->layers[l_src];
 
@@ -2144,9 +2162,22 @@ void get_fpga_model_params(Net * fpga_model) {
           for(int s = 0; s < layer_src->cd->kernel_size.size(); s++) {
 						if (layer_src->cd->kernel_size[s] != 3) supported_kernel = 0;
 					}
+
+          //only padding dimensions equal to 0 or 1 are suported in the FPGA
+          for(int s = 0; s < layer_src->cd->pads.size(); s++) {
+						if (layer_src->cd->pads[s] != 1 && layer_src->cd->pads[s] != 0) supported_padding = 0;
+					}
+
           if(!supported_stride) printf("Convolution with stride dimensions %d no supported in the FPGA!\n", layer_src->cd->strides[0]);
           if(!supported_kernel) printf("Convolution with kernel dimensions %d no supported in the FPGA!\n", layer_src->cd->kernel_size[0]);
-				}
+          if(!supported_padding) {
+            printf("Convolution with padding dimensions");
+            for(int s = 0; s < layer_src->cd->pads.size(); s++) {
+              printf(" %d", layer_src->cd->pads[s]);
+					  }
+            printf("no supported in the FPGA!\n");
+          }
+        }
         
 			  if (LInput *dl = dynamic_cast<LInput *>(cl)) found_I = 1;
 			  if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "relu") found_R = 1;
@@ -2208,12 +2239,12 @@ void get_fpga_model_params(Net * fpga_model) {
 				}
 
 				// Combination of layers detected (for the moment they are disabled)
-				found_CM = found_C && found_nM && supported_stride && supported_kernel;
-				found_CRM = found_C && found_nR && found_nnM && supported_stride && supported_kernel;
-			  found_CR = !found_CRM && found_C && found_nR && supported_stride && supported_kernel;
-	//found_CL = found_C && found_nL && supported_stride && supported_kernel;
-			  found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA && supported_stride && supported_kernel;
-			  found_CSTM = !found_CSTMA && found_C && found_nSp && found_nnT && found_nnnMult && supported_stride && supported_kernel;
+				found_CM = found_C && found_nM && supported_stride && supported_kernel  && supported_padding;
+				found_CRM = found_C && found_nR && found_nnM && supported_stride && supported_kernel && supported_padding;
+			  //found_CR = !found_CRM && found_C && found_nR && supported_stride && supported_kernel && supported_padding;
+	//found_CL = found_C && found_nL && supported_stride && supported_kernel && supported_padding;
+			  //found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA && supported_stride && supported_kernel && supported_padding;
+			  //found_CSTM = !found_CSTMA && found_C && found_nSp && found_nnT && found_nnnMult && supported_stride && supported_kernel && supported_padding;
 
 			  // data layer transform: Layers ran on the FPGA need to have their inputs in GHWC format, 
 				// the remaining layers need to have their inputs in NCHW format
@@ -2237,7 +2268,7 @@ void get_fpga_model_params(Net * fpga_model) {
 				  }
 				} else {
 	  
-			    if ((found_C && supported_stride && supported_kernel) || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL) {
+			    if ((found_C && supported_stride && supported_kernel && supported_padding) || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL) {
  				  // all these layers need the GHWC format at the input, therefore we check if the
 				  // previous layer is in GHWC format and if not we add a transform layer
 				  //
@@ -2443,7 +2474,8 @@ void get_fpga_model_params(Net * fpga_model) {
 			  	LConv *layer_src = (LConv *)cl;
 			  	// dst parent layer
           Layer *fpga_parent;
-          if (supported_stride && supported_kernel) {
+          int conv_fpga = supported_stride && supported_kernel && supported_padding;
+          if (conv_fpga) {
 			      fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
             printf("%3d: C	(fpga): prev %d\n", l_dst, dummy);
           } else {
@@ -2454,7 +2486,8 @@ void get_fpga_model_params(Net * fpga_model) {
 			    prev_layer = new LConv(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 			  												layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
 			  												 "",DEV_CPU, layer_src->cd->mem_level);
-			  	fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+          if(conv_fpga)fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+          else fn_set_associated_layer(cl, prev_layer, 0, l_dst);
 			  	associated_source_layer[l_dst] = l_src;
 			  	l_dst++;
   
@@ -2839,11 +2872,11 @@ void get_fpga_model_params(Net * fpga_model) {
 			// now we create the model
 			net = Model({ first }, { last });
 			build(net, sgd(0.001f, 0.9f),{"soft_cross_entropy"}, {"categorical_accuracy"}, CS_FPGA({1}));
-		//	summary(net);
+			summary(net);
 
 printf("FIN MODEL\n");
 //get_fpga_model_params(net);
-			 // now we adapt the filters and bias
+		 // now we adapt the filters and bias
 			for (int l=0; l<l_dst; l++) {
 	printf("layer %d\n", l);
 			  // filter and bias copy and adaptation
@@ -2863,19 +2896,36 @@ printf("FIN MODEL\n");
 						if (layer_dst->cd->kernel_size[s] != 3) fpga_conv = 0;
 					}
 
+          //only padding dimensions equal to 0 or 1 are suported in the FPGA
+          for(int s = 0; s < layer_src->cd->pads.size(); s++) {
+						if (layer_src->cd->pads[0] != 1 && layer_src->cd->pads[s] != 0) fpga_conv = 0;
+					}
+
+          //if(!fpga_conv) printf("Convolution with stride dimensions %d no supported in the FPGA!\n", layer_dst->cd->strides[0]);
+          //if(!fpga_conv) printf("Convolution with kernel dimensions %d no supported in the FPGA!\n", layer_dst->cd->kernel_size[0]);
+          //if(!fpga_conv) printf("Convolution with padding dimensions %d no supported in the FPGA!\n", layer_dst->cd->pads[0]);
+
+
 			    //filter
 			    collectTensor(layer_src, "param", 0);
-			    if(fpga_conv) filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
+			    if(fpga_conv) {
+            filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
+          } else {
+            Tensor::copy(layer_src->cd->K, layer_dst->cd->K);
+          }
 			    distributeTensor(layer_dst, "param", 0);
-          
+
 			    //bias
 			    collectTensor(layer_src, "param", 1);
-			    if(fpga_conv) tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+			    if(layer_src->cd->bias->size != layer_dst->cd->bias->size) {
+            tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+          } else {
+            Tensor::copy(layer_src->cd->bias, layer_dst->cd->bias);
+          }
 			    distributeTensor(layer_dst, "param", 1);
 
 			  } else if (LConvReLU *conv = dynamic_cast<LConvReLU *>(cl)) { 
 			    printf("LConvReLU adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
-			    //error aqui
 			    LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
 			    LConvReLU *layer_dst = (LConvReLU *) net->layers[l];
 			    
@@ -2921,8 +2971,8 @@ printf("FIN MODEL\n");
 
 			  } else if (LConvSTM *conv = dynamic_cast<LConvSTM *>(cl)) {
 						printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
-	    LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
-	    LConvSTM *layer_dst = (LConvSTM *) net->layers[l];
+	          LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
+	          LConvSTM *layer_dst = (LConvSTM *) net->layers[l];
 
 						//filter
 						collectTensor(layer_src, "param", 0);
@@ -2933,9 +2983,6 @@ printf("FIN MODEL\n");
 						collectTensor(layer_src, "param", 1);
 						tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
 						distributeTensor(layer_dst, "param", 1);
-
-	    printf("fin STM\n");
-	    //fflush(stdout);
 
 			  } else if (LConvSTMAdd *conv = dynamic_cast<LConvSTMAdd *>(cl)) {
 						printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
