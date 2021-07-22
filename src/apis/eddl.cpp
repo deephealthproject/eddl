@@ -2241,7 +2241,7 @@ void get_fpga_model_params(Net * fpga_model) {
 				// Combination of layers detected (for the moment they are disabled)
 				found_CM = found_C && found_nM && supported_stride && supported_kernel  && supported_padding;
 				found_CRM = found_C && found_nR && found_nnM && supported_stride && supported_kernel && supported_padding;
-			  //found_CR = !found_CRM && found_C && found_nR && supported_stride && supported_kernel && supported_padding;
+			  found_CR = !found_CRM && found_C && found_nR && supported_stride && supported_kernel && supported_padding;
 	//found_CL = found_C && found_nL && supported_stride && supported_kernel && supported_padding;
 			  //found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA && supported_stride && supported_kernel && supported_padding;
 			  //found_CSTM = !found_CSTMA && found_C && found_nSp && found_nnT && found_nnnMult && supported_stride && supported_kernel && supported_padding;
@@ -2331,7 +2331,11 @@ void get_fpga_model_params(Net * fpga_model) {
 			    Layer *fpga_parent;
 			    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
 				  printf("%3d: CR			    : prev %d\n", l_dst, dummy);
-			    prev_layer = new LConvReLU(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+			    
+          //the number of filters must be multiple of CPO for the fpga
+          int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
+
+          prev_layer = new LConvReLU(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 																		layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
 					fn_set_associated_layer(cl, prev_layer, 1, l_dst);
 					fn_set_associated_layer(nl, prev_layer, 1, l_dst);
@@ -2350,8 +2354,12 @@ void get_fpga_model_params(Net * fpga_model) {
 					Layer *fpga_parent;
 					fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
 					printf("%3d: CL			    : prev %d\n", l_dst, dummy);
+
+          //the number of filters must be multiple of CPO for the fpga
+          int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
+
 				  // Canbiar por una LConvLeakyReLU !!!!!!! Laura
-					prev_layer = new LConvReLU(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+					prev_layer = new LConvReLU(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 															  layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
 					fn_set_associated_layer(cl, prev_layer, 1, l_dst);
 					fn_set_associated_layer(nl, prev_layer, 1, l_dst);
@@ -2371,18 +2379,20 @@ void get_fpga_model_params(Net * fpga_model) {
 			    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
 				  printf("%3d: CM			   : prev %d\n", l_dst, dummy);
 
+          //the number of filters must be multiple of CPO for the fpga
+          int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
+
 			    if(n_layer_src->pd->padding =="custom") {
-						prev_layer = new LConvMaxPool(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+						prev_layer = new LConvMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 															  layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
 															  n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
 															  "",DEV_CPU, layer_src->cd->mem_level);
 			    } else {
-				    prev_layer = new LConvMaxPool(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+				    prev_layer = new LConvMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 																		  layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
 																		  n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->padding, layer_src->cd->use_bias,
 																		  "",DEV_CPU, layer_src->cd->mem_level);
-			    }
-				  fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+			    }				  fn_set_associated_layer(cl, prev_layer, 1, l_dst);
 				  fn_set_associated_layer(nl, prev_layer, 1, l_dst);
 					associated_source_layer[l_dst] = l_src;
 				  l_dst++;
@@ -2398,15 +2408,18 @@ void get_fpga_model_params(Net * fpga_model) {
 			  	Layer *fpga_parent;
 			  	fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
 					printf("%3d: CRM			  : prev %d\n", l_dst, dummy);
-	
+
+          //the number of filters must be multiple of CPO for the fpga
+          int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
+
 			  	if(n_layer_src->pd->padding =="custom") {
-			  	  prev_layer = new LConvReLUMaxPool(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+			  	  prev_layer = new LConvReLUMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 																layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
 																n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
 																"",DEV_CPU, layer_src->cd->mem_level);
 			  	} 
 			  	else {
-					  prev_layer = new LConvReLUMaxPool(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+					  prev_layer = new LConvReLUMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 																layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
 																n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->padding, layer_src->cd->use_bias,
 																"",DEV_CPU, layer_src->cd->mem_level);
@@ -2428,7 +2441,10 @@ void get_fpga_model_params(Net * fpga_model) {
 			    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
 			  	printf("%3d: CSTM			 : prev %d\n", l_dst, dummy);
 
-			    prev_layer = new LConvSTM(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+          //the number of filters must be multiple of CPO for the fpga
+          int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
+
+			    prev_layer = new LConvSTM(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 			  												    layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
 			  												    "",DEV_CPU, layer_src->cd->mem_level);
 			  	fn_set_associated_layer(cl, prev_layer, 1, l_dst);
@@ -2454,7 +2470,11 @@ void get_fpga_model_params(Net * fpga_model) {
           if (nnnn_layer_src->parent[0] != nnnl) parent.push_back(fn_get_associated_layer(nnnn_layer_src->parent[0], 1, &dummy1));
           else parent.push_back(fn_get_associated_layer(nnnn_layer_src->parent[1], 1, &dummy1));
           printf("%3d: CSTMA			: prevs %d %d\n", l_dst, dummy, dummy1);
-			    prev_layer = new LConvSTMAdd(parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+			    
+          //the number of filters must be multiple of CPO for the fpga
+          int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
+
+          prev_layer = new LConvSTMAdd(parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 			  												layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
 			  												 "",DEV_CPU, layer_src->cd->mem_level);
 			  	fn_set_associated_layer(cl, prev_layer, 1, l_dst);
@@ -2483,7 +2503,10 @@ void get_fpga_model_params(Net * fpga_model) {
 			  	  printf("%3d: C	(cpu) : prev %d\n", l_dst, dummy);
           }
 
-			    prev_layer = new LConv(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+          //the number of filters must be multiple of CPO for the fpga
+          int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
+
+			    prev_layer = new LConv(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 			  												layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
 			  												 "",DEV_CPU, layer_src->cd->mem_level);
           if(conv_fpga)fn_set_associated_layer(cl, prev_layer, 1, l_dst);

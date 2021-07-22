@@ -31,7 +31,6 @@ LConvSTMAdd::LConvSTMAdd(vector<Layer *> parent, ConvolDescriptor *D, string nam
     
     input = parent[0]->output;
     cd = D;
-    cd->ksize[0] =ceil((float)cd->ksize[0]/CPO) * CPO;
     cd->build(input);
 
     if (!Tensor::sameShape(cd->O, parent[1]->output)) {

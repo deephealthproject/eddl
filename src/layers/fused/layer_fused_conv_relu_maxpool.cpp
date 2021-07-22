@@ -45,7 +45,6 @@ LConvReLUMaxPool::LConvReLUMaxPool(Layer *parent, ConvolDescriptor *D, PoolDescr
   
     //Conv
     cd = D;
-    cd->ksize[0] =ceil((float)cd->ksize[0]/CPO) * CPO;
     cd->build(input);
 
     //Pooling
