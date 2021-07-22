@@ -2105,14 +2105,7 @@ void get_fpga_model_params(Net * fpga_model) {
 			int found_CSTMA; // Layers Convolution+Softplus+Tanh+Mult+Add detected
 			int found_CL;    // Layers Convolution+LeakyReLU detected
 			//
-			int supported_stride; //Stride is supported in the FPGA
-      int supported_kernel; //Kernel size is supported in the FPGA
-      int supported_padding; //Padding size is supported in the FPGA
-			// Vector of FPGA layers to easly identify the layers for the add and concat functions
-			vector<Layer *>  fpga_layer_model; 
-		
-			// transform mode activated
-			int ghwc_enabled = 0;
+      int supported_conv;    // Convolution is supported in the FPGA
 
 			// New model
 			Net *net = new Net();
@@ -2146,7 +2139,7 @@ void get_fpga_model_params(Net * fpga_model) {
 			  found_Slice = 0; found_Sig = 0; found_Mult = 0; found_Sub = 0; found_Exp = 0; found_Trans = 0; found_Add = 0; found_ConstofT = 0; found_div = 0; found_Sp = 0;
         found_Tanh = 0;
 
-				supported_stride = 1; supported_kernel = 1; supported_padding = 1;
+				supported_conv = 1;
 
 				cl = m_src->layers[l_src];
 
@@ -2156,26 +2149,25 @@ void get_fpga_model_params(Net * fpga_model) {
 					LConv *layer_src = (LConv *)cl;
           //only strides equal to one are suported in the FPGA
 					for(int s = 0; s < layer_src->cd->strides.size(); s++) {
-						if (layer_src->cd->strides[s] != 1) supported_stride = 0;
+						if (layer_src->cd->strides[s] != 1) supported_conv = 0;
+            else printf("Convolution stride dimensions no supported in the FPGA!\n");
 					}
           //only kernel dimensions equal to 3 are suported in the FPGA
           for(int s = 0; s < layer_src->cd->kernel_size.size(); s++) {
-						if (layer_src->cd->kernel_size[s] != 3) supported_kernel = 0;
+						if (layer_src->cd->kernel_size[s] != 3) supported_conv = 0;
+            else printf("Convolution kernel dimensions no supported in the FPGA!\n");
 					}
 
           //only padding dimensions equal to 0 or 1 are suported in the FPGA
           for(int s = 0; s < layer_src->cd->pads.size(); s++) {
-						if (layer_src->cd->pads[s] != 1 && layer_src->cd->pads[s] != 0) supported_padding = 0;
+						if (layer_src->cd->pads[s] != 1 && layer_src->cd->pads[s] != 0) supported_conv = 0;
+            else printf("Convolution padding dimensions no supported in the FPGA!\n");
 					}
 
-          if(!supported_stride) printf("Convolution with stride dimensions %d no supported in the FPGA!\n", layer_src->cd->strides[0]);
-          if(!supported_kernel) printf("Convolution with kernel dimensions %d no supported in the FPGA!\n", layer_src->cd->kernel_size[0]);
-          if(!supported_padding) {
-            printf("Convolution with padding dimensions");
-            for(int s = 0; s < layer_src->cd->pads.size(); s++) {
-              printf(" %d", layer_src->cd->pads[s]);
-					  }
-            printf("no supported in the FPGA!\n");
+          //only H and W dimensios lees or equal than 256 are suported in the FPGA
+          if(layer_src->input->shape.size() > 2) {
+            if(layer_src->input->shape[2] > 256 || layer_src->input->shape[3] > 256) supported_conv = 0;
+            else printf("Convolution with input dimensions no supported in the FPGA!\n");
           }
         }
         
@@ -2239,12 +2231,12 @@ void get_fpga_model_params(Net * fpga_model) {
 				}
 
 				// Combination of layers detected (for the moment they are disabled)
-				found_CM = found_C && found_nM && supported_stride && supported_kernel  && supported_padding;
-				found_CRM = found_C && found_nR && found_nnM && supported_stride && supported_kernel && supported_padding;
-			  found_CR = !found_CRM && found_C && found_nR && supported_stride && supported_kernel && supported_padding;
-	//found_CL = found_C && found_nL && supported_stride && supported_kernel && supported_padding;
-			  //found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA && supported_stride && supported_kernel && supported_padding;
-			  //found_CSTM = !found_CSTMA && found_C && found_nSp && found_nnT && found_nnnMult && supported_stride && supported_kernel && supported_padding;
+				found_CM = found_C && found_nM && supported_conv;
+				found_CRM = found_C && found_nR && found_nnM && supported_conv;
+			  //found_CR = !found_CRM && found_C && found_nR && supported_conv;
+	//found_CL = found_C && found_nL && supported_conv;
+			  //found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA && supported_conv;
+			  //found_CSTM = !found_CSTMA && found_C && found_nSp && found_nnT && found_nnnMult && supported_conv;
 
 			  // data layer transform: Layers ran on the FPGA need to have their inputs in GHWC format, 
 				// the remaining layers need to have their inputs in NCHW format
@@ -2268,7 +2260,7 @@ void get_fpga_model_params(Net * fpga_model) {
 				  }
 				} else {
 	  
-			    if ((found_C && supported_stride && supported_kernel && supported_padding) || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL) {
+			    if ((found_C && supported_conv) || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL) {
  				  // all these layers need the GHWC format at the input, therefore we check if the
 				  // previous layer is in GHWC format and if not we add a transform layer
 				  //
@@ -2494,8 +2486,7 @@ void get_fpga_model_params(Net * fpga_model) {
 			  	LConv *layer_src = (LConv *)cl;
 			  	// dst parent layer
           Layer *fpga_parent;
-          int conv_fpga = supported_stride && supported_kernel && supported_padding;
-          if (conv_fpga) {
+          if (supported_conv) {
 			      fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
             printf("%3d: C	(fpga): prev %d\n", l_dst, dummy);
           } else {
@@ -2509,7 +2500,7 @@ void get_fpga_model_params(Net * fpga_model) {
 			    prev_layer = new LConv(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
 			  												layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
 			  												 "",DEV_CPU, layer_src->cd->mem_level);
-          if(conv_fpga)fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+          if(supported_conv)fn_set_associated_layer(cl, prev_layer, 1, l_dst);
           else fn_set_associated_layer(cl, prev_layer, 0, l_dst);
 			  	associated_source_layer[l_dst] = l_src;
 			  	l_dst++;
@@ -2924,9 +2915,14 @@ printf("FIN MODEL\n");
 						if (layer_src->cd->pads[0] != 1 && layer_src->cd->pads[s] != 0) fpga_conv = 0;
 					}
 
-          //if(!fpga_conv) printf("Convolution with stride dimensions %d no supported in the FPGA!\n", layer_dst->cd->strides[0]);
-          //if(!fpga_conv) printf("Convolution with kernel dimensions %d no supported in the FPGA!\n", layer_dst->cd->kernel_size[0]);
-          //if(!fpga_conv) printf("Convolution with padding dimensions %d no supported in the FPGA!\n", layer_dst->cd->pads[0]);
+          //only h and w lees or equal than 256 are suported in the FPGA
+          if(layer_src->input->shape.size() > 2) {
+            if(layer_src->input->shape[2] > 256 || layer_src->input->shape[3] > 256) fpga_conv = 0;
+          }
+
+          if(!fpga_conv) printf("Convolution with stride dimensions %d no supported in the FPGA!\n", layer_dst->cd->strides[0]);
+          if(!fpga_conv) printf("Convolution with kernel dimensions %d no supported in the FPGA!\n", layer_dst->cd->kernel_size[0]);
+          if(!fpga_conv) printf("Convolution with padding dimensions %d no supported in the FPGA!\n", layer_dst->cd->pads[0]);
 
 
 			    //filter
@@ -2934,6 +2930,7 @@ printf("FIN MODEL\n");
 			    if(fpga_conv) {
             filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
           } else {
+            if(layer_src->cd->K->size != layer_dst->cd->K->size) tensor_padded(layer_src->cd->K, layer_dst->cd->K);
             Tensor::copy(layer_src->cd->K, layer_dst->cd->K);
           }
 			    distributeTensor(layer_dst, "param", 0);
