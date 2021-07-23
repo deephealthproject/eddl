@@ -2323,6 +2323,39 @@ namespace eddl {
     Net* download_vgg16(bool top=true, vector<int> input_shape={});
 
     /**
+      *  @brief Returns a VGG16 model with BatchNormalization pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A VGG16-BN Net* with the desired topology
+    */
+    Net* download_vgg16_bn(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a VGG19 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A VGG19 Net* with the desired topology
+    */
+    Net* download_vgg19(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a VGG19 model with BatchNormalization pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A VGG19-BN Net* with the desired topology
+    */
+    Net* download_vgg19_bn(bool top=true, vector<int> input_shape={});
+
+    /**
       *  @brief Returns a ResNet18 model pretrained with imagenet.
       *
       *  @param top  If true, returns the model without the densely connected part and

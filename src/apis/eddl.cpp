@@ -1681,6 +1681,96 @@ namespace eddl {
     return net;
   }
 
+  Net* download_vgg16_bn(bool top, vector<int> input_shape)
+  {
+    download_model("vgg16bn-7.onnx", "df7nd1ydsba9yp5");
+
+    cout << "Import ONNX..." << endl;
+
+    Net *net;
+    if (input_shape.size())
+      net = import_net_from_onnx_file("vgg16bn-7.onnx", input_shape, DEV_CPU);
+    else
+      net = import_net_from_onnx_file("vgg16bn-7.onnx", DEV_CPU);
+
+    Layer *l = getLayer(net, "data"); l->name = "input";
+    if (top) {
+      net->removeLayer("vgg0_dense2_fwd");
+      net->removeLayer("flatten_135");
+      net->removeLayer("vgg0_dropout1_fwd");
+      net->removeLayer("vgg0_dense1_relu_fwd");
+      net->removeLayer("vgg0_dense1_fwd");
+      net->removeLayer("flatten_130");
+      net->removeLayer("vgg0_dropout0_fwd");
+      net->removeLayer("vgg0_dense0_relu_fwd");
+      net->removeLayer("vgg0_dense0_fwd");
+
+      Layer *l = getLayer(net, "flatten_125"); l->name = "top";
+    }
+
+    return net;
+  }
+
+  Net* download_vgg19(bool top, vector<int> input_shape)
+  {
+    download_model("vgg19-7.onnx", "859b3zsr4dvvr26");
+
+    cout << "Import ONNX..." << endl;
+
+    Net *net;
+    if (input_shape.size())
+      net = import_net_from_onnx_file("vgg19-7.onnx", input_shape, DEV_CPU);
+    else
+      net = import_net_from_onnx_file("vgg19-7.onnx", DEV_CPU);
+
+    Layer *l = getLayer(net, "data"); l->name = "input";
+    if (top) {
+      net->removeLayer("vgg0_dense2_fwd");
+      net->removeLayer("flatten_82");
+      net->removeLayer("vgg0_dropout1_fwd");
+      net->removeLayer("vgg0_dense1_relu_fwd");
+      net->removeLayer("vgg0_dense1_fwd");
+      net->removeLayer("flatten_77");
+      net->removeLayer("vgg0_dropout0_fwd");
+      net->removeLayer("vgg0_dense0_relu_fwd");
+      net->removeLayer("vgg0_dense0_fwd");
+
+      Layer *l = getLayer(net, "flatten_72"); l->name = "top";
+    }
+
+    return net;
+  }
+
+  Net* download_vgg19_bn(bool top, vector<int> input_shape)
+  {
+    download_model("vgg19bn-7.onnx", "93ha0nilvin38rz");
+
+    cout << "Import ONNX..." << endl;
+
+    Net *net;
+    if (input_shape.size())
+      net = import_net_from_onnx_file("vgg19bn-7.onnx", input_shape, DEV_CPU);
+    else
+      net = import_net_from_onnx_file("vgg19bn-7.onnx", DEV_CPU);
+
+    Layer *l = getLayer(net, "data"); l->name = "input";
+    if (top) {
+      net->removeLayer("vgg0_dense2_fwd");
+      net->removeLayer("flatten_162");
+      net->removeLayer("vgg0_dropout1_fwd");
+      net->removeLayer("vgg0_dense1_relu_fwd");
+      net->removeLayer("vgg0_dense1_fwd");
+      net->removeLayer("flatten_157");
+      net->removeLayer("vgg0_dropout0_fwd");
+      net->removeLayer("vgg0_dense0_relu_fwd");
+      net->removeLayer("vgg0_dense0_fwd");
+
+      Layer *l = getLayer(net, "flatten_152"); l->name = "top";
+    }
+
+    return net;
+  }
+
   Net* download_resnet18(bool top, vector<int> input_shape)
   {
     download_model("resnet18.onnx","re7jodd12srksd7");
