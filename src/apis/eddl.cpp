@@ -1960,6 +1960,112 @@ int current_associated_layers = 0;
     exit(1);
   }
 
+  int Find_ConvRelu(model m_src, int *l_src, int *l_dst) {
+
+    int dummy;
+
+    if (*l_src >=m_src->layers.size()-1) return 0;
+
+    Layer *cl = m_src->layers[*l_src];
+    Layer *nl = m_src->layers[*l_src+1];
+    int found_Conv = 0;
+    int found_Relu = 0;
+    
+    if (LConv *dl = dynamic_cast<LConv *>(cl)) found_Conv = 1;
+    if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_Relu = 1;
+  
+    if (!found_Conv || !found_Relu) return 0;
+
+    LConv *layer_src = (LConv *)cl;
+    // dst parent layer
+    Layer *fpga_parent;
+    Layer *prev_layer;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+    printf("%3d: CR          : prev %d\n", *l_dst, dummy);
+    prev_layer = new LConvReLU(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+                                layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
+    fn_set_associated_layer(cl, prev_layer, 1, *l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, *l_dst);
+    associated_source_layer[*l_dst] = *l_src;
+    *l_dst = *l_dst + 1;
+    *l_src = *l_src + 2;
+
+    LConvReLU *layer_dst = (LConvReLU *)prev_layer;
+
+    //filter
+    collectTensor(layer_src, "param", 0);
+    filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
+    distributeTensor(layer_dst, "param", 0);
+
+    //bias
+    collectTensor(layer_src, "param", 1);
+    tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+    distributeTensor(layer_dst, "param", 1);
+
+    return 1;
+  }
+
+  int Find_ConvMaxpooling(model m_src, int *l_src, int *l_dst) {
+
+    int dummy;
+
+    return 0;
+  }
+
+  int Find_Div(model m_src, int *l_src, int *l_dst) {
+    int dummy, dummy1;
+
+    Layer *cl = m_src->layers[*l_src];
+    int found_Div = 0;
+
+    if (LDiv *dl = dynamic_cast<LDiv *>(cl)) found_Div = 1;
+
+    if (!found_Div) return 0;
+
+    LDiv *layer_src = (LDiv *)cl;
+    Layer *prev_layer;
+    // dst parent layer
+    if (layer_src->parent.size() < 2) {
+      Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+      printf("%3d: DIV        : prev %d\n", *l_dst, dummy);
+      prev_layer = Div(fpga_parent, layer_src->val);
+    } else if(layer_src->parent.size() == 2) {
+      vector<Layer *> parent;
+      Layer *fpga_parent;
+      fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+      parent.push_back(fpga_parent);
+      fpga_parent = fn_get_associated_layer(cl->parent[1], 0, &dummy1);
+      printf("%3d: DIV          : prevs %d %d\n", *l_dst, dummy, dummy1);
+      vector<Layer *> operators = expand_broadcast(parent);
+      prev_layer = Div(operators[0], operators[1]);
+    } else  msg("Error, Mult layer is only supported in FPGA with one or two parents","Model_for_fpga");
+    fn_set_associated_layer(cl, prev_layer, 0, *l_dst);
+    associated_source_layer[*l_dst] = *l_src;
+    *l_dst = *l_dst + 1;
+    *l_src = *l_src + 1;
+    return 1;
+  }
+
+  int Find_Input(model m_src, int *l_src, int *l_dst) {
+    int dummy;
+
+    Layer *cl = m_src->layers[*l_src];
+    int found_Input = 0;
+
+    if (LInput *dl = dynamic_cast<LInput *>(cl)) found_Input = 1;
+
+    if (!found_Input) return 0;
+
+    printf("%3d: I\n", *l_dst);
+    Layer *prev_layer = Input({cl->input->shape[1],cl->input->shape[2],cl->input->shape[3]});
+    fn_set_associated_layer(cl, prev_layer, 0, *l_dst);
+    associated_source_layer[*l_dst] = *l_src;
+    *l_dst = *l_dst + 1;
+    *l_src = *l_src + 1;
+    return 1;
+  }
+
+
     // model for fpga
   model model_for_fpga(model m_src) {
 
@@ -1978,6 +2084,8 @@ int current_associated_layers = 0;
       Layer *nnl;        // current+2 layer pointer
       Layer *nnnl;       // current+3 layer pointer
       Layer *nnnnl;      // current+4 layer pointer
+      Layer *nnnnnl;
+      Layer *nnnnnnl;
       layer first;       // first layer
       layer last;        // last layer
       layer prev_layer;  // for network building process (previous layer)
@@ -2007,10 +2115,17 @@ int current_associated_layers = 0;
       int found_nR;    // current+1 layer is a ReLU layer
       int found_nL;    // current+1 layer is a LeakyReLU layer
       int found_nSp;   // current+1 layer is a Sofplus layer
+      int found_nSum;  // current+1 layer is a Sum layer
+      int found_nMult;
       int found_nnM;   // current+2 layer is a maxpooling layer
       int found_nnT;   // current+2 layer is a Tanh layer
+      int found_nnSum;
       int found_nnnMult;  // current+3 layer is a Mult layer
+      int found_nnnMultiThreshold;
       int found_nnnnA;  // current+3 layer is an Add layer
+      int found_nnnnSum;
+      int found_nnnnnMult;
+      int found_nnnnnnConv;
       //
       int found_CR;    // Layers Convolution+Relu detected
       int found_CM;    // Layers Convolution+Maxpooling detected
@@ -2018,6 +2133,7 @@ int current_associated_layers = 0;
       int found_CSTM;  // Layers Convolution+Softplus+Tanh+Mult detected
       int found_CSTMA; // Layers Convolution+Softplus+Tanh+Mult+Add detected
       int found_CL;    // Layers Convolution+LeakyReLU detected
+      int found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv;
 
       // Vector of FPGA layers to easly identify the layers for the add and concat functions
       vector<Layer *>  fpga_layer_model; 
@@ -2048,6 +2164,8 @@ int current_associated_layers = 0;
       int l_dst = 0;
 
       while (l_src<num_layers) {
+
+	int found = 0;
 
         // detection stage, we detect any possible type of layer that can be merged
         // we look into current, current+1 and current+2 layers
@@ -2101,40 +2219,66 @@ int current_associated_layers = 0;
 	found_nR = 0;
 	found_nL = 0;
         found_nSp = 0;
+	found_nSum = 0;
+	found_nMult = 0;
 	if (l_src<num_layers-1) {
 	  nl = m_src->layers[l_src+1];
 	  if (LMaxPool *dl = dynamic_cast<LMaxPool *>(nl)) found_nM = 1;
 	  if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_nR = 1;
           if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "softplus") found_nSp = 1; 
 	  if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "leaky_relu") found_nL = 1;
+	  if (LSum *dl = dynamic_cast<LSum *>(nl)) found_nSum = 1;
+	  if (LMult *dl = dynamic_cast<LMult *>(nl)) found_nMult = 1;
   	}
 
 	// current+2 layer
 	found_nnM = 0;
         found_nnT = 0;
+	found_nnSum = 0;
 	if (l_src<num_layers-2) {
 	  nnl = m_src->layers[l_src+2];
 	  if (LMaxPool *dl = dynamic_cast<LMaxPool *>(nnl)) found_nnM = 1; 
           if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "tanh") found_nnT = 1; 
+	  if (LSum *dl = dynamic_cast<LSum *>(nnl)) found_nnSum = 1;
 	}
 
         // current+3 layer
-	      found_nnnMult = 0;
-	      if (l_src<num_layers-3) {
-	        nnnl = m_src->layers[l_src+3]; 
-                if (LMult *dl = dynamic_cast<LMult *>(nnnl)) found_nnnMult = 1; 
-	      }
+        found_nnnMult = 0;
+	found_nnnMultiThreshold = 0;
+        if (l_src<num_layers-3) {
+          nnnl = m_src->layers[l_src+3]; 
+          if (LMult *dl = dynamic_cast<LMult *>(nnnl)) found_nnnMult = 1; 
+	  if (LMultiThreshold *dl = dynamic_cast<LMultiThreshold *>(nnnl)) found_nnnMultiThreshold = 1;
+        }
+
 
         // current+4 layer
-	      found_nnnnA = 0;
-	      if (l_src<num_layers-4) {
-	        nnnnl = m_src->layers[l_src+4]; 
-                if (LAdd *dl = dynamic_cast<LAdd *>(nnnnl)) found_nnnnA = 1; 
-	      }
+        found_nnnnA = 0;
+	found_nnnnSum = 0;
+        if (l_src<num_layers-4) {
+          nnnnl = m_src->layers[l_src+4]; 
+          if (LAdd *dl = dynamic_cast<LAdd *>(nnnnl)) found_nnnnA = 1; 
+	  if (LSum *dl = dynamic_cast<LSum *>(nnnnl)) found_nnnnA = 1;
+        }
 
-	      // Combination of layers detected (for the moment they are disabled)
-	      found_CM = found_C && found_nM;
-	      found_CRM = found_C && found_nR && found_nnM;
+	// current+5 layer
+	found_nnnnnMult = 0;
+	if (l_src<num_layers-5) {
+          nnnnnl = m_src->layers[l_src+5];
+	  if (LMult *dl = dynamic_cast<LMult *>(nnnnnl)) found_nnnnnMult = 1;
+	}
+
+	// current+6 layer
+	found_nnnnnnConv = 0;
+	if (l_src<num_layers-6) {
+	  nnnnnnl = m_src->layers[l_src+6];
+	  if (LConv *dl = dynamic_cast<LConv *>(nnnnnnl)) found_nnnnnnConv = 1;
+	}
+
+	// Combination of layers detected (for the moment they are disabled)
+	found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv = found_div && found_nMult && found_nnSum && found_nnnMultiThreshold && found_nnnnSum && found_nnnnnMult && found_nnnnnnConv;
+	found_CM = found_C && found_nM;
+	found_CRM = found_C && found_nR && found_nnM;
         found_CR = !found_CRM && found_C && found_nR;
 	//found_CL = found_C && found_nL;
         found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA;
@@ -2162,7 +2306,7 @@ int current_associated_layers = 0;
 	  }
 	} else {
 	  
-          if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL) {
+          if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL | found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
  	        // all these layers need the GHWC format at the input, therefore we check if the
 	        // previous layer is in GHWC format and if not we add a transform layer
 	        //
@@ -2197,24 +2341,23 @@ int current_associated_layers = 0;
         }
 
         // build up stage, we create a merged layer out of our findings
-        if (found_CR) {
-
-	        //
-	        // Convolution + ReLu fused layer
-	        //
-	        // source layer
-          LConv *layer_src = (LConv *)cl;
-	        // dst parent layer
-          Layer *fpga_parent;
-          fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
-	        printf("%3d: CR          : prev %d\n", l_dst, dummy);
-          prev_layer = new LConvReLU(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
-                                layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
+	if (found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
+	  //
+	  // DIV + MULT + SUM + MultiThreshold + SUM + MULT + CONV
+	  LConv *layer_src = (LConv *)nnnnnnl;
+	  // dst parent layer
+	  Layer *fpga_parent;
+	  fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+	  prev_layer = new LConvReLU(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+			             layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "", DEV_CPU, layer_src->cd->mem_level);
 	  fn_set_associated_layer(cl, prev_layer, 1, l_dst);
-	  fn_set_associated_layer(nl, prev_layer, 1, l_dst);
-	  associated_source_layer[l_dst] = l_src;
+          fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+          fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+          fn_set_associated_layer(nnnl, prev_layer, 1, l_dst);
+          fn_set_associated_layer(nnnnl, prev_layer, 1, l_dst);
+          fn_set_associated_layer(nnnnnl, prev_layer, 1, l_dst);
+          fn_set_associated_layer(nnnnnnl, prev_layer, 1, l_dst);
 	  l_dst++;
-
 	} else if (found_CL) {
 
 	  // 
@@ -2697,15 +2840,15 @@ int current_associated_layers = 0;
 	      l_dst++;
 
       } else {
-        cout<<"searching "<<cl->name<<"\n";
-        msg("Error, unidentified layer","Model_for_fpga");
-        exit(1);
+  //      cout<<"searching "<<cl->name<<"\n";
+  //      msg("Error, unidentified layer","Model_for_fpga");
+  //      exit(1);
       }
 
       if (l_src == 0) first = prev_layer;
       last = prev_layer;
-      if (found_CSTMA) l_src += 5; else if (found_CSTM) l_src += 4; else if (found_CRM) l_src += 3; else if (found_CM || found_CR || found_CL) l_src += 2; else l_src++;     }
-
+      if (found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) l_src += 7; else if (found_CSTMA) l_src += 5; else if (found_CSTM) l_src += 4; else if (found_CRM) l_src += 3; else if (found_CM || found_CR || found_CL) l_src += 2; else l_src++;     }
+      
       printf("End parsing/creating new network\n");
 
       // now we create the model

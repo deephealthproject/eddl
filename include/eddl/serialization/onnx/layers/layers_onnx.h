@@ -67,7 +67,9 @@ enum ONNX_LAYERS {
   PAD,              // OPSET: 13, 11, 2, 1
   SLICE,            // OPSET: 13, 11, 10
   SPLIT,            // OPSET: 13, 11, 2
-  EXPAND            // OPSET: 13, 8
+  EXPAND,           // OPSET: 13, 8
+  MULTITHRESHOLD,   // Not in ONNX: Custom
+  TOPK              // OPSET: ????
 };
 
 map<string, ONNX_LAYERS> create_enum_map();

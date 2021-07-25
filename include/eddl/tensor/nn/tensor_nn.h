@@ -169,6 +169,10 @@ namespace tensorNN{
             Tensor *gbn_b, Tensor *bn_g, Tensor *variance,
             Tensor *work1, Tensor *work2);
 
+// ***** FPGA specific ************************************
+    void multithreshold(Tensor *A, Tensor *B, Tensor *thresholds, float out_bias, float out_scale);
+    void topK(Tensor *A, Tensor *B, int axis, int largest, int sorted, int K);
+
 }
 
 #endif //EDDL_TENSOR_NN_H

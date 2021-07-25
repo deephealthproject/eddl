@@ -363,7 +363,7 @@ void _profile_fpga_tensor(Tensor *T) {
   fpga_copy_from_fpga(T, T->ptr);
   // Now we calculate statistics (min, max, avg) from the tensor
   float min = FLT_MAX;
-  float max = FLT_MIN;
+  float max = -FLT_MAX;
   float sum = 0.f;
   float avg;
   for (int i=0; i<T->size; i++) {

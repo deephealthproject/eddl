@@ -8,6 +8,7 @@
 */
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 #include "eddl/profiling.h"
 
 #ifdef cFPGA
@@ -120,15 +121,28 @@ namespace tensorNN {
             Tensor *bn_mean, Tensor *bn_var,
             bool trmode, float epsilon, float momentum)
     {
-
         if (input->isCPU()) {
+#ifdef CPU_DEBUG
+        printf("BatchNormForward:\n");
+        printf(" input    : "); _profile_cpu_tensor(input);
+        printf(" mean     : "); _profile_cpu_tensor(mean);
+	printf(" variance : "); _profile_cpu_tensor(variance);
+	printf(" bn_g     : "); _profile_cpu_tensor(bn_g);
+	printf(" bn_b     : "); _profile_cpu_tensor(bn_b);
+	printf(" bn_mean  : "); _profile_cpu_tensor(bn_mean);
+	printf(" bn_var   : "); _profile_cpu_tensor(bn_var);
+#endif
             cpu_batchnorm_forward(input->shape[0], input->shape[1],
-                input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
+                input->ndim == 2 ? 1 : input->ndim == 3 ? input->shape[2] : input->shape[2] * input->shape[3],
                 input->ptr, output->ptr, opa->ptr,
                 mean->ptr, variance->ptr,
                 bn_g != NULL ? bn_g->ptr : NULL,
                 bn_b != NULL ? bn_b->ptr : NULL,
                 bn_mean->ptr, bn_var->ptr, trmode, epsilon, momentum);
+#ifdef CPU_DEBUG
+	printf(" output   : "); _profile_cpu_tensor(output);
+	printf(" opa      : "); _profile_cpu_tensor(opa);
+#endif
         } else {
 #ifdef cGPU
             gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],

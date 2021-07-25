@@ -264,5 +264,43 @@ namespace tensorNN {
 #endif
     }
 
+    void multithreshold(Tensor *A, Tensor *B, Tensor *thresholds, float out_bias, float out_scale) {
+
+
+	    if (A->isCPU() && B->isCPU() && thresholds->isCPU()) {
+	      cpu_multithreshold(A, B, thresholds, out_bias, out_scale);
+	    }
+#ifdef cGPU
+	    else if (A->isGPU() && B->isGPU() && thresholds->isGPU()) {
+	      printf("multithreshold not supported for GPU\n");
+	      exit(1);
+	    }
+#endif
+#ifdef cFPGA
+	    else if (A->isFPGA() && B->isFPGA() && thresholds->isFPGA()) {
+	      printf("multithreshold not supported yet for FPGA\n");
+	      exit(1);
+	    }
+#endif
+    }
+
+    void topK(Tensor *A, Tensor *B, int axis, int largest, int sorted, int K) {
+
+            if (A->isCPU() && B->isCPU()) {
+              cpu_topK(A, B, axis, largest, sorted, K);
+            }
+#ifdef cGPU
+            else if (A->isGPU() && B->isGPU()) {
+              printf("topK not supported for GPU\n");
+              exit(1);
+            }
+#endif
+#ifdef cFPGA
+            else if (A->isFPGA() && B->isFPGA()) {
+              printf("topK not supported yet for FPGA\n");
+              exit(1);
+            }
+#endif
+    }
 
 }

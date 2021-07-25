@@ -420,6 +420,14 @@ void cpu_low_mem_conv3D(int batch_size,
 
 void cpu_conv2D(ConvolDescriptor *D)
 {
+
+#ifdef CPU_DEBUG
+        printf("conv2D:\n");
+        printf(" input   : "); _profile_cpu_tensor(D->I);
+        printf(" filters : "); _profile_cpu_tensor(D->K);
+	if (D->use_bias) {printf(" bias    : "); _profile_cpu_tensor(D->bias);}
+#endif	
+
     if (D->mem_level > 1) cpu_low_mem_conv3D(D->I->shape[0],
         D->iz, 1, D->ir, D->ic, D->I->ptr,
         D->nk, 1, D->kr, D->kc, D->K->ptr,
@@ -440,6 +448,10 @@ void cpu_conv2D(ConvolDescriptor *D)
       (*ptrO)+=D->bias->ptr[z];
     }
   }
+
+#ifdef CPU_DEBUG
+  printf(" output  : "); _profile_cpu_tensor(D->O);
+#endif
 }
 
 void cpu_low_mem_conv3D_grad(int batch_size,

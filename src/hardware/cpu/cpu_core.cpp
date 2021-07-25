@@ -171,7 +171,7 @@ default                          : strcpy(name, "?????"); break;
 void _profile_cpu_tensor(Tensor *T) {
 #ifdef CPU_DEBUG
   float min = FLT_MAX;
-  float max = FLT_MIN;
+  float max = -FLT_MAX;
   float sum = 0.f;
   float avg;
   for (int i=0; i<T->size; i++) {
@@ -182,11 +182,11 @@ void _profile_cpu_tensor(Tensor *T) {
   avg = sum / (float)T->size;
   printf("  - Tensor (cpu)  ");
   printf(" size %10d ", T->size);
-  printf("                      ");
-  printf(" shape0 %6d ", T->shape[0]);
-  if (T->ndim>=2) printf(" shape1 %6d ", T->shape[1]); else printf("               ");
-  if (T->ndim>=3) printf(" shape2 %6d ", T->shape[2]); else printf("               ");
-  if (T->ndim>=4) printf(" shape3 %6d ", T->shape[3]); else printf("               ");
+  printf(" dims: ");
+  printf(" %6d ", T->shape[0]);
+  if (T->ndim>=2) printf(" x %6d ", T->shape[1]); else printf("          ");
+  if (T->ndim>=3) printf(" x %6d ", T->shape[2]); else printf("          ");
+  if (T->ndim>=4) printf(" x %6d ", T->shape[3]); else printf("          ");
   printf(" (cpu_ptr %p). ", T->ptr);
   printf(" Min %8.4f Max %8.4f Avg %8.4f\n", min, max, avg);
 #endif

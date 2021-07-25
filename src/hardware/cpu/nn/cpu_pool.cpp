@@ -15,7 +15,7 @@
 #include <limits>       // std::numeric_limits
 
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
-
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 float get_pixel(int b,int px,int py,int pz,PoolDescriptor *D,int isize,int irsize) {
   // Check boundaries of the window
@@ -72,6 +72,12 @@ void add_pixel3d(int in, int iz, int id, int ir, int ic, PoolDescriptor3D *D, in
 }
 
 void cpu_mpool2D(PoolDescriptor *D){
+
+#ifdef CPU_DEBUG
+        printf("mpool2D:\n");
+        printf(" input    : "); _profile_cpu_tensor(D->I);
+#endif
+
     _profile(_CPU_MPOOL2D, 0);
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
@@ -108,6 +114,10 @@ void cpu_mpool2D(PoolDescriptor *D){
         } // depth
     } // batch
     _profile(_CPU_MPOOL2D, 1);
+
+#ifdef CPU_DEBUG
+    printf(" output    : "); _profile_cpu_tensor(D->O);
+#endif
 }
 
 void cpu_mpool2D_back(PoolDescriptor *D){

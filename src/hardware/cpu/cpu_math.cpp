@@ -24,8 +24,16 @@ void cpu_acos(Tensor *A, Tensor *B){
 }
 
 void cpu_add(Tensor *A, Tensor *B, float v) {
+#ifdef CPU_DEBUG
+        printf("cpu_add (v = %f)\n", v);
+        _profile_cpu_tensor(A);
+#endif
 #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] + v;
+
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(B);
+#endif
 }
 
 
@@ -110,8 +118,15 @@ void cpu_mod(Tensor *A, Tensor *B, float v){
 }
 
 void cpu_mult(Tensor *A, Tensor *B, float v) {
+#ifdef CPU_DEBUG
+	printf("cpu_mult (v = %f)\n", v);
+	_profile_cpu_tensor(A);
+#endif
 #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] * v;
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(B);
+#endif
 }
 
 void cpu_normalize(Tensor *A, Tensor *B, float min, float max){
@@ -241,6 +256,11 @@ void cpu_inc(Tensor *A, Tensor *B) {
 }
 
 void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
+#ifdef CPU_DEBUG
+	printf("mult2d:\n");
+	printf(" input A : "); _profile_cpu_tensor(A);
+	printf(" input B : "); _profile_cpu_tensor(B);
+#endif
     if (!tB) {
         if (!tA) {
             if (!incC) *(C->ptr2) = *(B->ptr2) * (*(A->ptr2));
@@ -258,6 +278,9 @@ void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
             else *(C->ptr2) += (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
         }
     }
+#ifdef CPU_DEBUG
+    printf(" output C : "); _profile_cpu_tensor(C);
+#endif
 }
 
 void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
@@ -269,10 +292,18 @@ void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
 
 void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
+#ifdef CPU_DEBUG
+  printf("EL_MULT:\n");
+  _profile_cpu_tensor(A);
+  _profile_cpu_tensor(B);
+#endif
 #pragma omp parallel for
     for (int i = 0; i < A->size; i++)
         if (incC) C->ptr[i] += A->ptr[i] * B->ptr[i];
         else C->ptr[i] = A->ptr[i] * B->ptr[i];
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(C);
+#endif
 }
 
 

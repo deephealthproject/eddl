@@ -29,7 +29,8 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     if ((input->ndim != 2)&&(input->ndim != 4)) {
         input->info();
-        msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
+	printf("LBatchNorm only works over 1D or 2D tensors, however, we do not exit here and allow 3D tensors (JFLICH)\n");
+//        msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
     }
 
     if(name.empty()) this->name = "batchnorm" + to_string(++total_layers);

@@ -103,14 +103,6 @@ Layer* build_add_layer(onnx::NodeProto *node,
       // Create the tensor with the constant values to add
       vector<float> *tensor_values = &(map_init_values[tensor_name]);
       vector<int> tensor_shape = map_init_dims[tensor_name];
-      // Check that the tensor shape is valid
-      if (tensor_shape.size() < 2)
-        msg("Error in Add node " + node->name() + ". The number of dimensions of the constant operator must be 2 or higher", "ONNX::ImportNet");
-      else if (tensor_shape[0] != 1)
-        msg("Error in Add node " + node->name() + ". The first dimension (batch) of the constant operator must be 1, got " +
-            to_string(tensor_shape[0]), "ONNX::ImportNet");
-      else
-        tensor_shape.erase(tensor_shape.begin()); // Delete the batch dimension
 
       // Check if the constant tensor has only one number
       int tensor_size = 1;
@@ -123,6 +115,15 @@ Layer* build_add_layer(onnx::NodeProto *node,
         log_string("The constant input to the Add node has only one value, going to use a Sum layer...", log_level, LOG_LEVEL::DEBUG);
         return new LSum(parents[0], tensor_values->at(0), node->name(), dev, mem);
       }
+
+      // Check that the tensor shape is valid
+      if (tensor_shape.size() < 2)
+        msg("Error in Add node " + node->name() + ". The number of dimensions of the constant operator must be 2 or higher", "ONNX::ImportNet");
+      else if (tensor_shape[0] != 1)
+        msg("Error in Add node " + node->name() + ". The first dimension (batch) of the constant operator must be 1, got " +
+            to_string(tensor_shape[0]), "ONNX::ImportNet");
+      else
+        tensor_shape.erase(tensor_shape.begin()); // Delete the batch dimension
 
       Tensor *t = new Tensor(tensor_shape, nullptr, dev);
       COPY_FROM_VECTOR_PTR_TO_TENSOR(tensor_values, t);
