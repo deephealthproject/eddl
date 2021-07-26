@@ -22,10 +22,8 @@ using namespace std;
 
 int LGRU::total_layers = 0;
 
-LGRU::LGRU(vector<Layer *> parent, int units, bool mask_zeros, bool bidirectional, string name, int dev, int mem): MLayer(name, dev, mem) {
-
-    // DRAFT VERSION
-
+LGRU::LGRU(vector<Layer *> parent, int units, bool mask_zeros, bool bidirectional, string name, int dev, int mem): MLayer(name, dev, mem)
+{
     this->units = units;
     this->bidirectional = bidirectional;
     this->mask_zeros = mask_zeros;
@@ -112,6 +110,18 @@ void LGRU::mem_delta() {
 
         if (this->verbosity_level >= 2) {
             std::cout << "Booked delta for: " + this->name << std::endl;
+        }
+    } else if (this->delta->shape[0] != this->output->shape[0]) {
+
+        for (int i = 0; i < this->delta_states.size(); ++i)
+            this->delta_states[i]->resize(this->output->shape[0]);
+        // we do the previous for loop just in case, but in the current
+        // implementation only next commented line is required
+        //this->delta->resize(this->output->shape[0]);
+        
+
+        if (this->verbosity_level >= 2) {
+            std::cout << "Resized delta for: " + this->name << std::endl;
         }
     }
 }
@@ -303,7 +313,7 @@ void LGRU::backward() {
     Tensor::mult2D(daux, 0, Wn_x, 1, parent[0]->delta, 1); // delta * (1 - z_t) * tanh'(n_t) * Wn_x
     if (parent.size() > 1) {
         Tensor::el_mult(daux, r_t, d1, 0); // d1 is now delta * (1 - z_t) * tanh'(n_t) * r_t
-        Tensor::mult2D(d1, 0, Un_h, 1, parent[1]->delta_states[0], 1); 
+        Tensor::mult2D(d1, 0, Un_h, 1, parent[1]->delta_states[0], 1);
     }
 
     /*

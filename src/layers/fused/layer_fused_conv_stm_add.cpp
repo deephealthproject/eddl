@@ -6,6 +6,8 @@
 
 #include "eddl/layers/fused/layer_fused.h"
 
+#include "eddl/hardware/fpga/fpga_hw.h"     // FPGA enables of kernels
+
 
 using namespace std;
 
@@ -29,7 +31,6 @@ LConvSTMAdd::LConvSTMAdd(vector<Layer *> parent, ConvolDescriptor *D, string nam
     
     input = parent[0]->output;
     cd = D;
-    cd->ksize[0] =ceil((float)cd->ksize[0]/CPO) * CPO;
     cd->build(input);
 
     if (!Tensor::sameShape(cd->O, parent[1]->output)) {
@@ -80,6 +81,10 @@ string LConvSTMAdd::plot(int c) {
 void LConvSTMAdd::forward() { // cambiar
     //we apply the convolutional and stm module to the first layer
     //and then we add the tensor of the second layer
+   // printf("\n\n\n PARENT 0\n");
+   // _profile_fpga_tensor_print(parent[0]->output);
+   // printf("\n\n\n PARENT 1\n");
+   // _profile_fpga_tensor_print(parent[1]->output);
     tensorNN::conv_stm_add(this->cd, parent[0]->output);
 
 }

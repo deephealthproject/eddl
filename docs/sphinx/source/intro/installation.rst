@@ -1,7 +1,7 @@
 .. raw:: html
 
    <style>
-   #installation > img {
+   #installation img {
        width: 30px;
        margin-bottom: 0;
        margin-top: 0;
@@ -144,6 +144,24 @@ You can also install ``EDDL`` from source with cmake.
 
             make install
 
+    .. tab:: Windows
+
+        .. code:: batch
+
+            # Download source code
+            git clone https://github.com/deephealthproject/eddl.git
+            cd eddl/
+
+            # Install dependencies
+            conda env create -f environment.yml
+            conda activate eddl
+
+            # Build and install
+            mkdir build
+            cd build
+            cmake .. -DCMAKE_PREFIX_PATH=%CONDA_PREFIX% -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX%
+
+            cmake --build . --target install
 
 See the :doc:`build-options` section for more details about cmake options.
 

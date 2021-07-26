@@ -57,6 +57,9 @@ void cpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
             B->ptr[b*B->stride[0] + i] = A->ptr[b*A->stride[0] + sd->cpu_addresses[i]];
         }
     }
+    _profile_cpu_tensor(A);
+    _profile_cpu_tensor(B);
+    exit(1);
 }
 
 void cpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){

@@ -1157,11 +1157,11 @@ namespace eddl {
       *  @brief 2D Upsampling layer.
       *
       *  @details
-      *   Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
+      *   Identical to the ``scale`` transformation, it is an alias of the Resize layer.
       *
       *  @param parent  Parent layer
       *  @param size  Vector of 2 integers. The upsampling factors for rows and columns
-      *  @param interpolation  A string, one of "nearest" or "bilinear"
+      *  @param interpolation (Deprecated) A string, only "nearest" is valid
       *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */

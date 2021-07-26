@@ -58,7 +58,58 @@ string LAdd::plot(int c) {
 }
 
 
+// _profile_fpga_tensor_print(). Prints some values of the tensor
+void cpu_tensor_print(Tensor *T) {
+  // We read the tensor from FPGA
+  printf("tensor print:\n");
+  int d1_max = 2;
+  int d2_max = 4;
+  int d3_max = 4;
+  if (T->ndim==4) {
+    for (int d0=0; d0<T->shape[0]; d0++) {
+    for (int d1=0; d1<d1_max; d1++) {
+    for (int d2=0; d2<d2_max; d2++) {
+    for (int d3=0; d3<d3_max; d3++) {
+    
+    //for (int d0=0; d0<T->shape[0]; d0++) {
+    //for (int d1=0; d1<T->shape[1]; d1++) {
+    //for (int d2=0; d2<T->shape[2]; d2++) {
+    //for (int d3=0; d3<T->shape[3]; d3++) {
+      int a = (d0 * T->shape[1] * T->shape[2] * T->shape[3]) + (d1 * T->shape[2] * T->shape[3]) + (d2 * T->shape[3]) + d3;
+      printf("%f ", T->ptr[a]);
+      
+    }
+    //printf("\n");
+    }
+    //printf("\n\n");
+    }
+    //printf("\n\n\n");
+    }
+  }  else if(T->ndim==2) {
+       for (int d0=0; d0<d1_max; d0++) {
+       for (int d1=0; d1<d2_max; d1++) {
+       //for (int d0=0; d0<T->shape[0]; d0++) {
+       //for (int d1=0; d1<T->shape[1]; d1++) {
+         int a = (d0 * T->shape[1]) + d1;
+         printf("%f ", T->ptr[a]);
+       }
+       printf("\n\n");
+    }
+
+  } else if(T->ndim==1) {
+    for (int d0=0; d0<T->shape[0]; d0++) {
+      printf("%f ", T->ptr[0]);
+    }
+    printf("\n\n");
+    }
+}
+
 void LAdd::forward() {
+    printf("\n\n\n PARENT 0\n");
+    cpu_tensor_print(parent[0]->output);
+    printf("\n\n\n PARENT 1\n");
+    cpu_tensor_print(parent[1]->output);
+    //exit(0);
     output->fill_(0.0);
     for (int i = 0; i < parent.size(); ++i)
         Tensor::inc(parent[i]->output, output);

@@ -124,7 +124,7 @@ void fpga_cpuemu_conv2D(ConvolDescriptor *D) {
   cpu_conv2D(D);
   // Output data sent to the FPGA from CPU
   fpga_copy_to_fpga(D->O->ptr, D->O);
-  fpga_copy_memory_to_fpga(D->ptrI, (cl::Buffer *)D->fpga_ptrI, D->fpga_sizeI);
+  //fpga_copy_memory_to_fpga(D->ptrI, (cl::Buffer *)D->fpga_ptrI, D->fpga_sizeI);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -157,6 +157,8 @@ void fpga_conv2D(ConvolDescriptor *D) {
   int max_clip = 0;
   int dir_shift = 0;
   int pos_shift = 0;
+
+  printf("hola\n");
 
   PROFILING_HEADER(fpga_Conv2D);
   ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, global_offset, 

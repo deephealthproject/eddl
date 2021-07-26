@@ -10,8 +10,8 @@ Layer* build_batchnorm_layer(onnx::NodeProto *node,
                              int dev,
                              int mem)
 {
-  double epsilon = 1e-05; // Default value
-  double momentum = 0.9;  // Default value
+  float epsilon = 1e-05f; // Default value according to ONNX standard
+  float momentum = 0.9f;  // Default value according to ONNX standard
   for (int j = 0; j < node->attribute_size(); j++)
   { // Set the attributes
   onnx::AttributeProto attribute = node->attribute(j);

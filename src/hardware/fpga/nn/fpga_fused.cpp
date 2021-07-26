@@ -169,8 +169,13 @@ void fpga_conv_stm(ConvolDescriptor *D)
   _debug_fpga_funcs("fpga_conv2D_stm");
   _profile_fpga(_FPGA_CONV2D_STM, 0);
   _profile_fpga_tensor(D->I);
-  _profile_fpga_tensor(D->K);
+  printf("\n\nK tensor \n");
+    _profile_fpga_tensor(D->K);
+  _profile_fpga_tensor_print(D->K);
+    printf("\n\nBIAS tensor \n");
   _profile_fpga_tensor(D->bias);
+    _profile_fpga_tensor_print(D->bias);
+
 
   int ret = 0;
 
@@ -214,7 +219,11 @@ void fpga_conv_stm_add(ConvolDescriptor *D, Tensor *Add)
     // debug and profiling
   _debug_fpga_funcs("fpga_conv2D_stm_add");
   _profile_fpga(_FPGA_CONV2D_STM_ADD, 0);
-  _profile_fpga_tensor(D->I);
+    printf("\n I tensor\n");
+
+  _profile_fpga_tensor_print(D->I);
+  printf("\nadd tensor\n");
+  _profile_fpga_tensor_print(Add);
   _profile_fpga_tensor(D->K);
   _profile_fpga_tensor(D->bias);
 
@@ -234,7 +243,7 @@ void fpga_conv_stm_add(ConvolDescriptor *D, Tensor *Add)
   int max_clip = 0;
   int dir_shift = 0;
   int pos_shift = 0;
-
+//exit(0);
   PROFILING_HEADER(fpga_Conv2D_STM_ADD);
   ret = fpga_k_conv(D, Add, enable_relu, enable_stm, global_offset, 
       enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 

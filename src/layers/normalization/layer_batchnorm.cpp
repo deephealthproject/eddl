@@ -39,26 +39,30 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     this->epsilon = epsilon;
     this->affine = affine;
 
-    output=new Tensor(input->getShape(),dev);
-    opa=new Tensor(input->getShape(),dev);
+    output = new Tensor(input->getShape(), dev);
+    opa = new Tensor(input->getShape(), dev);
+    opa->fill_(0.0f);
     work1 = new Tensor(shape, dev);
     work2 = new Tensor(shape, dev);
 
-    mean=new Tensor(shape,dev);
+    mean = new Tensor(shape, dev);
     mean->fill_(0.0);
-    variance=new Tensor(shape,dev);
-    variance->fill_(1.0);
+    variance = new Tensor(shape, dev);
+    if (momentum > 0.0)
+        variance->fill_(0.0f);
+    else
+        variance->fill_(1.0f);
 
-    bn_mean=new Tensor(shape,dev);
-    bn_var=new Tensor(shape,dev);
+    bn_mean = new Tensor(shape, dev);
+    bn_var = new Tensor(shape, dev);
 
     if (affine) {
 
-        bn_g=new Tensor(shape,dev);
-        bn_b=new Tensor(shape,dev);
+        bn_g = new Tensor(shape, dev);
+        bn_b = new Tensor(shape, dev);
 
-        gbn_g=new Tensor(shape,dev);
-        gbn_b=new Tensor(shape,dev);
+        gbn_g = new Tensor(shape, dev);
+        gbn_b = new Tensor(shape, dev);
 
         params.push_back(bn_g);
         params.push_back(bn_b);
@@ -66,40 +70,56 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
         gradients.push_back(gbn_g);
         gradients.push_back(gbn_b);
     }
-#ifdef cCUDNN
-     if(!input->isCPU()){
-      data_type = CUDNN_DATA_FLOAT;
-      tensor_format = CUDNN_TENSOR_NCHW;
-      bn_mode =(input->ndim > 2) ? CUDNN_BATCHNORM_SPATIAL : CUDNN_BATCHNORM_PER_ACTIVATION;
-      
-      cudnnCreateTensorDescriptor(&xDesc);
-      cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                 input->shape[0],input->shape[1],
-                 (input->shape.size()>2) ? input->shape[2] : 1,
-                 (input->shape.size()>3) ? input->shape[3] : 1);
-      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor x "<< cudnnGetErrorString(bbb) <<std::endl;
-      
-      cudnnCreateTensorDescriptor(&yDesc);
-      bbb = cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type,
-                 output->shape[0],output->shape[1],
-                 (output->shape.size()>2) ? output->shape[2] : 1,
-                 (output->shape.size()>3) ? output->shape[3] : 1);
-      if(bbb != CUDNN_STATUS_SUCCESS) std::cout<<"Error create bn tensor descriptor y "<< cudnnGetErrorString(bbb) <<std::endl;
-      
-      cudnnCreateTensorDescriptor(&bnScaleBiasMeanVarDesc);
-      if(bn_mode == CUDNN_BATCHNORM_SPATIAL){
-      bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
-                 1,output->shape[1],
-                 1, 1);
-      }
-      else{
-      bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc, tensor_format, data_type,
-                 1,output->shape[1],
-                 (output->shape.size()>2) ? output->shape[2] : 1,
-                 (output->shape.size()>3) ? output->shape[3] : 1);
 
-      }
-      exponentialAverageFactor = 1.0 - this->momentum;
+#ifdef cCUDNN
+    if (! input->isCPU()) {
+        data_type = CUDNN_DATA_FLOAT;
+        tensor_format = CUDNN_TENSOR_NCHW;
+        bn_mode = (input->ndim > 2) ? CUDNN_BATCHNORM_SPATIAL : CUDNN_BATCHNORM_PER_ACTIVATION;
+
+        cudnnCreateTensorDescriptor(&xDesc);
+        cudnnStatus_t bbb = cudnnSetTensor4dDescriptor(xDesc,
+                                                    tensor_format,
+                                                    data_type,
+                                                    input->shape[0],
+                                                    input->shape[1],
+                                                    (input->shape.size() > 2) ? input->shape[2] : 1,
+                                                    (input->shape.size() > 3) ? input->shape[3] : 1);
+        if (bbb != CUDNN_STATUS_SUCCESS)
+            std::cout   << "Error create bn tensor descriptor x "
+                        << cudnnGetErrorString(bbb)
+                        << std::endl;
+
+        cudnnCreateTensorDescriptor(&yDesc);
+        bbb = cudnnSetTensor4dDescriptor(yDesc,
+                                        tensor_format, data_type,
+                                        output->shape[0],
+                                        output->shape[1],
+                                        (output->shape.size() > 2) ? output->shape[2] : 1,
+                                        (output->shape.size() > 3) ? output->shape[3] : 1);
+        if (bbb != CUDNN_STATUS_SUCCESS)
+            std::cout   << "Error create bn tensor descriptor y "
+                        << cudnnGetErrorString(bbb)
+                        << std::endl;
+
+        cudnnCreateTensorDescriptor(&bnScaleBiasMeanVarDesc);
+        if (bn_mode == CUDNN_BATCHNORM_SPATIAL) {
+            bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc,
+                                            tensor_format, data_type,
+                                            1, output->shape[1], 1, 1);
+        } else {
+            bbb = cudnnSetTensor4dDescriptor(bnScaleBiasMeanVarDesc,
+                                            tensor_format, data_type,
+                                            1, output->shape[1],
+                                            (output->shape.size() > 2) ? output->shape[2] : 1,
+                                            (output->shape.size() > 3) ? output->shape[3] : 1);
+        }
+        if (bbb != CUDNN_STATUS_SUCCESS)
+            std::cout   << "Error create bn tensor descriptor bnScaleBiasMeanVar "
+                        << cudnnGetErrorString(bbb)
+                        << std::endl;
+
+        exponentialAverageFactor = 1.0 - this->momentum;
    }
 #endif
 
@@ -122,14 +142,16 @@ LBatchNorm::~LBatchNorm(){
 // override functions:
 int LBatchNorm::get_trainable_params_count()
 {
-    if (affine) return 2;  // only 2 trainable params
-    else return 0;  // no trainable params
+    // if affine disable no trainable pararmeters,
+    // global_mean and global_variance are computed
+    // in during forward
+    return (affine) ? 2 : 0;
 }
 
 void LBatchNorm::initialize() {
     if (affine) {
-        params[0]->fill_(1.0);
-        params[1]->fill_(0.0);
+        params[0]->fill_(1.0); // scale
+        params[1]->fill_(0.0); // bias
     }
 }
 
@@ -162,14 +184,18 @@ void LBatchNorm::forward() {
     // Input = Output = opa = {Batch,Channels,H,W} OR {Batch,Dim}
     // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
 
-    if ((input->isCPU())||(input->isFPGA())) {
-
     // new implementation for CPU / GPU
-     if (input->isCPU()) {
-        tensorNN::BatchNormForward(input, output, opa, mean, variance,
-                affine ? bn_g : NULL, affine ? bn_b : NULL,
-                bn_mean, bn_var, mode == TRMODE, epsilon, momentum);
-    } else {
+    if (input->isCPU()) {
+
+        tensorNN::BatchNormForward(input, output, opa,
+                                    mean, variance,
+                                    affine ? bn_g : nullptr,
+                                    affine ? bn_b : nullptr,
+                                    bn_mean, bn_var,
+                                    mode == TRMODE,
+                                    epsilon, momentum);
+
+    } else if (input->isFPGA()) { // FPGA
         int M,N;
         int b,z,r,c,d;
         Tensor *in;
@@ -194,7 +220,6 @@ void LBatchNorm::forward() {
 
         BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
 
-
         Tensor::copy(in,opa);
         if (affine) {
             Tensor *var=new Tensor({N,M},input->device);
@@ -214,136 +239,172 @@ void LBatchNorm::forward() {
         }
         else Tensor::copy(in,output);
 
-
         delete in;
-    }
 
-    }
-    else { // GPU
+    } else { // GPU
 #ifdef cCUDNN
-    float alpha = 1.0;
-    float beta = 0.0;
-    if (mode == TRMODE){
-        cudnnStatus_t nnn=cudnnBatchNormalizationForwardTraining(hdnn[input->gpu_device], bn_mode, &alpha, &beta,
-                                                             xDesc, input->ptr, yDesc, output->ptr,
-                                                             bnScaleBiasMeanVarDesc, bn_g->ptr, bn_b->ptr,
-                                                             exponentialAverageFactor, mean->ptr, 
-							     variance->ptr, epsilon,
-                                                             bn_mean->ptr, bn_var->ptr);
-        if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error fwd BN (training) "<< cudnnGetErrorString(nnn) <<std::endl;        
-    }
-    else{
-        cudnnStatus_t nnn=cudnnBatchNormalizationForwardInference(hdnn[input->gpu_device], bn_mode, &alpha, &beta,
-                                                             xDesc, input->ptr, yDesc, output->ptr,
-                                                             bnScaleBiasMeanVarDesc, bn_g->ptr, bn_b->ptr,
-                                                             mean->ptr, variance->ptr, epsilon);
-        if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error fwd BN (Inference) "<< cudnnGetErrorString(nnn) <<std::endl;        
-
-   }
-#else
-    tensorNN::BatchNormForward(input, output, opa, mean, variance,
-                affine ? bn_g : NULL, affine ? bn_b : NULL,
-                bn_mean, bn_var, mode == TRMODE, epsilon, momentum);
-#endif
-
-    }
-}      
-
-void LBatchNorm::backward(){
-
-    //std::cout<<"BN layer BWD: "<< this->name <<std::endl;
-     if ((input->isCPU())||(input->isFPGA())) {
-        // new implementation for CPU 
-        if (input->isCPU()) {
-            tensorNN::BatchNormBackward(delta, opa, parent[0]->delta,
-                affine ? gbn_g : NULL, affine ? gbn_b : NULL, affine ? bn_g : NULL,
-                bn_var, work1, work2);
-        } else
-        {
-
-            int M,N;
-            int b,z,r,c,d;
-
-            Tensor *dp;
-
-            if (input->ndim==2) {
-                N=b=input->shape[0];
-                M=d=input->shape[1];
-
-                dp=delta->clone();
-            }
-            else {
-                b=input->shape[0];
-                M=z=input->shape[1];
-                r=input->shape[2];
-                c=input->shape[3];
-
-                N=b*r*c;
-
-                // permute input and delta
-                dp=new Tensor({b,r,c,z},input->device);
-
-                tensorNN::permute_channels_last(delta,dp);
-
-                dp->reshape_({N,M});
-
-            }
-
-            // Affine
-            if (affine) {
-                Tensor *A=new Tensor({N,M},delta->device);
-                Tensor *ones=new Tensor({N},delta->device);
-                ones->fill_(1.0);
-                Tensor *m=new Tensor({1,M},delta->device);
-                //1 gamma
-                Tensor::el_mult(dp,opa,A,0);
-                cmean(A,m,ones);
-                Tensor::add(1,gbn_g,1,m,gbn_g,1);
-
-                //2 Beta
-                cmean(dp,m,ones);
-                Tensor::add(1,gbn_b,1,m,gbn_b,1);
-
-                // delta=dE/dY
-                // Obtain dE/dY from delta:
-                rmult(dp,bn_g,ones,A);
-                delete A;
-                delete ones;
-                delete m;
-            }
-
-            BN_backward(dp,bn_var,opa);
-
-            // Inc parent delta
-            if (input->ndim==4) {
-                tensorNN::permute_channels_first(dp,delta);
-                Tensor::inc(delta, parent[0]->delta);
-            }
-            else Tensor::inc(dp, parent[0]->delta);
-
-            delete dp;
+        float alpha = 1.0;
+        float beta = 0.0;
+        if (mode == TRMODE) {
+            cudnnStatus_t nnn = cudnnBatchNormalizationForwardTraining(
+                                    hdnn[input->gpu_device],
+                                    bn_mode,
+                                    &alpha, &beta,
+                                    xDesc, input->ptr,
+                                    yDesc, output->ptr,
+                                    bnScaleBiasMeanVarDesc,
+                                    bn_g->ptr, bn_b->ptr,
+                                    exponentialAverageFactor,
+                                    mean->ptr, variance->ptr,
+                                    epsilon,
+                                    bn_mean->ptr, bn_var->ptr);
+            if(nnn != CUDNN_STATUS_SUCCESS)
+                std::cout   << "Error fwd BN (training) "
+                            << cudnnGetErrorString(nnn)
+                            << std::endl;
+        } else {
+            cudnnStatus_t nnn = cudnnBatchNormalizationForwardInference(
+                                    hdnn[input->gpu_device],
+                                    bn_mode,
+                                    &alpha, &beta,
+                                    xDesc, input->ptr,
+                                    yDesc, output->ptr,
+                                    bnScaleBiasMeanVarDesc,
+                                    bn_g->ptr, bn_b->ptr,
+                                    mean->ptr, variance->ptr,
+                                    epsilon);
+            if(nnn != CUDNN_STATUS_SUCCESS)
+                std::cout   << "Error fwd BN (inference) "
+                            << cudnnGetErrorString(nnn)
+                            << std::endl;
 
         }
-    }
-    else {  //GPU
-    #ifdef cCUDNN
-      float alphaDataDiff = 1.0;
-      float betaDataDiff = 0.0;
-      float alphaParamDiff = 1.0;
-      float betaParamDiff = 0.0;
-
-
-      cudnnStatus_t nnn= cudnnBatchNormalizationBackward(hdnn[input->gpu_device], bn_mode, &alphaDataDiff, &betaDataDiff, &alphaParamDiff, &betaParamDiff, xDesc, input->ptr,
-                                                         yDesc, delta->ptr, xDesc, parent[0]->delta->ptr,
-                                                         bnScaleBiasMeanVarDesc,bn_g->ptr, gbn_g->ptr, gbn_b->ptr,
-                                                         epsilon, bn_mean->ptr, bn_var->ptr);
-    if(nnn != CUDNN_STATUS_SUCCESS) std::cout<<"Error bwd BN  "<< cudnnGetErrorString(nnn) <<std::endl;
-#else  
-    tensorNN::BatchNormBackward(delta, opa, parent[0]->delta,
-            affine ? gbn_g : NULL, affine ? gbn_b : NULL, affine ? bn_g : NULL,
-            bn_var, work1, work2);
+#else
+        // this is the same call to method tensorNN::BatchNormForward in the
+        // case of CPU, see the implementation of that method where the
+        // distinction between CPU and GPU is made
+        tensorNN::BatchNormForward(input, output, opa,
+                                    mean, variance,
+                                    affine ? bn_g : nullptr,
+                                    affine ? bn_b : nullptr,
+                                    bn_mean, bn_var,
+                                    mode == TRMODE,
+                                    epsilon, momentum);
 #endif
+    }
+}
 
+void LBatchNorm::backward() {
+
+    //std::cout<<"BN layer BWD: "<< this->name <<std::endl;
+
+    // new implementation for CPU
+    if (input->isCPU()) {
+
+        tensorNN::BatchNormBackward(delta, opa,
+                                    parent[0]->delta,
+                                    affine ? gbn_g : nullptr,
+                                    affine ? gbn_b : nullptr,
+                                    affine ? bn_g : nullptr,
+                                    bn_var, work1, work2);
+
+    } else if (input->isFPGA()) { // FPGA
+
+        int M,N;
+        int b,z,r,c,d;
+
+        Tensor *dp;
+
+        if (input->ndim==2) {
+            N=b=input->shape[0];
+            M=d=input->shape[1];
+
+            dp=delta->clone();
+        }
+        else {
+            b=input->shape[0];
+            M=z=input->shape[1];
+            r=input->shape[2];
+            c=input->shape[3];
+
+            N=b*r*c;
+
+            // permute input and delta
+            dp=new Tensor({b,r,c,z},input->device);
+
+            tensorNN::permute_channels_last(delta,dp);
+
+            dp->reshape_({N,M});
+
+        }
+
+        // Affine
+        if (affine) {
+            Tensor *A=new Tensor({N,M},delta->device);
+            Tensor *ones=new Tensor({N},delta->device);
+            ones->fill_(1.0);
+            Tensor *m=new Tensor({1,M},delta->device);
+            //1 gamma
+            Tensor::el_mult(dp,opa,A,0);
+            cmean(A,m,ones);
+            Tensor::add(1,gbn_g,1,m,gbn_g,1);
+
+            //2 Beta
+            cmean(dp,m,ones);
+            Tensor::add(1,gbn_b,1,m,gbn_b,1);
+
+            // delta=dE/dY
+            // Obtain dE/dY from delta:
+            rmult(dp,bn_g,ones,A);
+            delete A;
+            delete ones;
+            delete m;
+        }
+
+        BN_backward(dp,bn_var,opa);
+
+        // Inc parent delta
+        if (input->ndim==4) {
+            tensorNN::permute_channels_first(dp,delta);
+            Tensor::inc(delta, parent[0]->delta);
+        }
+        else Tensor::inc(dp, parent[0]->delta);
+
+        delete dp;
+
+    } else { // GPU
+
+#ifdef cCUDNN
+        float alphaDataDiff = 1.0;
+        float betaDataDiff = 0.0;
+        float alphaParamDiff = 1.0;
+        float betaParamDiff = 0.0;
+
+        cudnnStatus_t nnn = cudnnBatchNormalizationBackward(
+                                hdnn[input->gpu_device],
+                                bn_mode,
+                                &alphaDataDiff, &betaDataDiff, &alphaParamDiff, &betaParamDiff,
+                                xDesc, input->ptr,
+                                yDesc, delta->ptr,
+                                xDesc, parent[0]->delta->ptr,
+                                bnScaleBiasMeanVarDesc,
+                                bn_g->ptr, gbn_g->ptr, gbn_b->ptr,
+                                epsilon, bn_mean->ptr, bn_var->ptr);
+        if(nnn != CUDNN_STATUS_SUCCESS)
+            std::cout   << "Error bwd BN  "
+                        << cudnnGetErrorString(nnn)
+                        << std::endl;
+#else
+        // this is the same call to method tensorNN::BatchNormBackward in the
+        // case of CPU, see the implementation of that method where the
+        // distinction between CPU and GPU is made
+        tensorNN::BatchNormBackward(delta, opa,
+                                    parent[0]->delta,
+                                    affine ? gbn_g : nullptr,
+                                    affine ? gbn_b : nullptr,
+                                    affine ? bn_g : nullptr,
+                                    bn_var, work1, work2);
+#endif
     }
 }
 

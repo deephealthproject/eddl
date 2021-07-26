@@ -156,12 +156,12 @@ void PoolDescriptor::resize(int b) {
 }
 
 
-int PoolDescriptor::compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate){
+int PoolDescriptor::compute_output(const string& padding, int input_size, int kernel_size, int stride, int dilation_rate){
     if (padding=="same" || padding =="zeros") {
         return std::ceil((float)input_size/(float)stride);
 
     }else if(padding =="valid" || padding =="none"){
-        return std::ceil(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate)/(float)stride);
+        return std::ceil(((float)input_size - ((float)kernel_size - 1.0f) * (float)dilation_rate)/(float)stride);
 
     }else{
       cout<<padding<<endl;
@@ -170,11 +170,11 @@ int PoolDescriptor::compute_output(const string& padding, int input_size, int ke
     return -1;
 }
 
-int PoolDescriptor::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
-    return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
+int PoolDescriptor::compute_output(vector<int> padding, int input_size, int kernel_size, int stride, int dilation_rate) {
+    return (int)(((float)input_size - ((float)kernel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
 }
 
-vector<int> PoolDescriptor::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding, bool row){
+vector<int> PoolDescriptor::compute_padding(int output_size, int input_size, int kernel_size, int stride, string padding, bool row){
     // Padding order: [left, right] // [top, bottom]
 
     if (padding=="same,none") {
@@ -187,7 +187,7 @@ vector<int> PoolDescriptor::compute_padding(int output_size, int input_size, int
     }
 
     if (padding=="same" || padding =="zeros") {
-        int pad = (output_size-1) * stride + kerkel_size - input_size;
+        int pad = (output_size-1) * stride + kernel_size - input_size;
         pad = std::max(pad, 0);
 
         // Ignore the padding if possible

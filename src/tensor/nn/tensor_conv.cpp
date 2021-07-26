@@ -43,19 +43,33 @@ void Conv2D(ConvolDescriptor *D) {
 
     PROFILING_HEADER(Conv2D);
 
+    bool is_dilated = false;
+    for (int i : D->dilation_rate)
+        if (i > 1) {
+            is_dilated = true;
+            break;
+        }
 
     if (D->I->isCPU()) {
+        if (is_dilated)
+            msg("Dilated convolutions are only supported using GPU with CUDNN." "Tensor::Conv2D");
         cpu_conv2D(D);
     }
 #ifdef cGPU
     else if (D->I->isGPU())
       {
+#ifndef cCUDNN
+        if (is_dilated)
+            msg("Dilated convolutions are only supported using GPU with CUDNN." "Tensor::Conv2D");
+#endif
          //gpu_conv2D_old(D);
          gpu_conv2D(D);
       }
 #endif
 #ifdef cFPGA
     else {
+        if (is_dilated)
+            msg("Dilated convolutions are only supported using GPU with CUDNN." "Tensor::Conv2D");
         fpga_conv2D(D);
     }
 #endif
@@ -137,20 +151,35 @@ void Conv3D(ConvolDescriptor3D *D) {
 
 //    PROFILING_HEADER(Conv3D);
 
+    bool is_dilated = false;
+    for (int i : D->dilation_rate)
+        if (i > 1) {
+            is_dilated = true;
+            break;
+        }
 
     if (D->I->isCPU()) {
+        if (is_dilated)
+            msg("Dilated convolutions are only supported using GPU with CUDNN." "Tensor::Conv3D");
         cpu_conv3D(D);
     }
 #ifdef cGPU
     else if (D->I->isGPU())
     {
+#ifndef cCUDNN
+        if (is_dilated)
+            msg("Dilated convolutions are only supported using GPU with CUDNN." "Tensor::Conv3D");
+#endif
         gpu_conv3D(D);
     }
 #endif
 #ifdef cFPGA
-        else {
-    //fpga_conv3D(D);
-}
+    else {
+        if (is_dilated)
+            msg("Dilated convolutions are only supported using GPU with CUDNN." "Tensor::Conv3D");
+        //fpga_conv3D(D);
+        msg("Conv3D is not supported in the FPGA" "Tensor::Conv3D");
+    }
 #endif
 
 

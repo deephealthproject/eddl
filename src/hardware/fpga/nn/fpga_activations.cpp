@@ -275,6 +275,7 @@ void fpga_cpuemu_softplus(Tensor *A, Tensor *B){
 }
 
 void fpga_softplus(Tensor *A, Tensor *B){
+	printf("hola softplus fpga\n");
   _profile_fpga(_FPGA_SOFTPLUS, 0);
 #ifndef K_ENABLED_SOFTPLUS
   fpga_cpuemu_softplus(A, B);

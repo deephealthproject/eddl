@@ -44,7 +44,6 @@ LConvMaxPool::LConvMaxPool(Layer *parent, ConvolDescriptor *D,  PoolDescriptor *
 
     //Conv
     cd = D;
-    cd->ksize[0] =ceil((float)cd->ksize[0]/CPO) * CPO;
     cd->build(input);
     //Pooling
     pd = P;

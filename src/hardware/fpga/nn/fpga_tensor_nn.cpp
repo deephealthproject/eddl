@@ -85,7 +85,8 @@ void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 //
 void fpga_cpuemu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
   fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_memory_from_fpga(sd->fpga_ptr, sd->cpu_addresses, B->stride[0]);
+  //fpga_copy_memory_from_fpga(sd->fpga_ptr, sd->cpu_addresses, B->stride[0]);
+  printf("hola\n");
   cpu_select_nn(A, B, sd);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -108,6 +109,7 @@ void fpga_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
   OCL_CHECK(err, err = q.enqueueTask(kernel_select_nn, NULL, &event));
   q.finish();
 #endif
+  printf("fin select_nn\n");
 }
 
 // ------------------------------------------------------------------

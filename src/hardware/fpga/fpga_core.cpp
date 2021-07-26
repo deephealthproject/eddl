@@ -1785,6 +1785,11 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int mode) {
   _profile_fpga_tensor(A);
   _debug_fpga_funcs("transform");
 
+  #ifdef FPGA_DEBUG
+ printf("fpga_transform:\n");
+ printf(" A tensor: "); _profile_fpga_tensor(A);
+#endif
+
   int CPI = 4;
 
   if (mode == 1) {
@@ -1852,6 +1857,9 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int mode) {
   _profile_fpga(_FPGA_TRANSFORM, 1);
   _profile_fpga_tensor(B);
   _debug_fpga_funcs("end transform");
+#ifdef FPGA_DEBUG
+  printf(" B tensor: "); _profile_fpga_tensor(B);
+#endif
 }
 
 

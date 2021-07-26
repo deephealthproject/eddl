@@ -133,7 +133,7 @@ public:
     ConvolDescriptor3D *cd;
 
     // constructors and clones
-    LConv3D(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, bool use_bias, string name, int dev, int mem);
+    LConv3D(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
 
     LConv3D(Layer *parent, int filters, const vector<int> &ks, const vector<int> &st,const vector<int> &p, string name, int dev, int mem);
 
