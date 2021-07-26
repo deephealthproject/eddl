@@ -2090,7 +2090,7 @@ int current_associated_layers = 0;
 
     // model for fpga
   model model_for_fpga(model m_src) {
-
+    #ifdef cFPGA
       int dummy;
       int dummy1;
 
@@ -3023,6 +3023,9 @@ int current_associated_layers = 0;
 			}
       printf("End adapting parameters\n");
 			return net;
+      #else
+      msg("Error, FPGA is not activated","model_for_fpga");
+      #endif
     }  
 
 }//namespace
