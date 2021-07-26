@@ -1983,7 +1983,7 @@ int current_associated_layers = 0;
   }
 
   int Find_ConvRelu(model m_src, int *l_src, int *l_dst) {
-
+    #ifdef cFPGA
     int dummy;
 
     if (*l_src >=m_src->layers.size()-1) return 0;
@@ -2023,8 +2023,10 @@ int current_associated_layers = 0;
     collectTensor(layer_src, "param", 1);
     tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
     distributeTensor(layer_dst, "param", 1);
-
     return 1;
+    #else
+    return 0;
+    #endif
   }
 
   int Find_ConvMaxpooling(model m_src, int *l_src, int *l_dst) {
@@ -2036,7 +2038,7 @@ int current_associated_layers = 0;
 
   int Find_Div(model m_src, int *l_src, int *l_dst) {
     int dummy, dummy1;
-
+    #ifdef cFPGA
     Layer *cl = m_src->layers[*l_src];
     int found_Div = 0;
 
@@ -2066,11 +2068,14 @@ int current_associated_layers = 0;
     *l_dst = *l_dst + 1;
     *l_src = *l_src + 1;
     return 1;
+    #else
+    return 0;
+    #endif
   }
 
   int Find_Input(model m_src, int *l_src, int *l_dst) {
     int dummy;
-
+    #ifdef cFPGA
     Layer *cl = m_src->layers[*l_src];
     int found_Input = 0;
 
@@ -2085,6 +2090,9 @@ int current_associated_layers = 0;
     *l_dst = *l_dst + 1;
     *l_src = *l_src + 1;
     return 1;
+    #else
+    return 0;
+    #endif
   }
 
 
