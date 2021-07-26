@@ -59,7 +59,6 @@ void cpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
     }
     _profile_cpu_tensor(A);
     _profile_cpu_tensor(B);
-    exit(1);
 }
 
 void cpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
