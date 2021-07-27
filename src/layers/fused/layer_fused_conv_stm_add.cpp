@@ -80,13 +80,7 @@ string LConvSTMAdd::plot(int c) {
 
 void LConvSTMAdd::forward() { // cambiar
     //we apply the convolutional and stm module to the first layer
-    //and then we add the tensor of the second layer
-   // printf("\n\n\n PARENT 0\n");
-   // _profile_fpga_tensor_print(parent[0]->output);
-   // printf("\n\n\n PARENT 1\n");
-   // _profile_fpga_tensor_print(parent[1]->output);
-    tensorNN::conv_stm_add(this->cd, parent[0]->output);
-
+    tensorNN::conv_stm_add(this->cd, parent[1]->output);
 }
 
 void LConvSTMAdd::backward() {

@@ -145,9 +145,8 @@ void fpga_conv2D(ConvolDescriptor *D) {
 
   int enable_relu = 0;
   int enable_stm = 0;
+  float relu_factor = 0;
   int global_offset = 0;
-  int enable_upper_padding = 1;
-  int enable_lower_padding = 1;
   int enable_avgp = 0;
   int enable_maxp = 0;
   int enable_clipping = 0;
@@ -161,8 +160,9 @@ void fpga_conv2D(ConvolDescriptor *D) {
   printf("hola\n");
 
   PROFILING_HEADER(fpga_Conv2D);
-  ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, global_offset, 
-      enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
+
+  ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, relu_factor, global_offset, 
+      enable_maxp, enable_avgp, 
       enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
   PROFILING_FOOTER(fpga_Conv2D);
 

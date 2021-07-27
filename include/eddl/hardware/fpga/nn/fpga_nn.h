@@ -102,9 +102,9 @@ void fpga_conv_stm(ConvolDescriptor *D);
 
 void fpga_conv_stm_add(ConvolDescriptor *D, Tensor *Add);
 
-int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_stm, int global_offset, 
-                     int enable_upper_padding, int enable_lower_padding, int enable_maxp, 
-                     int enable_avgp, int enable_clipping, int enable_shift, int enable_add, 
-                     int min_clip, int max_clip, int dir_shift, int pos_shift);
+int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_stm, float relu_factor,
+                int global_offset, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, 
+                     int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift);
+
 
 #endif //EDDL_FPGA_NN_H

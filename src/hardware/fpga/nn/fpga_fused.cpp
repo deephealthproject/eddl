@@ -40,9 +40,8 @@ void fpga_conv_maxpool(ConvolDescriptor *D)
 
   int enable_relu = 0;
   int enable_stm = 0;
+  float relu_factor = 0;
   int global_offset = 0;
-  int enable_upper_padding = 1;
-  int enable_lower_padding = 1;
   int enable_avgp = 0;
   int enable_maxp = 1;
   int enable_clipping = 0;
@@ -54,8 +53,8 @@ void fpga_conv_maxpool(ConvolDescriptor *D)
   int pos_shift = 0;
 
   PROFILING_HEADER(fpga_Conv2D_MAXPOOL);
-  ret = fpga_k_conv(D, NULL, enable_relu, enable_stm, global_offset, 
-      enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
+  ret = fpga_k_conv(D, NULL, enable_relu, enable_stm, relu_factor, global_offset, 
+      enable_maxp, enable_avgp, 
       enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
   PROFILING_FOOTER(fpga_Conv2D_MAXPOOL);
 
@@ -84,9 +83,8 @@ void fpga_conv_relu(ConvolDescriptor *D)
 
   int enable_relu = 1;
   int enable_stm = 0;
+  float relu_factor = 0;
   int global_offset = 0;
-  int enable_upper_padding = 1;
-  int enable_lower_padding = 1;
   int enable_avgp = 0;
   int enable_maxp = 0;
   int enable_clipping = 0;
@@ -98,8 +96,8 @@ void fpga_conv_relu(ConvolDescriptor *D)
   int pos_shift = 0;
 
   PROFILING_HEADER(fpga_Conv2D_RELU);
-  ret = fpga_k_conv(D, NULL, enable_relu, enable_stm, global_offset, 
-      enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
+  ret = fpga_k_conv(D, NULL, enable_relu, enable_stm, relu_factor, global_offset, 
+      enable_maxp, enable_avgp, 
       enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
   PROFILING_FOOTER(fpga_Conv2D_RELU);
 
@@ -130,9 +128,8 @@ void fpga_conv_relu_maxpool(ConvolDescriptor *D)
 
   int enable_relu = 1;
   int enable_stm = 0;
+  float relu_factor = 0;
   int global_offset = 0;
-  int enable_upper_padding = 1;
-  int enable_lower_padding = 1;
   int enable_avgp = 0;
   int enable_maxp = 1;
   int enable_clipping = 0;
@@ -144,8 +141,8 @@ void fpga_conv_relu_maxpool(ConvolDescriptor *D)
   int pos_shift = 0;
 
   PROFILING_HEADER(fpga_Conv2D_RELU_MAXPOOL);
-  ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, global_offset, 
-      enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
+  ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, relu_factor, global_offset, 
+      enable_maxp, enable_avgp, 
       enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
   PROFILING_FOOTER(fpga_Conv2D_RELU_MAXPOOL);
 
@@ -169,21 +166,16 @@ void fpga_conv_stm(ConvolDescriptor *D)
   _debug_fpga_funcs("fpga_conv2D_stm");
   _profile_fpga(_FPGA_CONV2D_STM, 0);
   _profile_fpga_tensor(D->I);
-  printf("\n\nK tensor \n");
-    _profile_fpga_tensor(D->K);
-  _profile_fpga_tensor_print(D->K);
-    printf("\n\nBIAS tensor \n");
+  _profile_fpga_tensor(D->K);
   _profile_fpga_tensor(D->bias);
-    _profile_fpga_tensor_print(D->bias);
 
 
   int ret = 0;
 
   int enable_relu = 0;
   int enable_stm = 1;
+  float relu_factor = 0;
   int global_offset = 0;
-  int enable_upper_padding = 1;
-  int enable_lower_padding = 1;
   int enable_avgp = 0;
   int enable_maxp = 0;
   int enable_clipping = 0;
@@ -195,8 +187,8 @@ void fpga_conv_stm(ConvolDescriptor *D)
   int pos_shift = 0;
 
   PROFILING_HEADER(fpga_Conv2D_STM);
-  ret = fpga_k_conv(D, NULL, enable_relu, enable_stm, global_offset, 
-      enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
+  ret = fpga_k_conv(D, NULL, enable_relu, enable_stm, relu_factor, global_offset, 
+      enable_maxp, enable_avgp, 
       enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
   PROFILING_FOOTER(fpga_Conv2D_STM);
 
@@ -219,11 +211,8 @@ void fpga_conv_stm_add(ConvolDescriptor *D, Tensor *Add)
     // debug and profiling
   _debug_fpga_funcs("fpga_conv2D_stm_add");
   _profile_fpga(_FPGA_CONV2D_STM_ADD, 0);
-    printf("\n I tensor\n");
-
-  _profile_fpga_tensor_print(D->I);
-  printf("\nadd tensor\n");
-  _profile_fpga_tensor_print(Add);
+  _profile_fpga_tensor(D->I);
+  _profile_fpga_tensor(Add);
   _profile_fpga_tensor(D->K);
   _profile_fpga_tensor(D->bias);
 
@@ -231,9 +220,8 @@ void fpga_conv_stm_add(ConvolDescriptor *D, Tensor *Add)
 
   int enable_relu = 0;
   int enable_stm = 1;
+  float relu_factor = 0;
   int global_offset = 0;
-  int enable_upper_padding = 1;
-  int enable_lower_padding = 1;
   int enable_avgp = 0;
   int enable_maxp = 0;
   int enable_clipping = 0;
@@ -243,10 +231,10 @@ void fpga_conv_stm_add(ConvolDescriptor *D, Tensor *Add)
   int max_clip = 0;
   int dir_shift = 0;
   int pos_shift = 0;
-//exit(0);
+
   PROFILING_HEADER(fpga_Conv2D_STM_ADD);
-  ret = fpga_k_conv(D, Add, enable_relu, enable_stm, global_offset, 
-      enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
+  ret = fpga_k_conv(D, Add, enable_relu, enable_stm, relu_factor, global_offset, 
+      enable_maxp, enable_avgp, 
       enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
   PROFILING_FOOTER(fpga_Conv2D_STM_ADD);
 

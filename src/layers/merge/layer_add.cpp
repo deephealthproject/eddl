@@ -105,15 +105,9 @@ void cpu_tensor_print(Tensor *T) {
 }
 
 void LAdd::forward() {
-    printf("\n\n\n PARENT 0\n");
-    cpu_tensor_print(parent[0]->output);
-    printf("\n\n\n PARENT 1\n");
-    cpu_tensor_print(parent[1]->output);
-    //exit(0);
     output->fill_(0.0);
     for (int i = 0; i < parent.size(); ++i)
         Tensor::inc(parent[i]->output, output);
-
 }
 
 void LAdd::backward() {

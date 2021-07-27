@@ -16,11 +16,11 @@ extern vector<cl::Event> kernel_events; // Kernel events (completion)
 //
     
 // fpga_conv_kernel: This function launches the kernel execution on the FPGA
-void fpga_conv_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, int Ichannels, int Ochannels,
-                     int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, cl::Buffer K, cl::Buffer B,
-                     cl::Buffer O, int global_offset, int enable_upper_padding, int enable_lower_padding,
-			         int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, 
-			         int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
+void fpga_conv_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, int PT, int PB, int PL, int PR, int SH, int SW,
+                      int Ichannels, int Ochannels,  int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor,
+                      cl::Buffer K, cl::Buffer B, cl::Buffer O, int global_offset, int enable_maxp, int enable_avgp, 
+                      int enable_clipping, int enable_shift, int enable_add, int min_clip, int max_clip, 
+                      int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
   
   // Error variable
   cl_int err;
@@ -31,9 +31,9 @@ void fpga_conv_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
   // input iterations
   int I_ITER = (Ichannels + (CPI-1)) / CPI;
 
-  printf("I_ITER %d, first %d last %d enable_relu %d enable_stm %d enable_up %d enable_lp %d enable_maxp %d enable_avgp %d enable_clip %d enable_shift %d enable_add %d\n", 
-		  I_ITER, first_o_iter, last_o_iter, enable_relu, enable_stm, enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, enable_clipping, enable_shift,
-		  enable_add);
+  printf("I_ITER %d, first %d last %d enable_relu %d relu_factor %f enable_stm %d enable_maxp %d enable_avgp %d enable_clip %d enable_shift %d enable_add %d\n PT %d PB %d PL %d PR %d SH %d SW %d\n", 
+		  I_ITER, first_o_iter, last_o_iter, enable_relu, relu_factor, enable_stm, enable_maxp, enable_avgp, enable_clipping, enable_shift,
+		  enable_add, PT, PB, PL, PR, SH, SW);
   printf("H %d W %d rows %d Ich %d Och %d\n", H, W, rows, Ichannels, Ochannels);
 
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I));
@@ -41,6 +41,12 @@ void fpga_conv_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, H));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, W));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, rows)); 
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, PT));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, PB));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, PL));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, PR));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, SH));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, SW));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Ichannels));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Ochannels));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I_ITER));
@@ -48,12 +54,11 @@ void fpga_conv_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, last_o_iter));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_relu));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_stm));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, relu_factor));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, K));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, B));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, O));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, global_offset));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_upper_padding));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_lower_padding));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_maxp));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_avgp));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_clipping));
@@ -72,20 +77,23 @@ void fpga_conv_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
 }
 
 // fpga_conv_launch: This function launches all the possible conv2D kernels
-void fpga_conv_launch(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, int Ichannels, int Ochannels,
-                     int enable_relu, int enable_stm, cl::Buffer K, cl::Buffer B,
-                     cl::Buffer O, int global_offset, int enable_upper_padding, int enable_lower_padding,
-			         int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, 
-			         int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int num_kernels, int max_rows) {
+void fpga_conv_launch(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, int PT, int PB, int PL, int PR, int SH, int SW, 
+                      int Ichannels, int Ochannels, int enable_relu, int enable_stm, float relu_factor, cl::Buffer K, cl::Buffer B,
+                      cl::Buffer O, int global_offset, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, 
+			                int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int num_kernels, 
+                      int max_rows) {
   // Depending on the number of kernels available we split the convolution operation into multiple frames, and launch one thread per kernel
   if (num_kernels == 1) {
     printf("1 kernel\n");
     // just one kernel which handles all the conv operation
     int first_o_iter = 0;
     int last_o_iter = ((Ochannels + (CPO-1)) / CPO) - 1;
-    fpga_conv_kernel(I, I_add, H, W, rows, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu,
-        enable_stm, K, B, O, global_offset, enable_upper_padding, enable_lower_padding, enable_maxp,
-		enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, 0);
+
+    fpga_conv_kernel(I, I_add, H, W, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, 
+                    last_o_iter, enable_relu, enable_stm, relu_factor, K, B, O, global_offset, enable_maxp,
+		                enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, 
+                    dir_shift, pos_shift, CPI, CPO, 0);
+                    
   } else { 
     printf("varios\n");
     // several kernels available, let's split the operation in sets of output channels
@@ -106,18 +114,19 @@ void fpga_conv_launch(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
     for (int k=0; k<num_kernels_to_launch; k++) {
       int first_o_iter = o_iter_per_kernel * k;
       int last_o_iter = first_o_iter + o_iter_per_kernel - 1;
-      fpga_conv_kernel(I, I_add, H, W, rows, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu,
-              enable_stm, K, B, O, global_offset, enable_upper_padding, enable_lower_padding, enable_maxp,
-		          enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, k);    
+      fpga_conv_kernel(I, I_add, H, W, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, 
+                      last_o_iter, enable_relu, enable_stm, relu_factor, K, B, O, global_offset, enable_maxp,
+		                  enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, 
+                      dir_shift, pos_shift, CPI, CPO, 0);   
     }
   }
 }
 
 //Transform de ConvolDescriptor in OpenCL variables
-int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_stm, int global_offset, 
-                     int enable_upper_padding, int enable_lower_padding, int enable_maxp, 
-                     int enable_avgp, int enable_clipping, int enable_shift, int enable_add, 
-                     int min_clip, int max_clip, int dir_shift, int pos_shift) {
+int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_stm, float relu_factor,
+                     int global_offset, 
+                     int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, 
+                     int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift) {
   // conv2D parameters
   int batch_size   = D->I->shape[0];                  // batch size
   cl::Buffer I     = *(cl::Buffer*)D->I->fpga_ptr;    // input activations
@@ -139,17 +148,16 @@ int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_st
   int stride_cols  = D->sc;                           // cols stride
   cl::Buffer I_add;                                   // input add data
 
+
   // This family of kernels need strides of 1x1, kernels of 1x1, padding of 1x1, and batch size 1
   if ((stride_rows == 1) && (stride_cols == 1) && (Krows == 3) && (Kcols == 3) && (batch_size == 1) && (padding_rows == 1) && (padding_cols == 1) &&
        (Irows <= 256) && (Icols <= 256)) {
-
-	  printf("dentro\n");
     
     if(enable_add)  I_add = *(cl::Buffer*) ADD->fpga_ptr;
     else I_add = *(cl::Buffer*) fpga_create_memory(sizeof(float)); // Creating dummy buffer for add buffer
-    fpga_conv_launch(I, I_add, Irows, Icols, Irows, Ichannels, Ochannels, enable_relu, enable_stm, K,
-          B, O, global_offset, enable_upper_padding, enable_lower_padding, enable_maxp, enable_avgp, 
-          enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, k_conv2d_cpi,
+   
+    fpga_conv_launch(I, I_add, Irows, Icols, Irows, padding_rows, padding_cols, padding_rows, padding_cols, stride_rows, stride_cols, Ichannels, Ochannels, enable_relu, enable_stm, relu_factor, K,
+          B, O, global_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, k_conv2d_cpi,
           k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
 
     return 1;
