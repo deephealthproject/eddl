@@ -162,8 +162,8 @@
 #define _FPGA_CONV2D_MAXPOOL        151
 #define _FPGA_CONV2D_RELU_MAXPOOL   152
 #define _FPGA_CONV2D_RELU           153
-
-#define _NUM_FPGA_FUNCS             154
+#define _FPGA_CONV2D_LEAKYRELU      154
+#define _NUM_FPGA_FUNCS             155
 
 extern int num_instances_fpga[_NUM_FPGA_FUNCS];
 void _profile_fpga(int f_id, int end);

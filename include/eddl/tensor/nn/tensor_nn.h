@@ -136,6 +136,9 @@ namespace tensorNN{
     //Conv2D + ReLU 
     void conv_relu(ConvolDescriptor *D);
 
+    //Conv2D + LeakyReLU 
+    void conv_leakyrelu(ConvolDescriptor *D, float alpha);
+
     //Conv2D + ReLU + Maxpooling
     void conv_relu_maxpool(ConvolDescriptor *D);
 

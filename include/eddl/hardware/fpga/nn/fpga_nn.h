@@ -96,6 +96,8 @@ void fpga_conv_maxpool(ConvolDescriptor *D);
 
 void fpga_conv_relu(ConvolDescriptor *D);
 
+void fpga_conv_leakyrelu(ConvolDescriptor *D, float alpha);
+
 void fpga_conv_relu_maxpool(ConvolDescriptor *D);
 
 void fpga_conv_stm(ConvolDescriptor *D);
