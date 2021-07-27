@@ -432,6 +432,7 @@ void _profile_fpga_tensor_print(Tensor *T) {
     }
     printf("\n\n");
     }
+  printf("\n");
   #endif
 }
 

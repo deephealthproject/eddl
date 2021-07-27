@@ -39,7 +39,7 @@ LConvSTMAdd::LConvSTMAdd(vector<Layer *> parent, ConvolDescriptor *D, string nam
         msg("Error: LConvSTMAdd layers with different tensor shape");
     }
 
-    output = new Tensor(parent[0]->output->shape, dev);
+    output = cd->O;
 
     params.push_back(cd->K);
     params.push_back(cd->bias);
@@ -78,7 +78,7 @@ string LConvSTMAdd::plot(int c) {
 }
 
 
-void LConvSTMAdd::forward() { // cambiar
+void LConvSTMAdd::forward() {
     //we apply the convolutional and stm module to the first layer
     tensorNN::conv_stm_add(this->cd, parent[1]->output);
 }

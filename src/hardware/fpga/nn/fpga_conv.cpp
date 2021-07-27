@@ -157,8 +157,6 @@ void fpga_conv2D(ConvolDescriptor *D) {
   int dir_shift = 0;
   int pos_shift = 0;
 
-  printf("hola\n");
-
   PROFILING_HEADER(fpga_Conv2D);
 
   ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, relu_factor, global_offset, 
