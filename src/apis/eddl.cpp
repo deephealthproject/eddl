@@ -2206,18 +2206,13 @@ int current_associated_layers = 0;
 	  // detection flags
 	  if (LConv *dl = dynamic_cast<LConv *>(cl)) {
 	    LConv *layer_src = (LConv *)cl;
-	    // only strides equal to one are suported in the FPGA
-	    for (int s = 0; s < layer_src->cd->strides.size(); s++) if (layer_src->cd->strides[s] != 1) found_C_cpu = 1;
-            // only kernel dimensions equal to 3 are suported in the FPGA
-            for (int s = 0; s < layer_src->cd->kernel_size.size(); s++) if (layer_src->cd->kernel_size[s] != 3) found_C_cpu = 10;
-            // only padding dimensions equal to 0 or 1 are suported in the FPGA
-            for (int s = 0; s < layer_src->cd->pads.size(); s++) if (layer_src->cd->pads[s] != 1 && layer_src->cd->pads[s] != 0) found_C_cpu = 1;
-            // only H and W dimensios lees or equal than 256 are suported in the FPGA
-            if (layer_src->input->shape.size() > 2) {
-              if (layer_src->input->shape[2] > 256 || layer_src->input->shape[3] > 256) found_C_cpu = 1;
-            }
+      // only kernel dimensions equal to 3 are suported in the FPGA
+      for (int s = 0; s < layer_src->cd->kernel_size.size(); s++) if (layer_src->cd->kernel_size[s] != 3) found_C_cpu = 1;
+      // only H and W dimensios lees or equal than 256 are suported in the FPGA
+      if (layer_src->input->shape.size() > 2) {
+        if (layer_src->input->shape[2] > 256 || layer_src->input->shape[3] > 256) found_C_cpu = 1;
+      }
 	    if (!found_C_cpu) found_C = 1;
-			printf("C cpu %d C FPGA %d\n", found_C_cpu, found_C);
     }
         
 	  if (LInput *dl = dynamic_cast<LInput *>(cl)) found_I = 1;
@@ -2982,26 +2977,21 @@ int current_associated_layers = 0;
 			build(net, sgd(0.001f, 0.9f),{"soft_cross_entropy"}, {"categorical_accuracy"}, CS_FPGA({1}));
 			summary(net);
 
-
   printf("FIN MODEL\n");
   //get_fpga_model_params(net);
   // now we adapt the filters and bias
   for (int l=0; l<l_dst; l++) {
-    printf("layer %d\n", l);
+    //printf("layer %d\n", l);
     // filter and bias copy and adaptation
     Layer *cl = net->layers[l];
     if (LConv *conv = dynamic_cast<LConv*>(cl)) { 
-      printf("LConv adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+      //printf("LConv adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
       LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
       LConv *layer_dst = (LConv *) net->layers[l];
 
       int fpga_conv = 1;
-      // only strides equal to one are suported in the FPGA
-      for (int s = 0; s < layer_src->cd->strides.size(); s++) if (layer_dst->cd->strides[s] != 1) fpga_conv = 0;
       // only kernel dimensions equal to 3 are suported in the FPGA
       for (int s = 0; s < layer_src->cd->kernel_size.size(); s++) if (layer_dst->cd->kernel_size[s] != 3) fpga_conv = 0;
-      // only padding dimensions equal to 0 or 1 are suported in the FPGA
-      for(int s = 0; s < layer_src->cd->pads.size(); s++) if (layer_src->cd->pads[0] != 1 && layer_src->cd->pads[s] != 0) fpga_conv = 0;
       // only h and w lees or equal than 256 are suported in the FPGA
       if (layer_src->input->shape.size() > 2) {
         if(layer_src->input->shape[2] > 256 || layer_src->input->shape[3] > 256) fpga_conv = 0;
@@ -3026,7 +3016,7 @@ int current_associated_layers = 0;
       distributeTensor(layer_dst, "param", 1);
 
 			  } else if (LConvReLU *conv = dynamic_cast<LConvReLU *>(cl)) { 
-			    printf("LConvReLU adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+			    //printf("LConvReLU adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
 			    LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
 			    LConvReLU *layer_dst = (LConvReLU *) net->layers[l];
 			    
@@ -3041,7 +3031,7 @@ int current_associated_layers = 0;
 			    distributeTensor(layer_dst, "param", 1);
 
 			  } else if (LConvMaxPool *conv = dynamic_cast<LConvMaxPool *>(cl)) {
-						printf("LConvMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+						//printf("LConvMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
 						LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
   				  LConvMaxPool *layer_dst = (LConvMaxPool *) net->layers[l];
 
@@ -3056,7 +3046,7 @@ int current_associated_layers = 0;
 						distributeTensor(layer_dst, "param", 1);
 						
 			  } else if (LConvReLUMaxPool *conv = dynamic_cast<LConvReLUMaxPool *>(cl)) {
-						printf("LConvReLUMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+						//printf("LConvReLUMaxPool adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
 						LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
   				  LConvReLUMaxPool *layer_dst = (LConvReLUMaxPool *) net->layers[l];
 
@@ -3071,7 +3061,7 @@ int current_associated_layers = 0;
 						distributeTensor(layer_dst, "param", 1);
 
 			  } else if (LConvSTM *conv = dynamic_cast<LConvSTM *>(cl)) {
-						printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+						//printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
 	          LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
 	          LConvSTM *layer_dst = (LConvSTM *) net->layers[l];
 
@@ -3086,7 +3076,7 @@ int current_associated_layers = 0;
 						distributeTensor(layer_dst, "param", 1);
 
 			  } else if (LConvSTMAdd *conv = dynamic_cast<LConvSTMAdd *>(cl)) {
-						printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+						//printf("LConvSTM adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
 						LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
   				  LConvSTMAdd *layer_dst = (LConvSTMAdd *) net->layers[l];
 
@@ -3100,7 +3090,7 @@ int current_associated_layers = 0;
 						tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
 						distributeTensor(layer_dst, "param", 1);
 			  } else if (LDense *dl = dynamic_cast<LDense *>(cl)) {
-						printf("LDense adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+						//printf("LDense adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
 						LDense *layer_src = (LDense *) m_src->layers[associated_source_layer[l]];
   				  LDense *layer_dst = (LDense *) net->layers[l]; 
 
