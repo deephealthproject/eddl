@@ -514,6 +514,7 @@ void fpga_mult(Tensor *A, Tensor *B, float v) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_mult, NULL, &event));
   q.finish();
 #endif
+  _profile_fpga_tensor(B);
   _profile_fpga(_FPGA_MULT, 1);
 }
 
@@ -909,8 +910,8 @@ void fpga_trunc(Tensor *A, Tensor *B){
 // add
 //
 void fpga_cpuemu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
-  fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_from_fpga(B, B->ptr);
+  if (A->fpga_ptr != NULL) fpga_copy_from_fpga(A, A->ptr); else printf("warning: fpga_cpuemu_add did not find the tensor in FPGA, relying on the CPU buffer\n");
+  if (B->fpga_ptr != NULL) fpga_copy_from_fpga(B, B->ptr); else printf("warning: fpga_cpuemu_add did not find the tensor in FPGA, relying on the CPU buffer\n");
   cpu_add(scA, A, scB, B, C, incC);
   fpga_copy_to_fpga(C->ptr, C);
 }

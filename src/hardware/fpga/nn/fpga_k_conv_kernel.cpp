@@ -31,10 +31,12 @@ void fpga_conv_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
   // input iterations
   int I_ITER = (Ichannels + (CPI-1)) / CPI;
 
+#ifdef DEBUG_VERBOSE
   printf("I_ITER %d, first %d last %d enable_relu %d relu_factor %f enable_stm %d enable_maxp %d enable_avgp %d enable_clip %d enable_shift %d enable_add %d\n PT %d PB %d PL %d PR %d SH %d SW %d\n", 
 		  I_ITER, first_o_iter, last_o_iter, enable_relu, relu_factor, enable_stm, enable_maxp, enable_avgp, enable_clipping, enable_shift,
 		  enable_add, PT, PB, PL, PR, SH, SW);
   printf("H %d W %d rows %d Ich %d Och %d\n", H, W, rows, Ichannels, Ochannels);
+#endif
 
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I_add));
@@ -84,7 +86,6 @@ void fpga_conv_launch(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
                       int max_rows) {
   // Depending on the number of kernels available we split the convolution operation into multiple frames, and launch one thread per kernel
   if (num_kernels == 1) {
-    printf("1 kernel\n");
     // just one kernel which handles all the conv operation
     int first_o_iter = 0;
     int last_o_iter = ((Ochannels + (CPO-1)) / CPO) - 1;
@@ -95,7 +96,6 @@ void fpga_conv_launch(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, in
                     dir_shift, pos_shift, CPI, CPO, 0);
                     
   } else { 
-    printf("varios\n");
     // several kernels available, let's split the operation in sets of output channels
     int O_ITER = (Ochannels + (CPO-1)) / CPO;
     // let's compute number of channels per kernel and number of final kernels to launch
@@ -162,8 +162,11 @@ int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_st
 
     return 1;
   }
+  printf("WARNING: Convolution operation can not be run on FPGA, moving to CPU (K=%1dx%1d S=%1dx%1d P=%1dx%1d HxW=%3dx%3d)\n", Krows, Kcols, stride_rows, stride_cols, padding_rows, padding_cols, Irows, Icols);
+#ifdef DEBUG_VERBOSE
 printf("(stride_rows == %d (1)) && (stride_cols == %d (1)) && (Krows == %d (3)) && (Kcols == %d (3)) && (batch_size == %d (1)) && (batch_size == %d (1)) && (padding_cols == %d (1)\n",
 stride_rows, stride_cols,Krows,Kcols,batch_size,batch_size, padding_cols);
-  return 0;
+#endif
+return 0;
 }
 #endif

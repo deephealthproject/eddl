@@ -10,7 +10,7 @@
 #ifndef EDDL_CPU_TENSOR_H
 #define EDDL_CPU_TENSOR_H
 
-#define CPU_DEBUG
+//#define CPU_DEBUG
 
 #include "cpu_profile.h"
 

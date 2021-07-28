@@ -86,13 +86,11 @@ void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 void fpga_cpuemu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
   fpga_copy_from_fpga(A, A->ptr);
   //fpga_copy_memory_from_fpga(sd->fpga_ptr, sd->cpu_addresses, B->stride[0]);
-  printf("hola\n");
   cpu_select_nn(A, B, sd);
   fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
-	printf("select_nn\n");
 #ifndef K_ENABLED_SELECT_NN
   fpga_cpuemu_select_nn(A, B, sd);
 #else
@@ -109,7 +107,6 @@ void fpga_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
   OCL_CHECK(err, err = q.enqueueTask(kernel_select_nn, NULL, &event));
   q.finish();
 #endif
-  printf("fin select_nn\n");
 }
 
 // ------------------------------------------------------------------
@@ -123,7 +120,6 @@ void fpga_cpuemu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
 }
 
 void fpga_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
-	printf("select_back_nn\n");
 #ifndef K_ENABLED_SELECT_BACK_NN
   fpga_cpuemu_select_back_nn(A, B, sd);
 #else
@@ -153,7 +149,6 @@ void fpga_cpuemu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
 }
 
 void fpga_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
-	printf("set_select_nn\n");
 #ifndef K_ENABLED_SET_SELECT_NN
   fpga_cpuemu_set_select_nn(A, B, sd);
 #else

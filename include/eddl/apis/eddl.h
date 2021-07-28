@@ -38,6 +38,7 @@
 #include "eddl/layers/pool/layer_pool.h"
 #include "eddl/layers/recurrent/layer_recurrent.h"
 #include "eddl/layers/fused/layer_fused.h"
+#include "eddl/layers/fpga/layer_hlsinf.h"
 
 // EDDL namespace defines the API
 namespace eddl {
