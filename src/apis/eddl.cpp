@@ -2198,6 +2198,7 @@ int current_associated_layers = 0;
       }
       #endif
 
+  int pepe = 3;
   int found = 0;
   // we sweep all the model in search of layers that can be merged
   int l_src = 0;
