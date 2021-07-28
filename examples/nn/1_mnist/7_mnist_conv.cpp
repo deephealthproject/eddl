@@ -1,16 +1,15 @@
 /*
-* EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
-* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
-* All rights reserved
-*/
+ * EDDL Library - European Distributed Deep Learning Library.
+ * Version: 0.9
+ * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+ * Date: November 2020
+ * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+ * All rights reserved
+ */
 
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-#include <mpi.h>
 
 #include "eddl/apis/eddl.h"
 
@@ -27,9 +26,9 @@ int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
     int id;
-    
-    init_distributed(&argc, &argv,8, &id);
-    
+
+    id = init_distributed(&argc, &argv, 8, 0);
+
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -45,17 +44,26 @@ int main(int argc, char **argv) {
 
     // Define network
     layer in = Input({784});
-    layer l = in;  // Aux var
+    layer l = in; // Aux var
 
-    l = Reshape(l,{1,28,28});
-    l = MaxPool2D(ReLu(Conv2D(l,32, {3,3},{1,1})),{3,3}, {1,1}, "same");
-//    l = MaxPool2D(ReLu(Conv2D(l,64, {3,3},{1,1})),{2,2}, {2,2}, "same");
-//    l = MaxPool2D(ReLu(Conv2D(l,128,{3,3},{1,1})),{3,3}, {2,2}, "none");
-//    l = MaxPool2D(ReLu(Conv2D(l,256,{3,3},{1,1})),{2,2}, {2,2}, "none");
+    l = Reshape(l,{1, 28, 28});
+    l = MaxPool2D(ReLu(Conv2D(l, 32,{3, 3},
+    {
+        1, 1
+    })),{3, 3},
+    {
+        1, 1
+    }, "same");
+    //    l = MaxPool2D(ReLu(Conv2D(l,64, {3,3},{1,1})),{2,2}, {2,2}, "same");
+    //    l = MaxPool2D(ReLu(Conv2D(l,128,{3,3},{1,1})),{3,3}, {2,2}, "none");
+    //    l = MaxPool2D(ReLu(Conv2D(l,256,{3,3},{1,1})),{2,2}, {2,2}, "none");
     l = Reshape(l,{-1});
 
     layer out = Softmax(Dense(l, num_classes));
-    model net = Model({in}, {out});
+    model net = Model({in},
+    {
+        out
+    });
     net->verbosity_level = 0;
 
     // dot from graphviz should be installed:
@@ -73,14 +81,16 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          rmsprop(0.001), // Optimizer
-          {"softmax_cross_entropy"}, // Losses
-          {"categorical_accuracy"}, // Metrics
-          cs);
+            rmsprop(0.001), // Optimizer
+    {"softmax_cross_entropy"}, // Losses
+    {
+        "categorical_accuracy"
+    }, // Metrics
+    cs);
 
     // View model
-          if (id==0)
-    summary(net);
+    if (id == 0)
+        summary(net);
 
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
@@ -92,8 +102,8 @@ int main(int argc, char **argv) {
         std::string _range_ = "0:" + std::to_string(2 * batch_size);
         Tensor* x_mini_train = x_train->select({_range_, ":"});
         Tensor* y_mini_train = y_train->select({_range_, ":"});
-        Tensor* x_mini_test  = x_test->select({_range_, ":"});
-        Tensor* y_mini_test  = y_test->select({_range_, ":"});
+        Tensor* x_mini_test = x_test->select({_range_, ":"});
+        Tensor* y_mini_test = y_test->select({_range_, ":"});
 
         delete x_train;
         delete y_train;
@@ -102,8 +112,8 @@ int main(int argc, char **argv) {
 
         x_train = x_mini_train;
         y_train = y_mini_train;
-        x_test  = x_mini_test;
-        y_test  = y_mini_test;
+        x_test = x_mini_test;
+        y_test = y_mini_test;
     }
 
     // Preprocessing
@@ -111,17 +121,23 @@ int main(int argc, char **argv) {
     x_test->div_(255.0f);
 
     // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    fit(net,{x_train},
+    {
+        y_train
+    }, batch_size, epochs);
 
     // Evaluate
-    evaluate(net, {x_test}, {y_test});
+    evaluate(net,{x_test},
+    {
+        y_test
+    });
 
     delete x_train;
     delete y_train;
     delete x_test;
     delete y_test;
     delete net;
-    
+
     end_distributed();
 
     return EXIT_SUCCESS;

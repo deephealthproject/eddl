@@ -13,56 +13,15 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
-#ifdef cMPI
-#include <mpi.h>
-#endif
-
-#define MPICHECK(cmd) do {                          \
-  int e = cmd;                                      \
-  if( e != MPI_SUCCESS ) {                          \
-    printf("Failed: MPI error %s:%d '%d'\n",        \
-        __FILE__,__LINE__, e);   \
-    exit(EXIT_FAILURE);                             \
-  }                                                 \
-} while(0)
-
-#define CUDACHECK(cmd) do {                         \
-  cudaError_t e = cmd;                              \
-  if( e != cudaSuccess ) {                          \
-    printf("Failed: Cuda error %s:%d '%s'\n",             \
-        __FILE__,__LINE__,cudaGetErrorString(e));   \
-    exit(EXIT_FAILURE);                             \
-  }                                                 \
-} while(0)
-
-#define NCCLCHECK(cmd) do {                         \
-  ncclResult_t r = cmd;                             \
-  if (r!= ncclSuccess) {                            \
-    printf("Failed, NCCL error %s:%d '%s'\n",             \
-        __FILE__,__LINE__,ncclGetErrorString(r));   \
-    exit(EXIT_FAILURE);                             \
-  }                                                 \
-} while(0)
 
 
 
-#ifdef cNCCL
-#include <nccl.h>
-#endif
 
 #include "eddl/apis/eddl.h"
 #include "eddl/utils.h"
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 
-int use_mpi = 0;
-int mpi_avg = 1;
-#ifdef cNCCL
-// NCCL
-ncclUniqueId nccl_id;
-ncclComm_t nccl_comm;
-cudaStream_t cuda_stream;
-#endif
 
 using namespace std;
 
@@ -365,57 +324,7 @@ namespace eddl {
         return m->predict(in);
     }
 
-    void init_distributed(int *argc, char ***argv, int avg, int* id) {
-
-        int n_procs;
-
-        MPI_Init(argc, argv);
-        use_mpi = 1;
-        mpi_avg = avg;
-        //  Get the number of processes.
-        MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
-        //  Get the individual process ID.
-        MPI_Comm_rank(MPI_COMM_WORLD, id);
-        srand(*id);
-
-        if (*id == 0)
-            fprintf(stdout, "[DISTR] %d procs, sync every %d batches \n", n_procs, mpi_avg);
-
-#ifdef cNCCL
-        //NCCL
-        //get NCCL unique ID at rank 0 and broadcast it to all others
-        if (*id == 0) ncclGetUniqueId(&nccl_id);
-        MPICHECK(MPI_Bcast(&nccl_id, sizeof (nccl_id), MPI_BYTE, 0, MPI_COMM_WORLD));
-        //picking a GPU based on localRank, allocate device buffers
-        CUDACHECK(cudaStreamCreate(&cuda_stream));
-        //initializing NCCL
-        NCCLCHECK(ncclCommInitRank(&nccl_comm, n_procs, nccl_id, *id));
-        if (*id == 0)
-            fprintf(stdout, "[DISTR] NCCL initialized %d procs\n", n_procs);
-#endif
-    }
-
-    void end_distributed() {
-        int id;
-
-        if (use_mpi) {
-            //  Get the individual process ID.
-            MPI_Comm_rank(MPI_COMM_WORLD, &id);
-
-
-
-#ifdef cNCCL
-            //finalizing NCCL
-            ncclCommDestroy(nccl_comm);
-            if (id == 0)
-                fprintf(stdout, "[DISTR] NCCL End\n");
-#endif
-
-            if (id == 0)
-                fprintf(stdout, "[DISTR] End\n");
-            MPI_Finalize();
-        }
-    }
+    
 
     // Finer methods
 

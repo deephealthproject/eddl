@@ -277,6 +277,17 @@ public:
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
 
+     /**
+      *  @brief Load tensor from file. Actual filename is obtained by appending the id of the process.
+      *
+      *  @param filename  Name of the file to load the tensor from.
+      *  @param format    Filetype. The accepted filetypes are the following:
+      *                     - Images: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm.
+      *                     - Other: bin
+      *  @return    Tensor
+    */
+    static Tensor* load_id(const string& filename, string format="");
+        
 //    /**
 //      *  @brief Load data from a text file
 //      *

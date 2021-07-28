@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     int id;
 
 
-    init_distributed(&argc, &argv, 8, &id);
+    id=init_distributed(&argc, &argv, 1, 1);
 
 
     for (int i = 1; i < argc; ++i) {
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
     download_cifar10();
 
     // Settings
-    int epochs = testing ? 2 : 10;
+    int epochs = testing ? 2 : 100;
     int batch_size = 100;
     int num_classes = 10;
 

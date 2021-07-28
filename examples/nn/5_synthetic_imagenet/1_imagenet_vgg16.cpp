@@ -10,7 +10,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-#include <mpi.h>
 
 #include "eddl/apis/eddl.h"
 
@@ -36,7 +35,7 @@ int main(int argc, char **argv){
   bool use_cpu = false;
   int id;
   
-  init_distributed(&argc, &argv, 64, &id);
+  id=init_distributed(&argc, &argv, 64, 0);
   
   for (int i = 1; i < argc; ++i) {
       if (strcmp(argv[i], "--testing") == 0) testing = true;

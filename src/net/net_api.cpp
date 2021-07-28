@@ -21,6 +21,8 @@
 #include "eddl/system_info.h"
 #include "eddl/utils.h"
 
+#include "eddl/mpi_distributed/mpi_distributed.h"
+
 #ifdef cMPI
 #include <mpi.h>
 #endif
@@ -44,6 +46,9 @@ using namespace std::chrono;
 
 extern int use_mpi;
 extern int mpi_avg;
+extern int avg_method;
+
+float loss1, loss2;
 
 #ifdef cNCCL
 // NCCL
@@ -52,23 +57,6 @@ extern ncclComm_t nccl_comm;
 extern cudaStream_t cuda_stream;
 #endif
 
-#define NCCLCHECK(cmd) do {                         \
-  ncclResult_t r = cmd;                             \
-  if (r!= ncclSuccess) {                            \
-    printf("Failed, NCCL error %d, %s:%d '%s'\n",             \
-        r, __FILE__,__LINE__,ncclGetErrorString(r));   \
-    exit(EXIT_FAILURE);                             \
-  }                                                 \
-} while(0)
-
-#define CUDACHECK(cmd) do {                         \
-  cudaError_t e = cmd;                              \
-  if( e != cudaSuccess ) {                          \
-    printf("Failed: Cuda error %s:%d '%s'\n",             \
-        __FILE__,__LINE__,cudaGetErrorString(e));   \
-    exit(EXIT_FAILURE);                             \
-  }                                                 \
-} while(0)
 
 /////////////////////////////////////////
 //// THREADS
@@ -817,14 +805,11 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     float * myptr;
     int count;
     int batches = 0;
-
-    int nDev = 1;
-
-#define SIZE 1024*1024*1024
-    //float ptr[SIZE];
-    float** sendbuff = (float**) malloc(nDev * sizeof (float*));
-    float** recvbuff = (float**) malloc(nDev * sizeof (float*));
-
+    int batches_per_proc = 0;
+    int batches_avg = 0;
+    double secs_epoch = 1e10;
+    double secs_epoch_prev = 0;
+    float SPEED_UP = 1.05;
 
 
     if (isrecurrent) {
@@ -885,22 +870,29 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
         // Set some parameters
         int num_batches = n / batch_size;
+        batches_per_proc = num_batches / n_procs;
 
         // Train network
         if (id == 0) {
-            fprintf(stdout, "%d epochs of %d batches of size %d\n", epochs, num_batches, batch_size);
-            if (use_mpi) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, num_batches / n_procs, mpi_avg);
+            fprintf(stdout, "%d epochs of %d batches of size %d (local) %d (global)\n", epochs, num_batches, batch_size, n_procs * batch_size);
+            if (use_mpi) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, mpi_avg);
         }
+
+        batches_avg = mpi_avg;
         for (i = 0; i < epochs; i++) {
             high_resolution_clock::time_point e1 = high_resolution_clock::now();
             if (id == 0) {
-                fprintf(stdout, "Epoch %d\n", i + 1);
+                if (use_mpi) {
+                    fprintf(stdout, "Epoch %d, mpi_avg %d\n", i + 1, batches_avg);
+                } else {
+                    fprintf(stdout, "Epoch %d\n", i + 1);
+                }
             }
             reset_loss();
 
             batches = 0;
             // For each batch
-            for (j = 0; j < (num_batches / n_procs); j++) {
+            for (j = 0; j < (batches_per_proc); j++) {
                 batches = batches + n_procs;
 
                 // printf("Batch nr %d\n", j);
@@ -912,25 +904,27 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
                 train_batch(tin, tout, sind);
 
-                // synchronize   
-                if (use_mpi) {
-                    if (((j + 1) % mpi_avg) == 0) {
-                        //printf("Proc %d Sincronizando %d\n", id, j);
-                        for (ii = 0; ii< snets[0]->layers.size(); ii++) {
-                            for (jj = 0; jj< snets[0]->layers[ii]->params.size(); jj++) {
 
-                                myptr= snets[0]->layers[ii]->params[jj]->ptr;
+#ifdef cMPI
+                // synchronize
+                if (use_mpi) {
+                    if ((((j + 1) % batches_avg) == 0) || ((j + 1) == batches_per_proc)) {
+                        //printf("Proc %d Sincronizando %d\n", id, j);
+                        for (ii = 0; ii < snets[0]->layers.size(); ii++) {
+                            for (jj = 0; jj < snets[0]->layers[ii]->params.size(); jj++) {
+
+                                myptr = snets[0]->layers[ii]->params[jj]->ptr;
                                 count = snets[0]->layers[ii]->params[jj]->size;
                                 //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
                                 if (count != 0) {
-                                   // MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
+                                    // MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
+                                    //fn_mpi_AllReduce(myptr, count)
+                                    fn_nccl_AllReduce(myptr, count);
 
-
-                                    CUDACHECK(cudaSetDevice(0));
-                                    NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
-                                    //completing NCCL operation by synchronizing on the CUDA stream
                                     //CUDACHECK(cudaSetDevice(0));
-                                    CUDACHECK(cudaStreamSynchronize(cuda_stream));
+                                    //NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
+                                    //completing NCCL operation by synchronizing on the CUDA stream
+                                    //CUDACHECK(cudaStreamSynchronize(cuda_stream));
 
                                     /*
                                    printf("NCCL Sincronizando proc %d batch %d\n", id, j);
@@ -942,21 +936,18 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                                 }
                                 // OJO solo se puede hacer printf si el objeto está en CPU
                                 //if (ii==7) {
-                                //  printf("\n ii=%d jj=%d count=%d .....", ii,jj,count);  
+                                //  printf("\n ii=%d jj=%d count=%d .....", ii,jj,count);
                                 //  for (int ss=0; ss<count; ss++) printf("%4f", myptr[ss] );
                                 //}
-                                
+
                             }
                         }
                     }
                 }
-
-                //MPI_Allreduce(MPI_IN_PLACE, ptr, SIZE, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD); 
-                //for (i = 1; i < SIZE; i++)
-                //	if (ptr[i]==j*n_procs*i) printf("ERROR ===========\n");
+#endif
 
                 if (id == 0) {
-                    print_loss(batches, num_batches/n_procs);
+                    print_loss(batches, num_batches);
                     //print_loss(j+1,num_batches);
                 }
                 high_resolution_clock::time_point e2 = high_resolution_clock::now();
@@ -970,8 +961,63 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             }
             high_resolution_clock::time_point e2 = high_resolution_clock::now();
             duration<double> epoch_time_span = e2 - e1;
+            secs_epoch = epoch_time_span.count();
+            if (i == 0) secs_epoch_prev = 2 * secs_epoch; // Force first change with adaptive
+
             if (id == 0) {
                 fprintf(stdout, "\n%1.4f secs/epoch\n", epoch_time_span.count());
+                fflush(stdout);
+            }
+            /*
+            if (((i+1) % 2)==1) {
+                    loss1 =  get_losses()[lout.size()-1];
+                    printf("measuring loss1 %f\n", loss1);
+                }
+            if (((i+1) % 2)==0) {
+                    loss2 =  get_losses()[lout.size()-1];
+                    printf("measuring loss2 %f\n", loss2);
+                 }
+            printf("loss1 %f\n", loss1);
+            printf("loss2 %f\n", loss2);
+             */
+            switch (avg_method) {
+                case 1:
+                    if (((i + 1) % (2 * n_procs)) == 0) {
+                        if (batches_avg < batches_per_proc)
+                            batches_avg = batches_avg * 2;
+                    }
+                    break;
+
+                case 2:
+                    if (((i + 1) % (n_procs)) == 0) {
+                        batches_avg = batches_avg * 2;
+
+                        if (batches_avg >= batches_per_proc)
+                            batches_avg = mpi_avg;
+                    }
+                    break;
+
+                case 3:
+                    if (((i + 1) % (n_procs)) == 0) {
+                        batches_avg = batches_avg / 2;
+
+                        if (batches_avg <= 1)
+                            batches_avg = mpi_avg;
+                    }
+                    break;
+
+
+                case 4:
+                    if (((i + 1) % (n_procs)) == 0) {
+                        float speed_up = secs_epoch_prev / secs_epoch;
+                        if (speed_up > SPEED_UP) {
+                            secs_epoch_prev = secs_epoch;
+
+                            if (batches_avg < batches_per_proc)
+                                batches_avg = batches_avg * 2;
+                        }
+                    }
+                    break;
             }
         }
         fflush(stdout);
@@ -979,7 +1025,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
 }
 
-void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z) {
+void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor * Z) {
     int i, j, k, n;
 
     // Check whether is encoder, decoder or both.
@@ -1042,6 +1088,7 @@ void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, 
             tinr.push_back(new Tensor(shape, yt[i]->ptr + (j * offset), yt[i]->device));
 
         // output
+
         for (j = 0; j < outl; j++)
             toutr.push_back(new Tensor(shape, yt[i]->ptr + (j * offset), yt[i]->device));
     }
@@ -1050,7 +1097,7 @@ void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, 
 
 }
 
-void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z) {
+void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor * Z) {
 
     int i, j, k, n;
 
@@ -1140,13 +1187,14 @@ void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &ou
             tinr.push_back(new Tensor(shape, yt[i]->ptr + (j * offset), yt[i]->device));
 
         // output
+
         for (j = 0; j < outl; j++)
             toutr.push_back(new Tensor(shape, yt[i]->ptr + (j * offset), yt[i]->device));
     }
 
 }
 
-void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z) {
+void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor * Z) {
     int i, j, k, n;
 
 
@@ -1229,12 +1277,13 @@ void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, 
             shape.push_back(yt[i]->shape[j]);
 
         if (tout.size())
+
             for (j = 0; j < outl; j++)
                 toutr.push_back(new Tensor(shape, yt[i]->ptr + (j * offset), yt[i]->device));
     }
 }
 
-void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z) {
+void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor * Z) {
     int i, j, k, n;
 
     // Check whether is encoder, decoder or both.
@@ -1255,6 +1304,7 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
         prepare_recurrent_enc_dec(tin, tout, inl, outl, xt, xtd, yt, tinr, toutr);
     else if (isdecoder)
         prepare_recurrent_dec(tin, tout, inl, outl, xt, xtd, yt, tinr, toutr);
+
     else
         prepare_recurrent_enc(tin, tout, inl, outl, xt, xtd, yt, tinr, toutr);
 }
@@ -1384,6 +1434,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
         if (!eval) {
             // In case of multiple GPUS or FPGA synchronize params
             if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches % cs->lsb == 0)) {
+
                 sync_weights();
             }
         }
@@ -1543,6 +1594,7 @@ vtensor Net::predict(vtensor tin) {
         forward(tin);
 
         for (int i = 0; i < lout.size(); i++) {
+
             collectTensor(lout[i], "output");
             out.push_back(lout[i]->output->clone());
         }
@@ -1589,6 +1641,7 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, float atol, float 
             }
         } else {
             if (verbose) {
+
                 cout << "[FAIL] The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
                         net2->layers[i]->name << ") do not match" << " [Net::compare_outputs]" << endl;
             }

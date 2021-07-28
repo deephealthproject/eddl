@@ -240,6 +240,14 @@ string get_extension(string filename){
     return "";
 }
 
+string get_name(string filename){
+    std::string::size_type idx = filename.rfind('.');
+    if(idx != std::string::npos){
+        return filename.substr(0,idx);
+    }
+    return "";
+}
+
 vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>& shape){
     string delimiter(":");
     vector<vector<int>> ranges;

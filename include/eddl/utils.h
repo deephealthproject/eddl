@@ -44,6 +44,7 @@ string bytes2human(unsigned long long int bytes, int decimals=2);
 unsigned long get_free_mem();
 
 string get_extension(string filename);
+string get_name(string filename);
 
 vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>& shape);
 

@@ -19,6 +19,9 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
+#ifdef cMPI
+#include <mpi.h>
+#endif
 
 // Image stuff
 #define STBI_WINDOWS_UTF8
@@ -54,6 +57,34 @@ Tensor* Tensor::load(const string& filename, string format){
     return Tensor::load<float>(filename, std::move(format));
 }
 
+Tensor* Tensor::load_id(const string& filename, string format){
+    int id;
+    string name;
+    
+    // Infer format from filename
+    if(format.empty()){
+        format = get_extension(filename);
+    }
+
+    // Check source type
+    if(format=="npy" || format=="npz"){
+        msg("Numpy files need a source type to be specified: 'Tensor::loadt<type>(filename)'");
+    }
+  
+#ifdef cMPI
+    name = get_name(filename);
+    MPI_Comm_rank(MPI_COMM_WORLD, &id);
+    name.append("_"); 
+    name.append(to_string(id)); 
+    name.append(".");
+    name.append(format);
+#endif
+    
+    fprintf(stderr, "[DISTR] File: %s\n", name.c_str());
+    // Default type to be ignored
+    // Ignore IDE warnings (some times they have problems with templates)
+    return Tensor::load<float>(name, std::move(format));
+}
 
 Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
 

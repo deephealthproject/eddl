@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-#include <mpi.h>
+
 
 
 using namespace eddl;
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     bool use_cpu = false;
     int id;
 
-    init_distributed(&argc, &argv, 8, &id);
+    id=init_distributed(&argc, &argv, 8, 0);
 
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
