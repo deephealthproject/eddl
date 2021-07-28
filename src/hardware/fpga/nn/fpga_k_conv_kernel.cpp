@@ -150,7 +150,7 @@ int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_st
 
 
   // This family of kernels need strides of 1x1, kernels of 1x1, padding of 1x1, and batch size 1
-  if ((stride_rows == 1) && (stride_cols == 1) && (Krows == 3) && (Kcols == 3) && (batch_size == 1) && (padding_rows == 1) && (padding_cols == 1) &&
+  if ((stride_rows >= 0) && (stride_cols >= 0) && (Krows == 3) && (Kcols == 3) && (batch_size == 1) && (padding_rows >= 0) && (padding_cols >= 0) &&
        (Irows <= 256) && (Icols <= 256)) {
     
     if(enable_add)  I_add = *(cl::Buffer*) ADD->fpga_ptr;

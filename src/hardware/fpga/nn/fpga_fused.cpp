@@ -20,6 +20,7 @@
 
 PROFILING_ENABLE_EXTERN(fpga_Conv2D_MAXPOOL);
 PROFILING_ENABLE_EXTERN(fpga_Conv2D_RELU);
+PROFILING_ENABLE_EXTERN(fpga_Conv2D_LEAKYRELU);
 PROFILING_ENABLE_EXTERN(fpga_Conv2D_STM);
 PROFILING_ENABLE_EXTERN(fpga_Conv2D_STM_ADD);
 PROFILING_ENABLE_EXTERN(fpga_Conv2D_RELU_MAXPOOL);
@@ -100,6 +101,50 @@ void fpga_conv_relu(ConvolDescriptor *D)
       enable_maxp, enable_avgp, 
       enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
   PROFILING_FOOTER(fpga_Conv2D_RELU);
+
+  if (ret == 0) {
+    printf("error, Conv2DReLU cannot be run on FPGA\n");
+    exit(1);
+  }
+
+  // profiling
+  _profile_fpga_tensor(D->O);
+  _profile_fpga_tensor_print(D->O);
+
+}
+
+// --------------------------------------------------------------------------------------------
+// Conv2D + LeakyReLU
+//
+void fpga_conv_leakyrelu(ConvolDescriptor *D, float alpha)
+{
+  _debug_fpga_funcs("fpga_conv2D_leakyrelu");
+  _profile_fpga(_FPGA_CONV2D_LEAKYRELU, 0);
+  _profile_fpga_tensor(D->I);
+  _profile_fpga_tensor(D->K);
+  _profile_fpga_tensor(D->bias);
+printf("fpga_fused.cpp leakyrelu alpha %d\n", alpha);
+  int ret = 0;
+
+  int enable_relu = 1;
+  int enable_stm = 0;
+  float relu_factor = alpha;
+  int global_offset = 0;
+  int enable_avgp = 0;
+  int enable_maxp = 0;
+  int enable_clipping = 0;
+  int enable_shift = 0;
+  int enable_add = 0;
+  int min_clip = 0;
+  int max_clip = 0;
+  int dir_shift = 0;
+  int pos_shift = 0;
+
+  PROFILING_HEADER(fpga_Conv2D_LEAKYRELU);
+  ret = fpga_k_conv(D, NULL, enable_relu, enable_stm, relu_factor, global_offset, 
+      enable_maxp, enable_avgp, 
+      enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
+  PROFILING_FOOTER(fpga_Conv2D_LEAKYRELU);
 
   if (ret == 0) {
     printf("error, Conv2DReLU cannot be run on FPGA\n");

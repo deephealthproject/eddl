@@ -2218,16 +2218,12 @@ int current_associated_layers = 0;
 	  // detection flags
 	  if (LConv *dl = dynamic_cast<LConv *>(cl)) {
 	    LConv *layer_src = (LConv *)cl;
-	    // only strides equal to one are suported in the FPGA
-	    for (int s = 0; s < layer_src->cd->strides.size(); s++) if (layer_src->cd->strides[s] != 1) found_C_cpu = 1;
-            // only kernel dimensions equal to 3 are suported in the FPGA
-            for (int s = 0; s < layer_src->cd->kernel_size.size(); s++) if (layer_src->cd->kernel_size[s] != 3) found_C_cpu = 10;
-            // only padding dimensions equal to 0 or 1 are suported in the FPGA
-            for (int s = 0; s < layer_src->cd->pads.size(); s++) if (layer_src->cd->pads[s] != 1 && layer_src->cd->pads[s] != 0) found_C_cpu = 1;
-            // only H and W dimensios lees or equal than 256 are suported in the FPGA
-            if (layer_src->input->shape.size() > 2) {
-              if (layer_src->input->shape[2] > 256 || layer_src->input->shape[3] > 256) found_C_cpu = 1;
-            }
+      // only kernel dimensions equal to 3 are suported in the FPGA
+      for (int s = 0; s < layer_src->cd->kernel_size.size(); s++) if (layer_src->cd->kernel_size[s] != 3) found_C_cpu = 1;
+      // only H and W dimensios lees or equal than 256 are suported in the FPGA
+      if (layer_src->input->shape.size() > 2) {
+        if (layer_src->input->shape[2] > 256 || layer_src->input->shape[3] > 256) found_C_cpu = 1;
+      }
 	    if (!found_C_cpu) found_C = 1;
 	    #ifdef DEBUG_VERBOSE
 	    printf("Convolution layer: C cpu %d C FPGA %d\n", found_C_cpu, found_C);
@@ -2327,7 +2323,7 @@ int current_associated_layers = 0;
   found_CSTM = !found_CSTMA && found_C && found_nSp && found_nnT && found_nnnMult;
 
 	// We filter found flags
-	if (found_CM || found_CM || found_CRM || found_CR || found_CSTMA || found_CSTM) {found_C = 0;}
+	if ( found_CR || found_CL || found_CM || found_CRM || found_CSTM || found_CSTMA) {found_C = 0;}
 
 
   // data layer transform: Layers ran on the FPGA need to have their inputs in GHWC format, 
@@ -2354,7 +2350,7 @@ int current_associated_layers = 0;
 	  }
 	} else {
 	  
-    if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL | found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
+    if (found_C || found_CR || found_CL || found_CM || found_CRM || found_CSTM || found_CSTMA || found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
  	    // all these layers need the GHWC format at the input, therefore we check if the
 	    // previous layer is in GHWC format and if not we add a transform layer
 	    //
@@ -2427,107 +2423,102 @@ int current_associated_layers = 0;
           //the number of filters must be multiple of CPO for the fpga
           int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
 
-          prev_layer = new LConvReLU(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
-																		layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
-					fn_set_associated_layer(cl, prev_layer, 1, l_dst);
-					fn_set_associated_layer(nl, prev_layer, 1, l_dst);
-					associated_source_layer[l_dst] = l_src;
-					l_dst++;
+    prev_layer = new LConvReLU(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+															layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
+		fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+		fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
 
-				} else if (found_CL) {
-				
-				  // 
-				  // Convolution + LeakyReLU fused layer
-				  //
-				  // source layer
-				  //
-					LConv *layer_src = (LConv *)cl;
-					// dst parent layer
-					Layer *fpga_parent;
-					fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
-#ifdef DEBUG_VERBOSE
-					printf("%3d: CL			    : prev %d\n", l_dst, dummy);
-#endif
+	} else if (found_CL) {
+		// 
+		// Convolution + LeakyReLU fused layer
+		//
+		// source layer
+		//
+		LConv *layer_src = (LConv *)cl;
+		LActivation *layer_leakyrelu = (LActivation *)nl;
+		// dst parent layer
+		Layer *fpga_parent;
+		fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+		printf("%3d: CL			    : prev %d\n", l_dst, dummy);
 
-          //the number of filters must be multiple of CPO for the fpga
-          int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
+    //the number of filters must be multiple of CPO for the fpga
+    int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
 
-				  // Canbiar por una LConvLeakyReLU !!!!!!! Laura
-					prev_layer = new LConvReLU(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
-															  layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
-					fn_set_associated_layer(cl, prev_layer, 1, l_dst);
-					fn_set_associated_layer(nl, prev_layer, 1, l_dst);
-				  associated_source_layer[l_dst] = l_src;
-					l_dst++;
+		float alpha = layer_leakyrelu->params[0];
+		prev_layer = new LConvLeakyReLU(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+															  layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, alpha, "",DEV_CPU, layer_src->cd->mem_level);
+		fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+		fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
 
-				} else if (found_CM) {
+	} else if (found_CM) {
 							
-				  //
-				  // Convolution + Maxpool layer
-				  //
-				  // source layers
-			    LConv *layer_src = (LConv *)cl;
-			    LPool *n_layer_src = (LPool *)nl;
-			    // dst parent layer
-			    Layer *fpga_parent;
-			    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
-#ifdef DEBUG_VERBOSE
-			    printf("%3d: CM			   : prev %d\n", l_dst, dummy);
-#endif
+		//
+		// Convolution + Maxpool layer
+		//
+		// source layers
+		LConv *layer_src = (LConv *)cl;
+		LPool *n_layer_src = (LPool *)nl;
+		// dst parent layer
+		Layer *fpga_parent;
+		fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+		printf("%3d: CM			   : prev %d\n", l_dst, dummy);
 
-          //the number of filters must be multiple of CPO for the fpga
-          int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
+    //the number of filters must be multiple of CPO for the fpga
+    int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
 
-			    if(n_layer_src->pd->padding =="custom") {
-						prev_layer = new LConvMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
-															  layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
-															  n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
-															  "",DEV_CPU, layer_src->cd->mem_level);
-			    } else {
-				    prev_layer = new LConvMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
-																		  layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
-																		  n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->padding, layer_src->cd->use_bias,
-																		  "",DEV_CPU, layer_src->cd->mem_level);
-			    }				  fn_set_associated_layer(cl, prev_layer, 1, l_dst);
-				  fn_set_associated_layer(nl, prev_layer, 1, l_dst);
-					associated_source_layer[l_dst] = l_src;
-				  l_dst++;
+		if(n_layer_src->pd->padding =="custom") {
+		prev_layer = new LConvMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+											  layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
+											  n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
+											  "",DEV_CPU, layer_src->cd->mem_level);
+		} else {
+		 prev_layer = new LConvMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+														  layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
+														  n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->padding, layer_src->cd->use_bias,
+														  "",DEV_CPU, layer_src->cd->mem_level);
+		}				  fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+		fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
 
-    		} else if (found_CRM) {
+	} else if (found_CRM) {
 
-					//
-					// Convolution + ReLU + Maxpool
-					// source layers
-			  	LConv *layer_src = (LConv *)cl;
-			  	LPool *n_layer_src = (LPool *)nnl;
-			  	// dst parent layer
-			  	Layer *fpga_parent;
-			  	fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
-#ifdef DEBUG_VERBOSE
-				printf("%3d: CRM			  : prev %d\n", l_dst, dummy);
-#endif
-          //the number of filters must be multiple of CPO for the fpga
-          int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
+		//
+		// Convolution + ReLU + Maxpool
+		// source layers
+		LConv *layer_src = (LConv *)cl;
+		LPool *n_layer_src = (LPool *)nnl;
+		// dst parent layer
+		Layer *fpga_parent;
+		fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+		printf("%3d: CRM			  : prev %d\n", l_dst, dummy);
 
-			  	if(n_layer_src->pd->padding =="custom") {
-			  	  prev_layer = new LConvReLUMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
-																layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
-																n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
-																"",DEV_CPU, layer_src->cd->mem_level);
-			  	} 
-			  	else {
-					  prev_layer = new LConvReLUMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
-																layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
-																n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->padding, layer_src->cd->use_bias,
-																"",DEV_CPU, layer_src->cd->mem_level);
-			  	}
-					fn_set_associated_layer(cl, prev_layer, 1, l_dst);
-					fn_set_associated_layer(nl, prev_layer, 1, l_dst);
-					fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
-					associated_source_layer[l_dst] = l_src;
-					l_dst++;
+    //the number of filters must be multiple of CPO for the fpga
+    int filters = ceil((float)layer_src->cd->filters/CPO) * CPO;
 
-	      } else if (found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
+		if(n_layer_src->pd->padding =="custom") {
+		  prev_layer = new LConvReLUMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+													layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
+													n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->pad, layer_src->cd->use_bias,
+													"",DEV_CPU, layer_src->cd->mem_level);
+		} 
+		else {
+		  prev_layer = new LConvReLUMaxPool(fpga_parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+													layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, 
+													n_layer_src->pd->ksize , n_layer_src->pd->stride, n_layer_src->pd->padding, layer_src->cd->use_bias,
+													"",DEV_CPU, layer_src->cd->mem_level);
+		}
+		fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+		fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+		fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
+
+	} else if (found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
 	  //
 	  // DIV + MULT + SUM + MultiThreshold + SUM + MULT + CONV
 	  LConv *layer_src = (LConv *)nnnnnnl;
@@ -2767,115 +2758,185 @@ int current_associated_layers = 0;
 			      elements = elements * layer_src->ls[i];
 			    }
   
-			    if(layer_src->ls[1] == elements && layer_src->ls.size() < 3 ) {
-			      prev_layer = Reshape(fpga_parent, { -1 });
-			    } else {
-			      vector<int> shape;
-			      for (int i = 1; i < layer_src->ls.size(); i++) shape.push_back(layer_src->ls[i]);
-			      prev_layer = Reshape(fpga_parent, shape);
-			    }
-    	    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-	        associated_source_layer[l_dst] = l_src;
-    	    l_dst++;
+	} else if (found_LR) { 
 
-			  } else  if (found_D) {
+		// 
+		// LeakyReLU
+		//
+		// source layer
+		LActivation *layer_src = (LActivation *)cl;
+		// dst parent layer
+		Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+		printf("%3d: LeakyReLU  : prev %d\n", l_dst, dummy);
+		prev_layer = LeakyReLu(fpga_parent, layer_src->params[0], "");
+		fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
+
+	} else if (found_M) {
         
-    	    //
-    	    // Dense
-    	    //
-    	    // source layer
-			    LDense *layer_src = (LDense *)cl;
-    	    // dst parent layer
-			    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
-#ifdef DEBUG_VERBOSE
-			    printf("%3d: Dense			: prev %d\n", l_dst, dummy);
-#endif
+		//
+		// MaxPooling
+		//
+		// source layer
+		LMaxPool *layer_src = (LMaxPool *)cl;
+		// dst parent layer
+		Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+		printf("%3d: Maxpool    : prev %d\n", l_dst, dummy);
+		if (layer_src->pd->padding =="custom") {
+		  prev_layer = new LMaxPool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
+		} else {
+		  prev_layer = new LMaxPool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
+		}
+		fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
 
-			    prev_layer = Dense(fpga_parent, layer_src->ndim);
-    	    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-	        associated_source_layer[l_dst] = l_src;
-    	    l_dst++;
+	} else if (found_A) {
 
-			  } else if (found_S) {
+		//
+		// AveragePooling
+		//
+		// source layer
+		LAveragePool *layer_src = (LAveragePool *)cl;
+		// dst parent layer
+		Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+		printf("%3d: AveragePool: prev %d\n", l_dst, dummy);
+		if (layer_src->pd->padding =="custom") {
+		  prev_layer = new LAveragePool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
+		} else {
+		  prev_layer = new LAveragePool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
+		}
+		fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
 
-			  	//
-			  	// Softmax
-			  	//
-			  	// dst parent layer
-			    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
-#ifdef DEBUG_VERBOSE
-			    printf("%3d: Softmax			     : prev %d\n", l_dst, dummy);
-#endif
-			    prev_layer = Softmax(fpga_parent);
-			  	fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-			  	associated_source_layer[l_dst] = l_src;
-			  	l_dst++;
+	} else if (found_I) {
 
-			  } else if (found_Concat) {
+		//
+		// Input
+		//
+		printf("%3d: I\n", l_dst);
+		prev_layer = Input({cl->input->shape[1],cl->input->shape[2],cl->input->shape[3]});
+		fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
 
-			  	// 
-			  	// Concat
-			  	//
-			  	// source layer
-			    LConcat *layer_src = (LConcat *)cl;
-			  	// dst parent layer
-			    vector<Layer *> parent;
-			    vector<int> dummy_vect;
-	        // the input format can be either GHWC or NCWH, but only one of them
-	        // we need to select which one
-	        int format = 0;
-	        if (fn_get_associated_layer(cl->parent[0], format, &dummy) == NULL) format = 1;
-			    for(int p = 0; p < cl->parent.size();p++) {
-			      int dummy_el;
-			      parent.push_back(fn_get_associated_layer(cl->parent[p], format, &dummy_el));
-			      dummy_vect.push_back(dummy_el);
-			    }
-#ifdef DEBUG_VERBOSE
-			    printf("%3d: CONCAT     : prevs ", l_dst);
-			    for(int p = 0; p < dummy_vect.size();p++){
-			      printf("%d ", dummy_vect[p]);
-			    }
-			    printf("\n");
-#endif
-				  //
-			    prev_layer = Concat(parent, layer_src->axis, "");
-				  fn_set_associated_layer(cl, prev_layer, format, l_dst);
-				  associated_source_layer[l_dst] = l_src;
-			    l_dst++;
+	} else if (found_Reshape) {
 
-			} else  if (found_Expand) { 
+    //
+    // Reshape
+    //
+    // source layer
+		LReshape *layer_src = (LReshape *)cl;
+		// dst parent layer
+		Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+    printf("%3d: RESHAPE    : prev %d\n", l_dst, dummy);
 
-				//
-				// Expand
-				//
-				// source layer
-			  LExpand *layer_src = (LExpand *)cl;
-				// dst parent layer
-			  Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
-#ifdef DEBUG_VERBOSE
-			  printf("%3d: EXPAND     : prev %d\n", l_dst, dummy);
-#endif
-			  prev_layer = Expand(fpga_parent, layer_src->size, "");
-				fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-				associated_source_layer[l_dst] = l_src;
-				l_dst++;
+		long int elements = 1;
+		for (int i = 1; i < layer_src->ls.size(); i++) {
+		  elements = elements * layer_src->ls[i];
+		}
+  
+		if(layer_src->ls[1] == elements && layer_src->ls.size() < 3 ) {
+		  prev_layer = Reshape(fpga_parent, { -1 });
+		} else {
+		  vector<int> shape;
+		  for (int i = 1; i < layer_src->ls.size(); i++) shape.push_back(layer_src->ls[i]);
+		  prev_layer = Reshape(fpga_parent, shape);
+		}
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	  associated_source_layer[l_dst] = l_src;
+    l_dst++;
 
-			} else  if (found_Slice) { 
+	} else  if (found_D) {
+        
+    //
+    // Dense
+    //
+    // source layer
+		LDense *layer_src = (LDense *)cl;
+    // dst parent layer
+		Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+		printf("%3d: Dense			: prev %d\n", l_dst, dummy);
 
-				//
-				// Slice
-				//
-				// source layer
-			  LSelect *layer_src = (LSelect *)cl;
-				// dst parent layer
-			  Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
-			  prev_layer = Slice(fpga_parent, layer_src->sd->indices, "");
-#ifdef DEBUG_VERBOSE
-			  printf("%3d: SLICE			: prev %d\n", l_dst, dummy);
-#endif
-			  fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-				associated_source_layer[l_dst] = l_src;
-				l_dst++;
+		prev_layer = Dense(fpga_parent, layer_src->ndim);
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+	  associated_source_layer[l_dst] = l_src;
+    l_dst++;
+
+	} else if (found_S) {
+
+		//
+		// Softmax
+		//
+		// dst parent layer
+		Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+		printf("%3d: Softmax			     : prev %d\n", l_dst, dummy);
+		prev_layer = Softmax(fpga_parent);
+		fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
+
+	} else if (found_Concat) {
+
+		// 
+		// Concat
+		//
+		// source layer
+		LConcat *layer_src = (LConcat *)cl;
+		// dst parent layer
+		vector<Layer *> parent;
+		vector<int> dummy_vect;
+	  // the input format can be either GHWC or NCWH, but only one of them
+	  // we need to select which one
+	  int format = 0;
+	  if (fn_get_associated_layer(cl->parent[0], format, &dummy) == NULL) format = 1;
+		for(int p = 0; p < cl->parent.size();p++) {
+		  int dummy_el;
+		  parent.push_back(fn_get_associated_layer(cl->parent[p], format, &dummy_el));
+		  dummy_vect.push_back(dummy_el);
+		}
+		printf("%3d: CONCAT     : prevs ", l_dst);
+		for(int p = 0; p < dummy_vect.size();p++){
+		  printf("%d ", dummy_vect[p]);
+		}
+		printf("\n");
+		//
+		prev_layer = Concat(parent, layer_src->axis, "");
+		fn_set_associated_layer(cl, prev_layer, format, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
+
+	} else  if (found_Expand) { 
+
+		//
+		// Expand
+		//
+		// source layer
+		LExpand *layer_src = (LExpand *)cl;
+		// dst parent layer
+		Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+		printf("%3d: EXPAND     : prev %d\n", l_dst, dummy);
+		prev_layer = Expand(fpga_parent, layer_src->size, "");
+		fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
+
+	} else  if (found_Slice) { 
+
+		//
+		// Slice
+		//
+		// source layer
+		LSelect *layer_src = (LSelect *)cl;
+		// dst parent layer
+		Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+		prev_layer = Slice(fpga_parent, layer_src->sd->indices, "");
+		printf("%3d: SLICE			: prev %d\n", l_dst, dummy);
+		fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+		associated_source_layer[l_dst] = l_src;
+		l_dst++;
 
 			} else if (found_Sig) {
 
@@ -3093,7 +3154,6 @@ int current_associated_layers = 0;
 			build(net, sgd(0.001f, 0.9f),{"soft_cross_entropy"}, {"categorical_accuracy"}, CS_FPGA({1}));
 			summary(net);
 
-
 #ifdef DEBUG_VERBOSE
 		      	printf("FIN MODEL\n");
 #endif
@@ -3188,10 +3248,10 @@ int current_associated_layers = 0;
 						filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
 						distributeTensor(layer_dst, "param", 0);
   
-						//bias
-						collectTensor(layer_src, "param", 1);
-						tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
-						distributeTensor(layer_dst, "param", 1);
+					//bias
+					collectTensor(layer_src, "param", 1);
+					tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+					distributeTensor(layer_dst, "param", 1);
 
 			  } else if (LConvSTM *conv = dynamic_cast<LConvSTM *>(cl)) {
 #ifdef DEBUG_VERBOSE
@@ -3226,6 +3286,37 @@ int current_associated_layers = 0;
 						collectTensor(layer_src, "param", 1);
 						tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
 						distributeTensor(layer_dst, "param", 1);
+		} else if (LConv *conv = dynamic_cast<LConv*>(cl)) { 
+      printf("LConv adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
+      LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
+      LConv *layer_dst = (LConv *) net->layers[l];
+
+      int fpga_conv = 1;
+      // only kernel dimensions equal to 3 are suported in the FPGA
+      for (int s = 0; s < layer_src->cd->kernel_size.size(); s++) if (layer_dst->cd->kernel_size[s] != 3) fpga_conv = 0;
+      // only h and w lees or equal than 256 are suported in the FPGA
+      if (layer_src->input->shape.size() > 2) {
+        if(layer_src->input->shape[2] > 256 || layer_src->input->shape[3] > 256) fpga_conv = 0;
+      }
+      // filter
+      collectTensor(layer_src, "param", 0);
+      if (fpga_conv) {
+        filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->cd->K);
+      } else {
+        //if(layer_src->cd->K->size != layer_dst->cd->K->size) tensor_padded(layer_src->cd->K, layer_dst->cd->K);
+        Tensor::copy(layer_src->cd->K, layer_dst->cd->K);
+      }
+      distributeTensor(layer_dst, "param", 0);
+
+      // bias
+      collectTensor(layer_src, "param", 1);
+      if (layer_src->cd->bias->size != layer_dst->cd->bias->size) {
+        tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+      } else {
+        Tensor::copy(layer_src->cd->bias, layer_dst->cd->bias);
+      }
+      distributeTensor(layer_dst, "param", 1);
+
 			  } else if (LDense *dl = dynamic_cast<LDense *>(cl)) {
 #ifdef DEBUG_VERBOSE
 				  printf("LDense adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
