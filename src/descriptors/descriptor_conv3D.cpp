@@ -25,10 +25,11 @@
 
 ConvolDescriptor3D::ConvolDescriptor3D() {}
 
-ConvolDescriptor3D::ConvolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, bool ub, int mem) {
+ConvolDescriptor3D::ConvolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, const vector<int> &dilation_rate, bool ub, int mem) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());
+    this->dilation_rate = vector<int>(dilation_rate.begin(), dilation_rate.end());
     mem_level=mem;
     use_bias = ub;
 
@@ -38,15 +39,17 @@ ConvolDescriptor3D::ConvolDescriptor3D(const vector<int> &ks, const vector<int> 
     if (stride.size() != 3) msg("Strides must have 3 dimensions", "ConvolDescriptor3D::ConvolDescriptor3D");
 }
 
-ConvolDescriptor3D::ConvolDescriptor3D(int filters, const vector<int> &ks, const vector<int> &st, const string& p, const vector<int> &pads, bool ub, int mem) {
+ConvolDescriptor3D::ConvolDescriptor3D(int filters, const vector<int> &ks, const vector<int> &st, const string& p, const vector<int> &pads, const vector<int> &dilation_rate, bool ub, int mem) {
     if (ks.size() != 3) { msg("Kernels must have 4 dimensions", "ConvolDescriptor3D::ConvolDescriptor3D"); }
     if (st.size() != 3) { msg("Strides must have 3 dimensions", "ConvolDescriptor3D::ConvolDescriptor3D"); }
+    if (dilation_rate.size() != 3) { msg("Dilations must have 3 elements", "ConvolDescriptor3D::ConvolDescriptor3D"); }
 
     // Add filters to kernel_size
     ksize = vector<int>(ks);
     ksize.insert(ksize.begin(), 1, filters);
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(pads);
+    this->dilation_rate = vector<int>(dilation_rate);
     use_bias=ub;
     mem_level=mem;
 
@@ -111,13 +114,13 @@ void ConvolDescriptor3D::build(Tensor *A) {
         z = nk;
 
         vector<int>pd; pd.push_back(pad[0]);pd.push_back(pad[1]);
-        d = compute_output(pd, id, kd, sd);
+        d = compute_output(pd, id, kd, sd, dilation_rate[0]);
 
         vector<int>pr; pr.push_back(pad[2]);pr.push_back(pad[3]);
-        r = compute_output(pr, ir, kr, sr);
+        r = compute_output(pr, ir, kr, sr, dilation_rate[1]);
 
         vector<int>pc; pc.push_back(pad[4]);pc.push_back(pad[5]);
-        c = compute_output(pc, ic, kc, sc);
+        c = compute_output(pc, ic, kc, sc, dilation_rate[2]);
 
     }else{  // Common padding (same/zeros)
         // Compute output
@@ -126,24 +129,24 @@ void ConvolDescriptor3D::build(Tensor *A) {
         z = nk;
 
         // Depth
-        if (padding=="same,none") d = compute_output("same", id, kd, sd);
-        else if (padding=="none,same")  d = compute_output("none", id, kd, sd);
-        else d = compute_output(this->padding, id, kd, sd);
+        if (padding=="same,none") d = compute_output("same", id, kd, sd, dilation_rate[0]);
+        else if (padding=="none,same")  d = compute_output("none", id, kd, sd, dilation_rate[0]);
+        else d = compute_output(this->padding, id, kd, sd, dilation_rate[0]);
 
         // Rows
-        if (padding=="same,none") r = compute_output("same", ir, kr, sr);
-        else if (padding=="none,same")  r = compute_output("none", ir, kr, sr);
-        else r = compute_output(this->padding, ir, kr, sr);
+        if (padding=="same,none") r = compute_output("same", ir, kr, sr, dilation_rate[1]);
+        else if (padding=="none,same")  r = compute_output("none", ir, kr, sr, dilation_rate[1]);
+        else r = compute_output(this->padding, ir, kr, sr, dilation_rate[1]);
 
         // Cols
-        if (padding=="same,none") c = compute_output("none", ic, kc, sc);
-        else if (padding=="none,same")  c = compute_output("same", ic, kc, sc);
-        else c = compute_output(this->padding, ic, kc, sc);
+        if (padding=="same,none") c = compute_output("none", ic, kc, sc, dilation_rate[2]);
+        else if (padding=="none,same")  c = compute_output("same", ic, kc, sc, dilation_rate[2]);
+        else c = compute_output(this->padding, ic, kc, sc, dilation_rate[2]);
 
         // Compute padding
-        vector<int> padd = compute_padding(d, id, kd, sd, this->padding,true);  // Order: [front, back]
-        vector<int> padr = compute_padding(r, ir, kr, sr, this->padding,true);  // Order: [top, bottom]
-        vector<int> padc = compute_padding(c, ic, kc, sc, this->padding,false);  // Order: [left, right]
+        vector<int> padd = compute_padding(d, id, kd, sd, this->padding,true, dilation_rate[0]);  // Order: [front, back]
+        vector<int> padr = compute_padding(r, ir, kr, sr, this->padding,true, dilation_rate[1]);  // Order: [top, bottom]
+        vector<int> padc = compute_padding(c, ic, kc, sc, this->padding,false, dilation_rate[2]);  // Order: [left, right]
 
         // Set padding
         pad = {padd[0], padd[1], padr[0], padr[1], padc[0], padc[1]};  // (front, back), (top, bottom), (left, right)
@@ -230,7 +233,7 @@ void ConvolDescriptor3D::build(Tensor *A) {
     cudnnCreateConvolutionDescriptor(&convolution_descriptor);
     int padding[3] = {pad[0],pad[2],pad[4]};
     int strides[3] ={sd,sr,sc};
-    int dilats[3] = {1,1,1};
+    int dilats[3] = {dilation_rate[0],dilation_rate[1],dilation_rate[2]};
     cudnnSetConvolutionNdDescriptor(convolution_descriptor,3,
                                     padding,
                                     strides,
@@ -343,12 +346,12 @@ void ConvolDescriptor3D::enable_distributed() {
     acc_gbias->fill_(0.0);
 }
 
-int ConvolDescriptor3D::compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate){
+int ConvolDescriptor3D::compute_output(const string& padding, int input_size, int kernel_size, int stride, int dilation_rate){
     if (padding=="same" || padding =="zeros") {
         return std::ceil((float)input_size/(float)stride);
 
     }else if(padding =="valid" || padding =="none"){
-        return std::ceil(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate)/(float)stride);
+        return std::ceil(((float)input_size - ((float)kernel_size - 1.0f) * (float)dilation_rate)/(float)stride);
 
     }else{
       cout<<padding<<endl;
@@ -357,11 +360,11 @@ int ConvolDescriptor3D::compute_output(const string& padding, int input_size, in
     return -1;
 }
 
-int ConvolDescriptor3D::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
-    return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
+int ConvolDescriptor3D::compute_output(vector<int> padding, int input_size, int kernel_size, int stride, int dilation_rate) {
+    return (int)(((float)input_size - ((float)kernel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
 }
 
-vector<int> ConvolDescriptor3D::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding, bool row){
+vector<int> ConvolDescriptor3D::compute_padding(int output_size, int input_size, int kernel_size, int stride, string padding, bool row, int dilation_rate){
     // Padding order: [left, right] // [top, bottom]
 
     if (padding=="same,none") {
@@ -374,7 +377,7 @@ vector<int> ConvolDescriptor3D::compute_padding(int output_size, int input_size,
     }
 
     if (padding=="same" || padding =="zeros") {
-        int pad = (output_size-1) * stride + kerkel_size - input_size;
+        int pad = (output_size-1) * stride + kernel_size - input_size + (dilation_rate-1) * (kernel_size-1);
         pad = std::max(pad, 0);
 
         // Ignore the padding if possible

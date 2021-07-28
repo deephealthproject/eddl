@@ -84,7 +84,13 @@ int main(int argc, char **argv) {
         l2 = MaxPool2D(ReLu(Conv2D(l2, 64, {5, 5}, {1, 1}, "valid")), {2, 2}, {2, 2}, "same");
         l3 = MaxPool2D(ReLu(Conv2D(l3, 64, {3, 3}, {1, 1}, "same")), {2, 2}, {2, 2}, "same");
 
-        l = Concat({l1, l2, l3});
+        // Create a constant layer
+        vector<int> aux_shape = l3->output->shape;
+        aux_shape.erase(aux_shape.begin()); // Delete the batch dimension
+        Tensor* const_data = Tensor::randn(aux_shape);
+        layer l4 = ConstOfTensor(const_data);
+
+        l = Concat({l1, l2, l3, l4});
         l = MaxPool2D(ReLu(Conv2D(l, 64, {1, 1}, {1, 1})), {2, 2}, {2, 2}, "same");
 
         l = Reshape(l, {-1});

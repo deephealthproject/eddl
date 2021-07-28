@@ -21,7 +21,8 @@ echo "##### CONDA BUILD CONSTANTS #####################"
 echo "#################################################"
 echo "PREFIX=$PREFIX"
 echo "CMAKE_LIBRARY_PATH=$CMAKE_LIBRARY_PATH"
-echo "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH"
+echo "CMAKE_PREFIX_PATH=$PREFIX"
+echo "CMAKE_INSTALL_PREFIX=$PREFIX"
 echo "SRC_DIR=$SRC_DIR"
 echo "CC=$CC"
 echo "CXX=$CXX"
@@ -29,7 +30,7 @@ echo "CPU_COUNT=$CPU_COUNT"
 echo "#################################################"
 
 # Build makefiles
-cmake -DBUILD_TARGET=CPU \
+mkdir build && cd build/ && cmake .. -DBUILD_TARGET=CUDNN \
       -DBUILD_SUPERBUILD=OFF \
       -DBUILD_EXAMPLES=OFF \
       -DBUILD_TESTS=OFF \
@@ -38,7 +39,7 @@ cmake -DBUILD_TARGET=CPU \
       -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
       -DCMAKE_PREFIX_PATH=$PREFIX \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \
-      $SRC_DIR
+      -DCMAKE_BUILD_TYPE=Release
 
 # Compile
 make -j${CPU_COUNT} ${VERBOSE_CM}

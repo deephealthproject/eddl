@@ -21,12 +21,11 @@ void build_conv3D_node(LConv3D *layer, onnx::GraphProto *graph, bool gradients)
 
   ////////////////////////// Attributes of the Conv operation //////////////////////////////////
   // Attr dilations
-  //onnx::AttributeProto *conv_dilations = node->add_attribute();
-  //conv_dilations->set_name("dilations");
-  //conv_dilations->set_type(onnx::AttributeProto::INTS);
-  //vector<int> vdilations{1, 1, 1};
-  //for (int i : vdilations)
-  //  conv_dilations->add_ints(i);
+  onnx::AttributeProto *conv_dilations = node->add_attribute();
+  conv_dilations->set_name("dilations");
+  conv_dilations->set_type(onnx::AttributeProto::INTS);
+  for (int i : layer->cd->dilation_rate)
+    conv_dilations->add_ints(i);
 
   //Attr group
   //onnx::AttributeProto *conv_group = node->add_attribute();

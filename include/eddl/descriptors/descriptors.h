@@ -155,10 +155,10 @@ public:
     void resize(int b);
     void enable_distributed();
 
-    static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static int compute_input(const string& padding, int output_size, int kerkel_size, int stride, int dilation_rate=1);
-    static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
+    static int compute_output(const string& padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static int compute_input(const string& padding, int output_size, int kernel_size, int stride, int dilation_rate=1);
+    static int compute_output(vector<int> padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static vector<int> compute_padding(int output_size, int input_size, int kernel_size, int stride, string padding="same",bool row=false, int dilation_rate=1);
 
 };
 
@@ -168,6 +168,7 @@ public:
     vector<int> stride;
     vector<int> pad; // {depth-front, depth-back, rows-top, rows-bottom, cols-left, cols-right}
     string padding; // valid/none, same/zeros, custom
+    vector<int> dilation_rate;
 
     int nk, kz, kd, kr, kc;  // nk=num filters, kz=kernel channels, kd=kernel depth, kr=kernel rows, kc=Kernel cols
     int sd, sr, sc;  // sd=stride depth, sr=stride rows, sc=stride cols
@@ -235,9 +236,9 @@ public:
     ConvolDescriptor3D();
 
     ConvolDescriptor3D(int filters, const vector<int> &ks, const vector<int> &st, const string& p,
-                       const vector<int> &pads, bool use_bias, int mem=0);
+                       const vector<int> &pads, const vector<int> &dilation_rate, bool use_bias, int mem=0);
 
-    ConvolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, bool use_bias, int mem=0);
+    ConvolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, const vector<int> &dilation_rate, bool use_bias, int mem=0);
 
     ~ConvolDescriptor3D();
 
@@ -245,9 +246,9 @@ public:
     void resize(int b);
     void enable_distributed();
 
-    static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
+    static int compute_output(const string& padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static int compute_output(vector<int> padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static vector<int> compute_padding(int output_size, int input_size, int kernel_size, int stride, string padding="same",bool row=false, int dilation_rate=1);
 
 };
 
@@ -343,9 +344,9 @@ public:
     void resize(int b);
     void enable_distributed();
 
-    static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
+    static int compute_output(const string& padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static int compute_output(vector<int> padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static vector<int> compute_padding(int output_size, int input_size, int kernel_size, int stride, string padding="same",bool row=false);
 
 };
 
@@ -438,9 +439,9 @@ public:
     void resize(int b);
     void enable_distributed();
 
-    static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
+    static int compute_output(const string& padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static int compute_output(vector<int> padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static vector<int> compute_padding(int output_size, int input_size, int kernel_size, int stride, string padding="same",bool row=false);
 
 };
 
@@ -498,9 +499,9 @@ public:
 
     void build(Tensor *A);
     void resize(int b);
-    static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
+    static int compute_output(const string& padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static int compute_output(vector<int> padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static vector<int> compute_padding(int output_size, int input_size, int kernel_size, int stride, string padding="same",bool row=false);
 };
 
 class PoolDescriptor3D {
@@ -555,9 +556,9 @@ public:
 
     void build(Tensor *A);
     void resize(int b);
-    static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
+    static int compute_output(const string& padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static int compute_output(vector<int> padding, int input_size, int kernel_size, int stride, int dilation_rate=1);
+    static vector<int> compute_padding(int output_size, int input_size, int kernel_size, int stride, string padding="same",bool row=false);
 };
 
 #endif //EDDL_DESCRIPTORS_H

@@ -36,7 +36,6 @@
 extern void _show_profile_fpga();
 #endif
 
-
 #define VERBOSE 0
 
 int verboserec = 1;
@@ -275,12 +274,16 @@ void Net::set_parameters(const vector<vtensor>& new_params) {
     }
 
     // Set layer params
-    for (int i = 0; i<this->layers.size(); i++) {
+    for (int layer_index = 0; layer_index < this->layers.size(); ++layer_index) {
 
         // Copy current params
-        for (int j = 0; j<this->layers[i]->params.size(); j++) {
-            Tensor::copy(new_params[i][j], this->layers[i]->params[j]);
-            sync_weights(); // Send CPU tensors to devices
+        for (int param_index = 0; param_index < this->layers[layer_index]->params.size(); ++param_index) {
+            Tensor::copy(new_params[layer_index][param_index], this->layers[layer_index]->params[param_index]);
+            // sync_weights();  // Send CPU tensors to devices -- 2021-07-05 to be definitively removed because it does just the opposite we need here
+            // copy-back to devices
+            for (int snet_index = 0; snet_index < snets.size(); ++snet_index) {
+                Tensor::copy(this->layers[layer_index]->params[param_index], snets[snet_index]->layers[layer_index]->params[param_index]);
+            }
         }
 
     }
@@ -811,221 +814,225 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     double secs_epoch_prev = 0;
     float SPEED_UP = 1.05;
 
-
     if (isrecurrent) {
         fit_recurrent(tin, tout, batch, epochs);
     } else {
-        /*
-      CUDACHECK(cudaMalloc(sendbuff + 0, SIZE * sizeof(float)));
-      CUDACHECK(cudaMalloc(recvbuff + 0, SIZE * sizeof(float)));
-      CUDACHECK(cudaMemset(sendbuff[0], 1, SIZE * sizeof(float)));
-      CUDACHECK(cudaMemset(recvbuff[0], 0, SIZE * sizeof(float)));
-         */
-        //     for (i = 1; i < SIZE; i++) ptr[i]=(float) i;
-        if (use_mpi) {
-            MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
-            MPI_Comm_rank(MPI_COMM_WORLD, &id);
-        } else id = 0;
-        // Check current optimizer
-        if (optimizer == nullptr)
-            msg("Net is not build", "Net.fit");
 
-        // Check if number of input/output network layers matches with the input/output tensor data
-        if (tin.size() != lin.size()) {
-            cout << tin.size() << "!=" << lin.size() << endl;
-            msg("input tensor list does not match with defined input layers", "Net.fit");
-        }
-        if (tout.size() != lout.size()) {
-            cout << tout.size() << "!=" << lout.size() << endl;
-            msg("output tensor list does not match with defined output layers", "Net.fit");
-        }
+        if (isrecurrent) {
+            fit_recurrent(tin, tout, batch, epochs);
+        } else {
+            /*
+          CUDACHECK(cudaMalloc(sendbuff + 0, SIZE * sizeof(float)));
+          CUDACHECK(cudaMalloc(recvbuff + 0, SIZE * sizeof(float)));
+          CUDACHECK(cudaMemset(sendbuff[0], 1, SIZE * sizeof(float)));
+          CUDACHECK(cudaMemset(recvbuff[0], 0, SIZE * sizeof(float)));
+             */
+            //     for (i = 1; i < SIZE; i++) ptr[i]=(float) i;
+            if (use_mpi) {
+                MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
+                MPI_Comm_rank(MPI_COMM_WORLD, &id);
+            } else id = 0;
+            // Check current optimizer
+            if (optimizer == nullptr)
+                msg("Net is not build", "Net.fit");
 
-
-        // Check if all the data inputs has the same number of samples
-        n = tin[0]->shape[0];
-        for (i = 1; i < tin.size(); i++)
-            if (tin[i]->shape[0] != n)
-                msg("different number of samples in input tensor", "Net.fit");
-
-
-
-        // Check if the size of the output layers matches with inputs sizes
-        for (i = 1; i < tout.size(); i++)
-            if (tout[i]->shape[0] != n)
-                msg("different number of samples in output tensor", "Net.fit");
-
-
-        // Set batch size
-        resize(batch);
-
-
-        // Create array to store batch indices (later random)
-        vind sind;
-        for (i = 0; i < batch_size; i++)
-            sind.push_back(0);
-
-
-        // Start training
-        setmode(TRMODE);
-
-        // Set some parameters
-        int num_batches = n / batch_size;
-        batches_per_proc = num_batches / n_procs;
-
-        // Train network
-        if (id == 0) {
-            fprintf(stdout, "%d epochs of %d batches of size %d (local) %d (global)\n", epochs, num_batches, batch_size, n_procs * batch_size);
-            if (use_mpi) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, mpi_avg);
-        }
-
-        batches_avg = mpi_avg;
-        for (i = 0; i < epochs; i++) {
-            high_resolution_clock::time_point e1 = high_resolution_clock::now();
-            if (id == 0) {
-                if (use_mpi) {
-                    fprintf(stdout, "Epoch %d, mpi_avg %d\n", i + 1, batches_avg);
-                } else {
-                    fprintf(stdout, "Epoch %d\n", i + 1);
-                }
+            // Check if number of input/output network layers matches with the input/output tensor data
+            if (tin.size() != lin.size()) {
+                cout << tin.size() << "!=" << lin.size() << endl;
+                msg("input tensor list does not match with defined input layers", "Net.fit");
             }
-            reset_loss();
+            if (tout.size() != lout.size()) {
+                cout << tout.size() << "!=" << lout.size() << endl;
+                msg("output tensor list does not match with defined output layers", "Net.fit");
+            }
 
-            batches = 0;
-            // For each batch
-            for (j = 0; j < (batches_per_proc); j++) {
-                batches = batches + n_procs;
 
-                // printf("Batch nr %d\n", j);
-                // Set random indices
-                for (k = 0; k < batch_size; k++) sind[k] = rand() % n;
+            // Check if all the data inputs has the same number of samples
+            n = tin[0]->shape[0];
+            for (i = 1; i < tin.size(); i++)
+                if (tin[i]->shape[0] != n)
+                    msg("different number of samples in input tensor", "Net.fit");
 
-                // Train batch
-                tr_batches++;
 
-                train_batch(tin, tout, sind);
 
+            // Check if the size of the output layers matches with inputs sizes
+            for (i = 1; i < tout.size(); i++)
+                if (tout[i]->shape[0] != n)
+                    msg("different number of samples in output tensor", "Net.fit");
+
+
+            // Set batch size
+            resize(batch);
+
+
+            // Create array to store batch indices (later random)
+            vind sind;
+            for (i = 0; i < batch_size; i++)
+                sind.push_back(0);
+
+
+            // Start training
+            setmode(TRMODE);
+
+            // Set some parameters
+            int num_batches = n / batch_size;
+            batches_per_proc = num_batches / n_procs;
+
+            // Train network
+            if (id == 0) {
+                fprintf(stdout, "%d epochs of %d batches of size %d (local) %d (global)\n", epochs, num_batches, batch_size, n_procs * batch_size);
+                if (use_mpi) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, mpi_avg);
+            }
+
+            batches_avg = mpi_avg;
+            for (i = 0; i < epochs; i++) {
+                high_resolution_clock::time_point e1 = high_resolution_clock::now();
+                if (id == 0) {
+                    if (use_mpi) {
+                        fprintf(stdout, "Epoch %d, mpi_avg %d\n", i + 1, batches_avg);
+                    } else {
+                        fprintf(stdout, "Epoch %d\n", i + 1);
+                    }
+                }
+                reset_loss();
+
+                batches = 0;
+                // For each batch
+                for (j = 0; j < (batches_per_proc); j++) {
+                    batches = batches + n_procs;
+
+                    // printf("Batch nr %d\n", j);
+                    // Set random indices
+                    for (k = 0; k < batch_size; k++) sind[k] = rand() % n;
+
+                    // Train batch
+                    tr_batches++;
+
+                    train_batch(tin, tout, sind);
 
 #ifdef cMPI
-                // synchronize
-                if (use_mpi) {
-                    if ((((j + 1) % batches_avg) == 0) || ((j + 1) == batches_per_proc)) {
-                        //printf("Proc %d Sincronizando %d\n", id, j);
-                        for (ii = 0; ii < snets[0]->layers.size(); ii++) {
-                            for (jj = 0; jj < snets[0]->layers[ii]->params.size(); jj++) {
+                    // synchronize
+                    if (use_mpi) {
+                        if ((((j + 1) % batches_avg) == 0) || ((j + 1) == batches_per_proc)) {
+                            //printf("Proc %d Sincronizando %d\n", id, j);
+                            for (ii = 0; ii < snets[0]->layers.size(); ii++) {
+                                for (jj = 0; jj < snets[0]->layers[ii]->params.size(); jj++) {
 
-                                myptr = snets[0]->layers[ii]->params[jj]->ptr;
-                                count = snets[0]->layers[ii]->params[jj]->size;
-                                //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
-                                if (count != 0) {
-                                    // MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
-                                    //fn_mpi_AllReduce(myptr, count)
-                                    fn_nccl_AllReduce(myptr, count);
+                                    myptr = snets[0]->layers[ii]->params[jj]->ptr;
+                                    count = snets[0]->layers[ii]->params[jj]->size;
+                                    //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
+                                    if (count != 0) {
+                                        // MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
+                                        //fn_mpi_AllReduce(myptr, count)
+                                        fn_nccl_AllReduce(myptr, count);
 
-                                    //CUDACHECK(cudaSetDevice(0));
-                                    //NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
-                                    //completing NCCL operation by synchronizing on the CUDA stream
-                                    //CUDACHECK(cudaStreamSynchronize(cuda_stream));
+                                        //CUDACHECK(cudaSetDevice(0));
+                                        //NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
+                                        //completing NCCL operation by synchronizing on the CUDA stream
+                                        //CUDACHECK(cudaStreamSynchronize(cuda_stream));
 
-                                    /*
-                                   printf("NCCL Sincronizando proc %d batch %d\n", id, j);
-                                   NCCLCHECK(ncclAllReduce((const void*)sendbuff[0], (void*)sendbuff[0], SIZE, ncclFloat, ncclSum, nccl_comm, cuda_stream));
-                                   CUDACHECK(cudaSetDevice(0));
-                                   CUDACHECK(cudaStreamSynchronize(cuda_stream));
-                                     */
-                                    snets[0]->layers[ii]->params[jj]->div_(n_procs);
+                                        /*
+                                       printf("NCCL Sincronizando proc %d batch %d\n", id, j);
+                                       NCCLCHECK(ncclAllReduce((const void*)sendbuff[0], (void*)sendbuff[0], SIZE, ncclFloat, ncclSum, nccl_comm, cuda_stream));
+                                       CUDACHECK(cudaSetDevice(0));
+                                       CUDACHECK(cudaStreamSynchronize(cuda_stream));
+                                         */
+                                        snets[0]->layers[ii]->params[jj]->div_(n_procs);
+                                    }
+                                    // OJO solo se puede hacer printf si el objeto está en CPU
+                                    //if (ii==7) {
+                                    //  printf("\n ii=%d jj=%d count=%d .....", ii,jj,count);
+                                    //  for (int ss=0; ss<count; ss++) printf("%4f", myptr[ss] );
+                                    //}
+
                                 }
-                                // OJO solo se puede hacer printf si el objeto está en CPU
-                                //if (ii==7) {
-                                //  printf("\n ii=%d jj=%d count=%d .....", ii,jj,count);
-                                //  for (int ss=0; ss<count; ss++) printf("%4f", myptr[ss] );
-                                //}
-
                             }
                         }
                     }
-                }
 #endif
 
-                if (id == 0) {
-                    print_loss(batches, num_batches);
-                    //print_loss(j+1,num_batches);
+                    if (id == 0) {
+                        print_loss(batches, num_batches);
+                        //print_loss(j+1,num_batches);
+                    }
+                    high_resolution_clock::time_point e2 = high_resolution_clock::now();
+                    duration<double> epoch_time_span = e2 - e1;
+                    if (id == 0) {
+                        fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count() / ((j + 1) * n_procs));
+                        fflush(stdout);
+                    }
+
+
                 }
                 high_resolution_clock::time_point e2 = high_resolution_clock::now();
                 duration<double> epoch_time_span = e2 - e1;
+                secs_epoch = epoch_time_span.count();
+                if (i == 0) secs_epoch_prev = 2 * secs_epoch; // Force first change with adaptive
+
                 if (id == 0) {
-                    fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count() / ((j + 1) * n_procs));
+                    fprintf(stdout, "\n%1.4f secs/epoch\n", epoch_time_span.count());
                     fflush(stdout);
                 }
-
-
-            }
-            high_resolution_clock::time_point e2 = high_resolution_clock::now();
-            duration<double> epoch_time_span = e2 - e1;
-            secs_epoch = epoch_time_span.count();
-            if (i == 0) secs_epoch_prev = 2 * secs_epoch; // Force first change with adaptive
-
-            if (id == 0) {
-                fprintf(stdout, "\n%1.4f secs/epoch\n", epoch_time_span.count());
-                fflush(stdout);
-            }
-            /*
-            if (((i+1) % 2)==1) {
-                    loss1 =  get_losses()[lout.size()-1];
-                    printf("measuring loss1 %f\n", loss1);
-                }
-            if (((i+1) % 2)==0) {
-                    loss2 =  get_losses()[lout.size()-1];
-                    printf("measuring loss2 %f\n", loss2);
-                 }
-            printf("loss1 %f\n", loss1);
-            printf("loss2 %f\n", loss2);
-             */
-            switch (avg_method) {
-                case 1:
-                    if (((i + 1) % (2 * n_procs)) == 0) {
-                        if (batches_avg < batches_per_proc)
-                            batches_avg = batches_avg * 2;
+                /*
+                if (((i+1) % 2)==1) {
+                        loss1 =  get_losses()[lout.size()-1];
+                        printf("measuring loss1 %f\n", loss1);
                     }
-                    break;
-
-                case 2:
-                    if (((i + 1) % (n_procs)) == 0) {
-                        batches_avg = batches_avg * 2;
-
-                        if (batches_avg >= batches_per_proc)
-                            batches_avg = mpi_avg;
-                    }
-                    break;
-
-                case 3:
-                    if (((i + 1) % (n_procs)) == 0) {
-                        batches_avg = batches_avg / 2;
-
-                        if (batches_avg <= 1)
-                            batches_avg = mpi_avg;
-                    }
-                    break;
-
-
-                case 4:
-                    if (((i + 1) % (n_procs)) == 0) {
-                        float speed_up = secs_epoch_prev / secs_epoch;
-                        if (speed_up > SPEED_UP) {
-                            secs_epoch_prev = secs_epoch;
-
+                if (((i+1) % 2)==0) {
+                        loss2 =  get_losses()[lout.size()-1];
+                        printf("measuring loss2 %f\n", loss2);
+                     }
+                printf("loss1 %f\n", loss1);
+                printf("loss2 %f\n", loss2);
+                 */
+                switch (avg_method) {
+                    case 1:
+                        if (((i + 1) % (2 * n_procs)) == 0) {
                             if (batches_avg < batches_per_proc)
                                 batches_avg = batches_avg * 2;
                         }
-                    }
-                    break;
+                        break;
+
+                    case 2:
+                        if (((i + 1) % (n_procs)) == 0) {
+                            batches_avg = batches_avg * 2;
+
+                            if (batches_avg >= batches_per_proc)
+                                batches_avg = mpi_avg;
+                        }
+                        break;
+
+                    case 3:
+                        if (((i + 1) % (n_procs)) == 0) {
+                            batches_avg = batches_avg / 2;
+
+                            if (batches_avg <= 1)
+                                batches_avg = mpi_avg;
+                        }
+                        break;
+
+
+                    case 4:
+                        if (((i + 1) % (n_procs)) == 0) {
+                            float speed_up = secs_epoch_prev / secs_epoch;
+                            if (speed_up > SPEED_UP) {
+                                secs_epoch_prev = secs_epoch;
+
+                                if (batches_avg < batches_per_proc)
+                                    batches_avg = batches_avg * 2;
+                            }
+                        }
+                        break;
+                }
             }
+            fflush(stdout);
         }
         fflush(stdout);
     }
 
 }
 
-void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor * Z) {
+void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z) {
     int i, j, k, n;
 
     // Check whether is encoder, decoder or both.
@@ -1088,7 +1095,6 @@ void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, 
             tinr.push_back(new Tensor(shape, yt[i]->ptr + (j * offset), yt[i]->device));
 
         // output
-
         for (j = 0; j < outl; j++)
             toutr.push_back(new Tensor(shape, yt[i]->ptr + (j * offset), yt[i]->device));
     }
@@ -1097,7 +1103,7 @@ void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, 
 
 }
 
-void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor * Z) {
+void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z) {
 
     int i, j, k, n;
 
@@ -1187,14 +1193,13 @@ void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &ou
             tinr.push_back(new Tensor(shape, yt[i]->ptr + (j * offset), yt[i]->device));
 
         // output
-
         for (j = 0; j < outl; j++)
             toutr.push_back(new Tensor(shape, yt[i]->ptr + (j * offset), yt[i]->device));
     }
 
 }
 
-void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor * Z) {
+void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z) {
     int i, j, k, n;
 
 
@@ -1277,13 +1282,12 @@ void Net::prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, 
             shape.push_back(yt[i]->shape[j]);
 
         if (tout.size())
-
             for (j = 0; j < outl; j++)
                 toutr.push_back(new Tensor(shape, yt[i]->ptr + (j * offset), yt[i]->device));
     }
 }
 
-void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor * Z) {
+void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z) {
     int i, j, k, n;
 
     // Check whether is encoder, decoder or both.
@@ -1304,7 +1308,6 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
         prepare_recurrent_enc_dec(tin, tout, inl, outl, xt, xtd, yt, tinr, toutr);
     else if (isdecoder)
         prepare_recurrent_dec(tin, tout, inl, outl, xt, xtd, yt, tinr, toutr);
-
     else
         prepare_recurrent_enc(tin, tout, inl, outl, xt, xtd, yt, tinr, toutr);
 }
@@ -1434,7 +1437,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
         if (!eval) {
             // In case of multiple GPUS or FPGA synchronize params
             if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches % cs->lsb == 0)) {
-
                 sync_weights();
             }
         }
@@ -1453,60 +1455,55 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 void Net::evaluate(vtensor tin, vtensor tout, int bs) {
 
     int i, j, k, n;
-    int id;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &id);
-    // Only proc 0 performs testing
-    if (id == 0) {
-        if (isrecurrent) {
-            evaluate_recurrent(tin, tout, bs);
-        } else {
+    if (isrecurrent) {
+        evaluate_recurrent(tin, tout, bs);
+    } else {
 
-            // Check list shape
-            if (tin.size() != lin.size())
-                msg("input tensor list does not match with defined input layers", "Net.evaluate");
-            if (tout.size() != lout.size())
-                msg("output tensor list does not match with defined output layers", "Net.evaluate");
+        // Check list shape
+        if (tin.size() != lin.size())
+            msg("input tensor list does not match with defined input layers", "Net.evaluate");
+        if (tout.size() != lout.size())
+            msg("output tensor list does not match with defined output layers", "Net.evaluate");
 
-            // Check data consistency
-            n = tin[0]->shape[0];
+        // Check data consistency
+        n = tin[0]->shape[0];
 
-            for (i = 1; i < tin.size(); i++)
-                if (tin[i]->shape[0] != n)
-                    msg("different number of samples in input tensor", "Net.evaluate");
+        for (i = 1; i < tin.size(); i++)
+            if (tin[i]->shape[0] != n)
+                msg("different number of samples in input tensor", "Net.evaluate");
 
-            for (i = 1; i < tout.size(); i++)
-                if (tout[i]->shape[0] != n)
-                    msg("different number of samples in output tensor", "Net.evaluate");
+        for (i = 1; i < tout.size(); i++)
+            if (tout[i]->shape[0] != n)
+                msg("different number of samples in output tensor", "Net.evaluate");
 
-            if (bs != -1) resize(bs);
-            else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
+        if (bs != -1) resize(bs);
+        else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
 
-            printf("Evaluate with batch size %d\n", batch_size);
+        printf("Evaluate with batch size %d\n", batch_size);
 
-            // Create internal variables
-            vind sind;
+        // Create internal variables
+        vind sind;
+        for (k = 0; k < batch_size; k++)
+            sind.push_back(0);
+
+
+        // Start eval
+        setmode(TSMODE);
+        reset_loss();
+        for (j = 0; j < n / batch_size; j++) {
+
             for (k = 0; k < batch_size; k++)
-                sind.push_back(0);
+                sind [k] = (j * batch_size) + k;
 
+            train_batch(tin, tout, sind, 1);
 
-            // Start eval
-            setmode(TSMODE);
-            reset_loss();
-            for (j = 0; j < n / batch_size; j++) {
-
-                for (k = 0; k < batch_size; k++)
-                    sind [k] = (j * batch_size) + k;
-
-                train_batch(tin, tout, sind, 1);
-
-                print_loss(j + 1, n / batch_size);
-                fprintf(stdout, "\r");
-                fflush(stdout);
-            }
-            fprintf(stdout, "\n");
-
+            print_loss(j + 1, n / batch_size);
+            fprintf(stdout, "\r");
+            fflush(stdout);
         }
+        fprintf(stdout, "\n");
+
     }
 }
 
@@ -1568,7 +1565,12 @@ vtensor Net::predict_recurrent(vtensor tin) {
 
     prepare_recurrent(tin, tout, inl, outl, xt, xtd, yt, tinr, toutr);
 
+    build_rnet(inl, outl);
+
     out = rnet->predict(tinr);
+
+    for (int i = 0; i < tinr.size(); i++) delete(tinr[i]);
+    for (int i = 0; i < toutr.size(); i++) delete(toutr[i]);
 
     for (int i = 0; i < xt.size(); i++)
         delete xt[i];
@@ -1585,16 +1587,16 @@ vtensor Net::predict(vtensor tin) {
     vtensor out;
 
     if (isrecurrent) {
+        verboserec = 0;
         return predict_recurrent(tin);
     } else {
-        cout << "Predict " << tin[0]->shape[0] << " samples\n";
+        // cout<<"Predict "<<tin[0]->shape[0]<<" samples\n";
 
         setmode(TSMODE);
 
         forward(tin);
 
         for (int i = 0; i < lout.size(); i++) {
-
             collectTensor(lout[i], "output");
             out.push_back(lout[i]->output->clone());
         }
@@ -1641,7 +1643,6 @@ bool Net::compare_outputs(Net *net1, Net *net2, bool verbose, float atol, float 
             }
         } else {
             if (verbose) {
-
                 cout << "[FAIL] The outputs from layers #" << i << " (" << net1->layers[i]->name << " AND " <<
                         net2->layers[i]->name << ") do not match" << " [Net::compare_outputs]" << endl;
             }

@@ -151,6 +151,13 @@ if(BUILD_PROTOBUF)
         # Add includes
         target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
 
+        if(MSVC AND NOT Protobuf_USE_STATIC_LIBS)
+            # libprotobuf as shared lib requires PROTOBUF_USE_DLLS definition for MSVC :(
+            # Because of https://github.com/protocolbuffers/protobuf/issues/2502#issuecomment-412868718
+            # libprotobuf conda package is dynamically linked
+            target_compile_definitions(${PROJECT_NAME} PUBLIC PROTOBUF_USE_DLLS)
+        endif()
+
         # Add libraries
         if(MSVC)
             target_link_libraries(${PROJECT_NAME} PUBLIC optimized ${Protobuf_LIBRARY} debug ${Protobuf_LIBRARY_DEBUG})

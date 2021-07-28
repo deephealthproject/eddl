@@ -116,9 +116,15 @@ void LReshape::mem_delta() {
 #endif
         delta = new Tensor(ls, parent[0]->delta);
 
-        if(this->verbosity_level >= 2){
+        if (this->verbosity_level >= 2) {
             std::cout << "Booked delta for: " + this->name << std::endl;
         }
+    } else if (this->delta->shape[0] != this->output->shape[0]) {
+        parent[0]->mem_delta();
+        this->delta->resize(this->output->shape[0], parent[0]->delta->ptr, nullptr, false);
+
+        if (ls[0] != this->delta->shape[0])
+            msg("Wrong resizing of delta in mem_delta()", "Reshape");
     }
 }
 

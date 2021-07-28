@@ -26,10 +26,10 @@
 | Split        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Split a layer into a list of tensors layers |
 | Embedding | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Turns positive integers (indexes) into dense vectors of fixed size; (also known as mapping). e.g. `[[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]` |
 | Transpose | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Permute the last two dimensions |
-| ConstOfTensor | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Repeats a tensor across the batch |
-| Equal | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Return (x1 == x2) element-wise |
+| ConstOfTensor | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Repeats a tensor across the batch |
+| Equal | 🟢️️ | 🟢️️ | 🟢️️ | ️🔴️ | Return (x1 == x2) element-wise |
 | Expand        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Returns a layer with singleton dimensions expanded to a larger size |
-| Where | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Return elements chosen from x or y depending on condition |
+| Where | 🟢️️ | 🟢️️ | 🟢️️ | ️🔴️ | Return elements chosen from x or y depending on condition |
 | Resize          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Resize the input image to the given size. `[height, width]` |
 
 
@@ -64,10 +64,10 @@
 | Conv3D            |  ⚫️️ | ⚫️  |🟢️️ | 🟢️ | 3D convolution |
 | Pointwise         | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | 2D pointwise convolution |
 | DepthwiseConv2D   | 🔴️ | 🔴️  |🔴️ | 🔴️ | 2D depthsise convolution |
-| TransposedConv2D  | ⚫️️ | ⚫️   |🟢️| 🔴️️ | 2D Transposed convolution |
-| TransposedConv3D  | ⚫️️ | ⚫️   |🟢️| 🔴️ | 3D Transposed convolution |
+| TransposedConv2D  | ⚫️️ | ⚫️   |🟢️| 🟢️ | 2D Transposed convolution |
+| TransposedConv3D  | ⚫️️ | ⚫️   |🟢️| 🟢️ | 3D Transposed convolution |
 | UpSampling2D        | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
-| UpSampling3D        | 🟢️️ | 🟢️️ |🟢️️ | ️️🔴 | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
+| UpSampling3D        | 🟢️️ | 🟢️️ | 🟢️️ | ️️🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
 
 
 ## Data transformation/augmentation
@@ -86,7 +86,7 @@ Deterministic transformations
 | Flip           | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Flip the given image at `axis=n` |
 | Grayscale      | ⚫️ | ⚫️ |⚫️ | ⚫️️ | Convert image to grayscale |
 | HorizontalFlip | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Horizontally flip the given image |
-| Pad            | 🟢️️ | 🟢️️ |🟢️️| ⚫️ | Pad the given image on all sides with the given "pad" value |
+| Pad            | 🟢️️ | 🟢️️ |🟢️️| 🟢️ | Pad the given image on all sides with the given "pad" value |
 | Rotate         | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Rotate the image by angle |
 | Scale          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Resize the input image to the given size. `[height, width]`. Does not include backward (see Resize) |
 | Shift          | 🟢️️ | 🟢️️ |🟢️️ | ⚫️ | Shift the input image `[a, b]` |
@@ -253,7 +253,7 @@ Apply data transformations with random parametrization.
 | MSLE                    | ⚫️    | ⚫️️  | Mean Squared Logarithmic Error |
 | Min                     | 🟢️️ | 🟢️️ | 🟢️️ | Minimum Error |
 | Hinge                   | ⚫ | ⚫ | ⚫ | Hinge Error |
-| Dice                    | 🟢️️ | 🟢️️   🟢️️  | Dice loss |
+| Dice                    | 🟢️️ | 🟢️️ | 🟢️️ | Dice loss |
 | SoftCrossEntropy        | 🟢️️ | 🟢️️ | 🟢️️ | Soft-Categorical Cross-Entropy Error |
 
 

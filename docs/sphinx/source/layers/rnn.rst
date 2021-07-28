@@ -20,11 +20,14 @@ GRU
 
 Gated Recurrent Unit - Cho et al. 2014.
 
-.. note::
+.. doxygenfunction:: GRU(layer parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "")
 
-    **Not implemented yet**
 
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#core-layers
+Example:
+
+.. code-block:: c++
+
+    l = GRU(l, 128);
 
 
 

@@ -15,7 +15,8 @@ vector<onnx::TensorProto> get_initializers(onnx::GraphProto graph);
 
 map<string, vector<onnx::NodeProto *>> initialize_input_node_map(vector<onnx::NodeProto> &nodes);
 
-map<string, onnx::NodeProto *> initialize_constant_nodes(vector<onnx::NodeProto> &nodes);
+map<string, onnx::NodeProto *> initialize_constant_nodes(vector<onnx::NodeProto> &nodes,
+                                                         map<string, vector<onnx::NodeProto *>> &input_node_map);
 
 queue<onnx::NodeProto *> process_inputs(vector<Layer *> *inputs,
                                         vector<onnx::ValueInfoProto> *inputs_onnx,
@@ -57,6 +58,7 @@ void log_model_metadata(onnx::ModelProto& model, LOG_LEVEL log_level);
 
 void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
                           map<string, vector<float>> &map_init_values,
+                          map<string, vector<onnx::NodeProto *>> &input_node_map,
                           map<string, onnx::NodeProto *> &constant_node_map,
                           queue<onnx::NodeProto *> &nodeQueue,
                           LOG_LEVEL log_level);

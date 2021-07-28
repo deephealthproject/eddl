@@ -19,6 +19,8 @@ def main():
                         help='File path to the onnx file with the pretrained model to test')
     parser.add_argument('-m', '--target-metric', type=str, default="",
                         help='Path to a file with a single value with the target metric to achieve')
+    parser.add_argument('--data-size', type=int, default=16,
+                        help='Size of the depth, height, and width dimensions of the synthetic data')
     args = parser.parse_args()
 
     # Load ONNX model
@@ -32,9 +34,9 @@ def main():
 
     # Prepare data loader
     class Dummy_datagen:
-        def __init__(self, batch_size=2, n_samples=6, num_classes=1):
+        def __init__(self, batch_size=2, n_samples=6, num_classes=1, ch=3, d=16, h=16, w=16):
             # Shape: (n_samples=n_samples, ch=3, depth=16, height=16, width=16)
-            self.samples = np.linspace(0, 1, n_samples*3*16*16*16).reshape((n_samples, 3, 16, 16, 16)).astype(np.float32)
+            self.samples = np.linspace(0, 1, n_samples*ch*d*h*w).reshape((n_samples, ch, d, h, w)).astype(np.float32)
             # Shape: (n_samples=n_samples, dim=num_classes)
             self.labels = np.linspace(0, 1, n_samples*num_classes).reshape((n_samples, num_classes)).astype(np.float32)
             self.curr_idx = 0  # Current index of the batch
@@ -55,7 +57,7 @@ def main():
 
     total_mse = 0
     total_samples = 0
-    for data, label in tqdm(Dummy_datagen(args.batch_size)):
+    for data, label in tqdm(Dummy_datagen(args.batch_size, d=args.data_size, h=args.data_size, w=args.data_size)):
         # Run model
         result = session.run([output_name], {input_name: data})
         pred = np.squeeze(np.array(result), axis=0)
