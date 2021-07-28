@@ -35,7 +35,10 @@ int main(int argc, char **argv) {
     int id;
 
 
-    id=init_distributed(&argc, &argv, 1, 1);
+     id = init_distributed(&argc, &argv);
+    
+    // Sync every batch, change every 2 epochs
+    set_method_distributed(AUTO_TIME,1,2);
 
 
     for (int i = 1; i < argc; ++i) {

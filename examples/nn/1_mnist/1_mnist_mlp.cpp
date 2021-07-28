@@ -27,7 +27,10 @@ int main(int argc, char **argv) {
     bool use_cpu = false;
     int id;
 
-    id = init_distributed(&argc, &argv, 1, 2);
+    id = init_distributed(&argc, &argv);
+    
+    // Sync every batch, change every 2 epochs
+    set_method_distributed(AUTO_TIME,1,4);
 
 
 
@@ -54,16 +57,14 @@ int main(int argc, char **argv) {
     l = LeakyReLu(Dense(l, 1024));
 
     layer out = Softmax(Dense(l, num_classes), -1); // Softmax axis optional (default=-1)
-    model net = Model({in},
-    {
-        out
-    });
+    model net = Model({in},{out});
     net->verbosity_level = 0;
 
     // dot from graphviz should be installed:
-    if (id == 0)
-        plot(net, "model.pdf");
-
+    if (id == 0) {
+       plot(net, "model.pdf");
+    }
+    
     compserv cs = nullptr;
     if (use_cpu) {
         cs = CS_CPU();
@@ -121,6 +122,7 @@ int main(int argc, char **argv) {
     {
         y_train
     }, batch_size, epochs);
+    
 
     // Evaluate
     evaluate(net,{x_test},

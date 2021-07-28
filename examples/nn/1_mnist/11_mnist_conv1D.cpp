@@ -25,8 +25,11 @@ int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
     int id;
-
-    id=init_distributed(&argc, &argv,8, 0);
+    
+    id = init_distributed(&argc, &argv);
+    
+    // Sync every batch, change every 2 epochs
+    set_method_distributed(AUTO_TIME,1,2); 
 
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;

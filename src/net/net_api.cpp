@@ -46,6 +46,7 @@ using namespace std::chrono;
 extern int use_mpi;
 extern int mpi_avg;
 extern int avg_method;
+extern int x_avg;
 
 float loss1, loss2;
 
@@ -814,6 +815,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     double secs_epoch_prev = 0;
     float SPEED_UP = 1.05;
 
+    
     if (isrecurrent) {
         fit_recurrent(tin, tout, batch, epochs);
     } else {
@@ -832,6 +834,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                 MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
                 MPI_Comm_rank(MPI_COMM_WORLD, &id);
             } else id = 0;
+            
             // Check current optimizer
             if (optimizer == nullptr)
                 msg("Net is not build", "Net.fit");
@@ -987,14 +990,14 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                  */
                 switch (avg_method) {
                     case 1:
-                        if (((i + 1) % (2 * n_procs)) == 0) {
+                        if (((i + 1) % (x_avg)) == 0) {
                             if (batches_avg < batches_per_proc)
                                 batches_avg = batches_avg * 2;
                         }
                         break;
 
                     case 2:
-                        if (((i + 1) % (n_procs)) == 0) {
+                        if (((i + 1) % (x_avg)) == 0) {
                             batches_avg = batches_avg * 2;
 
                             if (batches_avg >= batches_per_proc)
@@ -1003,17 +1006,17 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                         break;
 
                     case 3:
-                        if (((i + 1) % (n_procs)) == 0) {
+                        if (((i + 1) % (x_avg)) == 0) {
                             batches_avg = batches_avg / 2;
 
-                            if (batches_avg <= 1)
+                            if (batches_avg < 1)
                                 batches_avg = mpi_avg;
                         }
                         break;
 
 
                     case 4:
-                        if (((i + 1) % (n_procs)) == 0) {
+                        if (((i + 1) % (x_avg)) == 0) {
                             float speed_up = secs_epoch_prev / secs_epoch;
                             if (speed_up > SPEED_UP) {
                                 secs_epoch_prev = secs_epoch;
@@ -1023,6 +1026,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                             }
                         }
                         break;
+                   
                 }
             }
             fflush(stdout);
@@ -1455,55 +1459,61 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 void Net::evaluate(vtensor tin, vtensor tout, int bs) {
 
     int i, j, k, n;
+    int id;
 
     if (isrecurrent) {
         evaluate_recurrent(tin, tout, bs);
     } else {
+        if (use_mpi) {
+            //MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
+            MPI_Comm_rank(MPI_COMM_WORLD, &id);
+        } else id = 0;
+        if (id == 0) {
+            // Check list shape
+            if (tin.size() != lin.size())
+                msg("input tensor list does not match with defined input layers", "Net.evaluate");
+            if (tout.size() != lout.size())
+                msg("output tensor list does not match with defined output layers", "Net.evaluate");
 
-        // Check list shape
-        if (tin.size() != lin.size())
-            msg("input tensor list does not match with defined input layers", "Net.evaluate");
-        if (tout.size() != lout.size())
-            msg("output tensor list does not match with defined output layers", "Net.evaluate");
+            // Check data consistency
+            n = tin[0]->shape[0];
 
-        // Check data consistency
-        n = tin[0]->shape[0];
+            for (i = 1; i < tin.size(); i++)
+                if (tin[i]->shape[0] != n)
+                    msg("different number of samples in input tensor", "Net.evaluate");
 
-        for (i = 1; i < tin.size(); i++)
-            if (tin[i]->shape[0] != n)
-                msg("different number of samples in input tensor", "Net.evaluate");
+            for (i = 1; i < tout.size(); i++)
+                if (tout[i]->shape[0] != n)
+                    msg("different number of samples in output tensor", "Net.evaluate");
 
-        for (i = 1; i < tout.size(); i++)
-            if (tout[i]->shape[0] != n)
-                msg("different number of samples in output tensor", "Net.evaluate");
+            if (bs != -1) resize(bs);
+            else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
 
-        if (bs != -1) resize(bs);
-        else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
+            printf("Evaluate with batch size %d\n", batch_size);
 
-        printf("Evaluate with batch size %d\n", batch_size);
-
-        // Create internal variables
-        vind sind;
-        for (k = 0; k < batch_size; k++)
-            sind.push_back(0);
-
-
-        // Start eval
-        setmode(TSMODE);
-        reset_loss();
-        for (j = 0; j < n / batch_size; j++) {
-
+            // Create internal variables
+            vind sind;
             for (k = 0; k < batch_size; k++)
-                sind [k] = (j * batch_size) + k;
+                sind.push_back(0);
 
-            train_batch(tin, tout, sind, 1);
 
-            print_loss(j + 1, n / batch_size);
-            fprintf(stdout, "\r");
-            fflush(stdout);
+            // Start eval
+            setmode(TSMODE);
+            reset_loss();
+            for (j = 0; j < n / batch_size; j++) {
+
+                for (k = 0; k < batch_size; k++)
+                    sind [k] = (j * batch_size) + k;
+
+                train_batch(tin, tout, sind, 1);
+
+                print_loss(j + 1, n / batch_size);
+                fprintf(stdout, "\r");
+                fflush(stdout);
+            }
+            fprintf(stdout, "\n");
+
         }
-        fprintf(stdout, "\n");
-
     }
 }
 

@@ -24,6 +24,14 @@
 #include <nccl.h>
 #endif
 
+#define AVG_DEFAULT 16
+
+#define FIXED 0
+#define INC_AVG 1
+#define SAWTOOTH 2
+#define NEG_SAWTOOTH 3
+#define AUTO_TIME 4
+
 #define MPICHECK(cmd) do {                          \
   int e = cmd;                                      \
   if( e != MPI_SUCCESS ) {                          \
@@ -51,15 +59,28 @@
   }                                                 \
 } while(0)
 
+int fn_get_id();
+
+int fn_get_n_procs();
+
 /**
  *  @brief Initializes distributed training
  *
  *  @param argc,argv Command line arguments
- *  @param avg Nr of batches between parameters synchronization
- *  @param method Method to sinchronize (0: constant)
  *  @return id MPI rank of process 
  */
-int init_distributed(int *argc, char ***argv, int avg, int method);
+int init_distributed(int *argc, char ***argv);
+
+/**
+ *  @brief Sets distributed training paramas
+ *
+ *  @param method Method to sinchronize 
+ *  @param batch_avg Nr of batches between parameters synchronization
+ *  @param epoch_avg Nr of epochs between changes in batch_avg
+ *  @return id MPI rank of process 
+ */
+void set_method_distributed (int method, int batch_avg, int epoch_avg);
+
 /**
  *  @brief Finalizes distributed training
  *
@@ -73,6 +94,7 @@ void end_distributed();
  *  @param count buffer size in floats
  */
 void fn_mpi_AllReduce(float* myptr, int count);
+
 /**
  *  @brief Performs AllReduction of buffer using NCCL
  * 

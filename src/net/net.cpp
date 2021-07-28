@@ -23,7 +23,6 @@
 #include "eddl/layers/core/layer_core.h"
 
 
-
 /////////////////////////////////////////
 int isIn(Layer *l, vlayer vl, int &ind) {
     for (int i = 0; i < vl.size(); i++)
@@ -305,7 +304,6 @@ void Net::plot(string fname,string mode) {
     string type = fname.substr(fname.find('.') + 1);
     string cmd;
 
-
     out << "digraph Model {\n";
     out << "rankdir="<<mode<<";\n";
 
@@ -342,6 +340,7 @@ void Net::plot(string fname,string mode) {
         std::cerr << "Unable to run the following command" << std::endl << std::endl
                 << "   " << cmd << std::endl;
     }
+   
 }
 
 /////////////////////////////////////////

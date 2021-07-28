@@ -48,8 +48,17 @@ int main(int argc, char **argv) {
     int id;
 
 
-    id=init_distributed(&argc, &argv, 8, 0);
+    
+    id = init_distributed(&argc, &argv);
 
+    //set_method_distributed(FIXED,1,0);
+    //set_method_distributed(FIXED,16,0);
+    //set_method_distributed(INC_AVG,1,2);
+    //set_method_distributed(SAW_TOOTH,1,2);
+    //set_method_distributed(NEG_SAW_TOOTH,16,2);
+    
+    // Sync every batch, change every 2 epochs
+    set_method_distributed(AUTO_TIME,1,2);
 
 
     for (int i = 1; i < argc; ++i) {
@@ -145,24 +154,30 @@ int main(int argc, char **argv) {
         y_test = y_mini_test;
     }
 
-    
-     fit(net,{x_train},{y_train}, batch_size, epochs);
-      // Evaluate
-    evaluate(net, {x_test}, {y_test});
 
-/*
-    for (int i = 0; i < epochs; i++) {
-        // training, list of input and output tensors, batch, epochs
-        fit(net,{x_train},{y_train}, batch_size, 1);
-        // Evaluate test
-        std::cout << "Evaluate test:" << std::endl;
-        evaluate(net,{x_test},
-        {
-            y_test
-        });
-    }
-*/
-    
+    fit(net,{x_train},
+    {
+        y_train
+    }, batch_size, epochs);
+    // Evaluate
+    evaluate(net,{x_test},
+    {
+        y_test
+    });
+
+    /*
+        for (int i = 0; i < epochs; i++) {
+            // training, list of input and output tensors, batch, epochs
+            fit(net,{x_train},{y_train}, batch_size, 1);
+            // Evaluate test
+            std::cout << "Evaluate test:" << std::endl;
+            evaluate(net,{x_test},
+            {
+                y_test
+            });
+        }
+     */
+
     delete x_train;
     delete y_train;
     delete x_test;

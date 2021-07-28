@@ -57,8 +57,12 @@ int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
     int id;
+ 
+    id = init_distributed(&argc, &argv);
+    
+    // Sync every batch, change every 2 epochs
+    set_method_distributed(AUTO_TIME,1,2);
 
-    id=init_distributed(&argc, &argv, 8, 0);
 
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
@@ -69,7 +73,7 @@ int main(int argc, char **argv) {
     download_cifar10();
 
     // Settings
-    int epochs = testing ? 2 : 5;
+    int epochs = testing ? 2 : 100;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -163,6 +167,10 @@ int main(int argc, char **argv) {
         y_test = y_mini_test;
     }
 
+    fit(net,{x_train},{y_train}, batch_size, epochs);
+    // Evaluate
+    evaluate(net,{x_test},{y_test});
+    /*
     for (int i = 0; i < epochs; i++) {
         // training, list of input and output tensors, batch, epochs
         fit(net,{x_train},
@@ -176,7 +184,7 @@ int main(int argc, char **argv) {
             y_test
         });
     }
-
+     */
     delete x_train;
     delete y_train;
     delete x_test;
