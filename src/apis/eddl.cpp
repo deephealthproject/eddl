@@ -20,7 +20,7 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
-//#define DEBUG_VERBOSE
+#define DEBUG_VERBOSE
 
 extern void fpga_reshape_kernel(ConvolDescriptor *src_D, ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO);
 extern void _profile_fpga_tensor(Tensor *t);
@@ -2198,20 +2198,20 @@ int current_associated_layers = 0;
       }
       #endif
 
-	int found = 0;
-	// we sweep all the model in search of layers that can be merged
-	int l_src = 0;
-	int l_dst = 0;
+  int found = 0;
+  // we sweep all the model in search of layers that can be merged
+  int l_src = 0;
+  int l_dst = 0;
 
-	while (l_src<num_layers) {
+  while (l_src<num_layers) {
 
-	  // detection stage, we detect any possible type of layer that can be merged
-	  // we look into current, current+1 and current+2 layers
+    // detection stage, we detect any possible type of layer that can be merged
+    // we look into current, current+1 and current+2 layers
 			  
-	  // Current layer
-	  found_C = 0; found_C_cpu = 0; found_I = 0; found_LR = 0; found_R = 0; found_S = 0; found_M = 0; found_A = 0; found_Reshape = 0; found_D = 0; found_Concat = 0; found_Expand = 0; 
-	  found_Slice = 0; found_Sig = 0; found_Mult = 0; found_Sub = 0; found_Exp = 0; found_Trans = 0; found_Add = 0; found_ConstofT = 0; found_div = 0; found_Sp = 0;
-	  found_Tanh = 0;
+    // Current layer
+    found_C = 0; found_C_cpu = 0; found_I = 0; found_LR = 0; found_R = 0; found_S = 0; found_M = 0; found_A = 0; found_Reshape = 0; found_D = 0; found_Concat = 0; found_Expand = 0; 
+    found_Slice = 0; found_Sig = 0; found_Mult = 0; found_Sub = 0; found_Exp = 0; found_Trans = 0; found_Add = 0; found_ConstofT = 0; found_div = 0; found_Sp = 0;
+    found_Tanh = 0;
 	  
 	  cl = m_src->layers[l_src];
 	  
@@ -2626,7 +2626,7 @@ int current_associated_layers = 0;
 
 	  prev_layer = new LHLSinf(parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
 			                   enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
-					   enable_add, enable_stm, "", DEV_CPU, layer_src->cd->mem_level);
+					   enable_add, enable_stm, "CSTMA (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
           //prev_layer = new LConvSTMAdd(parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
           //                             layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
           //                             "",DEV_CPU, layer_src->cd->mem_level);
@@ -2696,7 +2696,7 @@ int current_associated_layers = 0;
 			  	// dst parent layer
 			    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
 #ifdef DEBUG_VERBOSE
-			    printf("%3d: Maxpool    : prev %d\n", l_dst, dummy);
+              printf("%3d: Maxpool    : prev %d\n", l_dst, dummy);
 #endif
 			    if (layer_src->pd->padding =="custom") {
 			  	  prev_layer = new LMaxPool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
