@@ -40,11 +40,15 @@ public:
     int enable_add;
     int enable_stm;
 
-    Tensor *filter;
-    Tensor *bias;
-    Tensor *input_add;
+    Tensor *filter= nullptr;;
+    Tensor *bias= nullptr;;
+    Tensor *input_add= nullptr;;
 
     static int total_layers;
+
+    LHLSinf(Layer * parent,  int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
+              int enable_relu, float relu_factor, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, int pos_shift,
+              int enable_add, int enable_stm, string name, int dev, int mem);
 
     LHLSinf(vector<Layer *> parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr, 
 		    int enable_relu, float relu_factor, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, int pos_shift,

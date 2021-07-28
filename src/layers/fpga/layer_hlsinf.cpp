@@ -19,6 +19,15 @@ using namespace std;
 
 int LHLSinf::total_layers = 0;
 
+LHLSinf::LHLSinf(Layer * parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
+              int enable_relu, float relu_factor, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, int pos_shift,
+              int enable_add, int enable_stm, string name, int dev, int mem) :
+              LHLSinf(vector<Layer*> {parent}, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr,
+              enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift,
+              enable_add, enable_stm, name, dev, mem) {  
+};
+
+
 LHLSinf::LHLSinf(vector<Layer *> parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
                     int enable_relu, float relu_factor, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, int pos_shift,
                     int enable_add, int enable_stm, string name, int dev, int mem) : MLayer(name, dev, mem) {
@@ -47,19 +56,31 @@ LHLSinf::LHLSinf(vector<Layer *> parent, int h, int w, int ichannels, int ochann
     this->enable_add = enable_add;
     this->enable_stm = enable_stm;
     
+    int HO = (H + PT + PB - KH + SH) / SH;
+    int WO = (W + PL + PR - KW + SW) / SW;
     this->filter = new Tensor(vector<int>{ochannels, kh, kw, ichannels}, dev);
     this->bias = new Tensor(vector<int>{ochannels}, dev);
 
-    this->input = parent[0]->output;
-    this->input_add = parent[1]->output;
-    output = new Tensor(input->shape, dev);
+  //      printf("HLSinf\n filter \n");
+  //      for (int i = 0 ;i < filter->shape.size() ;i++)
+  //  printf(" %d ", filter->shape[i]);
+  //  printf("\n bias \n");
+  // for (int i = 0; i < bias->shape.size() ;i++)
+  //  printf(" %d ", bias->shape[i]);
+  //  printf("\n Ochann %d , HO %d WO %d \n", Ochannels, HO, WO);
 
+    this->input = parent[0]->output;
+    
+    //params.push_back(this->filter);
+    //params.push_back(this->bias);
+
+    if(enable_add) this->input_add = parent[1]->output;
+    output = new Tensor(vector<int>{input->shape[0], Ochannels, HO, WO}, dev);
     for (int i = 0; i < parent.size(); ++i) {
       parent[i]->addchild(this);
       addparent(parent[i]);
     }
 }
-
 
 // virtual
 void LHLSinf::resize(int batch){
@@ -78,15 +99,21 @@ void LHLSinf::backward() {
 
 
 Layer *LHLSinf::share(int c, int bs, vector<Layer *> p) {
+   printf("\n\n\n HLSINF SHARE\n\n\n");
+
  auto *n = new LHLSinf(p, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift,
 		 enable_add, enable_stm, "HLSinf_"+to_string(c)+this->name, this->dev, this->mem_level);
  return n;
+
 }
 
 Layer *LHLSinf::clone(int c, int bs, vector<Layer *> p, int todev) {
+     printf("\n\n\n HLSINF clone\n\n\n");
+
   auto *n = new LHLSinf(p, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift,
 		  enable_add, enable_stm, name, todev, this->mem_level);
   n->orig = this;
+
   return n;
 }
 
