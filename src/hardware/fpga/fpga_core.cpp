@@ -1878,12 +1878,15 @@ void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B) {
       int KH = A->shape[2];
       int KW = A->shape[3];
 
+      int dst_KH = B->shape[2];
+      int dst_KW = B->shape[3];
+
       int CPI = 4;  
       int CPO = 4;
 
       int GI      = dst_I / CPI;
       int GO      = dst_O / CPO;
-      memset(dst_ptr, 0, sizeof(float) * KW * KH * dst_I * dst_O);
+      memset(dst_ptr, 0, sizeof(float) * dst_KW * dst_KH * dst_I * dst_O);
 
       for (int i=0; i < src_I; i++) {
         for (int o=0; o < src_O; o++) {
@@ -1894,8 +1897,8 @@ void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B) {
               int go = o / CPO;
               int cpo = o % CPO;
               int in_addr = (o * KW * KH * src_I) + (i * KW * KH) + (kh * KW) + kw;
-              int out_addr = (go * GI * CPO * CPI * KH * KW) + (gi * CPO * CPI * KH * KW) + 
-                  (cpo * CPI * KH * KW) + (cpi * KH * KW) + (kh * KW) + kw;
+              int out_addr = (go * GI * CPO * CPI * dst_KH * dst_KW) + (gi * CPO * CPI * dst_KH * dst_KW) + 
+                  (cpo * CPI * dst_KH * dst_KW) + (cpi * dst_KH * dst_KW) + (kh * dst_KW) + kw;
               dst_ptr[out_addr] = src_ptr[in_addr];
             }
           }

@@ -2219,11 +2219,11 @@ int current_associated_layers = 0;
     if (LConv *dl = dynamic_cast<LConv *>(cl)) {
       LConv *layer_src = (LConv *)cl;
       // only strides equal to one are suported in the FPGA
-      for (int s = 0; s < layer_src->cd->strides.size(); s++) if (layer_src->cd->strides[s] != 1) found_C_cpu = 1;
+      //for (int s = 0; s < layer_src->cd->strides.size(); s++) if (layer_src->cd->strides[s] != 1) found_C_cpu = 1;
             // only kernel dimensions equal to 3 are suported in the FPGA
-            for (int s = 0; s < layer_src->cd->kernel_size.size(); s++) if (layer_src->cd->kernel_size[s] != 3) found_C_cpu = 10;
+    //        for (int s = 0; s < layer_src->cd->kernel_size.size(); s++) if (layer_src->cd->kernel_size[s] != 3) found_C_cpu = 1;
             // only padding dimensions equal to 0 or 1 are suported in the FPGA
-            for (int s = 0; s < layer_src->cd->pads.size(); s++) if (layer_src->cd->pads[s] != 1 && layer_src->cd->pads[s] != 0) found_C_cpu = 1;
+      //      for (int s = 0; s < layer_src->cd->pads.size(); s++) if (layer_src->cd->pads[s] != 1 && layer_src->cd->pads[s] != 0) found_C_cpu = 1;
             // only H and W dimensios lees or equal than 256 are suported in the FPGA
             if (layer_src->input->shape.size() > 2) {
               if (layer_src->input->shape[2] > 256 || layer_src->input->shape[3] > 256) found_C_cpu = 1;
@@ -2355,6 +2355,7 @@ int current_associated_layers = 0;
   } else {
     
     if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL | found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
+	    printf("found para GHWC\n");
       // all these layers need the GHWC format at the input, therefore we check if the
       // previous layer is in GHWC format and if not we add a transform layer
       //
@@ -2391,6 +2392,8 @@ int current_associated_layers = 0;
         }
       }
     } else {
+
+	    printf("found para CHW\n");
       // The rest of layers need the CHW format at the inputs, therefore we check if the
       // previous layers are in CHW format and if not we add a transform layer
       //
@@ -2502,7 +2505,7 @@ int current_associated_layers = 0;
 
     prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
                          enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
-             enable_add, enable_stm, "Conv_Relu (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+             enable_add, enable_stm, "Conv_LeakyRelu (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
     fn_set_associated_layer(cl, prev_layer, 1, l_dst);
     fn_set_associated_layer(nl, prev_layer, 1, l_dst);
     associated_source_layer[l_dst] = l_src;
@@ -2786,7 +2789,7 @@ int current_associated_layers = 0;
 
     prev_layer = new LHLSinf(parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
                             enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
-                            enable_add, enable_stm, "", DEV_CPU, layer_src->cd->mem_level);
+                            enable_add, enable_stm, "CSTMA (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
     //prev_layer = new LConvSTMAdd(parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
     //                             layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
     //                             "",DEV_CPU, layer_src->cd->mem_level);
@@ -3266,17 +3269,21 @@ int current_associated_layers = 0;
 
       // filter
       collectTensor(layer_src, "param", 0);
+      printf("despues de collect\n");
       //if(layer_src->cd->K->size != layer_dst->cd->K->size) tensor_padded(layer_src->cd->K, layer_dst->cd->K);
-      /*else*/ Tensor::copy(layer_src->cd->K, layer_dst->cd->K);
-      distributeTensor(layer_dst, "param", 0);
+      printf("src: KH %d KW %d dst: KH %d KW %d\n", layer_src->cd->K->shape[2], layer_src->cd->K->shape[3], layer_dst->cd->K->shape[2], layer_dst->cd->K->shape[3]); 
+      printf("src: size %d dst: size %d\n", layer_src->cd->K->size, layer_dst->cd->K->size);
+      /*else*/ //Tensor::copy(layer_src->cd->K, layer_dst->cd->K);
+      //distributeTensor(layer_dst, "param", 0);
 
       // bias
-      collectTensor(layer_src, "param", 1);
-      if (layer_src->cd->bias->size != layer_dst->cd->bias->size) tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
-      else Tensor::copy(layer_src->cd->bias, layer_dst->cd->bias);
-      distributeTensor(layer_dst, "param", 1);
+      //collectTensor(layer_src, "param", 1);
+      //if (layer_src->cd->bias->size != layer_dst->cd->bias->size) tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+      //else Tensor::copy(layer_src->cd->bias, layer_dst->cd->bias);
+      //distributeTensor(layer_dst, "param", 1);
 
     } else if (LHLSinf *dl = dynamic_cast<LHLSinf *>(cl)) {
+	    printf("hola\n");
 #ifdef DEBUG_VERBOSE
       printf("LHLSinf adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
 #endif
@@ -3284,11 +3291,14 @@ int current_associated_layers = 0;
       cout << "cpu asociated " << m_src->layers[associated_source_layer[l]]->name;
       LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
 
+      printf("hola1\n");
+
       //filter
       collectTensor(layer_src, "param", 0);
-      filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->filter);
+      //filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->filter);
       //distributeTensor(layer_dst, "param", 0);
       
+      printf("hola2\n");
       //printf("end\n"); 
       //exit(0);
 

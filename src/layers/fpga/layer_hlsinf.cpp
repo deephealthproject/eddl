@@ -38,8 +38,8 @@ LHLSinf::LHLSinf(vector<Layer *> parent, int h, int w, int ichannels, int ochann
     this->W = w;
     this->Ichannels = ichannels;
     this->Ochannels = ochannels;
-    this->KH = kh;
-    this->KW = kw;
+    this->KH = 3; //kh;
+    this->KW = 3; //kw;
     this->SH = sh;
     this->SW = sw;
     this->PT = pt;
@@ -55,6 +55,16 @@ LHLSinf::LHLSinf(vector<Layer *> parent, int h, int w, int ichannels, int ochann
     this->pos_shift = pos_shift;
     this->enable_add = enable_add;
     this->enable_stm = enable_stm;
+
+    // we asllow K=1x1 by playing with paddings
+    if ((kh == 1) && (kw == 1)) {
+      printf("WARNING: Adjusting HLSinf layer to support 1x1 convolutions\n");
+      if ((sh != 1) && (sw != 1)) printf("WARNING: 1x1 filter adjustment with strides different from 1\n");
+      this->PT = 0;
+      this->PB = 2;
+      this->PL = 0;
+      this->PR = 2;
+    }
     
     int HO = (H + PT + PB - KH + SH) / SH;
     int WO = (W + PL + PR - KW + SW) / SW;

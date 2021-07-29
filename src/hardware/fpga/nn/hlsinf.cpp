@@ -119,7 +119,7 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   if (enable_add) {
     I_add = *(cl::Buffer*)input_add->fpga_ptr; // input add data
   } else {
-    I_add = NULL;
+    I_add = I;
   }
 
   // Depending on the number of kernels available we split the convolution operation into multiple frames, and launch one thread per kernel
