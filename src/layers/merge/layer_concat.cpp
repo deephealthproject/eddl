@@ -13,7 +13,10 @@
 #include <iostream>
 
 #include "eddl/layers/merge/layer_merge.h"
-
+#include "eddl/layers/operators/layer_operators.h"
+#include "eddl/tensor/nn/tensor_nn.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/profiling.h"
 
 using namespace std;
 
@@ -88,6 +91,15 @@ void LConcat::forward() {
 
     // Perform concatenation
     Tensor::concat(outputs, this->axis+1, this->output);
+      printf("CPUConcat\n");
+                    printf("input\n");
+
+        for (int i = 0; i < parent.size(); ++i) {
+        cout << parent[i]->name << "\n";
+        _profile_cpu_tensor(parent[i]->output);
+        }
+            printf("output\n");
+    _profile_cpu_tensor(output);
 }
 
 
