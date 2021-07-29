@@ -362,6 +362,9 @@ void tensor_padded(Tensor *A, Tensor *B);
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon);
 
 void fpga_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd);
+
+void fpga_repeat_batch(Tensor *A, Tensor *B);
+
 #endif //EDDL_FPGA_HW_H
 
 #endif

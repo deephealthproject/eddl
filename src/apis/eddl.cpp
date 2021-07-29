@@ -3148,7 +3148,22 @@ int current_associated_layers = 0;
 #ifdef DEBUG_VERBOSE
         printf("%3d: SUB        : prev %d\n", l_dst, dummy);
 #endif
-        prev_layer = Sub(fpga_parent, layer_src->val);
+        
+        if(layer_src->parent.size() == 2) {
+          //int binary = layer_src->binary;
+          vector<Layer *> parent;
+          parent.push_back(fpga_parent);
+          fpga_parent = fn_get_associated_layer(cl->parent[1], 0, &dummy1);
+          parent.push_back(fpga_parent);
+          prev_layer = new LDiff(parent[0], parent[1], "", DEV_CPU, layer_src->mem_level);
+        
+        } else if(layer_src->left) {
+          prev_layer = new LDiff(fpga_parent, layer_src->val, "", DEV_CPU, layer_src->mem_level);
+        
+        } else {
+          prev_layer = new LDiff(layer_src->val, fpga_parent, "", DEV_CPU, layer_src->mem_level);
+        }
+
         fn_set_associated_layer(cl, prev_layer, 0, l_dst);
         associated_source_layer[l_dst] = l_src;
         l_dst++;

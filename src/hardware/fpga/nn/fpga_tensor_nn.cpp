@@ -203,4 +203,10 @@ void fpga_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd){
   fpga_copy_to_fpga(B->ptr, B);
 }
 
+void fpga_repeat_batch(Tensor *A, Tensor *B){
+  //fpga_copy_from_fpga(A, A->ptr);
+  cpu_repeat_batch(A, B);
+  //fpga_copy_to_fpga(B->ptr, B);
+}
+
 #endif

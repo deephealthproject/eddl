@@ -260,6 +260,7 @@ namespace tensorNN {
 #ifdef cFPGA
         else if (A->isFPGA() && B->isFPGA())
         {
+            fpga_repeat_batch(A, B);
         }
 #endif
     }
