@@ -68,21 +68,19 @@ LHLSinf::LHLSinf(vector<Layer *> parent, int h, int w, int ichannels, int ochann
     
     int HO = (H + PT + PB - KH + SH) / SH;
     int WO = (W + PL + PR - KW + SW) / SW;
-    this->filter = new Tensor(vector<int>{ochannels, kh, kw, ichannels}, dev);
+    this->filter = new Tensor(vector<int>{ochannels, ichannels, KH, KW}, dev);
     this->bias = new Tensor(vector<int>{ochannels}, dev);
-
-  //      printf("HLSinf\n filter \n");
-  //      for (int i = 0 ;i < filter->shape.size() ;i++)
-  //  printf(" %d ", filter->shape[i]);
-  //  printf("\n bias \n");
-  // for (int i = 0; i < bias->shape.size() ;i++)
-  //  printf(" %d ", bias->shape[i]);
-  //  printf("\n Ochann %d , HO %d WO %d \n", Ochannels, HO, WO);
 
     this->input = parent[0]->output;
     
-    //params.push_back(this->filter);
-    //params.push_back(this->bias);
+    params.push_back(this->filter);
+    params.push_back(this->bias);
+
+    Tensor *gK = new Tensor(vector<int>{ochannels, ichannels, KH, KW}, dev);
+    Tensor *gbias = new Tensor(vector<int>{ochannels}, dev);
+
+    gradients.push_back(gK);
+    gradients.push_back(gbias);
 
     if(enable_add) this->input_add = parent[1]->output;
     output = new Tensor(vector<int>{input->shape[0], Ochannels, HO, WO}, dev);
@@ -99,8 +97,8 @@ void LHLSinf::resize(int batch){
 
 
 void LHLSinf::forward() {
-       	fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_maxp, enable_avgp,
-		                enable_clipping, enable_shift, pos_shift, enable_add, enable_stm, this->filter, this->bias, this->output);
+    fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_maxp, enable_avgp,
+		enable_clipping, enable_shift, pos_shift, enable_add, enable_stm, this->filter, this->bias, this->output);
 }
 
 void LHLSinf::backward() {

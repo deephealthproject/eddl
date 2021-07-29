@@ -2354,7 +2354,7 @@ int current_associated_layers = 0;
     }
   } else {
     
-    if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA | found_CL | found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
+    if (found_C || found_CR || found_CM || found_CRM || found_CSTM || found_CSTMA || found_CL || found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
 	    printf("found para GHWC\n");
       // all these layers need the GHWC format at the input, therefore we check if the
       // previous layer is in GHWC format and if not we add a transform layer
@@ -2471,6 +2471,7 @@ int current_associated_layers = 0;
     // source layer
     //
     LConv *layer_src = (LConv *)cl;
+    LActivation *layer_src_relu = (LActivation *)(nl);  
     // dst parent layer
     Layer *fpga_parent;
     fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
@@ -2494,7 +2495,7 @@ int current_associated_layers = 0;
     int pl = layer_src->cd->padcl;
     int pr = layer_src->cd->padcr;
     int enable_relu     = 1;
-    float relu_factor   = 0.f; //TODO
+    float relu_factor   = layer_src_relu->params[0];
     int enable_maxp     = 0;
     int enable_avgp     = 0;
     int enable_clipping = 0;
@@ -2777,15 +2778,15 @@ int current_associated_layers = 0;
     int pb = layer_src->cd->padrb;
     int pl = layer_src->cd->padcl;
     int pr = layer_src->cd->padcr;
-    int enable_relu = 0;
-    float relu_factor = 0.f;
-    int enable_maxp = 0;
-    int enable_avgp = 0;
+    int enable_relu     = 0;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 0;
+    int enable_avgp     = 0;
     int enable_clipping = 0;
-    int enable_shift = 0;
-    int pos_shift = 0;
-    int enable_add = 1;
-    int enable_stm = 1;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 1;
+    int enable_stm      = 1;
 
     prev_layer = new LHLSinf(parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
                             enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
@@ -2819,185 +2820,185 @@ int current_associated_layers = 0;
     l_dst++;
   } else if (found_R) {
         
-          // 
-          // ReLU
-          //
-          // dst parent layer
-          Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+    // 
+    // ReLU
+    //
+    // dst parent layer
+    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
 #ifdef DEBUG_VERBOSE
-          printf("%3d: RELU      : prev %d\n", l_dst, dummy);
+    printf("%3d: RELU      : prev %d\n", l_dst, dummy);
 #endif
-          prev_layer = ReLu(fpga_parent);
-          fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-          associated_source_layer[l_dst] = l_src;
-          l_dst++;
+    prev_layer = ReLu(fpga_parent);
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+    associated_source_layer[l_dst] = l_src;
+    l_dst++;
   
-        } else if (found_LR) { 
+  } else if (found_LR) { 
 
-          // 
-          // LeakyReLU
-          //
-          // source layer
-          LActivation *layer_src = (LActivation *)cl;
-          // dst parent layer
-          Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+    // 
+    // LeakyReLU
+    //
+    // source layer
+    LActivation *layer_src = (LActivation *)cl;
+    // dst parent layer
+    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
 #ifdef DEBUG_VERBOSE
-          printf("%3d: LeakyReLU  : prev %d\n", l_dst, dummy);
+    printf("%3d: LeakyReLU  : prev %d\n", l_dst, dummy);
 #endif
-          prev_layer = LeakyReLu(fpga_parent, layer_src->params[0], "");
-          fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-          associated_source_layer[l_dst] = l_src;
-          l_dst++;
+    prev_layer = LeakyReLu(fpga_parent, layer_src->params[0], "");
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+    associated_source_layer[l_dst] = l_src;
+    l_dst++;
 
-        } else if (found_M) {
+  } else if (found_M) {
         
-          //
-          // MaxPooling
-          //
-          // source layer
-          LMaxPool *layer_src = (LMaxPool *)cl;
-          // dst parent layer
-          Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+    //
+    // MaxPooling
+    //
+    // source layer
+    LMaxPool *layer_src = (LMaxPool *)cl;
+    // dst parent layer
+    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
 #ifdef DEBUG_VERBOSE
-          printf("%3d: Maxpool    : prev %d\n", l_dst, dummy);
+    printf("%3d: Maxpool    : prev %d\n", l_dst, dummy);
 #endif
-          if (layer_src->pd->padding =="custom") {
-            prev_layer = new LMaxPool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
-          } else {
-            prev_layer = new LMaxPool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
-          }
-          fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-          associated_source_layer[l_dst] = l_src;
-          l_dst++;
+    if (layer_src->pd->padding =="custom") {
+      prev_layer = new LMaxPool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
+    } else {
+      prev_layer = new LMaxPool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
+    }
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+    associated_source_layer[l_dst] = l_src;
+    l_dst++;
 
-        } else if (found_A) {
+  } else if (found_A) {
 
-          //
-          // AveragePooling
-          //
-          // source layer
-          LAveragePool *layer_src = (LAveragePool *)cl;
-          // dst parent layer
-          Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+    //
+    // AveragePooling
+    //
+    // source layer
+    LAveragePool *layer_src = (LAveragePool *)cl;
+    // dst parent layer
+    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
 #ifdef DEBUG_VERBOSE
-          printf("%3d: AveragePool: prev %d\n", l_dst, dummy);
+    printf("%3d: AveragePool: prev %d\n", l_dst, dummy);
 #endif
-          if (layer_src->pd->padding =="custom") {
-            prev_layer = new LAveragePool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
-          } else {
-            prev_layer = new LAveragePool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
-          }
-          fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-          associated_source_layer[l_dst] = l_src;
-          l_dst++;
+    if (layer_src->pd->padding =="custom") {
+      prev_layer = new LAveragePool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->pad, "", DEV_CPU, 0);
+    } else {
+      prev_layer = new LAveragePool(fpga_parent, layer_src->pd->ksize, layer_src->pd->stride, layer_src->pd->padding, "", DEV_CPU, 0);
+    }
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+    associated_source_layer[l_dst] = l_src;
+    l_dst++;
 
-        } else if (found_I) {
+  } else if (found_I) {
 
-          //
-          // Input
-          //
+    //
+    // Input
+    //
 #ifdef DEBUG_VERBOSE
-                printf("%3d: I\n", l_dst);
+    printf("%3d: I\n", l_dst);
 #endif
-            prev_layer = Input({cl->input->shape[1],cl->input->shape[2],cl->input->shape[3]});
-          fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-          associated_source_layer[l_dst] = l_src;
-          l_dst++;
+    prev_layer = Input({cl->input->shape[1],cl->input->shape[2],cl->input->shape[3]});
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+    associated_source_layer[l_dst] = l_src;
+    l_dst++;
 
-        } else if (found_Reshape) {
+  } else if (found_Reshape) {
 
-          //
-          // Reshape
-          //
-          // source layer
-          LReshape *layer_src = (LReshape *)cl;
-          // dst parent layer
-          Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+    //
+    // Reshape
+    //
+    // source layer
+    LReshape *layer_src = (LReshape *)cl;
+    // dst parent layer
+    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
 #ifdef DEBUG_VERBOSE
-          printf("%3d: RESHAPE    : prev %d\n", l_dst, dummy);
+    printf("%3d: RESHAPE    : prev %d\n", l_dst, dummy);
 #endif
-          long int elements = 1;
-          for (int i = 1; i < layer_src->ls.size(); i++) {
-            elements = elements * layer_src->ls[i];
-          }
+    long int elements = 1;
+    for (int i = 1; i < layer_src->ls.size(); i++) {
+      elements = elements * layer_src->ls[i];
+    }
   
-          if(layer_src->ls[1] == elements && layer_src->ls.size() < 3 ) {
-            prev_layer = Reshape(fpga_parent, { -1 });
-          } else {
-            vector<int> shape;
-            for (int i = 1; i < layer_src->ls.size(); i++) shape.push_back(layer_src->ls[i]);
-            prev_layer = Reshape(fpga_parent, shape);
-          }
-          fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-          associated_source_layer[l_dst] = l_src;
-          l_dst++;
+    if(layer_src->ls[1] == elements && layer_src->ls.size() < 3 ) {
+      prev_layer = Reshape(fpga_parent, { -1 });
+    } else {
+      vector<int> shape;
+      for (int i = 1; i < layer_src->ls.size(); i++) shape.push_back(layer_src->ls[i]);
+      prev_layer = Reshape(fpga_parent, shape);
+    }
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+    associated_source_layer[l_dst] = l_src;
+    l_dst++;
 
-        } else  if (found_D) {
+  } else  if (found_D) {
         
-          //
-          // Dense
-          //
-          // source layer
-          LDense *layer_src = (LDense *)cl;
-          // dst parent layer
-          Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+    //
+    // Dense
+    //
+    // source layer
+    LDense *layer_src = (LDense *)cl;
+    // dst parent layer
+    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
 #ifdef DEBUG_VERBOSE
-          printf("%3d: Dense      : prev %d\n", l_dst, dummy);
+    printf("%3d: Dense      : prev %d\n", l_dst, dummy);
 #endif
 
-          prev_layer = Dense(fpga_parent, layer_src->ndim);
-          fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-          associated_source_layer[l_dst] = l_src;
-          l_dst++;
+    prev_layer = Dense(fpga_parent, layer_src->ndim);
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+    associated_source_layer[l_dst] = l_src;
+    l_dst++;
 
-        } else if (found_S) {
+  } else if (found_S) {
 
-          //
-          // Softmax
-          //
-          // dst parent layer
-          Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+    //
+    // Softmax
+    //
+    // dst parent layer
+    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
 #ifdef DEBUG_VERBOSE
-          printf("%3d: Softmax           : prev %d\n", l_dst, dummy);
+    printf("%3d: Softmax           : prev %d\n", l_dst, dummy);
 #endif
-          prev_layer = Softmax(fpga_parent);
-          fn_set_associated_layer(cl, prev_layer, 0, l_dst);
-          associated_source_layer[l_dst] = l_src;
-          l_dst++;
+    prev_layer = Softmax(fpga_parent);
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+    associated_source_layer[l_dst] = l_src;
+    l_dst++;
 
-        } else if (found_Concat) {
+  } else if (found_Concat) {
 
-          // 
-          // Concat
-          //
-          // source layer
-          LConcat *layer_src = (LConcat *)cl;
-          // dst parent layer
-          vector<Layer *> parent;
-          vector<int> dummy_vect;
-          // the input format can be either GHWC or NCWH, but only one of them
-          // we need to select which one
-          int format = 0;
-          if (fn_get_associated_layer(cl->parent[0], format, &dummy) == NULL) format = 1;
-          for(int p = 0; p < cl->parent.size();p++) {
-            int dummy_el;
-            parent.push_back(fn_get_associated_layer(cl->parent[p], format, &dummy_el));
-            dummy_vect.push_back(dummy_el);
-          }
+    // 
+    // Concat
+    //
+    // source layer
+    LConcat *layer_src = (LConcat *)cl;
+    // dst parent layer
+    vector<Layer *> parent;
+    vector<int> dummy_vect;
+    // the input format can be either GHWC or NCWH, but only one of them
+    // we need to select which one
+    int format = 0;
+    if (fn_get_associated_layer(cl->parent[0], format, &dummy) == NULL) format = 1;
+    for(int p = 0; p < cl->parent.size();p++) {
+      int dummy_el;
+      parent.push_back(fn_get_associated_layer(cl->parent[p], format, &dummy_el));
+      dummy_vect.push_back(dummy_el);
+    }
 #ifdef DEBUG_VERBOSE
-          printf("%3d: CONCAT     : prevs ", l_dst);
-          for(int p = 0; p < dummy_vect.size();p++){
-            printf("%d ", dummy_vect[p]);
-          }
-          printf("\n");
+    printf("%3d: CONCAT     : prevs ", l_dst);
+    for(int p = 0; p < dummy_vect.size();p++){
+      printf("%d ", dummy_vect[p]);
+    }
+    printf("\n");
 #endif
-          //
-          prev_layer = Concat(parent, layer_src->axis, "");
-          fn_set_associated_layer(cl, prev_layer, format, l_dst);
-          associated_source_layer[l_dst] = l_src;
-          l_dst++;
+    //
+    prev_layer = Concat(parent, layer_src->axis, "");
+    fn_set_associated_layer(cl, prev_layer, format, l_dst);
+    associated_source_layer[l_dst] = l_src;
+    l_dst++;
 
-      } else  if (found_Expand) { 
+  } else  if (found_Expand) { 
 
         //
         // Expand
@@ -3267,23 +3268,22 @@ int current_associated_layers = 0;
       LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
       LConv *layer_dst = (LConv *) net->layers[l];
 
-      // filter
-      collectTensor(layer_src, "param", 0);
-      printf("despues de collect\n");
-      //if(layer_src->cd->K->size != layer_dst->cd->K->size) tensor_padded(layer_src->cd->K, layer_dst->cd->K);
       printf("src: KH %d KW %d dst: KH %d KW %d\n", layer_src->cd->K->shape[2], layer_src->cd->K->shape[3], layer_dst->cd->K->shape[2], layer_dst->cd->K->shape[3]); 
       printf("src: size %d dst: size %d\n", layer_src->cd->K->size, layer_dst->cd->K->size);
-      /*else*/ //Tensor::copy(layer_src->cd->K, layer_dst->cd->K);
-      //distributeTensor(layer_dst, "param", 0);
+
+      // filter
+      collectTensor(layer_src, "param", 0);
+      if(layer_src->cd->K->size != layer_dst->cd->K->size) tensor_padded(layer_src->cd->K, layer_dst->cd->K);
+      Tensor::copy(layer_src->cd->K, layer_dst->cd->K);
+      distributeTensor(layer_dst, "param", 0);
 
       // bias
-      //collectTensor(layer_src, "param", 1);
-      //if (layer_src->cd->bias->size != layer_dst->cd->bias->size) tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
-      //else Tensor::copy(layer_src->cd->bias, layer_dst->cd->bias);
-      //distributeTensor(layer_dst, "param", 1);
+      collectTensor(layer_src, "param", 1);
+      if (layer_src->cd->bias->size != layer_dst->cd->bias->size) tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
+      else Tensor::copy(layer_src->cd->bias, layer_dst->cd->bias);
+      distributeTensor(layer_dst, "param", 1);
 
     } else if (LHLSinf *dl = dynamic_cast<LHLSinf *>(cl)) {
-	    printf("hola\n");
 #ifdef DEBUG_VERBOSE
       printf("LHLSinf adapting parameters for layer %d (associated layer %d)\n", l, associated_source_layer[l]);
 #endif
@@ -3291,21 +3291,15 @@ int current_associated_layers = 0;
       cout << "cpu asociated " << m_src->layers[associated_source_layer[l]]->name;
       LConv *layer_src = (LConv *) m_src->layers[associated_source_layer[l]];
 
-      printf("hola1\n");
-
       //filter
       collectTensor(layer_src, "param", 0);
-      //filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->filter);
-      //distributeTensor(layer_dst, "param", 0);
-      
-      printf("hola2\n");
-      //printf("end\n"); 
-      //exit(0);
+      filter_IHW_to_GIHWCPI(layer_src->cd->K, layer_dst->filter);
+      distributeTensor(layer_dst, "param", 0);
 
       //bias
-      //collectTensor(layer_src, "param", 1);
-      //tensor_padded(layer_src->cd->bias, layer_dst->bias);
-      //distributeTensor(layer_dst, "param", 1);
+      collectTensor(layer_src, "param", 1);
+      tensor_padded(layer_src->cd->bias, layer_dst->bias);
+      distributeTensor(layer_dst, "param", 1);
     
     }else if (LDense *dl = dynamic_cast<LDense *>(cl)) {
 #ifdef DEBUG_VERBOSE

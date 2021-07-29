@@ -94,7 +94,13 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
                  int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, 
                  int enable_relu, float relu_factor, int enable_maxp, int enable_avgp,
                  int enable_clipping, int enable_shift, int pos_shift, int enable_add, int enable_stm, Tensor *filter, Tensor *bias, Tensor *output) {
-
+  
+  _debug_fpga_funcs("fpga_hlsinf");
+  _profile_fpga(_FPGA_HLSINF, 0);
+  _profile_fpga_tensor(input);
+  if(enable_add)   _profile_fpga_tensor(input_add);
+  _profile_fpga_tensor(filter);
+  _profile_fpga_tensor(bias);
   int rows = H;
   int global_offset = 0;
   int min_clip = 0;
@@ -122,6 +128,7 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
     I_add = I;
   }
 
+    PROFILING_HEADER(fpga_hlsinf);
   // Depending on the number of kernels available we split the convolution operation into multiple frames, and launch one thread per kernel
   if (num_kernels == 1) {
     // just one kernel which handles all the conv operation
@@ -158,6 +165,9 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
                       dir_shift, pos_shift, CPI, CPO, 0);
     }
   }
+  PROFILING_FOOTER(fpga_hlsinf);
+  _profile_fpga_tensor(output);
+  _profile_fpga_tensor_print(output);
   
 }
 

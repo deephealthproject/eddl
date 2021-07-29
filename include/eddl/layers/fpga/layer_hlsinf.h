@@ -40,9 +40,9 @@ public:
     int enable_add;
     int enable_stm;
 
-    Tensor *filter= nullptr;;
-    Tensor *bias= nullptr;;
-    Tensor *input_add= nullptr;;
+    Tensor *filter= nullptr;
+    Tensor *bias= nullptr;
+    Tensor *input_add= nullptr;
 
     static int total_layers;
 
