@@ -22,10 +22,10 @@
 
 extern cl::CommandQueue *q;
 
-//#define FPGA_DEBUG
-//#define FPGA_DEBUG_TENSORS
-//#define FPGA_DEBUG_FUNCS
-//#define FPGA_DEBUG_VERBOSE
+#define FPGA_DEBUG
+#define FPGA_DEBUG_TENSORS
+#define FPGA_DEBUG_FUNCS
+#define FPGA_DEBUG_VERBOSE
 
 #include "eddl/hardware/fpga/fpga_enables.h"
 
@@ -361,6 +361,7 @@ void tensor_padded(Tensor *A, Tensor *B);
 // Legacy
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon);
 
+void fpga_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd);
 #endif //EDDL_FPGA_HW_H
 
 #endif

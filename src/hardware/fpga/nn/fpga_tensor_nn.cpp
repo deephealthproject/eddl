@@ -197,4 +197,10 @@ void fpga_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 #endif
 }
 
+void fpga_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd){
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_expand_nn(A, B, sd);
+  fpga_copy_to_fpga(B->ptr, B);
+}
+
 #endif

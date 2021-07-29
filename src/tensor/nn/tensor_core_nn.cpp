@@ -220,7 +220,7 @@ namespace tensorNN {
 #ifdef cFPGA
             else if (A->isFPGA() && B->isFPGA())
         {
-//            fpga_expand_nn(A, B, sd);
+            fpga_expand_nn(A, B, sd);
         }
 #endif
     }
