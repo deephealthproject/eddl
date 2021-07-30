@@ -68,6 +68,11 @@ LHLSinf::LHLSinf(vector<Layer *> parent, int h, int w, int ichannels, int ochann
     
     int HO = (H + PT + PB - KH + SH) / SH;
     int WO = (W + PL + PR - KW + SW) / SW;
+    if (enable_maxp || enable_avgp) {
+      HO = HO / 2;
+      WO = WO / 2;
+    }
+
     this->filter = new Tensor(vector<int>{ochannels, ichannels, KH, KW}, dev);
     this->bias = new Tensor(vector<int>{ochannels}, dev);
 
@@ -97,8 +102,12 @@ void LHLSinf::resize(int batch){
 
 
 void LHLSinf::forward() {
+#ifdef cFPGA
     fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_maxp, enable_avgp,
 		enable_clipping, enable_shift, pos_shift, enable_add, enable_stm, this->filter, this->bias, this->output);
+#else
+    msg("LHLSinf layer only available for FPGA", "LHLSinf::forward()");
+#endif
 }
 
 void LHLSinf::backward() {
@@ -107,8 +116,6 @@ void LHLSinf::backward() {
 
 
 Layer *LHLSinf::share(int c, int bs, vector<Layer *> p) {
-   printf("\n\n\n HLSINF SHARE\n\n\n");
-
  auto *n = new LHLSinf(p, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift,
 		 enable_add, enable_stm, "HLSinf_"+to_string(c)+this->name, this->dev, this->mem_level);
  return n;
@@ -116,8 +123,6 @@ Layer *LHLSinf::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LHLSinf::clone(int c, int bs, vector<Layer *> p, int todev) {
-     printf("\n\n\n HLSINF clone\n\n\n");
-
   auto *n = new LHLSinf(p, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift,
 		  enable_add, enable_stm, name, todev, this->mem_level);
   n->orig = this;

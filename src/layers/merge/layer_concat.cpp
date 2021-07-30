@@ -91,15 +91,6 @@ void LConcat::forward() {
 
     // Perform concatenation
     Tensor::concat(outputs, this->axis+1, this->output);
-      printf("CPUConcat\n");
-                    printf("input\n");
-
-        for (int i = 0; i < parent.size(); ++i) {
-        cout << parent[i]->name << "\n";
-        _profile_cpu_tensor(parent[i]->output);
-        }
-            printf("output\n");
-    _profile_cpu_tensor(output);
 }
 
 

@@ -157,13 +157,13 @@ void fpga_conv2D(ConvolDescriptor *D) {
   int dir_shift = 0;
   int pos_shift = 0;
 
-  PROFILING_HEADER(fpga_Conv2D);
+  //PROFILING_HEADER(fpga_Conv2D);
 
-  ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, relu_factor, global_offset, 
-      enable_maxp, enable_avgp, 
-      enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
-  PROFILING_FOOTER(fpga_Conv2D);
-
+  //ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, relu_factor, global_offset, 
+  //    enable_maxp, enable_avgp, 
+  //    enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
+  //PROFILING_FOOTER(fpga_Conv2D);
+  ret = 0;
   if (ret == 0) {
     // we do not have any suitable Conv implementation on FPGA, then revert to CPU
     fpga_cpuemu_conv2D(D);

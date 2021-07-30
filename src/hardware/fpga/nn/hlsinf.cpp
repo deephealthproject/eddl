@@ -112,9 +112,10 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   int CPO = k_conv2d_cpo;
   int HO = H;
   int WO = W;
+#ifdef DEBUG_VERBOSE
   printf("HLSinf:  In=%3dx%3dx%3d, Out=%3dx%3dx%3d K=%1dx%1d S=%1dx%1d P=%1dx%1dx%1dx%1d RELU %d RELU_FACTOR %f MAXP %d AVGP %d CLIPPING %d SHIFT %d ADD %d STM %d\n", 
          Ichannels, H, W, Ochannels, HO, WO, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, enable_stm);
-
+#endif
   // conv2D parameters
   cl::Buffer I     = *(cl::Buffer*)input->fpga_ptr;     // input activations
   cl::Buffer K     = *(cl::Buffer*)filter->fpga_ptr;    // kernel

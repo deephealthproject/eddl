@@ -444,7 +444,6 @@ void _debug_fpga_funcs(const char *str) {
 
 // _show_profile_fpga(). Shows all the profile collected so far.
 void _show_profile_fpga() {
-  #ifdef FPGA_DEBUG
   printf("\n---------------------------------------\nFPGA functions called:\n");
   for (int i=0; i<_NUM_FPGA_FUNCS; i++) {
     if (num_instances_fpga[i] != 0) {
@@ -455,7 +454,6 @@ void _show_profile_fpga() {
   }
   printf("Memory: %f MB\n", mb_memory_needed_fpga);
   printf("---------------------------------------\n");
-  #endif
 }
 
 // _profile_fpga_add_tensor(). Adds a tensor profile information
