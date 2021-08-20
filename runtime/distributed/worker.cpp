@@ -20,8 +20,10 @@ int main(int argc, char *argv[])
     eddl::eddl_worker_modes         worker_mode = eddl::eddl_worker_modes::ANY_MASTER;
 
     // manual settings for testing
-    distributed_environment.set_my_ip_addr("10.81.25.1"); // platon.vpn
-    distributed_environment.set_master_ip_addr("10.81.25.6"); // socrates.vpn
+    //distributed_environment.set_my_ip_addr("10.81.25.1"); // platon.vpn
+    //distributed_environment.set_master_ip_addr("10.81.25.6"); // socrates.vpn
+    distributed_environment.set_my_ip_addr("158.42.215.16");  //ebids.etsinf
+    distributed_environment.set_master_ip_addr("158.42.184.139"); // platon.dsic
 
     for (int i=0; i < argc; i++) {
         if (! strcmp(argv[i], "--my-ip-addr")) {

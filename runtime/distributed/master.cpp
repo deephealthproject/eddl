@@ -17,6 +17,8 @@ eddl::eddl_queue * global_input_queue;
 
 void handler_funtion(int parameter)
 {
+    static int counter = 0;
+
     switch (parameter) {
         case SIGUSR1:
             global_input_queue->push(eddl::eddl_message::start_command(0));
@@ -31,12 +33,14 @@ void handler_funtion(int parameter)
             break;
     }
     eddl::print_log_msg("signal caught " + std::to_string(parameter));
+    if (++counter > 10) exit(1);
 }
 
 int main(int argc, char *argv[])
 {
     eddl::DistributedEnvironment distributed_environment;
-    distributed_environment.set_my_ip_addr("10.81.25.6"); // socrates.vpn
+    //distributed_environment.set_my_ip_addr("10.81.25.6"); // socrates.vpn
+    distributed_environment.set_my_ip_addr("158.42.184.139"); // platon.dsic
     eddl::eddl_queue    input_queue;
     eddl::eddl_queue    generic_output_queue;
     eddl::eddl_queue    generic_ack_queue;
@@ -71,7 +75,9 @@ int main(int argc, char *argv[])
         }
     }
 
-    workers.push_back(new eddl::eddl_worker_node("ip:10.81.25.1;cpu:4,8192;gpu:0,low_mem;fpga:0,0;batch_size:10"));
+    //workers.push_back(new eddl::eddl_worker_node("ip:10.81.25.1;cpu:4,8192;gpu:0,low_mem;fpga:0,0;batch_size:10"));
+    //workers.push_back(new eddl::eddl_worker_node("ip:158.42.215.16;cpu:8,131072;gpu:0,low_mem;fpga:0,0;batch_size:10"));
+    workers.push_back(new eddl::eddl_worker_node("ip:192.168.1.1;cpu:8,131072;gpu:0,low_mem;fpga:0,0;batch_size:10"));
 
     /*
         tcp_receiver pushes:
@@ -110,8 +116,8 @@ int main(int argc, char *argv[])
     std::mt19937_64 generator_2(seed + 1);  // mt19937 is a standard mersenne_twister_engine
     std::mt19937_64 generator_3(seed + 2);  // mt19937 is a standard mersenne_twister_engine
     std::bernoulli_distribution bernoulli(0.3);
-    std::uniform_int_distribution<int> dist_sizes(100,50*1024*1024);
-    std::uniform_int_distribution<int> dist_content(0,255);
+    std::uniform_int_distribution<int> dist_sizes(100, 50 * 1024 * 1024);
+    std::uniform_int_distribution<int> dist_content(0, 255);
     ////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////
@@ -144,6 +150,7 @@ int main(int argc, char *argv[])
         eddl::eddl_message * msg = input_queue.pop();
         if (nullptr == msg) continue;
 
+
         std::cout << "received message: "
                   << std::hex << msg->get_message_id() << " "
                   << std::hex << msg->get_type() << " "
@@ -153,16 +160,19 @@ int main(int argc, char *argv[])
 
         if (msg->get_type() == eddl::eddl_message_types::COMMAND) {
             switch (msg->get_command()) {
+
                 case eddl::eddl_command_types::START:
                     master_active = true;
                     for (auto w: workers)
                         generic_output_queue.push(eddl::eddl_message::start_command(w->get_s_addr()));
                     break;
+
                 case eddl::eddl_command_types::STOP:
                     master_active = false;
                     for (auto w: workers)
                         generic_output_queue.push(eddl::eddl_message::stop_command(w->get_s_addr()));
                     break;
+
                 case eddl::eddl_command_types::SHUTDOWN:
                     master_active = false;
                     for (auto w: workers)

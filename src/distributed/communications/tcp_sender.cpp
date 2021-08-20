@@ -24,10 +24,10 @@ namespace eddl {
 
 
 TCP_Sender::TCP_Sender(eddl_queue & output_queue,
-                       eddl_queue & ack_queue,
+                       eddl_queue & generic_ack_queue,
                        DistributedEnvironment & distributed_environment) :
     output_queue(output_queue),
-    ack_queue(ack_queue),
+    generic_ack_queue(generic_ack_queue),
     distributed_environment(distributed_environment)
 {
     change_status_to(NORMAL_OPERATION);
@@ -50,7 +50,7 @@ TCP_Sender::~TCP_Sender()
         see the code of eddl_queue, it wipes itself by deleting the pending messages,
         so it is not necessary to delete the messages in any of the three queues:
             output_queue
-            ack_queue
+            generic_ack_queue
             queue_of_pending_messages
     */
 
@@ -96,7 +96,7 @@ void TCP_Sender::sender()
             if (nullptr != message) {
                 manage_to_send_message(message);
             } else {
-                if (ack_queue.empty())
+                if (generic_ack_queue.empty())
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
         } else {
@@ -104,8 +104,8 @@ void TCP_Sender::sender()
                 change_status_to(NORMAL_OPERATION);
             }
         }
-        while (! ack_queue.empty()) {
-            eddl_message * ack = ack_queue.pop();
+        while (! generic_ack_queue.empty()) {
+            eddl_message * ack = generic_ack_queue.pop();
             std::string msg_id = ack->get_acknowledged_message_id();
             if (sent_messages.count(msg_id) > 0) {
                 delete sent_messages.at(msg_id);

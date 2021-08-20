@@ -36,7 +36,7 @@ class MulticastSender
 public:
     MulticastSender(std::vector<eddl_worker_node *> & workers,
                     eddl_queue & output_queue,
-                    eddl_queue & ack_queue,
+                    eddl_queue & weights_ack_queue,
                     DistributedEnvironment & distributed_environment);
     ~MulticastSender();
 
@@ -48,7 +48,7 @@ public:
 private:
     std::vector<eddl_worker_node *> &   workers;
     eddl_queue &                        output_queue;
-    eddl_queue &                        ack_queue;
+    eddl_queue &                        weights_ack_queue;
     DistributedEnvironment &            distributed_environment;
 /*
     std::string     multicast_group_addr;

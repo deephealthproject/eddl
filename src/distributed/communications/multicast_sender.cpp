@@ -25,11 +25,11 @@ namespace eddl {
 
 MulticastSender::MulticastSender(std::vector<eddl_worker_node *> & workers,
                                  eddl_queue & output_queue,
-                                 eddl_queue & ack_queue,
+                                 eddl_queue & weights_ack_queue,
                                  DistributedEnvironment & distributed_environment) :
     workers(workers),
     output_queue(output_queue),
-    ack_queue(ack_queue),
+    weights_ack_queue(weights_ack_queue),
     distributed_environment(distributed_environment)
 {
     socket_fd_out = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -189,6 +189,7 @@ void MulticastSender::sender()
         }
         // poping from the queue blocks until something his available
         message = output_queue.pop();
+
         // this allows to stop this thread, according to the destructor of this class
         if (nullptr == message) {
             continue;
@@ -278,7 +279,7 @@ bool MulticastSender::send_message(eddl_message * message)
     eddl_packet * sent_packets[message->get_seq_len()+1]; // includes the checksum
 
     // populates the queue of packet indices including one additional for the checksum
-    for (size_t seq_no=0; seq_no <= message->get_seq_len(); ++seq_no) {
+    for (size_t seq_no = 0; seq_no <= message->get_seq_len(); ++seq_no) {
         seq_no_queue.push(seq_no);
         sent_packets[seq_no] = nullptr;
     }
@@ -288,10 +289,13 @@ bool MulticastSender::send_message(eddl_message * message)
 
     try {
         uint64_t    t0 = get_system_milliseconds();
-        size_t      msec_to_wait_after_sendto=1;
-        size_t      counter=0;
-        ssize_t     sent_bytes=0;
-        while( sender_active  &&  ! seq_no_queue.empty()) {
+        size_t      msec_to_wait_after_sendto = 1;
+        size_t      counter = 0;
+        ssize_t     sent_bytes = 0;
+
+        print_log_msg("entering the loop to send message  " + message->get_message_id());
+
+        while (sender_active  &&  ! seq_no_queue.empty()) {
             size_t  pending_packets = seq_no_queue.size();
             for (size_t i=0; sender_active && i < pending_packets; i++) {
                 size_t seq_no = seq_no_queue.front();
@@ -320,7 +324,7 @@ bool MulticastSender::send_message(eddl_message * message)
                                        sizeof(this->target_group_addr));
                     sent_bytes += n;
                     if (sent_bytes >= 4000) {
-                        std::this_thread::sleep_for(std::chrono::milliseconds(msec_to_wait_after_sendto));
+                        //std::this_thread::sleep_for(std::chrono::milliseconds(msec_to_wait_after_sendto));
                         sent_bytes -= 4000;
                     }
                     if (n != l)
@@ -330,6 +334,7 @@ bool MulticastSender::send_message(eddl_message * message)
                                                        + strerror(errno)));
                     //print_log_msg("packet sent " + std::to_string(seq_no));
                     seq_no_queue.push(seq_no);
+                    ++counter;
                 } else if (nullptr != sent_packets[seq_no]) {
                     delete sent_packets[seq_no];
                     sent_packets[seq_no] = nullptr;
@@ -341,12 +346,13 @@ bool MulticastSender::send_message(eddl_message * message)
                     return_status = false;
                     throw std::runtime_error(err_msg("time over sending message " + message->get_message_id()));
                 }
-
-                ++counter;
             } // inner for loop  i < pending_packets
 
-            if (! ack_queue.empty()) {
-                eddl_message * ack = ack_queue.pop();
+            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            //if
+            while (! weights_ack_queue.empty()) {
+                eddl_message * ack = weights_ack_queue.pop();
 
                 std::string message_id = ack->get_acknowledged_message_id();
                 if (ack->get_type() == eddl_message_types::MSG_ACK_WEIGHTS) {
@@ -366,19 +372,21 @@ bool MulticastSender::send_message(eddl_message * message)
                 delete ack;
             }
 
+            uint64_t    lapse_in_ms = get_system_milliseconds() - t0;
             print_log_msg("message being sent: " + message->get_message_id()
                             + "  |seq_no_queue| = " + std::to_string(seq_no_queue.size())
                             + "  pending_acknowledgement_count = "
                             + std::to_string(message_acks->get_pending_acknowledgements())
                             + "  counter = " + std::to_string(counter)
-                            + "  waiting " + std::to_string((get_system_milliseconds()-t0))
-                            + " milliseconds from message started to be sent.");
+                            + "  waiting " + std::to_string((lapse_in_ms))
+                            + " milliseconds from message started to be sent"
+                            + " at " + std::to_string((message->get_message_data_size() / 1000.0) / lapse_in_ms) + " MBytes/second.");
             /*
             msec_to_wait_after_sendto = (msec_to_wait_after_sendto == 1)
                                       ? 10
                                       : msec_to_wait_after_sendto+10;
             */
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
         } // outer while loop ! seq_no_queue.empty()
     }
     catch(std::exception & e) {
