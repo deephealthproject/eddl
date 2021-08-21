@@ -129,6 +129,7 @@ MulticastSender::MulticastSender(std::vector<eddl_worker_node *> & workers,
                 << std::endl;
     ////////////////////////////////////////////////////////////////////////////
 
+    sent_bytes_threshold = 1 * 1024 * 1024; // initially 1 MBytes
     sender_active = true;
     sender_thread = std::thread( & MulticastSender::sender, this);
     ack_processor_thread = std::thread( & MulticastSender::ack_processor, this);
@@ -292,12 +293,14 @@ bool MulticastSender::send_message(eddl_message * message)
         size_t      msec_to_wait_after_sendto = 1;
         size_t      counter = 0;
         ssize_t     sent_bytes = 0;
+        bool        first_iteration = true;
 
         print_log_msg("entering the loop to send message  " + message->get_message_id());
 
         while (sender_active  &&  ! seq_no_queue.empty()) {
             size_t  pending_packets = seq_no_queue.size();
-            for (size_t i=0; sender_active && i < pending_packets; i++) {
+            size_t  counter_resent_packets = 0;
+            for (size_t i = 0; sender_active && i < pending_packets; i++) {
                 size_t seq_no = seq_no_queue.front();
                 seq_no_queue.pop();
 
@@ -316,6 +319,8 @@ bool MulticastSender::send_message(eddl_message * message)
                         else
                             packet = message->create_packet_for_checksum();
                         sent_packets[seq_no] = packet;
+                    } else {
+                        ++counter_resent_packets;
                     }
                     ssize_t l = sizeof(eddl_packet);
                     ssize_t n = sendto(socket_fd_out, (void *)packet, l,
@@ -323,9 +328,9 @@ bool MulticastSender::send_message(eddl_message * message)
                                        (const struct sockaddr *) &this->target_group_addr,
                                        sizeof(this->target_group_addr));
                     sent_bytes += n;
-                    if (sent_bytes >= 4000) {
-                        //std::this_thread::sleep_for(std::chrono::milliseconds(msec_to_wait_after_sendto));
-                        sent_bytes -= 4000;
+                    if (sent_bytes >= sent_bytes_threshold) {
+                        std::this_thread::sleep_for(std::chrono::milliseconds(msec_to_wait_after_sendto));
+                        sent_bytes -= sent_bytes_threshold;
                     }
                     if (n != l)
                         throw std::runtime_error(err_msg("sent " + std::to_string(n)
@@ -348,7 +353,23 @@ bool MulticastSender::send_message(eddl_message * message)
                 }
             } // inner for loop  i < pending_packets
 
-            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+/*
+            if (first_iteration) { //seq_no_queue.size()  >=  message->get_seq_len() / 2) { // if true -> it was the first iteration
+                size_t ms = std::max(10U, message->get_message_data_size() / (1024 * 1024));
+                std::this_thread::sleep_for(std::chrono::milliseconds(ms)); // wait after the first iteration for acknowledgements
+                first_iteration = false;
+            } else */ if (seq_no_queue.size() > 0) {
+                if (counter_resent_packets > 0) {
+                    //double resent_ratio = 100.0 * counter_resent_packets / (message->get_seq_len() + 1);
+                    double resent_ratio = 100.0 * counter_resent_packets / (counter + 1);
+                    if (resent_ratio > 50) { // greater than 50%
+                        sent_bytes_threshold = std::max(sent_bytes_threshold >> 1, (size_t)(1024 *  256 * 1)); // lower bound 256 KB
+                    } else if (resent_ratio < 0.1) { // lower than 1 per 1000
+                        sent_bytes_threshold = std::min(sent_bytes_threshold << 1, (size_t)(1024 * 1024 * 1)); // upper bounnd 1 MB
+                    }
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                }
+            }
 
             //if
             while (! weights_ack_queue.empty()) {
@@ -381,6 +402,8 @@ bool MulticastSender::send_message(eddl_message * message)
                             + "  waiting " + std::to_string((lapse_in_ms))
                             + " milliseconds from message started to be sent"
                             + " at " + std::to_string((message->get_message_data_size() / 1000.0) / lapse_in_ms) + " MBytes/second.");
+            print_log_msg("sent_bytes_threshold = " + std::to_string(this->sent_bytes_threshold));
+            print_log_msg("counter_resent_packets = " + std::to_string(counter_resent_packets));
             /*
             msec_to_wait_after_sendto = (msec_to_wait_after_sendto == 1)
                                       ? 10

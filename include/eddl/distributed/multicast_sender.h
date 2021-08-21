@@ -65,6 +65,8 @@ private:
     std::thread     ack_processor_thread;
     std::mutex      ack_processor_mutex;
 
+    size_t          sent_bytes_threshold;
+
     std::map<std::string, eddl_message_acks *>  active_acknowledgements;
 }; // class MulticastSender
 
