@@ -78,6 +78,9 @@ int main(int argc, char *argv[])
     //workers.push_back(new eddl::eddl_worker_node("ip:10.81.25.1;cpu:4,8192;gpu:0,low_mem;fpga:0,0;batch_size:10"));
     //workers.push_back(new eddl::eddl_worker_node("ip:158.42.215.16;cpu:8,131072;gpu:0,low_mem;fpga:0,0;batch_size:10"));
     workers.push_back(new eddl::eddl_worker_node("ip:192.168.1.1;cpu:8,131072;gpu:0,low_mem;fpga:0,0;batch_size:10"));
+    workers.push_back(new eddl::eddl_worker_node("ip:192.168.1.5;cpu:8,131072;gpu:0,low_mem;fpga:0,0;batch_size:10"));
+    workers.push_back(new eddl::eddl_worker_node("ip:192.168.1.7;cpu:8,131072;gpu:0,low_mem;fpga:0,0;batch_size:10"));
+    workers.push_back(new eddl::eddl_worker_node("ip:192.168.1.9;cpu:8,131072;gpu:0,low_mem;fpga:0,0;batch_size:10"));
 
     /*
         tcp_receiver pushes:

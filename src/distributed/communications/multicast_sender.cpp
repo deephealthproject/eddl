@@ -294,12 +294,12 @@ bool MulticastSender::send_message(eddl_message * message)
         size_t      counter = 0;
         ssize_t     sent_bytes = 0;
         bool        first_iteration = true;
+        size_t      counter_resent_packets = 0;
 
         print_log_msg("entering the loop to send message  " + message->get_message_id());
 
         while (sender_active  &&  ! seq_no_queue.empty()) {
             size_t  pending_packets = seq_no_queue.size();
-            size_t  counter_resent_packets = 0;
             for (size_t i = 0; sender_active && i < pending_packets; i++) {
                 size_t seq_no = seq_no_queue.front();
                 seq_no_queue.pop();
@@ -353,18 +353,16 @@ bool MulticastSender::send_message(eddl_message * message)
                 }
             } // inner for loop  i < pending_packets
 
-/*
-            if (first_iteration) { //seq_no_queue.size()  >=  message->get_seq_len() / 2) { // if true -> it was the first iteration
-                size_t ms = std::max(10U, message->get_message_data_size() / (1024 * 1024));
-                std::this_thread::sleep_for(std::chrono::milliseconds(ms)); // wait after the first iteration for acknowledgements
+            if (first_iteration) { // wait inconditionally after first iteration to allow acknowledgements from workers to arribe
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 first_iteration = false;
-            } else */ if (seq_no_queue.size() > 0) {
+            } else if (seq_no_queue.size() > 0) {
                 if (counter_resent_packets > 0) {
-                    //double resent_ratio = 100.0 * counter_resent_packets / (message->get_seq_len() + 1);
-                    double resent_ratio = 100.0 * counter_resent_packets / (counter + 1);
+                    double resent_ratio = 100.0 * counter_resent_packets / (message->get_seq_len() + 1);
+                    //double resent_ratio = 100.0 * counter_resent_packets / (counter + 1);
                     if (resent_ratio > 50) { // greater than 50%
-                        sent_bytes_threshold = std::max(sent_bytes_threshold >> 1, (size_t)(1024 *  256 * 1)); // lower bound 256 KB
-                    } else if (resent_ratio < 0.1) { // lower than 1 per 1000
+                        sent_bytes_threshold = std::max(sent_bytes_threshold >> 1, (size_t)(1024 *   32 * 1)); // lower bound 32 KB
+                    } else if (resent_ratio < 1) { // lower than 1%
                         sent_bytes_threshold = std::min(sent_bytes_threshold << 1, (size_t)(1024 * 1024 * 1)); // upper bounnd 1 MB
                     }
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -403,7 +401,8 @@ bool MulticastSender::send_message(eddl_message * message)
                             + " milliseconds from message started to be sent"
                             + " at " + std::to_string((message->get_message_data_size() / 1000.0) / lapse_in_ms) + " MBytes/second.");
             print_log_msg("sent_bytes_threshold = " + std::to_string(this->sent_bytes_threshold));
-            print_log_msg("counter_resent_packets = " + std::to_string(counter_resent_packets));
+            print_log_msg("counter_resent_packets = " + std::to_string(counter_resent_packets)
+                            + " resent rate = " + std::to_string(100.0 * counter_resent_packets / (message->get_seq_len() + 1)));
             /*
             msec_to_wait_after_sendto = (msec_to_wait_after_sendto == 1)
                                       ? 10

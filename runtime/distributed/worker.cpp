@@ -84,7 +84,8 @@ int main(int argc, char *argv[])
     while (worker_status != eddl::eddl_worker_status::WORKER_TO_SHUTDOWN) {
 
         // independently of the status the input queue must be processed
-        if (! input_queue.empty()) {
+        //if
+        while (! input_queue.empty()) {
             message = input_queue.pop();
             std::cout << "received message: "
                       << std::hex << message->get_message_id() << " "
@@ -103,8 +104,13 @@ int main(int argc, char *argv[])
                         }
                         break;
                     case eddl::eddl_command_types::STOP:
-                        if (worker_status == eddl::eddl_worker_status::WORKER_RUNNING) {
-                            worker_status = eddl::eddl_worker_status::WORKER_STOPPING;
+                        switch (worker_status) {
+                            case eddl::eddl_worker_status::WORKER_WAITING:
+                            case eddl::eddl_worker_status::WORKER_RUNNING:
+                                worker_status = eddl::eddl_worker_status::WORKER_STOPPING;
+                                break;
+                            default:
+                                break;
                         }
                         break;
                     case eddl::eddl_command_types::SHUTDOWN:
