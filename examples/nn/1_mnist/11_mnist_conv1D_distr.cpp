@@ -13,7 +13,6 @@
 
 #include "eddl/apis/eddl.h"
 
-
 using namespace eddl;
 
 //////////////////////////////////
@@ -25,6 +24,14 @@ using namespace eddl;
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
+    int id;
+    
+    // Init distribuited training
+    id = init_distributed(&argc, &argv);
+    
+    // Sync every batch, change every 2 epochs
+    set_method_distributed(AUTO_TIME,1,2); 
+
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -115,6 +122,9 @@ int main(int argc, char **argv) {
     delete x_test;
     delete y_test;
     delete net;
+    
+    // Finalize distributed training
+    end_distributed();
     
     return EXIT_SUCCESS;
 }

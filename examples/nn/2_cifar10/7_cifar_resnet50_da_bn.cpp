@@ -58,25 +58,16 @@ layer ResBlock(layer l, int filters,int half, int expand=0) {
 int main(int argc, char **argv){
   bool testing = false;
   bool use_cpu = false;
-  int id;
-  
-  id = init_distributed(&argc, &argv);
-    
-  // Sync every batch, change every 2 epochs
-  set_method_distributed(AUTO_TIME,1,2);
-
   for (int i = 1; i < argc; ++i) {
       if (strcmp(argv[i], "--testing") == 0) testing = true;
       else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
   }
 
-  
-  
   // download CIFAR data
   download_cifar10();
 
   // Settings
-  int epochs = testing ? 2 : 32;
+  int epochs = testing ? 2 : 5;
   int batch_size =16;
   int num_classes = 10;
 
@@ -136,12 +127,10 @@ int main(int argc, char **argv){
     cs);
 
   // plot the model
-  if (id==0)
-    plot(net,"model.pdf","TB");  // TB --> Top-Bottom mode for dot (graphviz)
+  plot(net,"model.pdf","TB");  // TB --> Top-Bottom mode for dot (graphviz)
 
   // get some info from the network
-   if (id==0)
-       summary(net);
+  summary(net);
 
 
 
@@ -174,16 +163,11 @@ int main(int argc, char **argv){
   }
 
   float lr=0.001;
-    
   for(int j=0;j<3;j++) {
     lr/=10.0;
 
     setlr(net,{lr,0.9});
-fit(net,{x_train},{y_train}, batch_size, epochs);
-    // Evaluate
-    evaluate(net,{x_test},{y_test});
 
-    /*
     for(int i=0;i<epochs;i++) {
       // training, list of input and output tensors, batch, epochs
       fit(net,{x_train},{y_train},batch_size, 1);
@@ -191,8 +175,7 @@ fit(net,{x_train},{y_train}, batch_size, epochs);
       // Evaluate test
       std::cout << "Evaluate test:" << std::endl;
       evaluate(net,{x_test},{y_test});
-    }*/
-    
+    }
   }
   delete x_train;
   delete y_train;

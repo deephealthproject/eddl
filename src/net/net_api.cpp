@@ -43,10 +43,12 @@ int verboserec = 1;
 using namespace std;
 using namespace std::chrono;
 
+// TODO. Hide these variables in mpi_distributed
 extern int use_mpi;
 extern int mpi_avg;
 extern int avg_method;
 extern int x_avg;
+extern int batch_is_global;
 
 float loss1, loss2;
 
@@ -816,224 +818,212 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     float SPEED_UP = 1.05;
 
     
+
     if (isrecurrent) {
         fit_recurrent(tin, tout, batch, epochs);
     } else {
-
-        if (isrecurrent) {
-            fit_recurrent(tin, tout, batch, epochs);
-        } else {
-            /*
-          CUDACHECK(cudaMalloc(sendbuff + 0, SIZE * sizeof(float)));
-          CUDACHECK(cudaMalloc(recvbuff + 0, SIZE * sizeof(float)));
-          CUDACHECK(cudaMemset(sendbuff[0], 1, SIZE * sizeof(float)));
-          CUDACHECK(cudaMemset(recvbuff[0], 0, SIZE * sizeof(float)));
-             */
-            //     for (i = 1; i < SIZE; i++) ptr[i]=(float) i;
-            if (use_mpi) {
-                MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
-                MPI_Comm_rank(MPI_COMM_WORLD, &id);
-            } else id = 0;
-            
-            // Check current optimizer
-            if (optimizer == nullptr)
-                msg("Net is not build", "Net.fit");
-
-            // Check if number of input/output network layers matches with the input/output tensor data
-            if (tin.size() != lin.size()) {
-                cout << tin.size() << "!=" << lin.size() << endl;
-                msg("input tensor list does not match with defined input layers", "Net.fit");
-            }
-            if (tout.size() != lout.size()) {
-                cout << tout.size() << "!=" << lout.size() << endl;
-                msg("output tensor list does not match with defined output layers", "Net.fit");
-            }
-
-
-            // Check if all the data inputs has the same number of samples
-            n = tin[0]->shape[0];
-            for (i = 1; i < tin.size(); i++)
-                if (tin[i]->shape[0] != n)
-                    msg("different number of samples in input tensor", "Net.fit");
-
-
-
-            // Check if the size of the output layers matches with inputs sizes
-            for (i = 1; i < tout.size(); i++)
-                if (tout[i]->shape[0] != n)
-                    msg("different number of samples in output tensor", "Net.fit");
-
+        if (use_mpi) {
+            //MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
+            //MPI_Comm_rank(MPI_COMM_WORLD, &id);
+            n_procs = get_n_procs_distributed();
+            id = get_id_distributed();
 
             // Set batch size
-            resize(batch);
+            if (batch_is_global)
+                batch = batch / n_procs;
+
+        } else {
+            n_procs=1;
+            id = 0;
+        }
+
+        /*
+      CUDACHECK(cudaMalloc(sendbuff + 0, SIZE * sizeof(float)));
+      CUDACHECK(cudaMalloc(recvbuff + 0, SIZE * sizeof(float)));
+      CUDACHECK(cudaMemset(sendbuff[0], 1, SIZE * sizeof(float)));
+      CUDACHECK(cudaMemset(recvbuff[0], 0, SIZE * sizeof(float)));
+         */
+        //     for (i = 1; i < SIZE; i++) ptr[i]=(float) i;
 
 
-            // Create array to store batch indices (later random)
-            vind sind;
-            for (i = 0; i < batch_size; i++)
-                sind.push_back(0);
+        // Check current optimizer
+        if (optimizer == nullptr)
+            msg("Net is not build", "Net.fit");
+
+        // Check if number of input/output network layers matches with the input/output tensor data
+        if (tin.size() != lin.size()) {
+            cout << tin.size() << "!=" << lin.size() << endl;
+            msg("input tensor list does not match with defined input layers", "Net.fit");
+        }
+        if (tout.size() != lout.size()) {
+            cout << tout.size() << "!=" << lout.size() << endl;
+            msg("output tensor list does not match with defined output layers", "Net.fit");
+        }
 
 
-            // Start training
-            setmode(TRMODE);
+        // Check if all the data inputs has the same number of samples
+        n = tin[0]->shape[0];
+        for (i = 1; i < tin.size(); i++)
+            if (tin[i]->shape[0] != n)
+                msg("different number of samples in input tensor", "Net.fit");
 
-            // Set some parameters
-            int num_batches = n / batch_size;
-            batches_per_proc = num_batches / n_procs;
 
-            // Train network
+        // Check if the size of the output layers matches with inputs sizes
+        for (i = 1; i < tout.size(); i++)
+            if (tout[i]->shape[0] != n)
+                msg("different number of samples in output tensor", "Net.fit");
+
+
+        // Set batch size
+        resize(batch);
+
+
+        // Create array to store batch indices (later random)
+        vind sind;
+        for (i = 0; i < batch_size; i++)
+            sind.push_back(0);
+
+
+        // Start training
+        setmode(TRMODE);
+
+        // Set some parameters
+        int num_batches = n / batch_size;
+        batches_per_proc = num_batches / n_procs;
+
+        // Train network
+        if (id == 0) {
+            fprintf(stdout, "%d epochs of %d batches of size %d (local) %d (global)\n", epochs, num_batches, batch_size, n_procs * batch_size);
+            if (use_mpi) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, mpi_avg);
+        }
+
+        batches_avg = mpi_avg;
+        for (i = 0; i < epochs; i++) {
+            high_resolution_clock::time_point e1 = high_resolution_clock::now();
             if (id == 0) {
-                fprintf(stdout, "%d epochs of %d batches of size %d (local) %d (global)\n", epochs, num_batches, batch_size, n_procs * batch_size);
-                if (use_mpi) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, mpi_avg);
-            }
-
-            batches_avg = mpi_avg;
-            for (i = 0; i < epochs; i++) {
-                high_resolution_clock::time_point e1 = high_resolution_clock::now();
-                if (id == 0) {
-                    if (use_mpi) {
-                        fprintf(stdout, "Epoch %d, mpi_avg %d\n", i + 1, batches_avg);
-                    } else {
-                        fprintf(stdout, "Epoch %d\n", i + 1);
-                    }
+                if (use_mpi) {
+                    fprintf(stdout, "Epoch %d, mpi_avg %d\n", i + 1, batches_avg);
+                } else {
+                    fprintf(stdout, "Epoch %d\n", i + 1);
                 }
-                reset_loss();
+            }
+            reset_loss();
 
-                batches = 0;
-                // For each batch
-                for (j = 0; j < (batches_per_proc); j++) {
-                    batches = batches + n_procs;
+            batches = 0;
+            // For each batch
+            for (j = 0; j < (batches_per_proc); j++) {
+                batches = batches + n_procs;
 
-                    // printf("Batch nr %d\n", j);
-                    // Set random indices
-                    for (k = 0; k < batch_size; k++) sind[k] = rand() % n;
+                // printf("Batch nr %d\n", j);
+                // Set random indices
+                for (k = 0; k < batch_size; k++) sind[k] = rand() % n;
 
-                    // Train batch
-                    tr_batches++;
+                // Train batch
+                tr_batches++;
 
-                    train_batch(tin, tout, sind);
+                train_batch(tin, tout, sind);
+                  
+                // synchronize
+                if (use_mpi) {
+                    if ((((j + 1) % batches_avg) == 0) || ((j + 1) == batches_per_proc)) {
+                        //printf("Proc %d Sincronizando %d\n", id, j);
+                        for (ii = 0; ii < snets[0]->layers.size(); ii++) {
+                            for (jj = 0; jj < snets[0]->layers[ii]->params.size(); jj++) {
 
-#ifdef cMPI
-                    // synchronize
-                    if (use_mpi) {
-                        if ((((j + 1) % batches_avg) == 0) || ((j + 1) == batches_per_proc)) {
-                            //printf("Proc %d Sincronizando %d\n", id, j);
-                            for (ii = 0; ii < snets[0]->layers.size(); ii++) {
-                                for (jj = 0; jj < snets[0]->layers[ii]->params.size(); jj++) {
+                                myptr = snets[0]->layers[ii]->params[jj]->ptr;
+                                count = snets[0]->layers[ii]->params[jj]->size;
+                                //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
+                                if (count != 0) {
+                                    // AllReduce params
+                                    AllReduce_distributed(myptr, count);
+                                    //fn_mpi_AllReduce(myptr, count)
+                                    //fn_nccl_AllReduce(myptr, count);
 
-                                    myptr = snets[0]->layers[ii]->params[jj]->ptr;
-                                    count = snets[0]->layers[ii]->params[jj]->size;
-                                    //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
-                                    if (count != 0) {
-                                        // MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
-                                        //fn_mpi_AllReduce(myptr, count)
-                                        fn_nccl_AllReduce(myptr, count);
-
-                                        //CUDACHECK(cudaSetDevice(0));
-                                        //NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
-                                        //completing NCCL operation by synchronizing on the CUDA stream
-                                        //CUDACHECK(cudaStreamSynchronize(cuda_stream));
-
-                                        /*
-                                       printf("NCCL Sincronizando proc %d batch %d\n", id, j);
-                                       NCCLCHECK(ncclAllReduce((const void*)sendbuff[0], (void*)sendbuff[0], SIZE, ncclFloat, ncclSum, nccl_comm, cuda_stream));
-                                       CUDACHECK(cudaSetDevice(0));
-                                       CUDACHECK(cudaStreamSynchronize(cuda_stream));
-                                         */
-                                        snets[0]->layers[ii]->params[jj]->div_(n_procs);
-                                    }
-                                    // OJO solo se puede hacer printf si el objeto está en CPU
-                                    //if (ii==7) {
-                                    //  printf("\n ii=%d jj=%d count=%d .....", ii,jj,count);
-                                    //  for (int ss=0; ss<count; ss++) printf("%4f", myptr[ss] );
-                                    //}
-
+                                    // Average params
+                                    snets[0]->layers[ii]->params[jj]->div_(n_procs);
                                 }
                             }
                         }
                     }
-#endif
+                }
 
-                    if (id == 0) {
-                        print_loss(batches, num_batches);
-                        //print_loss(j+1,num_batches);
-                    }
-                    high_resolution_clock::time_point e2 = high_resolution_clock::now();
-                    duration<double> epoch_time_span = e2 - e1;
-                    if (id == 0) {
-                        fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count() / ((j + 1) * n_procs));
-                        fflush(stdout);
-                    }
-
-
+                if (id == 0) {
+                    print_loss(batches, num_batches);
+                    //print_loss(j+1,num_batches);
                 }
                 high_resolution_clock::time_point e2 = high_resolution_clock::now();
                 duration<double> epoch_time_span = e2 - e1;
-                secs_epoch = epoch_time_span.count();
-                if (i == 0) secs_epoch_prev = 2 * secs_epoch; // Force first change with adaptive
-
                 if (id == 0) {
-                    fprintf(stdout, "\n%1.4f secs/epoch\n", epoch_time_span.count());
+                    fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count() / ((j + 1) * n_procs));
                     fflush(stdout);
                 }
-                /*
-                if (((i+1) % 2)==1) {
-                        loss1 =  get_losses()[lout.size()-1];
-                        printf("measuring loss1 %f\n", loss1);
+
+
+            }
+            high_resolution_clock::time_point e2 = high_resolution_clock::now();
+            duration<double> epoch_time_span = e2 - e1;
+            secs_epoch = epoch_time_span.count();
+            if (i == 0) secs_epoch_prev = 2 * secs_epoch; // Force first change with adaptive
+
+            if (id == 0) {
+                fprintf(stdout, "\n%1.4f secs/epoch\n", epoch_time_span.count());
+                fflush(stdout);
+            }
+            /*
+            if (((i+1) % 2)==1) {
+                    loss1 =  get_losses()[lout.size()-1];
+                    printf("measuring loss1 %f\n", loss1);
+                }
+            if (((i+1) % 2)==0) {
+                    loss2 =  get_losses()[lout.size()-1];
+                    printf("measuring loss2 %f\n", loss2);
+                 }
+            printf("loss1 %f\n", loss1);
+            printf("loss2 %f\n", loss2);
+             */
+            switch (avg_method) {
+                case 1:
+                    if (((i + 1) % (x_avg)) == 0) {
+                        if (batches_avg < batches_per_proc)
+                            batches_avg = batches_avg * 2;
                     }
-                if (((i+1) % 2)==0) {
-                        loss2 =  get_losses()[lout.size()-1];
-                        printf("measuring loss2 %f\n", loss2);
-                     }
-                printf("loss1 %f\n", loss1);
-                printf("loss2 %f\n", loss2);
-                 */
-                switch (avg_method) {
-                    case 1:
-                        if (((i + 1) % (x_avg)) == 0) {
+                    break;
+
+                case 2:
+                    if (((i + 1) % (x_avg)) == 0) {
+                        batches_avg = batches_avg * 2;
+
+                        if (batches_avg >= batches_per_proc)
+                            batches_avg = mpi_avg;
+                    }
+                    break;
+
+                case 3:
+                    if (((i + 1) % (x_avg)) == 0) {
+                        batches_avg = batches_avg / 2;
+
+                        if (batches_avg < 1)
+                            batches_avg = mpi_avg;
+                    }
+                    break;
+
+
+                case 4:
+                    if (((i + 1) % (x_avg)) == 0) {
+                        float speed_up = secs_epoch_prev / secs_epoch;
+                        if (speed_up > SPEED_UP) {
+                            secs_epoch_prev = secs_epoch;
+
                             if (batches_avg < batches_per_proc)
                                 batches_avg = batches_avg * 2;
                         }
-                        break;
+                    }
+                    break;
 
-                    case 2:
-                        if (((i + 1) % (x_avg)) == 0) {
-                            batches_avg = batches_avg * 2;
-
-                            if (batches_avg >= batches_per_proc)
-                                batches_avg = mpi_avg;
-                        }
-                        break;
-
-                    case 3:
-                        if (((i + 1) % (x_avg)) == 0) {
-                            batches_avg = batches_avg / 2;
-
-                            if (batches_avg < 1)
-                                batches_avg = mpi_avg;
-                        }
-                        break;
-
-
-                    case 4:
-                        if (((i + 1) % (x_avg)) == 0) {
-                            float speed_up = secs_epoch_prev / secs_epoch;
-                            if (speed_up > SPEED_UP) {
-                                secs_epoch_prev = secs_epoch;
-
-                                if (batches_avg < batches_per_proc)
-                                    batches_avg = batches_avg * 2;
-                            }
-                        }
-                        break;
-                   
-                }
             }
-            fflush(stdout);
         }
         fflush(stdout);
     }
-
 }
 
 void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z) {

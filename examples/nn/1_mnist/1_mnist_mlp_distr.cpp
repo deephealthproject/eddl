@@ -1,11 +1,11 @@
 /*
-* EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
-* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
-* All rights reserved
-*/
+ * EDDL Library - European Distributed Deep Learning Library.
+ * Version: 0.9
+ * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+ * Date: November 2020
+ * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+ * All rights reserved
+ */
 
 #include <cstdio>
 #include <cstdlib>
@@ -18,13 +18,23 @@ using namespace eddl;
 
 //////////////////////////////////
 // mnist_mlp.cpp:
-// A very basic Conv1D for mnist
+// A very basic MLP for mnist
 // Using fit for training
 //////////////////////////////////
 
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
+    int id;
+
+    // Init distribuited training
+    id = init_distributed(&argc, &argv);
+    
+    // Sync every batch, change every 4 epochs
+    set_method_distributed(AUTO_TIME,1,4);
+
+
+
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -33,29 +43,29 @@ int main(int argc, char **argv) {
     // Download mnist
     download_mnist();
 
+
     // Settings
-    int epochs = testing ? 2 : 5;
-    int batch_size = 100;
+    int epochs = (testing) ? 2 : 100;
+    int batch_size = 200;
     int num_classes = 10;
 
     // Define network
     layer in = Input({784});
-    layer l = in;  // Aux var
+    layer l = in; // Aux var
 
-    l = Reshape(l,{1,784}); //image as a 1D signal with depth=1
-    l = MaxPool1D(ReLu(Conv1D(l,16, {3},{1})),{4},{4});  //MaxPool 4 stride 4
-    l = MaxPool1D(ReLu(Conv1D(l,32, {3},{1})),{4},{4});
-    l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
-    l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
-    l = Reshape(l,{-1});
+    l = LeakyReLu(Dense(l, 1024));
+    l = LeakyReLu(Dense(l, 1024));
+    l = LeakyReLu(Dense(l, 1024));
 
-    layer out = Softmax(Dense(l, num_classes));
-    model net = Model({in}, {out});
+    layer out = Softmax(Dense(l, num_classes), -1); // Softmax axis optional (default=-1)
+    model net = Model({in},{out});
     net->verbosity_level = 0;
 
     // dot from graphviz should be installed:
-    plot(net, "model.pdf");
-
+    if (id == 0) {
+       plot(net, "model.pdf");
+    }
+    
     compserv cs = nullptr;
     if (use_cpu) {
         cs = CS_CPU();
@@ -68,15 +78,22 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          rmsprop(0.001), // Optimizer
-          {"softmax_cross_entropy"}, // Losses
-          {"categorical_accuracy"}, // Metrics
-          cs);
+            adam(0.001), // Optimizer
+    {"softmax_cross_entropy"}, // Losses
+    {
+        "categorical_accuracy"
+    }, // Metrics
+    cs);
+    //    toGPU(net, {1}, 100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
     // View model
-    summary(net);
+    if (id == 0)
+        summary(net);
 
     // Load dataset
+    //Distributed dataset
+    //Tensor* x_train = Tensor::load_id("mnist_trX.bin");
+    //Tensor* y_train = Tensor::load_id("mnist_trY.bin");
     Tensor* x_train = Tensor::load("mnist_trX.bin");
     Tensor* y_train = Tensor::load("mnist_trY.bin");
     Tensor* x_test = Tensor::load("mnist_tsX.bin");
@@ -86,8 +103,8 @@ int main(int argc, char **argv) {
         std::string _range_ = "0:" + std::to_string(2 * batch_size);
         Tensor* x_mini_train = x_train->select({_range_, ":"});
         Tensor* y_mini_train = y_train->select({_range_, ":"});
-        Tensor* x_mini_test  = x_test->select({_range_, ":"});
-        Tensor* y_mini_test  = y_test->select({_range_, ":"});
+        Tensor* x_mini_test = x_test->select({_range_, ":"});
+        Tensor* y_mini_test = y_test->select({_range_, ":"});
 
         delete x_train;
         delete y_train;
@@ -96,8 +113,8 @@ int main(int argc, char **argv) {
 
         x_train = x_mini_train;
         y_train = y_mini_train;
-        x_test  = x_mini_test;
-        y_test  = y_mini_test;
+        x_test = x_mini_test;
+        y_test = y_mini_test;
     }
 
     // Preprocessing
@@ -105,16 +122,26 @@ int main(int argc, char **argv) {
     x_test->div_(255.0f);
 
     // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    fit(net,{x_train},{y_train}, batch_size, epochs);
+    
 
     // Evaluate
-    evaluate(net, {x_test}, {y_test});
+    evaluate(net,{x_test},
+    {
+        y_test
+    });
 
+    // Release objects, layers, optimizer and computing service are released by the net object
     delete x_train;
     delete y_train;
     delete x_test;
     delete y_test;
     delete net;
-    
+
+    // Finalize distributed training
+    end_distributed();
+
+
+
     return EXIT_SUCCESS;
 }

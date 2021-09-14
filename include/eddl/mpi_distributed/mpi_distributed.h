@@ -27,7 +27,7 @@
 #define AVG_DEFAULT 16
 
 #define FIXED 0
-#define INC_AVG 1
+#define AVG_INC 1
 #define SAWTOOTH 2
 #define NEG_SAWTOOTH 3
 #define AUTO_TIME 4
@@ -59,37 +59,36 @@
   }                                                 \
 } while(0)
 
-int fn_get_id();
+int get_id_distributed();
 
-int fn_get_n_procs();
+int get_n_procs_distributed();
 
 /**
  *  @brief Initializes distributed training
  *
  *  @param argc,argv Command line arguments
- *  @return id MPI rank of process 
+ *  @return id MPI rank of process
  */
 int init_distributed(int *argc, char ***argv);
 
 /**
  *  @brief Sets distributed training paramas
  *
- *  @param method Method to sinchronize 
+ *  @param method Method to sinchronize
  *  @param batch_avg Nr of batches between parameters synchronization
  *  @param epoch_avg Nr of epochs between changes in batch_avg
- *  @return id MPI rank of process 
  */
-void set_method_distributed (int method, int batch_avg, int epoch_avg);
+void set_method_distributed(int method, int batch_avg, int epoch_avg);
 
 /**
  *  @brief Finalizes distributed training
  *
  */
 void end_distributed();
-    
+
 /**
  *  @brief Performs AllReduction of buffer using MPI
- * 
+ *
  *  @param myptr pointer to buffer
  *  @param count buffer size in floats
  */
@@ -97,11 +96,19 @@ void fn_mpi_AllReduce(float* myptr, int count);
 
 /**
  *  @brief Performs AllReduction of buffer using NCCL
- * 
+ *
  *  @param myptr pointer to buffer
  *  @param count buffer size in floats
  */
 void fn_nccl_AllReduce(float* myptr, int count);
+
+/**
+ *  @brief Performs AllReduction of buffer using NCCL if available, MPI otherwise
+ *
+ *  @param myptr pointer to buffer
+ *  @param count buffer size in floats
+ */
+void AllReduce_distributed(float* myptr, int count);
 
 
 

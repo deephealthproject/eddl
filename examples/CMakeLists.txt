@@ -6,6 +6,9 @@ project(eddl-examples)
 # EXAMPLES: MNIST ****************************************************
 add_executable(mnist_mlp "nn/1_mnist/1_mnist_mlp.cpp")
 target_link_libraries(mnist_mlp eddl)
+# distributed
+add_executable(mnist_mlp_distr "nn/1_mnist/1_mnist_mlp_distr.cpp")
+target_link_libraries(mnist_mlp_distr eddl)
 
 add_executable(mnist_mlp_initializers "nn/1_mnist/2_mnist_mlp_initializers.cpp")
 target_link_libraries(mnist_mlp_initializers eddl)
@@ -24,6 +27,9 @@ target_link_libraries(mnist_auto_encoder eddl)
 
 add_executable(mnist_conv "nn/1_mnist/7_mnist_conv.cpp")
 target_link_libraries(mnist_conv eddl)
+# distributed
+add_executable(mnist_conv_distr "nn/1_mnist/7_mnist_conv_distr.cpp")
+target_link_libraries(mnist_conv_distr eddl)
 
 add_executable(mnist_rnn "nn/1_mnist/8_mnist_rnn.cpp")
 target_link_libraries(mnist_rnn eddl)
@@ -36,6 +42,9 @@ target_link_libraries(mnist_rnn_func eddl)
 
 add_executable(mnist_conv1D "nn/1_mnist/11_mnist_conv1D.cpp")
 target_link_libraries(mnist_conv1D eddl)
+#distributed
+add_executable(mnist_conv1D_distr "nn/1_mnist/11_mnist_conv1D_distr.cpp")
+target_link_libraries(mnist_conv1D_distr eddl)
 
 add_executable(mnist_conv_dice "nn/1_mnist/13_mnist_conv_dice.cpp")
 target_link_libraries(mnist_conv_dice eddl)
@@ -48,27 +57,45 @@ target_link_libraries(mnist_losses eddl)
 # EXAMPLES: CIFAR10 ****************************************************
 add_executable(cifar_conv "nn/2_cifar10/1_cifar_conv.cpp")
 target_link_libraries(cifar_conv eddl)
+#distributed
+add_executable(cifar_conv_distr "nn/2_cifar10/1_cifar_conv_distr.cpp")
+target_link_libraries(cifar_conv_distr eddl)
 
 add_executable(cifar_conv_da "nn/2_cifar10/2_cifar_conv_da.cpp")
 target_link_libraries(cifar_conv_da eddl)
 
 add_executable(cifar_vgg16 "nn/2_cifar10/3_cifar_vgg16.cpp")
 target_link_libraries(cifar_vgg16 eddl)
+#distributed
+add_executable(cifar_vgg16_distr "nn/2_cifar10/3_cifar_vgg16_distr.cpp")
+target_link_libraries(cifar_vgg16_distr eddl)
 
 add_executable(cifar_vgg16_bn "nn/2_cifar10/4_cifar_vgg16_bn.cpp")
 target_link_libraries(cifar_vgg16_bn eddl)
+#distributed
+add_executable(cifar_vgg16_bn_distr "nn/2_cifar10/4_cifar_vgg16_bn_distr.cpp")
+target_link_libraries(cifar_vgg16_bn_distr eddl)
 
 add_executable(cifar_vgg16_gn "nn/2_cifar10/4_cifar_vgg16_gn.cpp")
 target_link_libraries(cifar_vgg16_gn eddl)
+#distributed
+add_executable(cifar_vgg16_gn_distr "nn/2_cifar10/4_cifar_vgg16_gn_distr.cpp")
+target_link_libraries(cifar_vgg16_gn_distr eddl)
 
 add_executable(cifar_resnet "nn/2_cifar10/5_cifar_resnet.cpp")
 target_link_libraries(cifar_resnet eddl)
+#distributed
+add_executable(cifar_resnet_distr "nn/2_cifar10/5_cifar_resnet_distr.cpp")
+target_link_libraries(cifar_resnet_distr eddl)
 
 add_executable(cifar_resnet_da_bn "nn/2_cifar10/6_cifar_resnet_da_bn.cpp")
 target_link_libraries(cifar_resnet_da_bn eddl)
 
 add_executable(cifar_resnet50_da_bn "nn/2_cifar10/7_cifar_resnet50_da_bn.cpp")
 target_link_libraries(cifar_resnet50_da_bn eddl)
+#distributed
+add_executable(cifar_resnet50_da_bn_distr "nn/2_cifar10/7_cifar_resnet50_da_bn_distr.cpp")
+target_link_libraries(cifar_resnet50_da_bn_distr eddl)
 
 add_executable(cifar_avgpool3d "nn/2_cifar10/8_cifar_avgpool3d.cpp")
 target_link_libraries(cifar_avgpool3d eddl)
