@@ -982,14 +982,14 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             printf("loss2 %f\n", loss2);
              */
             switch (avg_method) {
-                case 1:
+                case AVG_INC:
                     if (((i + 1) % (x_avg)) == 0) {
                         if (batches_avg < batches_per_proc)
                             batches_avg = batches_avg * 2;
                     }
                     break;
 
-                case 2:
+                case SAWTOOTH:
                     if (((i + 1) % (x_avg)) == 0) {
                         batches_avg = batches_avg * 2;
 
@@ -998,7 +998,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                     }
                     break;
 
-                case 3:
+                case NEG_SAWTOOTH:
                     if (((i + 1) % (x_avg)) == 0) {
                         batches_avg = batches_avg / 2;
 
@@ -1008,7 +1008,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                     break;
 
 
-                case 4:
+                case AUTO_TIME:
                     if (((i + 1) % (x_avg)) == 0) {
                         float speed_up = secs_epoch_prev / secs_epoch;
                         if (speed_up > SPEED_UP) {
