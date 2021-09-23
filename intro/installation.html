@@ -419,9 +419,9 @@ conda activate eddl
 # Build and install
 <span class="k">mkdir</span> build
 <span class="k">cd</span> build
-cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+cmake .. -DCMAKE_PREFIX_PATH=<span class="nv">%CONDA_PREFIX%</span> -DCMAKE_INSTALL_PREFIX=<span class="nv">%CONDA_PREFIX%</span>
 
-make install
+cmake --build . --target install
 </pre></div>
 </div>
 </div>

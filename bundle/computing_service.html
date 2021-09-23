@@ -265,13 +265,13 @@ the code will be executed.</p>
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span>
-      <span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span>            <span class="c1">// Optimizer</span>
-      <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span>   <span class="c1">// Losses</span>
-      <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
-      <span class="n">CS_CPU</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>                <span class="c1">// CPU with 4 threads</span>
-      <span class="nb">false</span>
-<span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span><span class="w">            </span><span class="c1">// Optimizer</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span><span class="w">   </span><span class="c1">// Losses</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Metrics</span>
+<span class="w">      </span><span class="n">CS_CPU</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w">                </span><span class="c1">// CPU with 4 threads</span>
+<span class="w">      </span><span class="nb">false</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -342,13 +342,13 @@ the code will be executed.</p>
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">build</span><span class="p">(</span><span class="n">imported_net</span><span class="p">,</span>
-      <span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span>            <span class="c1">// Optimizer</span>
-      <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span>   <span class="c1">// Losses</span>
-      <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
-      <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">}),</span>              <span class="c1">// one GPU</span>
-      <span class="nb">false</span>
-<span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">build</span><span class="p">(</span><span class="n">imported_net</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span><span class="w">            </span><span class="c1">// Optimizer</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span><span class="w">   </span><span class="c1">// Losses</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Metrics</span>
+<span class="w">      </span><span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">}),</span><span class="w">              </span><span class="c1">// one GPU</span>
+<span class="w">      </span><span class="nb">false</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -405,8 +405,8 @@ using protocol buffers and the ONNX standard definition.</p>
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">compserv</span> <span class="n">cs</span> <span class="o">=</span> <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">});</span>
-<span class="n">save_compserv_to_onnx_file</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="s">&quot;my_cs.onnx&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">compserv</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">});</span><span class="w"></span>
+<span class="n">save_compserv_to_onnx_file</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;my_cs.onnx&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -428,7 +428,7 @@ using protocol buffers and the ONNX standard definition.</p>
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">compserv</span> <span class="n">cs</span> <span class="o">=</span> <span class="n">import_compserv_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_cs.onnx&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">compserv</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_compserv_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_cs.onnx&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>

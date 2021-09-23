@@ -274,13 +274,13 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="n">in1</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">in2</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">});</span>
-<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Concat</span><span class="p">(</span><span class="n">in1</span><span class="p">,</span> <span class="n">in2</span><span class="p">);</span>
-<span class="p">...</span>
-<span class="n">layer</span> <span class="n">out</span> <span class="o">=</span> <span class="n">Activation</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">),</span> <span class="s">&quot;softmax&quot;</span><span class="p">);</span>
-<span class="p">...</span>
-<span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in1</span><span class="p">,</span> <span class="n">in2</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span><span class="w"> </span><span class="n">in1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">});</span><span class="w"></span>
+<span class="n">layer</span><span class="w"> </span><span class="n">in2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Input</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">});</span><span class="w"></span>
+<span class="n">layer</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Concat</span><span class="p">(</span><span class="n">in1</span><span class="p">,</span><span class="w"> </span><span class="n">in2</span><span class="p">);</span><span class="w"></span>
+<span class="p">...</span><span class="w"></span>
+<span class="n">layer</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Activation</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">num_classes</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;softmax&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="p">...</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Model</span><span class="p">({</span><span class="n">in1</span><span class="p">,</span><span class="w"> </span><span class="n">in2</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">out</span><span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -306,16 +306,16 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">model</span> <span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span><span class="w"></span>
 
 <span class="c1">// Build model</span>
-<span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span>
-      <span class="n">sgd</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span> <span class="c1">// Optimizer</span>
-      <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span> <span class="c1">// Losses</span>
-      <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
-      <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">},</span> <span class="s">&quot;low_mem&quot;</span><span class="p">)</span> <span class="c1">// GPU with only one gpu</span>
-<span class="p">);</span>
+<span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">sgd</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span><span class="w"> </span><span class="mf">0.9</span><span class="p">),</span><span class="w"> </span><span class="c1">// Optimizer</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Losses</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Metrics</span>
+<span class="w">      </span><span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="s">&quot;low_mem&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// GPU with only one gpu</span>
+<span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -337,18 +337,18 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">model</span> <span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span><span class="w"></span>
 
 <span class="c1">// Build model</span>
-<span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span>
-      <span class="n">sgd</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span> <span class="c1">// Optimizer</span>
-      <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span> <span class="c1">// Losses</span>
-      <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
-      <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">},</span> <span class="s">&quot;low_mem&quot;</span><span class="p">)</span> <span class="c1">// GPU with only one gpu</span>
-<span class="p">);</span>
+<span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">sgd</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span><span class="w"> </span><span class="mf">0.9</span><span class="p">),</span><span class="w"> </span><span class="c1">// Optimizer</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Losses</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Metrics</span>
+<span class="w">      </span><span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="s">&quot;low_mem&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// GPU with only one gpu</span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="n">summary</span><span class="p">(</span><span class="n">net</span><span class="p">);</span>
+<span class="n">summary</span><span class="p">(</span><span class="n">net</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Result:</p>
@@ -386,10 +386,10 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">model</span> <span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span><span class="w"></span>
 
-<span class="n">plot</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="s">&quot;model.pdf&quot;</span><span class="p">);</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="s">&quot;model.pdf&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Result:</p>
@@ -413,22 +413,22 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">out</span><span class="p">});</span><span class="w"></span>
 
 <span class="c1">// Build model</span>
-<span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span>
-      <span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span> <span class="c1">// Optimizer</span>
-      <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span> <span class="c1">// Losses</span>
-      <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
-       <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="mi">100</span><span class="p">)</span> <span class="c1">// one GPU</span>
-<span class="p">);</span>
+<span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span><span class="w"> </span><span class="c1">// Optimizer</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Losses</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Metrics</span>
+<span class="w">       </span><span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="c1">// one GPU</span>
+<span class="p">);</span><span class="w"></span>
 
 <span class="c1">// Load weights</span>
-<span class="n">load</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="s">&quot;saved-weights.bin&quot;</span><span class="p">);</span>
+<span class="n">load</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;saved-weights.bin&quot;</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">// Evaluate</span>
-<span class="n">evaluate</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">x_test</span><span class="p">},</span> <span class="p">{</span><span class="n">y_test</span><span class="p">});</span>
+<span class="n">evaluate</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">x_test</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">y_test</span><span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -451,22 +451,22 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">out</span><span class="p">});</span><span class="w"></span>
 
 <span class="c1">// Build model</span>
-<span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span>
-      <span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span> <span class="c1">// Optimizer</span>
-      <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span> <span class="c1">// Losses</span>
-      <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
-       <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="mi">100</span><span class="p">)</span> <span class="c1">// one GPU</span>
-<span class="p">);</span>
+<span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span><span class="w"> </span><span class="c1">// Optimizer</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Losses</span>
+<span class="w">      </span><span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Metrics</span>
+<span class="w">       </span><span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="c1">// one GPU</span>
+<span class="p">);</span><span class="w"></span>
 
 <span class="c1">// Train model</span>
-<span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">x_train</span><span class="p">},</span> <span class="p">{</span><span class="n">y_train</span><span class="p">},</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">epochs</span><span class="p">);</span>
+<span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">x_train</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">y_train</span><span class="p">},</span><span class="w"> </span><span class="n">batch_size</span><span class="p">,</span><span class="w"> </span><span class="n">epochs</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">// Save weights</span>
-<span class="n">save</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="s">&quot;saved-weights.bin&quot;</span><span class="p">);</span>
+<span class="n">save</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;saved-weights.bin&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -489,16 +489,16 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span>
-<span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">...</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">out</span><span class="p">});</span><span class="w"></span>
 
 <span class="c1">// Build model</span>
-<span class="p">...</span>
+<span class="p">...</span><span class="w"></span>
 
-<span class="n">setlr</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mf">0.005</span><span class="p">,</span><span class="mf">0.9</span><span class="p">});</span>
+<span class="n">setlr</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mf">0.005</span><span class="p">,</span><span class="mf">0.9</span><span class="p">});</span><span class="w"></span>
 
 <span class="c1">// Train model</span>
-<span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">x_train</span><span class="p">},</span> <span class="p">{</span><span class="n">y_train</span><span class="p">},</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">epochs</span><span class="p">);</span>
+<span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">x_train</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">y_train</span><span class="p">},</span><span class="w"> </span><span class="n">batch_size</span><span class="p">,</span><span class="w"> </span><span class="n">epochs</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -521,15 +521,15 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">out</span><span class="p">});</span><span class="w"></span>
 
 <span class="c1">// Build model</span>
-<span class="p">...</span>
+<span class="p">...</span><span class="w"></span>
 
-<span class="n">setlogfile</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="s">&quot;model-log&quot;</span><span class="p">);</span>
+<span class="n">setlogfile</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="s">&quot;model-log&quot;</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">// Train model</span>
-<span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">x_train</span><span class="p">},</span> <span class="p">{</span><span class="n">y_train</span><span class="p">},</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">epochs</span><span class="p">);</span>
+<span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">x_train</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">y_train</span><span class="p">},</span><span class="w"> </span><span class="n">batch_size</span><span class="p">,</span><span class="w"> </span><span class="n">epochs</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -553,7 +553,7 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">toCPU</span><span class="p">(</span><span class="n">net</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">toCPU</span><span class="p">(</span><span class="n">net</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="cpp function">
@@ -575,13 +575,13 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mi">1</span><span class="p">},</span><span class="mi">100</span><span class="p">,</span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span> <span class="c1">// In two gpus, syncronize every 100 batches, low_mem setup</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mi">1</span><span class="p">},</span><span class="mi">100</span><span class="p">,</span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// In two gpus, syncronize every 100 batches, low_mem setup</span>
 
 <span class="c1">// Other ways</span>
-<span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span> <span class="c1">// Model synchronization every batch</span>
-<span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mi">1</span><span class="p">});</span> <span class="c1">// Model synchronization every batch and full_mem mode</span>
-<span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="s">&quot;low_mem&quot;</span><span class="p">);</span> <span class="c1">// Model synchronization every batch and use of all available GPUs</span>
-<span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">);</span> <span class="c1">// Model synchronization every batch, use of all available GPUs, and full_mem mode</span>
+<span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Model synchronization every batch</span>
+<span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mi">1</span><span class="p">});</span><span class="w"> </span><span class="c1">// Model synchronization every batch and full_mem mode</span>
+<span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Model synchronization every batch and use of all available GPUs</span>
+<span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">);</span><span class="w"> </span><span class="c1">// Model synchronization every batch, use of all available GPUs, and full_mem mode</span>
 </pre></div>
 </div>
 </section>
@@ -604,7 +604,7 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="n">vtensor</span><span class="o">&gt;</span> <span class="n">get_parameters</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span> <span class="c1">// deep_copy=true</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="n">vtensor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">get_parameters</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"> </span><span class="c1">// deep_copy=true</span>
 </pre></div>
 </div>
 </section>
@@ -625,8 +625,8 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="n">vtensor</span><span class="o">&gt;</span> <span class="n">myparameters</span> <span class="o">=</span> <span class="p">...</span>
-<span class="n">set_parameters</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">myparameters</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="n">vtensor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">myparameters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span><span class="w"></span>
+<span class="n">set_parameters</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="n">myparameters</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>

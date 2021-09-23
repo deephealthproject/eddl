@@ -242,14 +242,14 @@
 <h1>Training a ResNet50<a class="headerlink" href="#training-a-resnet50" title="Permalink to this headline">¶</a></h1>
 <p>This example trains and evaluates ResNet50 using CIFAR-10. <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/examples/nn/2_cifar10/7_cifar_resnet50_da_bn.cpp">[source]</a></p>
 <a class="reference internal image-reference" href="../../_images/resnet50.svg"><img alt="../../_images/resnet50.svg" height="1568" src="../../_images/resnet50.svg" width="71184" /></a>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;cstdlib&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdlib&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;eddl/apis/eddl.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;eddl/apis/eddl.h&quot;</span><span class="cp"></span>
 
 
-<span class="k">using</span> <span class="k">namespace</span> <span class="nn">eddl</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">eddl</span><span class="p">;</span><span class="w"></span>
 
 <span class="c1">//////////////////////////////////</span>
 <span class="c1">// cifar_resnet50_da_bn.cpp:</span>
@@ -259,128 +259,128 @@
 <span class="c1">// Using fit for training</span>
 <span class="c1">//////////////////////////////////</span>
 
-<span class="n">layer</span> <span class="nf">BN</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">)</span>
-<span class="p">{</span>
-  <span class="k">return</span> <span class="n">BatchNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
-  <span class="c1">//return l;</span>
-<span class="p">}</span>
+<span class="n">layer</span><span class="w"> </span><span class="nf">BN</span><span class="p">(</span><span class="n">layer</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="c1">//return l;</span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="n">layer</span> <span class="nf">BG</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//return GaussianNoise(BN(l),0.3);</span>
-  <span class="k">return</span> <span class="n">BN</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
-<span class="p">}</span>
-
-
-<span class="n">layer</span> <span class="nf">ResBlock</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="kt">int</span> <span class="n">filters</span><span class="p">,</span><span class="kt">int</span> <span class="n">half</span><span class="p">,</span> <span class="kt">int</span> <span class="n">expand</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">layer</span> <span class="n">in</span><span class="o">=</span><span class="n">l</span><span class="p">;</span>
-
-  <span class="n">l</span><span class="o">=</span><span class="n">ReLu</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">filters</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)));</span>
-
-  <span class="k">if</span> <span class="p">(</span><span class="n">half</span><span class="p">)</span>
-    <span class="n">l</span><span class="o">=</span><span class="n">ReLu</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">filters</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)));</span>
-  <span class="k">else</span>
-    <span class="n">l</span><span class="o">=</span><span class="n">ReLu</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">filters</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)));</span>
-
-  <span class="n">l</span><span class="o">=</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">4</span><span class="o">*</span><span class="n">filters</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">));</span>
-
-  <span class="k">if</span> <span class="p">(</span><span class="n">half</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">Sum</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="mi">4</span><span class="o">*</span><span class="n">filters</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)),</span><span class="n">l</span><span class="p">));</span>
-  <span class="k">else</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">expand</span><span class="p">)</span> <span class="k">return</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">Sum</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="mi">4</span><span class="o">*</span><span class="n">filters</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)),</span><span class="n">l</span><span class="p">));</span>
-    <span class="k">else</span> <span class="k">return</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">Sum</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="n">l</span><span class="p">));</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">){</span>
-
-  <span class="c1">// download CIFAR data</span>
-  <span class="n">download_cifar10</span><span class="p">();</span>
-
-  <span class="c1">// Settings</span>
-  <span class="kt">int</span> <span class="n">epochs</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="n">batch_size</span> <span class="o">=</span><span class="mi">16</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="n">num_classes</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-
-  <span class="c1">// network</span>
-  <span class="n">layer</span> <span class="n">in</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">});</span>
-  <span class="n">layer</span> <span class="n">l</span><span class="o">=</span><span class="n">in</span><span class="p">;</span>
-
-  <span class="c1">// Data augmentation</span>
-
-  <span class="n">l</span> <span class="o">=</span> <span class="n">RandomCropScale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mf">0.8f</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">});</span>
-  <span class="n">l</span> <span class="o">=</span> <span class="n">RandomHorizontalFlip</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
-
-  <span class="c1">// Resnet-50</span>
-
-  <span class="n">l</span><span class="o">=</span><span class="n">ReLu</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">64</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)));</span> <span class="c1">//{1,1}</span>
-  <span class="c1">//l=MaxPool(l,{3,3},{1,1},&quot;same&quot;);</span>
-
-  <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="n">l</span><span class="o">=</span><span class="n">ResBlock</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span> <span class="c1">// not half but expand the first</span>
-
-  <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="n">l</span><span class="o">=</span><span class="n">ResBlock</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
-
-  <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="n">l</span><span class="o">=</span><span class="n">ResBlock</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
-
-  <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="n">l</span><span class="o">=</span><span class="n">ResBlock</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">512</span><span class="p">,</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
-
-  <span class="n">l</span><span class="o">=</span><span class="n">MaxPool</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">});</span>  <span class="c1">// should be avgpool</span>
-
-  <span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">-1</span><span class="p">});</span>
-
-  <span class="n">layer</span> <span class="n">out</span><span class="o">=</span><span class="n">Activation</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">num_classes</span><span class="p">),</span><span class="s">&quot;softmax&quot;</span><span class="p">);</span>
-
-  <span class="c1">// net define input and output layers list</span>
-  <span class="n">model</span> <span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span>
+<span class="n">layer</span><span class="w"> </span><span class="nf">BG</span><span class="p">(</span><span class="n">layer</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">//return GaussianNoise(BN(l),0.3);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">BN</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
 
-  <span class="c1">// Build model</span>
-  <span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span>
-  <span class="n">sgd</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span><span class="mf">0.9</span><span class="p">),</span> <span class="c1">// Optimizer</span>
-    <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span> <span class="c1">// Losses</span>
-    <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
-    <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span> <span class="c1">// one GPU</span>
-    <span class="c1">//CS_GPU({1,1},100) // two GPU with weight sync every 100 batches</span>
-    <span class="c1">//CS_CPU()</span>
-  <span class="p">);</span>
+<span class="n">layer</span><span class="w"> </span><span class="nf">ResBlock</span><span class="p">(</span><span class="n">layer</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">filters</span><span class="p">,</span><span class="kt">int</span><span class="w"> </span><span class="n">half</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">expand</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">layer</span><span class="w"> </span><span class="n">in</span><span class="o">=</span><span class="n">l</span><span class="p">;</span><span class="w"></span>
 
-  <span class="c1">// plot the model</span>
-  <span class="n">plot</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="s">&quot;model.pdf&quot;</span><span class="p">,</span><span class="s">&quot;TB&quot;</span><span class="p">);</span>  <span class="c1">// TB --&gt; Top-Bottom mode for dot (graphviz)</span>
+<span class="w">  </span><span class="n">l</span><span class="o">=</span><span class="n">ReLu</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">filters</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)));</span><span class="w"></span>
 
-  <span class="c1">// get some info from the network</span>
-  <span class="n">summary</span><span class="p">(</span><span class="n">net</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">half</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">l</span><span class="o">=</span><span class="n">ReLu</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">filters</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)));</span><span class="w"></span>
+<span class="w">  </span><span class="k">else</span><span class="w"></span>
+<span class="w">    </span><span class="n">l</span><span class="o">=</span><span class="n">ReLu</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">filters</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)));</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">l</span><span class="o">=</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">4</span><span class="o">*</span><span class="n">filters</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">));</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">half</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ReLu</span><span class="p">(</span><span class="n">Sum</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="mi">4</span><span class="o">*</span><span class="n">filters</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)),</span><span class="n">l</span><span class="p">));</span><span class="w"></span>
+<span class="w">  </span><span class="k">else</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">expand</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ReLu</span><span class="p">(</span><span class="n">Sum</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="mi">4</span><span class="o">*</span><span class="n">filters</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)),</span><span class="n">l</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ReLu</span><span class="p">(</span><span class="n">Sum</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="n">l</span><span class="p">));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">){</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// download CIFAR data</span>
+<span class="w">  </span><span class="n">download_cifar10</span><span class="p">();</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// Settings</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">epochs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">batch_size</span><span class="w"> </span><span class="o">=</span><span class="mi">16</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">num_classes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// network</span>
+<span class="w">  </span><span class="n">layer</span><span class="w"> </span><span class="n">in</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">});</span><span class="w"></span>
+<span class="w">  </span><span class="n">layer</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">in</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// Data augmentation</span>
+
+<span class="w">  </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RandomCropScale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mf">0.8f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">});</span><span class="w"></span>
+<span class="w">  </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RandomHorizontalFlip</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// Resnet-50</span>
+
+<span class="w">  </span><span class="n">l</span><span class="o">=</span><span class="n">ReLu</span><span class="p">(</span><span class="n">BG</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">64</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="s">&quot;same&quot;</span><span class="p">,</span><span class="nb">false</span><span class="p">)));</span><span class="w"> </span><span class="c1">//{1,1}</span>
+<span class="w">  </span><span class="c1">//l=MaxPool(l,{3,3},{1,1},&quot;same&quot;);</span>
+
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">l</span><span class="o">=</span><span class="n">ResBlock</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// not half but expand the first</span>
+
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">l</span><span class="o">=</span><span class="n">ResBlock</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="p">,</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">l</span><span class="o">=</span><span class="n">ResBlock</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">l</span><span class="o">=</span><span class="n">ResBlock</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">512</span><span class="p">,</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">l</span><span class="o">=</span><span class="n">MaxPool</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">});</span><span class="w">  </span><span class="c1">// should be avgpool</span>
+
+<span class="w">  </span><span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">-1</span><span class="p">});</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">layer</span><span class="w"> </span><span class="n">out</span><span class="o">=</span><span class="n">Activation</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">num_classes</span><span class="p">),</span><span class="s">&quot;softmax&quot;</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// net define input and output layers list</span>
+<span class="w">  </span><span class="n">model</span><span class="w"> </span><span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span><span class="w"></span>
+
+
+<span class="w">  </span><span class="c1">// Build model</span>
+<span class="w">  </span><span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">sgd</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span><span class="mf">0.9</span><span class="p">),</span><span class="w"> </span><span class="c1">// Optimizer</span>
+<span class="w">    </span><span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Losses</span>
+<span class="w">    </span><span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Metrics</span>
+<span class="w">    </span><span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span><span class="w"> </span><span class="c1">// one GPU</span>
+<span class="w">    </span><span class="c1">//CS_GPU({1,1},100) // two GPU with weight sync every 100 batches</span>
+<span class="w">    </span><span class="c1">//CS_CPU()</span>
+<span class="w">  </span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// plot the model</span>
+<span class="w">  </span><span class="n">plot</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="s">&quot;model.pdf&quot;</span><span class="p">,</span><span class="s">&quot;TB&quot;</span><span class="p">);</span><span class="w">  </span><span class="c1">// TB --&gt; Top-Bottom mode for dot (graphviz)</span>
+
+<span class="w">  </span><span class="c1">// get some info from the network</span>
+<span class="w">  </span><span class="n">summary</span><span class="p">(</span><span class="n">net</span><span class="p">);</span><span class="w"></span>
 
 
 
-  <span class="c1">// Load and preprocess training data</span>
-  <span class="n">Tensor</span><span class="o">*</span> <span class="n">x_train</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;cifar_trX.bin&quot;</span><span class="p">);</span>
-  <span class="n">Tensor</span><span class="o">*</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;cifar_trY.bin&quot;</span><span class="p">);</span>
-  <span class="n">x_train</span><span class="o">-&gt;</span><span class="n">div_</span><span class="p">(</span><span class="mf">255.0f</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// Load and preprocess training data</span>
+<span class="w">  </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">x_train</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;cifar_trX.bin&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">y_train</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;cifar_trY.bin&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">x_train</span><span class="o">-&gt;</span><span class="n">div_</span><span class="p">(</span><span class="mf">255.0f</span><span class="p">);</span><span class="w"></span>
 
-  <span class="c1">// Load and preprocess test data</span>
-  <span class="n">Tensor</span><span class="o">*</span> <span class="n">x_test</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;cifar_tsX.bin&quot;</span><span class="p">);</span>
-  <span class="n">Tensor</span><span class="o">*</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;cifar_tsY.bin&quot;</span><span class="p">);</span>
-  <span class="n">x_test</span><span class="o">-&gt;</span><span class="n">div_</span><span class="p">(</span><span class="mf">255.0f</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// Load and preprocess test data</span>
+<span class="w">  </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">x_test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;cifar_tsX.bin&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">y_test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;cifar_tsY.bin&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">x_test</span><span class="o">-&gt;</span><span class="n">div_</span><span class="p">(</span><span class="mf">255.0f</span><span class="p">);</span><span class="w"></span>
 
 
-  <span class="kt">float</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">;</span>
-  <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">lr</span><span class="o">/=</span><span class="mf">10.0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">lr</span><span class="o">/=</span><span class="mf">10.0</span><span class="p">;</span><span class="w"></span>
 
-    <span class="n">setlr</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="n">lr</span><span class="p">,</span><span class="mf">0.9</span><span class="p">});</span>
+<span class="w">    </span><span class="n">setlr</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="n">lr</span><span class="p">,</span><span class="mf">0.9</span><span class="p">});</span><span class="w"></span>
 
-    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">epochs</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">// training, list of input and output tensors, batch, epochs</span>
-      <span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="n">x_train</span><span class="p">},{</span><span class="n">y_train</span><span class="p">},</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">epochs</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="c1">// training, list of input and output tensors, batch, epochs</span>
+<span class="w">      </span><span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="n">x_train</span><span class="p">},{</span><span class="n">y_train</span><span class="p">},</span><span class="n">batch_size</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
 
-      <span class="c1">// Evaluate test</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Evaluate test:&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-      <span class="n">evaluate</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="n">x_test</span><span class="p">},{</span><span class="n">y_test</span><span class="p">});</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">      </span><span class="c1">// Evaluate test</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Evaluate test:&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">evaluate</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="n">x_test</span><span class="p">},{</span><span class="n">y_test</span><span class="p">});</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>

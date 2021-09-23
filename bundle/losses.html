@@ -269,7 +269,7 @@
 <p>Aliases: <code class="docutils literal notranslate"><span class="pre">mean_squared_error</span></code> and <code class="docutils literal notranslate"><span class="pre">mse</span></code>.</p>
 <p>Creates a criterion that measures the mean squared error (squared L2 norm) between each element in the input</p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span> <span class="o">=</span> <span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;mean_squared_error&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;mean_squared_error&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -279,7 +279,7 @@
 <p>Creates a criterion that measures the Binary Cross Entropy between the target and the output. Values are encoded as
 the probability of the positive class.</p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span> <span class="o">=</span> <span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;binary_cross_entropy&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;binary_cross_entropy&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -289,7 +289,7 @@ the probability of the positive class.</p>
 <p>Creates a criterion that measures the Categorical Cross Entropy between the target and the output.  Values are encoded as
 vector of probabilities that sum is equal to one.</p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span> <span class="o">=</span> <span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;categorical_cross_entropy&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;categorical_cross_entropy&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -299,7 +299,7 @@ vector of probabilities that sum is equal to one.</p>
 <p>This is the optimized version of the CategoricalCrossEntropy when the last layer is a Softmax layer. It bypasses the
 backward of the Softmax layer by applying the simplified derivative of <code class="docutils literal notranslate"><span class="pre">f(x)=CE(Softmax(x));</span> <span class="pre">df/dx=</span> <span class="pre">y_pred-y_target</span></code>.</p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span> <span class="o">=</span> <span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;softmax_cross_entropy&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;softmax_cross_entropy&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -307,7 +307,7 @@ backward of the Softmax layer by applying the simplified derivative of <code cla
 <h2>Dice<a class="headerlink" href="#dice" title="Permalink to this headline">¶</a></h2>
 <p>Alias: <code class="docutils literal notranslate"><span class="pre">dice</span></code>.</p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span> <span class="o">=</span> <span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;dice&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">myloss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getLoss</span><span class="p">(</span><span class="s">&quot;dice&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>

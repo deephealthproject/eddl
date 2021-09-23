@@ -279,7 +279,7 @@
 
 <p>The Softmax activation function is: <code class="docutils literal notranslate"><span class="pre">softmax(x)</span> <span class="pre">=</span> <span class="pre">exp(x)</span> <span class="pre">/</span> <span class="pre">reduce_sum(exp(x))</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Softmax</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Softmax</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -305,7 +305,7 @@
 
 <p>The Sigmoid activation function is: <code class="docutils literal notranslate"><span class="pre">sigmoid(x)</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">+</span> <span class="pre">exp(-x))</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Sigmoid</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sigmoid</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -335,7 +335,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">else:</span> <span class="pre">relu(x)</span> <span class="pre">=</span> <span class="pre">0</span></code></p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -364,7 +364,7 @@
 <li><p>else: <code class="docutils literal notranslate"><span class="pre">thresholded_relu(x)</span> <span class="pre">=</span> <span class="pre">0</span></code></p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">ThresholdedReLu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ThresholdedReLu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -395,7 +395,7 @@
 <li><p>else: <code class="docutils literal notranslate"><span class="pre">leaky_relu(x)</span> <span class="pre">=</span> <span class="pre">alpha</span> <span class="pre">*</span> <span class="pre">x</span></code></p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">LeakyReLu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LeakyReLu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mf">0.01</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -424,7 +424,7 @@
 <li><p>else: <code class="docutils literal notranslate"><span class="pre">elu(x)</span> <span class="pre">=</span> <span class="pre">alpha</span> <span class="pre">*</span>&#160; <span class="pre">(exp(x)</span> <span class="pre">-</span> <span class="pre">1)</span></code></p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Elu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Elu</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -453,7 +453,7 @@
 </ul>
 <p>where <code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">1.6732632423543772848170429916717</span></code> and <code class="docutils literal notranslate"><span class="pre">scale</span> <span class="pre">=</span> <span class="pre">1.0507009873554804934193349852946</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Selu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Selu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -477,7 +477,7 @@
 
 <p>The Exponential activation function is: <code class="docutils literal notranslate"><span class="pre">exp(x)</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Exponential</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Exponential</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -501,7 +501,7 @@
 
 <p>The Softplus activation function is: <code class="docutils literal notranslate"><span class="pre">softplus(x)</span> <span class="pre">=</span> <span class="pre">log(1</span> <span class="pre">+</span> <span class="pre">exp(x))</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Softplus</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Softplus</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -525,7 +525,7 @@
 
 <p>The Softsign activation function is: <code class="docutils literal notranslate"><span class="pre">softsign(x)</span> <span class="pre">=</span> <span class="pre">x</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">+</span> <span class="pre">abs(x))</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Softsign</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Softsign</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -550,7 +550,7 @@
 
 <p>The Linear activation function is: <code class="docutils literal notranslate"><span class="pre">linear(x)</span> <span class="pre">=</span> <span class="pre">alpha</span> <span class="pre">*</span> <span class="pre">x</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -576,7 +576,7 @@
 
 <p>The Tanh activation function is: <code class="docutils literal notranslate"><span class="pre">tanh(x)</span> <span class="pre">=</span> <span class="pre">sinh(x)/cosh(x)</span> <span class="pre">=</span> <span class="pre">((exp(x)</span> <span class="pre">-</span> <span class="pre">exp(-x))/(exp(x)</span> <span class="pre">+</span> <span class="pre">exp(-x)))</span></code></p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Tanh</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tanh</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>

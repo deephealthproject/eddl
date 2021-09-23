@@ -280,7 +280,7 @@
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;mytensor.bin&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;mytensor.bin&quot;</span><span class="p">);</span><span class="w"></span>
 <span class="c1">// [</span>
 <span class="c1">// [1.00 2.00 3.00]</span>
 <span class="c1">// [4.00 5.00 6.00]</span>
@@ -316,26 +316,26 @@
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create matrix</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span> <span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">);</span><span class="w"> </span><span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
 <span class="c1">// [</span>
 <span class="c1">// [1.00 2.00 3.00]</span>
 <span class="c1">// [4.00 5.00 6.00]</span>
 <span class="c1">// [7.00 8.00 9.00]</span>
 <span class="c1">// ]</span>
 
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;mytensor.bin&quot;</span><span class="p">);</span>
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;mytensor.txt&quot;</span><span class="p">);</span>
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;mytensor.csv&quot;</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;mytensor.bin&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;mytensor.txt&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;mytensor.csv&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create matrix</span>
-<span class="n">Tensor</span><span class="o">*</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="mi">100</span><span class="o">*</span><span class="mi">100</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="mi">100</span><span class="o">*</span><span class="mi">100</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">// Reshape to a 4D tensor and normalize to RGB (0-255)</span>
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">});</span>
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">normalize_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">reshape_</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">});</span><span class="w"></span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">normalize_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">);</span><span class="w"></span>
 
-<span class="n">t1</span><span class="o">-&gt;</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;mytensor.jpg&quot;</span><span class="p">);</span>
+<span class="n">t1</span><span class="o">-&gt;</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;mytensor.jpg&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="../_images/mytensor.jpg"><img alt="Save tensor as an image" class="align-center" src="../_images/mytensor.jpg" style="width: 100px;" /></a>

@@ -159,9 +159,9 @@ You can also install ``EDDL`` from source with cmake.
             # Build and install
             mkdir build
             cd build
-            cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+            cmake .. -DCMAKE_PREFIX_PATH=%CONDA_PREFIX% -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX%
 
-            make install
+            cmake --build . --target install
 
 See the :doc:`build-options` section for more details about cmake options.
 
