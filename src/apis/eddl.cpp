@@ -623,6 +623,7 @@ namespace eddl {
                int groups, vector<int> dilation_rate,string name){
     kernel_size.push_back(1);
     strides.push_back(1);
+    dilation_rate.push_back(1);
     return new LConv1D(parent, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
@@ -692,23 +693,44 @@ namespace eddl {
   }
   // Legacy
   layer UpSampling(layer parent, const vector<int> &size, string interpolation, string name){
-    return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
+    return UpSampling2D(parent, size, interpolation, name);
   }
 
   layer UpSampling2D(layer parent, const vector<int> &size, string interpolation, string name){
-    return new LUpSampling(parent, size, interpolation, name, DEV_CPU, 0);
+    // interpolation param is deprecated, we only accept "nearest"
+    if (interpolation != "nearest")
+      std::cerr << "Warning: In UpSampling2D the interpolation type \"" << interpolation << "\" is not valid. Only \"nearest\" is available.\n";
+
+    const vector<int> parent_shape = parent->output->getShape();
+    // Parent output must be of shape (batch, channels, height, width)
+    if (parent_shape.size() != 4)
+      msg("The number of dimensions of the input tensor must be 4", "EDDL::UpSampling2D");
+
+    // Only height and width scale values
+    if (size.size() != 2)
+      msg("The number of dimensions of the \"size\" parameter must be 2", "EDDL::UpSampling2D");
+
+    // Get the target output shape by applying the scale factor to the input
+    vector<int> target_shape;
+    for (const int i : {2, 3}) { // Loop through 2:height and 3:width dimensions (0:batch, 1:channels)
+      const int dim_scale = size[i-2];
+      if (dim_scale < 1)
+        msg("The scale factors in \"size\" parameter must be greater or equal to 1", "EDDL::UpSampling2D");
+      target_shape.push_back(parent_shape[i] * dim_scale);
+    }
+
+    return new LResize(parent, target_shape, true, getWrappingMode("nearest"), 0.0f, getTransformationMode("asymmetric"), name, DEV_CPU, 0);
   }
 
-    layer UpSampling3D(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
-        return new LUpSampling3D(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
-    }
+  layer UpSampling3D(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
+    return new LUpSampling3D(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
+  }
 
-    layer Resize(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
-        return new LResize(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
-    }
+  layer Resize(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string coordinate_transformation_mode, string name){
+    return new LResize(parent, new_shape, reshape, getWrappingMode(da_mode), constant, getTransformationMode(coordinate_transformation_mode), name, DEV_CPU, 0);
+  }
 
-
-    layer Reshape(layer parent, const vector<int> &shape, string name){
+  layer Reshape(layer parent, const vector<int> &shape, string name){
     tshape s = vector<int>(shape.begin(), shape.end());
     s.insert(s.begin(), 1);
     return new LReshape(parent, s, name, DEV_CPU, 0);
@@ -1328,7 +1350,7 @@ namespace eddl {
       return l1->output->clone();  // Why not return addresses so that we can easily avoid potential memory leaks?
     }
     else {
-      cout<<"get output from recurrent"<<endl;
+      //cout<<"get output from recurrent"<<endl;
       int length=0;
 
       vector<int> shape;
@@ -1654,6 +1676,96 @@ namespace eddl {
 
       Layer *l=getLayer(net,"flatten_60"); l->name="top";
 
+    }
+
+    return net;
+  }
+
+  Net* download_vgg16_bn(bool top, vector<int> input_shape)
+  {
+    download_model("vgg16bn-7.onnx", "df7nd1ydsba9yp5");
+
+    cout << "Import ONNX..." << endl;
+
+    Net *net;
+    if (input_shape.size())
+      net = import_net_from_onnx_file("vgg16bn-7.onnx", input_shape, DEV_CPU);
+    else
+      net = import_net_from_onnx_file("vgg16bn-7.onnx", DEV_CPU);
+
+    Layer *l = getLayer(net, "data"); l->name = "input";
+    if (top) {
+      net->removeLayer("vgg0_dense2_fwd");
+      net->removeLayer("flatten_135");
+      net->removeLayer("vgg0_dropout1_fwd");
+      net->removeLayer("vgg0_dense1_relu_fwd");
+      net->removeLayer("vgg0_dense1_fwd");
+      net->removeLayer("flatten_130");
+      net->removeLayer("vgg0_dropout0_fwd");
+      net->removeLayer("vgg0_dense0_relu_fwd");
+      net->removeLayer("vgg0_dense0_fwd");
+
+      Layer *l = getLayer(net, "flatten_125"); l->name = "top";
+    }
+
+    return net;
+  }
+
+  Net* download_vgg19(bool top, vector<int> input_shape)
+  {
+    download_model("vgg19-7.onnx", "859b3zsr4dvvr26");
+
+    cout << "Import ONNX..." << endl;
+
+    Net *net;
+    if (input_shape.size())
+      net = import_net_from_onnx_file("vgg19-7.onnx", input_shape, DEV_CPU);
+    else
+      net = import_net_from_onnx_file("vgg19-7.onnx", DEV_CPU);
+
+    Layer *l = getLayer(net, "data"); l->name = "input";
+    if (top) {
+      net->removeLayer("vgg0_dense2_fwd");
+      net->removeLayer("flatten_82");
+      net->removeLayer("vgg0_dropout1_fwd");
+      net->removeLayer("vgg0_dense1_relu_fwd");
+      net->removeLayer("vgg0_dense1_fwd");
+      net->removeLayer("flatten_77");
+      net->removeLayer("vgg0_dropout0_fwd");
+      net->removeLayer("vgg0_dense0_relu_fwd");
+      net->removeLayer("vgg0_dense0_fwd");
+
+      Layer *l = getLayer(net, "flatten_72"); l->name = "top";
+    }
+
+    return net;
+  }
+
+  Net* download_vgg19_bn(bool top, vector<int> input_shape)
+  {
+    download_model("vgg19bn-7.onnx", "93ha0nilvin38rz");
+
+    cout << "Import ONNX..." << endl;
+
+    Net *net;
+    if (input_shape.size())
+      net = import_net_from_onnx_file("vgg19bn-7.onnx", input_shape, DEV_CPU);
+    else
+      net = import_net_from_onnx_file("vgg19bn-7.onnx", DEV_CPU);
+
+    Layer *l = getLayer(net, "data"); l->name = "input";
+    if (top) {
+      net->removeLayer("vgg0_dense2_fwd");
+      net->removeLayer("flatten_162");
+      net->removeLayer("vgg0_dropout1_fwd");
+      net->removeLayer("vgg0_dense1_relu_fwd");
+      net->removeLayer("vgg0_dense1_fwd");
+      net->removeLayer("flatten_157");
+      net->removeLayer("vgg0_dropout0_fwd");
+      net->removeLayer("vgg0_dense0_relu_fwd");
+      net->removeLayer("vgg0_dense0_fwd");
+
+      Layer *l = getLayer(net, "flatten_152"); l->name = "top";
     }
 
     return net;

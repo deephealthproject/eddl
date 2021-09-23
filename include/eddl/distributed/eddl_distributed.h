@@ -69,7 +69,7 @@ static constexpr int listen_max_pending = 50; ///< maximum number of connections
 static constexpr int eddl_checksum_len = 32; ///< SHA256 algorithm is used, whose output is 256 bits (32 bytes) length
 static constexpr size_t eddl_msg_id_len = 19; ///< 19=8+3+8 hexadecimal digits, 8 of the IP address, 3 of the message type and 8 of the timestamp in milliseconds
 static constexpr size_t _eddl_msg_id_len_ = next_multiple(eddl_msg_id_len,eddl_alignment); ///< next eight-multiple from 19
-static constexpr size_t eddl_default_mtu = 1500; //1536; ///< MTU -- block size for sending/receiving packets
+static constexpr size_t eddl_default_mtu = 8192; // 1500; //1536; ///< MTU -- block size for sending/receiving packets (mainly affects UDP multicast)
 static constexpr size_t eddl_packet_data_size = prev_multiple(eddl_default_mtu
                                                 - 4*sizeof(uint32_t)
                                                 - _eddl_msg_id_len_

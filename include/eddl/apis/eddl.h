@@ -1059,11 +1059,11 @@ namespace eddl {
       *  @brief 2D Upsampling layer.
       *
       *  @details
-      *   Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
+      *   Identical to the ``scale`` transformation, it is an alias of the Resize layer.
       *
       *  @param parent  Parent layer
       *  @param size  Vector of 2 integers. The upsampling factors for rows and columns
-      *  @param interpolation  A string, one of "nearest" or "bilinear"
+      *  @param interpolation (Deprecated) A string, only "nearest" is valid
       *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */
@@ -2321,6 +2321,39 @@ namespace eddl {
       *  @return  A VGG16 Net* with the desired topology
     */
     Net* download_vgg16(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a VGG16 model with BatchNormalization pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A VGG16-BN Net* with the desired topology
+    */
+    Net* download_vgg16_bn(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a VGG19 model pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A VGG19 Net* with the desired topology
+    */
+    Net* download_vgg19(bool top=true, vector<int> input_shape={});
+
+    /**
+      *  @brief Returns a VGG19 model with BatchNormalization pretrained with imagenet.
+      *
+      *  @param top  If true, returns the model without the densely connected part and
+      *              the last layer of the returned model is named "top".
+      *  @param input_shape  Optional. To change the input shape of the model.
+      *                      The shape vector must not have the batch dimension.
+      *  @return  A VGG19-BN Net* with the desired topology
+    */
+    Net* download_vgg19_bn(bool top=true, vector<int> input_shape={});
 
     /**
       *  @brief Returns a ResNet18 model pretrained with imagenet.

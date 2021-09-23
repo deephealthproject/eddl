@@ -51,6 +51,7 @@
 #include "eddl/serialization/onnx/layers/da/pad_onnx.h"
 #include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 #include "eddl/serialization/onnx/layers/auxiliar/expand_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/constoftensor_onnx.h"
 
 /*
  * ONNX IMPORT
@@ -121,6 +122,7 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["Slice"] = ONNX_LAYERS::SLICE;
   map_layers["Split"] = ONNX_LAYERS::SPLIT;
   map_layers["Expand"] = ONNX_LAYERS::EXPAND;
+  map_layers["Constant"] = ONNX_LAYERS::CONSTANT;
 
   return map_layers;
 }
@@ -325,6 +327,9 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
     case ONNX_LAYERS::EXPAND:
       new_layer = build_expand_layer(node, map_init_values, output_node_map, dev, mem);
       break;
+    case ONNX_LAYERS::CONSTANT:
+      new_layer = build_constoftensor_layer(node, map_init_values, output_node_map, dev, mem);
+      break;
     default:
       msg("Error: The ONNX node type " + layer_type_name + " is not supported!", "ONNX::ImportNet");
   }
@@ -473,6 +478,8 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_select_node(l, graph);
   else if (LExpand *l = dynamic_cast<LExpand *>(layer))
     build_expand_node(l, graph);
+  else if (LConstOfTensor *l = dynamic_cast<LConstOfTensor *>(layer))
+    build_constant_node(l, graph);
   else
   {
     cout << "The layer " << layer->name << "has no OpType in Onnx." << endl;

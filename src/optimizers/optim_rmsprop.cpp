@@ -50,7 +50,9 @@ Optimizer *RMSProp::share() {
     return n;
 }
 void RMSProp::setlayers(vlayer l) {
-    layers = l;
+    // layers = l;
+    layers.clear();
+    for (auto _ : l) layers.push_back(_);
 
     if (isshared) return;
 
@@ -92,7 +94,7 @@ void RMSProp::applygrads(int batch) {
             Tensor::add(-lr, gT[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
 
             // Distributed training: Accumulation of gradients
-            if (layers[i]->acc_gradients.size() > 0) 
+            if (layers[i]->acc_gradients.size() > 0)
               Tensor::add(-lr, gT[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
         }
     }

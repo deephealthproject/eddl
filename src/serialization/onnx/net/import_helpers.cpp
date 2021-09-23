@@ -35,17 +35,29 @@ map<string, vector<onnx::NodeProto *>> initialize_input_node_map(vector<onnx::No
 }
 
 // Creates a map with the name of the constant node as key and the node container from onnx as value.
-map<string, onnx::NodeProto *> initialize_constant_nodes(vector<onnx::NodeProto> &nodes)
+map<string, onnx::NodeProto *> initialize_constant_nodes(vector<onnx::NodeProto> &nodes,
+                                                         map<string, vector<onnx::NodeProto *>> &input_node_map)
 {
   map<string, onnx::NodeProto *> constant_node_map;
-  for (int i = 0; i < nodes.size(); i++)
+  for (auto& node : nodes)
   {
-    if (!nodes[i].op_type().compare("Constant"))
+    if (node.op_type() == "Constant")
     {
-      for (int j = 0; j < nodes[i].output_size(); j++)
-      {
-        constant_node_map[nodes[i].output(j)] = &(nodes[i]);
-      }
+      // Only the constant nodes with a Reshape layer as child must be added to the constant_node_queue, as they are
+      // not going to be used to create a ConstOfTensor layer, they are just a parameter for the Reshape layer
+      bool skip_node = false;
+      for (const auto& child : input_node_map[node.output(0)])
+        if (child->op_type() != "Reshape")
+        {
+          skip_node = true; // The constant data will be accessed directly from the ConstOfTensor layer constructor
+          break;
+        }
+
+      if (skip_node)
+        continue; // Dont add the node to the constant_node_map
+
+      for (int j = 0; j < node.output_size(); j++)
+        constant_node_map[node.output(j)] = &node;
     }
   }
   return constant_node_map;
@@ -418,6 +430,7 @@ void log_model_metadata(onnx::ModelProto& model, LOG_LEVEL log_level)
 
 void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
                           map<string, vector<float>> &map_init_values,
+                          map<string, vector<onnx::NodeProto *>> &input_node_map,
                           map<string, onnx::NodeProto *> &constant_node_map,
                           queue<onnx::NodeProto *> &nodeQueue,
                           LOG_LEVEL log_level)
@@ -438,11 +451,23 @@ void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
     }
     if (avaliable)
     {
-      log_string("Node " + node->name() + " is avaliable, since only has initializers and constant nodes as parameters.",
+      if (node->op_type() == "Constant")
+      {
+        bool skip_node = false;
+        for (const auto& child : input_node_map[node->output(0)])
+          if (child->op_type() == "Reshape")
+            skip_node = true; // The constant data will be accessed directly from the Reshape layer constructor
+        if (skip_node)
+        {
+          log_string("Node " + node->name() + " has a Reshape layer as child, going to skip the node in the queue.",
+                     log_level,
+                     LOG_LEVEL::DEBUG);
+          continue; // Don't add the node to the nodeQueue
+        }
+      }
+      log_string("Node \"" + node->name() + "\" is avaliable, since only has initializers and constant nodes as parameters.",
                  log_level,
                  LOG_LEVEL::DEBUG);
-      if (node->op_type() == "Constant")
-        continue;
       nodeQueue.push(node);
     }
   }
@@ -595,13 +620,13 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
   map<string, vector<onnx::NodeProto *>> input_node_map = initialize_input_node_map(nodes);
 
   // 4 and 5: Create queue of NodeProto
-  map<string, onnx::NodeProto *> constant_node_map = initialize_constant_nodes(nodes);
+  map<string, onnx::NodeProto *> constant_node_map = initialize_constant_nodes(nodes, input_node_map);
 
   map<string, Layer *> output_node_map;
   queue<onnx::NodeProto *> nodeQueue = process_inputs(inputs, inputs_onnx, input_node_map, output_node_map);
 
   // Check if any node only has initializers and constant nodes as parameters, so we can process it right away
-  queue_constant_nodes(nodes, map_init_values, constant_node_map, nodeQueue, log_level);
+  queue_constant_nodes(nodes, map_init_values, input_node_map, constant_node_map, nodeQueue, log_level);
 
   /*
    * In the case of models with recurrent decoders, we have to track the input layers of the decoder layers

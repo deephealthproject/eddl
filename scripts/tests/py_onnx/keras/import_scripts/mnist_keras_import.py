@@ -1,15 +1,12 @@
-import numpy as np
 import argparse
-import os
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Input
+
 from tensorflow.keras.datasets import mnist
 from keras.utils.np_utils import to_categorical
 from onnx2keras import onnx_to_keras
 import onnx
 
 parser = argparse.ArgumentParser(description='Keras MNIST ONNX import example')
-parser.add_argument('--model-path', type=str, default="onnx_models/conv2D_mnist.onnx", 
+parser.add_argument('--model-path', type=str, default="onnx_models/conv2D_mnist.onnx",
                     help='Path of the onnx file to load')
 parser.add_argument('--input-1D', action='store_true', default=False,
                     help='To change the input size to a 784 length vector')
@@ -49,11 +46,11 @@ print("Test labels shape:", y_test.shape)
 onnx_model = onnx.load(args.model_path)
 
 # Call the converter (input - is the main model input name, can be different for your model)
-k_model = onnx_to_keras(onnx_model, ['linput'])
+model = onnx_to_keras(onnx_model, ['input1'])
 
-model.compile(loss = 'categorical_crossentropy', 
-        optimizer = "adam",               
-        metrics = ['accuracy'])
+model.compile(loss='categorical_crossentropy',
+              optimizer="adam",
+              metrics=['accuracy'])
 
 model.summary()
 
