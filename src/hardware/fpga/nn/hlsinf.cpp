@@ -147,23 +147,35 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
     // let's compute number of channels per kernel and number of final kernels to launch
     int num_kernels_to_launch;
     int o_iter_per_kernel;
+    int extra_iter = 0;
+
     if (O_ITER < num_kernels) {
       num_kernels_to_launch = 1;
       o_iter_per_kernel = O_ITER;
     } else {
       num_kernels_to_launch = num_kernels;
       o_iter_per_kernel = O_ITER / num_kernels;
+      if(O_ITER > o_iter_per_kernel * num_kernels) extra_iter = O_ITER - o_iter_per_kernel * num_kernels;
     }
 
     // Let's launch the kernels
     #pragma omp parallel for
     for (int k=0; k<num_kernels_to_launch; k++) {
-      int first_o_iter = o_iter_per_kernel * k;
-      int last_o_iter = first_o_iter + o_iter_per_kernel - 1;
+      int first_o_iter, last_o_iter;
+      if(k == 0) {
+        first_o_iter = o_iter_per_kernel * k;
+        last_o_iter = first_o_iter + o_iter_per_kernel + extra_iter - 1;
+      } else {
+        first_o_iter = o_iter_per_kernel * k + extra_iter ;
+        last_o_iter = first_o_iter + o_iter_per_kernel - 1;
+      }
+#ifdef DEBUG_VERBOSE
+      printf("Kernel %d first iter %d last %d\n", k, first_o_iter, last_o_iter);
+#endif
       HLSinf_kernel(I, I_add, H, W, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter,
                       last_o_iter, enable_relu, enable_stm, relu_factor, K, B, O, global_offset, enable_maxp,
                                   enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip,
-                      dir_shift, pos_shift, CPI, CPO, 0);
+                      dir_shift, pos_shift, CPI, CPO, k);
     }
   }
   PROFILING_FOOTER(fpga_hlsinf);
