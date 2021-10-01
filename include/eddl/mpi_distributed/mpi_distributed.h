@@ -110,6 +110,10 @@ void fn_nccl_AllReduce(float* myptr, int count);
  */
 void AllReduce_distributed(float* myptr, int count);
 
+int get_local_GPU_distributed(int id);
+
+int is_mpi_distributed();
+
 
 
 

@@ -752,6 +752,12 @@ vector<float> Net::get_metrics() {
     return metrics_values;
 }
 
+
+float Net::get_accuracy() {
+    return get_metrics()[lout.size()-1];
+}
+
+
 void Net::reset_grads() {
     if (isrecurrent)
         if (rnet != nullptr)
@@ -1382,7 +1388,6 @@ void Net::train_batch_recurrent(vtensor tin, vtensor tout, vind sind, int eval) 
 }
 
 void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
-
     if (isrecurrent) {
         verboserec = 0;
         train_batch_recurrent(X, Y, sind, eval);

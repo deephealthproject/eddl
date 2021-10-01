@@ -29,8 +29,33 @@ layer Normalization(layer l)
   //return BatchNormalization(l);
 }
 
+#define suggest_batch_size(initial_batch, epochs_test, suggested_batch_size) \
+    int k; \
+    float ratio = 0; \
+    float ratio_prev; \
+    k=initial_batch; \
+    fprintf(stdout, "\nTesting batch size ...\n"); \
+    do { \
+        ratio_prev = ratio; \
+        std::chrono::high_resolution_clock::time_point e1 = std::chrono::high_resolution_clock::now(); \
+        fit(net,{x_train}, {y_train}, k, epochs_test); \
+        std::chrono::high_resolution_clock::time_point e2 = std::chrono::high_resolution_clock::now(); \
+        std::chrono::duration<double> epoch_time_span = e2 - e1; \
+        ratio = net->get_accuracy() / epoch_time_span.count(); \
+        int id = 0; \
+        if (id == 0) { \
+            fprintf(stdout, "\nBatch %d: %1.4f secs accuracy %1.4f ratio=%1.4f\n\n", k, epoch_time_span.count(), net->get_accuracy(), ratio); \
+        } \
+        evaluate(net,{x_test},{y_test}); \
+        k = k * 2; \
+    } while (ratio > ratio_prev); \
+    fprintf(stdout, "\nSuggested batch size is %d\n", k/4); \
+    suggested_batch_size=k/4; \
+
+
 int main(int argc, char **argv){
     bool testing = false;
+    
     bool use_cpu = false;
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
@@ -41,7 +66,7 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = testing ? 2 : 3;
+  int epochs = testing ? 2 : 10;
   int batch_size = 100;
   int num_classes = 10;
 
@@ -120,11 +145,15 @@ int main(int argc, char **argv){
       y_test  = y_mini_test;
   }
 
+  suggest_batch_size(128,1,batch_size);
+  
     // Train model
     fit(net, {x_train}, {y_train}, batch_size, epochs);
 
     // Evaluate
     evaluate(net, {x_test}, {y_test});
+
+ 
 
 //  for(int i=0;i<epochs;i++) {
 //    // training, list of input and output tensors, batch, epochs

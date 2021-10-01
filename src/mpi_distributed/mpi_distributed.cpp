@@ -13,6 +13,10 @@
 
 #include "eddl/mpi_distributed/mpi_distributed.h"
 
+#ifdef cCUDA
+#include "cuda.h"
+#endif
+
 // Global variables
 int use_mpi = 0;
 int mpi_avg = 1;
@@ -65,7 +69,7 @@ int init_distributed(int *argc, char ***argv) {
     n_procs=get_n_procs_distributed();
     id=get_id_distributed();
  
-    fprintf(stderr, "[DISTR] setting default method: ");
+    fprintf(stderr, "[DISTR] setting default method\n");
     set_method_distributed(FIXED, AVG_DEFAULT, 0);
     
     // Initalize a different seed per proc
@@ -177,4 +181,16 @@ void AllReduce_distributed(float* myptr, int count) {
 #else
     fn_mpi_AllReduce(myptr, count);
 #endif
+}
+
+int get_local_GPU_distributed(int id) {
+    int nDevices=1;
+#ifdef cCUDA
+    cudaGetDeviceCount(&nDevices);
+#endif
+    return id % nDevices;
+}
+
+int is_mpi_distributed() {
+    return use_mpi;
 }

@@ -103,6 +103,7 @@ void Net::collect_acc_grads() {
 }
 
 void Net::sync_weights() {
+        printf("==== sync_weights ====\n");
     for (int j = 0; j < layers.size(); j++)
         for (int k = 0; k < layers[j]->params.size(); k++) {
             // Taking average

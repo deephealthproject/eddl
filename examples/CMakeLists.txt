@@ -33,6 +33,9 @@ target_link_libraries(mnist_conv_distr eddl)
 
 add_executable(mnist_rnn "nn/1_mnist/8_mnist_rnn.cpp")
 target_link_libraries(mnist_rnn eddl)
+# distributed
+add_executable(mnist_rnn_distr "nn/1_mnist/8_mnist_rnn_distr.cpp")
+target_link_libraries(mnist_rnn_distr eddl)
 
 add_executable(mnist_mlp_func "nn/1_mnist/9_mnist_mlp_func.cpp")
 target_link_libraries(mnist_mlp_func eddl)

@@ -1,12 +1,12 @@
 
 /*
-* EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
-* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
-* All rights reserved
-*/
+ * EDDL Library - European Distributed Deep Learning Library.
+ * Version: 0.9
+ * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+ * Date: November 2020
+ * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+ * All rights reserved
+ */
 
 #ifndef EDDL_NET_H
 #define EDDL_NET_H
@@ -40,7 +40,7 @@ int isInorig(Layer *l, vlayer vl, int &ind);
 
 class Net {
 private:
-    void make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
+    void make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize = true);
 
     void set_compserv(CompServ *cs, bool do_compserv_delete);
 
@@ -100,10 +100,10 @@ public:
 
 
     void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs,
-               bool initialize = true,
-               bool do_optimizer_delete = true,
-               bool do_compserv_delete = false);
-    void toGPU(vector<int> g,int lsb,int mem);
+            bool initialize = true,
+            bool do_optimizer_delete = true,
+            bool do_compserv_delete = false);
+    void toGPU(vector<int> g, int lsb, int mem);
     void toCPU(int t);
 
     void fts();
@@ -113,7 +113,7 @@ public:
     Net *unroll_enc(int inl, int outl);
     Net *unroll_enc_dec(int inl, int outl);
     Net *unroll_dec(int inl, int outl);
-    void build_rnet(int inl,int outl);
+    void build_rnet(int inl, int outl);
     Layer* getLayer(string l);
     void removeLayer(string l);
     void initializeLayer(string l);
@@ -123,7 +123,7 @@ public:
     int inNet(Layer *l);
     int inNetF(Layer *l);
     int inNetB(Layer *l);
-    void walk(Layer *l,vlayer lout);
+    void walk(Layer *l, vlayer lout);
     void walk_back(Layer *l);
 
 
@@ -132,13 +132,13 @@ public:
     void enable_distributed();
 
     string summary();
-    void plot(string fname,string mode);
+    void plot(string fname, string mode);
 
     void setmode(int m);
 
 
-    void save(const string& filename, string format="");
-    void load(const string& filename, string format="");
+    void save(const string& filename, string format = "");
+    void load(const string& filename, string format = "");
     void setlogfile(string fname);
 
 
@@ -166,9 +166,9 @@ public:
     void forward();
     void forward_recurrent(vector<Tensor*> tin);
     void reset_loss();
-    void print_loss(int b,int nb=-1);
+    void print_loss(int b, int nb = -1);
     void backward(vector<Tensor *> target);
-    void backward(Layer* (*f)(Layer *),Layer *out);
+    void backward(Layer* (*f)(Layer *), Layer *out);
     void backward();
     void backward_recurrent(vector<Tensor *> target);
     void delta();
@@ -176,35 +176,36 @@ public:
     void reset_grads();
     void update();
     void compute_loss();
-    void clamp(float min,float max);
+    void clamp(float min, float max);
     void setlr(vector <float> p);
-    vector<vtensor> get_parameters(bool deepcopy=false);
+    vector<vtensor> get_parameters(bool deepcopy = false);
     void set_parameters(const vector<vtensor>& new_params);
 
     vector<float> get_losses();
     vector<float> get_metrics();
+    float get_accuracy();
 
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
-    void prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
-    void prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
-    void prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
-    void prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z=nullptr);
+    void prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z = nullptr);
+    void prepare_recurrent_enc(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z = nullptr);
+    void prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z = nullptr);
+    void prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd, vtensor &yt, vtensor &tinr, vtensor &toutr, Tensor *Z = nullptr);
 
     void fit_recurrent(vtensor tin, vtensor tout, int batch_size, int epochs);
     void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
     void train_batch_recurrent(vtensor X, vtensor Y, vind sind, int eval = 0);
-    void evaluate(vtensor tin, vtensor tout, int bs=100);
+    void evaluate(vtensor tin, vtensor tout, int bs = 100);
     void evaluate_recurrent(vtensor tin, vtensor tout, int bs);
     vtensor predict_recurrent(vtensor tin);
     vtensor predict(vtensor tin);
 
     // Debug
-    static bool compare_outputs(Net* net1, Net* net2, bool verbose=false, float atol=1e-05f, float rtol=0.0f, bool equal_nan=false);
-    static bool compare_params(Net* net1, Net* net2, bool verbose=false, float atol=1e-05f, float rtol=0.0f, bool equal_nan=false);
+    static bool compare_outputs(Net* net1, Net* net2, bool verbose = false, float atol = 1e-05f, float rtol = 0.0f, bool equal_nan = false);
+    static bool compare_params(Net* net1, Net* net2, bool verbose = false, float atol = 1e-05f, float rtol = 0.0f, bool equal_nan = false);
 };
 
 
-void collectTensor(Layer *l,string tname="output",int p=0);
-void distributeTensor(Layer *l,string tname="output", int p=0);
+void collectTensor(Layer *l, string tname = "output", int p = 0);
+void distributeTensor(Layer *l, string tname = "output", int p = 0);
 
 #endif  //EDDL_NET_H

@@ -69,6 +69,17 @@ int main(int argc, char **argv) {
     compserv cs = nullptr;
     if (use_cpu) {
         cs = CS_CPU();
+    } else if (is_mpi_distributed()) {
+        switch (get_local_GPU_distributed(id)) {
+            case 0: cs = CS_GPU({0, 0, 0, 1}, "low_mem");
+                break;
+            case 1: cs = CS_GPU({0, 0, 1, 0}, "low_mem");
+                break;
+            case 2: cs = CS_GPU({0, 1, 0, 0}, "low_mem");
+                break;
+            case 3: cs = CS_GPU({1, 0, 0, 0}, "low_mem");
+                break;
+        }             
     } else {
         cs = CS_GPU({1}, "low_mem"); // one GPU
         // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
