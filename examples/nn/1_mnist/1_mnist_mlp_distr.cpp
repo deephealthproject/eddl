@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     if (use_cpu) {
         cs = CS_CPU();
     } else if (is_mpi_distributed()) {
-        switch (get_local_GPU_distributed(id)) {
+        switch (id % 4) {
             case 0: cs = CS_GPU({0, 0, 0, 1}, "low_mem");
                 break;
             case 1: cs = CS_GPU({0, 0, 1, 0}, "low_mem");

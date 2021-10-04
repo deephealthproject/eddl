@@ -43,13 +43,6 @@ int verboserec = 1;
 using namespace std;
 using namespace std::chrono;
 
-// TODO. Hide these variables in mpi_distributed
-extern int use_mpi;
-extern int mpi_avg;
-extern int avg_method;
-extern int x_avg;
-extern int batch_is_global;
-
 float loss1, loss2;
 
 #ifdef cNCCL
@@ -822,17 +815,23 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     double secs_epoch = 1e10;
     double secs_epoch_prev = 0;
     float SPEED_UP = 1.05;
+    
+    int mpi_avg ;
+    int avg_method ;
+    int x_avg ;
+    int batch_is_global; 
 
     
 
     if (isrecurrent) {
         fit_recurrent(tin, tout, batch, epochs);
     } else {
-        if (use_mpi) {
+        if (is_mpi_distributed()) {
             //MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
             //MPI_Comm_rank(MPI_COMM_WORLD, &id);
             n_procs = get_n_procs_distributed();
             id = get_id_distributed();
+            get_params_distributed(&avg_method, &mpi_avg, &x_avg, &batch_is_global);
 
             // Set batch size
             if (batch_is_global)
@@ -900,14 +899,14 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
         // Train network
         if (id == 0) {
             fprintf(stdout, "%d epochs of %d batches of size %d (local) %d (global)\n", epochs, num_batches, batch_size, n_procs * batch_size);
-            if (use_mpi) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, mpi_avg);
+            if (is_mpi_distributed()) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, mpi_avg);
         }
 
         batches_avg = mpi_avg;
         for (i = 0; i < epochs; i++) {
             high_resolution_clock::time_point e1 = high_resolution_clock::now();
             if (id == 0) {
-                if (use_mpi) {
+                if (is_mpi_distributed()) {
                     fprintf(stdout, "Epoch %d, mpi_avg %d\n", i + 1, batches_avg);
                 } else {
                     fprintf(stdout, "Epoch %d\n", i + 1);
@@ -930,7 +929,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                 train_batch(tin, tout, sind);
                   
                 // synchronize
-                if (use_mpi) {
+                if (is_mpi_distributed()) {
                     if ((((j + 1) % batches_avg) == 0) || ((j + 1) == batches_per_proc)) {
                         //printf("Proc %d Sincronizando %d\n", id, j);
                         for (ii = 0; ii < snets[0]->layers.size(); ii++) {
@@ -1459,7 +1458,7 @@ void Net::evaluate(vtensor tin, vtensor tout, int bs) {
     if (isrecurrent) {
         evaluate_recurrent(tin, tout, bs);
     } else {
-        if (use_mpi) {
+        if (is_mpi_distributed()) {
             //MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
             MPI_Comm_rank(MPI_COMM_WORLD, &id);
         } else id = 0;

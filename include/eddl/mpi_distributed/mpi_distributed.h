@@ -59,8 +59,19 @@
   }                                                 \
 } while(0)
 
+
+/**
+ *  @brief Get MPI id of process
+ *
+ *  @return id MPI rank of process
+ */
 int get_id_distributed();
 
+/**
+ *  @brief Get nr of MPI running processes
+ *
+ *  @return nr of MPI processes
+ */
 int get_n_procs_distributed();
 
 /**
@@ -110,11 +121,24 @@ void fn_nccl_AllReduce(float* myptr, int count);
  */
 void AllReduce_distributed(float* myptr, int count);
 
-int get_local_GPU_distributed(int id);
 
+/**
+ *  @brief Checks if running in mpi_distributed mode
+ *
+ *  @return true if running in mpi_distributed mode
+ */
 int is_mpi_distributed();
 
-
-
+/**
+ *  @brief Get MPI distributed params
+ *
+ *  @param[out] avg_method: Method to compute average of params
+ *  @param[out] mpi_avg:    Elapsed nr of batches among averages
+ *  @param[out] x_avg:      Elapsed nr of batches to change mpi_avg
+ *  @param[out] batch_is_global: True if batch size is interpreted as global batch
+ * 
+ *  @return true if running in mpi_distributed mode
+ */
+int get_params_distributed(int* method, int* avg, int* avg_chg, int* batch_global);
 
 

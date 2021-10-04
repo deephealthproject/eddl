@@ -183,14 +183,25 @@ void AllReduce_distributed(float* myptr, int count) {
 #endif
 }
 
-int get_local_GPU_distributed(int id) {
+int get_local_GPU_distributed(int id, int nGPUs) {
     int nDevices=1;
-#ifdef cCUDA
-    cudaGetDeviceCount(&nDevices);
-#endif
-    return id % nDevices;
+//#ifdef cCUDA
+//    cudaGetDeviceCount(&nDevices);
+//#endif
+//    return id % nDevices;
+    return id % nGPUs;
 }
 
 int is_mpi_distributed() {
+    return use_mpi;
+}
+
+int get_params_distributed(int* method, int* avg, int* avg_chg, int* batch_global) {
+
+    *avg = mpi_avg;
+    *method = avg_method;
+    *avg_chg = x_avg;
+    *batch_global = batch_is_global;
+
     return use_mpi;
 }
