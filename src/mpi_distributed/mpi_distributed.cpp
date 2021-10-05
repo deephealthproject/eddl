@@ -166,10 +166,8 @@ void fn_mpi_AllReduce(float* myptr, int count) {
 void fn_nccl_AllReduce(float* myptr, int count) {
 #ifdef cNCCL
     if (count > 0) {
-        CUDACHECK(cudaSetDevice(0));
         NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
         //completing NCCL operation by synchronizing on the CUDA stream
-        //CUDACHECK(cudaSetDevice(0));
         CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #endif

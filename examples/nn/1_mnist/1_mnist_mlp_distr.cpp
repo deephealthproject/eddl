@@ -13,31 +13,6 @@
 
 #include "eddl/apis/eddl.h"
 
-#define CS_GPU_1_distributed \
-    switch (id % 1) { \
-        case 0: cs = CS_GPU({1}, "low_mem"); \
-            break; \
-        }\   
-
-#define CS_GPU_2_distributed \
-    switch (id % 2) { \
-        case 0: cs = CS_GPU({0, 1}, "low_mem"); \
-            break; \
-        case 1: cs = CS_GPU({1, 0}, "low_mem"); \
-            break; \
-        }\           
-
-#define CS_GPU_4_distributed \
-    switch (id % 4) { \
-        case 0: cs = CS_GPU({0, 0, 0, 1}, "low_mem"); \
-            break; \
-        case 1: cs = CS_GPU({0, 0, 1, 0}, "low_mem"); \
-            break; \
-        case 2: cs = CS_GPU({0, 1, 0, 0}, "low_mem"); \
-            break; \
-        case 3: cs = CS_GPU({1, 0, 0, 0}, "low_mem"); \
-            break; \
-        }\           
 
                 
 using namespace eddl;
@@ -52,6 +27,24 @@ int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
     int id;
+    
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
+
+    // Define comuting service
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else if (is_mpi_distributed()) {
+        CS_GPU_1_distributed;
+    } else {
+        cs = CS_GPU({1}, "low_mem"); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+        // cs = CS_FPGA({1});
+    }
 
     // Init distribuited training
     id = init_distributed(&argc, &argv);
@@ -61,11 +54,7 @@ int main(int argc, char **argv) {
 
 
 
-    for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--testing") == 0) testing = true;
-        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
-    }
-
+    
     // Download mnist
     download_mnist();
 
@@ -92,17 +81,7 @@ int main(int argc, char **argv) {
        plot(net, "model.pdf");
     }
     
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else if (is_mpi_distributed()) {
-        CS_GPU_1_distributed;
-    } else {
-        cs = CS_GPU({1}, "low_mem"); // one GPU
-        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-        // cs = CS_CPU();
-        // cs = CS_FPGA({1});
-    }
+    
 
     // Build model
     build(net,

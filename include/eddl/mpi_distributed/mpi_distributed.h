@@ -59,6 +59,52 @@
   }                                                 \
 } while(0)
 
+#define CS_GPU_1_distributed \
+    switch (id % 1) { \
+        case 0: cs = CS_GPU({1}, "low_mem"); \
+            break; \
+        }\   
+
+#define CS_GPU_2_distributed \
+    switch (id % 2) { \
+        case 0: cs = CS_GPU({0, 1}, "low_mem"); \
+            break; \
+        case 1: cs = CS_GPU({1, 0}, "low_mem"); \
+            break; \
+        }\           
+
+#define CS_GPU_4_distributed \
+    switch (id % 4) { \
+        case 0: cs = CS_GPU({0, 0, 0, 1}, "low_mem"); \
+            break; \
+        case 1: cs = CS_GPU({0, 0, 1, 0}, "low_mem"); \
+            break; \
+        case 2: cs = CS_GPU({0, 1, 0, 0}, "low_mem"); \
+            break; \
+        case 3: cs = CS_GPU({1, 0, 0, 0}, "low_mem"); \
+            break; \
+        }\           
+
+#define CS_GPU_8_distributed \
+    switch (id % 8) { \
+        case 0: cs = CS_GPU({0, 0, 0, 0, 0, 0, 0, 1}, "low_mem"); \
+            break; \
+        case 1: cs = CS_GPU({0, 0, 0, 0, 0, 0, 1, 0}, "low_mem"); \
+            break; \
+        case 2: cs = CS_GPU({0, 0, 0, 0, 0, 1, 0, 0}, "low_mem"); \
+            break; \
+        case 3: cs = CS_GPU({0, 0, 0, 0, 1, 0, 0, 0}, "low_mem"); \
+            break; \
+        case 4: cs = CS_GPU({0, 0, 0, 1, 0, 0, 0, 0}, "low_mem"); \
+            break; \
+        case 5: cs = CS_GPU({0, 0, 1, 0, 0, 0, 0, 0}, "low_mem"); \
+            break; \
+        case 6: cs = CS_GPU({0, 1, 0, 0, 0, 0, 0, 0}, "low_mem"); \
+            break; \
+        case 7: cs = CS_GPU({1, 0, 0, 0, 0, 0, 0, 0}, "low_mem"); \
+            break; \
+        }\           
+
 
 /**
  *  @brief Get MPI id of process
