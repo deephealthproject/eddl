@@ -49,18 +49,19 @@ int main(int argc, char **argv) {
     if (use_cpu) {
         cs = CS_CPU();
     } else if (use_mpi1) {
- 	cs=CS_MPI_DISTR_1_GPU_PER_PROC(1);
-	//cs=CS_MPI_DISTRIBUTED(1);
+ 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(1);
+	cs=CS_MPI_DISTRIBUTED(1);
     } else if (use_mpi2) {
- 	cs=CS_MPI_DISTR_1_GPU_PER_PROC(2);
-	//cs=CS_MPI_DISTRIBUTED(2);
+ 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(2);
+	cs=CS_MPI_DISTRIBUTED(2);
     } else if (use_mpi4) {
- 	cs=CS_MPI_DISTR_1_GPU_PER_PROC(4);
-	//cs=CS_MPI_DISTRIBUTED(4);
+ 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(4);
+	cs=CS_MPI_DISTRIBUTED(4);
     } else if (use_mpiall) {
 	cs=CS_MPI_DISTRIBUTED();
     } else if (use_mpix) {
-        cs=CS_MPI_DISTR_X_GPU_PER_PROC({1},100,"low_mem");
+        //cs=CS_MPI_DISTR_X_GPU_PER_PROC({1},100,"low_mem");
+        cs=CS_MPI_DISTRIBUTED({1},100,"low_mem");
     } else {
         cs = CS_GPU({1}, "low_mem"); // one GPU
         // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
@@ -82,7 +83,7 @@ int main(int argc, char **argv) {
 
 
     // Settings
-    int epochs = (testing) ? 2 : 100;
+    int epochs = (testing) ? 2 : 32;
     int batch_size = 200;
     int num_classes = 10;
 
