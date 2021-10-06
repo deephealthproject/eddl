@@ -157,11 +157,24 @@ int main(int argc, char **argv) {
     
 
     // Evaluate
-    evaluate(net,{x_test},
-    {
-        y_test
-    });
+    evaluate(net,{x_test}, {y_test});
 
+    /*
+    float acc_goal = 0.98;
+    float acc = 0;
+    int count=1;
+    
+   
+    while (acc<acc_goal) {
+        fit(net,{x_train},{y_train}, batch_size, 1);
+        evaluate(net,{x_test}, {y_test});
+        if (id==0) 
+            acc=net->get_accuracy();
+        MPI_Bcast(&acc, 1, MPI_FLOAT, 0, MPI_COMM_WORLD);
+        printf("Process %d Iteration: %d Accuracy: %f\n",id, count, acc);
+        count++;
+    }
+    */
     
     // Release objects, layers, optimizer and computing service are released by the net object
     delete x_train;

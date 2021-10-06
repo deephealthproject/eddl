@@ -140,6 +140,7 @@ void end_distributed() {
 
 #ifdef cMPI
     if (use_mpi) {
+        MPI_Barrier(MPI_COMM_WORLD);
         //  Get the individual process ID.
         MPI_Comm_rank(MPI_COMM_WORLD, &id);
 #endif
@@ -218,3 +219,4 @@ int get_available_GPUs() {
     cudaGetDeviceCount(&count);
     return count;
 }
+
