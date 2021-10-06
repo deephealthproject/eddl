@@ -71,7 +71,7 @@
             break; \
         case 1: cs = CS_GPU({1, 0}, "low_mem"); \
             break; \
-        }        
+        }
 
 #define CS_GPU_4_distributed \
     switch (id % 4) { \
@@ -103,7 +103,7 @@
             break; \
         case 7: cs = CS_GPU({1, 0, 0, 0, 0, 0, 0, 0}, "low_mem"); \
             break; \
-        }           
+    }
 
 
 /**

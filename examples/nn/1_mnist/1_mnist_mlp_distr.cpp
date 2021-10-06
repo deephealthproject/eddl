@@ -33,6 +33,7 @@ int main(int argc, char **argv) {
     bool use_mpix = false;
     int id;
     
+    // Process arguments
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -151,6 +152,7 @@ int main(int argc, char **argv) {
 
     // Train model
     fit(net,{x_train},{y_train}, batch_size, epochs);
+    printf("%f",net->get_accuracy());
     
 
     // Evaluate
@@ -159,6 +161,7 @@ int main(int argc, char **argv) {
         y_test
     });
 
+    
     // Release objects, layers, optimizer and computing service are released by the net object
     delete x_train;
     delete y_train;
