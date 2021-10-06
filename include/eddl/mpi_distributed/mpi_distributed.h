@@ -63,7 +63,7 @@
     switch (id % 1) { \
         case 0: cs = CS_GPU({1}, "low_mem"); \
             break; \
-        }\   
+        }  
 
 #define CS_GPU_2_distributed \
     switch (id % 2) { \
@@ -71,7 +71,7 @@
             break; \
         case 1: cs = CS_GPU({1, 0}, "low_mem"); \
             break; \
-        }\           
+        }        
 
 #define CS_GPU_4_distributed \
     switch (id % 4) { \
@@ -83,7 +83,7 @@
             break; \
         case 3: cs = CS_GPU({1, 0, 0, 0}, "low_mem"); \
             break; \
-        }\           
+        }          
 
 #define CS_GPU_8_distributed \
     switch (id % 8) { \
@@ -103,7 +103,7 @@
             break; \
         case 7: cs = CS_GPU({1, 0, 0, 0, 0, 0, 0, 0}, "low_mem"); \
             break; \
-        }\           
+        }           
 
 
 /**
@@ -127,6 +127,7 @@ int get_n_procs_distributed();
  *  @return id MPI rank of process
  */
 int init_distributed(int *argc, char ***argv);
+int init_distributed();
 
 /**
  *  @brief Sets distributed training paramas
@@ -186,5 +187,7 @@ int is_mpi_distributed();
  *  @return true if running in mpi_distributed mode
  */
 int get_params_distributed(int* method, int* avg, int* avg_chg, int* batch_global);
+
+int get_available_GPUs();
 
 

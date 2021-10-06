@@ -19,6 +19,52 @@
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 
+#define GPU_1_distributed \
+    switch (id % 1) { \
+        case 0: gpus={1}; \
+            break; \
+        }  
+
+#define GPU_2_distributed \
+    switch (id % 2) { \
+        case 0:  gpus={0, 1}; \
+            break; \
+        case 1: gpus={1, 0}; \
+            break; \
+        }          
+
+#define GPU_4_distributed \
+    switch (id % 4) { \
+        case 0: gpus={0, 0, 0, 1}; \
+            break; \
+        case 1: gpus={0, 0, 1, 0}; \
+            break; \
+        case 2: gpus={0, 1, 0, 0}; \
+            break; \
+        case 3: gpus={1, 0, 0, 0}; \
+            break; \
+        }          
+
+#define GPU_8_distributed \
+    switch (id % 8) { \
+        case 0: gpus={0, 0, 0, 0, 0, 0, 0, 1}; \
+            break; \
+        case 1: gpus={0, 0, 0, 0, 0, 0, 1, 0}; \
+            break; \
+        case 2: gpus={0, 0, 0, 0, 0, 1, 0, 0}; \
+            break; \
+        case 3: gpus={0, 0, 0, 0, 1, 0, 0, 0}; \
+            break; \
+        case 4: gpus={0, 0, 0, 1, 0, 0, 0, 0}; \
+            break; \
+        case 5: gpus={0, 0, 1, 0, 0, 0, 0, 0}; \
+            break; \
+        case 6: gpus={0, 1, 0, 0, 0, 0, 0, 0}; \
+            break; \
+        case 7: gpus={1, 0, 0, 0, 0, 0, 0, 0}; \
+            break; \
+        }         
+
 using namespace std;
 
 ////////////////////////////////////////////////////////
@@ -196,15 +242,48 @@ namespace eddl {
   }
   compserv CS_GPU(const vector<int> g, int lsb){
     return CS_GPU(g, lsb, "full_mem");
-  }
-  compserv CS_GPU(const vector<int> g, int lsb, string mem){
-    if (mem=="low_mem") return new CompServ(0, g, {}, lsb, 2);
-    else if (mem=="mid_mem") return new CompServ(0, g, {}, lsb, 1);
-    else if (mem=="full_mem") return new CompServ(0, g, {}, lsb, 0);
-    else msg("Error mem param","CS_GPU"); // Exits
-    return nullptr; // To silent warnings
-  }
+    }
 
+  compserv CS_GPU(const vector<int> g, int lsb, string mem) {
+    if (mem == "low_mem") return new CompServ(0, g,{}, lsb, 2);
+    else if (mem == "mid_mem") return new CompServ(0, g,{}, lsb, 1);
+    else if (mem == "full_mem") return new CompServ(0, g,{}, lsb, 0);
+    else msg("Error mem param", "CS_GPU"); // Exits
+    return nullptr; // To silent warnings
+    }
+
+  compserv CS_MPI_DISTR_1_GPU_PER_PROC(int nr_gpus) {
+        vector<int> gpus;
+        int id;
+        id = init_distributed();
+        printf("[DISTR] CS: one GPUs per process. %d/%d GPUS used/available per node\n",nr_gpus,get_available_GPUs());
+        switch (nr_gpus) {
+            case 1: GPU_1_distributed;
+                break;
+            case 2: GPU_2_distributed;
+                break;
+            case 4: GPU_4_distributed;
+                break;
+            case 8: GPU_8_distributed;
+                break;
+            default: msg("Error nr_gpus param", "CS_MPI"); // Exits
+                return nullptr; // To silent warnings
+        }
+        //return new CompServ(0, {1},{}, lsb, 0);
+        return new CompServ(0, gpus,{}, 0, 0);
+    }
+   
+  compserv CS_MPI_DISTRIBUTED() {
+      return CS_MPI_DISTR_1_GPU_PER_PROC(get_available_GPUs());
+  } 
+  
+  compserv CS_MPI_DISTR_X_GPU_PER_PROC(const vector<int> g, int lsb, string mem) {
+      init_distributed();
+      printf("[DISTR] CS: several GPUs per process. %d GPUS available per node\n",get_available_GPUs());
+      return CS_GPU(g, lsb, mem);
+  }
+  
+  
   /*compserv CS_FPGA(const vector<int> g){
     return CS_FPGA(g, 1, "full_mem");
     }
@@ -1636,7 +1715,8 @@ namespace eddl {
 
     if (!exist(name)) {
       cout<<name<<" x\n";
-      cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link+"/"+name;
+      //cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link+"/"+name;
+      cmd = "wget -q  https://www.dropbox.com/s/"+link+"/"+name;
       int status = system(cmd.c_str());
       if (status < 0){
 	msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
@@ -1917,7 +1997,8 @@ namespace eddl {
     for(int i=0;i<link.size();i++) {
       if (!exist(file[i])) {
         cout<<file[i]<<" x\n";
-        cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
+        //cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
+        cmd = "wget -q  https://www.dropbox.com/s/"+link[i]+"/"+file[i];
         int status = system(cmd.c_str());
         if (status < 0){
           msg("Error executing wget.  Is it installed?", "eddl.download_"+name);

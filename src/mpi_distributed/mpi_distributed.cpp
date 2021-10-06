@@ -51,9 +51,17 @@ int get_n_procs_distributed() {
     return n_procs;
 }
 
+
+int init_distributed() {
+    int *argc;
+    char ***argv;
+
+    init_distributed(argc,argv);
+}
+
 int init_distributed(int *argc, char ***argv) {
-    int n_procs;
     int id;
+    int n_procs; 
     
 #ifndef cMPI
     msg("MPI library is not linked", "init_distributed");
@@ -202,4 +210,11 @@ int get_params_distributed(int* method, int* avg, int* avg_chg, int* batch_globa
     *batch_global = batch_is_global;
 
     return use_mpi;
+}
+
+int get_available_GPUs() {
+    int count=0;
+
+    cudaGetDeviceCount(&count);
+    return count;
 }

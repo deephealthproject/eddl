@@ -201,13 +201,45 @@ namespace eddl {
     compserv CS_GPU(const vector<int> g, int lsb,string mem);
 
     /**
+      *  @brief Executes the code in MPI with *1* GPU per process. GPUs are assigned to processes in block mode (i.e. with y GPUs per node, node X is assigned processes X*y ... X*y+y-1)
+      *  Memory consumption of the model is set to  "full_mem".
+      *
+      *  @param nr_gpus Nr of GPUs per node
+      *  @return     The computer service itself.
+    */
+    compserv CS_MPI_DISTR_1_GPU_PER_PROC(int nr_gpus);
+
+    /**
+      *  @brief Executes the code in MPI with *1* GPU per process. 
+      *  GPUs are assigned to processes in block mode (i.e. with y GPUs per node, node X is assigned processes X*y ... X*y+y-1)
+      *  GPUs per node is equal to the maximum available.
+      *  Memory consumption of the model is set to  "full_mem".
+      *  
+      *  @return     The computer service itself.
+    */
+    compserv CS_MPI_DISTRIBUTED();
+
+    /**
+      *  @brief Executes the code in MPI with several GPUs per process.
+      *
+      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
+      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different GPUs of a node.
+      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *
+      *  @return     The computer service itself.
+    */
+    compserv CS_MPI_DISTR_X_GPU_PER_PROC(const vector<int> g, int lsb, string mem);
+    //compserv CS_MPI_DISTRIBUTED(int mode, int nr_gpus, const vector<int> g, int lsb);
+
+
+    /**
       *  @brief Executes the code in the FPGA.
       *
       *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
       *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-
+  
 //    compserv CS_FPGA(const vector<int> g);
 
     /**

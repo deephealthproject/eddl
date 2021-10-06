@@ -26,19 +26,40 @@ using namespace eddl;
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
+    bool use_mpiall = false;
+    bool use_mpi1 = false;
+    bool use_mpi2 = false;
+    bool use_mpi4 = false;
+    bool use_mpix = false;
     int id;
     
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+        else if (strcmp(argv[i], "--mpi1pall") == 0) use_mpiall = true;
+        else if (strcmp(argv[i], "--mpi1p1gpu") == 0) use_mpi1 = true;
+        else if (strcmp(argv[i], "--mpi1p2gpu") == 0) use_mpi2 = true;
+        else if (strcmp(argv[i], "--mpi1p4gpu") == 0) use_mpi4 = true;
+        else if (strcmp(argv[i], "--mpixgpu") == 0) use_mpix = true;
     }
 
     // Define comuting service
     compserv cs = nullptr;
     if (use_cpu) {
         cs = CS_CPU();
-    } else if (is_mpi_distributed()) {
-        CS_GPU_1_distributed;
+    } else if (use_mpi1) {
+ 	cs=CS_MPI_DISTR_1_GPU_PER_PROC(1);
+	//cs=CS_MPI_DISTRIBUTED(1);
+    } else if (use_mpi2) {
+ 	cs=CS_MPI_DISTR_1_GPU_PER_PROC(2);
+	//cs=CS_MPI_DISTRIBUTED(2);
+    } else if (use_mpi4) {
+ 	cs=CS_MPI_DISTR_1_GPU_PER_PROC(4);
+	//cs=CS_MPI_DISTRIBUTED(4);
+    } else if (use_mpiall) {
+	cs=CS_MPI_DISTRIBUTED();
+    } else if (use_mpix) {
+        cs=CS_MPI_DISTR_X_GPU_PER_PROC({1},100,"low_mem");
     } else {
         cs = CS_GPU({1}, "low_mem"); // one GPU
         // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
@@ -47,7 +68,7 @@ int main(int argc, char **argv) {
     }
 
     // Init distribuited training
-    id = init_distributed(&argc, &argv);
+    //id = init_distributed(&argc, &argv);
     
     // Sync every batch, change every 4 epochs
     set_method_distributed(AUTO_TIME,1,4);
