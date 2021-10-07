@@ -17,6 +17,8 @@
 #include "cuda.h"
 #endif
 
+#define NUM_STREAMS_COMM 4
+
 // Global variables
 int use_mpi = 0;
 int mpi_avg = 1;
@@ -30,7 +32,7 @@ int batch_is_global=1;
 // NCCL
 ncclUniqueId nccl_id;
 ncclComm_t nccl_comm;
-cudaStream_t cuda_stream;
+cudaStream_t cuda_stream[NUM_STREAMS_COMM] ;
 #endif
 
 int get_id_distributed() {    
@@ -62,6 +64,17 @@ int init_distributed() {
 int init_distributed(int *argc, char ***argv) {
     int id;
     int n_procs; 
+ 
+    id=init_MPI();
+    //init_NCCL();
+}
+
+int init_MPI() {
+    int *argc;
+    char ***argv;
+
+    int id;
+    int n_procs; 
     
 #ifndef cMPI
     msg("MPI library is not linked", "init_distributed");
@@ -84,13 +97,27 @@ int init_distributed(int *argc, char ***argv) {
     srand(id);
 #endif
 
+    return id;
+}
+
+
+int init_NCCL(int nr_gpus) {
+    int id;
+    int n_procs; 
+    
+    n_procs=get_n_procs_distributed();
+    id=get_id_distributed();
 #ifdef cNCCL
     //NCCL
     //get NCCL unique ID at rank 0 and broadcast it to all others
     if (id == 0) ncclGetUniqueId(&nccl_id);
     MPICHECK(MPI_Bcast(&nccl_id, sizeof (nccl_id), MPI_BYTE, 0, MPI_COMM_WORLD));
     //picking a GPU based on localRank, allocate device buffers
-    CUDACHECK(cudaStreamCreate(&cuda_stream));
+    CUDACHECK(cudaSetDevice (id % nr_gpus));
+    for (int i = 0; i < NUM_STREAMS_COMM; i++) {
+        CUDACHECK(cudaStreamCreateWithFlags(&cuda_stream[i], cudaStreamNonBlocking));
+    }
+    //CUDACHECK(cudaStreamCreate(&cuda_stream));
     //initializing NCCL
     NCCLCHECK(ncclCommInitRank(&nccl_comm, n_procs, nccl_id, id));
     if (id == 0)
@@ -99,6 +126,7 @@ int init_distributed(int *argc, char ***argv) {
 
     return id;
 }
+
 
 void set_method_distributed (int method, int batch_avg, int epoch_avg) {    
     int n_procs;
@@ -175,9 +203,22 @@ void fn_mpi_AllReduce(float* myptr, int count) {
 void fn_nccl_AllReduce(float* myptr, int count) {
 #ifdef cNCCL
     if (count > 0) {
-        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
+        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream[0]));
         //completing NCCL operation by synchronizing on the CUDA stream
-        CUDACHECK(cudaStreamSynchronize(cuda_stream));
+        CUDACHECK(cudaStreamSynchronize(cuda_stream[0]));
+    }
+#endif
+}
+
+void fn_nccl_AllReduce_streams(float* myptr, int count, int layer) {
+    int stream;
+#ifdef cNCCL
+    if (count > 0) {
+        stream= layer % NUM_STREAMS_COMM;
+        //printf("Using stream %d\n", stream);
+        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream[stream]));
+        //completing NCCL operation by synchronizing on the CUDA stream
+        CUDACHECK(cudaStreamSynchronize(cuda_stream[stream]));
     }
 #endif
 }
@@ -189,6 +230,15 @@ void AllReduce_distributed(float* myptr, int count) {
     fn_mpi_AllReduce(myptr, count);
 #endif
 }
+
+void AllReduce_streams_distributed(float* myptr, int count, int layer) {
+#ifdef cNCCL
+    fn_nccl_AllReduce_streams(myptr, count, layer); 
+#else
+    fn_mpi_AllReduce(myptr, count);
+#endif
+}
+
 
 int get_local_GPU_distributed(int id, int nGPUs) {
     int nDevices=1;

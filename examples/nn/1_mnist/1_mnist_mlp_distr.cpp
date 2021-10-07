@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
 
     // Train model
     fit(net,{x_train},{y_train}, batch_size, epochs);
-    printf("%f",net->get_accuracy());
+    //printf("%f",net->get_accuracy());
     
 
     // Evaluate

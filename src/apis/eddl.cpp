@@ -257,8 +257,9 @@ namespace eddl {
         int id;
         char node_name[256];
         int len;
+        compserv aux;
         
-        id = init_distributed();
+        id = init_MPI();
         MPICHECK(MPI_Get_processor_name(node_name, &len));
         printf("[DISTR] CS: Node %s, one GPUs per process. %d/%d GPUS used/available per node\n",node_name,nr_gpus,get_available_GPUs());
         switch (nr_gpus) {
@@ -274,17 +275,22 @@ namespace eddl {
                 return nullptr; // To silent warnings
         }
         //return new CompServ(0, {1},{}, lsb, 0);
-        return new CompServ(0, gpus,{}, 0, 0);
+        aux= CS_GPU(gpus, 0, "full_mem");
+        init_NCCL(nr_gpus);
+        return aux;
     }
   
   compserv CS_MPI_DISTR_X_GPU_PER_PROC(const vector<int> g, int lsb, string mem) {
       char node_name[256];
       int len;
+      compserv aux;
       
-      init_distributed();
+      init_MPI();
       MPICHECK(MPI_Get_processor_name(node_name, &len));
       printf("[DISTR] CS: Node %s, several GPUs per process. %d GPUS available per node\n", node_name, get_available_GPUs());
-      return CS_GPU(g, lsb, mem);
+      aux= CS_GPU(g, lsb, mem);
+      init_NCCL(1);
+      return aux;
     }
   
   compserv CS_MPI_DISTRIBUTED() {

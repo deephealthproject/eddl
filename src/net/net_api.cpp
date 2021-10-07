@@ -940,7 +940,8 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                                 //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
                                 if (count != 0) {
                                     // AllReduce params
-                                    AllReduce_distributed(myptr, count);
+                                    //AllReduce_distributed(myptr, count);
+                                    AllReduce_streams_distributed(myptr, count, ii);
                                     //fn_mpi_AllReduce(myptr, count)
                                     //fn_nccl_AllReduce(myptr, count);
 

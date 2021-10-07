@@ -129,6 +129,10 @@ int get_n_procs_distributed();
 int init_distributed(int *argc, char ***argv);
 int init_distributed();
 
+int init_MPI();
+int init_NCCL(int nr_gpus);
+
+
 /**
  *  @brief Sets distributed training paramas
  *
@@ -167,6 +171,8 @@ void fn_nccl_AllReduce(float* myptr, int count);
  *  @param count buffer size in floats
  */
 void AllReduce_distributed(float* myptr, int count);
+
+void AllReduce_streams_distributed(float* myptr, int count, int layer);
 
 
 /**
