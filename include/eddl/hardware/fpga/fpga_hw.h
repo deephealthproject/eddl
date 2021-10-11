@@ -126,7 +126,9 @@ extern cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2
 extern int k_conv2d_cpi;
 extern int k_conv2d_cpo;
 extern int k_conv2d_num_kernels;
-extern int k_conv2d_max_rows; 
+extern int k_conv2d_max_rows;
+extern int k_conv2d_max_ho;
+extern int k_conv2d_max_wo;
 #endif
 
 #define MAX_FLOAT std::numeric_limits<float>::max()

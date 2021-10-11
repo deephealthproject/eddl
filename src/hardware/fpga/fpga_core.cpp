@@ -126,6 +126,8 @@ int k_conv2d_cpi;             // number of CPI channels (parallel channels read)
 int k_conv2d_cpo;             // number of CPO channels (parallel channels written)
 int k_conv2d_num_kernels;     // number of kernels present in the FPGA
 int k_conv2d_max_rows;        // maximum number of rows that the kernel can handle
+int k_conv2d_max_ho;          // maximum number of output rows the kernel can handle
+int k_conv2d_max_wo;          // maximum number of output cols the kernel can handle
 #endif
 
 // -------------------------------------------------------------------------------------------------------------------------------------------
@@ -495,22 +497,22 @@ void fpga_init(){
   printf("kernel version %d.%d\n", kernel_version, kernel_subversion);
   switch (kernel_version) {
     case 1: switch (kernel_subversion) {
-              case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_fp32_relu_1kernel.xclbin"; break;
-              case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_apf8_relu_1kernel.xclbin"; break;
-              case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_api8_relu_1kernel.xclbin"; break;
-              case 3: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_8x8_apf8_relu_1kernel.xclbin"; break;
-              case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_8x8_api8_relu_1kernel.xclbin"; break;
-              case 5: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_fp32_relu_2kernel.xclbin"; break;
+              case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_fp32_relu_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+              case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_apf8_relu_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+              case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_api8_relu_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+              case 3: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_8x8_apf8_relu_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+              case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_8x8_api8_relu_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+              case 5: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_fp32_relu_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
               default: printf("Error, unrecognized conv2d kernel subversion\n"); exit(1); break;
             }
 	    break;
     // Version 2: Kernels with GIHWCPI format 
     case 2: switch (kernel_subversion) {
-	      case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_1kernel.xclbin"; break;
-        case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_1kernel.xclbin"; break;
-        case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_2kernel.xclbin"; break;
-        case 3: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_1kernel.xclbin"; break;
-        case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_2kernel.xclbin"; break;
+	      case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+        case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+        case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+        case 3: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+        case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
 	      default: printf("Error, unrecognized conv2d kernel subversion\n"); exit(1); break;
 	    }
 	    break;
