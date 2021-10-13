@@ -508,9 +508,9 @@ void fpga_init(){
 	    break;
     // Version 2: Kernels with GIHWCPI format 
     case 2: switch (kernel_subversion) {
-	      case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+	      case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 1024; break;
         case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-        case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+        case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 1024; break;
         case 3: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
         case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
 	      default: printf("Error, unrecognized conv2d kernel subversion\n"); exit(1); break;

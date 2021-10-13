@@ -888,7 +888,7 @@ void __show_profile() {
   PROFILING_PRINTF(reduction);
   PROFILING_PRINTF(reduction_back);
   // activations
-  PROFILING_ENABLE(ELu);
+  PROFILING_PRINTF(ELu);
   PROFILING_PRINTF(Exp);
   PROFILING_PRINTF(ReLu);
   PROFILING_PRINTF(Tanh);
@@ -982,4 +982,185 @@ void __show_profile() {
   PROFILING_PRINTF(FPGA_READ);
   PROFILING_PRINTF(FPGA_WRITE);
 
+}
+
+void __reset_profile() {
+
+  // profiling declarations
+  PROFILING_RESET(maximum);
+  PROFILING_RESET(minimum);
+  PROFILING_RESET(max);
+  PROFILING_RESET(argmax);
+  PROFILING_RESET(argmax_d);
+  PROFILING_RESET(min);
+  PROFILING_RESET(argmin);
+  PROFILING_RESET(sum);
+  PROFILING_RESET(sum_abs);
+  PROFILING_RESET(prod);
+  PROFILING_RESET(mean);
+  PROFILING_RESET(median);
+  PROFILING_RESET(std);
+  PROFILING_RESET(var);
+  PROFILING_RESET(mode);
+  PROFILING_RESET(abs);
+  PROFILING_RESET(acos);
+  PROFILING_RESET(add);
+  PROFILING_RESET(asin);
+  PROFILING_RESET(atan);
+  PROFILING_RESET(cell);
+  PROFILING_RESET(clamp);
+  PROFILING_RESET(clampmax);
+  PROFILING_RESET(clampmin);
+  PROFILING_RESET(cos);
+  PROFILING_RESET(cosh);
+  PROFILING_RESET(div);
+  PROFILING_RESET(exp);
+  PROFILING_RESET(floor);
+  PROFILING_RESET(inv);
+  PROFILING_RESET(log);
+  PROFILING_RESET(log2);
+  PROFILING_RESET(log10);
+  PROFILING_RESET(logn);
+  PROFILING_RESET(mod);
+  PROFILING_RESET(mult);
+  PROFILING_RESET(neg);
+  PROFILING_RESET(normalize);
+  PROFILING_RESET(pow);
+  PROFILING_RESET(powb);
+  PROFILING_RESET(reciprocal);
+  PROFILING_RESET(remainder);
+  PROFILING_RESET(round);
+  PROFILING_RESET(rsqrt);
+  PROFILING_RESET(sigmoid);
+  PROFILING_RESET(sign);
+  PROFILING_RESET(sin);
+  PROFILING_RESET(sinh);
+  PROFILING_RESET(sqr);
+  PROFILING_RESET(sqrt);
+  PROFILING_RESET(sub);
+  PROFILING_RESET(tan);
+  PROFILING_RESET(tanh);
+  PROFILING_RESET(trunc);
+  PROFILING_RESET(inc);
+  PROFILING_RESET(el_div);
+  PROFILING_RESET(mult2D);
+  PROFILING_RESET(el_mult);
+  PROFILING_RESET(sum2D_rowwise);
+  PROFILING_RESET(reduce_sum2D);
+  PROFILING_RESET(sum2D_colwise);
+  PROFILING_RESET(ceil);
+  // da
+  PROFILING_RESET(shift);
+  PROFILING_RESET(rotate);
+  PROFILING_RESET(scale);
+  PROFILING_RESET(flip);
+  PROFILING_RESET(crop);
+  PROFILING_RESET(crop_scale);
+  PROFILING_RESET(cutout);
+  PROFILING_RESET(shift_random);
+  PROFILING_RESET(rotate_random);
+  PROFILING_RESET(scale_random);
+  PROFILING_RESET(flip_random);
+  PROFILING_RESET(crop_random);
+  PROFILING_RESET(crop_scale_random);
+  PROFILING_RESET(cutout_random);
+  //reduction
+  PROFILING_RESET(reduce);
+  PROFILING_RESET(reduce_op);
+  PROFILING_RESET(reduction);
+  PROFILING_RESET(reduction_back);
+  // activations
+  PROFILING_RESET(ELu);
+  PROFILING_RESET(Exp);
+  PROFILING_RESET(ReLu);
+  PROFILING_RESET(Tanh);
+  PROFILING_RESET(D_ELu);
+  PROFILING_RESET(D_Exp);
+  PROFILING_RESET(D_Tanh);
+  PROFILING_RESET(D_ThresholdedReLu);
+  PROFILING_RESET(D_HardSigmoid);
+  PROFILING_RESET(D_LeakyRelu);
+  PROFILING_RESET(D_Linear);
+  PROFILING_RESET(D_ReLu);
+  PROFILING_RESET(D_LeakyReLu);
+  PROFILING_RESET(D_Sigmoid);
+  PROFILING_RESET(D_Softmax);
+  PROFILING_RESET(D_softplus);
+  PROFILING_RESET(HardSigmoid);
+  PROFILING_RESET(D_softsign);
+  PROFILING_RESET(LeakyReLu);
+  PROFILING_RESET(Linear);
+  PROFILING_RESET(Sigmoid);
+  PROFILING_RESET(Softmax);
+  PROFILING_RESET(Softplus);
+  PROFILING_RESET(Softsign);
+  PROFILING_RESET(ThresholdedReLu);
+  // conv
+  PROFILING_RESET(Conv2D);
+  PROFILING_RESET(Conv2DReLU);
+  PROFILING_RESET(Conv2D_grad);
+  PROFILING_RESET(Conv2D_back);
+  // losses
+  PROFILING_RESET(cent);
+  // generator
+  PROFILING_RESET(fill_rand_uniform);
+  PROFILING_RESET(fill_rand_signed_uniform);
+  PROFILING_RESET(fill_rand_normal);
+  PROFILING_RESET(fill_rand_binary);
+  // comparison
+  PROFILING_RESET(all);
+  PROFILING_RESET(any);
+  PROFILING_RESET(isfinite);
+  PROFILING_RESET(isinf);
+  PROFILING_RESET(isnan);
+  PROFILING_RESET(isneginf);
+  PROFILING_RESET(isposinf);
+  PROFILING_RESET(logical_and);
+  PROFILING_RESET(logical_or);
+  PROFILING_RESET(logical_not);
+  PROFILING_RESET(logical_xor);
+  PROFILING_RESET(allclose);
+  PROFILING_RESET(isclose);
+  PROFILING_RESET(greater);
+  PROFILING_RESET(greater_equal);
+  PROFILING_RESET(less);
+  PROFILING_RESET(less_equal);
+  PROFILING_RESET(equal);
+  PROFILING_RESET(not_equal);
+  PROFILING_RESET(equivalent);
+  // bn
+  PROFILING_RESET(permute_channels_last);
+  PROFILING_RESET(permute_channels_first);
+  PROFILING_RESET(permute_batch_last);
+  PROFILING_RESET(permute_batch_first);
+  // core_nn
+  PROFILING_RESET(repeat_nn);
+  PROFILING_RESET(d_repeat_nn);
+  PROFILING_RESET(select);
+  PROFILING_RESET(select_back);
+  PROFILING_RESET(set_select);
+  PROFILING_RESET(set_select_back);
+  PROFILING_RESET(transform);
+  // metrics
+  PROFILING_RESET(accuracy);
+  PROFILING_RESET(bin_accuracy);
+  // pool
+  PROFILING_RESET(MPool2D);
+  PROFILING_RESET(MPool2D_back);
+  PROFILING_RESET(AvgPool2D);
+
+  // fpga-specific
+  PROFILING_RESET(fpga_reshape_input_data_convol);
+  PROFILING_RESET(fpga_reshape_kernel_data_convol);
+  PROFILING_RESET(fpga_Conv2D);
+  PROFILING_RESET(fpga_Conv2D_STM);
+  PROFILING_RESET(fpga_Conv2D_STM_ADD);
+  PROFILING_RESET(fpga_Conv2D_MAXPOOL);
+  PROFILING_RESET(fpga_Conv2D_RELU_MAXPOOL);
+  PROFILING_RESET(fpga_Conv2D_RELU);
+  PROFILING_RESET(fpga_hlsinf);
+  PROFILING_RESET(fpga_Conv2D_LEAKYRELU);
+  PROFILING_RESET(Precision_Conversion);
+  PROFILING_RESET(FPGA_READ);
+  PROFILING_RESET(FPGA_WRITE);
 }

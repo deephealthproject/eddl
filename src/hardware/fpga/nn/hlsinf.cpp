@@ -63,7 +63,7 @@ PROFILING_ENABLE_EXTERN(fpga_hlsinf);
 //   CPO: Kernel channels per output
 //   kernel_id: Kernel ID (which kernel to use in a multi-kernel setting)
 //
-void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows, int PT, int PB, int PL, int PR, int SH, int SW, int Ichannels, int Ochannels,  int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor, cl::Buffer K, cl::Buffer B, cl::Buffer O, int read_offset, int write_offset, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
+void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, int WO, int rows, int PT, int PB, int PL, int PR, int SH, int SW, int Ichannels, int Ochannels,  int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor, cl::Buffer K, cl::Buffer B, cl::Buffer O, int read_offset, int write_offset, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, int enable_add, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
 
   // Error variable
   cl_int err;
@@ -85,6 +85,8 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int rows
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I_add));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, H));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, W));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, HO));
+  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, WO));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, rows));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, PT));
   OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, PB));
@@ -198,7 +200,7 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
     int first_o_iter = 0;
     int last_o_iter = ((Ochannels + (CPO-1)) / CPO) - 1;
 
-    HLSinf_launch_kernel(I, I_add, H, W, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu, enable_stm, relu_factor, K, B, O, read_offset, write_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, 0);
+    HLSinf_launch_kernel(I, I_add, H, W, HO, WO, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu, enable_stm, relu_factor, K, B, O, read_offset, write_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, 0);
 
   } else {
     // several kernels available, let's split the operation in sets of output channels
@@ -231,7 +233,7 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
 #ifdef DEBUG_VERBOSE
       printf("Kernel %d first iter %d last %d\n", k, first_o_iter, last_o_iter);
 #endif
-      HLSinf_launch_kernel(I, I_add, H, W, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu, enable_stm, relu_factor, K, B, O, read_offset, write_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, k);
+      HLSinf_launch_kernel(I, I_add, H, W, HO, WO, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu, enable_stm, relu_factor, K, B, O, read_offset, write_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, k);
     }
   }
   PROFILING_FOOTER(fpga_hlsinf);

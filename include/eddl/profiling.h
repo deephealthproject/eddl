@@ -63,6 +63,11 @@ int gettimeofday(struct timeval* tp, struct timezone* tzp);
             100.0 * prof_##fn##_time / acc, (float) prof_##fn##_time / (float) prof_##fn##_calls);
 #endif
 
+#define PROFILING_RESET(fn) \
+  prof_##fn##_calls = 0; \
+  prof_##fn##_time = 0;
+
+
 //CxHxW
 //
 //HxWxC

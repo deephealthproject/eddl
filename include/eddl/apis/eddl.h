@@ -729,6 +729,11 @@ namespace eddl {
     */
     void show_profile();
 
+    /**
+     *  @brief Resets profile information.
+     */
+    void reset_profile();
+
 
     ///////////////////////////////////////
     //  LAYERS

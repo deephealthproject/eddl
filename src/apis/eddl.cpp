@@ -327,6 +327,10 @@ namespace eddl {
     __show_profile();
   }
 
+  void reset_profile() {
+    __reset_profile();
+  }
+
   void next_batch(vector<Tensor *> in,vector<Tensor *> out)
   {
     int i,n;
@@ -2141,9 +2145,9 @@ void get_fpga_model_params(Net * fpga_model) {
     // detection flags
     if (LConv *dl = dynamic_cast<LConv *>(cl)) {
       LConv *layer_src = (LConv *)cl;
-      // only H and W dimensios lees or equal than 256 are suported in the FPGA
+      // only W dimensios lees or equal than wmax are suported in the FPGA
       if (layer_src->input->shape.size() > 2) {
-        if (layer_src->input->shape[2] > 256 || layer_src->input->shape[3] > 256) found_C_cpu = 1;
+        if (layer_src->input->shape[3] > 1024) found_C_cpu = 1;
       }
       if (!found_C_cpu) found_C = 1;
       #ifdef DEBUG_VERBOSE
