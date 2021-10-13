@@ -466,7 +466,6 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
   //   Note: Check build_net_onnx() for full algorithm description
   while (!nodeQueue.empty())
   {
-    printf("hola debtri de process_node_queue\n");
     onnx::NodeProto *node = nodeQueue.front();
     log_string("Next node: " + node->name(), log_level, LOG_LEVEL::DEBUG);
 

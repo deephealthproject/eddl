@@ -117,8 +117,8 @@ void fpga_reshape_kernel_data_convol(ConvolDescriptor *D, int KW, int KH, int I,
 //
 void fpga_cpuemu_conv2D(ConvolDescriptor *D) {
   // Data moved to CPU from FPGA: kernel, bias, input data
-  fpga_copy_from_fpga(D->K, D->K->ptr);
-  fpga_copy_from_fpga(D->bias, D->bias->ptr);
+  //fpga_copy_from_fpga(D->K, D->K->ptr);
+  //fpga_copy_from_fpga(D->bias, D->bias->ptr);
   fpga_copy_from_fpga(D->I, D->I->ptr);
   // Convolution performed on the CPU
   cpu_conv2D(D);
