@@ -2274,6 +2274,7 @@ void get_fpga_model_params(Net * fpga_model) {
       int found_S;     // current layer is a softmax layer
       int found_D;     // current layer is a dense layer
       int found_Reshape; // current layer is a reshape layer
+      int found_Resize; // current layer is a resize layer
       int found_Concat; // current layer is a concat layer
       int found_Expand; // current layer is an expand layer
       int found_Slice; //current layer is a Slice layer
@@ -2285,8 +2286,8 @@ void get_fpga_model_params(Net * fpga_model) {
       int found_Trans;   //current layer is a Transpose layer
       int found_Add;   // current layer is an add layer
       int found_ConstofT; // current layer is constoftensor layer
-      int found_Sp;
-      int found_Tanh;
+      int found_Sp;    // current layer is sofplus layer
+      int found_Tanh;  // current layer is tanh layer
       int found_nM;    // current+1 layer is a maxpooling layer
       int found_nR;    // current+1 layer is a ReLU layer
       int found_nL;    // current+1 layer is a LeakyReLU layer
@@ -2344,9 +2345,9 @@ void get_fpga_model_params(Net * fpga_model) {
     // we look into current, current+1 and current+2 layers
         
     // Current layer
-    found_C = 0; found_C_cpu = 0; found_I = 0; found_LR = 0; found_R = 0; found_S = 0; found_M = 0; found_A = 0; found_Reshape = 0; found_D = 0; found_Concat = 0; found_Expand = 0; 
-    found_Slice = 0; found_Sig = 0; found_Mult = 0; found_Sub = 0; found_Exp = 0; found_Trans = 0; found_Add = 0; found_ConstofT = 0; found_div = 0; found_Sp = 0;
-    found_Tanh = 0;
+    found_C = 0; found_C_cpu = 0; found_I = 0; found_LR = 0; found_R = 0; found_S = 0; found_M = 0; found_A = 0; found_Reshape = 0; found_Resize = 0; found_D = 0; 
+    found_Concat = 0; found_Expand = 0; found_Slice = 0; found_Sig = 0; found_Mult = 0; found_Sub = 0; found_Exp = 0; found_Trans = 0; found_Add = 0; 
+    found_ConstofT = 0; found_div = 0; found_Sp = 0; found_Tanh = 0;
     
     cl = m_src->layers[l_src];
     
@@ -2371,6 +2372,7 @@ void get_fpga_model_params(Net * fpga_model) {
     if (LMaxPool *dl = dynamic_cast<LMaxPool *>(cl)) found_M = 1;
     if (LAveragePool *dl = dynamic_cast<LAveragePool *>(cl)) found_A = 1;       
     if (LReshape *dl = dynamic_cast<LReshape *>(cl)) found_Reshape = 1;
+    if (LResize *dl = dynamic_cast<LResize *>(cl)) found_Resize = 1;
     if (LDense *dl = dynamic_cast<LDense *>(cl)) found_D = 1;
     if (LConcat *dl = dynamic_cast<LConcat *>(cl)) found_Concat = 1;
     if (LExpand *dl = dynamic_cast<LExpand *>(cl)) found_Expand = 1;
@@ -3037,6 +3039,25 @@ void get_fpga_model_params(Net * fpga_model) {
     associated_source_layer[l_dst].dst = prev_layer;
     l_dst++;
 
+  } else  if (found_Resize) {
+
+    //
+    // Resize
+    //
+    // source layer
+    LResize *layer_src = (LResize *)cl;
+    // dst parent layer
+    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+#ifdef DEBUG_VERBOSE
+    printf("%3d: RESIZE     : prev %d\n", l_dst, dummy);
+#endif
+
+    prev_layer = new LResize(fpga_parent, layer_src->new_shape, layer_src->reshape, layer_src->da_mode,
+                    layer_src->cval, layer_src->coordinate_transformation_mode, layer_src->name, layer_src->dev, 0);
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+    associated_source_layer[l_dst].src = cl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
   } else  if (found_D) {
         
     //

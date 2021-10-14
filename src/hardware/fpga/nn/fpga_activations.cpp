@@ -444,6 +444,7 @@ void fpga_cpuemu_sigmoid(Tensor *A, Tensor *B){
   cpu_sigmoid(A, B);
   fpga_copy_to_fpga(B->ptr, B);
   _profile_fpga_tensor(B);
+  _profile_fpga_tensor_print(B);
 }
 
 void fpga_sigmoid(Tensor *A, Tensor *B){
