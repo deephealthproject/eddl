@@ -20,7 +20,7 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
-#define DEBUG_VERBOSE
+//#define DEBUG_VERBOSE
 
 extern void fpga_reshape_kernel(ConvolDescriptor *src_D, ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO);
 extern void _profile_fpga_tensor(Tensor *t);
@@ -2360,7 +2360,7 @@ void get_fpga_model_params(Net * fpga_model) {
       if (!found_C_cpu) found_C = 1;
       #ifdef DEBUG_VERBOSE
       printf("Convolution layer: C cpu %d C FPGA %d\n", found_C_cpu, found_C);
-            #endif
+      #endif
     }
         
     if (LInput *dl = dynamic_cast<LInput *>(cl)) found_I = 1;
@@ -3431,12 +3431,32 @@ void get_fpga_model_params(Net * fpga_model) {
       if(layer_src->cd->K->size != layer_dst->cd->K->size) tensor_padded(layer_src->cd->K, layer_dst->cd->K);
       Tensor::copy(layer_src->cd->K, layer_dst->cd->K);
       distributeTensor(layer_dst, "param", 0);
+      //distribute filter to cpu
+      Layer *sl=nullptr;
+      Net *sn=layer_dst->net;
+      for(int j=0;j<sn->snets[0]->layers.size();j++)
+      if (sn->snets[0]->layers[j]->orig==layer_dst) {
+          sl=sn->snets[0]->layers[j];
+          break;
+      }
 
       // bias
       collectTensor(layer_src, "param", 1);
       if (layer_src->cd->bias->size != layer_dst->cd->bias->size) tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
       else Tensor::copy(layer_src->cd->bias, layer_dst->cd->bias);
       distributeTensor(layer_dst, "param", 1);
+
+      //distribute bias to cpu
+      sn=layer_dst->net;
+      for(int j=0;j<sn->snets[0]->layers.size();j++)
+      if (sn->snets[0]->layers[j]->orig==layer_dst) {
+          sl=sn->snets[0]->layers[j];
+          break;
+      }
+
+      //copy to cpu memory
+      cpu_copy(layer_dst->params[0],sl->params[0]); //filter
+      cpu_copy(layer_dst->params[1],sl->params[1]); //bias
 
     } else if (LHLSinf *dl = dynamic_cast<LHLSinf *>(cl)) {
       LHLSinf *layer_dst = (LHLSinf *) net->layers[l]; 

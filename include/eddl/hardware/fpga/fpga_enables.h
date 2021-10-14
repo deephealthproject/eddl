@@ -40,7 +40,7 @@
 //#define K_ENABLED_ISINF
 //#define K_ENABLED_ISNAN
 //#define K_ENABLED_ISNEGINF
-//#define K_ENABLED_ISPOSINF      // duda
+//#define K_ENABLED_ISPOSINF      
 //#define K_ENABLED_LOGICAL_AND
 //#define K_ENABLED_LOGICAL_OR
 //#define K_ENABLED_LOGICAL_NOT

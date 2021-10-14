@@ -253,7 +253,11 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   // output geometry
   int HO = (H + PT + PB - (KH - 1)) / SH;
   int WO = (W + PL + PR - (KW - 1)) / SW;
-
+  if (enable_maxp || enable_avgp) {
+    HO = HO / 2;
+    WO = WO / 2;
+  }
+  
   // HLSinf kernel limitations
   int HO_MAX = k_conv2d_max_ho;
   int WO_MAX = k_conv2d_max_wo;
