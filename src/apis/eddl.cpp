@@ -2031,6 +2031,214 @@ void get_fpga_model_params(Net * fpga_model) {
   }
   fclose(fptr);
 }
+
+  void model_to_hls(model m_src) {
+
+    int stream_id = 0;
+    int filter_id = 0;
+    int scale_id = 0;
+    int B_id = 0;
+    int mean_id = 0;
+    int var_id = 0;
+
+    // number of layers
+    int num_layers = m_src->layers.size();
+
+    int l=0;
+    while (l < num_layers) {
+
+      Layer *cl = m_src->layers[l];	    
+
+      if (LInput *dl = dynamic_cast<LInput *>(cl)) {    // Input layer (read)
+	// output stream
+	int C = cl->input->shape[1];
+	int H = cl->input->shape[2];
+	int W = cl->input->shape[3];
+	int DATA_WIDTH = 32;
+	int out_stream = stream_id;
+	printf("\n// read data\n");
+	printf("hls::stream<ap_uint<%d * %d>> stream_%0d;\n", DATA_WIDTH, C, stream_id);
+	printf("read<%d, %d, %d, %d>((ap_uint<%d * %d> *)ptr_in, stream_%0d);\n", C, H, W, DATA_WIDTH, C, DATA_WIDTH, out_stream);
+	stream_id++;
+      } else if (LDiv *dl = dynamic_cast<LDiv *>(cl)) { // Div layer
+	int C = cl->input->shape[1];
+	int H = cl->input->shape[2];
+	int W = cl->input->shape[3];
+	int DATA_WIDTH = 32;
+	int in_stream = stream_id - 1;
+	int out_stream = stream_id;
+	int PE = 1;
+	float div_factor = dl->val;
+	printf("\n// div\n");
+        printf("hls::stream<ap_uint<%d * %d>> stream_%0d;\n", DATA_WIDTH, C, stream_id);
+        printf("div<%d, %d, %d, %d, %d>(stream_%0d, %f, stream_%0d);\n", C, H, W, DATA_WIDTH, PE, in_stream, div_factor, out_stream);
+	stream_id++;
+      } else if (LMult *dl = dynamic_cast<LMult *>(cl)) { // Div layer
+        int C = cl->input->shape[1];
+        int H = cl->input->shape[2];
+        int W = cl->input->shape[3];
+        int DATA_WIDTH = 32;
+        int in_stream = stream_id - 1;
+        int out_stream = stream_id;
+        int PE = 1;
+        float mul_factor = dl->val;
+        printf("\n// mult\n");
+        printf("hls::stream<ap_uint<%d * %d>> stream_%0d;\n", DATA_WIDTH, C, stream_id);
+        printf("mul<%d, %d, %d, %d, %d>(stream_%0d, %f, stream_%0d);\n", C, H, W, DATA_WIDTH, PE, in_stream, mul_factor, out_stream);
+        stream_id++;
+      } else if (LDiff *dl = dynamic_cast<LDiff *>(cl)) { // Substract layer
+        int C = cl->input->shape[1];
+        int H = cl->input->shape[2];
+        int W = cl->input->shape[3];
+        int DATA_WIDTH = 32;
+        int in_stream = stream_id - 1;
+        int out_stream = stream_id;
+        int PE = 1;
+        float sub_factor = dl->val;
+        printf("\n// sub\n");
+        printf("hls::stream<ap_uint<%d * %d>> stream_%0d;\n", DATA_WIDTH, C, stream_id);
+        printf("sub<%d, %d, %d, %d, %d>(stream_%0d, %f, stream_%0d);\n", C, H, W, DATA_WIDTH, PE, in_stream, sub_factor, out_stream);
+        stream_id++;
+      } else if (LMultiThreshold *dl = dynamic_cast<LMultiThreshold *>(cl)) { // MultiThreshold layer
+        int C = cl->input->shape[1];
+        int H = cl->input->shape[2];
+        int W = cl->input->shape[3];
+        int DATA_WIDTH = 32;
+        int in_stream = stream_id - 1;
+        int out_stream = stream_id;
+        int PE = 1;
+        printf("\n// multithreshold\n");
+        printf("hls::stream<ap_uint<%d * %d>> stream_%0d;\n", DATA_WIDTH, C, stream_id);
+        printf("multithreshold .... ?????;\n");
+        stream_id++;
+      } else if (LSum *dl = dynamic_cast<LSum *>(cl)) { // Add layer
+        int C = cl->input->shape[1];
+        int H = cl->input->shape[2];
+        int W = cl->input->shape[3];
+        int DATA_WIDTH = 32;
+        int in_stream = stream_id - 1;
+        int out_stream = stream_id;
+        int PE = 1;
+        float add_factor = dl->val;
+        printf("\n// add\n");
+        printf("hls::stream<ap_uint<%d * %d>> stream_%0d;\n", DATA_WIDTH, C, stream_id);
+        printf("sub<%d, %d, %d, %d, %d>(stream_%0d, %f, stream_%0d);\n", C, H, W, DATA_WIDTH, PE, in_stream, add_factor, out_stream);
+        stream_id++;
+      } else if (LConv *dl = dynamic_cast<LConv *>(cl)) { // Convolution layer
+        printf("\n// convolution layer\n");
+        // parameters
+        int C = cl->input->shape[1];
+        int H = cl->input->shape[2];
+        int W = cl->input->shape[3];
+        int KH = dl->cd->kernel_size[0];
+        int KW = dl->cd->kernel_size[1];
+        int SH = dl->cd->strides[0];
+        int SW = dl->cd->strides[1];
+        int PT = dl->cd->pads[0];
+        int PB = dl->cd->pads[1];
+        int PL = dl->cd->pads[2];
+        int PR = dl->cd->pads[3];
+        int O = dl->output->shape[1];
+        int DATA_WIDTH = 32;
+        int in_stream = stream_id - 1;
+        int out_stream = stream_id;
+        int PE = 1;
+        int II = 1;
+        // filters
+        printf("ap_uint<%0d> filter_%0d[%0d] = {", C * KH * KW, filter_id, O);
+        collectTensor(dl, "param", 0);
+        for (int o=0; o<O; o++) {
+          unsigned value = 0;
+          int bit_pos = 0;
+          for (int c=0; c<C; c++) {
+            for (int kh=0; kh<KH; kh++) {
+              for (int kw=0; kw<KW; kw++) {
+                int addr = (o * C * KH * KW) + (c * KH * KW) + (kh * KW) + kw;
+                float filter_value = dl->cd->K->ptr[addr];
+                if (filter_value == 1) value = value | (1 << bit_pos);
+                bit_pos++;
+                if (bit_pos == 32) {
+                  bit_pos = 0;
+                  printf("0x%x", value);
+                  value = 0;
+                }
+              }
+            }
+          }
+          if (bit_pos != 0) printf("0x%x", value);
+          if (o!=O-1) printf(","); else printf("};");
+        }
+        printf("\n");
+        printf("hls::stream<ap_uint<%d * %d>> stream_%0d;\n", DATA_WIDTH, C, stream_id);
+        printf("conv_bipolar<%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d>(stream_%0d, filter_%0d, stream_%0d);\n", C, H, W, O, KH, KW, PT, PB, PL, PR, SH, SW, DATA_WIDTH, DATA_WIDTH, II, PE, in_stream, filter_id, out_stream);
+        stream_id++;
+	      filter_id++;
+      } else if (LBatchNorm *dl = dynamic_cast<LBatchNorm *>(cl)) { // Batch Normalization
+        printf("\n// Batch Normalization\n");
+        // parameters
+        int C = cl->input->shape[1];
+        int H = cl->input->shape[2];
+        int W = cl->input->shape[3];
+        int DATA_WIDTH = 32;
+        int PE = 1;
+        int in_stream = stream_id - 1;
+        int out_stream = stream_id;
+
+        // scale, B, mean, and var
+        printf("float scale_%0d[%0d] = {", scale_id, C);
+        printf("};");
+        printf("\n");
+        printf("float B_%0d[%0d] = {", B_id, C);
+        printf("};");
+        printf("\n");
+        printf("float mean_%0d[%0d] = {", mean_id, C);
+        collectTensor(dl, "param", 0);
+        for (int c=0; c<C; c++) {
+          float value = dl->bn_mean->ptr[c];
+          printf("%f", value);
+          if (c!=C-1) printf(","); else printf("};");
+        }
+        printf("\n");
+        printf("float var_%0d[%0d] = {", var_id, C);
+        collectTensor(dl, "param", 0);
+        for (int c=0; c<C; c++) {
+          float value = dl->bn_var->ptr[c];
+          printf("%f", value);
+          if (c!=C-1) printf(","); else printf("};");
+        }
+        printf("\n");
+        printf("hls::stream<ap_uint<%d * %d>> stream_%0d;\n", DATA_WIDTH, C, stream_id);
+        printf("batch_normalization<%d, %d, %d, %d, %d>(stream_%0d, scale_%0d, B_%0d, mean_%0d, var_%0d, stream_%0d);\n", C, H, W, DATA_WIDTH, PE, in_stream, scale_id, B_id, mean_id, var_id, out_stream);
+        stream_id++;
+	      scale_id++;
+        B_id++;
+        mean_id++;
+        var_id++;
+      } else if (LMaxPool *dl = dynamic_cast<LMaxPool *>(cl)) { // Maxpool
+        printf("\n// Maxpooling\n");
+        // parameters
+        int C = cl->input->shape[1];
+        int H = cl->input->shape[2];
+        int W = cl->input->shape[3];
+        int DATA_WIDTH = 32;
+        int PE = 1;
+        int in_stream = stream_id - 1;
+        int out_stream = stream_id;
+        int KH = dl->pd->ksize[0];
+        int KW = dl->pd->ksize[1];
+        int SH = dl->pd->stride[0];
+        int SW = dl->pd->stride[1];
+        printf("hls::stream<ap_uint<%d * %d>> stream_%0d;\n", DATA_WIDTH, C, stream_id);
+        printf("maxpool<%d, %d, %d, %d, %d, %d, %d, %d, %d>(stream_%0d, stream_%0d);\n", C, H, W, KH, KW, SH, SW, DATA_WIDTH, PE, in_stream, out_stream);
+      } else {
+	printf("Error, layer not supported\n"); exit(1);
+      }
+
+      l++;
+
+    }
+  }
+    
     // model for fpga
   model model_for_fpga(model m_src) {
     #ifdef cFPGA

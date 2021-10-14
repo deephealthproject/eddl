@@ -2572,5 +2572,6 @@ namespace eddl {
      *  @return The new model adapted for FPGA
    */
    model model_for_fpga(model m_src);  
+   void model_to_hls(model m_src);
 }
 #endif
