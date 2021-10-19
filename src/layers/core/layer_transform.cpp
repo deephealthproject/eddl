@@ -34,7 +34,15 @@ LTransform::LTransform(Layer *parent, int mode, string name, int dev, int mem) :
     // Set default name
     if(name.empty()) this->name = "transform_" + to_string(++total_layers);
 
-    int CPI = k_conv2d_cpi;
+    int CPI = 0;
+
+    #ifdef cFPGA
+    CPI = k_conv2d_cpi;
+    #endif
+
+    if(!CPI) {
+        msg("Error: LTransform layer with CPI parameter equal to 0 ");
+    }
 
     // Set input
     input=parent->output;

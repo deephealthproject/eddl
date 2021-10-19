@@ -2249,8 +2249,6 @@ void get_fpga_model_params(Net * fpga_model) {
       // constants
       const int CPI = k_conv2d_cpi;
       const int CPO = k_conv2d_cpo;
-      //const int CPI = 8;
-      //const int CPO = 8;
 
       // layer pointers
       Layer *cl;         // current layer pointer
