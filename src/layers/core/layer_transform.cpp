@@ -14,7 +14,7 @@
 #include <utility>
 
 #include "eddl/layers/core/layer_core.h"
-
+#include "eddl/hardware/fpga/fpga_hw.h"
 
 using namespace std;
 
@@ -34,7 +34,7 @@ LTransform::LTransform(Layer *parent, int mode, string name, int dev, int mem) :
     // Set default name
     if(name.empty()) this->name = "transform_" + to_string(++total_layers);
 
-    int CPI = 4;
+    int CPI = k_conv2d_cpi;
 
     // Set input
     input=parent->output;

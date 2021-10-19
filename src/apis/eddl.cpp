@@ -2245,9 +2245,10 @@ void get_fpga_model_params(Net * fpga_model) {
       int dummy;
       int dummy1;
 
+      fpga_init();
       // constants
-      const int CPI = 4;
-      const int CPO = 4;
+      const int CPI = k_conv2d_cpi;
+      const int CPO = k_conv2d_cpo;
       //const int CPI = 8;
       //const int CPO = 8;
 

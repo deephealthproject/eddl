@@ -481,6 +481,13 @@ void _profile_fpga_remove_tensor(int size) {
 // This function must be called only once and at the begining of operations with the FPGA
 void fpga_init(){
 
+  if (context!=NULL) {
+    #ifdef FPGA_DEBUG
+    printf("fpga_init function skipped, previous initialization done\n");
+    #endif
+    return;
+  }
+
   #ifdef FPGA_DEBUG
   printf("initializing FPGA\n");
   #endif
@@ -1794,8 +1801,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int mode) {
  printf(" A tensor: "); _profile_fpga_tensor(A);
 #endif
 
-  int CPI = 4;
-  //int CPI = 8;
+  int CPI = k_conv2d_cpi;
 
   if (mode == 1) {
 
@@ -1885,10 +1891,8 @@ void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B) {
       int dst_KH = B->shape[2];
       int dst_KW = B->shape[3];
 
-      int CPI = 4;  
-      int CPO = 4;
-      //int CPI = 8;  
-      //int CPO = 8;
+      int CPI = k_conv2d_cpi;  
+      int CPO = k_conv2d_cpo;
 
       int GI      = dst_I / CPI;
       int GO      = dst_O / CPO;
