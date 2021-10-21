@@ -17,7 +17,7 @@
 #include "cuda.h"
 #endif
 
-#define NUM_STREAMS_COMM 4
+#define NUM_STREAMS_COMM 1
 
 // Global variables
 int use_mpi = 0;
@@ -32,7 +32,8 @@ int batch_is_global=1;
 // NCCL
 ncclUniqueId nccl_id;
 ncclComm_t nccl_comm;
-cudaStream_t cuda_stream[NUM_STREAMS_COMM] ;
+//cudaStream_t cuda_stream[NUM_STREAMS_COMM] ;
+cudaStream_t cuda_stream ;
 #endif
 
 int get_id_distributed() {    
@@ -114,10 +115,10 @@ int init_NCCL(int nr_gpus) {
     MPICHECK(MPI_Bcast(&nccl_id, sizeof (nccl_id), MPI_BYTE, 0, MPI_COMM_WORLD));
     //picking a GPU based on localRank, allocate device buffers
     CUDACHECK(cudaSetDevice (id % nr_gpus));
-    for (int i = 0; i < NUM_STREAMS_COMM; i++) {
-        CUDACHECK(cudaStreamCreateWithFlags(&cuda_stream[i], cudaStreamNonBlocking));
-    }
-    //CUDACHECK(cudaStreamCreate(&cuda_stream));
+    //for (int i = 0; i < NUM_STREAMS_COMM; i++) {
+    //    CUDACHECK(cudaStreamCreateWithFlags(&cuda_stream[i], cudaStreamNonBlocking));
+    //}
+    CUDACHECK(cudaStreamCreate(&cuda_stream));
     //initializing NCCL
     NCCLCHECK(ncclCommInitRank(&nccl_comm, n_procs, nccl_id, id));
     if (id == 0)
@@ -203,9 +204,9 @@ void fn_mpi_AllReduce(float* myptr, int count) {
 void fn_nccl_AllReduce(float* myptr, int count) {
 #ifdef cNCCL
     if (count > 0) {
-        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream[0]));
+        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
         //completing NCCL operation by synchronizing on the CUDA stream
-        CUDACHECK(cudaStreamSynchronize(cuda_stream[0]));
+        CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #endif
 }
@@ -216,9 +217,9 @@ void fn_nccl_AllReduce_streams(float* myptr, int count, int layer) {
     if (count > 0) {
         stream= layer % NUM_STREAMS_COMM;
         //printf("Using stream %d\n", stream);
-        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream[stream]));
+        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
         //completing NCCL operation by synchronizing on the CUDA stream
-        CUDACHECK(cudaStreamSynchronize(cuda_stream[stream]));
+        CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #endif
 }

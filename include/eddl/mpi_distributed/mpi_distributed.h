@@ -59,51 +59,51 @@
   }                                                 \
 } while(0)
 
-#define CS_GPU_1_distributed \
+#define GPU_1_distributed \
     switch (id % 1) { \
-        case 0: cs = CS_GPU({1}, "low_mem"); \
+        case 0: gpus={1}; \
             break; \
         }  
 
-#define CS_GPU_2_distributed \
+#define GPU_2_distributed \
     switch (id % 2) { \
-        case 0: cs = CS_GPU({0, 1}, "low_mem"); \
+        case 0: gpus={1, 0}; \
             break; \
-        case 1: cs = CS_GPU({1, 0}, "low_mem"); \
-            break; \
-        }
-
-#define CS_GPU_4_distributed \
-    switch (id % 4) { \
-        case 0: cs = CS_GPU({0, 0, 0, 1}, "low_mem"); \
-            break; \
-        case 1: cs = CS_GPU({0, 0, 1, 0}, "low_mem"); \
-            break; \
-        case 2: cs = CS_GPU({0, 1, 0, 0}, "low_mem"); \
-            break; \
-        case 3: cs = CS_GPU({1, 0, 0, 0}, "low_mem"); \
+        case 1: gpus={0, 1}; \
             break; \
         }          
 
-#define CS_GPU_8_distributed \
+#define GPU_4_distributed \
+    switch (id % 4) { \
+        case 0: gpus={1, 0, 0, 0}; \
+            break; \
+        case 1: gpus={0, 1, 0, 0}; \
+            break; \
+        case 2: gpus={0, 0, 1, 0}; \
+            break; \
+        case 3: gpus={0, 0, 0, 1}; \
+            break; \
+        }          
+
+#define GPU_8_distributed \
     switch (id % 8) { \
-        case 0: cs = CS_GPU({0, 0, 0, 0, 0, 0, 0, 1}, "low_mem"); \
+        case 0: gpus={1, 0, 0, 0, 0, 0, 0, 0}; \
             break; \
-        case 1: cs = CS_GPU({0, 0, 0, 0, 0, 0, 1, 0}, "low_mem"); \
+        case 1: gpus={0, 1, 0, 0, 0, 0, 0, 0}; \
             break; \
-        case 2: cs = CS_GPU({0, 0, 0, 0, 0, 1, 0, 0}, "low_mem"); \
+        case 2: gpus={0, 0, 1, 0, 0, 0, 0, 0}; \
             break; \
-        case 3: cs = CS_GPU({0, 0, 0, 0, 1, 0, 0, 0}, "low_mem"); \
+        case 3: gpus={0, 0, 0, 1, 0, 0, 0, 0}; \
             break; \
-        case 4: cs = CS_GPU({0, 0, 0, 1, 0, 0, 0, 0}, "low_mem"); \
+        case 4: gpus={0, 0, 0, 0, 1, 0, 0, 0}; \
             break; \
-        case 5: cs = CS_GPU({0, 0, 1, 0, 0, 0, 0, 0}, "low_mem"); \
+        case 5: gpus={0, 0, 0, 0, 0, 1, 0, 0}; \
             break; \
-        case 6: cs = CS_GPU({0, 1, 0, 0, 0, 0, 0, 0}, "low_mem"); \
+        case 6: gpus={0, 0, 0, 0, 0, 0, 1, 0}; \
             break; \
-        case 7: cs = CS_GPU({1, 0, 0, 0, 0, 0, 0, 0}, "low_mem"); \
+        case 7: gpus={0, 0, 0, 0, 0, 0, 0, 1}; \
             break; \
-    }
+        }         
 
 
 /**
