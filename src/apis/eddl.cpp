@@ -27,41 +27,41 @@
 
 #define GPU_2_distributed \
     switch (id % 2) { \
-        case 0:  gpus={0, 1}; \
+        case 0: gpus={1, 0}; \
             break; \
-        case 1: gpus={1, 0}; \
+        case 1: gpus={0, 1}; \
             break; \
         }          
 
 #define GPU_4_distributed \
     switch (id % 4) { \
-        case 0: gpus={0, 0, 0, 1}; \
+        case 0: gpus={1, 0, 0, 0}; \
             break; \
-        case 1: gpus={0, 0, 1, 0}; \
+        case 1: gpus={0, 1, 0, 0}; \
             break; \
-        case 2: gpus={0, 1, 0, 0}; \
+        case 2: gpus={0, 0, 1, 0}; \
             break; \
-        case 3: gpus={1, 0, 0, 0}; \
+        case 3: gpus={0, 0, 0, 1}; \
             break; \
         }          
 
 #define GPU_8_distributed \
     switch (id % 8) { \
-        case 0: gpus={0, 0, 0, 0, 0, 0, 0, 1}; \
+        case 0: gpus={1, 0, 0, 0, 0, 0, 0, 0}; \
             break; \
-        case 1: gpus={0, 0, 0, 0, 0, 0, 1, 0}; \
+        case 1: gpus={0, 1, 0, 0, 0, 0, 0, 0}; \
             break; \
-        case 2: gpus={0, 0, 0, 0, 0, 1, 0, 0}; \
+        case 2: gpus={0, 0, 1, 0, 0, 0, 0, 0}; \
             break; \
-        case 3: gpus={0, 0, 0, 0, 1, 0, 0, 0}; \
+        case 3: gpus={0, 0, 0, 1, 0, 0, 0, 0}; \
             break; \
-        case 4: gpus={0, 0, 0, 1, 0, 0, 0, 0}; \
+        case 4: gpus={0, 0, 0, 0, 1, 0, 0, 0}; \
             break; \
-        case 5: gpus={0, 0, 1, 0, 0, 0, 0, 0}; \
+        case 5: gpus={0, 0, 0, 0, 0, 1, 0, 0}; \
             break; \
-        case 6: gpus={0, 1, 0, 0, 0, 0, 0, 0}; \
+        case 6: gpus={0, 0, 0, 0, 0, 0, 1, 0}; \
             break; \
-        case 7: gpus={1, 0, 0, 0, 0, 0, 0, 0}; \
+        case 7: gpus={0, 0, 0, 0, 0, 0, 0, 1}; \
             break; \
         }         
 
