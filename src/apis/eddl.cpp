@@ -1887,12 +1887,10 @@ namespace eddl {
       net = import_net_from_onnx_file("densenet121.onnx", input_shape, DEV_CPU);
     else net = import_net_from_onnx_file("densenet121.onnx", DEV_CPU);
 
-    Layer *l=getLayer(net,"data"); l->name="input";
+    Layer *l=getLayer(net,"data_0"); l->name="input";
     if (top) {
       net->removeLayer("conv2d121");
-
       Layer *l=getLayer(net,"avgpool10");
-      l=Reshape(l,{-1});
       l->name="top";
     }
 

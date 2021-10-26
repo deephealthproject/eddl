@@ -2413,7 +2413,7 @@ namespace eddl {
     /**
       *  @brief Returns a DenseNet121 model pretrained with imagenet.
       *
-      *  @param top  If true, returns the model without the densely connected part and
+      *  @param top  If true, returns the feature extraction part and
       *              the last layer of the returned model is named "top".
       *  @param input_shape  Optional. To change the input shape of the model.
       *                      The shape vector must not have the batch dimension.
