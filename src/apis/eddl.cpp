@@ -1952,6 +1952,7 @@ int current_associated_layers = 0;
     for (i=0; i<current_associated_layers; i++) {
       if (associated_layers[i].src == src) {
         found = 1;
+        printf("[exists]\n");
         break;
       }
     }
@@ -1963,6 +1964,7 @@ int current_associated_layers = 0;
       associated_layers[i].layer_id_ghwc = -1;
       associated_layers[i].layer_id_chw = -1;
       current_associated_layers++;
+      printf("[new]\n");
     }
     if (ghwc_format) {
       associated_layers[i].dst_ghwc = dst; 
@@ -1986,18 +1988,16 @@ int current_associated_layers = 0;
         }
       }
     }
-    printf("Error, associated layer not found\n");
-    exit(1);
+    msg("Error, associated layer not found","fn_get_associated_layer");
   }
 
-  void* fn_get_cpu_equivalent_layer(void* dst) {
-    for (int i=0; i<current_associated_layers; i++) {
+  void* fn_get_cpu_equivalent_layer(void* dst, int n_associated_layers) {
+    for (int i=0; i<n_associated_layers; i++) {
       if (associated_source_layer[i].dst == dst) {
         return associated_source_layer[i].src;
       }
     }
-    printf("Error, associated layer not found\n");
-    exit(1);
+    msg("Error, associated layer not found", "fn_get_cpu_equivalent_layer");
   }
 
 void get_fpga_model_params(Net * fpga_model) {
@@ -2287,20 +2287,34 @@ void get_fpga_model_params(Net * fpga_model) {
       int found_ConstofT; // current layer is constoftensor layer
       int found_Sp;    // current layer is sofplus layer
       int found_Tanh;  // current layer is tanh layer
+      int found_Padd;  // current layer is Padding layer
+
+      int found_nC;    // current+1 layer is a maxpooling layer
       int found_nM;    // current+1 layer is a maxpooling layer
       int found_nR;    // current+1 layer is a ReLU layer
       int found_nL;    // current+1 layer is a LeakyReLU layer
       int found_nSp;   // current+1 layer is a Sofplus layer
       int found_nSum;  // current+1 layer is a Sum layer
-      int found_nMult;
-      int found_nnM;   // current+2 layer is a maxpooling layer
-      int found_nnT;   // current+2 layer is a Tanh layer
-      int found_nnSum;
-      int found_nnnMult;  // current+3 layer is a Mult layer
+      int found_nMult; // current+1 layer is a Mult layer
+
+      int found_nnSp;    // current+2 layer is a Sofplus layer
+      int found_nnM;     // current+2 layer is a maxpooling layer
+      int found_nnT;     // current+2 layer is a Tanh layer
+      int found_nnSum;   // current+2 layer is a Sum layer
+      int found_nnR;     // current+2 layer is a ReLU layer
+      int found_nnL;     // current+2 layer is a LeakyReLU layer
+
+      int found_nnnMult; // current+3 layer is a Mult layer
+      int found_nnnT;    // current+3 layer is a Tanh layer
       int found_nnnMultiThreshold;
-      int found_nnnnA;  // current+3 layer is an Add layer
-      int found_nnnnSum;
-      int found_nnnnnMult;
+
+      int found_nnnnMult; // current+4 layer is a Mult layer
+      int found_nnnnA;    // current+4 layer is an Add layer
+      int found_nnnnSum;  // current+4 layer is an Sum layer
+
+      int found_nnnnnMult; // current+5 layer is an Mult layer
+      int found_nnnnnA;    // current+5 layer is an Add layer
+
       int found_nnnnnnConv;
       //
       int found_CR;    // Layers Convolution+Relu detected
@@ -2309,6 +2323,14 @@ void get_fpga_model_params(Net * fpga_model) {
       int found_CSTM;  // Layers Convolution+Softplus+Tanh+Mult detected
       int found_CSTMA; // Layers Convolution+Softplus+Tanh+Mult+Add detected
       int found_CL;    // Layers Convolution+LeakyReLU detected
+
+      int found_PC;    // Layers Padding+Convolution detected
+      int found_PCR;    // Layers Padding+Convolution+Relu detected
+      int found_PCM;    // Layers Padding+Convolution+Maxpooling detected
+      int found_PCRM;   // Layers Padding+Convolution+ReLU+Maxpooling detected
+      int found_PCSTM;  // Layers Padding+Convolution+Softplus+Tanh+Mult detected
+      int found_PCSTMA; // Layers Padding+Convolution+Softplus+Tanh+Mult+Add detected
+      int found_PCL;    // Layers Padding+Convolution+LeakyReLU detected
       int found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv;
 
       // New model
@@ -2346,7 +2368,7 @@ void get_fpga_model_params(Net * fpga_model) {
     // Current layer
     found_C = 0; found_C_cpu = 0; found_I = 0; found_LR = 0; found_R = 0; found_S = 0; found_M = 0; found_A = 0; found_Reshape = 0; found_Resize = 0; found_D = 0; 
     found_Concat = 0; found_Expand = 0; found_Slice = 0; found_Sig = 0; found_Mult = 0; found_Sub = 0; found_Exp = 0; found_Trans = 0; found_Add = 0; 
-    found_ConstofT = 0; found_div = 0; found_Sp = 0; found_Tanh = 0;
+    found_ConstofT = 0; found_div = 0; found_Sp = 0; found_Tanh = 0; found_Padd = 0; 
     
     cl = m_src->layers[l_src];
     
@@ -2368,6 +2390,8 @@ void get_fpga_model_params(Net * fpga_model) {
     if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "leaky_relu") found_LR = 1;       
     if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "softmax") found_S = 1;
     if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "sigmoid") found_Sig = 1;
+    if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "softplus") found_Sp = 1; 
+    if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "tanh") found_Tanh = 1;
     if (LMaxPool *dl = dynamic_cast<LMaxPool *>(cl)) found_M = 1;
     if (LAveragePool *dl = dynamic_cast<LAveragePool *>(cl)) found_A = 1;       
     if (LReshape *dl = dynamic_cast<LReshape *>(cl)) found_Reshape = 1;
@@ -2383,18 +2407,13 @@ void get_fpga_model_params(Net * fpga_model) {
     if (LPermute *dl = dynamic_cast<LPermute *>(cl)) found_Trans = 1;
     if (LAdd *dl = dynamic_cast<LAdd *>(cl)) found_Add = 1;
     if (LConstOfTensor *dl = dynamic_cast<LConstOfTensor *>(cl)) found_ConstofT = 1;
-    if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "softplus") found_Sp = 1; 
-    if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "tanh") found_Tanh = 1; 
-        
+    if (LPad *dl = dynamic_cast<LPad *>(cl)) found_Padd = 1;
+
     // current+1 layer
-    found_nM = 0;
-    found_nR = 0;
-    found_nL = 0;
-    found_nSp = 0;
-    found_nSum = 0;
-    found_nMult = 0;
+    found_nC = 0; found_nM = 0; found_nR = 0; found_nL = 0; found_nSp = 0; found_nSum = 0; found_nMult = 0;
     if (l_src<num_layers-1) {
       nl = m_src->layers[l_src+1];
+      if (LConv *dl = dynamic_cast<LConv *>(nl)) found_nC = 1;
       if (LMaxPool *dl = dynamic_cast<LMaxPool *>(nl)) found_nM = 1;
       if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "relu") found_nR = 1;
       if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "softplus") found_nSp = 1; 
@@ -2404,40 +2423,43 @@ void get_fpga_model_params(Net * fpga_model) {
     }
 
     // current+2 layer
-    found_nnM = 0;
-    found_nnT = 0;
-    found_nnSum = 0;
+    found_nnR = 0; found_nnL = 0; found_nnSp = 0; found_nnM = 0; found_nnT = 0; found_nnSum = 0;
     if (l_src<num_layers-2) {
       nnl = m_src->layers[l_src+2];
+      if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "relu") found_nnR = 1;
+      if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "leaky_relu") found_nnL = 1;
+      if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "softplus") found_nnSp = 1; 
+      if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "tanh") found_nnT = 1; 
       if (LMaxPool *dl = dynamic_cast<LMaxPool *>(nnl)) found_nnM = 1; 
-            if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "tanh") found_nnT = 1; 
       if (LSum *dl = dynamic_cast<LSum *>(nnl)) found_nnSum = 1;
     }
 
     // current+3 layer
-    found_nnnMult = 0;
-    found_nnnMultiThreshold = 0;
+    found_nnnT = 0; found_nnnMult = 0; found_nnnMultiThreshold = 0;
     if (l_src<num_layers-3) {
       nnnl = m_src->layers[l_src+3]; 
+      if (LActivation *dl = dynamic_cast<LActivation *>(nnnl)) if (dl->act == "tanh") found_nnnT = 1; 
       if (LMult *dl = dynamic_cast<LMult *>(nnnl)) found_nnnMult = 1; 
       if (LMultiThreshold *dl = dynamic_cast<LMultiThreshold *>(nnnl)) found_nnnMultiThreshold = 1;
     }
 
 
     // current+4 layer
-    found_nnnnA = 0;
-    found_nnnnSum = 0;
+    found_nnnnMult = 0; found_nnnnA = 0; found_nnnnSum = 0;
     if (l_src<num_layers-4) {
       nnnnl = m_src->layers[l_src+4]; 
+      if (LMult *dl = dynamic_cast<LMult *>(nnnnl)) found_nnnnMult = 1; 
       if (LAdd *dl = dynamic_cast<LAdd *>(nnnnl)) found_nnnnA = 1; 
-      if (LSum *dl = dynamic_cast<LSum *>(nnnnl)) found_nnnnA = 1;
+      if (LSum *dl = dynamic_cast<LSum *>(nnnnl)) found_nnnnSum = 1;
     }
 
     // current+5 layer
     found_nnnnnMult = 0;
+    found_nnnnnA = 0;
     if (l_src<num_layers-5) {
-            nnnnnl = m_src->layers[l_src+5];
+      nnnnnl = m_src->layers[l_src+5];
       if (LMult *dl = dynamic_cast<LMult *>(nnnnnl)) found_nnnnnMult = 1;
+      if (LAdd *dl = dynamic_cast<LAdd *>(nnnnnl)) found_nnnnnA = 1; 
     }
 
   // current+6 layer
@@ -2455,9 +2477,17 @@ void get_fpga_model_params(Net * fpga_model) {
   found_CR    = found_C && found_nR  && !found_CRM;
   found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA;
   found_CSTM  = found_C && found_nSp && found_nnT && found_nnnMult && !found_CSTMA;
+  found_PC    = found_nC && found_Padd;
+  found_PCM    = found_C && found_nM && found_Padd;
+  found_PCL    = found_C && found_nL && found_Padd;
+  found_PCRM   = found_C && found_nR  && found_nnM && found_Padd;
+  found_PCR    = found_C && found_nR  && !found_PCRM && found_Padd;
+  found_PCSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA && found_Padd;
+  found_PCSTM  = found_C && found_nSp && found_nnT && found_nnnMult && !found_PCSTMA && found_Padd;
 
   // We filter found flags
-  if (found_CR || found_CM || found_CL || found_CRM || found_CSTMA || found_CSTM) {found_C = 0;}
+  if (found_CR || found_CM || found_CL  || found_CRM || found_CSTM || found_CSTMA  || 
+      found_PC ||found_PCR || found_PCM || found_PCL || found_PCRM || found_PCSTMA || found_PCSTM) {found_C = 0;}
 
 
   // data layer transform: Layers ran on the FPGA need to have their inputs in GHWC format, 
@@ -2475,7 +2505,7 @@ void get_fpga_model_params(Net * fpga_model) {
         // we add a transform layer
         parent_layer = fn_get_associated_layer(cl->parent[x], format==0?1:0, &dummy);
 #ifdef DEBUG_VERBOSE
-        printf("%3d: TRANSFORM  : prev %d\n", l_dst, dummy);
+        printf("%3d: CONCAT  : prev %d\n", l_dst, dummy);
 #endif
         Layer *new_parent_layer = Transform(parent_layer, format);
         fn_set_associated_layer(cl->parent[x], new_parent_layer, format, l_dst);
@@ -2484,7 +2514,8 @@ void get_fpga_model_params(Net * fpga_model) {
     }
   } else {
     
-    if (found_C || found_CR || found_CM || found_CL || found_CRM || found_CSTM || found_CSTMA || found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
+    if (found_C  || found_CR || found_CM  || found_CL  || found_CRM  ||  found_CSTM  || found_CSTMA || found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv ||
+        found_PC ||found_PCR || found_PCM || found_PCL || found_PCRM || found_PCSTMA || found_PCSTM) {
       // all these layers need the GHWC format at the input, therefore we check if the
       // previous layer is in GHWC format and if not we add a transform layer
       //
@@ -2898,6 +2929,355 @@ void get_fpga_model_params(Net * fpga_model) {
     associated_source_layer[l_dst].dst = prev_layer;
     l_dst++;
 
+  } else if(found_PC) { 
+    //
+    // Convolution FPGA
+    //
+    // source layers
+    LPad *layer_pad = (LPad *)cl;
+    LConv *layer_src = (LConv *)nl;
+    // dst parent layer
+    Layer *fpga_parent;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+#ifdef DEBUG_VERBOSE
+      printf("%3d: PC (fpga): prev %d\n", l_dst, dummy);
+#endif
+
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI; 
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;   
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_pad->padding[0];
+    int pb = layer_pad->padding[2];
+    int pl = layer_pad->padding[3];
+    int pr = layer_pad->padding[1];
+    int enable_relu     = 0;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 0;
+    int enable_avgp     = 0;
+    int enable_clipping = 0;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 0;
+    int enable_stm      = 0;
+
+    prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                         enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
+             enable_add, enable_stm, "P_Conv (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = nl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
+  } else if (found_PCR) {
+
+    //
+    // Padd + Convolution + ReLu fused layer
+    //
+    LPad *layer_pad = (LPad *)cl;
+    LConv *layer_src = (LConv *)nl;
+    // dst parent layer
+    Layer *fpga_parent;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+#ifdef DEBUG_VERBOSE
+      printf("%3d: PCR       : prev %d\n", l_dst, dummy);
+#endif
+
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI; 
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;   
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_pad->padding[0];
+    int pb = layer_pad->padding[2];
+    int pl = layer_pad->padding[3];
+    int pr = layer_pad->padding[1];
+    int enable_relu     = 1;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 0;
+    int enable_avgp     = 0;
+    int enable_clipping = 0;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 0;
+    int enable_stm      = 0;
+
+    prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                         enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
+             enable_add, enable_stm, "P_Conv_Relu (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+
+    //prev_layer = new LConvReLU(fpga_parent, filters_fpga, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+    //                                layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias, "",DEV_CPU, layer_src->cd->mem_level);
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = nl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
+  } else if (found_PCL) {
+
+    // 
+    // Padd + Convolution + LeakyReLU fused layer
+    //
+    // source layer
+    //
+    LPad *layer_pad = (LPad *)cl;
+    LConv *layer_src = (LConv *)nl;
+    LActivation *layer_src_relu = (LActivation *)nnl;  
+    // dst parent layer
+    Layer *fpga_parent;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+#ifdef DEBUG_VERBOSE
+    printf("%3d: PCL        : prev %d\n", l_dst, dummy);
+#endif          
+
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI; 
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;   
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_pad->padding[0];
+    int pb = layer_pad->padding[2];
+    int pl = layer_pad->padding[3];
+    int pr = layer_pad->padding[1];
+    int enable_relu     = 1;
+    float relu_factor   = layer_src_relu->params[0];
+    int enable_maxp     = 0;
+    int enable_avgp     = 0;
+    int enable_clipping = 0;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 0;
+    int enable_stm      = 0;
+
+    prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                         enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
+             enable_add, enable_stm, "Conv_LeakyRelu (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = nl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
+  } else if (found_PCM) {
+              
+    //
+    // Pad + Convolution + Maxpool layer
+    //
+    // source layers
+    LPad *layer_pad = (LPad *)cl;
+    LConv *layer_src = (LConv *)nl;
+    LPool *n_layer_src = (LPool *)nnl;
+    // dst parent layer
+    Layer *fpga_parent;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+#ifdef DEBUG_VERBOSE
+    printf("%3d: PCM       : prev %d\n", l_dst, dummy);
+#endif
+
+
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI; 
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;   
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_pad->padding[0];
+    int pb = layer_pad->padding[2];
+    int pl = layer_pad->padding[3];
+    int pr = layer_pad->padding[1];
+    int enable_relu     = 0;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 1;
+    int enable_avgp     = 0;
+    int enable_clipping = 0;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 0;
+    int enable_stm      = 0;
+
+    prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                         enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
+             enable_add, enable_stm, "Conv_Maxpool (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+         
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = nl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
+  } else if (found_PCRM) {
+
+    //
+    // Padd + Convolution + ReLU + Maxpool
+    // source layers
+    LPad *layer_pad = (LPad *)cl;
+    LConv *layer_src = (LConv *)nl;
+    LPool *n_layer_src = (LPool *)nnnl;
+    // dst parent layer
+    Layer *fpga_parent;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+#ifdef DEBUG_VERBOSE
+    printf("%3d: PCRM       : prev %d\n", l_dst, dummy);
+#endif
+
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI; 
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;   
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_pad->padding[0];
+    int pb = layer_pad->padding[2];
+    int pl = layer_pad->padding[3];
+    int pr = layer_pad->padding[1];
+    int enable_relu     = 1;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 1;
+    int enable_avgp     = 0;
+    int enable_clipping = 0;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 0;
+    int enable_stm      = 0;
+
+    prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                      enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
+                      enable_add, enable_stm, "Conv_Relu_Maxpool (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+ 
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = nl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
+  } else if (found_PCSTM) {
+    //
+    // Padd + Convolution + Sigmoid + Tanh + Multiply 
+    // source layers
+    LPad *layer_pad = (LPad *)cl;
+    LConv *layer_src = (LConv *)nl;
+    // dst parent layer
+    Layer *fpga_parent;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+#ifdef DEBUG_VERBOSE
+    printf("%3d: PCSTM                      : prev %d\n", l_dst, dummy);
+#endif
+
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI; 
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;   
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_pad->padding[0];
+    int pb = layer_pad->padding[2];
+    int pl = layer_pad->padding[3];
+    int pr = layer_pad->padding[1];
+    int enable_relu     = 0;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 0;
+    int enable_avgp     = 0;
+    int enable_clipping = 0;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 0;
+    int enable_stm      = 1;
+
+    prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                         enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
+             enable_add, enable_stm, "Conv_STM (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnnl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = nl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
+  } else if (found_PCSTMA) {
+    //
+    // Padd + Convolution + Sigmoid + Tanh + Multiply + Add
+    //
+    // source layers
+    vector<Layer *> parent;
+    LPad *layer_pad = (LPad *)cl;
+    LConv *layer_src = (LConv *)nl;
+    LAdd *nnnn_layer_src = (LAdd *)nnnnnl;
+    if (nnnn_layer_src->parent.size() != 2) msg("Error: LAdd layer with more or less than two parents is not supported in the FPGA ");
+    //Convolutional parent
+    parent.push_back(fn_get_associated_layer(layer_src->parent[0], 1, &dummy));
+#ifdef DEBUG_VERBOSE
+    printf("dummy %d\n", dummy);
+#endif
+    //Furthest Add parent
+    if (nnnn_layer_src->parent[0] != nnnl) parent.push_back(fn_get_associated_layer(nnnn_layer_src->parent[0], 1, &dummy1));
+    else parent.push_back(fn_get_associated_layer(nnnn_layer_src->parent[1], 1, &dummy1));
+#ifdef DEBUG_VERBOSE
+    printf("%3d: HLSinf (CSTMA)                    : prevs %d %d\n", l_dst, dummy, dummy1);
+#endif
+   
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI; 
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;   
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_pad->padding[0];
+    int pb = layer_pad->padding[2];
+    int pl = layer_pad->padding[3];
+    int pr = layer_pad->padding[1];
+    int enable_relu     = 0;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 0;
+    int enable_avgp     = 0;
+    int enable_clipping = 0;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 1;
+    int enable_stm      = 1;
+
+    prev_layer = new LHLSinf(parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                            enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, 
+                            enable_add, enable_stm, "CSTMA (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+    //prev_layer = new LConvSTMAdd(parent, filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
+    //                             layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
+    //                             "",DEV_CPU, layer_src->cd->mem_level);
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnnnl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = nl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+                 
   } else if (found_C_cpu) {
     //
     // Convolution to be run on CPU
@@ -2909,6 +3289,7 @@ void get_fpga_model_params(Net * fpga_model) {
 #ifdef DEBUG_VERBOSE
     printf("%3d: C (cpu): prev %d\n", l_dst, dummy);
 #endif
+
     prev_layer = new LConv(fpga_parent, layer_src->cd->filters, layer_src->cd->kernel_size, layer_src->cd->strides, layer_src->cd->padding,
                                  layer_src->cd->pads, layer_src->cd->groups, layer_src->cd->dilation_rate, layer_src->cd->use_bias,
                                  "",DEV_CPU, layer_src->cd->mem_level);
@@ -3399,7 +3780,7 @@ void get_fpga_model_params(Net * fpga_model) {
 
   if (l_src == 0) first = prev_layer;
   last = prev_layer;
-  if (found_CSTMA) l_src += 5; else if (found_CSTM) l_src += 4; else if (found_CRM) l_src += 3; else if (found_CM || found_CR || found_CL) l_src += 2; else l_src++;     }
+  if (found_PCSTMA) l_src += 6; else if (found_CSTMA || found_PCSTM) l_src += 5; else if (found_CSTM || found_PCRM) l_src += 4; else if (found_CRM || found_PCM || found_PCR || found_PCL) l_src += 3; else if (found_CM || found_CR || found_CL || found_PC) l_src += 2; else l_src++;     }
 
 #ifdef DEBUG_VERBOSE
   printf("End parsing/creating new network\n");
@@ -3440,7 +3821,7 @@ void get_fpga_model_params(Net * fpga_model) {
 #endif
     if (LConv *conv = dynamic_cast<LConv*>(cl)) { 
       LConv *layer_dst = (LConv *) net->layers[l];
-      LConv *layer_src = (LConv *) fn_get_cpu_equivalent_layer(layer_dst);
+      LConv *layer_src = (LConv *) fn_get_cpu_equivalent_layer(layer_dst,l_dst);
 
 #ifdef DEBUG_VERBOSE
       cout << "LConv adapting parameters for layer " << l<<" "<<layer_dst->name<<" (associated layer "<< layer_src->name<<")\n";
@@ -3480,7 +3861,7 @@ void get_fpga_model_params(Net * fpga_model) {
 
     } else if (LHLSinf *dl = dynamic_cast<LHLSinf *>(cl)) {
       LHLSinf *layer_dst = (LHLSinf *) net->layers[l]; 
-      LConv *layer_src = (LConv *) fn_get_cpu_equivalent_layer(layer_dst);
+      LConv *layer_src = (LConv *) fn_get_cpu_equivalent_layer(layer_dst,l_dst);
 #ifdef DEBUG_VERBOSE
       cout << "LHLSinf adapting parameters for layer " << l<<" "<<layer_dst->name<<" (associated layer "<< layer_src->name<<")\n";
 #endif
@@ -3496,7 +3877,7 @@ void get_fpga_model_params(Net * fpga_model) {
 
     } else if (LDense *dl = dynamic_cast<LDense *>(cl)) {
       LDense *layer_dst = (LDense *) net->layers[l]; 
-      LDense *layer_src = (LDense *) fn_get_cpu_equivalent_layer(layer_dst);
+      LDense *layer_src = (LDense *) fn_get_cpu_equivalent_layer(layer_dst,l_dst);
 
 #ifdef DEBUG_VERBOSE
       cout << "LDense adapting parameters for layer " << l<<" "<<layer_dst->name<<" (associated layer "<< layer_src->name<<")\n";

@@ -123,7 +123,7 @@ void fpga_conv_leakyrelu(ConvolDescriptor *D, float alpha)
   _profile_fpga_tensor(D->I);
   _profile_fpga_tensor(D->K);
   _profile_fpga_tensor(D->bias);
-printf("fpga_fused.cpp leakyrelu alpha %d\n", alpha);
+
   int ret = 0;
 
   int enable_relu = 1;
