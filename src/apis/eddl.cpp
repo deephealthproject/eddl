@@ -1952,7 +1952,6 @@ int current_associated_layers = 0;
     for (i=0; i<current_associated_layers; i++) {
       if (associated_layers[i].src == src) {
         found = 1;
-        printf("[exists]\n");
         break;
       }
     }
@@ -1964,7 +1963,6 @@ int current_associated_layers = 0;
       associated_layers[i].layer_id_ghwc = -1;
       associated_layers[i].layer_id_chw = -1;
       current_associated_layers++;
-      printf("[new]\n");
     }
     if (ghwc_format) {
       associated_layers[i].dst_ghwc = dst; 
