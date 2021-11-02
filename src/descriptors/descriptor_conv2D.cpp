@@ -205,7 +205,8 @@ void ConvolDescriptor::build(Tensor *A) {
                                     stride[0], stride[1],
                                     dilation_rate[0], dilation_rate[1],
                                     convolution_mode, data_type);
-
+    // Add group convolutions
+    // cudnnSetConvolutionGroupCount(convolution_descriptor, 1);
 
    cudnnCreateTensorDescriptor(&xDesc);
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
