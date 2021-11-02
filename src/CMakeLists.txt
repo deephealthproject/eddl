@@ -90,7 +90,6 @@ FOREACH(item ${SPECIAL_FILES})
 ENDFOREACH(item)
 
 
-
 ###########################################################################
 ############################# SET LIBRARY #################################
 ###########################################################################
@@ -117,6 +116,16 @@ if(MSVC)
     # Install the debug library with "d" suffix
     set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 endif()
+
+
+###########################################################################
+########################## COMPILE FOR RISK-V #############################
+###########################################################################
+
+if(RISKV_COMPILER_PATH)
+    message(STATUS "Compiling for Risk-V...")
+endif()
+
 
 ###########################################################################
 ########################### LINK LIBRARIES ################################
@@ -488,6 +497,10 @@ if(USE_FPGA)
     message(STATUS "OpenCL version: " ${OpenCL_VERSION_MAJOR} )
     message(STATUS "OpenCL include: " ${OpenCL_INCLUDE_DIRS} )
     message(STATUS "OpenCL libraries: " ${OpenCL_LIBRARIES} )
+endif()
+if(RISKV_COMPILER_PATH)
+    message(STATUS "-------------------------------------------" )
+    message(STATUS "Risk-V compiler: " ${RISKV_COMPILER_PATH} )
 endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 root dir: " ${Eigen3_DIR} )
