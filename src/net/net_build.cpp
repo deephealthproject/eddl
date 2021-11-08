@@ -19,6 +19,7 @@
 #include "eddl/random.h"
 
 #include "eddl/layers/core/layer_core.h"
+#include "eddl/layers/conv/layer_conv.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -153,6 +154,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs,
   make_graph(opt, lo, me, initialize);
   this->do_optimizer_delete = do_optimizer_delete;
 
+  check_compserv_compatibility(cs);
   set_compserv(cs, do_compserv_delete);
 
   isbuild=true;
@@ -223,6 +225,31 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if(initialize) {
       do_initialize();
     }
+}
+
+void Net::check_compserv_compatibility(CompServ *cs) {
+#ifdef cCUDNN
+    if (cs->local_gpus.size())
+        // If we are using CuDNN all the features are available
+        return;
+#endif
+    // Check if there are CuDNN only features
+    if (cs->local_gpus.size() == 0)
+        for (Layer *l : layers)
+            if (LConv *aux_l = dynamic_cast<LConv*>(l)) {
+                // Look for grouped convolutions
+                if (aux_l->cd->groups != 1)
+                    msg("Grouped convolutions are only available with CuDNN. "
+                        "In layer " + aux_l->name + " received groups=" + to_string(aux_l->cd->groups),
+                        "Net::check_compserv_compatibility");
+
+                // Look for dilated convolutions
+                for (int d : aux_l->cd->dilation_rate)
+                    if (d != 1)
+                        msg("Dilated convolutions are only available with CuDNN. "
+                            "In layer " + aux_l->name + " received dilation=" + to_string(d),
+                            "Net::check_compserv_compatibility");
+            }
 }
 
 void Net::set_compserv(CompServ *cs, bool do_compserv_delete){

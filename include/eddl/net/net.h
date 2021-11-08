@@ -42,6 +42,8 @@ class Net {
 private:
     void make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
 
+    void check_compserv_compatibility(CompServ *cs);
+
     void set_compserv(CompServ *cs, bool do_compserv_delete);
 
 public:
