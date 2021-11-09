@@ -134,6 +134,24 @@ namespace eddl {
     l.clear();
   }
 
+  void build(model net, optimizer o, const vector<Loss *> &lo, const vector<Metric *> &me, CompServ *cs, bool init_weights){
+    // Assign default computing service
+    bool do_compserv_delete = true;
+    if (cs == nullptr){
+      cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
+      do_compserv_delete = true;
+    }
+
+    // Assign default optimizer
+    bool do_optimizer_delete = true;
+    if (o == nullptr){
+      o = new SGD(0.001,0.9);
+      do_optimizer_delete = true;
+    }
+
+    net->build(o, lo, me, cs, init_weights, do_optimizer_delete, do_compserv_delete);
+  }
+
   // Computing services
 
   // GPU
@@ -2256,8 +2274,8 @@ void get_fpga_model_params(Net * fpga_model) {
       Layer *nnnnl;      // current+4 layer pointer
       Layer *nnnnnl;
       Layer *nnnnnnl;
-      layer first;       // first layer
-      layer last;        // last layer
+      vlayer first;       // first layer
+      vlayer last;        // last layer
       layer prev_layer;  // for network building process (previous layer)
 
       // variables to find layers
@@ -2351,6 +2369,14 @@ void get_fpga_model_params(Net * fpga_model) {
         cout << "\n";
         l++;
       }
+      printf("-----------------------------------\n");
+      printf("Input Layers \n");
+      for(int lin = 0; lin < m_src->lin.size(); lin++)
+        cout << m_src->lin[lin]->name << "\n";
+      
+      printf("Output Layers \n");
+      for(int lout = 0; lout < m_src->lout.size(); lout++)
+        cout << m_src->lout[lout]->name << "\n";
 #endif
 
   int found = 0;
@@ -3775,18 +3801,34 @@ void get_fpga_model_params(Net * fpga_model) {
     cout << prev_layer->parent[p] << " ";
   }
 #endif
+  //int ind;
+  //if (isIn(cl,m_src->lin,ind)) first.push_back(prev_layer);
+  //if (isIn(cl,m_src->lout,ind)) last.push_back(prev_layer);
+  
+  if (found_PCSTMA) l_src += 6; else if (found_CSTMA || found_PCSTM) l_src += 5; else if (found_CSTM || found_PCRM) l_src += 4; else if (found_CRM || found_PCM || found_PCR || found_PCL) l_src += 3; else if (found_CM || found_CR || found_CL || found_PC) l_src += 2; else l_src++;     
+  }
 
-  if (l_src == 0) first = prev_layer;
-  last = prev_layer;
-  if (found_PCSTMA) l_src += 6; else if (found_CSTMA || found_PCSTM) l_src += 5; else if (found_CSTM || found_PCRM) l_src += 4; else if (found_CRM || found_PCM || found_PCR || found_PCL) l_src += 3; else if (found_CM || found_CR || found_CL || found_PC) l_src += 2; else l_src++;     }
+  // now we create the input and output layers in the correct order
+  for(int lin = 0; lin < m_src->lin.size(); lin++)
+    first.push_back(fn_get_associated_layer(m_src->lin[lin], 0, &dummy));
+  
+  for(int lout = 0; lout < m_src->lout.size(); lout++)
+    last.push_back(fn_get_associated_layer(m_src->lout[lout], 0, &dummy));
 
 #ifdef DEBUG_VERBOSE
+      printf("input Layers \n");
+      for(int lin = 0; lin < first.size(); lin++)
+        cout << first[lin]->name << "\n";
+      
+      printf("Output Layers \n");
+      for(int lout = 0; lout < last.size(); lout++)
+        cout << last[lout]->name << "\n";
+
   printf("End parsing/creating new network\n");
 #endif
-
   // now we create the model
   net = Model({ first }, { last });
-  build(net, sgd(0.001f, 0.9f),{"soft_cross_entropy"}, {"categorical_accuracy"}, CS_FPGA({1}));
+  build(net, m_src->optimizer, m_src->losses, m_src->metrics, CS_FPGA({1}), false);
   summary(net);
 
 #ifdef DEBUG_VERBOSE
