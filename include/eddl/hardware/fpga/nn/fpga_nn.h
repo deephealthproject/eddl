@@ -111,8 +111,8 @@ int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_st
 
 // HLSinf
 void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, int Ochannels, 
-		 int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, 
-		 int enable_relu, float relu_factor, int enable_maxp, int enable_avgp,
-                 int enable_clipping, int enable_shift, int pos_shift, int enable_add, int enable_stm, Tensor *K, Tensor *bias, Tensor *O);
+           int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, 
+           int enable_relu, float relu_factor, int enable_batch_norm, int enable_maxp, int enable_avgp, 
+           int enable_clipping, int enable_shift, int pos_shift, int enable_add, int enable_stm, Tensor *filter, Tensor *bias, Tensor* batch_norm_values, Tensor *output);
 
 #endif //EDDL_FPGA_NN_H

@@ -516,10 +516,10 @@ void fpga_init(){
     // Version 2: Kernels with GIHWCPI format 
     case 2: switch (kernel_subversion) {
 	      case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 1024; break;
-        case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-        case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 1024; break;
-        case 3: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-        case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+        case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_bn_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+        case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_bn_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 1024; break;
+        case 3: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_bn_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
+        case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_bn_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
 	      default: printf("Error, unrecognized conv2d kernel subversion\n"); exit(1); break;
 	    }
 	    break;
@@ -1921,5 +1921,22 @@ void tensor_padded(Tensor *A, Tensor *B) {
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++){
       B->ptr[i] = A->ptr[i];
+  }
+}
+
+void get_batch_norm_values(int ochannels, Tensor *global_mean, Tensor *global_variance, Tensor* affine_g, Tensor* affine_b, Tensor* output) {
+  memset(output->ptr, 0, sizeof(float) * output->size);
+  // 0 (affine_b) 1 (affine_g) 2 (global_mean) 3 (global_variance)
+  
+  #pragma omp parallel for
+  for (int i = 0; i < ochannels; i++){
+      output->ptr[i*4]   = affine_b->ptr[i];
+      output->ptr[i*4+1] = affine_g->ptr[i];
+      output->ptr[i*4+2] = global_mean->ptr[i];
+      output->ptr[i*4+3] = global_variance->ptr[i];
+          printf("[out] %f %f %f %f\n", output->ptr[i*4], output->ptr[i*4+1], output->ptr[i*4+2], output->ptr[i*4+3]);
+          printf("[inp] %f %f %f %f\n",affine_b->ptr[i] ,affine_g->ptr[i], global_mean->ptr[i], global_variance->ptr[i]);
+
+
   }
 }

@@ -360,6 +360,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int mode);
 
 void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B);
 void tensor_padded(Tensor *A, Tensor *B);
+void get_batch_norm_values(int ochannels, Tensor *global_mean, Tensor *global_variance, Tensor* affine_g, Tensor* affine_b, Tensor* output); 
 // Legacy
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon);
 
