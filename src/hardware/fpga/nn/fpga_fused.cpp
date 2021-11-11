@@ -33,9 +33,9 @@ void fpga_conv_maxpool(ConvolDescriptor *D)
     // debug and profiling
   _debug_fpga_funcs("fpga_conv2D_maxpool");
   _profile_fpga(_FPGA_CONV2D_MAXPOOL, 0);
-  _profile_fpga_tensor(D->I);
-  _profile_fpga_tensor(D->K);
-  _profile_fpga_tensor(D->bias);
+  _profile_fpga_tensor("input: ", D->I);
+  _profile_fpga_tensor("filter: ", D->K);
+  _profile_fpga_tensor("bias: ", D->bias);
 
   int ret = 0;
 
@@ -65,7 +65,7 @@ void fpga_conv_maxpool(ConvolDescriptor *D)
   }
 
   // profiling
-  _profile_fpga_tensor(D->O);
+  _profile_fpga_tensor("output: ", D->O);
   _profile_fpga_tensor_print(D->O);
 }
 
@@ -76,9 +76,9 @@ void fpga_conv_relu(ConvolDescriptor *D)
 {
   _debug_fpga_funcs("fpga_conv2D_relu");
   _profile_fpga(_FPGA_CONV2D_RELU, 0);
-  _profile_fpga_tensor(D->I);
-  _profile_fpga_tensor(D->K);
-  _profile_fpga_tensor(D->bias);
+  _profile_fpga_tensor("input: ", D->I);
+  _profile_fpga_tensor("filter: ", D->K);
+  _profile_fpga_tensor("bias: ", D->bias);
 
   int ret = 0;
 
@@ -108,7 +108,7 @@ void fpga_conv_relu(ConvolDescriptor *D)
   }
 
   // profiling
-  _profile_fpga_tensor(D->O);
+  _profile_fpga_tensor("output: ", D->O);
   _profile_fpga_tensor_print(D->O);
 
 }
@@ -120,9 +120,9 @@ void fpga_conv_leakyrelu(ConvolDescriptor *D, float alpha)
 {
   _debug_fpga_funcs("fpga_conv2D_leakyrelu");
   _profile_fpga(_FPGA_CONV2D_LEAKYRELU, 0);
-  _profile_fpga_tensor(D->I);
-  _profile_fpga_tensor(D->K);
-  _profile_fpga_tensor(D->bias);
+  _profile_fpga_tensor("input: ", D->I);
+  _profile_fpga_tensor("filter: ", D->K);
+  _profile_fpga_tensor("bias: ", D->bias);
 printf("fpga_fused.cpp leakyrelu alpha %d\n", alpha);
   int ret = 0;
 
@@ -152,7 +152,7 @@ printf("fpga_fused.cpp leakyrelu alpha %d\n", alpha);
   }
 
   // profiling
-  _profile_fpga_tensor(D->O);
+  _profile_fpga_tensor("output: ", D->O);
   _profile_fpga_tensor_print(D->O);
 
 }
@@ -165,9 +165,9 @@ void fpga_conv_relu_maxpool(ConvolDescriptor *D)
     // debug and profiling
   _debug_fpga_funcs("fpga_conv2D_relu_maxpool");
   _profile_fpga(_FPGA_CONV2D_RELU_MAXPOOL, 0);
-  _profile_fpga_tensor(D->I);
-  _profile_fpga_tensor(D->K);
-  _profile_fpga_tensor(D->bias);
+  _profile_fpga_tensor("input: ", D->I);
+  _profile_fpga_tensor("filter: ", D->K);
+  _profile_fpga_tensor("bias: ", D->bias);
 
   int ret = 0;
 
@@ -197,7 +197,7 @@ void fpga_conv_relu_maxpool(ConvolDescriptor *D)
   }
 
   // profiling
-  _profile_fpga_tensor(D->O);
+  _profile_fpga_tensor("output: ", D->O);
   _profile_fpga_tensor_print(D->O);
 }
 
@@ -210,9 +210,9 @@ void fpga_conv_stm(ConvolDescriptor *D)
     // debug and profiling
   _debug_fpga_funcs("fpga_conv2D_stm");
   _profile_fpga(_FPGA_CONV2D_STM, 0);
-  _profile_fpga_tensor(D->I);
-  _profile_fpga_tensor(D->K);
-  _profile_fpga_tensor(D->bias);
+  _profile_fpga_tensor("input: ", D->I);
+  _profile_fpga_tensor("filter: ", D->K);
+  _profile_fpga_tensor("bias: ", D->bias);
 
 
   int ret = 0;
@@ -243,7 +243,7 @@ void fpga_conv_stm(ConvolDescriptor *D)
   }
 
   // profiling
-  _profile_fpga_tensor(D->O);
+  _profile_fpga_tensor("output: ", D->O);
   _profile_fpga_tensor_print(D->O);
 }
 
@@ -256,10 +256,10 @@ void fpga_conv_stm_add(ConvolDescriptor *D, Tensor *Add)
     // debug and profiling
   _debug_fpga_funcs("fpga_conv2D_stm_add");
   _profile_fpga(_FPGA_CONV2D_STM_ADD, 0);
-  _profile_fpga_tensor(D->I);
-  _profile_fpga_tensor(Add);
-  _profile_fpga_tensor(D->K);
-  _profile_fpga_tensor(D->bias);
+  _profile_fpga_tensor("input: ", D->I);
+  _profile_fpga_tensor("add: ", Add);
+  _profile_fpga_tensor("filter: ", D->K);
+  _profile_fpga_tensor("bias: ", D->bias);
 
   int ret = 0;
 
@@ -289,7 +289,7 @@ void fpga_conv_stm_add(ConvolDescriptor *D, Tensor *Add)
   }
 
   // profiling
-  _profile_fpga_tensor(D->O);
+  _profile_fpga_tensor("output: ", D->O);
   _profile_fpga_tensor_print(D->O);
 }
 #endif

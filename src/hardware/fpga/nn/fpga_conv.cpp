@@ -70,7 +70,7 @@ void fpga_reshape_kernel_data_convol(ConvolDescriptor *D, int KW, int KH, int I,
 
 #ifdef FPGA_DEBUG
   printf("tensor before conversion (I=%d, O=%d, Itarget=%d Otarget=%d)\n", I, O, Itarget, Otarget);
-  _profile_fpga_tensor(D->K);
+  _profile_fpga_tensor("filter: ", D->K);
 #endif
 
   if ((I < CPI) || (O < CPO)) {
@@ -94,7 +94,7 @@ void fpga_reshape_kernel_data_convol(ConvolDescriptor *D, int KW, int KH, int I,
 
 #ifdef FPGA_DEBUG
   printf("tensor after conversion\n");
-  _profile_fpga_tensor(D->K);
+  _profile_fpga_tensor("filter: ", D->K);
 #endif
 
   // remove the buffer
@@ -137,9 +137,9 @@ void fpga_conv2D(ConvolDescriptor *D) {
   // debug and profiling
   _debug_fpga_funcs("conv2D");
   _profile_fpga(_FPGA_CONV2D, 0);
-  _profile_fpga_tensor(D->I);
-  _profile_fpga_tensor(D->K);
-  _profile_fpga_tensor(D->bias);
+  _profile_fpga_tensor("input: ", D->I);
+  _profile_fpga_tensor("filter: ", D->K);
+  _profile_fpga_tensor("bias: ", D->bias);
 
   int ret = 0;
 
@@ -170,7 +170,7 @@ void fpga_conv2D(ConvolDescriptor *D) {
   }
 
   // profiling
-  _profile_fpga_tensor(D->O);
+  _profile_fpga_tensor("output: ", D->O);
   _profile_fpga_tensor_print(D->O);
 }
 

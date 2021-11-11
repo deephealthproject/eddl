@@ -41,7 +41,7 @@ void fpga_cpuemu_relu(Tensor *A, Tensor *B){
 void fpga_relu(Tensor *A, Tensor *B){
   _debug_fpga_funcs("ReLU");
   _profile_fpga(_FPGA_RELU, 0);
-  _profile_fpga_tensor(A);
+  _profile_fpga_tensor("A: ", A);
   #ifndef K_ENABLED_RELU
   fpga_cpuemu_relu(A, B);
   #else
@@ -58,7 +58,7 @@ void fpga_relu(Tensor *A, Tensor *B){
   //  event.wait();
   q.finish();
 #endif
-  _profile_fpga_tensor(B);
+  _profile_fpga_tensor("B: ", B);
   _profile_fpga(_FPGA_RELU, 1);
 }
 
@@ -440,10 +440,10 @@ void fpga_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param){
 //
 void fpga_cpuemu_sigmoid(Tensor *A, Tensor *B){
   fpga_copy_from_fpga(A, A->ptr);
-  _profile_fpga_tensor(A);
+  _profile_fpga_tensor("A: ", A);
   cpu_sigmoid(A, B);
   fpga_copy_to_fpga(B->ptr, B);
-  _profile_fpga_tensor(B);
+  _profile_fpga_tensor("B: ", B);
   _profile_fpga_tensor_print(B);
 }
 
@@ -636,8 +636,8 @@ void fpga_softmax(Tensor *A, Tensor *B) {
   q.finish();
 #endif
   _profile_fpga(_FPGA_SOFTMAX, 1);
-  _profile_fpga_tensor(A);
-  _profile_fpga_tensor(B);
+  _profile_fpga_tensor("A: ", A);
+  _profile_fpga_tensor("B: ", B);
 }
 
 // -----------------------------------------------------------------
@@ -702,8 +702,8 @@ void fpga_full_softmax(Tensor *A, Tensor *B, int axis, bool stable) {
   exit(1);
 #endif
   _profile_fpga(_FPGA_SOFTMAX, 1);
-  _profile_fpga_tensor(A);
-  _profile_fpga_tensor(B);
+  _profile_fpga_tensor("A: ", A);
+  _profile_fpga_tensor("B: ", B);
 }
 
 

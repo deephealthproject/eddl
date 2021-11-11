@@ -334,6 +334,7 @@ void _profile_fpga_funcname(int i, char *name) {
       case _FPGA_D_REPEAT_NN            : strcpy(name, "d_repeat_nn"); break;
       case _FPGA_SUM_2                  : strcpy(name, "sum_2"); break;
       case _FPGA_TRANSFORM              : strcpy(name, "transform"); break;
+      case _FPGA_HLSINF                 : strcpy(name, "HLSinf"); break;
       default                          : strcpy(name, "?????"); break;
   }
 }
@@ -359,7 +360,7 @@ void _profile_fpga(int f_id, int end) {
 
 // profile_fpga_tensor(). Function to profile a tensor.
 // It provides tensor information through the console
-void _profile_fpga_tensor(Tensor *T) {
+void _profile_fpga_tensor(char *str, Tensor *T) {
   #ifdef FPGA_DEBUG
   // We read the tensor from FPGA first
   fpga_copy_from_fpga(T, T->ptr);
@@ -376,7 +377,7 @@ void _profile_fpga_tensor(Tensor *T) {
   avg = sum / (float)T->size;
 
   // Now, we print the information (related tensor information and statistics of the tensor)
-  printf("FPGA_DEBUG: Tensor: %3d ", T->fpga_tensor_id);
+  printf("%s: Tensor: %3d ", str, T->fpga_tensor_id);
   printf(" size %10d ", T->size);
   //printf(" size_fpga %10d ", T->fpga_size);
   printf(" shape ");
@@ -1360,7 +1361,7 @@ void fpga_delete_tensor(int device, cl::Buffer *ptr, int fpga_tensor_id_p, int s
 // Copy operations
 //
 void fpga_copy_fpga(Tensor *A, Tensor *B) {
-  #ifdef FPGA_DEBUG
+  #ifdef FPGA_DEBUG_VERBOSE
   printf("    (copy fpga: tensor id %d (size %d, ptr %p) -> tensor id %d (size %d, ptr %p))\n", A->fpga_tensor_id, A->size, A->fpga_ptr, B->fpga_tensor_id, B->size, B->fpga_ptr);
   #endif
   
@@ -1381,13 +1382,13 @@ void fpga_copy_fpga(Tensor *A, Tensor *B) {
     OCL_CHECK(err, err= (*q).enqueueCopyBuffer(*bufferA, *bufferB, 0, 0, A->size*sizeof(fpga_data_type), NULL, &blocking_event));
     (*q).finish();
   }
-  #ifdef FPGA_DEBUG
+  #ifdef FPGA_DEBUG_VERBOSE
   printf("copy completed\n");
   #endif
 }
 
 void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {
-  #ifdef FPGA_DEBUG
+  #ifdef FPGA_DEBUG_VERBOSE
   printf("FPGA_DEBUG: Copy CPU->FPGA. Addr: %p->%p. tensor_id %4d. Size %4d\n", nptr, A->fpga_ptr, A->fpga_tensor_id, A->size);
   #endif
 
@@ -1431,7 +1432,7 @@ void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {
 }
 
 void fpga_copy_from_fpga(Tensor *A,float *nptr, int cvt) {
-  #ifdef FPGA_DEBUG
+  #ifdef FPGA_DEBUG_VERBOSE
   printf("FPGA_DEBUG: Copy FPGA->CPU. Addr: %p->%p. tensor_id %4d. Size %4d\n", A->fpga_ptr, nptr, A->fpga_tensor_id, A->size);
   #endif
 
@@ -1786,12 +1787,11 @@ void fpga_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivativ
 //
 void fpga_transform_nn(Tensor *A, Tensor *B, int mode) {
   _profile_fpga(_FPGA_TRANSFORM, 0);
-  _profile_fpga_tensor(A);
-  _debug_fpga_funcs("transform");
+  _profile_fpga_tensor("A: ", A);
 
   #ifdef FPGA_DEBUG
  printf("fpga_transform:\n");
- printf(" A tensor: "); _profile_fpga_tensor(A);
+ _profile_fpga_tensor("A: ", A);
 #endif
 
   int CPI = 4;
@@ -1860,11 +1860,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int mode) {
   }
 
   _profile_fpga(_FPGA_TRANSFORM, 1);
-  _profile_fpga_tensor(B);
-  _debug_fpga_funcs("end transform");
-#ifdef FPGA_DEBUG
-  printf(" B tensor: "); _profile_fpga_tensor(B);
-#endif
+  _profile_fpga_tensor("B: ", B);
 }
 
 

@@ -243,12 +243,15 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
 void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, int Ochannels, int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, int enable_relu, float relu_factor, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, int pos_shift, int enable_add, int enable_stm, Tensor *filter, Tensor *bias, Tensor *output) {
  
   // profiling and debug	
-  _debug_fpga_funcs("fpga_hlsinf");
   _profile_fpga(_FPGA_HLSINF, 0);
-  _profile_fpga_tensor(input);
-  if(enable_add)   _profile_fpga_tensor(input_add);
-  _profile_fpga_tensor(filter);
-  _profile_fpga_tensor(bias);
+
+  #ifdef FPGA_DEBUG_FUNCS
+  printf("input (CxHxW): %0dx%0dx%0d Feature maps: %d Conv filter: %0dx%0d, Conv padding: %d %d %d %d, Conv Stride: %0dx%0d, ReLU %d, ReLU factor %d, Maxp %d, AvgP %d, Clipping %d, Shift %d, bit shifts %d, Enable Add %d, Enable STM %d\n", Ichannels, H, W, Ochannels, KH, KW, PT, PB, PL, PR, SH, SW, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift, enable_add, enable_stm);
+  #endif
+  _profile_fpga_tensor("input: ", input);
+  if(enable_add)   _profile_fpga_tensor("input add: ", input_add);
+  _profile_fpga_tensor("filter: ", filter);
+  _profile_fpga_tensor("bias: ", bias);
 
   // output geometry
   int HO = (H + PT + PB - (KH - 1)) / SH;
@@ -305,8 +308,9 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   }
 
   // profiling
-  _profile_fpga_tensor(output);
+  _profile_fpga_tensor("output:", output);
   _profile_fpga_tensor_print(output);
+  _profile_fpga(_FPGA_HLSINF, 1);
 }
 
 #endif

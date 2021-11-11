@@ -499,7 +499,7 @@ void fpga_cpuemu_mult(Tensor *A, Tensor *B, float v) {
 void fpga_mult(Tensor *A, Tensor *B, float v) {
   _debug_fpga_funcs("mult");
   _profile_fpga(_FPGA_MULT, 0);
-  _profile_fpga_tensor(A);
+  _profile_fpga_tensor("A: ", A);
 #ifndef K_ENABLED_MULT
   fpga_cpuemu_mult(A, B, v);
 #else
@@ -514,7 +514,7 @@ void fpga_mult(Tensor *A, Tensor *B, float v) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_mult, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga_tensor(B);
+  _profile_fpga_tensor("B: ", B);
   _profile_fpga(_FPGA_MULT, 1);
 }
 
@@ -980,9 +980,9 @@ void fpga_cpuemu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int inc
 void fpga_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     _debug_fpga_funcs("mult2D");
     _profile_fpga(_FPGA_MULT2D, 0);
-    _profile_fpga_tensor(A);
-    _profile_fpga_tensor(B);
-    _profile_fpga_tensor(C);
+    _profile_fpga_tensor("A: ", A);
+    _profile_fpga_tensor("B: ", B);
+    _profile_fpga_tensor("C: ", C);
 #ifndef K_ENABLED_MULT2D
     fpga_cpuemu_mult2D(A, tA, B, tB, C, incC);
 #else
@@ -1020,9 +1020,9 @@ void fpga_cpuemu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 void fpga_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
   _debug_fpga_funcs("el_div");
   _profile_fpga(_FPGA_EL_DIV, 0);
-  _profile_fpga_tensor(A);
-  _profile_fpga_tensor(B);
-  _profile_fpga_tensor(C);
+  _profile_fpga_tensor("A: ", A);
+  _profile_fpga_tensor("B: ", B);
+  _profile_fpga_tensor("C: ", C);
 #ifndef K_ENABLED_EL_DIV
   fpga_cpuemu_el_div(A, B, C, incC);
 #else
@@ -1039,9 +1039,9 @@ void fpga_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
   q.finish();
 #endif
   _profile_fpga(_FPGA_EL_DIV, 1);
-  _profile_fpga_tensor(A);
-  _profile_fpga_tensor(B);
-  _profile_fpga_tensor(C);
+  _profile_fpga_tensor("A: ", A);
+  _profile_fpga_tensor("B: ", B);
+  _profile_fpga_tensor("C: ", C);
 }
 
 // -----------------------------------------------------------------
@@ -1424,7 +1424,7 @@ float fpga_cpuemu_sum(Tensor *A) {
 float fpga_sum(Tensor *A) {
   float ret;
   _profile_fpga(_FPGA_SUM, 0);
-  _profile_fpga_tensor(A);
+  _profile_fpga_tensor("A: ", A);
 #ifndef K_ENABLED_SUM
   ret = fpga_cpuemu_sum(A);
 #else

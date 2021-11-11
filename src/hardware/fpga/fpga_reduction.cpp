@@ -153,7 +153,7 @@ void fpga_cpuemu_reduction(ReduceDescriptor *RD) {
 
 void fpga_reduction(ReduceDescriptor *RD){
   _profile_fpga(_FPGA_REDUCTION, 0);
-  _profile_fpga_tensor(RD->I);
+  _profile_fpga_tensor("input: ", RD->I);
   if (fpga_set_cpuemu_reduction == 1) {
       fpga_cpuemu_reduction(RD);
   } else {

@@ -52,7 +52,7 @@ void fpga_cpuemu_mpool2D(PoolDescriptor *D) {
 void fpga_mpool2D(PoolDescriptor *D){
     _debug_fpga_funcs("mpool2D");
     _profile_fpga(_FPGA_MPOOL2D, 0);
-    _profile_fpga_tensor(D->I);
+    _profile_fpga_tensor("Input: ", D->I);
     if (fpga_set_cpuemu_mpool2D == 1) {
         fpga_cpuemu_mpool2D(D);
     } else {
@@ -80,7 +80,7 @@ void fpga_mpool2D(PoolDescriptor *D){
         OCL_CHECK(err, err = q.enqueueTask(kernel_mpool2D, NULL, &event));
         q.finish();*/
     }
-    _profile_fpga_tensor(D->O);
+    _profile_fpga_tensor("Output: ", D->O);
     _profile_fpga(_FPGA_MPOOL2D, 1);
 }
 

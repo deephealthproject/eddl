@@ -20,7 +20,7 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
-//#define DEBUG_VERBOSE
+#define DEBUG_VERBOSE
 
 extern void fpga_reshape_kernel(ConvolDescriptor *src_D, ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO);
 extern void _profile_fpga_tensor(Tensor *t);
@@ -2239,6 +2239,144 @@ void get_fpga_model_params(Net * fpga_model) {
     }
   }
     
+  void show_weight_stats(model m) {
+
+    #define MAX_STATS 10000
+    int stats_entries = 0;
+    struct {
+      float filters[3][3];
+      int num_entries;
+    } stats[MAX_STATS];
+
+    // number of layers
+    int num_layers = m->layers.size();
+
+    int l=0;
+    while (l < num_layers) {
+
+      Layer *cl = m->layers[l];	    
+
+      if (LConv *dl = dynamic_cast<LConv *>(cl)) { // Convolution layer
+        // parameters
+        int C = cl->input->shape[1];
+        int H = cl->input->shape[2];
+        int W = cl->input->shape[3];
+        int KH = dl->cd->kernel_size[0];
+        int KW = dl->cd->kernel_size[1];
+        int SH = dl->cd->strides[0];
+        int SW = dl->cd->strides[1];
+        int PT = dl->cd->pads[0];
+        int PB = dl->cd->pads[1];
+        int PL = dl->cd->pads[2];
+        int PR = dl->cd->pads[3];
+        int O = dl->output->shape[1];
+
+        printf("\n// convolution layer (l=%d) %dx%dx%dx%d\n", l, C, KH, KW, O);
+
+        collectTensor(dl, "param", 0);
+        for (int c=0; c<C; c++) {
+          printf("analyzing input I=%d: ", c);
+
+          for (int o=0; o<O; o++) {
+
+            // ponemos tres posiciones a -1
+            //int addr = (o * C * KH * KW) + (c * KH * KW) + (0 * KW) + 0;
+            //dl->cd->K->ptr[addr] = -1;
+            //addr = (o * C * KH * KW) + (c * KH * KW) + (0 * KW) + 1;
+            //dl->cd->K->ptr[addr] = -1;
+            //addr = (o * C * KH * KW) + (c * KH * KW) + (0 * KW) + 2;
+            //dl->cd->K->ptr[addr] = -1;
+            //addr = (o * C * KH * KW) + (c * KH * KW) + (1 * KW) + 0;
+            //dl->cd->K->ptr[addr] = -1;
+            //addr = (o * C * KH * KW) + (c * KH * KW) + (1 * KW) + 1;
+            //dl->cd->K->ptr[addr] = -1;
+            //addr = (o * C * KH * KW) + (c * KH * KW) + (1 * KW) + 2;
+            //dl->cd->K->ptr[addr] = -1;
+            //addr = (o * C * KH * KW) + (c * KH * KW) + (2 * KW) + 0;
+            //dl->cd->K->ptr[addr] = -1;
+            //addr = (o * C * KH * KW) + (c * KH * KW) + (2 * KW) + 1;
+            //dl->cd->K->ptr[addr] = -1;
+            //addr = (o * C * KH * KW) + (c * KH * KW) + (2 * KW) + 2;
+            //dl->cd->K->ptr[addr] = -1;
+
+            int ss;
+            int found = 0;
+            for (int s=0; s<stats_entries; s++) {
+              found = 1;
+              ss = s;
+              for (int kh=0; kh<KH; kh++) {
+                for (int kw=0; kw<KW; kw++) {
+                  int addr = (o * C * KH * KW) + (c * KH * KW) + (kh * KW) + kw;
+                  float filter_value = dl->cd->K->ptr[addr];
+                  if (stats[s].filters[kh][kw] != filter_value) found = 0;
+                }
+              }
+              if (found) break;
+            }
+            if (found) {
+              stats[ss].num_entries++;
+            } else {
+              ss = stats_entries;
+              for (int kh=0; kh<KH; kh++) {
+                for (int kw=0; kw<KW; kw++) {
+                  int addr = (o * C * KH * KW) + (c * KH * KW) + (kh * KW) + kw;
+                  float filter_value = dl->cd->K->ptr[addr];
+                  stats[ss].filters[kh][kw] = filter_value;
+                }
+              }
+              stats[ss].num_entries = 1;
+              stats_entries++; 
+            }
+          }
+
+          // we sort entries
+          for (int s1 = 0; s1<stats_entries - 1; s1++) {
+            for (int s2 = s1+1; s2<stats_entries; s2++) {
+              if (stats[s1].num_entries < stats[s2].num_entries) {
+                int aux = stats[s1].num_entries;
+                stats[s1].num_entries = stats[s2].num_entries;
+                stats[s2].num_entries = aux;
+                for (int kh=0; kh<3; kh++) for (int kw=0; kw<3; kw++) {
+                  float faux = stats[s1].filters[kh][kw];
+                  stats[s1].filters[kh][kw] = stats[s2].filters[kh][kw];
+                  stats[s2].filters[kh][kw] = faux;
+                }
+              }
+            }
+          }
+
+          // total num entries
+          int sum_num_entries = 0;
+          for (int s=0; s<stats_entries; s++) sum_num_entries += stats[s].num_entries;
+          printf("%d filters (sum entries %d) -> ", stats_entries, sum_num_entries);
+          int x = stats_entries;
+          if (x>3) x=3;
+          for (int s=0; s<x; s++) {
+            for (int kh=0; kh<3; kh++) for (int kw=0; kw<3; kw++) printf("%4.2f ", stats[s].filters[kh][kw]);
+            printf(" -> %5d entries (%6.4f\%) ", stats[s].num_entries, 100.0 * (float)stats[s].num_entries / (float)sum_num_entries);
+          }
+
+          // top four filters percentage
+          int top_four = 0;
+          if (stats_entries > 0) top_four += stats[0].num_entries;
+          if (stats_entries > 1) top_four += stats[1].num_entries;
+          if (stats_entries > 2) top_four += stats[2].num_entries;
+          if (stats_entries > 3) top_four += stats[3].num_entries;
+          printf(" -> top four: %d entries (%6.4f)", top_four, 100.0 * (float)top_four / (float)sum_num_entries);
+          printf("\n");
+
+          stats_entries = 0;
+
+        }
+
+      }
+    
+      l++;
+
+    }
+
+  }
+
     // model for fpga
   model model_for_fpga(model m_src) {
     #ifdef cFPGA
@@ -2288,18 +2426,23 @@ void get_fpga_model_params(Net * fpga_model) {
       int found_ConstofT; // current layer is constoftensor layer
       int found_Sp;    // current layer is sofplus layer
       int found_Tanh;  // current layer is tanh layer
+      int found_Clamp; // current layer is Clamp layer (clip)
       int found_nM;    // current+1 layer is a maxpooling layer
       int found_nR;    // current+1 layer is a ReLU layer
       int found_nL;    // current+1 layer is a LeakyReLU layer
       int found_nSp;   // current+1 layer is a Sofplus layer
       int found_nSum;  // current+1 layer is a Sum layer
       int found_nMult;
+      int found_nDiv;  // current+1 layer is a Div layer
       int found_nnM;   // current+2 layer is a maxpooling layer
       int found_nnT;   // current+2 layer is a Tanh layer
+      int found_nnClamp;// current+2 layer is a Clamp layer (Clip) 
       int found_nnSum;
       int found_nnnMult;  // current+3 layer is a Mult layer
       int found_nnnMultiThreshold;
+      int found_nnnR;     // current+3 layer is a ReLU layer
       int found_nnnnA;  // current+3 layer is an Add layer
+      int found_nnnnMaxp; // current+3 layer is a Maxpool layer
       int found_nnnnSum;
       int found_nnnnnMult;
       int found_nnnnnnConv;
@@ -2311,6 +2454,10 @@ void get_fpga_model_params(Net * fpga_model) {
       int found_CSTMA; // Layers Convolution+Softplus+Tanh+Mult+Add detected
       int found_CL;    // Layers Convolution+LeakyReLU detected
       int found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv;
+      int found_Conv_Mul_Clamp_Relu;
+      int found_Conv_Mul_Clamp_Relu_Maxp;
+      int found_Conv_Div_Clamp_Relu;
+      int found_Conv_Div_Clamp_Relu_Maxp;
 
       // New model
       Net *net = new Net();
@@ -2347,7 +2494,7 @@ void get_fpga_model_params(Net * fpga_model) {
     // Current layer
     found_C = 0; found_C_cpu = 0; found_I = 0; found_LR = 0; found_R = 0; found_S = 0; found_M = 0; found_A = 0; found_Reshape = 0; found_Resize = 0; found_D = 0; 
     found_Concat = 0; found_Expand = 0; found_Slice = 0; found_Sig = 0; found_Mult = 0; found_Sub = 0; found_Exp = 0; found_Trans = 0; found_Add = 0; 
-    found_ConstofT = 0; found_div = 0; found_Sp = 0; found_Tanh = 0;
+    found_ConstofT = 0; found_div = 0; found_Sp = 0; found_Tanh = 0; found_Clamp = 0;
     
     cl = m_src->layers[l_src];
     
@@ -2386,7 +2533,8 @@ void get_fpga_model_params(Net * fpga_model) {
     if (LConstOfTensor *dl = dynamic_cast<LConstOfTensor *>(cl)) found_ConstofT = 1;
     if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "softplus") found_Sp = 1; 
     if (LActivation *dl = dynamic_cast<LActivation *>(cl)) if (dl->act == "tanh") found_Tanh = 1; 
-        
+    if (LClamp *dl = dynamic_cast<LClamp *>(cl)) found_Clamp = 1;    
+    
     // current+1 layer
     found_nM = 0;
     found_nR = 0;
@@ -2394,6 +2542,7 @@ void get_fpga_model_params(Net * fpga_model) {
     found_nSp = 0;
     found_nSum = 0;
     found_nMult = 0;
+    found_nDiv = 0;
     if (l_src<num_layers-1) {
       nl = m_src->layers[l_src+1];
       if (LMaxPool *dl = dynamic_cast<LMaxPool *>(nl)) found_nM = 1;
@@ -2402,36 +2551,43 @@ void get_fpga_model_params(Net * fpga_model) {
       if (LActivation *dl = dynamic_cast<LActivation *>(nl)) if (dl->act == "leaky_relu") found_nL = 1;
       if (LSum *dl = dynamic_cast<LSum *>(nl)) found_nSum = 1;
       if (LMult *dl = dynamic_cast<LMult *>(nl)) found_nMult = 1;
+      if (LDiv *dl = dynamic_cast<LDiv *>(nl)) found_nDiv = 1;
     }
 
     // current+2 layer
     found_nnM = 0;
     found_nnT = 0;
     found_nnSum = 0;
+    found_nnClamp = 0;
     if (l_src<num_layers-2) {
       nnl = m_src->layers[l_src+2];
       if (LMaxPool *dl = dynamic_cast<LMaxPool *>(nnl)) found_nnM = 1; 
             if (LActivation *dl = dynamic_cast<LActivation *>(nnl)) if (dl->act == "tanh") found_nnT = 1; 
       if (LSum *dl = dynamic_cast<LSum *>(nnl)) found_nnSum = 1;
+      if (LClamp *dl = dynamic_cast<LClamp *>(nnl)) found_nnClamp = 1;
     }
 
     // current+3 layer
     found_nnnMult = 0;
     found_nnnMultiThreshold = 0;
+    found_nnnR = 0;
     if (l_src<num_layers-3) {
       nnnl = m_src->layers[l_src+3]; 
       if (LMult *dl = dynamic_cast<LMult *>(nnnl)) found_nnnMult = 1; 
       if (LMultiThreshold *dl = dynamic_cast<LMultiThreshold *>(nnnl)) found_nnnMultiThreshold = 1;
+      if (LActivation *dl = dynamic_cast<LActivation *>(nnnl)) if (dl->act == "relu") found_nnnR = 1;
     }
 
 
     // current+4 layer
     found_nnnnA = 0;
     found_nnnnSum = 0;
+    found_nnnnMaxp = 0;
     if (l_src<num_layers-4) {
       nnnnl = m_src->layers[l_src+4]; 
       if (LAdd *dl = dynamic_cast<LAdd *>(nnnnl)) found_nnnnA = 1; 
       if (LSum *dl = dynamic_cast<LSum *>(nnnnl)) found_nnnnA = 1;
+      if (LMaxPool *dl = dynamic_cast<LMaxPool *>(nnnnl)) found_nnnnMaxp = 1;
     }
 
     // current+5 layer
@@ -2456,9 +2612,15 @@ void get_fpga_model_params(Net * fpga_model) {
   found_CR    = found_C && found_nR  && !found_CRM;
   found_CSTMA = found_C && found_nSp && found_nnT && found_nnnMult && found_nnnnA;
   found_CSTM  = found_C && found_nSp && found_nnT && found_nnnMult && !found_CSTMA;
+  found_Conv_Mul_Clamp_Relu = found_C && found_nMult && found_nnClamp && found_nnnR;
+  found_Conv_Mul_Clamp_Relu_Maxp = found_C && found_nMult && found_nnClamp && found_nnnR && found_nnnnMaxp;
+  found_Conv_Div_Clamp_Relu = found_C && found_nDiv && found_nnClamp && found_nnnR;
+  found_Conv_Div_Clamp_Relu_Maxp = found_C && found_nDiv && found_nnClamp && found_nnnR && found_nnnnMaxp;
 
   // We filter found flags
-  if (found_CR || found_CM || found_CL || found_CRM || found_CSTMA || found_CSTM) {found_C = 0;}
+  if (found_CR || found_CM || found_CL || found_CRM || found_CSTMA || found_CSTM || found_Conv_Mul_Clamp_Relu || found_Conv_Mul_Clamp_Relu_Maxp || found_Conv_Div_Clamp_Relu || found_Conv_Div_Clamp_Relu_Maxp) {found_C = 0;}
+  if (found_Conv_Mul_Clamp_Relu_Maxp) found_Conv_Mul_Clamp_Relu = 0;
+  if (found_Conv_Div_Clamp_Relu_Maxp) found_Conv_Div_Clamp_Relu = 0;
 
 
   // data layer transform: Layers ran on the FPGA need to have their inputs in GHWC format, 
@@ -2485,7 +2647,8 @@ void get_fpga_model_params(Net * fpga_model) {
     }
   } else {
     
-    if (found_C || found_CR || found_CM || found_CL || found_CRM || found_CSTM || found_CSTMA || found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
+    if (found_C || found_CR || found_CM || found_CL || found_CRM || found_CSTM || found_CSTMA || found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv || found_Conv_Mul_Clamp_Relu || found_Conv_Mul_Clamp_Relu_Maxp ||
+	found_Conv_Div_Clamp_Relu || found_Conv_Div_Clamp_Relu_Maxp) {
       // all these layers need the GHWC format at the input, therefore we check if the
       // previous layer is in GHWC format and if not we add a transform layer
       //
@@ -2732,6 +2895,189 @@ void get_fpga_model_params(Net * fpga_model) {
     associated_source_layer[l_dst].dst = prev_layer;
     l_dst++;
 
+  } else if (found_Conv_Mul_Clamp_Relu) {
+    //
+    // Convolution + Mult + Clamp + Relu
+    // source layers
+    LConv *layer_src = (LConv *)cl;
+    // dst parent layer
+    Layer *fpga_parent;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+#ifdef DEBUG_VERBOSE
+    printf("%3d: Conv_Mult_Clamp_Relu    : prev %d\n", l_dst, dummy);
+#endif
+
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI;
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_src->cd->padrt;
+    int pb = layer_src->cd->padrb;
+    int pl = layer_src->cd->padcl;
+    int pr = layer_src->cd->padcr;
+    int enable_relu     = 1;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 0;
+    int enable_avgp     = 0;
+    int enable_clipping = 1;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 0;
+    int enable_stm      = 0;
+
+    prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                         enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift,
+             enable_add, enable_stm, "Conv_Mul_Clamp_Relu (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = cl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
+  } else if (found_Conv_Mul_Clamp_Relu_Maxp) {
+    //
+    // Convolution + Mult + Clamp + Relu + Maxp
+    // source layers
+    LConv *layer_src = (LConv *)cl;
+    // dst parent layer
+    Layer *fpga_parent;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+#ifdef DEBUG_VERBOSE
+    printf("%3d: Conv_Mult_Clamp_Relu    : prev %d\n", l_dst, dummy);
+#endif
+
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI;
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_src->cd->padrt;
+    int pb = layer_src->cd->padrb;
+    int pl = layer_src->cd->padcl;
+    int pr = layer_src->cd->padcr;
+    int enable_relu     = 1;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 1;
+    int enable_avgp     = 0;
+    int enable_clipping = 1;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 0;
+    int enable_stm      = 0;
+
+    prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                         enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift,
+             enable_add, enable_stm, "Conv_Mul_Clamp_Relu_Maxp (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnnl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = cl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
+  } else if (found_Conv_Div_Clamp_Relu) {
+    //
+    // Convolution + Div + Clamp + Relu
+    // source layers
+    LConv *layer_src = (LConv *)cl;
+    // dst parent layer
+    Layer *fpga_parent;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+#ifdef DEBUG_VERBOSE
+    printf("%3d: Conv_Div_Clamp_Relu    : prev %d\n", l_dst, dummy);
+#endif
+
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI;
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_src->cd->padrt;
+    int pb = layer_src->cd->padrb;
+    int pl = layer_src->cd->padcl;
+    int pr = layer_src->cd->padcr;
+    int enable_relu     = 1;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 0;
+    int enable_avgp     = 0;
+    int enable_clipping = 1;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 0;
+    int enable_stm      = 0;
+
+    prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                         enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift,
+             enable_add, enable_stm, "Conv_Div_Clamp_Relu (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = cl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
+  } else if (found_Conv_Div_Clamp_Relu_Maxp) {
+    //
+    // Convolution + Mult + Clamp + Relu + Maxp
+    // source layers
+    LConv *layer_src = (LConv *)cl;
+    // dst parent layer
+    Layer *fpga_parent;
+    fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
+#ifdef DEBUG_VERBOSE
+    printf("%3d: Conv_Div_Clamp_Relu    : prev %d\n", l_dst, dummy);
+#endif
+
+    int h = layer_src->cd->I->shape[2];
+    int w = layer_src->cd->I->shape[3];
+    int ichannels = ceil((float)layer_src->cd->I->shape[1]/CPI) * CPI;
+    int ochannels = ceil((float)layer_src->cd->O->shape[1]/CPO) * CPO;
+    int kh = layer_src->cd->kr;
+    int kw = layer_src->cd->kc;
+    int sh = layer_src->cd->sr;
+    int sw = layer_src->cd->sc;
+    int pt = layer_src->cd->padrt;
+    int pb = layer_src->cd->padrb;
+    int pl = layer_src->cd->padcl;
+    int pr = layer_src->cd->padcr;
+    int enable_relu     = 1;
+    float relu_factor   = 0.f;
+    int enable_maxp     = 1;
+    int enable_avgp     = 0;
+    int enable_clipping = 1;
+    int enable_shift    = 0;
+    int pos_shift       = 0;
+    int enable_add      = 0;
+    int enable_stm      = 0;
+
+    prev_layer = new LHLSinf(fpga_parent, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
+                         enable_maxp, enable_avgp, enable_clipping, enable_shift, pos_shift,
+             enable_add, enable_stm, "Conv_Div_Clamp_Relu_Maxp (HLSinf)", DEV_CPU, layer_src->cd->mem_level);
+    fn_set_associated_layer(cl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnl, prev_layer, 1, l_dst);
+    fn_set_associated_layer(nnnnl, prev_layer, 1, l_dst);
+    associated_source_layer[l_dst].src = cl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
+
   } else if (found_Div_Mult_Sum_MultiThreshold_Sum_Mult_Conv) {
     //
     // DIV + MULT + SUM + MultiThreshold + SUM + MULT + CONV
@@ -2933,6 +3279,26 @@ void get_fpga_model_params(Net * fpga_model) {
     associated_source_layer[l_dst].src = cl;
     associated_source_layer[l_dst].dst = prev_layer;
     l_dst++;
+
+  } else if (found_Clamp) {
+    // 
+    // Clamp
+    //
+    // src layer
+    LClamp *layer_src = (LClamp *)cl;
+    // dst parent layer
+    Layer *fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy);
+#ifdef DEBUG_VERBOSE
+    printf("%3d: Clamp      : prev %d\n", l_dst, dummy);
+#endif
+    float min = layer_src->min;
+    float max = layer_src->max;
+    prev_layer = Clamp(fpga_parent, min, max);
+    fn_set_associated_layer(cl, prev_layer, 0, l_dst);
+    associated_source_layer[l_dst].src = cl;
+    associated_source_layer[l_dst].dst = prev_layer;
+    l_dst++;
+
   
   } else if (found_LR) { 
 
@@ -3400,7 +3766,9 @@ void get_fpga_model_params(Net * fpga_model) {
 
   if (l_src == 0) first = prev_layer;
   last = prev_layer;
-  if (found_CSTMA) l_src += 5; else if (found_CSTM) l_src += 4; else if (found_CRM) l_src += 3; else if (found_CM || found_CR || found_CL) l_src += 2; else l_src++;     }
+  if (found_CSTMA || found_Conv_Mul_Clamp_Relu_Maxp || found_Conv_Div_Clamp_Relu_Maxp) l_src += 5; 
+  else if (found_CSTM || found_Conv_Mul_Clamp_Relu || found_Conv_Div_Clamp_Relu)       l_src += 4; 
+  else if (found_CRM) l_src += 3; else if (found_CM || found_CR || found_CL) l_src += 2; else l_src++;     }
 
 #ifdef DEBUG_VERBOSE
   printf("End parsing/creating new network\n");

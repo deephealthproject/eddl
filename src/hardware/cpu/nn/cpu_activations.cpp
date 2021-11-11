@@ -16,6 +16,10 @@
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
 void cpu_relu(Tensor *A, Tensor *B){
+#ifdef CPU_DEBUG
+    printf("cpu_relu\n");
+    _profile_cpu_tensor(A);
+#endif  
     _profile(_CPU_RELU, 0);
 #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {
@@ -23,6 +27,9 @@ void cpu_relu(Tensor *A, Tensor *B){
         else B->ptr[i] = 0.0;
     }
     _profile(_CPU_RELU, 1);
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(B);
+#endif
 }
 
 void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD){

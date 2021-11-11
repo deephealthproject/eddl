@@ -53,7 +53,11 @@ void cpu_ceil(Tensor *A, Tensor *B){
 }
 
 void cpu_clamp(Tensor *A, Tensor *B, float min, float max){
-#pragma omp parallel for
+#ifdef CPU_DEBUG
+    printf("cpu_clamp (minv = %f, max = %f)\n", min, max);
+    _profile_cpu_tensor(A);
+#endif
+    #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         if (A->ptr[i] < min){
             B->ptr[i] = min;
@@ -63,6 +67,9 @@ void cpu_clamp(Tensor *A, Tensor *B, float min, float max){
             B->ptr[i] = A->ptr[i];
         }
     }
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(B);
+#endif
 }
 
 

@@ -2573,5 +2573,6 @@ namespace eddl {
    */
    model model_for_fpga(model m_src);  
    void model_to_hls(model m_src);
+   void show_weight_stats(model m);
 }
 #endif

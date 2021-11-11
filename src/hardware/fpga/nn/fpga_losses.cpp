@@ -29,9 +29,9 @@ void fpga_cpuemu_cent(Tensor *A, Tensor *B, Tensor *C) {
 
 void fpga_cent(Tensor *A, Tensor *B, Tensor *C){
   _profile_fpga(_FPGA_CENT, 0);
-  _profile_fpga_tensor(A);
-  _profile_fpga_tensor(B);
-  _profile_fpga_tensor(C);
+  _profile_fpga_tensor("A: ", A);
+  _profile_fpga_tensor("B: ", B);
+  _profile_fpga_tensor("C: ", C);
 #ifndef K_ENABLED_CENT
   fpga_cpuemu_cent(A, B, C);
 #else

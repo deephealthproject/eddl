@@ -224,6 +224,10 @@ void cpu_mpool3D_back(PoolDescriptor3D *D){
 
 
 void cpu_avgpool2D(PoolDescriptor *D){
+#ifdef CPU_DEBUG
+    printf("avgpool2D:\n");
+    printf(" input    : "); _profile_cpu_tensor(D->I);
+#endif
     _profile(_CPU_AVGPOOL2D, 0);
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
@@ -264,6 +268,9 @@ void cpu_avgpool2D(PoolDescriptor *D){
         } // depth
     } // batch
     _profile(_CPU_AVGPOOL2D, 1);
+#ifdef CPU_DEBUG
+    printf(" output    : "); _profile_cpu_tensor(D->O);
+#endif
 }
 
 void cpu_avgpool2D_back(PoolDescriptor *D){
