@@ -308,8 +308,8 @@ void ConvolDescriptorT3D::resize(int b)
 
    //cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
 
-
-
+   cudnn_env_init = -1;
+   cudnn_conv_back_init = -1;
 #endif
     }
 #endif
