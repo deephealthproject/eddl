@@ -164,7 +164,7 @@ python3 -m onnxsim resnet18-v1-7.onnx resnet18-v1-7_simplify.onnx
 ```
 
 
-**MovileNet (One input)**: [link](https://github.com/onnx/models/tree/master/vision/classification/mobilenet)
+**MobileNet (One input)**: [link](https://github.com/onnx/models/tree/master/vision/classification/mobilenet)
 
 This models requites the input shape
 
@@ -173,7 +173,7 @@ python3 -m onnxsim mobilenetv2-7.onnx mobilenetv2-7_simplified.onnx --input-shap
 ```
 
 
-**TinyYOLOv3 (One input)**: [link](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/tiny-yolov3)
+**TinyYOLOv3 (Two inputs, one dynamic)**: [link](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/tiny-yolov3)
 
 This models requires two inputs. You can open the model with electron to check the number of inputs and their expected shapes
 
