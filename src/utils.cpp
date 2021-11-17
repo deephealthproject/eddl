@@ -552,6 +552,14 @@ vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch){
     return new_shape;
 }
 
+
+inline void fast_address2indices(unsigned int address, unsigned int* indices, const unsigned int* shape, const unsigned int* strides, unsigned int ndim){
+    for(int i=0; i<ndim; i++) {
+        indices[i] = address / strides[i] % shape[i];
+    }
+}
+
+
 vector<int> address2indices(unsigned int address, const vector<int>& shape, const vector<int>& strides){
     // Check sizes
     if(shape.size()!=strides.size()){
@@ -567,14 +575,23 @@ vector<int> address2indices(unsigned int address, const vector<int>& shape, cons
         msg("The address cannot greater than the maximum possible address with the given shape", "utils::address2indices");
     }
 
-    // Compute indices
+    // Reserve memory
     vector<int> indices;
-    indices.reserve(strides.size());
-    for(int i=0; i<strides.size(); i++){
-        indices.push_back((int)address/strides[i] % shape[i]);
-    }
+    unsigned int ndim = strides.size();
+    indices.reserve(ndim);
+
+    // Compute indices
+    fast_address2indices(address, reinterpret_cast<unsigned int *>(indices.data()), (unsigned int *) shape.data(), (unsigned int *) strides.data(), ndim);
 
     return indices;
+}
+
+inline unsigned int fast_indices2address(const unsigned int* indices, const unsigned int* strides, unsigned int ndim){
+    unsigned int address = 0;
+    for (int i=0; i< ndim; i++){
+        address += indices[i] * strides[i];
+    }
+    return address;
 }
 
 unsigned int indices2address(const vector<int>& indices, const vector<int>& strides){
@@ -585,10 +602,8 @@ unsigned int indices2address(const vector<int>& indices, const vector<int>& stri
     }
 
     // Compute address
-    unsigned int address = 0;
-    for (int i=0; i<strides.size(); i++){
-        address+=indices[i] * strides[i];
-    }
+    unsigned int address = fast_indices2address(reinterpret_cast<const unsigned int *>(indices.data()),
+                                                reinterpret_cast<const unsigned int *>(strides.data()), indices.size());
 
     return address;
 }
