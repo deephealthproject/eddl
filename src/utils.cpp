@@ -552,6 +552,47 @@ vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch){
     return new_shape;
 }
 
+vector<int> address2indices(unsigned int address, const vector<int>& shape, const vector<int>& strides){
+    // Check sizes
+    if(shape.size()!=strides.size()){
+        msg("Shape and strides must have the same size", "utils::address2indices");
+    }
+
+    // Compute size
+    int tsize = 1;
+    for(auto &s : shape) { tsize *= s; }
+
+    // Check maximum size
+    if(address > tsize-1){
+        msg("The address cannot greater than the maximum possible address with the given shape", "utils::address2indices");
+    }
+
+    // Compute indices
+    vector<int> indices;
+    indices.reserve(strides.size());
+    for(int i=0; i<strides.size(); i++){
+        indices.push_back((int)address/strides[i] % shape[i]);
+    }
+
+    return indices;
+}
+
+unsigned int indices2address(const vector<int>& indices, const vector<int>& strides){
+    // Check sizes
+    if(indices.size()!=strides.size()){
+        msg("Indices and strides must have the same size", "utils::indices2address");
+
+    }
+
+    // Compute address
+    unsigned int address = 0;
+    for (int i=0; i<strides.size(); i++){
+        address+=indices[i] * strides[i];
+    }
+
+    return address;
+}
+
 WrappingMode getWrappingMode(string mode){
     if(mode == "constant"){
         // (k k k k | a b c d | k k k k)

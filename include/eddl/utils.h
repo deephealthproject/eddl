@@ -71,6 +71,9 @@ string get_parent_dir(const string& fname);
 vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch=false);
 vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch=false);
 
+vector<int> address2indices(unsigned int address, const vector<int>& shape, const vector<int>& strides);
+unsigned int indices2address(const vector<int>& indices, const vector<int>& strides);
+
 template<typename T>
 string printVector(vector<T> myvector){
     string temp = "";
