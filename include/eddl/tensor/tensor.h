@@ -2899,10 +2899,35 @@ public:
     static void argsort(Tensor* A, Tensor* B, bool descending=false, bool stable=true);
 
     // Indexing, Slicing, Joining, Mutating Ops *************
+    /**
+      *  @brief Join a sequence of arrays along an existing axis.
+      *
+      *  @param Vector of Tensors   The Tensors must have the same shape, except in the dimension corresponding to axis (the first, by default).
+      *  @param axis   The axis along which the arrays will be joined. If axis is None, arrays are flattened before use. Default is 0.
+      *  @param output   Output tensor
+    */
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, vector<Tensor*> t, unsigned int axis);
 
+    /**
+      *  @brief Join a sequence of arrays along a new axis.
+      *
+      *  @param A   Input tensor.
+      *  @param axis   The axis in the result array along which the input arrays are stacked.
+      *  @param output   Output tensor
+    */
     static Tensor* stack(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
+
+    /**
+      *  @brief Repeat elements of a Tensor.
+      *
+      *  @param A   Input tensor.
+      *  @param repeats   The number of repetitions for each element ("int" or "vector of ints")
+      *  @param axis   The axis along which to repeat values.
+      *  @param output   Output tensor
+    */
+    static Tensor* repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr);
+    static Tensor* repeat(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.

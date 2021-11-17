@@ -443,7 +443,7 @@ void Tensor::argsort(Tensor* A, Tensor* B, bool descending, bool stable){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("Function not implemented for FPGA", "Tensor::argsort");
     }
 #endif
 }
@@ -635,6 +635,69 @@ Tensor* Tensor::stack(const vector<Tensor*> A, unsigned int axis, Tensor* output
     return output;
 }
 
+Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis, Tensor* output){
+    // Check axis values
+    if(axis<0 || axis > A->ndim-1){
+        msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Tensor::repeat");
+    }
+
+    // Check that there are enough values in
+    if(repeats.size()!=A->shape[axis]){
+        msg("The size of 'repeats' (" + std::to_string(repeats.size()) + ") must equal the size the the dimension to repeat " + std::to_string(A->shape[axis]) + ")", "Tensor::repeat");
+    }
+
+    // Compute new shape
+    vector<int> new_shape;
+    for(int i=0; i<A->ndim; i++){
+        unsigned int dsize = 0;
+        if(i!=axis){
+            dsize = A->shape[i];
+        }else{
+            for(auto &d : repeats) { dsize+= d; }
+        }
+        new_shape.push_back((int)dsize);
+    }
+
+    // Create new tensor
+    if(output==nullptr){
+        output = Tensor::zeros(new_shape, A->device);
+    }else{
+        // Check dimensions
+        if(output->shape!=new_shape){
+            msg("The dimension of the output tensor is incorrect", "Tensor::repeat");
+        }else if(output->device != A->device){
+            msg("The output tensor and the input ones must be on the same device", "Tensor::repeat");
+        }
+    }
+
+    if (A->isCPU() && output->isCPU()){
+        cpu_repeat(A, output, repeats, axis);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && output->isGPU())
+    {
+        //gpu_repeat(A, output, repeats, axis);
+    }
+#endif
+#ifdef cFPGA
+    else {
+        msg("Function not implemented for FPGA", "Tensor::repeat");
+    }
+#endif
+    return output;
+}
+
+Tensor* Tensor::repeat(Tensor* A, unsigned int repeats, unsigned int axis, Tensor* output){
+    // Check axis values
+    if(axis<0 || axis > A->ndim-1){
+        msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Tensor::repeat");
+    }
+    // Repeat n times each dimension
+    vector<unsigned int> vrepeats = vector<unsigned int>(A->shape[axis], repeats);
+
+    // Call main function
+    return Tensor::repeat(A, vrepeats, axis, output);
+}
 
 Tensor* Tensor::select(const vector<string>& indices){
     // Build descriptor

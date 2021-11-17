@@ -358,7 +358,7 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
         float *src = t[i]->ptr;
 
         // Walk tensor i
-#pragma omp parallel for
+        #pragma omp parallel for
         for (int j = 0; j < t[i]->size; j++) {
             unsigned int k = j % src_stride;  // Pos (index) in the stride (src)
             unsigned int stride_idx = j / src_stride;  // Index of the stride (src/dst)
@@ -371,6 +371,54 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
     _profile(_CPU_CONCAT, 1);
 }
 
+void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsigned int axis){
+    // Tensor A: Reserve memory
+    unsigned int ndim = A->ndim;  // Shared
+    auto* A_indices = new unsigned int[ndim];
+    auto* A_shape = new unsigned int[ndim];
+    auto* A_strides = new unsigned int[ndim];
+
+    // Tensor A: Copy data
+    std::copy(A->shape.begin(), A->shape.end(), A_shape);
+    std::copy(A->stride.begin(), A->stride.end(), A_strides);
+
+    // Tensor B: Reserve memory
+    auto* B_indices = new unsigned int[ndim];
+    auto* B_shape = new unsigned int[ndim];
+    auto* B_strides = new unsigned int[ndim];
+
+    // Tensor A: Copy data
+    std::copy(B->shape.begin(), B->shape.end(), B_shape);
+    std::copy(B->stride.begin(), B->stride.end(), B_strides);
+
+    // Translate tensor
+    for (unsigned int A_address = 0; A_address < A->size; A_address++) {
+        fast_address2indices(A_address, A_indices, A_shape, A_strides, ndim);
+
+        // Get B indices. Same as A indices but changing size in axis to be expanded
+        std::copy(A_indices, A_indices+ndim, B_indices);
+
+        // Get A_indices[axis]=> repeat(3,2,1) AND "sel_index=2" => start at position: 3+2=5
+        unsigned int A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
+        unsigned int B_idx_axis = 0;
+        for (unsigned int j = 0; j < A_idx_axis; j++) { B_idx_axis+= repeats[j]; }
+        B_indices[axis] = B_idx_axis;
+
+        // Copy value t times
+        unsigned int B_address = fast_indices2address(B_indices, B_strides, ndim);
+        for (unsigned int t = 0; t < repeats[A_indices[axis]]; t++) {
+            B->ptr[B_address + t*B_strides[axis]] = A->ptr[A_address];
+        }
+    }
+
+    // Delete stuff
+    delete[] A_indices;
+    delete[] A_shape;
+    delete[] A_strides;
+    delete[] B_indices;
+    delete[] B_shape;
+    delete[] B_strides;
+}
 
 void cpu_sort(Tensor *A, Tensor *B, bool descending, bool stable){
     auto order_desc = std::greater<float>();
