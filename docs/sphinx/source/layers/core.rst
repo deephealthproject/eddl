@@ -220,3 +220,18 @@ Example:
 .. code-block:: c++
 
    l = Resize(l, {35, 35});
+
+
+Repeat
+-------
+
+.. doxygenfunction:: eddl::Repeat(layer parent, const vector<unsigned int>& repeats, unsigned int axis, string name="");
+.. doxygenfunction:: eddl::Repeat(layer parent, unsigned int repeats, unsigned int axis, string name="");
+
+Example:
+
+.. code-block:: c++
+
+   l = Repeat(l, 3, 1);  // Repeat depth (axis=3) 3 times
+   l = Repeat(l, {3, 2, 1}, 1);  // Repeat col 1 => 3 times; col 2 => 2 times; col 3 => 1 time. (repeat=[3,2,1], axis=1)
+
