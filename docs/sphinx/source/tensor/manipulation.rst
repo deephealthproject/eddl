@@ -175,7 +175,7 @@ reshape
 flatten
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::flatten
+.. doxygenfunction:: Tensor::flatten()
 
 .. code-block:: c++
     
@@ -194,6 +194,40 @@ flatten
    Tensor *t2 = Tensor::flatten(t1);  // returns new tensor
    t1->flatten(t2) // static
    
+
+Tiling arrays
+--------------------------
+
+repeat
+^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr)
+.. doxygenfunction:: Tensor::repeat(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr)
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::range(1, 6); t1->reshape_({2, 3});
+    // [
+    // [1 2 3]
+    // [4 5 6]
+    // ]
+
+    // Repeat all rows 2 times. (repeat=2, axis=0)
+    Tensor *t2 = Tensor::repeat(t1, 2, 0);  // returns new tensor
+    // [
+    // [1 2 3]
+    // [1 2 3]
+    // [4 5 6]
+    // [4 5 6]
+    // ]
+
+
+    // Repeat col 1 => 3 times; col 2 => 2 times; col 3 => 1 time. (repeat=[3,2,1], axis=1)
+    Tensor *t2 = Tensor::repeat(t1, {3, 2, 1}, 1);  // returns new tensor
+    // [
+    // [1 1 1 2 2 3]
+    // [4 4 4 5 5 6]
+    // ]
 
 
 Transpose-like operations
@@ -328,6 +362,9 @@ unsqueeze
 Joining arrays
 ---------------
 
+concatenate
+^^^^^^^^^^^^^^^
+
 .. doxygenfunction:: Tensor::concat
 
 Example:
@@ -359,6 +396,32 @@ Example:
    // [[2.00 2.00 5.00 5.00] [2.00 2.00 5.00 5.00]]
    // [[2.00 2.00 5.00 5.00] [2.00 2.00 5.00 5.00]]
    // ]
+
+
+stack
+^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::stack
+
+Example:
+
+.. code-block:: c++
+
+    Tensor* t1 = Tensor::full({2, 2}, 2);
+    Tensor* t2 = Tensor::full({2, 2}, 5);
+
+    Tensor* t3 = Tensor::stack({t1, t2});  // axis = 0
+    // [
+    // [[2.00 2.00] [2.00 2.00]]
+    // [[5.00 5.00] [5.00 5.00]]
+    // ]
+
+    Tensor *t4 = Tensor::stack({t1, t2}, 1);  // axis = 1
+    // [
+    // [[2.00 2.00] [5.00 5.00]]
+    // [[2.00 2.00] [5.00 5.00]]
+    // ]
+
 
 Value operations
 -----------------
