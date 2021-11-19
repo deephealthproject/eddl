@@ -93,6 +93,7 @@ __global__ void gpu_asin(float *A, float *B, long int size);
 __global__ void gpu_atan(float *A, float *B, long int size);
 __global__ void gpu_ceil(float *A, float *B, long int size);
 __global__ void gpu_clamp(float *A, float *B, long int size, float min, float max);
+__global__ void gpu_d_clamp(float *D, float *I, float *PD, long int size, float min, float max);
 __global__ void gpu_cos(float *A, float *B, long int size);
 __global__ void gpu_cosh(float *A, float *B, long int size);
 __global__ void gpu_exp(float *A, float *B, long int size);

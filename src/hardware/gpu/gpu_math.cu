@@ -155,6 +155,16 @@ void gpu_clamp(Tensor *A, Tensor *B, float min, float max){
     check_cuda(cudaDeviceSynchronize(), "clamp");
 }
 
+void gpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max){
+    int device=D->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(D);
+
+    gpu_d_clamp<<<dimGrid,dimBlock>>>(D->ptr, I->ptr, PD->ptr, D->size, min, max);
+    check_cuda(cudaDeviceSynchronize(), "d_clamp");
+}
+
 void gpu_cos(Tensor *A, Tensor *B){
     int device=A->gpu_device;
     cudaSetDevice(device);

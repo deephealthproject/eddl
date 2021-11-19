@@ -91,6 +91,7 @@ void gpu_asin(Tensor *A, Tensor *B);
 void gpu_atan(Tensor *A, Tensor *B);
 void gpu_ceil(Tensor *A, Tensor *B);
 void gpu_clamp(Tensor *A, Tensor *B, float min, float max);
+void gpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max);
 void gpu_cos(Tensor *A, Tensor *B);
 void gpu_cosh(Tensor *A, Tensor *B);
 void gpu_exp(Tensor *A, Tensor *B);
