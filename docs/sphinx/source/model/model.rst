@@ -108,60 +108,32 @@ Result:
 
 
 
-Load
+Load weights
 --------------
 
+Loads the weights of a model (not the topology).
 
-.. doxygenfunction:: eddl::load(model, string&, string)
-
-Example:
-
-.. code-block:: c++
-
-    ...
-    model net = Model({in}, {out});
-
-    // Build model
-    build(net,
-          rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
-          {"categorical_accuracy"}, // Metrics
-           CS_GPU({1,1},100) // one GPU
-    );
-
-    // Load weights
-    load(net, "saved-weights.bin");
-
-    // Evaluate
-    evaluate(net, {x_test}, {y_test});
-
-
-Save
---------------------
-
-
-.. doxygenfunction:: eddl::save(model, string&, string)
+.. doxygenfunction:: eddl::load(model m, const string& fname, string format="bin")
 
 Example:
 
 .. code-block:: c++
 
-    ...
-    model net = Model({in}, {out});
+    load(net, "model-weights.bin");
 
-    // Build model
-    build(net,
-          rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
-          {"categorical_accuracy"}, // Metrics
-           CS_GPU({1,1},100) // one GPU
-    );
-    
-    // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
 
-    // Save weights
-    save(net, "saved-weights.bin");
+Save weights
+-------------
+
+Save the weights of a model (not the topology).
+
+.. doxygenfunction:: eddl::save(model m, const string& fname, string format="bin")
+
+Example:
+
+.. code-block:: c++
+
+    save(net, "model-weights.bin");
 
 
 Learning rate (on the fly)
@@ -180,7 +152,7 @@ Example:
     // Build model
     ...
 
-    setlr(net,{0.005,0.9});
+    setlr(net, {0.005, 0.9});
 
     // Train model
     fit(net, {x_train}, {y_train}, batch_size, epochs);
@@ -216,7 +188,7 @@ Move to device
 
 Move the model to a specific device
 
-.. doxygenfunction:: eddl::toCPU
+.. doxygenfunction:: toCPU(model net, int th=-1)
 
 Example:
 
@@ -224,20 +196,15 @@ Example:
 
     toCPU(net);
 
-.. doxygenfunction:: eddl::toGPU(model net, vector<int> g, int lsb, string mem)
+
+.. doxygenfunction:: toGPU(model net, vector<int> g={1}, int lsb=1, const string& mem="full_mem")
 
 Example:
 
 .. code-block:: c++
     
-    
-    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
-    
-    // Other ways
-    toGPU(net,{1},"low_mem"); // Model synchronization every batch
-    toGPU(net,{1}); // Model synchronization every batch and full_mem mode
-    toGPU(net, "low_mem"); // Model synchronization every batch and use of all available GPUs
-    toGPU(net); // Model synchronization every batch, use of all available GPUs, and full_mem mode
+    toGPU(net, {1}); // Use GPU #1 (implicit: syncronize every batch and use 'full_mem' setup)
+    toGPU(net, {1, 1}, 100, "low_mem"); // Use GPU #1 and #2, syncronize every 100 batches and use 'low_mem' setup
 
 
 Get parameters
