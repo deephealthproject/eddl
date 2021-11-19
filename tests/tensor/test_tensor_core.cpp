@@ -182,6 +182,4 @@ TEST(TensorTestSuite, tensor_repeat){
     Tensor* t2_res = Tensor::repeat(t2, 3, 1);
     t2_res->print(0);
     ASSERT_TRUE(Tensor::equivalent(t2_res, t2_ref, 1e-3f, 0.0f, true, true));
-
-
 }

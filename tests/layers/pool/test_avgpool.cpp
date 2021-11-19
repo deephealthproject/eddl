@@ -287,6 +287,7 @@ TEST(AvgPoolTestSuite, avgpool_cpu_gpu){
         for(auto& s : strides){
             for(auto& k : kernels){
 
+                // TODO: If cuDNN => Ignore examples with asymmetric padding
 
                 // CPU Operation
                 auto *pd_cpu = new PoolDescriptor({k, k}, {s, s}, p);
