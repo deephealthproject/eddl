@@ -2923,7 +2923,7 @@ public:
       *  @brief Repeat elements of a Tensor.
       *
       *  @param A   Input tensor.
-      *  @param repeats   The number of repetitions for each element ("int" or "vector of ints")
+      *  @param repeats   The number of repetitions for the specified dimension ("int" or "vector of ints")
       *  @param axis   The axis along which to repeat values.
       *  @param output   Output tensor
     */

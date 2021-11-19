@@ -338,6 +338,19 @@ void gpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
 }
 
 
+void  gpu_repeat(Tensor* A, Tensor *B, vector<unsigned int> repeats, unsigned int axis){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    unsigned int *gpu_vrepeats;
+    cudaMalloc((void **) &gpu_vrepeats, repeats.size() * sizeof(unsigned int));
+    cudaMemcpy(gpu_vrepeats, &repeats[0], repeats.size() * sizeof(unsigned int), cudaMemcpyHostToDevice);
+
+    setDims(B);  // B is the big one
+    gpu_repeat<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, gpu_vrepeats, axis, A->size, B->size, repeats.size());
+    check_cuda(cudaDeviceSynchronize(), "gpu_repeat");
+}
+
 void gpu_repeat_batch(Tensor *A, Tensor *B){
     int device=A->gpu_device;
     cudaSetDevice(device);

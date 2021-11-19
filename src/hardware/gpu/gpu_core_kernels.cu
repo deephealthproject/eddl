@@ -136,6 +136,15 @@ __global__ void gpu_expand(float* A, float* B, long int size, int* indices){
     }
 }
 
+
+__global__ void gpu_repeat(float *A, float* B, unsigned int* repeats, unsigned int axis, long int A_size, long int B_size, int repeats_size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < B_size){
+    }
+}
+
+
 __global__ void gpu_repeat_batch(float* A, float* B, long int A_size, long int B_size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
