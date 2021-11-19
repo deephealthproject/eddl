@@ -132,34 +132,15 @@ namespace eddl {
   // Computing services
 
   // GPU
-  void toGPU(model net)
-  {
-    net->toGPU({1},1,0);
+  void toGPU(model net, const string& mem){
+      toGPU(net, {1}, 1, mem);
   }
-  void toGPU(model net, vector<int> g)
-  {
-    net->toGPU(g,1,0);
+
+  void toGPU(model net, vector<int> g, const string& mem){
+      toGPU(net, g, 1, mem);
   }
-  void toGPU(model net, vector<int> g,int lsb)
-  {
-    net->toGPU(g,lsb,0);
-  }
-  void toGPU(model net, vector<int> g,string mem)
-  {
-    if (mem=="low_mem") net->toGPU(g,1,2);
-    else if (mem=="mid_mem") net->toGPU(g,1,1);
-    else if (mem=="full_mem") net->toGPU(g,1,0);
-    else msg("Error mem param","toGPU");
-  }
-  void toGPU(model net, string mem)
-  {
-    if (mem=="low_mem") net->toGPU({1},1,2);
-    else if (mem=="mid_mem") net->toGPU({1},1,1);
-    else if (mem=="full_mem") net->toGPU({1},1,0);
-    else msg("Error mem param","toGPU");
-  }
-  void toGPU(model net, vector<int> g,int lsb,string mem)
-  {
+
+  void toGPU(model net, vector<int> g, int lsb, const string& mem){
     if (mem=="low_mem") net->toGPU(g,lsb,2);
     else if (mem=="mid_mem") net->toGPU(g,lsb,1);
     else if (mem=="full_mem") net->toGPU(g,lsb,0);
@@ -167,20 +148,13 @@ namespace eddl {
   }
 
   // CPU
-  void toCPU(model net, int t)
-  {
-    net->toCPU(t);
+  void toCPU(model net, int th){
+    if(th==-1) { th=std::thread::hardware_concurrency(); }
+    net->toCPU(th);
   }
 
-  compserv CS_CPU(){
-    return CS_CPU(-1, "full_mem");
-  }
 
-  compserv CS_CPU(int th){
-    return CS_CPU(th, "full_mem");
-  }
-
-  compserv CS_CPU(int th,string mem){
+  compserv CS_CPU(int th, const string& mem){
     if (mem=="low_mem") return new CompServ(th, {}, {}, 0, 2);
     else if (mem=="mid_mem") return new CompServ(th, {}, {}, 0, 1);
     else if (mem=="full_mem") return new CompServ(th, {}, {}, 0, 0);
@@ -188,16 +162,12 @@ namespace eddl {
     return nullptr; // To silent warnings
   }
 
-  compserv CS_GPU(const vector<int> g){
-    return CS_GPU(g, 1, "full_mem");
-  }
-  compserv CS_GPU(const vector<int> g, string mem){
+  compserv CS_GPU(const vector<int>& g, const string& mem){
     return CS_GPU(g, 1, mem);
   }
-  compserv CS_GPU(const vector<int> g, int lsb){
-    return CS_GPU(g, lsb, "full_mem");
-  }
-  compserv CS_GPU(const vector<int> g, int lsb, string mem){
+
+
+  compserv CS_GPU(const vector<int>& g, int lsb, const string& mem){
     if (mem=="low_mem") return new CompServ(0, g, {}, lsb, 2);
     else if (mem=="mid_mem") return new CompServ(0, g, {}, lsb, 1);
     else if (mem=="full_mem") return new CompServ(0, g, {}, lsb, 0);

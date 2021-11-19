@@ -2920,7 +2920,7 @@ public:
     static Tensor* stack(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
 
     /**
-      *  @brief Repeat elements of a Tensor.
+      *  @brief Repeats the elements of a tensor along the specified dimension.
       *
       *  @param A   Input tensor.
       *  @param repeats   The number of repetitions for the specified dimension ("int" or "vector of ints")

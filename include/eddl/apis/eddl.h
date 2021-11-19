@@ -89,86 +89,63 @@ namespace eddl {
     */
     void set_parameters(model net, const vector<vtensor>& params);
 
+    /**
+      *  @brief Configures the model for training.
+      *
+      *  @param net  Model
+      *  @param o  Optimizer
+      *  @param cs  Computing service
+      *  @param init_weights  'True' if the weights can be initialized to random values, else False (e.g.: Used when loading a pretrained model)
+      *  @return     (void)
+    */
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
 
     /**
-      *  @brief Tell the model which optimizer, losses, metrics and computing services to use.
+      *  @brief Configures the model for training.
       *
       *  @param net  Model
       *  @param o  Optimizer
       *  @param lo  Vector with losses
       *  @param me  Vector with metrics
       *  @param cs  Computing service
+      *  @param init_weights  'True' if the weights can be initialized to random values, else False (e.g.: Used when loading a pretrained model)
       *  @return     (void)
     */
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, bool init_weights=true);
 
     // Computing services
 
-    void toGPU(model net, vector<int> g, int lsb);
-    void toGPU(model net, vector<int> g, string mem);
-    /**
-      *  @brief Assign model operations to the GPU.
-      *
-      *  @param net  Model
-      *  @param g  Vector with gpu ids to allocate the model
-      *  @param lsb  Number of batches to sync model weights
-      *  @param mem  String. One of ``low_mem``, ``mid_mem`` or ``full_mem``.
-      *  @return     (void)
-    */
-    void toGPU(model net, vector<int> g, int lsb, string mem);
-    void toGPU(model net, vector<int> g);
-    void toGPU(model net, string mem);
-    void toGPU(model net);
 
-    //void toGPU(model net, string mem);
+
     /**
       *  @brief Assign model operations to the CPU.
-      *
       *  @param net  Model
-      *  @param t  CPU Threads
+      *  @param th  CPU Threads. (if '-1', use all threads)
       *  @return     (void)
     */
-    void toCPU(model net, int t=std::thread::hardware_concurrency());
+    void toCPU(model net, int th=-1);
+
+
+    /**
+      *  @brief Assign model operations to the GPU.
+      *  @param net  Model
+      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
+      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     (void)
+    */
+    void toGPU(model net, vector<int> g={1}, int lsb=1, const string& mem="full_mem");
+    void toGPU(model net, const string& mem="full_mem");
+    void toGPU(model net, vector<int> g={1}, const string& mem="full_mem");
 
     /**
       *  @brief Executes the code in the CPU.
       *
-      *  @param th  Indicates the number of threads to use (-1 = all available threads)
+      *  @param th  CPU Threads. (if '-1', use all threads)
       *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-    compserv CS_CPU();
+    compserv CS_CPU(int th=-1, const string& mem="full_mem");
 
-
-    /**
-      *  @brief Executes the code in the CPU.
-      *
-      *  @param th  Indicates the number of threads to use (-1 = all available threads)
-      *  @return     The computer service itself.
-    */
-    compserv CS_CPU(int th);
-
-
-    /**
-      *  @brief Executes the code in the GPU.
-      *
-      *  @param th  Integer to set which GPUs will be used (1=on, 0=off)
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
-      *  @return     The computer service itself.
-    */
-
-    compserv CS_CPU(int th,string mem);
-
-
-    /**
-      *  @brief Executes the code in the GPU.
-      *
-      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
-      *  @return     The computer service itself.
-    */
-
-    compserv CS_GPU(const vector<int> g);
 
     /**
       *  @brief Executes the code in the GPU.
@@ -177,16 +154,7 @@ namespace eddl {
       *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-    compserv CS_GPU(const vector<int> g, string mem);
-
-    /**
-      *  @brief Executes the code in the GPU.
-      *
-      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
-      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different GPUs
-      *  @return     The computer service itself.
-    */
-    compserv CS_GPU(const vector<int> g, int lsb);
+    compserv CS_GPU(const vector<int>& g, const string& mem="full_mem");
 
     /**
       *  @brief Executes the code in the GPU.
@@ -196,46 +164,7 @@ namespace eddl {
       *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-    compserv CS_GPU(const vector<int> g, int lsb,string mem);
-
-    /**
-      *  @brief Executes the code in the FPGA.
-      *
-      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
-      *  @return     The computer service itself.
-    */
-
-//    compserv CS_FPGA(const vector<int> g);
-
-    /**
-      *  @brief Executes the code in the FPGA.
-      *
-      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
-      *  @return     The computer service itself.
-    */
-//    compserv CS_FPGA(const vector<int> g, string mem);
-
-    /**
-      *  @brief Executes the code in the FPGA.
-      *
-      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
-      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different FPGAs
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
-      *  @return     The computer service itself.
-    */
-//    compserv CS_FPGA(const vector<int> g, int lsb);
-
-    /**
-      *  @brief Executes the code in the FPGA.
-      *
-      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
-      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different FGPAs
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
-      *  @return     The computer service itself.
-    */
-//    compserv CS_FPGA(const vector<int> g, int lsb,string mem);
+    compserv CS_GPU(const vector<int>& g, int lsb, const string& mem="full_mem");
 
 
     /**
@@ -245,7 +174,7 @@ namespace eddl {
       *  @param lsb  (Multi-fpga setting) Number of batches to run before synchronizing the weights of the different FPGAs
       *  @return     The computer service itself.
     */
-    compserv CS_FPGA(const vector<int> &f,int lsb=1);
+    compserv CS_FPGA(const vector<int> &f, int lsb=1);
 
     /**
       *  @brief Executes the code through the COMP Superscalar (COMPSs) framework.
@@ -291,6 +220,7 @@ namespace eddl {
       *  @return     (void) Loads the weights
     */
     void load(model m, const string& fname, string format="bin");
+
     /**
       *  @brief  Save weights of a model.
       *
