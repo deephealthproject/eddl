@@ -128,7 +128,7 @@ Numpy-like operations over a raw-tensor object
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
 | tile          | ⚫️   | ⚫️   |  	Construct an array by repeating A the number of times given by reps |
-| repeat        | 🟢️    | 🟢️️️ ️   |  Repeat elements of an array  (only implemented for dimension 0)|
+| repeat        | 🟢️    | 🟢️️️ ️   |  Repeats the elements of a tensor along the specified dimension |
 
 
 ### Adding and removing elements
