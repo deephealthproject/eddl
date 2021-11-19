@@ -646,6 +646,13 @@ namespace eddl {
     return new LConv(parent, filters, {1, 1}, strides, "none", {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
+    layer DepthwiseConv2D(layer parent, const vector<int> &kernel_size, const vector<int> &strides, string padding, bool use_bias, const vector<int> &dilation_rate, string name){
+      // A single convolutional filter is applied to each input channel
+      // To achieve so, we can have one filter per channel (3xdepth) and then use groups to force each filter to have depth=1
+      int filters = parent->output->shape[2];  // one filter per channel (...with depth D)
+      int groups = filters;  // one filter per channel (...with depth 1)
+      return new LConv(parent, filters, kernel_size, strides, "none", {}, filters, dilation_rate, use_bias, name, DEV_CPU, 0);
+    }
 
   layer PointwiseConv2D(layer parent, int filters,
 			const vector<int> &strides, bool use_bias,

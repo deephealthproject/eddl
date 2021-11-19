@@ -1022,6 +1022,20 @@ namespace eddl {
                         int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
     /**
+      *  @brief DepthwiseConv 2D convolution
+      *
+      *  @param parent  Parent layer
+      *  @param kernel_size  The depth, height and width of the convolution window
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param use_bias  Boolean, whether the layer uses a bias vector
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer DepthwiseConv2D(layer parent, const vector<int> &kernel_size, const vector<int> &strides = {1, 1}, string padding = "same",
+                          bool use_bias = true, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    /**
       *  @brief Regular densely-connected NN layer.
       *
       *  @param parent  Parent layer
