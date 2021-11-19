@@ -1014,8 +1014,12 @@ namespace eddl {
     return new LLog10(l, "", DEV_CPU, 0);
   }
 
-  layer Clamp(layer l, float min, float max){
-    return new LClamp(l, min, max, "", DEV_CPU, 0);
+  layer Clamp(layer l, float min, float max, string name){
+    return new LClamp(l, min, max, name, DEV_CPU, 0);
+  }
+
+  layer Clip(layer l, float min, float max, string name){
+    return Clamp(l, min, max, name); // Alias for clamp
   }
 
   layer Mult(layer l1, layer l2){

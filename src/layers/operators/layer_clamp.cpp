@@ -38,7 +38,7 @@ void LClamp::forward() {
 }
 
 void LClamp::backward() {
-    msg("NotImplementedError: Only available for inference", "LClamp::backward");
+    Tensor::d_clamp(delta, input, parent[0]->delta, this->min, this->max);
 }
 
 Layer *LClamp::share(int c, int bs, vector<Layer *> p) {

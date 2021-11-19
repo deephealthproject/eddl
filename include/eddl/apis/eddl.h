@@ -1733,14 +1733,16 @@ namespace eddl {
     layer Log10(layer l);
 
     /**
-      *  @brief Layer that clamps the values of another layer
+      *  @brief Clamps all elements in input into the range [ min, max ].
       *
-      *  @param l  Parent layer
-      *  @param min  Minimum value
-      *  @param max  Maximum value
-      *  @return     Parent layer `l` after computing its logarithm to base 10
+      *  @param parent  Parent layer
+      *  @param min  Lower-bound of the range to be clamped to
+      *  @param max  Upper-bound of the range to be clamped to
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
     */
-    layer Clamp(layer l, float min, float max);
+    layer Clamp(layer parent, float min, float max, string name = "");
+    layer Clip(layer parent, float min, float max, string name = "");
 
     /**
       *  @brief  Layer that computes the element-wise multiplication of two layers.
