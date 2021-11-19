@@ -660,7 +660,7 @@ Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned 
 
     // Create new tensor
     if(output==nullptr){
-        output = Tensor::zeros(new_shape, A->device);
+        output = new Tensor(new_shape, A->device);
     }else{
         // Check dimensions
         if(output->shape!=new_shape){
@@ -676,6 +676,7 @@ Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned 
 #ifdef cGPU
     else if (A->isGPU() && output->isGPU())
     {
+        msg("Not implemented for GPU yet", "Tensor::repeat");
         //gpu_repeat(A, output, repeats, axis);
     }
 #endif
