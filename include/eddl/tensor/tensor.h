@@ -1056,6 +1056,7 @@ public:
     *   @param max The upper bound of the clamping range.
     */
     static void clamp(Tensor *A, Tensor *B, float min, float max);
+    static void d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max);
 
     /**
     *   @brief In-place clamp all elements in the input tensor to the range [-infty, max].

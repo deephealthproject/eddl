@@ -91,6 +91,7 @@ void cpu_asin(Tensor *A, Tensor *B);
 void cpu_atan(Tensor *A, Tensor *B);
 void cpu_ceil(Tensor *A, Tensor *B);
 void cpu_clamp(Tensor *A, Tensor *B, float min, float max);
+void cpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max);
 void cpu_cos(Tensor *A, Tensor *B);
 void cpu_cosh(Tensor *A, Tensor *B);
 void cpu_exp(Tensor *A, Tensor *B);
