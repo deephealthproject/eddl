@@ -1131,6 +1131,18 @@ namespace eddl {
     layer Flatten(layer parent, string name = "");
 
     /**
+      *  @brief Repeats the elements of a tensor (layer's output) along the specified dimension.
+      *
+      *  @param parent  Parent layer
+      *  @param repeats  The number of repetitions for the specified dimension ("int" or "vector of ints")
+      *  @param axis  The axis along which to repeat values. (Batch is ignored)
+      *  @return     Output of repeat operation
+    */
+    layer Repeat(layer parent, const vector<unsigned int>& repeats, unsigned int axis, string name="");
+    layer Repeat(layer parent, unsigned int repeats, unsigned int axis, string name="");
+
+
+    /**
       *  @brief Dimension of size one is removed at the specified position. (Batch dimension is ignored)
       *
       *  @param parent  Parent layer
