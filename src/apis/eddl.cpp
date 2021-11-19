@@ -747,6 +747,26 @@ namespace eddl {
     return Reshape(parent, {-1}, name);
   }
 
+  layer Repeat(layer parent, const vector<unsigned int>& repeats, unsigned int axis, string name){
+    if(axis==-1){ axis = parent->output->ndim-1; }  // Select last dimension
+    else { axis += 1; } // Batch is ignored
+
+    return new LRepeat(parent, repeats, axis, name, DEV_CPU, 0);
+  }
+
+  layer Repeat(layer parent, unsigned int repeats, unsigned int axis, string name){
+      if(axis==-1){ axis = parent->output->ndim-1; }  // Select last dimension
+      else { axis += 1; } // Batch is ignored
+
+    // Check axis values
+    if(axis<0 || axis > parent->output->ndim-1){
+      msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Repeat");
+    }
+    // Repeat n times each dimension
+    vector<unsigned int> vrepeats = vector<unsigned int>(parent->output->shape[axis], repeats);
+    return new LRepeat(parent, vrepeats, axis, name, DEV_CPU, 0);
+  }
+
   layer Squeeze(layer parent, const int axis, string name){
     return new LSqueeze(parent, axis, name, DEV_CPU, 0);
   }

@@ -228,6 +228,29 @@ public:
 
 };
 
+
+class LRepeat : public LinLayer {
+public:
+    static int total_layers;
+    vector<unsigned int> repeats;
+    unsigned int axis;
+
+    // constructors and clones
+    LRepeat(Layer *parent, const vector<unsigned int>& repeats, unsigned int axis, string name, int dev, int mem);
+    LRepeat(Layer *parent, unsigned int repeats, unsigned int axis, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
 /// UpSampling3D Layer
 class LUpSampling3D : public LinLayer {
 public:
