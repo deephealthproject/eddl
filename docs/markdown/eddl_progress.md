@@ -63,7 +63,7 @@
 | Conv2D            | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | 2D convolution |
 | Conv3D            |  ⚫️️ | ⚫️  |🟢️️ | 🟢️ | 3D convolution |
 | Pointwise         | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | 2D pointwise convolution |
-| DepthwiseConv2D   | 🔴️ | 🔴️  |🔴️ | 🔴️ | 2D depthsise convolution |
+| DepthwiseConv2D   | 🔴️ | 🔴️  |🟢️ | 🟢️ | 2D depthsise convolution |
 | TransposedConv2D  | ⚫️️ | ⚫️   |🟢️| 🟢️ | 2D Transposed convolution |
 | TransposedConv3D  | ⚫️️ | ⚫️   |🟢️| 🟢️ | 3D Transposed convolution |
 | UpSampling2D        | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
