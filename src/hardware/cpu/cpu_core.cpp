@@ -393,22 +393,22 @@ void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsig
 
     // Translate tensor
     for (unsigned int A_address = 0; A_address < A->size; A_address++) {
-        fast_address2indices(A_address, A_indices, A_shape, A_strides, ndim);
-
-        // Get B indices. Same as A indices but changing size in axis to be expanded
-        std::copy(A_indices, A_indices+ndim, B_indices);
-
-        // Get A_indices[axis]=> repeat(3,2,1) AND "sel_index=2" => start at position: 3+2=5
-        unsigned int A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
-        unsigned int B_idx_axis = 0;
-        for (unsigned int j = 0; j < A_idx_axis; j++) { B_idx_axis+= repeats[j]; }
-        B_indices[axis] = B_idx_axis;
-
-        // Copy value t times
-        unsigned int B_address = fast_indices2address(B_indices, B_strides, ndim);
-        for (unsigned int t = 0; t < repeats[A_indices[axis]]; t++) {
-            B->ptr[B_address + t*B_strides[axis]] = A->ptr[A_address];
-        }
+//        fast_address2indices(A_address, A_indices, A_shape, A_strides, ndim);
+//
+//        // Get B indices. Same as A indices but changing size in axis to be expanded
+//        std::copy(A_indices, A_indices+ndim, B_indices);
+//
+//        // Get A_indices[axis]=> repeat(3,2,1) AND "sel_index=2" => start at position: 3+2=5
+//        unsigned int A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
+//        unsigned int B_idx_axis = 0;
+//        for (unsigned int j = 0; j < A_idx_axis; j++) { B_idx_axis+= repeats[j]; }
+//        B_indices[axis] = B_idx_axis;
+//
+//        // Copy value t times
+//        unsigned int B_address = fast_indices2address(B_indices, B_strides, ndim);
+//        for (unsigned int t = 0; t < repeats[A_indices[axis]]; t++) {
+//            B->ptr[B_address + t*B_strides[axis]] = A->ptr[A_address];
+//        }
     }
 
     // Delete stuff
