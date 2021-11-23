@@ -71,11 +71,25 @@ string get_parent_dir(const string& fname);
 vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch=false);
 vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch=false);
 
-//inline void fast_address2indices(unsigned int address, unsigned int* indices, const unsigned int* shape, const unsigned int* strides, unsigned int ndim);
+void fast_address2indices(unsigned int address, unsigned int* indices, const unsigned int* shape, const unsigned int* strides, unsigned int ndim);
 vector<int> address2indices(unsigned int address, const vector<int>& shape, const vector<int>& strides);
 
-//inline unsigned int fast_indices2address(const unsigned int* indices, const unsigned int* strides, unsigned int ndim);
-unsigned int indices2address(const vector<int>& indices, const vector<int>& strides);
+// https://isocpp.org/wiki/faq/inline-functions#inline-member-fns
+inline unsigned int fast_indices2address(const unsigned int* indices, const unsigned int* strides, unsigned int ndim){
+    unsigned int address = 0;
+    for (int i=0; i< ndim; i++){
+        address += indices[i] * strides[i];
+    }
+    return address;
+}
+
+
+inline void fast_address2indices(unsigned int address, unsigned int* indices, const unsigned int* shape, const unsigned int* strides, unsigned int ndim){
+    for(int i=0; i<ndim; i++) {
+        indices[i] = address / strides[i] % shape[i];
+    }
+}
+
 
 template<typename T>
 string printVector(vector<T> myvector){
