@@ -1,5 +1,22 @@
 # Development
 
+## Conda environment
+
+```bash
+# Create new environment
+conda env create -f environment.yml
+
+# Update existing environment
+conda env update --file environment.yml --prune
+
+# Remove environment
+conda remove --name eddl --all
+
+# Activate environment
+conda activate eddl
+```
+
+
 ## CMake tutorials
 
 ```
