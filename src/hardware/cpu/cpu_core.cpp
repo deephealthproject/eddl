@@ -372,52 +372,43 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
 }
 
 void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsigned int axis){
-    // Tensor A: Reserve memory
-    unsigned int ndim = A->ndim;  // Shared
-    auto* A_indices = new unsigned int[ndim];
-    auto* A_shape = new unsigned int[ndim];
-    auto* A_strides = new unsigned int[ndim];
+//    // Tensor A: Reserve memory
+//    int max_threads = omp_get_max_threads();
+//    omp_set_num_threads(max_threads);
 
-    // Tensor A: Copy struct  data
-    std::copy(A->shape.begin(), A->shape.end(), A_shape);
-    std::copy(A->stride.begin(), A->stride.end(), A_strides);
-
-    // Tensor B: Reserve memory
-    auto* B_indices = new unsigned int[ndim];
-    auto* B_shape = new unsigned int[ndim];
-    auto* B_strides = new unsigned int[ndim];
-
-    // Tensor B: Copy struct data
-    std::copy(B->shape.begin(), B->shape.end(), B_shape);
-    std::copy(B->stride.begin(), B->stride.end(), B_strides);
+    unsigned int A_address;
+    unsigned int B_address;
+    unsigned int A_idx_axis;
+    unsigned int B_idx_axis;
 
     // Translate tensor
-    for (unsigned int A_address = 0; A_address < A->size; A_address++) {
-        fast_address2indices(A_address, A_indices, A_shape, A_strides, ndim);
+//    #pragma omp parallel for private(A_address, B_address, A_idx_axis, B_idx_axis)
+    for (A_address = 0; A_address < A->size; A_address++) {
+        auto* A_indices = new unsigned int[A->ndim];
+        auto* B_indices = new unsigned int[B->ndim];
+
+        // Get A Indices
+        fast_address2indices(A_address, A_indices, reinterpret_cast<const unsigned int *>(A->shape.data()),
+                             reinterpret_cast<const unsigned int *>(A->stride.data()), A->ndim);
 
         // Get B indices. Same as A indices but changing size in axis to be expanded
-        std::copy(A_indices, A_indices+ndim, B_indices);
-
+        std::copy(A_indices, A_indices+A->ndim, B_indices);  // Copy A indices
         // Get A_indices[axis]=> repeat(3,2,1) AND "sel_index=2" => start at position: 3+2=5
-        unsigned int A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
-        unsigned int B_idx_axis = 0;
+        A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
+        B_idx_axis = 0;
         for (unsigned int j = 0; j < A_idx_axis; j++) { B_idx_axis+= repeats[j]; }
         B_indices[axis] = B_idx_axis;
 
         // Copy value t times
-        unsigned int B_address = fast_indices2address(B_indices, B_strides, ndim);
+        B_address = fast_indices2address(B_indices, reinterpret_cast<const unsigned int *>(B->stride.data()), B->ndim);
         for (unsigned int t = 0; t < repeats[A_indices[axis]]; t++) {
-            B->ptr[B_address + t*B_strides[axis]] = A->ptr[A_address];
+            B->ptr[B_address + t*B->stride[axis]] = A->ptr[A_address];
         }
-    }
 
-    // Delete stuff
-    delete[] A_indices;
-    delete[] A_shape;
-    delete[] A_strides;
-    delete[] B_indices;
-    delete[] B_shape;
-    delete[] B_strides;
+        // Delete stuff
+        delete[] A_indices;
+        delete[] B_indices;
+    }
 }
 
 void cpu_sort(Tensor *A, Tensor *B, bool descending, bool stable){
