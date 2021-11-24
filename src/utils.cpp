@@ -585,12 +585,11 @@ unsigned int indices2address(const vector<int>& indices, const vector<int>& stri
         msg("Indices and strides must have the same size", "utils::indices2address");
 
     }
-
     // Compute address
     unsigned int address = fast_indices2address(reinterpret_cast<const unsigned int *>(indices.data()),
                                                 reinterpret_cast<const unsigned int *>(strides.data()), indices.size());
 
-    return 0;
+    return address;
 }
 
 WrappingMode getWrappingMode(string mode){

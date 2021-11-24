@@ -71,8 +71,8 @@ string get_parent_dir(const string& fname);
 vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch=false);
 vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch=false);
 
-void fast_address2indices(unsigned int address, unsigned int* indices, const unsigned int* shape, const unsigned int* strides, unsigned int ndim);
 vector<int> address2indices(unsigned int address, const vector<int>& shape, const vector<int>& strides);
+unsigned int indices2address(const vector<int>& indices, const vector<int>& strides);
 
 // https://isocpp.org/wiki/faq/inline-functions#inline-member-fns
 inline unsigned int fast_indices2address(const unsigned int* indices, const unsigned int* strides, unsigned int ndim){
