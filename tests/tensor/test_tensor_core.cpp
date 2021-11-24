@@ -211,4 +211,21 @@ TEST(TensorTestSuite, tensor_repeat){
     Tensor* t2_res = Tensor::repeat(t2, 3, 1);
     t2_res->print(0);
     ASSERT_TRUE(Tensor::equivalent(t2_res, t2_ref, 1e-3f, 0.0f, true, true));
+
+    delete t1; delete t1_res;
+    delete t2; delete t2_res;
+
+    // Test GPU
+#ifdef cGPU
+    // Test #1
+    Tensor* t1_cpu = Tensor::randn({1, 3, 128, 128});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+
+    Tensor* t1_cpu_res = Tensor::repeat(t1_cpu, 128, 0);
+    Tensor* t1_gpu_res = Tensor::repeat(t1_gpu, 128, 0); t1_gpu_res->toCPU();
+    ASSERT_TRUE(Tensor::equivalent(t1_cpu_res, t1_gpu_res, 1e-3f, 0.0f, true, true));
+
+    delete t1_cpu; delete t1_cpu_res;
+    delete t1_gpu; delete t1_gpu_res;
+#endif
 }
