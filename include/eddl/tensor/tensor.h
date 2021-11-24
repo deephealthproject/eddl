@@ -2930,6 +2930,8 @@ public:
     */
     static Tensor* repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr, bool derivative=false);
     static Tensor* repeat(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr, bool derivative=false);
+    static Tensor* repeat_desc(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr);
+    static Tensor* repeat_desc(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.

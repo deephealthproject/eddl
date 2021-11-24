@@ -636,6 +636,7 @@ Tensor* Tensor::stack(const vector<Tensor*> A, unsigned int axis, Tensor* output
 }
 
 Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis, Tensor* output, bool derivative){
+    // NOT USED ANYWHERE. REPEAT DONE THROUGH A SELECT
     // Check axis values
     if(axis<0 || axis > A->ndim-1){
         msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Tensor::repeat");
@@ -697,6 +698,43 @@ Tensor* Tensor::repeat(Tensor* A, unsigned int repeats, unsigned int axis, Tenso
 
     // Call main function
     return Tensor::repeat(A, vrepeats, axis, output, derivative);
+}
+
+Tensor* Tensor::repeat_desc(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis, Tensor* output){
+    // Build descriptor
+    auto *rd = new RepeatDescriptor(repeats, axis, A->device);
+    rd->build(A->shape);
+
+    // Create new tensor
+    if(output==nullptr){
+        output = new Tensor(rd->oshape, A->device);
+    }else{
+        // Check dimensions
+        if(output->shape!=rd->oshape){
+            msg("The dimension of the output tensor is incorrect", "Tensor::repeat_desc");
+        }else if(output->device != A->device){
+            msg("The output tensor and the input ones must be on the same device", "Tensor::repeat_desc");
+        }
+    }
+
+    // Fill new tensor
+    Tensor::select(A, output, rd);
+
+    delete rd;
+    return output;
+}
+
+
+Tensor* Tensor::repeat_desc(Tensor* A, unsigned int repeats, unsigned int axis, Tensor* output){
+    // Check axis values
+    if(axis<0 || axis > A->ndim-1){
+        msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Tensor::repeat_desc");
+    }
+    // Repeat n times each dimension
+    vector<unsigned int> vrepeats = vector<unsigned int>(A->shape[axis], repeats);
+
+    // Call main function
+    return Tensor::repeat_desc(A, vrepeats, axis, output);
 }
 
 Tensor* Tensor::select(const vector<string>& indices){
