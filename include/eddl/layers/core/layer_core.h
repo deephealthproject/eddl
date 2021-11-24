@@ -232,8 +232,7 @@ public:
 class LRepeat : public LinLayer {
 public:
     static int total_layers;
-    vector<unsigned int> repeats;
-    unsigned int axis;
+    RepeatDescriptor *rd;
 
     // constructors and clones
     LRepeat(Layer *parent, const vector<unsigned int>& repeats, unsigned int axis, string name, int dev, int mem);
@@ -242,6 +241,8 @@ public:
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    ~LRepeat() override;
 
     void forward() override;
 

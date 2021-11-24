@@ -35,23 +35,16 @@ LRepeat::LRepeat(Layer *parent, const vector<unsigned int>& repeats, unsigned in
         msg("The size of 'repeats' (" + std::to_string(repeats.size()) + ") must equal the size the the dimension to repeat " + std::to_string(input->shape[axis]) + ")", "LRepeat::LRepeat");
     }
 
-    // Set output
-    vector<int> oshape;
-    for(int i=0; i<input->ndim; i++){
-        unsigned int dsize = 0;
-        if(i!=axis){
-            dsize = input->shape[i];
-        }else{
-            for(auto &d : repeats) { dsize+= d; }
-        }
-        oshape.push_back((int)dsize);
-    }
-    output = new Tensor(oshape, dev);
+    // Build descriptor
+    vector<int> shape_single_batch(input->shape.begin()+1, input->shape.end());
+    shape_single_batch.insert(shape_single_batch.begin(), 1);
+    this->rd = new RepeatDescriptor(repeats, axis, dev);
+    this->rd->build(shape_single_batch);
 
-    // Save params
-    this->repeats = vector<unsigned int> (repeats);
-    this->axis = axis;
+    // Set output tensors
+    output=new Tensor(this->rd->oshape, dev);
 
+    // Set parent
     parent->addchild(this);
     addparent(parent);
 }
@@ -59,24 +52,51 @@ LRepeat::LRepeat(Layer *parent, const vector<unsigned int>& repeats, unsigned in
 // This constructor is also in the API with sanity checks
 LRepeat::LRepeat(Layer *parent, unsigned int repeats, unsigned int axis, string name, int dev, int mem) : LRepeat(parent, vector<unsigned int>(parent->output->shape[axis], repeats), axis, name, dev, mem) {}
 
-void LRepeat::forward() {
-    Tensor::repeat(this->input, this->repeats, axis, this->output);
+LRepeat::~LRepeat(){
+    delete rd;
 }
 
-void LRepeat::backward() {
-    Tensor::repeat(parent[0]->delta, this->repeats, axis, delta, true);
+void LRepeat::forward(){
+    tensorNN::select(this->input, this->output, this->rd);
+
+//    // Repeat function n tims
+//    int times = 25;
+//    clock_t begin = clock();
+//    for(int i=0; i<times; i++) {
+//    tensorNN::select(this->input, this->output, this->rd);
+////        Tensor::repeat(this->input, this->rd->vrepeats, this->rd->axis, this->output);
+//    }
+//    clock_t end = clock();
+//    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+//    std::cout << "[Forward] Time elapsed: " << elapsed_secs << "s" << std::endl;
+//    std::cout << "[Forward] Time elapsed per function: " << elapsed_secs/times << "s" << std::endl;
 }
 
+void LRepeat::backward(){
+    tensorNN::select_back(this->delta, this->parent[0]->delta, this->rd);
+
+//    // Repeat function n tims
+//    int times = 25;
+//    clock_t begin = clock();
+//    for(int i=0; i<times; i++) {
+//    tensorNN::select_back(this->delta, this->parent[0]->delta, this->rd);
+////        Tensor::repeat(this->input, this->rd->vrepeats, this->rd->axis, this->output, true);
+//    }
+//    clock_t end = clock();
+//    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+//    std::cout << "[Backward] Time elapsed: " << elapsed_secs << "s" << std::endl;
+//    std::cout << "[Backward] Time elapsed per function: " << elapsed_secs/times << "s" << std::endl;
+}
 
 Layer *LRepeat::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LRepeat(p[0], this->repeats, this->axis, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LRepeat(p[0], this->rd->vrepeats, this->rd->axis, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LRepeat::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LRepeat(p[0], this->repeats, this->axis, this->name, todev, this->mem_level);
+    auto *n = new LRepeat(p[0], this->rd->vrepeats, this->rd->axis, this->name, todev, this->mem_level);
     n->orig = this;
 
     return n;

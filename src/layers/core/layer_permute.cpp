@@ -37,7 +37,7 @@ LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev, int me
     // Set input
     input=parent->output;
 
-        // Build descriptor
+    // Build descriptor
     vector<int> shape_no_batch(input->shape.begin()+1, input->shape.end());
     sd = new PermuteDescriptor(dims, dev);
     sd->build(shape_no_batch);
