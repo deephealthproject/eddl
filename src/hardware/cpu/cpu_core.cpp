@@ -11,6 +11,7 @@
 #include "eddl/profiling.h"
 #include <algorithm>
 #include <numeric>
+#include <omp.h>
 
 int num_instances[_NUM_CPU_FUNCS];
 float mb_memory_needed;
@@ -371,7 +372,8 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
     _profile(_CPU_CONCAT, 1);
 }
 
-void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsigned int axis){
+void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsigned int axis, bool derivative){
+    // if derivative==True: A must be parent_delta and B delta
 //    // Tensor A: Reserve memory
 //    int max_threads = omp_get_max_threads();
 //    omp_set_num_threads(max_threads);
@@ -402,7 +404,11 @@ void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsig
         // Copy value t times
         B_address = fast_indices2address(B_indices, reinterpret_cast<const unsigned int *>(B->stride.data()), B->ndim);
         for (unsigned int t = 0; t < repeats[A_indices[axis]]; t++) {
-            B->ptr[B_address + t*B->stride[axis]] = A->ptr[A_address];
+            if(!derivative){
+                B->ptr[B_address + t*B->stride[axis]] = A->ptr[A_address];
+            }else{
+                A->ptr[A_address] += B->ptr[B_address + t*B->stride[axis]];  // parent_delta += delta
+            }
         }
 
         // Delete stuff

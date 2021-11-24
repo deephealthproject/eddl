@@ -138,11 +138,10 @@ __global__ void gpu_expand(float* A, float* B, long int size, int* indices){
 
 
 __global__ void gpu_repeat(float *A, float* B, unsigned int* repeats, unsigned int axis,
-                           long int A_size, long int B_size, unsigned int* A_shape, unsigned int* B_shape,
-                           unsigned int* A_strides,  unsigned int* B_strides, unsigned int ndim, int repeats_size){
+                           long int A_size, unsigned int* A_shape, unsigned int* A_strides,  unsigned int* B_strides, unsigned int ndim, bool derivative){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if (thread_id_x < B_size){
+    if (thread_id_x < A_size){
         auto* A_indices = new unsigned int[ndim];
         auto* B_indices = new unsigned int[ndim];
 
@@ -167,7 +166,11 @@ __global__ void gpu_repeat(float *A, float* B, unsigned int* repeats, unsigned i
 
         // Copy value t times
         for (unsigned int t = 0; t < repeats[A_indices[axis]]; t++) {
-            B[B_address + t*B_strides[axis]] = A[thread_id_x];
+            if (!derivative){
+                B[B_address + t*B_strides[axis]] = A[thread_id_x];
+            }else{
+                A[thread_id_x] += B[B_address + t*B_strides[axis]];
+            }
         }
 
         // Delete stuff

@@ -45,7 +45,7 @@ void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int i
 
 void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
 
-void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsigned int axis);
+void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsigned int axis, bool derivative);
 
 // CPU: Create
 void cpu_range(Tensor *A, float min, float step);

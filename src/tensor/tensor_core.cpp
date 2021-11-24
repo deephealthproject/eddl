@@ -635,7 +635,7 @@ Tensor* Tensor::stack(const vector<Tensor*> A, unsigned int axis, Tensor* output
     return output;
 }
 
-Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis, Tensor* output){
+Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis, Tensor* output, bool derivative){
     // Check axis values
     if(axis<0 || axis > A->ndim-1){
         msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Tensor::repeat");
@@ -671,12 +671,12 @@ Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned 
     }
 
     if (A->isCPU() && output->isCPU()){
-        cpu_repeat(A, output, repeats, axis);
+        cpu_repeat(A, output, repeats, axis, derivative);
     }
 #ifdef cGPU
     else if (A->isGPU() && output->isGPU())
     {
-        gpu_repeat(A, output, repeats, axis);
+        gpu_repeat(A, output, repeats, axis, derivative);
     }
 #endif
 #ifdef cFPGA
@@ -687,7 +687,7 @@ Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned 
     return output;
 }
 
-Tensor* Tensor::repeat(Tensor* A, unsigned int repeats, unsigned int axis, Tensor* output){
+Tensor* Tensor::repeat(Tensor* A, unsigned int repeats, unsigned int axis, Tensor* output, bool derivative){
     // Check axis values
     if(axis<0 || axis > A->ndim-1){
         msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Tensor::repeat");
@@ -696,7 +696,7 @@ Tensor* Tensor::repeat(Tensor* A, unsigned int repeats, unsigned int axis, Tenso
     vector<unsigned int> vrepeats = vector<unsigned int>(A->shape[axis], repeats);
 
     // Call main function
-    return Tensor::repeat(A, vrepeats, axis, output);
+    return Tensor::repeat(A, vrepeats, axis, output, derivative);
 }
 
 Tensor* Tensor::select(const vector<string>& indices){

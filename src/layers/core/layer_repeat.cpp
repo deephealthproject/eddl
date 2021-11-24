@@ -64,7 +64,7 @@ void LRepeat::forward() {
 }
 
 void LRepeat::backward() {
-    msg("Not implemented error", "LRepeat::LRepeat");
+    Tensor::repeat(parent[0]->delta, this->repeats, axis, delta, true);
 }
 
 

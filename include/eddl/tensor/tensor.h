@@ -2926,9 +2926,10 @@ public:
       *  @param repeats   The number of repetitions for the specified dimension ("int" or "vector of ints")
       *  @param axis   The axis along which to repeat values.
       *  @param output   Output tensor
+      *  @param derivative   Apply derivative for: output = repeat(A)
     */
-    static Tensor* repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr);
-    static Tensor* repeat(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr);
+    static Tensor* repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr, bool derivative=false);
+    static Tensor* repeat(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr, bool derivative=false);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.

@@ -340,7 +340,7 @@ void gpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
 }
 
 
-void  gpu_repeat(Tensor* A, Tensor *B, vector<unsigned int> repeats, unsigned int axis){
+void  gpu_repeat(Tensor* A, Tensor *B, vector<unsigned int> repeats, unsigned int axis, bool derivative){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -352,10 +352,6 @@ void  gpu_repeat(Tensor* A, Tensor *B, vector<unsigned int> repeats, unsigned in
     cudaMalloc((void **) &gpu_A_shape, A->ndim * sizeof(unsigned int));
     cudaMemcpy(gpu_A_shape, A->shape.data(), A->ndim * sizeof(unsigned int), cudaMemcpyHostToDevice);
 
-    unsigned int *gpu_B_shape;
-    cudaMalloc((void **) &gpu_B_shape, B->ndim * sizeof(unsigned int));
-    cudaMemcpy(gpu_B_shape, B->shape.data(), B->ndim * sizeof(unsigned int), cudaMemcpyHostToDevice);
-
     unsigned int *gpu_A_strides;
     cudaMalloc((void **) &gpu_A_strides, A->ndim * sizeof(unsigned int));
     cudaMemcpy(gpu_A_strides, A->stride.data(), A->ndim * sizeof(unsigned int), cudaMemcpyHostToDevice);
@@ -365,14 +361,12 @@ void  gpu_repeat(Tensor* A, Tensor *B, vector<unsigned int> repeats, unsigned in
     cudaMemcpy(gpu_B_strides, B->stride.data(), B->ndim * sizeof(unsigned int), cudaMemcpyHostToDevice);
 
     setDims(A);  // A is the small one. We should use B as is the big one, but this is a direct translation from the CPU code
-    gpu_repeat<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, gpu_vrepeats, axis, A->size, B->size, 
-                                     gpu_A_shape, gpu_B_shape, gpu_A_strides, gpu_B_strides, A->ndim, repeats.size());
+    gpu_repeat<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, gpu_vrepeats, axis, A->size, gpu_A_shape,gpu_A_strides, gpu_B_strides, A->ndim, derivative);
     check_cuda(cudaDeviceSynchronize(), "gpu_repeat");
 
     // Free memory
      check_cuda(cudaFree(gpu_vrepeats), "gpu_repeat");
      check_cuda(cudaFree(gpu_A_shape), "gpu_repeat");
-     check_cuda(cudaFree(gpu_B_shape), "gpu_repeat");
      check_cuda(cudaFree(gpu_A_strides), "gpu_repeat");
 
 }

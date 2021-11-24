@@ -43,7 +43,7 @@ void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_gather(Tensor *A, Tensor *B, GatherDescriptor *sd);
 void gpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
 
-void gpu_repeat(Tensor* A, Tensor *B, vector<unsigned int> repeats, unsigned int axis);
+void gpu_repeat(Tensor* A, Tensor *B, vector<unsigned int> repeats, unsigned int axis, bool derivative);
 void gpu_repeat_batch(Tensor *A, Tensor *B);
 
 void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
