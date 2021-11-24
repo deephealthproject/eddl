@@ -109,6 +109,11 @@ Layer* build_conv_layer(onnx::NodeProto *node,
     msg("Error in layer " + name + + ", the number of values in the dilations attribute (" + to_string(dilation_rate.size()) +
         ") doesn't match the number of dimensions of the convolutional layer (" + to_string(conv_dim) + ").");
 
+  // If the padding values are not provided and the padding type is custom we default to padding 0
+  if (pads.empty() && auto_pad_option == "custom")
+      for (int i = 0; i < conv_dim * 2; ++i)
+          pads.push_back(0);
+
   Layer *actual_layer;
   if (conv_dim < 3) // Handle Conv1D and Conv2D (they use the same ConvolDescriptor)
   {
