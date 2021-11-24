@@ -35,7 +35,8 @@ PROFILING_ENABLE_EXTERN(set_select_back);
 
 namespace tensorNN {
 
-
+    // Deprecated. Used in UpSampling2D.
+    // Repeats the rows and columns of the data by size[0] and size[1] respectively.
     void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
         if ((A->device != B->device)) msg("Tensors in different devices", "Tensor::Repeat_NN");
         if (A->ndim != B->ndim) msg("Incompatible dims", "Tensor::Repeat");

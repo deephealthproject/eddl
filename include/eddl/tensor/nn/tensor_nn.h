@@ -123,7 +123,7 @@ namespace tensorNN{
     void conv2d_activation(string act, ConvolDescriptor *D);
 
 // ***** Tensor operations *****************************
-    void repeat_nn(Tensor *A, Tensor *B, vector<int> size);
+    void repeat_nn(Tensor *A, Tensor *B, vector<int> size);  // Deprecated (for UpSampling2d)
     void d_repeat_nn(Tensor *D, Tensor *P, vector<int> size);
 
     void select(Tensor *A, Tensor* B, SelDescriptor *sd);
@@ -135,7 +135,7 @@ namespace tensorNN{
     void expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
     void expand_back(Tensor *A, Tensor* B, ExpandDescriptor *sd);
 
-    void repeat_batch(Tensor *A, Tensor* B);
+    void repeat_batch(Tensor *A, Tensor* B);  // Used in ConstOfTensor
 
 // ***** Permutations for BatchNorm ********************
     void permute_channels_last(Tensor *A,Tensor *B);

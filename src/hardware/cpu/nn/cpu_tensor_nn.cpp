@@ -9,7 +9,7 @@
 
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
-void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
+void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){  // Deprecated. Used in UpSampling2D
     _profile(_CPU_REPEAT_NN, 0);
 #pragma omp parallel for
     for(int i=0; i<B->size; i++){
@@ -28,7 +28,7 @@ void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
 }
 
-void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
+void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){ // Deprecated. Used in UpSampling2D
     _profile(_CPU_D_REPEAT_NN, 0);
 
 #pragma omp parallel for
