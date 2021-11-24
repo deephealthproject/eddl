@@ -95,6 +95,18 @@ public:
     void build_indices() override;
 };
 
+class RepeatDescriptor : public SelDescriptor {
+public:
+    vector<unsigned int> vrepeats;
+    unsigned int axis;
+
+    RepeatDescriptor(vector<unsigned int> vrepeats, unsigned int axis, int dev);
+
+    void build(vector<int> ishape) override;
+    void resize(int b) override;
+    void build_indices() override;
+};
+
 class ReduceDescriptor2 : public TensorDescriptor {
 
 private:
