@@ -676,8 +676,7 @@ Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned 
 #ifdef cGPU
     else if (A->isGPU() && output->isGPU())
     {
-        msg("Not implemented for GPU yet", "Tensor::repeat");
-        //gpu_repeat(A, output, repeats, axis);
+        gpu_repeat(A, output, repeats, axis);
     }
 #endif
 #ifdef cFPGA

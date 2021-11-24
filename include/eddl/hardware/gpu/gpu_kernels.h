@@ -44,7 +44,9 @@ __global__ void deselect_rows(float *A, float* B, int rowsize, int size, int* in
 __global__ void gpu_gather(float *A, float* B, long int size, int* indices);
 __global__ void gpu_expand(float *A, float* B, long int size, int* indices);
 
-__global__ void gpu_repeat(float *A, float* B, unsigned int* repeats, unsigned int axis, long int A_size, long int B_size, int repeats_size);
+__global__ void gpu_repeat(float *A, float* B, unsigned int* repeats, unsigned int axis,
+                           long int A_size, long int B_size, unsigned int* A_shape, unsigned int* B_shape,
+                           unsigned int* A_strides,  unsigned int* B_strides, unsigned int ndim, int repeats_size);
 __global__ void gpu_repeat_batch(float *A, float* B, long int A_size, long int B_size);
 
 __global__ void concat(float *dest, float *src, unsigned int src_size, unsigned int src_stride, unsigned int dest_stride, bool derivative);
