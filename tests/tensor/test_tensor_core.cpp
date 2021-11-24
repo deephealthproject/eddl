@@ -159,27 +159,56 @@ TEST(TensorTestSuite, tensor_expand) {
 #endif
 }
 
-//
-//TEST(TensorTestSuite, tensor_repeat){
-//    // Test axis 1
-//    Tensor* t1 = Tensor::range(1, 6)->unsqueeze(0); t1->reshape_({3, 2});
-//    Tensor *t1_ref = new Tensor({1, 2,
-//                                      1, 2,
-//                                      1, 2,
-//                                      3, 4,
-//                                      3, 4,
-//                                      5, 6}, {6, 2}, DEV_CPU);
-//    t1->print(0);
-//    Tensor* t1_res = Tensor::repeat(t1, {3, 2, 1}, 0);
-//    t1_res->print(0);
-//    ASSERT_TRUE(Tensor::equivalent(t1_res, t1_ref, 1e-3f, 0.0f, true, true));
-//
-//    // Test axis 1
-//    Tensor* t2 = Tensor::range(1, 4)->unsqueeze(0); t2->reshape_({2, 2});
-//    Tensor *t2_ref = new Tensor({1, 1, 1, 2, 2, 2,
-//                                      3, 3, 3, 4, 4, 4}, {2, 6}, DEV_CPU);
-//    t2->print(0);
-//    Tensor* t2_res = Tensor::repeat(t2, 3, 1);
-//    t2_res->print(0);
-//    ASSERT_TRUE(Tensor::equivalent(t2_res, t2_ref, 1e-3f, 0.0f, true, true));
-//}
+
+TEST(TensorTestSuite, tensor_repeat_timed){
+    // Test axis 1
+    int times = 25;
+    int factor = 128;
+    Tensor* t1 = Tensor::ones({1, 3, 128, 128}, DEV_CPU);
+    Tensor* t1_out = new Tensor({1*factor, 3, 128, 128}, DEV_CPU);
+
+
+    // Repeat function n tims
+    clock_t begin = clock();
+    for(int i=0; i<times; i++){
+        Tensor::repeat(t1, factor, 0, t1_out);
+//        tensorNN::ReLu(t1_out, t1_out);
+//        tensorNN::repeat_batch(t1, t1_out);
+//        tensorNN::Conv2D(cd);
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    std::cout << "Time elapsed: " << elapsed_secs << "s" << std::endl;
+    std::cout << "Time elapsed per function: " << elapsed_secs/times << "s" << std::endl;
+
+//    // Print
+//    t1->print();
+//    t1_out->print();
+    ASSERT_TRUE(elapsed_secs<1000);  // Dummy test. Just for debugging
+
+}
+
+
+TEST(TensorTestSuite, tensor_repeat){
+    // Test axis 1
+    Tensor* t1 = Tensor::range(1, 6)->unsqueeze(0); t1->reshape_({3, 2});
+    Tensor *t1_ref = new Tensor({1, 2,
+                                      1, 2,
+                                      1, 2,
+                                      3, 4,
+                                      3, 4,
+                                      5, 6}, {6, 2}, DEV_CPU);
+    t1->print(0);
+    Tensor* t1_res = Tensor::repeat(t1, {3, 2, 1}, 0);
+    t1_res->print(0);
+    ASSERT_TRUE(Tensor::equivalent(t1_res, t1_ref, 1e-3f, 0.0f, true, true));
+
+    // Test axis 1
+    Tensor* t2 = Tensor::range(1, 4)->unsqueeze(0); t2->reshape_({2, 2});
+    Tensor *t2_ref = new Tensor({1, 1, 1, 2, 2, 2,
+                                      3, 3, 3, 4, 4, 4}, {2, 6}, DEV_CPU);
+    t2->print(0);
+    Tensor* t2_res = Tensor::repeat(t2, 3, 1);
+    t2_res->print(0);
+    ASSERT_TRUE(Tensor::equivalent(t2_res, t2_ref, 1e-3f, 0.0f, true, true));
+}
