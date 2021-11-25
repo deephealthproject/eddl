@@ -27,6 +27,7 @@ public:
 
 using namespace std;
 
+
 void msg(const string& text, const string& title="");
 
 void set_text_green();
@@ -89,6 +90,8 @@ inline void fast_address2indices(unsigned int address, unsigned int* indices, co
         indices[i] = address / strides[i] % shape[i];
     }
 }
+
+bool isPaddingAsymmetric(vector<int> padding);
 
 
 template<typename T>

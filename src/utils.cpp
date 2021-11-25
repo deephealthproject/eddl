@@ -592,6 +592,22 @@ unsigned int indices2address(const vector<int>& indices, const vector<int>& stri
     return address;
 }
 
+bool isPaddingAsymmetric(vector<int> padding){
+    // Check if padding is even
+    if(padding.size()%2!=0){
+        msg("'padding' must have an even number of elements");
+    }
+
+    // Check for asymmetric paddings
+    for(int i=0; i<padding.size(); i+=2){
+        if(padding[i]!=padding[i+1]){
+            return true;
+        }
+    }
+    return false;
+}
+
+
 WrappingMode getWrappingMode(string mode){
     if(mode == "constant"){
         // (k k k k | a b c d | k k k k)
