@@ -3290,6 +3290,11 @@ public:
     */
     static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false, bool verbose=true);  // Previously named "Tensor::equal2"
 
+    /**
+   *   @brief Gets the most efficient accelerator supported
+   *   @return 'cpu', 'cuda', 'cudnn' or 'fpga'
+   */
+    static string max_accelerator_supported();
 };
 
 
