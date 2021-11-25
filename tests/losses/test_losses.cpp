@@ -61,7 +61,7 @@ TEST(NetTestSuite, losses_categorical_cross_entropy){
     // Compute loss
     float cpu_loss = loss.value(t_cpu_y_true, t_cpu_y_pred);
     float gpu_loss = loss.value(t_gpu_y_true, t_gpu_y_pred);
-    ASSERT_NEAR(cpu_loss-gpu_loss, 0.0f, 1e-3f);
+    ASSERT_NEAR(cpu_loss-gpu_loss, 0.0f, 1e-3f); // abs_error [1e-2, 1e-3]
 
     // Test: Deltas
     // Generate matrices
