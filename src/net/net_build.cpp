@@ -314,7 +314,7 @@ void Net::set_compserv(CompServ *cs, bool do_compserv_delete){
         } else {
             // split on multiple FPGAs
 #ifndef cFPGA
-        msg("EDDLL not compiled for FPGA", "Net.build");
+        msg("EDDL not compiled for FPGA", "Net.build");
 #else
         int nfpgas=1;  //fpga_devices();
 

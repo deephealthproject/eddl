@@ -148,7 +148,7 @@ void gpu_init(int device)
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop,device);
 
-    fprintf(stderr,"EDDLL is running on GPU device %d, %s\n",device,prop.name);
+    fprintf(stderr,"EDDL is running on GPU device %d, %s\n",device,prop.name);
 
 
     /// CUBLAS

@@ -853,3 +853,4 @@ int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_
 
     return 1;
 }
+
