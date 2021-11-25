@@ -1,23 +1,23 @@
-///*
-//* EDDL Library - European Distributed Deep Learning Library.
-//* Version: 1.0
-//* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-//* Date: November 2021
-//* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
-//* All rights reserved
-//*/
-//
-//#include <cstdio>
-//#include <cstdlib>
-//#include <iostream>
-//
-//#include "eddl/apis/eddl.h"
-//#include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
-//
-//using namespace eddl;
-//
-//
-//int main(int argc, char **argv) {
+/*
+* EDDL Library - European Distributed Deep Learning Library.
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* All rights reserved
+*/
+
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+
+#include "eddl/apis/eddl.h"
+#include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
+
+using namespace eddl;
+
+
+int main(int argc, char **argv) {
 //
 //    // Paths
 //    string model_path = "/home/salva/Downloads/models/resnet34-v1-7.onnx";
@@ -69,9 +69,9 @@
 //    prediction->print(2);
 //    int best_class = prediction->argmax();
 //    std::cout << "Selected class: " << best_class << std::endl;
-//
-//	return 0;
-//}
-//
-//
-/////////////
+
+	return 0;
+}
+
+
+///////////
