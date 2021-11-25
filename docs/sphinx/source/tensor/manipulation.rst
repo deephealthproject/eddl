@@ -201,8 +201,8 @@ Tiling arrays
 repeat
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr)
-.. doxygenfunction:: Tensor::repeat(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr)
+.. doxygenfunction:: Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr, bool derivative=false)
+.. doxygenfunction:: Tensor::repeat(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr, bool derivative=false);
 
 .. code-block:: c++
 
