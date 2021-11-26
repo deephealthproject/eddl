@@ -58,34 +58,12 @@ LRepeat::~LRepeat(){
 
 void LRepeat::forward(){
     tensorNN::select(this->input, this->output, this->rd);
-
-//    // Repeat function n tims
-//    int times = 25;
-//    clock_t begin = clock();
-//    for(int i=0; i<times; i++) {
-//    tensorNN::select(this->input, this->output, this->rd);
-////        Tensor::repeat(this->input, this->rd->vrepeats, this->rd->axis, this->output);
-//    }
-//    clock_t end = clock();
-//    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-//    std::cout << "[Forward] Time elapsed: " << elapsed_secs << "s" << std::endl;
-//    std::cout << "[Forward] Time elapsed per function: " << elapsed_secs/times << "s" << std::endl;
+//    Tensor::repeat(this->input, this->rd->vrepeats, this->rd->axis, this->output);
 }
 
 void LRepeat::backward(){
     tensorNN::select_back(this->delta, this->parent[0]->delta, this->rd);
-
-//    // Repeat function n tims
-//    int times = 25;
-//    clock_t begin = clock();
-//    for(int i=0; i<times; i++) {
-//    tensorNN::select_back(this->delta, this->parent[0]->delta, this->rd);
-////        Tensor::repeat(this->input, this->rd->vrepeats, this->rd->axis, this->output, true);
-//    }
-//    clock_t end = clock();
-//    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-//    std::cout << "[Backward] Time elapsed: " << elapsed_secs << "s" << std::endl;
-//    std::cout << "[Backward] Time elapsed per function: " << elapsed_secs/times << "s" << std::endl;
+//    Tensor::repeat(this->input, this->rd->vrepeats, this->rd->axis, this->output, true);
 }
 
 Layer *LRepeat::share(int c, int bs, vector<Layer *> p) {
