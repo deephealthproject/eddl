@@ -378,31 +378,30 @@ void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsig
 //    int max_threads = omp_get_max_threads();
 //    omp_set_num_threads(max_threads);
 
-    unsigned int A_address;
-    unsigned int B_address;
-    unsigned int A_idx_axis;
-    unsigned int B_idx_axis;
-
     // Translate tensor
-//    #pragma omp parallel for private(A_address, B_address, A_idx_axis, B_idx_axis)
-    for (A_address = 0; A_address < A->size; A_address++) {
+    #pragma omp parallel for
+    for (unsigned int A_address = 0; A_address < A->size; A_address++) {
         auto* A_indices = new unsigned int[A->ndim];
         auto* B_indices = new unsigned int[B->ndim];
 
+        // **** Function to transform "A address" into the "B address" ************
         // Get A Indices
-        fast_address2indices(A_address, A_indices, reinterpret_cast<const unsigned int *>(A->shape.data()),
-                             reinterpret_cast<const unsigned int *>(A->stride.data()), A->ndim);
+        for(int i=0; i<A->ndim; i++) { A_indices[i] = A_address / A->stride[i] % A->shape[i]; }
 
         // Get B indices. Same as A indices but changing size in axis to be expanded
         std::copy(A_indices, A_indices+A->ndim, B_indices);  // Copy A indices
         // Get A_indices[axis]=> repeat(3,2,1) AND "sel_index=2" => start at position: 3+2=5
-        A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
-        B_idx_axis = 0;
+        unsigned int A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
+        unsigned int B_idx_axis = 0;
         for (unsigned int j = 0; j < A_idx_axis; j++) { B_idx_axis+= repeats[j]; }
         B_indices[axis] = B_idx_axis;
 
         // Copy value t times
-        B_address = fast_indices2address(B_indices, reinterpret_cast<const unsigned int *>(B->stride.data()), B->ndim);
+        unsigned int B_address = 0;
+        for (int i=0; i< B->ndim; i++){ B_address += B_indices[i] * B->stride[i]; }
+        // ******************************************************************
+
+        // Copy values from A to B
         for (unsigned int t = 0; t < repeats[A_indices[axis]]; t++) {
             if(!derivative){
                 B->ptr[B_address + t*B->stride[axis]] = A->ptr[A_address];
