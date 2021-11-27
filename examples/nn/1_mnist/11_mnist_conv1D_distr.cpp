@@ -26,22 +26,32 @@ int main(int argc, char **argv) {
     bool use_cpu = false;
     int id;
     
-    // Init distribuited training
-    id = init_distributed(&argc, &argv);
-    
-    // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2); 
-
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
+    
+    // Define computing service
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else { 
+	cs=CS_MPI_DISTRIBUTED();
+    }
+
+    
+    // Init distribuited training
+    id = get_id_distributed();
+    
+    // Sync every batch, change every 2 epochs
+    set_method_distributed(AUTO_TIME,1,2);
+    
 
     // Download mnist
     download_mnist();
 
     // Settings
-    int epochs = testing ? 2 : 5;
+    int epochs = testing ? 2 : 10;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -63,15 +73,6 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else {
-        cs = CS_GPU({1}, "low_mem"); // one GPU
-        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-        // cs = CS_CPU();
-        // cs = CS_FPGA({1});
-    }
 
     // Build model
     build(net,

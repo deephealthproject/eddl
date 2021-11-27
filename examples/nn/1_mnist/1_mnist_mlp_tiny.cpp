@@ -107,8 +107,8 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
+//    l = LeakyReLu(Dense(l, 1024));
+//    l = LeakyReLu(Dense(l, 1024));
     l = LeakyReLu(Dense(l, 10));
 
     layer out = Softmax(Dense(l, num_classes), -1);  // Softmax axis optional (default=-1)
@@ -169,7 +169,8 @@ int main(int argc, char **argv) {
 
     //suggest_batch_size(128, 1, batch_size);
  
-       
+        gpu_layer_print (net, 3);
+    
      // Train model
     fit(net,{x_train},{y_train}, batch_size, epochs);
 //save(net, "saved-weights.bin");

@@ -18,6 +18,7 @@
 #include "eddl/utils.h"
 #include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
+#include "eddl/mpi_distributed/mpi_distributed.h"
 
 
 using namespace std;
@@ -242,3 +243,4 @@ void distributeTensor(Layer *l,string tname, int p)
     }
 
 }
+

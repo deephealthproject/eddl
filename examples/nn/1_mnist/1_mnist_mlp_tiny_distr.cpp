@@ -47,6 +47,8 @@ int main(int argc, char **argv) {
         else if (strcmp(argv[i], "--mpi1p4gpu") == 0) use_mpi4 = true;
         else if (strcmp(argv[i], "--mpixgpu") == 0) use_mpix = true;
     }
+    
+    testing=true;
 
     // Define computing service
     compserv cs = nullptr;
@@ -85,8 +87,8 @@ int main(int argc, char **argv) {
 
 
     // Settings
-    int epochs = (testing) ? 2 : 10;
-    int batch_size = 100;
+    int epochs = (testing) ? 1 : 1;
+    int batch_size = 27;
     int num_classes = 10;
 
     // Define network
@@ -95,9 +97,9 @@ int main(int argc, char **argv) {
     layer l = in; // Aux var
 
     l = Flatten(l);
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
     l = LeakyReLu(Dense(l, 10));
+ //   l = LeakyReLu(Dense(l, 10));
+//    l = LeakyReLu(Dense(l, 10));
 
     layer out = Softmax(Dense(l, num_classes), -1); // Softmax axis optional (default=-1)
     model net = Model({in},{out});
@@ -160,13 +162,14 @@ int main(int argc, char **argv) {
     x_test->div_(255.0f);
 
     //broadcast_CPU_params_distributed(net); 
-    broadcast_GPU_params_distributed(net); 
+    //broadcast_GPU_params_distributed(net); 
     
     
+    gpu_layer_print (net, 4);
     // Train model
     fit(net,{x_train},{y_train}, batch_size, epochs);
     //printf("%f",net->get_accuracy());
-    
+    gpu_layer_print (net, 4);
 
     // Evaluate
     evaluate(net,{x_test}, {y_test});

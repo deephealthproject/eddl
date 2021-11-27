@@ -811,7 +811,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     int count;
     int batches = 0;
     int batches_per_proc = 0;
-    int batches_avg = 0;
+   // int batches_avg = 0;
     double secs_epoch = 1e10;
     double secs_epoch_prev = 0;
     float SPEED_UP = 1.05;
@@ -902,15 +902,14 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             if (is_mpi_distributed()) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, mpi_avg);
         }
 
-        batches_avg = mpi_avg;
+        //batches_avg = mpi_avg;
         for (i = 0; i < epochs; i++) {
             high_resolution_clock::time_point e1 = high_resolution_clock::now();
             if (id == 0) {
+                fprintf(stdout, "Epoch %d\n", i + 1);
                 if (is_mpi_distributed()) {
-                    fprintf(stdout, "Epoch %d, mpi_avg %d\n", i + 1, batches_avg);
-                } else {
-                    fprintf(stdout, "Epoch %d\n", i + 1);
-                }
+                    fprintf(stdout, "[DISTR] batches_avg: %d\n", get_current_batch_avg_distributed ());
+                } 
             }
             reset_loss();
 
@@ -919,17 +918,26 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             for (j = 0; j < (batches_per_proc); j++) {
                 batches = batches + n_procs;
 
-                // printf("Batch nr %d\n", j);
+                 printf("Batch nr %d\n", j);
                 // Set random indices
-                for (k = 0; k < batch_size; k++) sind[k] = rand() % n;
-
+                printf("Proc: %d sind:\n", id);
+                for (k = 0; k < batch_size; k++) {
+                    sind[k] = rand() % n;
+                    printf("%5d ",sind[k]);
+                }
+                printf("\n");
+                
                 // Train batch
                 tr_batches++;
 
                 train_batch(tin, tout, sind);
+                 // gpu_layer_print (this, 3);
                   
                 // synchronize
-                if (is_mpi_distributed()) {
+                if (is_mpi_distributed()) 
+                    avg_weights_distributed(this, j+1, batches_per_proc);   
+                /*
+                {
                     if ((((j + 1) % batches_avg) == 0) || ((j + 1) == batches_per_proc)) {
                         //printf("Proc %d Sincronizando %d\n", id, j);
                         for (ii = 0; ii < snets[0]->layers.size(); ii++) {
@@ -952,6 +960,8 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                         }
                     }
                 }
+                */
+                 
 
                 if (id == 0) {
                     print_loss(batches, num_batches);
@@ -987,6 +997,9 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             printf("loss1 %f\n", loss1);
             printf("loss2 %f\n", loss2);
              */
+            update_batch_avg_distributed (i, &secs_epoch_prev, secs_epoch, batches_per_proc);
+            
+            /*
             switch (avg_method) {
                 case AVG_INC:
                     if (((i + 1) % (x_avg)) == 0) {
@@ -1027,6 +1040,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                     break;
 
             }
+             */
         }
         fflush(stdout);
     }

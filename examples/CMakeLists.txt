@@ -2,13 +2,18 @@ cmake_minimum_required(VERSION 3.9.2)
 
 project(eddl-examples)
 
-
 # EXAMPLES: MNIST ****************************************************
 add_executable(mnist_mlp "nn/1_mnist/1_mnist_mlp.cpp")
 target_link_libraries(mnist_mlp eddl)
 # distributed
 add_executable(mnist_mlp_distr "nn/1_mnist/1_mnist_mlp_distr.cpp")
 target_link_libraries(mnist_mlp_distr eddl)
+
+add_executable(mnist_mlp_tiny "nn/1_mnist/1_mnist_mlp_tiny.cpp")
+target_link_libraries(mnist_mlp_tiny eddl)
+# distributed
+add_executable(mnist_mlp_tiny_distr "nn/1_mnist/1_mnist_mlp_tiny_distr.cpp")
+target_link_libraries(mnist_mlp_tiny_distr eddl)
 
 add_executable(mnist_mlp_initializers "nn/1_mnist/2_mnist_mlp_initializers.cpp")
 target_link_libraries(mnist_mlp_initializers eddl)

@@ -216,7 +216,7 @@ namespace eddl {
         
         id = init_MPI();
         MPICHECK(MPI_Get_processor_name(node_name, &len));
-        printf("[DISTR] CS: Node %s, one GPUs per process. %d/%d GPUS used/available per node\n",node_name,nr_gpus,get_available_GPUs());
+        printf("[DISTR] CS: Node %s, one GPUs per process. %d/%d GPUS used/available per node\n",node_name,nr_gpus,get_available_GPUs_distributed());
         switch (nr_gpus) {
             case 1: GPU_1_distributed;
                 break;
@@ -242,14 +242,14 @@ namespace eddl {
       
       init_MPI();
       MPICHECK(MPI_Get_processor_name(node_name, &len));
-      printf("[DISTR] CS: Node %s, several GPUs per process. %d GPUS available per node\n", node_name, get_available_GPUs());
+      printf("[DISTR] CS: Node %s, several GPUs per process. %d GPUS available per node\n", node_name, get_available_GPUs_distributed());
       aux= CS_GPU(g, lsb, mem);
       init_NCCL(1);
       return aux;
     }
   
   compserv CS_MPI_DISTRIBUTED() {
-        return CS_MPI_DISTR_1_GPU_PER_PROC(get_available_GPUs());
+        return CS_MPI_DISTR_1_GPU_PER_PROC(get_available_GPUs_distributed());
     } 
   
   compserv CS_MPI_DISTRIBUTED(int nr_gpus) {
@@ -371,7 +371,7 @@ namespace eddl {
   void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices){
     net->train_batch(in, out, indices,1);
   }
-
+  
   void show_profile() {
     printf("profile:\n");
     __show_profile();

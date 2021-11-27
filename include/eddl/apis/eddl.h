@@ -572,7 +572,7 @@ namespace eddl {
       *  @return    (void)
     */
     void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
-
+    
     // Finest methods
     /**
       *  @brief Set model mode.

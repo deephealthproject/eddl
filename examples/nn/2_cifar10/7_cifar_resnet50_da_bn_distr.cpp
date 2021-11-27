@@ -60,6 +60,7 @@ int main(int argc, char **argv){
   bool use_cpu = false;
   int id;
   
+  
   id = init_distributed(&argc, &argv);
     
   // Sync every batch, change every 2 epochs

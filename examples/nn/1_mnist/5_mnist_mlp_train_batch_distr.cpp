@@ -26,11 +26,25 @@ using namespace eddl;
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
+    
+    int id;
+    
+    
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
+    
+    // Define computing service
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else { 
+	cs=CS_MPI_DISTRIBUTED();
+    }
 
+     id=get_id_distributed();
+    
     // Download mnist
     download_mnist();
 
@@ -53,15 +67,7 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else {
-        cs = CS_GPU({1}, "low_mem"); // one GPU
-        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-        // cs = CS_CPU();
-        // cs = CS_FPGA({1});
-    }
+    
 
     // Build model
     build(net,
@@ -71,9 +77,11 @@ int main(int argc, char **argv) {
           cs);
 
     printf("after build\n");
+    //Broadcast_params_distributed(net);
 
     // View model
-    summary(net);
+    if (id==0)
+        summary(net);
 
     setlogfile(net,"mnist");
 
@@ -112,22 +120,39 @@ int main(int argc, char **argv) {
     // Train model
     int i,j;
     tshape s = x_train->getShape();
-    int num_batches=s[0]/batch_size;
 
+    // Batch size
+    // batch_size= batch_size/n_procs;
+
+    int num_batches=s[0]/batch_size;
+    
+    int n_procs = get_n_procs_distributed();
+    int batches_per_proc=num_batches/n_procs;
+    
     for(i=0;i<epochs;i++) {
       reset_loss(net);
-      fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
-      for(j=0;j<num_batches;j++)  {
+      if (id == 0) {
+            fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs, num_batches);
+        }
+//      for(j=0;j<num_batches;j++)  {
+      for(j=0;j<batches_per_proc;j++)  {
 
         next_batch({x_train,y_train},{xbatch,ybatch});
         train_batch(net, {xbatch}, {ybatch});
-
-        print_loss(net,j);
-        printf("\r");
+        //sync_batch
+        avg_weights_distributed(net, j, batches_per_proc);  
+        
+        if (id==0) {
+            print_loss(net,j);
+            printf("\r");
+        }
       }
-      printf("\n");
+      // adjust batches_avg
+      if (id==0)
+          printf("\n");
     }
-    printf("\n");   
+    if (id==0) 
+        printf("\n");   
 
 
     // Print loss and metrics
@@ -140,7 +165,9 @@ int main(int argc, char **argv) {
 
 
     // Evaluate model
-    printf("Evaluate:\n");
+    if (id==0) {
+    
+     printf("Evaluate:\n");
     s=x_test->getShape();
     num_batches=s[0]/batch_size;
 
@@ -152,12 +179,14 @@ int main(int argc, char **argv) {
 
         eval_batch(net, {x_test}, {y_test}, indices);
 
-        print_loss(net,j);
-        printf("\r");
+        if (id==0) {
+            print_loss(net,j);
+            printf("\r");
+        }
 
       }
 
-    printf("\n");
+        printf("\n");
 
     // Print loss and metrics
     vector<float> losses2 = get_losses(net);
@@ -190,7 +219,8 @@ int main(int argc, char **argv) {
         cout << "Loss: " << losses3[i] << "\t" << "Metric: " << metrics3[i] << "   |   ";
     }
     cout << endl;
-
+    }
+    
     delete xbatch;
     delete ybatch;
 
@@ -199,6 +229,10 @@ int main(int argc, char **argv) {
     delete x_test;
     delete y_test;
     delete net;
+    
+    // Finalize distributed training
+    end_distributed();
+
     
     return EXIT_SUCCESS;
 }

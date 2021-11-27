@@ -39,15 +39,15 @@ int main(int argc, char **argv){
   }
 
   // download CIFAR data
-  download_cifar10();
+  //download_cifar10();
 
   // Settings
-  int epochs = testing ? 2 : 5;
+  int epochs = testing ? 2 : 100;
   int batch_size = 100;
-  int num_classes = 10;
+  int num_classes = 1000;
 
   // network
-  layer in=Input({3,32,32});
+  layer in=Input({3,224,224});
   layer l=in;
 
 
@@ -92,13 +92,17 @@ int main(int argc, char **argv){
   summary(net);
 
   // Load and preprocess training data
-  Tensor* x_train = Tensor::load("cifar_trX.bin");
-  Tensor* y_train = Tensor::load("cifar_trY.bin");
+  Tensor* x_train = Tensor::load("train-images.bi8");
+  Tensor* y_train = Tensor::load("train-labels.bi8");
+//  Tensor* x_train = Tensor::load("cifar_trX.bin");
+//  Tensor* y_train = Tensor::load("cifar_trY.bin");
   x_train->div_(255.0f);
 
   // Load and preprocess test data
-  Tensor* x_test = Tensor::load("cifar_tsX.bin");
-  Tensor* y_test = Tensor::load("cifar_tsY.bin");
+  Tensor* x_test = Tensor::load("test-images.bi8");
+  Tensor* y_test = Tensor::load("test-labels.bi8");
+//  Tensor* x_test = Tensor::load("cifar_tsX.bin");
+//  Tensor* y_test = Tensor::load("cifar_tsY.bin");
   x_test->div_(255.0f);
 
   if (testing) {

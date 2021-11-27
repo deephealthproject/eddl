@@ -77,6 +77,7 @@ class Tensor {
 private:
     // Load methods
     static Tensor* load_from_bin(std::ifstream &ifs, int start_row, int end_row);
+    static Tensor* load_from_bin8(std::ifstream &ifs, int start_row, int end_row);
     static Tensor* load_from_img(const string &filename, const string &format);
 //    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);  // Deprecated
 //    static Tensor* load_from_txt(std::ifstream &ifs, char delimiter, int headerRows);  // Deprecated
@@ -3327,6 +3328,8 @@ Tensor* Tensor::load(const string& filename, string format){
        format=="pic"  || format=="pgm"  || format=="ppm") { // Images
         t = Tensor::load_from_img(filename, format);
     }else if(format=="bin"){
+        t = Tensor::loadfs(ifs, format);
+    }else if(format=="bi8"){
         t = Tensor::loadfs(ifs, format);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load");

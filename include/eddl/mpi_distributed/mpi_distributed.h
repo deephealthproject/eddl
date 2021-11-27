@@ -15,6 +15,10 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+#include "eddl/apis/eddl.h"
+#include "eddl/net/net.h"
+#include "eddl/layers/core/layer_core.h"
+
 
 #ifdef cMPI
 #include <mpi.h>
@@ -194,6 +198,24 @@ int is_mpi_distributed();
  */
 int get_params_distributed(int* method, int* avg, int* avg_chg, int* batch_global);
 
-int get_available_GPUs();
+int get_current_batch_avg_distributed ();
 
+
+int get_available_GPUs_distributed();
+
+void broadcast_CPU_params_distributed(Net* net);
+void broadcast_GPU_params_distributed(Net* net);
+
+/**
+     *  @brief Average weights of mpi processes
+     *
+     *  @param curr_batch_id Batch nr (from 0)
+     *  @param batches_per_proc #batches per mpi process
+     *  @return    (void)
+     */
+void avg_weights_distributed (Net* net, int curr_batch, int batches_per_proc);
+
+void update_batch_avg_distributed(int epoch, double * secs_prev, double secs, int batches_per_proc) ;
+
+void gpu_layer_print (Net* net, int layer);
 

@@ -47,24 +47,26 @@ int main(int argc, char **argv) {
     bool use_cpu = false;
     int id;
 
+for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) testing = true;
+        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+    }
+    
+    // Define computing service
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else { 
+	cs=CS_MPI_DISTRIBUTED();
+    }
 
     
-    id = init_distributed(&argc, &argv);
-
-    //set_method_distributed(FIXED,1,0);
-    //set_method_distributed(FIXED,16,0);
-    //set_method_distributed(INC_AVG,1,2);
-    //set_method_distributed(SAW_TOOTH,1,2);
-    //set_method_distributed(NEG_SAW_TOOTH,16,2);
+    // Init distribuited training
+    id = get_id_distributed();
     
     // Sync every batch, change every 2 epochs
     set_method_distributed(AUTO_TIME,1,2);
 
-
-    for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--testing") == 0) testing = true;
-        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
-    }
 
     // download CIFAR data
     download_cifar10();
@@ -96,15 +98,7 @@ int main(int argc, char **argv) {
         out
     });
 
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else {
-        cs = CS_GPU({1}); // one GPU
-        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-        // cs = CS_CPU();
-        // cs = CS_FPGA({1});
-    }
+    
 
     // Build model
     build(net,

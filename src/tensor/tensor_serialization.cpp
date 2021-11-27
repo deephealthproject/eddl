@@ -46,7 +46,7 @@ Tensor* Tensor::load(const string& filename, string format){
     if(format.empty()){
         format = get_extension(filename);
     }
-
+    string name=get_name(filename);
     // Check source type
     if(format=="npy" || format=="npz"){
         msg("Numpy files need a source type to be specified: 'Tensor::loadt<type>(filename)'");
@@ -91,6 +91,8 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
     // Choose format
     if (format=="bin") {
         return Tensor::load_from_bin(ifs, 0, -1);
+    }else if (format=="bi8") {
+        return Tensor::load_from_bin8(ifs, 0, -1);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load"); // Exits
     }
@@ -108,10 +110,11 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
     vector<int> r_shape(r_ndim);
     ifs.read(reinterpret_cast<char *>(r_shape.data()), r_ndim * sizeof(int));
 
+   printf("LOAD dim %d\n", r_ndim);
     // Compute total size
     int r_size = 1;
     for(int i=0; i<r_ndim; i++){ r_size *= r_shape[i]; }
-
+ for(int i=0; i<r_ndim; i++){ printf("LOAD shape %d %d\n", i, r_shape[i]); }
     // Compute stride
     vector<int> tmp_stride = shape2stride(r_shape);
 
@@ -135,6 +138,7 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
 
     auto *t1 = new Tensor(r_shape, DEV_CPU);
     ifs.read(reinterpret_cast<char*>(t1->ptr), n_read * sizeof(float));
+    //t1->print();
     // Load content (row-major)
     /*
     auto *r_ptr = new float[r_size];
@@ -147,6 +151,78 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
     return t1;
 }
 
+
+Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
+    int r_ndim;
+
+    // Load number of dimensions
+    ifs.read(reinterpret_cast<char *>(&r_ndim),  sizeof(int));
+
+    printf("LOAD8 dim %d\n", r_ndim);
+    // Load dimensions
+    vector<int> r_shape(r_ndim);
+    ifs.read(reinterpret_cast<char *>(r_shape.data()), r_ndim * sizeof(int));
+
+    // Compute total size
+    int r_size = 1;
+    for(int i=0; i<r_ndim; i++){ r_size *= r_shape[i]; }
+ for(int i=0; i<r_ndim; i++){ printf("LOAD8 shape %d %d\n", i, r_shape[i]); }
+
+    // Compute stride
+    vector<int> tmp_stride = shape2stride(r_shape);
+
+    // Compute offsets and positions to read
+    int start_offset = start_row * tmp_stride[0];
+    int n_read;
+
+    if(end_row<0){
+        n_read = r_size;
+    }else{
+        // Compute bytes to read
+        int n_rows = end_row - start_row;
+        n_read = n_rows * tmp_stride[0];
+
+        // Set new shape
+        r_shape[0] = n_rows;
+
+        // Set cursor's position
+        ifs.seekg(start_offset*sizeof(float), std::ifstream::cur);
+    }
+
+    auto *t1 = new Tensor(r_shape, DEV_CPU);
+  
+    // Data are unsigned char
+    // Load every item and convert to float
+    unsigned char item;
+    for(int i=0; i<n_read; i++){
+        ifs.read(reinterpret_cast<char*>(&item),1);
+        t1->ptr[i] = (float) item;
+    }
+    //vector<unsigned char> vs(n_read);
+    //char* vs = (char *) malloc(n_read * sizeof(char));
+    //ifs.read(reinterpret_cast<char*>(vs.data()), n_read * sizeof(char));
+ 
+    //for(int i=0; i<n_read; i++){
+    //    t1->ptr[i] = (float) vs[i]; 
+    //} 
+    //printf("DATA %d %d\n", n_read, vs.size());
+    //for(int i=0; i<n_read; i++){
+        //printf("Data: i=%d value=%d %f\n", i, vs[i], t1->ptr[i]);
+    //} 
+    //1->print();
+
+    // Load content (row-major)
+    /*
+    auto *r_ptr = new float[r_size];
+    ifs.read(reinterpret_cast<char*>(r_ptr), n_read * sizeof(float));
+
+    // Return new tensor
+    auto *t1 = new Tensor(r_shape, r_ptr, DEV_CPU);
+    */
+//    t1->info();
+    //free(vs);
+    return t1;
+}
 
 
 Tensor* Tensor::load_from_img(const string &filename, const string &format){

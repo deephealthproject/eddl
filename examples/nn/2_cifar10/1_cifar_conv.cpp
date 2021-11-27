@@ -145,10 +145,11 @@ int main(int argc, char **argv){
       y_test  = y_mini_test;
   }
 
-  suggest_batch_size(128,1,batch_size);
+  //suggest_batch_size(128,1,batch_size);
   
     // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    fit(net, {x_train}, {y_train}, 128, 1);
+    fit(net, {x_train}, {y_train}, 128, 1);
 
     // Evaluate
     evaluate(net, {x_test}, {y_test});
