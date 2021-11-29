@@ -22,7 +22,7 @@
 #include <string>
 #include <sys/stat.h>
 #include <stdexcept>
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <iomanip>
 #include <limits>
@@ -677,6 +677,30 @@ void show_deprecated_warning(const string& deprecated_name, const string& new_na
 }
 
 
+vector<string> read_lines_from_file(const string& filename){
+    vector<string> lines;
+
+
+    // Read file
+    std::ifstream ifile(filename);
+
+    // Check if the file exists
+    if (!ifile) {
+        throw std::runtime_error("The file does not exists. Filename: " + filename);
+    }
+
+    // Read lines
+    std::string line;
+    while (std::getline(ifile, line)){
+        if(!line.empty()){  // Check if the line is empty
+            lines.push_back(line);
+        }
+    }
+
+    return lines;
+}
+
+
 // ---------------------------------------------------------------------------------------------
 // Profiling
 
@@ -1007,3 +1031,4 @@ void __show_profile() {
   PROFILING_PRINTF(AvgPool2D_back);
 
 }
+

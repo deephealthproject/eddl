@@ -13,6 +13,7 @@
 #include <cstdint> // uint64_t
 #include <vector>
 
+
 class AsymmetricPaddingException : public std::exception {
     std::string error_msg; // Error message to show
     std::vector<int> asymmetric_pads; // To store the padding values that have produced the error
@@ -76,7 +77,7 @@ vector<int> address2indices(unsigned int address, const vector<int>& shape, cons
 unsigned int indices2address(const vector<int>& indices, const vector<int>& strides);
 
 // https://isocpp.org/wiki/faq/inline-functions#inline-member-fns
-inline unsigned int fast_indices2address(const unsigned int* indices, const unsigned int* strides, unsigned int ndim){
+inline int fast_indices2address(const unsigned int* indices, const unsigned int* strides, unsigned int ndim){
     unsigned int address = 0;
     for (int i=0; i< ndim; i++){
         address += indices[i] * strides[i];
@@ -85,7 +86,7 @@ inline unsigned int fast_indices2address(const unsigned int* indices, const unsi
 }
 
 
-inline void fast_address2indices(unsigned int address, unsigned int* indices, const unsigned int* shape, const unsigned int* strides, unsigned int ndim){
+inline void fast_address2indices( int address, unsigned int* indices, const unsigned int* shape, const unsigned int* strides, unsigned int ndim){
     for(int i=0; i<ndim; i++) {
         indices[i] = address / strides[i] % shape[i];
     }
@@ -114,6 +115,8 @@ string getTransformationModeName(TransformationMode mode);
 void __show_profile();
 
 void show_deprecated_warning(const string& deprecated_name, const string& new_name="", const string& type="function", const string& version="future");
+
+vector<string> read_lines_from_file(const string& filename);
 
 
 #endif //EDDL_UTILS_H
