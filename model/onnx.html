@@ -4,7 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -123,15 +123,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/merge.html">Merge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/generators.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/operators.html">Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduction Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduce</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
 <p><span class="caption-text">Model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ONNX</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#save-to-file">Save to file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#import-from-file">Import from file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exporting-to-onnx">Exporting to *.onnx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#importing-a-onnx-file">Importing a *.onnx file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simplifying-a-onnx-model">Simplifying a *.onnx model</a></li>
 </ul>
 </li>
 </ul>
@@ -246,8 +247,8 @@
             
   <section id="onnx">
 <h1>ONNX<a class="headerlink" href="#onnx" title="Permalink to this headline">¶</a></h1>
-<section id="save-to-file">
-<h2>Save to file<a class="headerlink" href="#save-to-file" title="Permalink to this headline">¶</a></h2>
+<section id="exporting-to-onnx">
+<h2>Exporting to *.onnx<a class="headerlink" href="#exporting-to-onnx" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv421save_net_to_onnx_fileP3Net6string">
 <span id="_CPPv321save_net_to_onnx_fileP3Net6string"></span><span id="_CPPv221save_net_to_onnx_fileP3Net6string"></span><span id="save_net_to_onnx_file__NetP.string"></span><span class="target" id="eddl__onnx_8h_1a8f247d66e3528791b986284eb208e449"></span>void <code class="sig-name descname">save_net_to_onnx_file</code><span class="sig-paren">(</span>Net *<em>net</em>, string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421save_net_to_onnx_fileP3Net6string" title="Permalink to this definition">¶</a><br /></dt>
@@ -269,14 +270,8 @@
 </pre></div>
 </div>
 </section>
-<section id="import-from-file">
-<h2>Import from file<a class="headerlink" href="#import-from-file" title="Permalink to this headline">¶</a></h2>
-<p>The EDDL supports a subset of the ONNX operators. If you want to check wich layers are supported check out <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md">EDDL_progress</a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In case of experiencing an <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">when</span> <span class="pre">importing</span> <span class="pre">a</span> <span class="pre">model</span> <span class="pre">created</span> <span class="pre">with</span> <span class="pre">another</span> <span class="pre">library</span></code>, it is recommended
-to use <a class="reference external" href="https://github.com/daquexian/onnx-simplifier">onnx_simplifier</a> over the onnx file before importing it.</p>
-</div>
+<section id="importing-a-onnx-file">
+<h2>Importing a *.onnx file<a class="headerlink" href="#importing-a-onnx-file" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv425import_net_from_onnx_file6stringi9LOG_LEVEL">
 <span id="_CPPv325import_net_from_onnx_file6stringi9LOG_LEVEL"></span><span id="_CPPv225import_net_from_onnx_file6stringi9LOG_LEVEL"></span><span id="import_net_from_onnx_file__string.i.LOG_LEVEL"></span><span class="target" id="eddl__onnx_8h_1a7f95e1707b13535c57b8de1e89997278"></span>Net *<code class="sig-name descname">import_net_from_onnx_file</code><span class="sig-paren">(</span>string <em>path</em>, int <em>mem</em> = 0, LOG_LEVEL <em>log_level</em> = LOG_LEVEL::INFO<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425import_net_from_onnx_file6stringi9LOG_LEVEL" title="Permalink to this definition">¶</a><br /></dt>
@@ -318,6 +313,37 @@ to use <a class="reference external" href="https://github.com/daquexian/onnx-sim
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Net</span><span class="o">*</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_net_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_model.onnx&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">});</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="simplifying-a-onnx-model">
+<h2>Simplifying a *.onnx model<a class="headerlink" href="#simplifying-a-onnx-model" title="Permalink to this headline">¶</a></h2>
+<p>Not all onnx models can be loaded by the EDDL since in order to read the model correctly, all its layers and arguments must be supported by our library.</p>
+<p>The best way to know if a model is supported by our current version is to try to load it. If import step produces an error,
+you try to “standardize” or “simplifying” using <em>onnx_simplifier_</em>.</p>
+<p><strong>Installation</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install -U pip <span class="o">&amp;&amp;</span> pip3 install onnx-simplifier
+</pre></div>
+</div>
+<p><strong>Example #1:</strong> Simplifying a “ResNet18” (one input)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download onnx model from: https://github.com/onnx/models/tree/master/vision/classification/resnet</span>
+
+<span class="c1"># Simplify</span>
+python3 -m onnxsim resnet18-v1-7.onnx resnet18-v1-7_simplify.onnx
+</pre></div>
+</div>
+<p><strong>Example #2:</strong> Simplifying a “MobileNet” (input’s shape required)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download onnx model from: https://github.com/onnx/models/tree/master/vision/classification/mobilenet</span>
+
+<span class="c1"># Simplify</span>
+python3 -m onnxsim mobilenetv2-7.onnx mobilenetv2-7_simplified.onnx --input-shape <span class="m">1</span>,3,224,224
+</pre></div>
+</div>
+<p><strong>Example #3:</strong> Simplifying a “TinyYOLOv3” (two inputs, one dynamic)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download onnx model from: https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/tiny-yolov3</span>
+
+<span class="c1"># Simplify</span>
+python3 -m onnxsim tiny-yolov3-11.onnx tiny-yolov3-11_simplified.onnx --dynamic-input-shape --input-shape input_1:1,3,416,416 image_shape:1,2
 </pre></div>
 </div>
 </section>

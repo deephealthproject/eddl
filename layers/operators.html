@@ -4,7 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -42,7 +42,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Reduction Layers" href="reduction.html" />
+    <link rel="next" title="Reduce" href="reduction.html" />
     <link rel="prev" title="Generators" href="generators.html" /> 
 </head>
 
@@ -124,7 +124,8 @@
 <li class="toctree-l1"><a class="reference internal" href="generators.html">Generators</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Operators</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#abs">Abs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#subtraction">Subtraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#addition">Addition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clamp-clip">Clamp / Clip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#division">Division</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exponent">Exponent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logarithm-natural">Logarithm (natural)</a></li>
@@ -133,10 +134,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#multiplication">Multiplication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#power">Power</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sqrt">Sqrt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#addition">Addition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subtraction">Subtraction</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reduction.html">Reduction Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reduction.html">Reduce</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rnn.html">Recurrent</a></li>
 </ul>
 <p><span class="caption-text">Model</span></p>
@@ -277,14 +278,14 @@
 </pre></div>
 </div>
 </section>
-<section id="subtraction">
-<h2>Subtraction<a class="headerlink" href="#subtraction" title="Permalink to this headline">¶</a></h2>
+<section id="addition">
+<h2>Addition<a class="headerlink" href="#addition" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl3SubE5layer5layer">
-<span id="_CPPv3N4eddl3SubE5layer5layer"></span><span id="_CPPv2N4eddl3SubE5layer5layer"></span><span id="eddl::Sub__layer.layer"></span><span class="target" id="namespaceeddl_1a4589b9932d07b3c06412354e94b83c81"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sub</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SubE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Layer that computes the difference of two layers. </p>
+<dt id="_CPPv4N4eddl3AddE5layer5layer">
+<span id="_CPPv3N4eddl3AddE5layer5layer"></span><span id="_CPPv2N4eddl3AddE5layer5layer"></span><span id="eddl::Add__layer.layer"></span><span class="target" id="namespaceeddl_1ae3dceecf85746e12ff88f06486925054"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Add</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3AddE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the sum of two layers. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Difference between <code class="docutils literal notranslate"><span class="pre">l1</span></code> and <code class="docutils literal notranslate"><span class="pre">l2</span></code> </p>
+<dt><strong>Return</strong></dt><dd><p>The result after computing the sum of layers <code class="docutils literal notranslate"><span class="pre">l1</span></code> and <code class="docutils literal notranslate"><span class="pre">l2</span></code> </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: Layer </p></li>
@@ -296,15 +297,15 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sub</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span><span class="w"> </span><span class="n">l2</span><span class="p">);</span><span class="w"> </span><span class="c1">// l1 and l2 are layers with the same shape</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Add</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span><span class="w"> </span><span class="n">l2</span><span class="p">);</span><span class="w"> </span><span class="c1">// l1 and l2 are layers with the same shape</span>
 </pre></div>
 </div>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl3SubE5layerf">
-<span id="_CPPv3N4eddl3SubE5layerf"></span><span id="_CPPv2N4eddl3SubE5layerf"></span><span id="eddl::Sub__layer.float"></span><span class="target" id="namespaceeddl_1a1efab45fd7b88663984dc634ec4a4892"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sub</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SubE5layerf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Layer that computes the difference of a layer and a float number. </p>
+<dt id="_CPPv4N4eddl3AddE5layerf">
+<span id="_CPPv3N4eddl3AddE5layerf"></span><span id="_CPPv2N4eddl3AddE5layerf"></span><span id="eddl::Add__layer.float"></span><span class="target" id="namespaceeddl_1a3feb5f255c5c8c54fa5221d965169b3e"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Add</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3AddE5layerf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the sum of a float number and a layer. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Parent layer <code class="docutils literal notranslate"><span class="pre">l1</span></code> after computing its difference with <code class="docutils literal notranslate"><span class="pre">k</span></code> </p>
+<dt><strong>Return</strong></dt><dd><p>Parent layer <code class="docutils literal notranslate"><span class="pre">l1</span></code> after computing its sum with <code class="docutils literal notranslate"><span class="pre">k</span></code> </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: Parent layer </p></li>
@@ -316,16 +317,42 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sub</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Add</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl3SubEf5layer">
-<span id="_CPPv3N4eddl3SubEf5layer"></span><span id="_CPPv2N4eddl3SubEf5layer"></span><span id="eddl::Sub__float.layer"></span><span class="target" id="namespaceeddl_1a769740322b3bb75d6c01d91b9f1f4f1c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sub</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SubEf5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N4eddl3AddEf5layer">
+<span id="_CPPv3N4eddl3AddEf5layer"></span><span id="_CPPv2N4eddl3AddEf5layer"></span><span id="eddl::Add__float.layer"></span><span class="target" id="namespaceeddl_1a44aa12821eff06e47e7bee6e7f84655a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Add</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3AddEf5layer" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sub</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Add</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="clamp-clip">
+<h2>Clamp / Clip<a class="headerlink" href="#clamp-clip" title="Permalink to this headline">¶</a></h2>
+<p>Clamps all elements in input into the range [min, max].</p>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5ClampE5layerff6string">
+<span id="_CPPv3N4eddl5ClampE5layerff6string"></span><span id="_CPPv2N4eddl5ClampE5layerff6string"></span><span id="eddl::Clamp__layer.float.float.string"></span><span class="target" id="namespaceeddl_1a3f1708343c78870fd9d613ecfbc2aa9d"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Clamp</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>min</em>, float <em>max</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ClampE5layerff6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Clamps all elements in input into the range [ min, max ]. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of reshape operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code>: Lower-bound of the range to be clamped to </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max</span></code>: Upper-bound of the range to be clamped to </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Clamp</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mi">-100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -571,14 +598,14 @@
 </pre></div>
 </div>
 </section>
-<section id="addition">
-<h2>Addition<a class="headerlink" href="#addition" title="Permalink to this headline">¶</a></h2>
+<section id="subtraction">
+<h2>Subtraction<a class="headerlink" href="#subtraction" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl3AddE5layer5layer">
-<span id="_CPPv3N4eddl3AddE5layer5layer"></span><span id="_CPPv2N4eddl3AddE5layer5layer"></span><span id="eddl::Add__layer.layer"></span><span class="target" id="namespaceeddl_1ae3dceecf85746e12ff88f06486925054"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Add</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3AddE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Layer that computes the sum of two layers. </p>
+<dt id="_CPPv4N4eddl3SubE5layer5layer">
+<span id="_CPPv3N4eddl3SubE5layer5layer"></span><span id="_CPPv2N4eddl3SubE5layer5layer"></span><span id="eddl::Sub__layer.layer"></span><span class="target" id="namespaceeddl_1a4589b9932d07b3c06412354e94b83c81"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sub</code><span class="sig-paren">(</span>layer <em>l1</em>, layer <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SubE5layer5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the difference of two layers. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The result after computing the sum of layers <code class="docutils literal notranslate"><span class="pre">l1</span></code> and <code class="docutils literal notranslate"><span class="pre">l2</span></code> </p>
+<dt><strong>Return</strong></dt><dd><p>Difference between <code class="docutils literal notranslate"><span class="pre">l1</span></code> and <code class="docutils literal notranslate"><span class="pre">l2</span></code> </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: Layer </p></li>
@@ -590,15 +617,15 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Add</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span><span class="w"> </span><span class="n">l2</span><span class="p">);</span><span class="w"> </span><span class="c1">// l1 and l2 are layers with the same shape</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sub</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span><span class="w"> </span><span class="n">l2</span><span class="p">);</span><span class="w"> </span><span class="c1">// l1 and l2 are layers with the same shape</span>
 </pre></div>
 </div>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl3AddE5layerf">
-<span id="_CPPv3N4eddl3AddE5layerf"></span><span id="_CPPv2N4eddl3AddE5layerf"></span><span id="eddl::Add__layer.float"></span><span class="target" id="namespaceeddl_1a3feb5f255c5c8c54fa5221d965169b3e"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Add</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3AddE5layerf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Layer that computes the sum of a float number and a layer. </p>
+<dt id="_CPPv4N4eddl3SubE5layerf">
+<span id="_CPPv3N4eddl3SubE5layerf"></span><span id="_CPPv2N4eddl3SubE5layerf"></span><span id="eddl::Sub__layer.float"></span><span class="target" id="namespaceeddl_1a1efab45fd7b88663984dc634ec4a4892"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sub</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SubE5layerf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the difference of a layer and a float number. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Parent layer <code class="docutils literal notranslate"><span class="pre">l1</span></code> after computing its sum with <code class="docutils literal notranslate"><span class="pre">k</span></code> </p>
+<dt><strong>Return</strong></dt><dd><p>Parent layer <code class="docutils literal notranslate"><span class="pre">l1</span></code> after computing its difference with <code class="docutils literal notranslate"><span class="pre">k</span></code> </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">l1</span></code>: Parent layer </p></li>
@@ -610,16 +637,16 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Add</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sub</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl3AddEf5layer">
-<span id="_CPPv3N4eddl3AddEf5layer"></span><span id="_CPPv2N4eddl3AddEf5layer"></span><span id="eddl::Add__float.layer"></span><span class="target" id="namespaceeddl_1a44aa12821eff06e47e7bee6e7f84655a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Add</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3AddEf5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N4eddl3SubEf5layer">
+<span id="_CPPv3N4eddl3SubEf5layer"></span><span id="_CPPv2N4eddl3SubEf5layer"></span><span id="eddl::Sub__float.layer"></span><span class="target" id="namespaceeddl_1a769740322b3bb75d6c01d91b9f1f4f1c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sub</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3SubEf5layer" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Add</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sub</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -633,7 +660,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="reduction.html" class="btn btn-neutral float-right" title="Reduction Layers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="reduction.html" class="btn btn-neutral float-right" title="Reduce" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="generators.html" class="btn btn-neutral float-left" title="Generators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

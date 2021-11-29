@@ -15,39 +15,51 @@ Example:
 
 
 
-
-Subtraction
+Addition
 ---------------
 
-.. doxygenfunction:: Sub(layer l1, layer l2)
+
+.. doxygenfunction:: Add(layer l1, layer l2)
 
 Example:
 
 .. code-block:: c++
 
-   layer l = Sub(l1, l2); // l1 and l2 are layers with the same shape
+   layer l = Add(l1, l2); // l1 and l2 are layers with the same shape
 
 
 
-.. doxygenfunction:: Sub(layer l1, float k)
-
-Example:
-
-.. code-block:: c++
-
-   l = Sub(l, 0.5);
-
-
-
-.. doxygenfunction:: Sub(float k, layer l1)
-
+.. doxygenfunction:: Add(layer l1, float k)
 
 Example:
 
 .. code-block:: c++
 
-   l = Sub(0.5, l);
-   
+   l = Add(l, 0.5);
+
+
+
+.. doxygenfunction:: Add(float k, layer l1)
+
+Example:
+
+.. code-block:: c++
+
+   l = Add(0.5, l);
+
+
+Clamp / Clip
+-------------
+
+Clamps all elements in input into the range [min, max].
+
+.. doxygenfunction:: Clamp
+
+Example:
+
+.. code-block:: c++
+
+ l = Clamp(l, -100, 100);
 
 
 Division
@@ -213,36 +225,36 @@ Example:
 
 
 
-Addition
+Subtraction
 ---------------
 
-
-.. doxygenfunction:: Add(layer l1, layer l2)
-
-Example:
-
-.. code-block:: c++
-
-   layer l = Add(l1, l2); // l1 and l2 are layers with the same shape
-
-
-
-.. doxygenfunction:: Add(layer l1, float k)
+.. doxygenfunction:: Sub(layer l1, layer l2)
 
 Example:
 
 .. code-block:: c++
 
-   l = Add(l, 0.5);
+   layer l = Sub(l1, l2); // l1 and l2 are layers with the same shape
 
 
 
-.. doxygenfunction:: Add(float k, layer l1)
+.. doxygenfunction:: Sub(layer l1, float k)
 
 Example:
 
 .. code-block:: c++
 
-   l = Add(0.5, l);
+   l = Sub(l, 0.5);
+
+
+
+.. doxygenfunction:: Sub(float k, layer l1)
+
+
+Example:
+
+.. code-block:: c++
+
+   l = Sub(0.5, l);
 
 

@@ -4,7 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -131,7 +131,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/merge.html">Merge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/generators.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/operators.html">Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduction Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduce</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
 <p><span class="caption-text">Model</span></p>
@@ -290,7 +290,7 @@ You can use one of the following lines according to your needs:</p>
 <ul class="simple">
 <li><p>Platforms supported: Linux and MacOS</p></li>
 </ul>
-</div>
+</aside>
 </div>
 <div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-0-1 docutils container">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-gpu
@@ -301,7 +301,7 @@ You can use one of the following lines according to your needs:</p>
 <ul class="simple">
 <li><p>Platforms supported: Linux</p></li>
 </ul>
-</div>
+</aside>
 </div>
 <div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-0-2 docutils container">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-cudnn
@@ -312,7 +312,7 @@ You can use one of the following lines according to your needs:</p>
 <ul class="simple">
 <li><p>Platforms supported: Linux</p></li>
 </ul>
-</div>
+</aside>
 </div>
 </div>
 <img alt="../_images/homebrew.svg" src="../_images/homebrew.svg" /></section>
@@ -346,7 +346,7 @@ brew install eddl
 </li>
 <li><p>[Optional] cuDNN to speed up training</p></li>
 </ul>
-</div>
+</aside>
 <div class="sphinx-tabs docutils container">
 <div class="ui top attached tabular menu sphinx-menu docutils container">
 <div class="active item sphinx-data-tab-1-0 docutils container">
@@ -444,7 +444,7 @@ with:</em> <code class="docutils literal notranslate"><span class="pre">-DCMAKE_
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake .. -DBUILD_SUPERBUILD<span class="o">=</span>ON -DBUILD_TARGET<span class="o">=</span>CUDNN -DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc -DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7
 </pre></div>
 </div>
-</div>
+</aside>
 </section>
 <section id="including-eddl-in-your-project">
 <h2>Including EDDL in your project<a class="headerlink" href="#including-eddl-in-your-project" title="Permalink to this headline">¶</a></h2>
@@ -458,7 +458,7 @@ installation mode you choose, you can add <code class="docutils literal notransl
 <p class="admonition-title">Note</p>
 <p>After <code class="docutils literal notranslate"><span class="pre">find_package</span></code>, you can access library components with theses variables:
 <code class="docutils literal notranslate"><span class="pre">EDDL_ROOT</span></code>, <code class="docutils literal notranslate"><span class="pre">EDDL_INCLUDE_DIR</span></code>, <code class="docutils literal notranslate"><span class="pre">EDDL_LIBRARIES_DIR</span></code> and <code class="docutils literal notranslate"><span class="pre">EDDL_LIBRARIES</span></code>.</p>
-</div>
+</aside>
 </section>
 </section>
 

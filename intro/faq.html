@@ -4,7 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -117,6 +117,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#is-it-more-memory-efficient-than-pytorch-tensorflow-etc">Is it more memory-efficient than PyTorch/TensorFlow/etc?</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#problems-with-onnx-models">Problems with ONNX models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#i-cannot-import-a-onnx-model">I cannot import a *.onnx model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#my-onnx-model-is-not-exported-correctly">My *.onnx model is not exported correctly</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -145,7 +150,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/merge.html">Merge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/generators.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/operators.html">Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduction Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduce</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
 <p><span class="caption-text">Model</span></p>
@@ -326,6 +331,17 @@ docker <span class="nb">exec</span> -it <span class="o">[</span>container-id<spa
 <h3>Is it more memory-efficient than PyTorch/TensorFlow/etc?<a class="headerlink" href="#is-it-more-memory-efficient-than-pytorch-tensorflow-etc" title="Permalink to this headline">¶</a></h3>
 <p>Depends on your memory setting.
 You can take a look at our benchmarks: <a class="reference external" href="https://github.com/jofuelo/eddl_benchmark">EDDL benchmarks</a></p>
+</section>
+</section>
+<section id="problems-with-onnx-models">
+<h2>Problems with ONNX models<a class="headerlink" href="#problems-with-onnx-models" title="Permalink to this headline">¶</a></h2>
+<section id="i-cannot-import-a-onnx-model">
+<h3>I cannot import a *.onnx model<a class="headerlink" href="#i-cannot-import-a-onnx-model" title="Permalink to this headline">¶</a></h3>
+<p>If a *.onnx model cannot be imported by the EDDL, you can try to simplifying it. (More on: <a class="reference internal" href="../model/onnx.html"><span class="doc">my document</span></a>)</p>
+</section>
+<section id="my-onnx-model-is-not-exported-correctly">
+<h3>My *.onnx model is not exported correctly<a class="headerlink" href="#my-onnx-model-is-not-exported-correctly" title="Permalink to this headline">¶</a></h3>
+<p>Exporting an *.onnx is hard since each framework has its way of importing/exporting *.onnx files. Due to this problematic, we try to make sure that the EDDL can import/export with itself, ONNX Runtime, and then, we focus our efforts on the other frameworks.</p>
 </section>
 </section>
 </section>

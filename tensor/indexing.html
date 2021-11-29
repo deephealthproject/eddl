@@ -4,7 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -123,7 +123,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/merge.html">Merge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/generators.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/operators.html">Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduction Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduce</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
 <p><span class="caption-text">Model</span></p>
@@ -381,22 +381,17 @@
 </section>
 <section id="set-select">
 <h3>Set Select<a class="headerlink" href="#set-select" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor10set_selectERK6vectorI6stringEf">
-<span id="_CPPv3N6Tensor10set_selectERK6vectorI6stringEf"></span><span id="_CPPv2N6Tensor10set_selectERK6vectorI6stringEf"></span><span id="Tensor::set_select__vector:string:CR.float"></span><span class="target" id="class_tensor_1aad2375edffa7747ce482058b10a4284f"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">set_select</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;string&gt; &amp;<em>indices</em>, float <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10set_selectERK6vectorI6stringEf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Sets the elements in the array using the selected indices. The indices must be specified as a vector of strings ({“0”, “:5”, “:”, “3:6”}). </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;:5&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;:&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;3:6&quot;</span></code>. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::set_select” with arguments (const vector&lt;string&gt;&amp; indices, float value) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">SelDescriptor</span> <span class="o">*</span><span class="n">sd</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">indices</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">indices</span><span class="p">,</span> <span class="nb">float</span> <span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</aside>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">});</span><span class="w"></span>
 <span class="n">t1</span><span class="o">-&gt;</span><span class="n">set_select</span><span class="p">({</span><span class="s">&quot;0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="p">},</span><span class="w"> </span><span class="mf">2.0f</span><span class="p">);</span><span class="w"> </span><span class="c1">// Set element (0, 2) to &quot;2&quot;</span>
@@ -423,22 +418,17 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor10set_selectERK6vectorI6stringEP6Tensor">
-<span id="_CPPv3N6Tensor10set_selectERK6vectorI6stringEP6Tensor"></span><span id="_CPPv2N6Tensor10set_selectERK6vectorI6stringEP6Tensor"></span><span id="Tensor::set_select__vector:string:CR.TensorP"></span><span class="target" id="class_tensor_1ac159a0a2d781d424a636dabb0572d18e"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">set_select</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;string&gt; &amp;<em>indices</em>, Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10set_selectERK6vectorI6stringEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Sets the elements in the array using the selected indices. The indices must be specified as a vector of strings ({“0”, “:5”, “:”, “3:6”}). </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;:5&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;:&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;3:6&quot;</span></code>. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::set_select” with arguments (const vector&lt;string&gt;&amp; indices, Tensor *A) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">SelDescriptor</span> <span class="o">*</span><span class="n">sd</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">indices</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">indices</span><span class="p">,</span> <span class="nb">float</span> <span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</aside>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">});</span><span class="w"></span>
 <span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="mf">5.0f</span><span class="p">);</span><span class="w"></span>

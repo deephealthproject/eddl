@@ -4,7 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -122,7 +122,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/merge.html">Merge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/generators.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/operators.html">Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduction Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduce</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
 <p><span class="caption-text">Model</span></p>
@@ -219,12 +219,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#element-wise">Element-wise</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Div</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">Maximum</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Minimum</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Mult</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id6">Sub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-1">Add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#div-1">Div</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maximum-1">Maximum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#minimum-1">Minimum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mult-1">Mult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sub-1">Sub</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#reductions">Reductions</a><ul>
@@ -1567,8 +1567,8 @@
 </section>
 <section id="element-wise">
 <h2>Element-wise<a class="headerlink" href="#element-wise" title="Permalink to this headline">¶</a></h2>
-<section id="id1">
-<h3>Add<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<section id="add-1">
+<h3>Add<a class="headerlink" href="#add-1" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3addEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor3addEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor3addEP6TensorP6Tensor"></span><span id="Tensor::add__TensorP.TensorP"></span><span class="target" id="class_tensor_1a731b680ae9e2ad4f2f126e42f9c64b6d"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">add</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3addEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -1609,8 +1609,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id2">
-<h3>Div<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<section id="div-1">
+<h3>Div<a class="headerlink" href="#div-1" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3divEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor3divEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor3divEP6TensorP6Tensor"></span><span id="Tensor::div__TensorP.TensorP"></span><span class="target" id="class_tensor_1a9ab9f4187abd140aaceb5b50c6c8e647"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">div</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3divEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -1651,8 +1651,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id3">
-<h3>Maximum<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<section id="maximum-1">
+<h3>Maximum<a class="headerlink" href="#maximum-1" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor7maximumEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor7maximumEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor7maximumEP6TensorP6Tensor"></span><span id="Tensor::maximum__TensorP.TensorP"></span><span class="target" id="class_tensor_1a8abac6fe018c9d1ac948a1f3789cb134"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">maximum</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7maximumEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -1692,8 +1692,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id4">
-<h3>Minimum<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<section id="minimum-1">
+<h3>Minimum<a class="headerlink" href="#minimum-1" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor7minimumEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor7minimumEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor7minimumEP6TensorP6Tensor"></span><span id="Tensor::minimum__TensorP.TensorP"></span><span class="target" id="class_tensor_1a5f5549013120d747f83ab2bec1d4edd1"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">minimum</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7minimumEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -1733,8 +1733,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id5">
-<h3>Mult<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<section id="mult-1">
+<h3>Mult<a class="headerlink" href="#mult-1" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4multEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor4multEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor4multEP6TensorP6Tensor"></span><span id="Tensor::mult__TensorP.TensorP"></span><span class="target" id="class_tensor_1ab5307cc05d05fc20d3d0edc7d084a9e8"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">mult</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4multEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
@@ -1775,8 +1775,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id6">
-<h3>Sub<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<section id="sub-1">
+<h3>Sub<a class="headerlink" href="#sub-1" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor3subEP6TensorP6Tensor">
 <span id="_CPPv3N6Tensor3subEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor3subEP6TensorP6Tensor"></span><span id="Tensor::sub__TensorP.TensorP"></span><span class="target" id="class_tensor_1a6bb199eb71093afdb88c5b3b6f2be6a3"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sub</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3subEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
