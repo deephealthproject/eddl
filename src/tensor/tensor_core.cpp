@@ -1076,3 +1076,30 @@ void Tensor::tile(Tensor *A, Tensor *B)
         Tensor::select(A, B, sind, 0, Bsize);
     }
 }
+
+Tensor* Tensor::broadcast(Tensor* A, Tensor* B){
+    // Source: https://numpy.org/doc/stable/user/basics.broadcasting.html
+
+    // Check dimensions
+    if (A->ndim != B->ndim){
+        msg("The dimensions of both tensors must be equal", "Tensor::broadcast");
+    }
+
+    // Check if the shapes can be broadcasted
+    for(int i=0; i<A->ndim; i++){
+        if(A->shape[i]==B->shape[i] || (A->shape[i]==1)  || B->shape[i]==1){
+            // okay. Do nothing
+        }else{
+            msg("These tensors cannot be broadcasted. Two dimensions are compatible when: 1) they are equal, or 2) one of them is 1", "Tensor::broadcast");
+        }
+    }
+
+    std::cerr << "[Experimental function]: Broadcast" << std::endl;
+
+    // Do broadcast
+    Tensor* new_t;
+//    new_t = Tensor::repeat(A, target_size[0]*target_size[1], 1);
+//    new_t->reshape_(B->shape);
+
+    return new_t;
+}
