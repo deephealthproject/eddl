@@ -87,11 +87,20 @@ int main(int argc, char **argv) {
     // Settings
     int epochs = (testing) ? 2 : 10;
     int batch_size = 100;
-    int num_classes = 10;
+//    int num_classes = 10;
+    // medical
+    int num_classes = 6;
+    //apples
+    //int num_classes = 4;
 
     // Define network
     //layer in = Input({64*64});
-    layer in = Input({1, 28, 28});
+    // mnsit
+    //layer in = Input({1, 28, 28});
+    // medical
+     layer in = Input({1, 64, 64});
+     // apples
+    //  layer in = Input({3, 256, 256});
     layer l = in; // Aux var
 
     l = Flatten(l);
@@ -130,11 +139,38 @@ int main(int argc, char **argv) {
     //Distributed dataset
     //Tensor* x_train = Tensor::load_id("mnist_trX.bin");
     //Tensor* y_train = Tensor::load_id("mnist_trY.bin");
+    /*
     Tensor* x_train = Tensor::load("mnist_trX.bin");
     Tensor* y_train = Tensor::load("mnist_trY.bin");
     Tensor* x_test = Tensor::load("mnist_tsX.bin");
     Tensor* y_test = Tensor::load("mnist_tsY.bin");
+    */
+    /*
+    Tensor* x_train = Tensor::load("small/train-images.bin");
+    Tensor* y_train = Tensor::load("small/train-labels.bin");
+    Tensor* x_test = Tensor::load("small/test-images.bin");
+    Tensor* y_test = Tensor::load("small/test-labels.bin");
+*/
 
+    /*
+    Tensor* x_train = Tensor::load("large/train-images.bin");
+    Tensor* y_train = Tensor::load("large/train-labels.bin");
+    Tensor* x_test = Tensor::load("large/test-images.bin");
+    Tensor* y_test = Tensor::load("large/test-labels.bin");
+    */
+  
+    
+    Tensor* x_train = Tensor::load("medical/train-images.bin");
+    Tensor* y_train = Tensor::load("medical/train-labels.bin");
+    Tensor* x_test = Tensor::load("medical/test-images.bin");
+    Tensor* y_test = Tensor::load("medical/test-labels.bin");
+     
+    /*
+    Tensor* x_train = Tensor::load("apples/train-images.bin");
+    Tensor* y_train = Tensor::load("apples/train-labels.bin");
+    Tensor* x_test = Tensor::load("apples/test-images.bin");
+    Tensor* y_test = Tensor::load("apples/test-labels.bin");
+    */
    
 
     if (testing) {

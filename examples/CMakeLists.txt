@@ -63,6 +63,10 @@ target_link_libraries(mnist_losses eddl)
 
 
 # EXAMPLES: CIFAR10 ****************************************************
+#distributed
+add_executable(generic_vgg16_distr "nn/2_cifar10/3_generic_vgg16_distr.cpp")
+target_link_libraries(generic_vgg16_distr eddl)
+
 add_executable(cifar_conv "nn/2_cifar10/1_cifar_conv.cpp")
 target_link_libraries(cifar_conv eddl)
 #distributed

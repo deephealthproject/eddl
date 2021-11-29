@@ -918,14 +918,14 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             for (j = 0; j < (batches_per_proc); j++) {
                 batches = batches + n_procs;
 
-                 printf("Batch nr %d\n", j);
+                //printf("Batch nr %d\n", j);
                 // Set random indices
-                printf("Proc: %d sind:\n", id);
+                //printf("Proc: %d sind:\n", id);
                 for (k = 0; k < batch_size; k++) {
                     sind[k] = rand() % n;
-                    printf("%5d ",sind[k]);
+                    //printf("%5d ",sind[k]);
                 }
-                printf("\n");
+                //printf("\n");
                 
                 // Train batch
                 tr_batches++;

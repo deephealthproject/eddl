@@ -39,6 +39,8 @@
 //#include "eddl/tensor/cnpy/cnpy.h"
 
 using namespace std;
+using std::chrono::high_resolution_clock;
+using std::chrono::duration;
 
 // ********* LOAD FUNCTIONS *********
 Tensor* Tensor::load(const string& filename, string format){
@@ -57,7 +59,7 @@ Tensor* Tensor::load(const string& filename, string format){
     return Tensor::load<float>(filename, std::move(format));
 }
 
-Tensor* Tensor::load_id(const string& filename, string format){
+Tensor* Tensor::load_id(const string& filename, int i1, int i2, string format){
     int id;
     string name;
     
@@ -71,14 +73,13 @@ Tensor* Tensor::load_id(const string& filename, string format){
         msg("Numpy files need a source type to be specified: 'Tensor::loadt<type>(filename)'");
     }
   
-#ifdef cMPI
     name = get_name(filename);
-    MPI_Comm_rank(MPI_COMM_WORLD, &id);
     name.append("_"); 
-    name.append(to_string(id)); 
+    name.append(to_string(i1)); 
+    name.append("_"); 
+    name.append(to_string(i2)); 
     name.append(".");
     name.append(format);
-#endif
     
     fprintf(stderr, "[DISTR] File: %s\n", name.c_str());
     // Default type to be ignored
@@ -102,7 +103,9 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
 
 Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
     int r_ndim;
+    int DEBUG=1;
 
+    high_resolution_clock::time_point e1 = high_resolution_clock::now();
     // Load number of dimensions
     ifs.read(reinterpret_cast<char *>(&r_ndim),  sizeof(int));
 
@@ -110,11 +113,18 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
     vector<int> r_shape(r_ndim);
     ifs.read(reinterpret_cast<char *>(r_shape.data()), r_ndim * sizeof(int));
 
-   printf("LOAD dim %d\n", r_ndim);
     // Compute total size
     int r_size = 1;
-    for(int i=0; i<r_ndim; i++){ r_size *= r_shape[i]; }
- for(int i=0; i<r_ndim; i++){ printf("LOAD shape %d %d\n", i, r_shape[i]); }
+    for (int i = 0; i < r_ndim; i++) {
+        r_size *= r_shape[i];
+    }
+    if (DEBUG) {
+        printf("[Debug] LOAD: dim=%d ", r_ndim);
+        for (int i = 0; i < r_ndim; i++) {
+            printf("shape[%d]=%d ", i, r_shape[i]);
+        }
+        printf("\n");
+    }
     // Compute stride
     vector<int> tmp_stride = shape2stride(r_shape);
 
@@ -138,6 +148,11 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
 
     auto *t1 = new Tensor(r_shape, DEV_CPU);
     ifs.read(reinterpret_cast<char*>(t1->ptr), n_read * sizeof(float));
+    
+    high_resolution_clock::time_point e2 = high_resolution_clock::now();
+    duration<double> epoch_time_span = e2 - e1;
+    if (DEBUG) 
+    printf("[Debug] LOAD. Time=%f sec\n", epoch_time_span);
     //t1->print();
     // Load content (row-major)
     /*
@@ -155,10 +170,12 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
 Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
     int r_ndim;
 
+    int DEBUG=1;
+
+    high_resolution_clock::time_point e1 = high_resolution_clock::now();
     // Load number of dimensions
     ifs.read(reinterpret_cast<char *>(&r_ndim),  sizeof(int));
 
-    printf("LOAD8 dim %d\n", r_ndim);
     // Load dimensions
     vector<int> r_shape(r_ndim);
     ifs.read(reinterpret_cast<char *>(r_shape.data()), r_ndim * sizeof(int));
@@ -166,8 +183,14 @@ Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
     // Compute total size
     int r_size = 1;
     for(int i=0; i<r_ndim; i++){ r_size *= r_shape[i]; }
- for(int i=0; i<r_ndim; i++){ printf("LOAD8 shape %d %d\n", i, r_shape[i]); }
-
+ 
+    if (DEBUG) {
+        printf("[Debug] LOAD8: dim=%d ", r_ndim);
+        for (int i = 0; i < r_ndim; i++) {
+            printf("shape[%d]=%d ", i, r_shape[i]);
+        }
+        printf("\n");
+    }
     // Compute stride
     vector<int> tmp_stride = shape2stride(r_shape);
 
@@ -193,11 +216,37 @@ Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
   
     // Data are unsigned char
     // Load every item and convert to float
+    
     unsigned char item;
+    /*
     for(int i=0; i<n_read; i++){
         ifs.read(reinterpret_cast<char*>(&item),1);
         t1->ptr[i] = (float) item;
     }
+    */
+    int h=0;
+    
+    #define BUFFER_SIZE 1000
+    unsigned char items[BUFFER_SIZE];
+
+    for (int i = 0; i < (n_read % BUFFER_SIZE); i++) {
+        ifs.read(reinterpret_cast<char*> (&item), 1);
+        t1->ptr[h] = (float) item;
+        h++;
+    }
+    
+    for (int i = 0; i < (int)(n_read / BUFFER_SIZE); i++) {
+        ifs.read(reinterpret_cast<char*> (&items), BUFFER_SIZE);
+        for (int k = 0; k < BUFFER_SIZE; k++) {
+            t1->ptr[h] = (float) items[k];
+            h++;
+        }
+    }
+    
+    high_resolution_clock::time_point e2 = high_resolution_clock::now();
+    duration<double> epoch_time_span = e2 - e1;
+    if (DEBUG) 
+    printf("[Debug] LOAD8. Time=%f sec\n", epoch_time_span);
     //vector<unsigned char> vs(n_read);
     //char* vs = (char *) malloc(n_read * sizeof(char));
     //ifs.read(reinterpret_cast<char*>(vs.data()), n_read * sizeof(char));

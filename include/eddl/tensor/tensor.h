@@ -287,7 +287,7 @@ public:
       *                     - Other: bin
       *  @return    Tensor
     */
-    static Tensor* load_id(const string& filename, string format="");
+    static Tensor* load_id(const string& filename, int i1, int i2, string format="");
         
 //    /**
 //      *  @brief Load data from a text file
