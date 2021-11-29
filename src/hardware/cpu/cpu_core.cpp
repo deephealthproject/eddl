@@ -378,9 +378,10 @@ void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsig
 //    int max_threads = omp_get_max_threads();
 //    omp_set_num_threads(max_threads);
 
-    // Translate tensor
+    // OMP does not want 'unsigned int's in the for loop
+    // Source: https://stackoverflow.com/questions/2820621/why-arent-unsigned-openmp-index-variables-allowed
     #pragma omp parallel for
-    for (unsigned int A_address = 0; A_address < A->size; A_address++) {
+    for (int A_address = 0; A_address < A->size; A_address++) {
         auto* A_indices = new unsigned int[A->ndim];
         auto* B_indices = new unsigned int[B->ndim];
 
@@ -397,7 +398,7 @@ void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsig
         B_indices[axis] = B_idx_axis;
 
         // Copy value t times
-        unsigned int B_address = 0;
+        int B_address = 0;
         for (int i=0; i< B->ndim; i++){ B_address += B_indices[i] * B->stride[i]; }
         // ******************************************************************
 
