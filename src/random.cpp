@@ -54,7 +54,7 @@ float slow_randn(float mean, float sd) {
 void build_randn_table() {
     if (! random_table_generated ) {
         random_table_generated = true;
-        printf("Generating Random Table\n");
+        fprintf(stderr, "Generating Random Table\n");
 
         for (int i = 0; i < MAX_RTABLE; i++)
             RTable[i] = gaussgen();

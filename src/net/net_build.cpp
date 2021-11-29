@@ -17,6 +17,7 @@
 #include "eddl/net/net.h"
 #include "eddl/utils.h"
 #include "eddl/random.h"
+#include <cstdio>
 
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/conv/layer_conv.h"
@@ -141,9 +142,10 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs,
   if (isbuild) return;
 
   if (!initialize) {
-    cout<<"Building "<<name<<" without initialization\n";
+    std::cerr<<"Building "<<name<<" without initialization" << std::endl;
+  }else{
+      std::cerr<<"Building " << name << std::endl;
   }
-  else cout<<"Building "<<name<<endl;
 /*
   for(int i=0;i<layers.size();i++) {
     if (layers[i]->net!=this) {
@@ -418,7 +420,7 @@ void Net::split(int c, int todev) {
         snets[i]->name=cname;
         snets[i]->make_graph(optimizer->clone(), this->losses, this->metrics);
         if(onnx_pretrained){ //We need to copy the imported weights to each snet
-            printf("Copying onnx params to devices\n");
+            fprintf(stderr,"copying onnx params to devices\n");
             for(int i = 0; i < snets.size(); i++)
                 for(int j = 0; j < layers.size(); j++)
                     layers[j]->copy(snets[i]->layers[j]);
