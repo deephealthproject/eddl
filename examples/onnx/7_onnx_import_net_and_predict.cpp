@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
     Net *net = import_net_from_onnx_file(model_path, {in_channels, in_height, in_width}, DEV_CPU);  // Why is the device needed?
 
     // **********************************************************************************************
-    // Optional: This model does not include a softmax layer, so we need to add it
+    // Optional: This model does not include a softmax layer, so we need to add it to get the final probabilities
     // Get input/output + Add softmax
     layer in = net->lin[0];   // getLayer(net,"input_layer_name");
     layer l = net->lout[0];   // getLayer(net,"output_layer_name");
