@@ -2264,6 +2264,31 @@ namespace eddl {
                            const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
                            int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
+
+    ///////////////////////////////////////
+    // UTILS FUNCTIONS
+    ///////////////////////////////////////
+
+    /**
+     *  @brief Reads a text file
+     *
+     *  @param filename  Path for the file
+     *  @return  Vector of string, where each strings represets a line in the file
+   */
+    vector<string> read_txt_file(const string& filename);
+
+    /**
+      *  @brief Get top k class names along with their probabilities
+      *
+      *  @param class_probs  Tensor with class probabilities (shapes: (n), (1, n) or (n, 1)
+      *  @param class_names  Vector of strings containing the class names
+      *  @param k  Number of classes to return. (default 5)
+      *  @param decimals  Number of decimal places for the probability values
+      *  @return   string
+    */
+    string get_topk_predictions(Tensor* class_probs, const vector<string>& class_names, int k=5, int decimals=2);
+
+
     ///////////////////////////////////////
     // MODELS
     ///////////////////////////////////////
@@ -2438,5 +2463,6 @@ namespace eddl {
 
     // Auxiliary function
     layer _expand3d_to_4d(layer parent, string name);
+
 }
 #endif

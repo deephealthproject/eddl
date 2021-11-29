@@ -13,6 +13,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+#include <sstream>
+#include <iomanip>
 
 #include "eddl/apis/eddl.h"
 #include "eddl/utils.h"
@@ -1968,5 +1970,37 @@ namespace eddl {
     }
     return p;
   }
+
+    vector<string> read_txt_file(const string& filename){
+        return read_lines_from_file(filename);  // I had to change the name of the function. Utils should have a namespace
+  }
+
+    string get_topk_predictions(Tensor* class_probs, const vector<string>& class_names, int k, int decimals){
+        // Check tensor dimensions
+        if (class_probs == nullptr || class_probs->size == 0){
+            throw std::runtime_error("The given class probability tensor is empty");
+
+        }
+        // Check class names sizes
+        if(class_probs->size!=class_names.size()){
+            throw std::runtime_error("The number of elements in the class probability tensor does not match the number of class names");
+        }
+
+        // Check K
+        if(k <= 0  || k >= class_probs->size) {
+            throw std::runtime_error("'k' must be a number greater than zero and smaller than the number of classes");
+        }
+
+        // Sort indices by probability
+        Tensor* top_k_probs_idx = class_probs->argsort(true);
+        std::stringstream stream;
+        for(int i=0; i<k; i++){
+            int idx = (int)top_k_probs_idx->ptr[i];
+            float prob = class_probs->ptr[idx] * 100.0f;
+            stream << i+1 << ". " << class_names[idx] << " (" << std::fixed << std::setprecision(decimals) << prob << "%)" << std::endl;
+        }
+        std::string result = stream.str();
+        return result;
+    }
 
 }//namespace
