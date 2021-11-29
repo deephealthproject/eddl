@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -570,6 +570,7 @@ void Net::compute_loss()
 
 void Net::print_loss(int b,int nb)
 {
+  int lbar=50;
   int p = 0;
 
   if (isrecurrent) {
@@ -579,25 +580,26 @@ void Net::print_loss(int b,int nb)
 
 
     if (nb!=-1) {
-      int pc=((b+1)*20)/nb;
-      if (b>=nb) pc=20;
+      int pc=((b+1)*lbar)/nb;
+      if (b>=nb) pc=lbar;
 
       printf("[");
     
       set_text_green();
-      for(int k=0;k<pc;k++) printf("X");
+      for(int k=0;k<pc;k++) printf("█");
 
-      if (pc<20) {
-        if (b%4<2) printf("/");
-        else printf("\\");
-      }
+      //if (pc<lbar) {
+      //  if (b%4<2) printf(".");
+      //  else printf(".");
+      //}
 
       set_text_red();
-      for(int k=pc+1;k<20;k++) printf("-");
+      for(int k=pc+1;k<lbar;k++) printf("-");
 
       set_text_default();
       printf("] ");
     }
+
 
     fprintf(stdout,"%d ",b);
 

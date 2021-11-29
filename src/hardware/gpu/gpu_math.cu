@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -153,6 +153,16 @@ void gpu_clamp(Tensor *A, Tensor *B, float min, float max){
 
     gpu_clamp<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, min, max);
     check_cuda(cudaDeviceSynchronize(), "clamp");
+}
+
+void gpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max){
+    int device=D->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(D);
+
+    gpu_d_clamp<<<dimGrid,dimBlock>>>(D->ptr, I->ptr, PD->ptr, D->size, min, max);
+    check_cuda(cudaDeviceSynchronize(), "d_clamp");
 }
 
 void gpu_cos(Tensor *A, Tensor *B){

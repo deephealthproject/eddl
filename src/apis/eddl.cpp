@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -13,6 +13,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+#include <sstream>
+#include <iomanip>
 
 #include "eddl/apis/eddl.h"
 #include "eddl/utils.h"
@@ -132,34 +134,15 @@ namespace eddl {
   // Computing services
 
   // GPU
-  void toGPU(model net)
-  {
-    net->toGPU({1},1,0);
+  void toGPU(model net, const string& mem){
+      toGPU(net, {1}, 1, mem);
   }
-  void toGPU(model net, vector<int> g)
-  {
-    net->toGPU(g,1,0);
+
+  void toGPU(model net, vector<int> g, const string& mem){
+      toGPU(net, g, 1, mem);
   }
-  void toGPU(model net, vector<int> g,int lsb)
-  {
-    net->toGPU(g,lsb,0);
-  }
-  void toGPU(model net, vector<int> g,string mem)
-  {
-    if (mem=="low_mem") net->toGPU(g,1,2);
-    else if (mem=="mid_mem") net->toGPU(g,1,1);
-    else if (mem=="full_mem") net->toGPU(g,1,0);
-    else msg("Error mem param","toGPU");
-  }
-  void toGPU(model net, string mem)
-  {
-    if (mem=="low_mem") net->toGPU({1},1,2);
-    else if (mem=="mid_mem") net->toGPU({1},1,1);
-    else if (mem=="full_mem") net->toGPU({1},1,0);
-    else msg("Error mem param","toGPU");
-  }
-  void toGPU(model net, vector<int> g,int lsb,string mem)
-  {
+
+  void toGPU(model net, vector<int> g, int lsb, const string& mem){
     if (mem=="low_mem") net->toGPU(g,lsb,2);
     else if (mem=="mid_mem") net->toGPU(g,lsb,1);
     else if (mem=="full_mem") net->toGPU(g,lsb,0);
@@ -167,20 +150,13 @@ namespace eddl {
   }
 
   // CPU
-  void toCPU(model net, int t)
-  {
-    net->toCPU(t);
+  void toCPU(model net, int th){
+    if(th==-1) { th=std::thread::hardware_concurrency(); }
+    net->toCPU(th);
   }
 
-  compserv CS_CPU(){
-    return CS_CPU(-1, "full_mem");
-  }
 
-  compserv CS_CPU(int th){
-    return CS_CPU(th, "full_mem");
-  }
-
-  compserv CS_CPU(int th,string mem){
+  compserv CS_CPU(int th, const string& mem){
     if (mem=="low_mem") return new CompServ(th, {}, {}, 0, 2);
     else if (mem=="mid_mem") return new CompServ(th, {}, {}, 0, 1);
     else if (mem=="full_mem") return new CompServ(th, {}, {}, 0, 0);
@@ -188,16 +164,12 @@ namespace eddl {
     return nullptr; // To silent warnings
   }
 
-  compserv CS_GPU(const vector<int> g){
-    return CS_GPU(g, 1, "full_mem");
-  }
-  compserv CS_GPU(const vector<int> g, string mem){
+  compserv CS_GPU(const vector<int>& g, const string& mem){
     return CS_GPU(g, 1, mem);
   }
-  compserv CS_GPU(const vector<int> g, int lsb){
-    return CS_GPU(g, lsb, "full_mem");
-  }
-  compserv CS_GPU(const vector<int> g, int lsb, string mem){
+
+
+  compserv CS_GPU(const vector<int>& g, int lsb, const string& mem){
     if (mem=="low_mem") return new CompServ(0, g, {}, lsb, 2);
     else if (mem=="mid_mem") return new CompServ(0, g, {}, lsb, 1);
     else if (mem=="full_mem") return new CompServ(0, g, {}, lsb, 0);
@@ -646,6 +618,13 @@ namespace eddl {
     return new LConv(parent, filters, {1, 1}, strides, "none", {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
   }
 
+  layer DepthwiseConv2D(layer parent, const vector<int> &kernel_size, const vector<int> &strides, string padding, bool use_bias, const vector<int> &dilation_rate, string name){
+    // A single convolutional filter is applied to each input channel
+    // To achieve so, we can have one filter per channel (3xdepth) and then use groups to force each filter to have depth=1
+    int filters = parent->output->shape[1];  // one filter per channel (...with depth D)
+    int groups = filters;  // one filter per channel (...with depth 1)
+    return new LConv(parent, filters, kernel_size, strides, "none", {}, filters, dilation_rate, use_bias, name, DEV_CPU, 0);
+  }
 
   layer PointwiseConv2D(layer parent, int filters,
 			const vector<int> &strides, bool use_bias,
@@ -738,6 +717,26 @@ namespace eddl {
 
   layer Flatten(layer parent, string name){
     return Reshape(parent, {-1}, name);
+  }
+
+  layer Repeat(layer parent, const vector<unsigned int>& repeats, unsigned int axis, string name){
+    if(axis==-1){ axis = parent->output->ndim-1; }  // Select last dimension
+    else { axis += 1; } // Batch is ignored
+
+    return new LRepeat(parent, repeats, axis, name, DEV_CPU, 0);
+  }
+
+  layer Repeat(layer parent, unsigned int repeats, unsigned int axis, string name){
+      if(axis==-1){ axis = parent->output->ndim-1; }  // Select last dimension
+      else { axis += 1; } // Batch is ignored
+
+    // Check axis values
+    if(axis<0 || axis > parent->output->ndim-1){
+      msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Repeat");
+    }
+    // Repeat n times each dimension
+    vector<unsigned int> vrepeats = vector<unsigned int>(parent->output->shape[axis], repeats);
+    return new LRepeat(parent, vrepeats, axis, name, DEV_CPU, 0);
   }
 
   layer Squeeze(layer parent, const int axis, string name){
@@ -1007,8 +1006,12 @@ namespace eddl {
     return new LLog10(l, "", DEV_CPU, 0);
   }
 
-  layer Clamp(layer l, float min, float max){
-    return new LClamp(l, min, max, "", DEV_CPU, 0);
+  layer Clamp(layer l, float min, float max, string name){
+    return new LClamp(l, min, max, name, DEV_CPU, 0);
+  }
+
+  layer Clip(layer l, float min, float max, string name){
+    return Clamp(l, min, max, name); // Alias for clamp
   }
 
   layer Mult(layer l1, layer l2){
@@ -1887,12 +1890,10 @@ namespace eddl {
       net = import_net_from_onnx_file("densenet121.onnx", input_shape, DEV_CPU);
     else net = import_net_from_onnx_file("densenet121.onnx", DEV_CPU);
 
-    Layer *l=getLayer(net,"data"); l->name="input";
+    Layer *l=getLayer(net,"data_0"); l->name="input";
     if (top) {
       net->removeLayer("conv2d121");
-
       Layer *l=getLayer(net,"avgpool10");
-      l=Reshape(l,{-1});
       l->name="top";
     }
 
@@ -1969,5 +1970,37 @@ namespace eddl {
     }
     return p;
   }
+
+    vector<string> read_txt_file(const string& filename){
+        return read_lines_from_file(filename);  // I had to change the name of the function. Utils should have a namespace
+  }
+
+    string get_topk_predictions(Tensor* class_probs, const vector<string>& class_names, int k, int decimals){
+        // Check tensor dimensions
+        if (class_probs == nullptr || class_probs->size == 0){
+            throw std::runtime_error("The given class probability tensor is empty");
+
+        }
+        // Check class names sizes
+        if(class_probs->size!=class_names.size()){
+            throw std::runtime_error("The number of elements in the class probability tensor does not match the number of class names");
+        }
+
+        // Check K
+        if(k <= 0  || k >= class_probs->size) {
+            throw std::runtime_error("'k' must be a number greater than zero and smaller than the number of classes");
+        }
+
+        // Sort indices by probability
+        Tensor* top_k_probs_idx = class_probs->argsort(true);
+        std::stringstream stream;
+        for(int i=0; i<k; i++){
+            int idx = (int)top_k_probs_idx->ptr[i];
+            float prob = class_probs->ptr[idx] * 100.0f;
+            stream << i+1 << ". " << class_names[idx] << " (" << std::fixed << std::setprecision(decimals) << prob << "%)" << std::endl;
+        }
+        std::string result = stream.str();
+        return result;
+    }
 
 }//namespace

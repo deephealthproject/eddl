@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -54,7 +54,7 @@ float slow_randn(float mean, float sd) {
 void build_randn_table() {
     if (! random_table_generated ) {
         random_table_generated = true;
-        printf("Generating Random Table\n");
+        fprintf(stderr, "Generating Random Table\n");
 
         for (int i = 0; i < MAX_RTABLE; i++)
             RTable[i] = gaussgen();

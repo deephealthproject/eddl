@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -22,7 +22,7 @@
 #include <string>
 #include <sys/stat.h>
 #include <stdexcept>
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <iomanip>
 #include <limits>
@@ -552,6 +552,62 @@ vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch){
     return new_shape;
 }
 
+
+vector<int> address2indices(unsigned int address, const vector<int>& shape, const vector<int>& strides){
+    // Check sizes
+    if(shape.size()!=strides.size()){
+        msg("Shape and strides must have the same size", "utils::address2indices");
+    }
+
+    // Compute size
+    int tsize = 1;
+    for(auto &s : shape) { tsize *= s; }
+
+    // Check maximum size
+    if(address > tsize-1){
+        msg("The address cannot greater than the maximum possible address with the given shape", "utils::address2indices");
+    }
+
+    // Reserve memory
+    vector<int> indices;
+    unsigned int ndim = strides.size();
+    indices.reserve(ndim);
+
+    // Compute indices
+    fast_address2indices(address, reinterpret_cast<unsigned int *>(indices.data()), (unsigned int *) shape.data(), (unsigned int *) strides.data(), ndim);
+
+    return indices;
+}
+
+unsigned int indices2address(const vector<int>& indices, const vector<int>& strides){
+    // Check sizes
+    if(indices.size()!=strides.size()){
+        msg("Indices and strides must have the same size", "utils::indices2address");
+
+    }
+    // Compute address
+    unsigned int address = fast_indices2address(reinterpret_cast<const unsigned int *>(indices.data()),
+                                                reinterpret_cast<const unsigned int *>(strides.data()), indices.size());
+
+    return address;
+}
+
+bool isPaddingAsymmetric(vector<int> padding){
+    // Check if padding is even
+    if(padding.size()%2!=0){
+        msg("'padding' must have an even number of elements");
+    }
+
+    // Check for asymmetric paddings
+    for(int i=0; i<padding.size(); i+=2){
+        if(padding[i]!=padding[i+1]){
+            return true;
+        }
+    }
+    return false;
+}
+
+
 WrappingMode getWrappingMode(string mode){
     if(mode == "constant"){
         // (k k k k | a b c d | k k k k)
@@ -618,6 +674,30 @@ void show_deprecated_warning(const string& deprecated_name, const string& new_na
     std::cerr << "[DEPRECATION WARNING]: The '" << deprecated_name << "' " << type << " will be deprecated in a " << version << " version";
     if (!new_name.empty()) { std::cerr << " in favor of '" << new_name << "'"; }
     std::cerr << "." << std::endl;
+}
+
+
+vector<string> read_lines_from_file(const string& filename){
+    vector<string> lines;
+
+
+    // Read file
+    std::ifstream ifile(filename);
+
+    // Check if the file exists
+    if (!ifile) {
+        throw std::runtime_error("The file does not exists. Filename: " + filename);
+    }
+
+    // Read lines
+    std::string line;
+    while (std::getline(ifile, line)){
+        if(!line.empty()){  // Check if the line is empty
+            lines.push_back(line);
+        }
+    }
+
+    return lines;
 }
 
 
@@ -951,3 +1031,4 @@ void __show_profile() {
   PROFILING_PRINTF(AvgPool2D_back);
 
 }
+

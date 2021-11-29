@@ -10,7 +10,7 @@ Example:
 
 .. code-block:: c++
 
-    l = RNN(lE,32);
+    l = RNN(l, 32);
 
 You can check a full example on :doc:`../usage/advanced`.
 
@@ -20,7 +20,9 @@ GRU
 
 Gated Recurrent Unit - Cho et al. 2014.
 
-.. doxygenfunction:: GRU(layer parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "")
+.. doxygenfunction:: GRU(layer parent, int units, bool mask_zeros = false, bool bidirectional = false, string name = "")
+
+.. doxygenfunction:: GRU(vector<layer> parent, int units, bool mask_zeros, bool bidirectional, string name)
 
 
 Example:
@@ -42,6 +44,6 @@ Example:
 
 .. code-block:: c++
 
-    l = LSTM(lE,32);
+    l = LSTM(l,32);
 
 You can check a full example on :doc:`../usage/advanced`.

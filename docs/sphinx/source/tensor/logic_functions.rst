@@ -11,7 +11,7 @@ Truth value testing
 All
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::all
+.. doxygenfunction:: Tensor::all()
 
 .. code-block:: c++
 
@@ -26,7 +26,7 @@ All
 Any
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::any
+.. doxygenfunction:: Tensor::any()
 
 .. code-block:: c++
 
@@ -46,7 +46,7 @@ Array contents
 Is finite?
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::isfinite
+.. doxygenfunction:: Tensor::isfinite()
 
 .. code-block:: c++
 
@@ -71,7 +71,7 @@ Is finite?
 Is inf?
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::isinf
+.. doxygenfunction:: Tensor::isinf()
 
 .. code-block:: c++
 
@@ -93,7 +93,7 @@ Is inf?
 Is NaN?
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::isnan
+.. doxygenfunction:: Tensor::isnan()
 
 .. code-block:: c++
 
@@ -116,7 +116,7 @@ Is NaN?
 Is -inf?
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::isneginf
+.. doxygenfunction:: Tensor::isneginf()
 
 .. code-block:: c++
 
@@ -140,7 +140,7 @@ Is -inf?
 Is +inf?
 ^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::isposinf
+.. doxygenfunction:: Tensor::isposinf()
 
 .. code-block:: c++
 
@@ -248,7 +248,7 @@ Logical OR: "A | B"
 Logical NOT: "~A"
 ^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::logical_not
+.. doxygenfunction:: Tensor::logical_not()
 
 .. code-block:: c++
 

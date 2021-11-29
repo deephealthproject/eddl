@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -45,18 +45,21 @@ void cpu_ceil(Tensor *A, Tensor *B){
 }
 
 void cpu_clamp(Tensor *A, Tensor *B, float min, float max){
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
-        if (A->ptr[i] < min){
-            B->ptr[i] = min;
-        } else if(A->ptr[i] > max){
-            B->ptr[i] = max;
-        }else {
-            B->ptr[i] = A->ptr[i];
-        }
+        if (A->ptr[i] < min){ B->ptr[i] = min; }
+        else if(A->ptr[i] > max){ B->ptr[i] = max; }
+        else { B->ptr[i] = A->ptr[i]; }
     }
 }
 
+void cpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max){
+    #pragma omp parallel for
+    for (int i = 0; i < D->size; ++i){
+        if (I->ptr[i] < min || I->ptr[i] > max){ PD->ptr[i] += 0.0f; }
+        else{ PD->ptr[i] += D->ptr[i]; }  // * 1.0f
+    }
+}
 
 void cpu_cos(Tensor *A, Tensor *B){
 #pragma omp parallel for

@@ -1,9 +1,9 @@
 
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -41,6 +41,8 @@ int isInorig(Layer *l, vlayer vl, int &ind);
 class Net {
 private:
     void make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
+
+    void check_compserv_compatibility(CompServ *cs);
 
     void set_compserv(CompServ *cs, bool do_compserv_delete);
 

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -27,9 +27,13 @@ ConvolDescriptor::ConvolDescriptor() {}
 
 ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
                  int groups, const vector<int> &dilation_rate, bool use_bias, int mem){
+#ifndef cCUDNN
+    if (groups > 1) { msg("Grouped convolutions are only available with CuDNN", "ConvolDescriptor::ConvolDescriptor"); }
+#endif
     if (kernel_size.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
     if (strides.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
     if (dilation_rate.size() != 2) { msg("Dilations must have 2 elements", "ConvolDescriptor::ConvolDescriptor"); }
+    if (groups < 1) { msg("The number of groups should be greater or equal to 1", "ConvolDescriptor::ConvolDescriptor"); }
 
     // Store stuff
     this->filters = filters;
@@ -50,6 +54,12 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &kernel_size, 
     if (!(padding == "custom" || padding=="same" || padding =="none" || padding =="valid" || padding =="zeros" || padding=="same,none" || padding=="none,same")) {
         msg("Incorrect padding type (" + padding + ")", "ConvolDescriptor::ConvolDescriptor");
     }
+
+    // Check that the number of groups is valid
+    if(filters % groups)
+        msg("The number of filters must be divisible by the number groups."
+            " Received: filters=" + to_string(filters) + " groups=" + to_string(groups),
+            "ConvolDescriptor::ConvolDescriptor");
 }
 
 
@@ -85,7 +95,11 @@ void ConvolDescriptor::build(Tensor *A) {
     nk = ksize[0];
     kr = ksize[1];
     kc = ksize[2];
-    kz = A->shape[1];
+    if(A->shape[1] % groups)
+        msg("The number of input channels must be divisible by the number groups."
+            " Received: in_channels=" + to_string(A->shape[1]) + " groups=" + to_string(groups),
+            "ConvolDescriptor::build");
+    kz = A->shape[1] / groups;
 
     sr = stride[0];
     sc = stride[1];
@@ -200,12 +214,13 @@ void ConvolDescriptor::build(Tensor *A) {
 
     cudnnCreateConvolutionDescriptor(&convolution_descriptor);
 
+    cudnnSetConvolutionGroupCount(convolution_descriptor, groups);
+
     cudnnSetConvolution2dDescriptor(convolution_descriptor,
                                     pads[0], pads[2],
                                     stride[0], stride[1],
                                     dilation_rate[0], dilation_rate[1],
                                     convolution_mode, data_type);
-
 
    cudnnCreateTensorDescriptor(&xDesc);
    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
@@ -268,6 +283,8 @@ void ConvolDescriptor::resize(int b)
 
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+   cudnn_env_init = -1;
+   cudnn_conv_back_init = -1;
 
 #endif
 }

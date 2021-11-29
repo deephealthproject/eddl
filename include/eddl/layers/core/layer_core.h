@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -223,6 +223,30 @@ public:
     void backward() override;
 
     void resize(int batch) override;
+
+    string plot(int c) override;
+
+};
+
+
+class LRepeat : public LinLayer {
+public:
+    static int total_layers;
+    RepeatDescriptor *rd;
+
+    // constructors and clones
+    LRepeat(Layer *parent, const vector<unsigned int>& repeats, unsigned int axis, string name, int dev, int mem);
+    LRepeat(Layer *parent, unsigned int repeats, unsigned int axis, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    ~LRepeat() override;
+
+    void forward() override;
+
+    void backward() override;
 
     string plot(int c) override;
 

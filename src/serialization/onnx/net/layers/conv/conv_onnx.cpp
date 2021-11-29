@@ -42,8 +42,9 @@ Layer* build_conv_layer(onnx::NodeProto *node,
       for (int h = 0; h < attribute.ints_size(); h++)
         dilation_rate.push_back(attribute.ints(h));
     }
-    //else if (!attr_name.compare("group")) { It isn't implemented in eddl
-    //}
+    else if (!attr_name.compare("group")) {
+        groups = attribute.i();
+    }
     else if (!attr_name.compare("kernel_shape"))
     {
       for (int h = 0; h < attribute.ints_size(); h++)
@@ -107,6 +108,11 @@ Layer* build_conv_layer(onnx::NodeProto *node,
   else if (dilation_rate.size() != conv_dim)
     msg("Error in layer " + name + + ", the number of values in the dilations attribute (" + to_string(dilation_rate.size()) +
         ") doesn't match the number of dimensions of the convolutional layer (" + to_string(conv_dim) + ").");
+
+  // If the padding values are not provided and the padding type is custom we default to padding 0
+  if (pads.empty() && auto_pad_option == "custom")
+      for (int i = 0; i < conv_dim * 2; ++i)
+          pads.push_back(0);
 
   Layer *actual_layer;
   if (conv_dim < 3) // Handle Conv1D and Conv2D (they use the same ConvolDescriptor)
@@ -245,7 +251,7 @@ void build_conv_node(LConv *layer, onnx::GraphProto *graph, bool gradients)
   onnx::AttributeProto *conv_group = node->add_attribute();
   conv_group->set_name("group");
   conv_group->set_type(onnx::AttributeProto::INT);
-  conv_group->set_i(1);
+  conv_group->set_i(layer->cd->groups);
 
   // Attr kernel_shape
   onnx::AttributeProto *conv_kernel_shape = node->add_attribute();

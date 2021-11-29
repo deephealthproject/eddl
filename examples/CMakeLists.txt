@@ -195,6 +195,9 @@ if(BUILD_PROTOBUF)
 	add_executable(onnx_predict "onnx/6_onnx_predict.cpp")
 	target_link_libraries(onnx_predict eddl)
 
+	add_executable(onnx_import_predict "onnx/7_onnx_import_net_and_predict.cpp")
+	target_link_libraries(onnx_import_predict eddl)
+
 	# EXAMPLES: ONNX MNIST ****************************************************
 	add_executable(onnx_mnist_mlp "onnx/nn/1_mnist/1_mnist_mlp.cpp")
 	target_link_libraries(onnx_mnist_mlp eddl)

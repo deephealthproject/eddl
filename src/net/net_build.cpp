@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -17,8 +17,10 @@
 #include "eddl/net/net.h"
 #include "eddl/utils.h"
 #include "eddl/random.h"
+#include <cstdio>
 
 #include "eddl/layers/core/layer_core.h"
+#include "eddl/layers/conv/layer_conv.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -140,9 +142,10 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs,
   if (isbuild) return;
 
   if (!initialize) {
-    cout<<"Building "<<name<<" without initialization\n";
+    std::cerr<<"Building "<<name<<" without initialization" << std::endl;
+  }else{
+      std::cerr<<"Building " << name << std::endl;
   }
-  else cout<<"Building "<<name<<endl;
 /*
   for(int i=0;i<layers.size();i++) {
     if (layers[i]->net!=this) {
@@ -153,6 +156,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs,
   make_graph(opt, lo, me, initialize);
   this->do_optimizer_delete = do_optimizer_delete;
 
+  check_compserv_compatibility(cs);
   set_compserv(cs, do_compserv_delete);
 
   isbuild=true;
@@ -225,6 +229,31 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     }
 }
 
+void Net::check_compserv_compatibility(CompServ *cs) {
+#ifdef cCUDNN
+    if (cs->local_gpus.size())
+        // If we are using CuDNN all the features are available
+        return;
+#endif
+    // Check if there are CuDNN only features
+    if (cs->local_gpus.size() == 0)
+        for (Layer *l : layers)
+            if (LConv *aux_l = dynamic_cast<LConv*>(l)) {
+                // Look for grouped convolutions
+                if (aux_l->cd->groups != 1)
+                    msg("Grouped convolutions are only available with CuDNN. "
+                        "In layer " + aux_l->name + " received groups=" + to_string(aux_l->cd->groups),
+                        "Net::check_compserv_compatibility");
+
+                // Look for dilated convolutions
+                for (int d : aux_l->cd->dilation_rate)
+                    if (d != 1)
+                        msg("Dilated convolutions are only available with CuDNN. "
+                            "In layer " + aux_l->name + " received dilation=" + to_string(d),
+                            "Net::check_compserv_compatibility");
+            }
+}
+
 void Net::set_compserv(CompServ *cs, bool do_compserv_delete){
     int todev;
     this->cs = cs;
@@ -287,7 +316,7 @@ void Net::set_compserv(CompServ *cs, bool do_compserv_delete){
         } else {
             // split on multiple FPGAs
 #ifndef cFPGA
-        msg("EDDLL not compiled for FPGA", "Net.build");
+        msg("EDDL not compiled for FPGA", "Net.build");
 #else
         int nfpgas=1;  //fpga_devices();
 
@@ -391,7 +420,7 @@ void Net::split(int c, int todev) {
         snets[i]->name=cname;
         snets[i]->make_graph(optimizer->clone(), this->losses, this->metrics);
         if(onnx_pretrained){ //We need to copy the imported weights to each snet
-            printf("Copying onnx params to devices\n");
+            fprintf(stderr,"copying onnx params to devices\n");
             for(int i = 0; i < snets.size(); i++)
                 for(int j = 0; j < layers.size(); j++)
                     layers[j]->copy(snets[i]->layers[j]);

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -12,6 +12,7 @@
 
 #include <cstdint> // uint64_t
 #include <vector>
+
 
 class AsymmetricPaddingException : public std::exception {
     std::string error_msg; // Error message to show
@@ -26,6 +27,7 @@ public:
 };
 
 using namespace std;
+
 
 void msg(const string& text, const string& title="");
 
@@ -71,6 +73,28 @@ string get_parent_dir(const string& fname);
 vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch=false);
 vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch=false);
 
+vector<int> address2indices(unsigned int address, const vector<int>& shape, const vector<int>& strides);
+unsigned int indices2address(const vector<int>& indices, const vector<int>& strides);
+
+// https://isocpp.org/wiki/faq/inline-functions#inline-member-fns
+inline int fast_indices2address(const unsigned int* indices, const unsigned int* strides, unsigned int ndim){
+    unsigned int address = 0;
+    for (int i=0; i< ndim; i++){
+        address += indices[i] * strides[i];
+    }
+    return address;
+}
+
+
+inline void fast_address2indices( int address, unsigned int* indices, const unsigned int* shape, const unsigned int* strides, unsigned int ndim){
+    for(int i=0; i<ndim; i++) {
+        indices[i] = address / strides[i] % shape[i];
+    }
+}
+
+bool isPaddingAsymmetric(vector<int> padding);
+
+
 template<typename T>
 string printVector(vector<T> myvector){
     string temp = "";
@@ -91,6 +115,8 @@ string getTransformationModeName(TransformationMode mode);
 void __show_profile();
 
 void show_deprecated_warning(const string& deprecated_name, const string& new_name="", const string& type="function", const string& version="future");
+
+vector<string> read_lines_from_file(const string& filename);
 
 
 #endif //EDDL_UTILS_H
