@@ -1,77 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Optimizers &mdash; EDDL  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/tabs.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CPU" href="computing_service.html" />
     <link rel="prev" title="Initializers" href="initializers.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #185070" >
-          
-
-          
             <a href="../index.html">
-          
-
-          
-            
             <img src="../_static/logo-eddl-small-white.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -79,37 +37,26 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p><span class="caption-text">Installation</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p><span class="caption-text">Get started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
 </ul>
-<p><span class="caption-text">Videotutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Videotutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
 </ul>
-<p><span class="caption-text">Layers</span></p>
+<p class="caption" role="heading"><span class="caption-text">Layers</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../layers/core.html">Core</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/auxiliar.html">Auxiliar Layers</a></li>
@@ -126,21 +73,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduce</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
-<p><span class="caption-text">Model</span></p>
+<p class="caption" role="heading"><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
-<p><span class="caption-text">Training</span></p>
+<p class="caption" role="heading"><span class="caption-text">Training</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
 </ul>
-<p><span class="caption-text">Test &amp; Score</span></p>
+<p class="caption" role="heading"><span class="caption-text">Test &amp; Score</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
 </ul>
-<p><span class="caption-text">Bundle</span></p>
+<p class="caption" role="heading"><span class="caption-text">Bundle</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="losses.html">Losses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
@@ -159,7 +106,7 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Computing Services</span></p>
+<p class="caption" role="heading"><span class="caption-text">Computing Services</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html">CPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html#gpu">GPU</a></li>
@@ -167,16 +114,16 @@
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html#compss">COMPSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="computing_service.html#serialization">Serialization</a></li>
 </ul>
-<p><span class="caption-text">Model Zoo</span></p>
+<p class="caption" role="heading"><span class="caption-text">Model Zoo</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../models_zoo/classification.html">Classification</a></li>
 </ul>
-<p><span class="caption-text">Datasets</span></p>
+<p class="caption" role="heading"><span class="caption-text">Datasets</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p><span class="caption-text">Tensor</span></p>
+<p class="caption" role="heading"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
@@ -188,282 +135,269 @@
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #185070" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">EDDL</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Optimizers</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/bundle/optimizers.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <section id="optimizers">
-<h1>Optimizers<a class="headerlink" href="#optimizers" title="Permalink to this headline">¶</a></h1>
-<section id="adadelta">
-<h2>Adadelta<a class="headerlink" href="#adadelta" title="Permalink to this headline">¶</a></h2>
+             
+  <div class="section" id="optimizers">
+<h1>Optimizers<a class="headerlink" href="#optimizers" title="Permalink to this headline"></a></h1>
+<div class="section" id="adadelta">
+<h2>Adadelta<a class="headerlink" href="#adadelta" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl8adadeltaEffff">
-<span id="_CPPv3N4eddl8adadeltaEffff"></span><span id="_CPPv2N4eddl8adadeltaEffff"></span><span id="eddl::adadelta__float.float.float.float"></span><span class="target" id="namespaceeddl_1ab7990db93dd516ae3ad707f757d02296"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">adadelta</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>rho</em>, float <em>epsilon</em>, float <em>weight_decay</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8adadeltaEffff" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl8adadeltaEffff">
+<span id="_CPPv3N4eddl8adadeltaEffff"></span><span id="_CPPv2N4eddl8adadeltaEffff"></span><span id="eddl::adadelta__float.float.float.float"></span><span class="target" id="namespaceeddl_1ab7990db93dd516ae3ad707f757d02296"></span><span class="n"><span class="pre">optimizer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">adadelta</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lr</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rho</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epsilon</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weight_decay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8adadeltaEffff" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Adadelta optimizer. </p>
 <p>Adadelta is a more robust extension of Adagrad that adapts learning rates based on a moving window of gradient updates, instead of accumulating all past gradients. This way, Adadelta continues learning even when many updates have been done.</p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1212.5701">https://arxiv.org/abs/1212.5701</a></p>
 </dd>
-<dt><strong>Return</strong></dt><dd><p>Adadelta optimizer </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rho</span></code>: Smoothing constant </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Weight decay (L2 penalty) </p></li>
-</ul>
-</dd>
 </dl>
 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lr</strong> – Learning rate </p></li>
+<li><p><strong>rho</strong> – Smoothing constant </p></li>
+<li><p><strong>epsilon</strong> – Term added to the denominator to improve numerical stability </p></li>
+<li><p><strong>weight_decay</strong> – Weight decay (L2 penalty) </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Adadelta optimizer </p>
+</dd>
+</dl>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">adadelta</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span><span class="w"> </span><span class="mf">0.95</span><span class="p">,</span><span class="w"> </span><span class="mf">0.000001</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="adam">
-<h2>Adam<a class="headerlink" href="#adam" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="adam">
+<h2>Adam<a class="headerlink" href="#adam" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl4adamEfffffb">
-<span id="_CPPv3N4eddl4adamEfffffb"></span><span id="_CPPv2N4eddl4adamEfffffb"></span><span id="eddl::adam__float.float.float.float.float.b"></span><span class="target" id="namespaceeddl_1a1245376cb4f64d7addf20e8ef1b5e982"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">adam</code><span class="sig-paren">(</span>float <em>lr</em> = 0.01, float <em>beta_1</em> = 0.9, float <em>beta_2</em> = 0.999, float <em>epsilon</em> = 0.000001, float <em>weight_decay</em> = 0, bool <em>amsgrad</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4adamEfffffb" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl4adamEfffffb">
+<span id="_CPPv3N4eddl4adamEfffffb"></span><span id="_CPPv2N4eddl4adamEfffffb"></span><span id="eddl::adam__float.float.float.float.float.b"></span><span class="target" id="namespaceeddl_1a1245376cb4f64d7addf20e8ef1b5e982"></span><span class="n"><span class="pre">optimizer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">adam</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.01</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta_1</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.9</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta_2</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.999</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epsilon</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.000001</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weight_decay</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">amsgrad</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4adamEfffffb" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Adam optimizer. </p>
 <p>Default parameters follow those provided in the original paper (See section). <dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1412.6980v8">https://arxiv.org/abs/1412.6980v8</a></p>
 </dd>
-<dt><strong>Return</strong></dt><dd><p>Adam optimizer </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">beta_1</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">beta_2</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Weight decay (L2 penalty) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amsgrad</span></code>: Whether to apply the AMSGrad variant of this algorithm from the paper “On the Convergence of Adam and Beyond”. </p></li>
-</ul>
-</dd>
 </dl>
 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lr</strong> – Learning rate </p></li>
+<li><p><strong>beta_1</strong> – Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><strong>beta_2</strong> – Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><strong>epsilon</strong> – Term added to the denominator to improve numerical stability </p></li>
+<li><p><strong>weight_decay</strong> – Weight decay (L2 penalty) </p></li>
+<li><p><strong>amsgrad</strong> – Whether to apply the AMSGrad variant of this algorithm from the paper “On the Convergence of Adam and Beyond”. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Adam optimizer </p>
+</dd>
+</dl>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">adam</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="adagrad">
-<h2>Adagrad<a class="headerlink" href="#adagrad" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="adagrad">
+<h2>Adagrad<a class="headerlink" href="#adagrad" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl7adagradEfff">
-<span id="_CPPv3N4eddl7adagradEfff"></span><span id="_CPPv2N4eddl7adagradEfff"></span><span id="eddl::adagrad__float.float.float"></span><span class="target" id="namespaceeddl_1afe8db87b88a3267f0be7e7496bc294f4"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">adagrad</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>epsilon</em>, float <em>weight_decay</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7adagradEfff" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl7adagradEfff">
+<span id="_CPPv3N4eddl7adagradEfff"></span><span id="_CPPv2N4eddl7adagradEfff"></span><span id="eddl::adagrad__float.float.float"></span><span class="target" id="namespaceeddl_1afe8db87b88a3267f0be7e7496bc294f4"></span><span class="n"><span class="pre">optimizer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">adagrad</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lr</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epsilon</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weight_decay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7adagradEfff" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Adagrad optimizer. </p>
 <p>Adagrad is an optimizer with parameter-specific learning rates, which are adapted relative to how frequently a parameter gets updated during training. The more updates a parameter receives, the smaller the learning rate.</p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference external" href="http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf">http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf</a></p>
 </dd>
-<dt><strong>Return</strong></dt><dd><p>Adagrad optimizer </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rho</span></code>: Smoothing constant </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Weight decay (L2 penalty) </p></li>
-</ul>
-</dd>
 </dl>
 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lr</strong> – Learning rate </p></li>
+<li><p><strong>rho</strong> – Smoothing constant </p></li>
+<li><p><strong>epsilon</strong> – Term added to the denominator to improve numerical stability </p></li>
+<li><p><strong>weight_decay</strong> – Weight decay (L2 penalty) </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Adagrad optimizer </p>
+</dd>
+</dl>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">adagrad</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span><span class="w"> </span><span class="mf">0.000001</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="adamax">
-<h2>Adamax<a class="headerlink" href="#adamax" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="adamax">
+<h2>Adamax<a class="headerlink" href="#adamax" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl6adamaxEfffff">
-<span id="_CPPv3N4eddl6adamaxEfffff"></span><span id="_CPPv2N4eddl6adamaxEfffff"></span><span id="eddl::adamax__float.float.float.float.float"></span><span class="target" id="namespaceeddl_1a325ff1a6fdb5f7065b806695ded3f693"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">adamax</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>beta_1</em>, float <em>beta_2</em>, float <em>epsilon</em>, float <em>weight_decay</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6adamaxEfffff" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl6adamaxEfffff">
+<span id="_CPPv3N4eddl6adamaxEfffff"></span><span id="_CPPv2N4eddl6adamaxEfffff"></span><span id="eddl::adamax__float.float.float.float.float"></span><span class="target" id="namespaceeddl_1a325ff1a6fdb5f7065b806695ded3f693"></span><span class="n"><span class="pre">optimizer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">adamax</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lr</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta_1</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta_2</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epsilon</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weight_decay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6adamaxEfffff" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Adamax optimizer. </p>
 <p>It is a variant of Adam based on the infinity norm. Default parameters follow those provided in the See section. <dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1412.6980v8">https://arxiv.org/abs/1412.6980v8</a></p>
 </dd>
-<dt><strong>Return</strong></dt><dd><p>Adamax optimizer </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">beta_1</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">beta_2</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Weight decay (L2 penalty) </p></li>
-</ul>
-</dd>
 </dl>
 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lr</strong> – Learning rate </p></li>
+<li><p><strong>beta_1</strong> – Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><strong>beta_2</strong> – Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><strong>epsilon</strong> – Term added to the denominator to improve numerical stability </p></li>
+<li><p><strong>weight_decay</strong> – Weight decay (L2 penalty) </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Adamax optimizer </p>
+</dd>
+</dl>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">adamax</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span><span class="w"> </span><span class="mf">0.999</span><span class="p">,</span><span class="w"> </span><span class="mf">0.000001</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="nadam">
-<h2>Nadam<a class="headerlink" href="#nadam" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="nadam">
+<h2>Nadam<a class="headerlink" href="#nadam" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl5nadamEfffff">
-<span id="_CPPv3N4eddl5nadamEfffff"></span><span id="_CPPv2N4eddl5nadamEfffff"></span><span id="eddl::nadam__float.float.float.float.float"></span><span class="target" id="namespaceeddl_1a91dbb377770ae4cb5361ad824149b13a"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">nadam</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>beta_1</em>, float <em>beta_2</em>, float <em>epsilon</em>, float <em>schedule_decay</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5nadamEfffff" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl5nadamEfffff">
+<span id="_CPPv3N4eddl5nadamEfffff"></span><span id="_CPPv2N4eddl5nadamEfffff"></span><span id="eddl::nadam__float.float.float.float.float"></span><span class="target" id="namespaceeddl_1a91dbb377770ae4cb5361ad824149b13a"></span><span class="n"><span class="pre">optimizer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">nadam</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lr</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta_1</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta_2</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epsilon</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">schedule_decay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5nadamEfffff" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Nadam optimizer. </p>
 <p>It is a variant of Adam based on the infinity norm. Default parameters follow those provided in the See section. <dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1412.6980v8">https://arxiv.org/abs/1412.6980v8</a></p>
 </dd>
-<dt><strong>Return</strong></dt><dd><p>Nadam optimizer </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">beta_1</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">beta_2</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">schedule_decay</span></code>: Weight decay (L2 penalty) </p></li>
-</ul>
-</dd>
 </dl>
 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lr</strong> – Learning rate </p></li>
+<li><p><strong>beta_1</strong> – Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><strong>beta_2</strong> – Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><strong>epsilon</strong> – Term added to the denominator to improve numerical stability </p></li>
+<li><p><strong>schedule_decay</strong> – Weight decay (L2 penalty) </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nadam optimizer </p>
+</dd>
+</dl>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nadam</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span><span class="w"> </span><span class="mf">0.999</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0000001</span><span class="p">,</span><span class="w"> </span><span class="mf">0.004</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="rmsprop">
-<h2>RMSProp<a class="headerlink" href="#rmsprop" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="rmsprop">
+<h2>RMSProp<a class="headerlink" href="#rmsprop" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl7rmspropEffff">
-<span id="_CPPv3N4eddl7rmspropEffff"></span><span id="_CPPv2N4eddl7rmspropEffff"></span><span id="eddl::rmsprop__float.float.float.float"></span><span class="target" id="namespaceeddl_1a8109148bc89e06fe446881e5c61c7a03"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rmsprop</code><span class="sig-paren">(</span>float <em>lr</em> = 0.01, float <em>rho</em> = 0.9, float <em>epsilon</em> = 0.00001, float <em>weight_decay</em> = 0.0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7rmspropEffff" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl7rmspropEffff">
+<span id="_CPPv3N4eddl7rmspropEffff"></span><span id="_CPPv2N4eddl7rmspropEffff"></span><span id="eddl::rmsprop__float.float.float.float"></span><span class="target" id="namespaceeddl_1a8109148bc89e06fe446881e5c61c7a03"></span><span class="n"><span class="pre">optimizer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">rmsprop</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.01</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rho</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.9</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epsilon</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.00001</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weight_decay</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7rmspropEffff" title="Permalink to this definition"></a><br /></dt>
 <dd><p>RMSProp optimizer. </p>
 <p>It is recommended to leave the parameters of this optimizer at their default values (except the learning rate, which can be freely tuned).</p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference external" href="http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf">http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf</a></p>
 </dd>
-<dt><strong>Return</strong></dt><dd><p>RMSProp optimizer </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rho</span></code>: Smoothing constant </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Weight decay (L2 penalty) </p></li>
-</ul>
-</dd>
 </dl>
 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lr</strong> – Learning rate </p></li>
+<li><p><strong>rho</strong> – Smoothing constant </p></li>
+<li><p><strong>epsilon</strong> – Term added to the denominator to improve numerical stability </p></li>
+<li><p><strong>weight_decay</strong> – Weight decay (L2 penalty) </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>RMSProp optimizer </p>
+</dd>
+</dl>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="sgd-stochastic-gradient-descent">
-<h2>SGD (Stochastic Gradient Descent)<a class="headerlink" href="#sgd-stochastic-gradient-descent" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="sgd-stochastic-gradient-descent">
+<h2>SGD (Stochastic Gradient Descent)<a class="headerlink" href="#sgd-stochastic-gradient-descent" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl3sgdEfffb">
-<span id="_CPPv3N4eddl3sgdEfffb"></span><span id="_CPPv2N4eddl3sgdEfffb"></span><span id="eddl::sgd__float.float.float.b"></span><span class="target" id="namespaceeddl_1ae030ab89d6778ba90ca5d5e0e8587c41"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sgd</code><span class="sig-paren">(</span>float <em>lr</em> = 0.01f, float <em>momentum</em> = 0.0f, float <em>weight_decay</em> = 0.0f, bool <em>nesterov</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3sgdEfffb" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl3sgdEfffb">
+<span id="_CPPv3N4eddl3sgdEfffb"></span><span id="_CPPv2N4eddl3sgdEfffb"></span><span id="eddl::sgd__float.float.float.b"></span><span class="target" id="namespaceeddl_1ae030ab89d6778ba90ca5d5e0e8587c41"></span><span class="n"><span class="pre">optimizer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">sgd</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.01f</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">momentum</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0f</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weight_decay</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0f</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nesterov</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3sgdEfffb" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Stochastic gradient descent optimizer. </p>
 <p>Includes support for momentum, learning rate decay, and Nesterov momentum</p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Stochastic gradient descent optimizer </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">momentum</span></code>: Momentum factor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Value to apply to the activation function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nesterov</span></code>: Boolean. Whether to apply Nesterov momentum </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lr</strong> – Learning rate </p></li>
+<li><p><strong>momentum</strong> – Momentum factor </p></li>
+<li><p><strong>weight_decay</strong> – Value to apply to the activation function </p></li>
+<li><p><strong>nesterov</strong> – Boolean. Whether to apply Nesterov momentum </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Stochastic gradient descent optimizer </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sgd</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="export-to-file">
-<h2>Export to file<a class="headerlink" href="#export-to-file" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="export-to-file">
+<h2>Export to file<a class="headerlink" href="#export-to-file" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv427save_optimizer_to_onnx_fileP9Optimizer6string">
-<span id="_CPPv327save_optimizer_to_onnx_fileP9Optimizer6string"></span><span id="_CPPv227save_optimizer_to_onnx_fileP9Optimizer6string"></span><span id="save_optimizer_to_onnx_file__OptimizerP.string"></span><span class="target" id="eddl__onnx_8h_1a8c35a77229eed96288531b7c0746b102"></span>void <code class="sig-name descname">save_optimizer_to_onnx_file</code><span class="sig-paren">(</span>Optimizer *<em>optimizer</em>, string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427save_optimizer_to_onnx_fileP9Optimizer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv427save_optimizer_to_onnx_fileP9Optimizer6string">
+<span id="_CPPv327save_optimizer_to_onnx_fileP9Optimizer6string"></span><span id="_CPPv227save_optimizer_to_onnx_fileP9Optimizer6string"></span><span id="save_optimizer_to_onnx_file__OptimizerP.string"></span><span class="target" id="eddl__onnx_8h_1a8c35a77229eed96288531b7c0746b102"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">save_optimizer_to_onnx_file</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Optimizer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">optimizer</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427save_optimizer_to_onnx_fileP9Optimizer6string" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Saves the configuration of an optimizer using the ONNX format. It will contain the Optimizer type and attributes like learning rate, momentum, weight decay, etc. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">optimizer</span></code>: Optimizer to be saved </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Path to the file where the Optimizer configuration will be saved</p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optimizer</strong> – Optimizer to be saved </p></li>
+<li><p><strong>path</strong> – Path to the file where the Optimizer configuration will be saved</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
@@ -471,85 +405,59 @@
 <span class="n">save_optimizer_to_onnx_file</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;my_opt.onnx&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="import-from-file">
-<h2>Import from file<a class="headerlink" href="#import-from-file" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="import-from-file">
+<h2>Import from file<a class="headerlink" href="#import-from-file" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv431import_optimizer_from_onnx_file6string">
-<span id="_CPPv331import_optimizer_from_onnx_file6string"></span><span id="_CPPv231import_optimizer_from_onnx_file6string"></span><span id="import_optimizer_from_onnx_file__string"></span><span class="target" id="eddl__onnx_8h_1a9b58d4b7d4c1a4974602ca21659d3f63"></span>Optimizer *<code class="sig-name descname">import_optimizer_from_onnx_file</code><span class="sig-paren">(</span>string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431import_optimizer_from_onnx_file6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv431import_optimizer_from_onnx_file6string">
+<span id="_CPPv331import_optimizer_from_onnx_file6string"></span><span id="_CPPv231import_optimizer_from_onnx_file6string"></span><span id="import_optimizer_from_onnx_file__string"></span><span class="target" id="eddl__onnx_8h_1a9b58d4b7d4c1a4974602ca21659d3f63"></span><span class="n"><span class="pre">Optimizer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">import_optimizer_from_onnx_file</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431import_optimizer_from_onnx_file6string" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Creates an Optimizer from the definition provided in an ONNX file. The ONNX will provide the Optimizer type and its attributes. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Optimizer* </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – Path to the file where the Optimizer configuration is saved</p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Path to the file where the Optimizer configuration is saved</p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Optimizer* </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span><span class="w"> </span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_optimizer_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_opt.onnx&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="computing_service.html" class="btn btn-neutral float-right" title="CPU" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="initializers.html" class="btn btn-neutral float-left" title="Initializers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="initializers.html" class="btn btn-neutral float-left" title="Initializers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="computing_service.html" class="btn btn-neutral float-right" title="CPU" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2020, EDDL
-
-    </p>
+    <p>&#169; Copyright 2020, EDDL.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -1,77 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Creation Routines &mdash; EDDL  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/tabs.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Manipulation" href="manipulation.html" />
     <link rel="prev" title="Segmentation" href="../datasets/segmentation.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #185070" >
-          
-
-          
             <a href="../index.html">
-          
-
-          
-            
             <img src="../_static/logo-eddl-small-white.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -79,37 +37,26 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p><span class="caption-text">Installation</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p><span class="caption-text">Get started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
 </ul>
-<p><span class="caption-text">Videotutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Videotutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
 </ul>
-<p><span class="caption-text">Layers</span></p>
+<p class="caption" role="heading"><span class="caption-text">Layers</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../layers/core.html">Core</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/auxiliar.html">Auxiliar Layers</a></li>
@@ -126,21 +73,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduce</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
-<p><span class="caption-text">Model</span></p>
+<p class="caption" role="heading"><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
-<p><span class="caption-text">Training</span></p>
+<p class="caption" role="heading"><span class="caption-text">Training</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
 </ul>
-<p><span class="caption-text">Test &amp; Score</span></p>
+<p class="caption" role="heading"><span class="caption-text">Test &amp; Score</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
 </ul>
-<p><span class="caption-text">Bundle</span></p>
+<p class="caption" role="heading"><span class="caption-text">Bundle</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/losses.html">Losses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/metrics.html">Metrics</a></li>
@@ -148,7 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/initializers.html">Initializers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/optimizers.html">Optimizers</a></li>
 </ul>
-<p><span class="caption-text">Computing Services</span></p>
+<p class="caption" role="heading"><span class="caption-text">Computing Services</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html">CPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
@@ -156,16 +103,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#serialization">Serialization</a></li>
 </ul>
-<p><span class="caption-text">Model Zoo</span></p>
+<p class="caption" role="heading"><span class="caption-text">Model Zoo</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../models_zoo/classification.html">Classification</a></li>
 </ul>
-<p><span class="caption-text">Datasets</span></p>
+<p class="caption" role="heading"><span class="caption-text">Datasets</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p><span class="caption-text">Tensor</span></p>
+<p class="caption" role="heading"><span class="caption-text">Tensor</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Creation Routines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#constructors">Constructors</a></li>
@@ -213,77 +160,38 @@
 <li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #185070" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">EDDL</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Creation Routines</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/tensor/create.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <section id="creation-routines">
-<h1>Creation Routines<a class="headerlink" href="#creation-routines" title="Permalink to this headline">¶</a></h1>
-<section id="constructors">
-<h2>Constructors<a class="headerlink" href="#constructors" title="Permalink to this headline">¶</a></h2>
+             
+  <div class="section" id="creation-routines">
+<h1>Creation Routines<a class="headerlink" href="#creation-routines" title="Permalink to this headline"></a></h1>
+<div class="section" id="constructors">
+<h2>Constructors<a class="headerlink" href="#constructors" title="Permalink to this headline"></a></h2>
 <p>Create an uninitialized tensor</p>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor6TensorEv">
-<span id="_CPPv3N6Tensor6TensorEv"></span><span id="_CPPv2N6Tensor6TensorEv"></span><span id="Tensor::Tensor"></span><span class="target" id="class_tensor_1a4420e3cacf3811f54a0363db56d9379d"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorEv" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6TensorEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor6TensorEv">
+<span id="_CPPv3N6Tensor6TensorEv"></span><span id="_CPPv2N6Tensor6TensorEv"></span><span id="Tensor::Tensor"></span><span class="target" id="class_tensor_1a4420e3cacf3811f54a0363db56d9379d"></span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorEv" title="Tensor::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6TensorEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Construct an uninitialized tensor without shape and in CPU. </p>
 </dd></dl>
 
@@ -292,19 +200,20 @@
 </pre></div>
 </div>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor6TensorERK6vectorIiEi">
-<span id="_CPPv3N6Tensor6TensorERK6vectorIiEi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIiEi"></span><span id="Tensor::Tensor__vector:i:CR.i"></span><span class="target" id="class_tensor_1a48b7318a576e60ebdabd9edb7ca7faee"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIiEi" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6TensorERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor6TensorERK6vectorIiEi">
+<span id="_CPPv3N6Tensor6TensorERK6vectorIiEi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIiEi"></span><span id="Tensor::Tensor__vector:i:CR.i"></span><span class="target" id="class_tensor_1a48b7318a576e60ebdabd9edb7ca7faee"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIiEi" title="Tensor::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">shape</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6TensorERK6vectorIiEi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Construct of an uninitialized tensor. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>a tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Vector of ints specifying the shape of the tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> – Vector of ints specifying the shape of the tensor </p></li>
+<li><p><strong>dev</strong> – One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tensor </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -315,20 +224,21 @@
 </pre></div>
 </div>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor6TensorERK6vectorIfERK6vectorIiEi">
-<span id="_CPPv3N6Tensor6TensorERK6vectorIfERK6vectorIiEi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIfERK6vectorIiEi"></span><span id="Tensor::Tensor__vector:float:CR.vector:i:CR.i"></span><span class="target" id="class_tensor_1a807797e2f28e5dc73e8300776cb72c67"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIfERK6vectorIiEi" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;float&gt; &amp;<em>data</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6TensorERK6vectorIfERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor6TensorERK6vectorIfERK6vectorIiEi">
+<span id="_CPPv3N6Tensor6TensorERK6vectorIfERK6vectorIiEi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIfERK6vectorIiEi"></span><span id="Tensor::Tensor__vector:float:CR.vector:i:CR.i"></span><span class="target" id="class_tensor_1a807797e2f28e5dc73e8300776cb72c67"></span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIfERK6vectorIiEi" title="Tensor::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">data</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">shape</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6TensorERK6vectorIfERK6vectorIiEi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Construct tensor with initial data. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>a tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: Vector with the data to initialize the tensor with. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Vector of ints specifying the shape of the tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Vector with the data to initialize the tensor with. </p></li>
+<li><p><strong>shape</strong> – Vector of ints specifying the shape of the tensor. </p></li>
+<li><p><strong>dev</strong> – One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tensor </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -338,26 +248,27 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="constructors-initializers">
-<h2>Constructors &amp; Initializers<a class="headerlink" href="#constructors-initializers" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="constructors-initializers">
+<h2>Constructors &amp; Initializers<a class="headerlink" href="#constructors-initializers" title="Permalink to this headline"></a></h2>
 <p>Create tensor from generators</p>
-<section id="empty">
-<h3>empty<a class="headerlink" href="#empty" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="empty">
+<h3>empty<a class="headerlink" href="#empty" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor5emptyERK6vectorIiEi">
-<span id="_CPPv3N6Tensor5emptyERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5emptyERK6vectorIiEi"></span><span id="Tensor::empty__vector:i:CR.i"></span><span class="target" id="class_tensor_1a732ed860cd9231f2a0d95229df884a26"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5emptyERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor5emptyERK6vectorIiEi">
+<span id="_CPPv3N6Tensor5emptyERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5emptyERK6vectorIiEi"></span><span id="Tensor::empty__vector:i:CR.i"></span><span class="target" id="class_tensor_1a732ed860cd9231f2a0d95229df884a26"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">empty</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">shape</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5emptyERK6vectorIiEi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create a tensor of the specified shape filled with uninitialized data. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with zeros </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> – Shape of the tensor to create. </p></li>
+<li><p><strong>dev</strong> – Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tensor of the specified shape filled with zeros </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -367,22 +278,21 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="empty-like">
-<h3>empty_like<a class="headerlink" href="#empty-like" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="empty-like">
+<h3>empty_like<a class="headerlink" href="#empty-like" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor10empty_likeEP6Tensor">
-<span id="_CPPv3N6Tensor10empty_likeEP6Tensor"></span><span id="_CPPv2N6Tensor10empty_likeEP6Tensor"></span><span id="Tensor::empty_like__TensorP"></span><span class="target" id="class_tensor_1a43621731327d8adb316ed10fc3684b41"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">empty_like</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10empty_likeEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor10empty_likeEP6Tensor">
+<span id="_CPPv3N6Tensor10empty_likeEP6Tensor"></span><span id="_CPPv2N6Tensor10empty_likeEP6Tensor"></span><span id="Tensor::empty_like__TensorP"></span><span class="target" id="class_tensor_1a43621731327d8adb316ed10fc3684b41"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">empty_like</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10empty_likeEP6Tensor" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create a tensor with the shape and device of another one, but empty. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Empty initialized A-shaped tensor </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>A</strong> – Input tensor from wich to take shape and device. </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor from wich to take shape and device. </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Empty initialized A-shaped tensor </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -393,23 +303,24 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="zeros">
-<h3>zeros<a class="headerlink" href="#zeros" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="zeros">
+<h3>zeros<a class="headerlink" href="#zeros" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor5zerosERK6vectorIiEi">
-<span id="_CPPv3N6Tensor5zerosERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5zerosERK6vectorIiEi"></span><span id="Tensor::zeros__vector:i:CR.i"></span><span class="target" id="class_tensor_1a369bcb7cffc78d60348b58561d9002c9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">zeros</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5zerosERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor5zerosERK6vectorIiEi">
+<span id="_CPPv3N6Tensor5zerosERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5zerosERK6vectorIiEi"></span><span id="Tensor::zeros__vector:i:CR.i"></span><span class="target" id="class_tensor_1a369bcb7cffc78d60348b58561d9002c9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">zeros</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">shape</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5zerosERK6vectorIiEi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create a tensor of the specified shape and filled with zeros. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with zeros </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> – Shape of the tensor to create. </p></li>
+<li><p><strong>dev</strong> – Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tensor of the specified shape filled with zeros </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">zeros</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -419,22 +330,21 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="zeros-like">
-<h3>zeros_like<a class="headerlink" href="#zeros-like" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="zeros-like">
+<h3>zeros_like<a class="headerlink" href="#zeros-like" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor10zeros_likeEP6Tensor">
-<span id="_CPPv3N6Tensor10zeros_likeEP6Tensor"></span><span id="_CPPv2N6Tensor10zeros_likeEP6Tensor"></span><span id="Tensor::zeros_like__TensorP"></span><span class="target" id="class_tensor_1aff9cb6b805e3d1f4dcaaa3ad5f0c4b6d"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">zeros_like</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10zeros_likeEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor10zeros_likeEP6Tensor">
+<span id="_CPPv3N6Tensor10zeros_likeEP6Tensor"></span><span id="_CPPv2N6Tensor10zeros_likeEP6Tensor"></span><span id="Tensor::zeros_like__TensorP"></span><span class="target" id="class_tensor_1aff9cb6b805e3d1f4dcaaa3ad5f0c4b6d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">zeros_like</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10zeros_likeEP6Tensor" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create a tensor with the shape and device of another one, initialized with zeros. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Zeros initialized A-shaped tensor </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>A</strong> – Input tensor from wich to take shape and device. </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor from wich to take shape and device. </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Zeros initialized A-shaped tensor </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -445,23 +355,24 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="ones">
-<h3>ones<a class="headerlink" href="#ones" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="ones">
+<h3>ones<a class="headerlink" href="#ones" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor4onesERK6vectorIiEi">
-<span id="_CPPv3N6Tensor4onesERK6vectorIiEi"></span><span id="_CPPv2N6Tensor4onesERK6vectorIiEi"></span><span id="Tensor::ones__vector:i:CR.i"></span><span class="target" id="class_tensor_1a17af99e2d288c01fd64a9ff27f05a124"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ones</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4onesERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor4onesERK6vectorIiEi">
+<span id="_CPPv3N6Tensor4onesERK6vectorIiEi"></span><span id="_CPPv2N6Tensor4onesERK6vectorIiEi"></span><span id="Tensor::ones__vector:i:CR.i"></span><span class="target" id="class_tensor_1a17af99e2d288c01fd64a9ff27f05a124"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ones</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">shape</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4onesERK6vectorIiEi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create a tensor of the specified shape and filled with ones. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with ones </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> – Shape of the tensor to create. </p></li>
+<li><p><strong>dev</strong> – Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tensor of the specified shape filled with ones </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -471,22 +382,21 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="ones-like">
-<h3>ones_like<a class="headerlink" href="#ones-like" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="ones-like">
+<h3>ones_like<a class="headerlink" href="#ones-like" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor9ones_likeEP6Tensor">
-<span id="_CPPv3N6Tensor9ones_likeEP6Tensor"></span><span id="_CPPv2N6Tensor9ones_likeEP6Tensor"></span><span id="Tensor::ones_like__TensorP"></span><span class="target" id="class_tensor_1a56e6fb11b962f0ab204b069b62988daf"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ones_like</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9ones_likeEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor9ones_likeEP6Tensor">
+<span id="_CPPv3N6Tensor9ones_likeEP6Tensor"></span><span id="_CPPv2N6Tensor9ones_likeEP6Tensor"></span><span id="Tensor::ones_like__TensorP"></span><span class="target" id="class_tensor_1a56e6fb11b962f0ab204b069b62988daf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ones_like</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9ones_likeEP6Tensor" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create a tensor with the shape and device of another one, initialized with ones. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Ones initialized A-shaped tensor </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>A</strong> – Input tensor from wich to take shape and device. </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor from wich to take shape and device. </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Ones initialized A-shaped tensor </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -497,24 +407,25 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="full">
-<h3>full<a class="headerlink" href="#full" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="full">
+<h3>full<a class="headerlink" href="#full" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor4fullERK6vectorIiEfi">
-<span id="_CPPv3N6Tensor4fullERK6vectorIiEfi"></span><span id="_CPPv2N6Tensor4fullERK6vectorIiEfi"></span><span id="Tensor::full__vector:i:CR.float.i"></span><span class="target" id="class_tensor_1ad96f086f07c67e2430053d26121274b6"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">full</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, float <em>value</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4fullERK6vectorIiEfi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor4fullERK6vectorIiEfi">
+<span id="_CPPv3N6Tensor4fullERK6vectorIiEfi"></span><span id="_CPPv2N6Tensor4fullERK6vectorIiEfi"></span><span id="Tensor::full__vector:i:CR.float.i"></span><span class="target" id="class_tensor_1ad96f086f07c67e2430053d26121274b6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">full</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">shape</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4fullERK6vectorIiEfi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create a tensor of the specified shape and filled with a specific value. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with the value </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to use to fill the tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> – Shape of the tensor to create. </p></li>
+<li><p><strong>value</strong> – Value to use to fill the tensor. </p></li>
+<li><p><strong>dev</strong> – Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tensor of the specified shape filled with the value </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">full</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="mf">10.0f</span><span class="p">);</span><span class="w"></span>
@@ -524,23 +435,24 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="full-like">
-<h3>full_like<a class="headerlink" href="#full-like" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="full-like">
+<h3>full_like<a class="headerlink" href="#full-like" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor9full_likeEP6Tensorf">
-<span id="_CPPv3N6Tensor9full_likeEP6Tensorf"></span><span id="_CPPv2N6Tensor9full_likeEP6Tensorf"></span><span id="Tensor::full_like__TensorP.float"></span><span class="target" id="class_tensor_1a6c7eff7cfc1449f6a1e9597573d52155"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">full_like</code><span class="sig-paren">(</span>Tensor *<em>A</em>, float <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9full_likeEP6Tensorf" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor9full_likeEP6Tensorf">
+<span id="_CPPv3N6Tensor9full_likeEP6Tensorf"></span><span id="_CPPv2N6Tensor9full_likeEP6Tensorf"></span><span id="Tensor::full_like__TensorP.float"></span><span class="target" id="class_tensor_1a6c7eff7cfc1449f6a1e9597573d52155"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">full_like</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9full_likeEP6Tensorf" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create a tensor with the shape an device of the input tensor and filled with a specific value. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Value initialized A-shaped tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor from wich to take shape and device. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to use to fill the tensor </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – Input tensor from wich to take shape and device. </p></li>
+<li><p><strong>value</strong> – Value to use to fill the tensor </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value initialized A-shaped tensor </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">empty</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -551,23 +463,24 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="eye">
-<h3>eye<a class="headerlink" href="#eye" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="eye">
+<h3>eye<a class="headerlink" href="#eye" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor3eyeEiii">
-<span id="_CPPv3N6Tensor3eyeEiii"></span><span id="_CPPv2N6Tensor3eyeEiii"></span><span id="Tensor::eye__i.i.i"></span><span class="target" id="class_tensor_1afc30fce8989c8cd07ebf2888730f8705"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">eye</code><span class="sig-paren">(</span>int <em>rows</em>, int <em>offset</em> = 0, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3eyeEiii" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with the value </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">rows</span></code>: Number of rows of the tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">offset</span></code>: </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor3eyeEiii">
+<span id="_CPPv3N6Tensor3eyeEiii"></span><span id="_CPPv2N6Tensor3eyeEiii"></span><span id="Tensor::eye__i.i.i"></span><span class="target" id="class_tensor_1afc30fce8989c8cd07ebf2888730f8705"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">eye</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rows</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3eyeEiii" title="Permalink to this definition"></a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rows</strong> – Number of rows of the tensor. </p></li>
+<li><p><strong>offset</strong> – </p></li>
+<li><p><strong>dev</strong> – Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tensor of the specified shape filled with the value </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
@@ -586,23 +499,24 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="identity">
-<h3>identity<a class="headerlink" href="#identity" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="identity">
+<h3>identity<a class="headerlink" href="#identity" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor8identityEii">
-<span id="_CPPv3N6Tensor8identityEii"></span><span id="_CPPv2N6Tensor8identityEii"></span><span id="Tensor::identity__i.i"></span><span class="target" id="class_tensor_1aef18d21f233c577f18226ca412c11606"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">identity</code><span class="sig-paren">(</span>int <em>rows</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8identityEii" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor8identityEii">
+<span id="_CPPv3N6Tensor8identityEii"></span><span id="_CPPv2N6Tensor8identityEii"></span><span id="Tensor::identity__i.i"></span><span class="target" id="class_tensor_1aef18d21f233c577f18226ca412c11606"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">identity</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rows</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8identityEii" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create a tensor representing the identity matrix. Equivalent to calling function <code class="docutils literal notranslate"><span class="pre">eye</span></code> with <code class="docutils literal notranslate"><span class="pre">offset</span> <span class="pre">=</span> <span class="pre">0</span></code>. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with the value </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">rows</span></code>: Shape of the tensor to create. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rows</strong> – Shape of the tensor to create. </p></li>
+<li><p><strong>dev</strong> – Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tensor of the specified shape filled with the value </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
@@ -613,22 +527,22 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="constructors-from-existing-data">
-<h2>Constructors from existing data<a class="headerlink" href="#constructors-from-existing-data" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+<div class="section" id="constructors-from-existing-data">
+<h2>Constructors from existing data<a class="headerlink" href="#constructors-from-existing-data" title="Permalink to this headline"></a></h2>
 <p>Create tensor from existing data</p>
-<section id="clone">
-<h3>clone<a class="headerlink" href="#clone" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="clone">
+<h3>clone<a class="headerlink" href="#clone" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor5cloneEv">
-<span id="_CPPv3N6Tensor5cloneEv"></span><span id="_CPPv2N6Tensor5cloneEv"></span><span id="Tensor::clone"></span><span class="target" id="class_tensor_1a997099c0f8de3f9b89b61ec279da2d34"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5cloneEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor5cloneEv">
+<span id="_CPPv3N6Tensor5cloneEv"></span><span id="_CPPv2N6Tensor5cloneEv"></span><span id="Tensor::clone"></span><span class="target" id="class_tensor_1a997099c0f8de3f9b89b61ec279da2d34"></span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">clone</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5cloneEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Clone a tensor (same device). Similar to copy, but returning a new instance. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Tensor </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">tensor1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -644,23 +558,24 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="reallocate">
-<h3>reallocate<a class="headerlink" href="#reallocate" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="reallocate">
+<h3>reallocate<a class="headerlink" href="#reallocate" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor10reallocateEP6TensorRK6vectorIiE">
-<span id="_CPPv3N6Tensor10reallocateEP6TensorRK6vectorIiE"></span><span id="_CPPv2N6Tensor10reallocateEP6TensorRK6vectorIiE"></span><span id="Tensor::reallocate__TensorP.vector:i:CR"></span><span class="target" id="class_tensor_1a0c67963920c02f59f6c8f7c681ef5b8f"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reallocate</code><span class="sig-paren">(</span>Tensor *<em>old_t</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10reallocateEP6TensorRK6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor10reallocateEP6TensorRK6vectorIiE">
+<span id="_CPPv3N6Tensor10reallocateEP6TensorRK6vectorIiE"></span><span id="_CPPv2N6Tensor10reallocateEP6TensorRK6vectorIiE"></span><span id="Tensor::reallocate__TensorP.vector:i:CR"></span><span class="target" id="class_tensor_1a0c67963920c02f59f6c8f7c681ef5b8f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">reallocate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">old_t</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">shape</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10reallocateEP6TensorRK6vectorIiE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Reallocates a tensor into this one. Replaces the pointer of this tensor, with the pointer of a reference tensor. Then, the attributes of this tensor (shape, size, device) are update with from the specified new shape. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">old_t</span></code>: Reference tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the new tensor (optional) </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>old_t</strong> – Reference tensor </p></li>
+<li><p><strong>shape</strong> – Shape of the new tensor (optional) </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>void </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -711,23 +626,24 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="copy">
-<h3>copy<a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="copy">
+<h3>copy<a class="headerlink" href="#copy" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor4copyEP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor4copyEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor4copyEP6TensorP6Tensor"></span><span id="Tensor::copy__TensorP.TensorP"></span><span class="target" id="class_tensor_1a48d86fd650524a63cf5a1147cd6b62e0"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">copy</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4copyEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor4copyEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor4copyEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor4copyEP6TensorP6Tensor"></span><span id="Tensor::copy__TensorP.TensorP"></span><span class="target" id="class_tensor_1a48d86fd650524a63cf5a1147cd6b62e0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">copy</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4copyEP6TensorP6Tensor" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Copy data from tensor A to B. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – Tensor </p></li>
+<li><p><strong>B</strong> – Tensor </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>void </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -759,157 +675,163 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="constructors-from-numerical-ranges">
-<h2>Constructors from numerical ranges<a class="headerlink" href="#constructors-from-numerical-ranges" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+<div class="section" id="constructors-from-numerical-ranges">
+<h2>Constructors from numerical ranges<a class="headerlink" href="#constructors-from-numerical-ranges" title="Permalink to this headline"></a></h2>
 <p>Create tensor from numerical ranges</p>
-<section id="arange">
-<h3>arange<a class="headerlink" href="#arange" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="arange">
+<h3>arange<a class="headerlink" href="#arange" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor6arangeEfffi">
-<span id="_CPPv3N6Tensor6arangeEfffi"></span><span id="_CPPv2N6Tensor6arangeEfffi"></span><span id="Tensor::arange__float.float.float.i"></span><span class="target" id="class_tensor_1a6ee1b4958f826a1de286f631842e4aa8"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">arange</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em> = 1.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6arangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor6arangeEfffi">
+<span id="_CPPv3N6Tensor6arangeEfffi"></span><span id="_CPPv2N6Tensor6arangeEfffi"></span><span id="Tensor::arange__float.float.float.i"></span><span class="target" id="class_tensor_1a6ee1b4958f826a1de286f631842e4aa8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">arange</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">step</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0f</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6arangeEfffi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create a 1-D tensor of size ceil(end - start) with values from start to end with step step. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The new tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start index </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code>: End index </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">step</span></code>: The gap between two values in the tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – Start index </p></li>
+<li><p><strong>end</strong> – End index </p></li>
+<li><p><strong>step</strong> – The gap between two values in the tensor. </p></li>
+<li><p><strong>dev</strong> – One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The new tensor </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">arange</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span><span class="w"></span>
 <span class="c1">// [1.00 1.50 2.00 2.50 3.00 3.50]</span>
 </pre></div>
 </div>
-</section>
-<section id="range">
-<h3>range<a class="headerlink" href="#range" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="range">
+<h3>range<a class="headerlink" href="#range" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor5rangeEfffi">
-<span id="_CPPv3N6Tensor5rangeEfffi"></span><span id="_CPPv2N6Tensor5rangeEfffi"></span><span id="Tensor::range__float.float.float.i"></span><span class="target" id="class_tensor_1af679670e497f8912cdfb28a101a3ea38"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">range</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em> = 1.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5rangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor5rangeEfffi">
+<span id="_CPPv3N6Tensor5rangeEfffi"></span><span id="_CPPv2N6Tensor5rangeEfffi"></span><span id="Tensor::range__float.float.float.i"></span><span class="target" id="class_tensor_1af679670e497f8912cdfb28a101a3ea38"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">range</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">step</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0f</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5rangeEfffi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Creates a 1-D tensor of size floor(end - start)/ + 1 with values from start to end with step step. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The new tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start value </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code>: End value </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">step</span></code>: The gap between two values in the tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – Start value </p></li>
+<li><p><strong>end</strong> – End value </p></li>
+<li><p><strong>step</strong> – The gap between two values in the tensor. </p></li>
+<li><p><strong>dev</strong> – One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The new tensor </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span><span class="w"></span>
 <span class="c1">// [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]</span>
 </pre></div>
 </div>
-</section>
-<section id="linspace">
-<h3>linspace<a class="headerlink" href="#linspace" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="linspace">
+<h3>linspace<a class="headerlink" href="#linspace" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor8linspaceEffii">
-<span id="_CPPv3N6Tensor8linspaceEffii"></span><span id="_CPPv2N6Tensor8linspaceEffii"></span><span id="Tensor::linspace__float.float.i.i"></span><span class="target" id="class_tensor_1ab0abb998c7d097791f23e9bdda8cace0"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">linspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8linspaceEffii" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor8linspaceEffii">
+<span id="_CPPv3N6Tensor8linspaceEffii"></span><span id="_CPPv2N6Tensor8linspaceEffii"></span><span id="Tensor::linspace__float.float.i.i"></span><span class="target" id="class_tensor_1ab0abb998c7d097791f23e9bdda8cace0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">linspace</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">steps</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8linspaceEffii" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Creates a 1-D tensor with a sequence of num evenly-spaced values starting at start. If steps &gt; 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The new tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start value </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code>: End value </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">steps</span></code>: The gap between two values in the tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – Start value </p></li>
+<li><p><strong>end</strong> – End value </p></li>
+<li><p><strong>steps</strong> – The gap between two values in the tensor. </p></li>
+<li><p><strong>dev</strong> – One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The new tensor </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">linspace</span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span><span class="w"></span>
 <span class="c1">// [3.00, 4.75, 6.50, 8.25, 10.00]</span>
 </pre></div>
 </div>
-</section>
-<section id="logspace">
-<h3>logspace<a class="headerlink" href="#logspace" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="logspace">
+<h3>logspace<a class="headerlink" href="#logspace" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor8logspaceEffifi">
-<span id="_CPPv3N6Tensor8logspaceEffifi"></span><span id="_CPPv2N6Tensor8logspaceEffifi"></span><span id="Tensor::logspace__float.float.i.float.i"></span><span class="target" id="class_tensor_1a6307a5a9387363c168dcd4f644622cf9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, float <em>base</em> = 10.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8logspaceEffifi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor8logspaceEffifi">
+<span id="_CPPv3N6Tensor8logspaceEffifi"></span><span id="_CPPv2N6Tensor8logspaceEffifi"></span><span id="Tensor::logspace__float.float.i.float.i"></span><span class="target" id="class_tensor_1a6307a5a9387363c168dcd4f644622cf9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">logspace</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">steps</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10.0f</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8logspaceEffifi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Creates a 1-D tensor with a sequence of num logarithmic spaced values starting at start. If steps &gt; 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The new tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start value </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code>: End value </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">steps</span></code>: The gap between two values in the tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">base</span></code>: The base of the logarithm to apply. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – Start value </p></li>
+<li><p><strong>end</strong> – End value </p></li>
+<li><p><strong>steps</strong> – The gap between two values in the tensor. </p></li>
+<li><p><strong>base</strong> – The base of the logarithm to apply. </p></li>
+<li><p><strong>dev</strong> – One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The new tensor </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">logspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mf">10.0</span><span class="p">);</span><span class="w"></span>
 <span class="c1">// [1.2589, 2.1135, 3.5481, 5.9566, 10.0000]</span>
 </pre></div>
 </div>
-</section>
-<section id="geomspace">
-<h3>geomspace<a class="headerlink" href="#geomspace" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="geomspace">
+<h3>geomspace<a class="headerlink" href="#geomspace" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor9geomspaceEffii">
-<span id="_CPPv3N6Tensor9geomspaceEffii"></span><span id="_CPPv2N6Tensor9geomspaceEffii"></span><span id="Tensor::geomspace__float.float.i.i"></span><span class="target" id="class_tensor_1a7b3b1e649de5d4d2565ed1793c1c5699"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">geomspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9geomspaceEffii" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor9geomspaceEffii">
+<span id="_CPPv3N6Tensor9geomspaceEffii"></span><span id="_CPPv2N6Tensor9geomspaceEffii"></span><span id="Tensor::geomspace__float.float.i.i"></span><span class="target" id="class_tensor_1a7b3b1e649de5d4d2565ed1793c1c5699"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">geomspace</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">steps</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9geomspaceEffii" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Creates a 1-D tensor with a sequence of num geometrically spaced values starting at start. If steps &gt; 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The new tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start value </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code>: End value </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">steps</span></code>: The gap between two values in the tensor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – Start value </p></li>
+<li><p><strong>end</strong> – End value </p></li>
+<li><p><strong>steps</strong> – The gap between two values in the tensor. </p></li>
+<li><p><strong>dev</strong> – One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The new tensor </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
 <span class="c1">// [1.0, 10.0, 100.0]</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="constructors-from-random-generators">
-<h2>Constructors from random generators<a class="headerlink" href="#constructors-from-random-generators" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+<div class="section" id="constructors-from-random-generators">
+<h2>Constructors from random generators<a class="headerlink" href="#constructors-from-random-generators" title="Permalink to this headline"></a></h2>
 <p>Create tensor from generators</p>
-<section id="randu">
-<h3>randu<a class="headerlink" href="#randu" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="randu">
+<h3>randu<a class="headerlink" href="#randu" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor5randuERK6vectorIiEi">
-<span id="_CPPv3N6Tensor5randuERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5randuERK6vectorIiEi"></span><span id="Tensor::randu__vector:i:CR.i"></span><span class="target" id="class_tensor_1ace96fede6da7958a824a57df8a366f1a"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">randu</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5randuERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor5randuERK6vectorIiEi">
+<span id="_CPPv3N6Tensor5randuERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5randuERK6vectorIiEi"></span><span id="Tensor::randu__vector:i:CR.i"></span><span class="target" id="class_tensor_1ace96fede6da7958a824a57df8a366f1a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">randu</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">shape</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5randuERK6vectorIiEi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Initialise a tensor with random values following an uniform distribution. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> – Shape of the tensor to create. </p></li>
+<li><p><strong>dev</strong> – Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tensor of the specified shape filled </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">randu</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -920,23 +842,24 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-<section id="randn">
-<h3>randn<a class="headerlink" href="#randn" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="randn">
+<h3>randn<a class="headerlink" href="#randn" title="Permalink to this headline"></a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor5randnERK6vectorIiEi">
-<span id="_CPPv3N6Tensor5randnERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5randnERK6vectorIiEi"></span><span id="Tensor::randn__vector:i:CR.i"></span><span class="target" id="class_tensor_1a7277ccb42afa48c6771d669fe1664a1c"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">randn</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5randnERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor5randnERK6vectorIiEi">
+<span id="_CPPv3N6Tensor5randnERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5randnERK6vectorIiEi"></span><span id="Tensor::randn__vector:i:CR.i"></span><span class="target" id="class_tensor_1a7277ccb42afa48c6771d669fe1664a1c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">randn</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">shape</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dev</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DEV_CPU</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5randnERK6vectorIiEi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Initialise a tensor with random values following an normal distribution. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> – Shape of the tensor to create. </p></li>
+<li><p><strong>dev</strong> – Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tensor of the specified shape filled </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
@@ -946,23 +869,22 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="constructors-of-matrices">
-<h2>Constructors of matrices<a class="headerlink" href="#constructors-of-matrices" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+<div class="section" id="constructors-of-matrices">
+<h2>Constructors of matrices<a class="headerlink" href="#constructors-of-matrices" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor4diagEi">
-<span id="_CPPv3N6Tensor4diagEi"></span><span id="_CPPv2N6Tensor4diagEi"></span><span id="Tensor::diag__i"></span><span class="target" id="class_tensor_1a63ffb0dbb713eb521b16952877e1225f"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">diag</code><span class="sig-paren">(</span>int <em>k</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4diagEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor4diagEi">
+<span id="_CPPv3N6Tensor4diagEi"></span><span id="_CPPv2N6Tensor4diagEi"></span><span id="Tensor::diag__i"></span><span class="target" id="class_tensor_1a63ffb0dbb713eb521b16952877e1225f"></span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">diag</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4diagEi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Extract a diagonal or construct a diagonal array. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A new tensor with the elements on the selected diagonal. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> – Offset. If k=0, main diagonal is selected. If k&gt;0, a diagonal above the main diagonal is selected. If k&lt;0, a diagonal below the main diagonal is selected. </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: Offset. If k=0, main diagonal is selected. If k&gt;0, a diagonal above the main diagonal is selected. If k&lt;0, a diagonal below the main diagonal is selected. </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new tensor with the elements on the selected diagonal. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
@@ -988,63 +910,38 @@
 <span class="c1">// ]</span>
 </pre></div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="manipulation.html" class="btn btn-neutral float-right" title="Manipulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../datasets/segmentation.html" class="btn btn-neutral float-left" title="Segmentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../datasets/segmentation.html" class="btn btn-neutral float-left" title="Segmentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="manipulation.html" class="btn btn-neutral float-right" title="Manipulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2020, EDDL
-
-    </p>
+    <p>&#169; Copyright 2020, EDDL.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

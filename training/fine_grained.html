@@ -1,77 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fine-grained training &mdash; EDDL  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/sphinx_tabs/tabs.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Test &amp; Score" href="../test_score/test_score.html" />
     <link rel="prev" title="Coarse training" href="coarse.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #185070" >
-          
-
-          
             <a href="../index.html">
-          
-
-          
-            
             <img src="../_static/logo-eddl-small-white.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -79,37 +37,26 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p><span class="caption-text">Installation</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/build-options.html">Build and configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/troubleshoot.html">Troubleshoot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/faq.html">FAQ</a></li>
 </ul>
-<p><span class="caption-text">Get started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Get started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
 </ul>
-<p><span class="caption-text">Videotutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Videotutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
 </ul>
-<p><span class="caption-text">Layers</span></p>
+<p class="caption" role="heading"><span class="caption-text">Layers</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../layers/core.html">Core</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/auxiliar.html">Auxiliar Layers</a></li>
@@ -126,12 +73,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduce</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
 </ul>
-<p><span class="caption-text">Model</span></p>
+<p class="caption" role="heading"><span class="caption-text">Model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">ONNX</a></li>
 </ul>
-<p><span class="caption-text">Training</span></p>
+<p class="caption" role="heading"><span class="caption-text">Training</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="coarse.html">Coarse training</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Fine-grained training</a><ul>
@@ -155,11 +102,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Test &amp; Score</span></p>
+<p class="caption" role="heading"><span class="caption-text">Test &amp; Score</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
 </ul>
-<p><span class="caption-text">Bundle</span></p>
+<p class="caption" role="heading"><span class="caption-text">Bundle</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/losses.html">Losses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/metrics.html">Metrics</a></li>
@@ -167,7 +114,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/initializers.html">Initializers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/optimizers.html">Optimizers</a></li>
 </ul>
-<p><span class="caption-text">Computing Services</span></p>
+<p class="caption" role="heading"><span class="caption-text">Computing Services</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html">CPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
@@ -175,16 +122,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#serialization">Serialization</a></li>
 </ul>
-<p><span class="caption-text">Model Zoo</span></p>
+<p class="caption" role="heading"><span class="caption-text">Model Zoo</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../models_zoo/classification.html">Classification</a></li>
 </ul>
-<p><span class="caption-text">Datasets</span></p>
+<p class="caption" role="heading"><span class="caption-text">Datasets</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
-<p><span class="caption-text">Tensor</span></p>
+<p class="caption" role="heading"><span class="caption-text">Tensor</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
@@ -196,87 +143,49 @@
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #185070" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">EDDL</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Fine-grained training</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/training/fine_grained.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <section id="fine-grained-training">
-<h1>Fine-grained training<a class="headerlink" href="#fine-grained-training" title="Permalink to this headline">¶</a></h1>
-<section id="random-indices">
-<h2>random_indices<a class="headerlink" href="#random-indices" title="Permalink to this headline">¶</a></h2>
+             
+  <div class="section" id="fine-grained-training">
+<h1>Fine-grained training<a class="headerlink" href="#fine-grained-training" title="Permalink to this headline"></a></h1>
+<div class="section" id="random-indices">
+<h2>random_indices<a class="headerlink" href="#random-indices" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl14random_indicesEii">
-<span id="_CPPv3N4eddl14random_indicesEii"></span><span id="_CPPv2N4eddl14random_indicesEii"></span><span id="eddl::random_indices__i.i"></span><span class="target" id="namespaceeddl_1a907447522385eb175ff5b5d1e822f46c"></span>vector&lt;int&gt; <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">random_indices</code><span class="sig-paren">(</span>int <em>batch_size</em>, int <em>num_samples</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14random_indicesEii" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl14random_indicesEii">
+<span id="_CPPv3N4eddl14random_indicesEii"></span><span id="_CPPv2N4eddl14random_indicesEii"></span><span id="eddl::random_indices__i.i"></span><span class="target" id="namespaceeddl_1a907447522385eb175ff5b5d1e822f46c"></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">random_indices</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">batch_size</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_samples</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14random_indicesEii" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Generates a random sequence of indices for a batch. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Vector of integers </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">batch_size</span></code>: Length of the random sequence to generate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">num_samples</span></code>: Number of samples available, i.e. maximum value to include in the random sequence + 1 </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_size</strong> – Length of the random sequence to generate </p></li>
+<li><p><strong>num_samples</strong> – Number of samples available, i.e. maximum value to include in the random sequence + 1 </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Vector of integers </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
@@ -292,23 +201,24 @@
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="next-batch">
-<h2>next_batch<a class="headerlink" href="#next-batch" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="next-batch">
+<h2>next_batch<a class="headerlink" href="#next-batch" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE">
-<span id="_CPPv3N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::next_batch__vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a96b88fa2bc90089928156030d06699be"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">next_batch</code><span class="sig-paren">(</span>vector&lt;Tensor*&gt; <em>in</em>, vector&lt;Tensor*&gt; <em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE">
+<span id="_CPPv3N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::next_batch__vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a96b88fa2bc90089928156030d06699be"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">next_batch</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Loads the next batch of random samples from the input vector to the output vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector from where the samples of the next batch should be chosen from </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector where the samples of the next batch should be stored </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in</strong> – Vector from where the samples of the next batch should be chosen from </p></li>
+<li><p><strong>out</strong> – Vector where the samples of the next batch should be stored </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
@@ -327,25 +237,26 @@
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="train-batch">
-<h2>train_batch<a class="headerlink" href="#train-batch" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="train-batch">
+<h2>train_batch<a class="headerlink" href="#train-batch" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE">
-<span id="_CPPv3N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="_CPPv2N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="eddl::train_batch__model.vector:TensorP:.vector:TensorP:.vector:i:"></span><span class="target" id="namespaceeddl_1a07a43f13a4616095bd0529a6efb880e5"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">train_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor*&gt; <em>in</em>, vector&lt;Tensor*&gt; <em>out</em>, vector&lt;int&gt; <em>indices</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE">
+<span id="_CPPv3N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="_CPPv2N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="eddl::train_batch__model.vector:TensorP:.vector:TensorP:.vector:i:"></span><span class="target" id="namespaceeddl_1a07a43f13a4616095bd0529a6efb880e5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">train_batch</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">net</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">out</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">indices</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Train the model using the samples of the input vector that are on the selected indices vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Net to train </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of samples </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector of labels or expected output </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of indices of the samples to train </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> – Net to train </p></li>
+<li><p><strong>in</strong> – Vector of samples </p></li>
+<li><p><strong>out</strong> – Vector of labels or expected output </p></li>
+<li><p><strong>indices</strong> – Vector of indices of the samples to train </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
@@ -362,20 +273,21 @@
 </pre></div>
 </div>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE">
-<span id="_CPPv3N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::train_batch__model.vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1af8b8b8ab0c3dec392319df582d6264dc"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">train_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor*&gt; <em>in</em>, vector&lt;Tensor*&gt; <em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE">
+<span id="_CPPv3N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::train_batch__model.vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1af8b8b8ab0c3dec392319df582d6264dc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">train_batch</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">net</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Train the model using the samples of the input vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Net to train </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of samples </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector of labels or expected output </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> – Net to train </p></li>
+<li><p><strong>in</strong> – Vector of samples </p></li>
+<li><p><strong>out</strong> – Vector of labels or expected output </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
@@ -394,25 +306,26 @@
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="eval-batch">
-<h2>eval_batch<a class="headerlink" href="#eval-batch" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="eval-batch">
+<h2>eval_batch<a class="headerlink" href="#eval-batch" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE">
-<span id="_CPPv3N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="_CPPv2N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="eddl::eval_batch__model.vector:TensorP:.vector:TensorP:.vector:i:"></span><span class="target" id="namespaceeddl_1a178a2363a2008a631d287395c3603d17"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">eval_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor*&gt; <em>in</em>, vector&lt;Tensor*&gt; <em>out</em>, vector&lt;int&gt; <em>indices</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE">
+<span id="_CPPv3N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="_CPPv2N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="eddl::eval_batch__model.vector:TensorP:.vector:TensorP:.vector:i:"></span><span class="target" id="namespaceeddl_1a178a2363a2008a631d287395c3603d17"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">eval_batch</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">net</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">out</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">indices</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Evaluate the model using the samples of the input vector that are on the selected indices vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Net to evaluate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of samples </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector of labels or expected output </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of indices of the samples to evaluate </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> – Net to evaluate </p></li>
+<li><p><strong>in</strong> – Vector of samples </p></li>
+<li><p><strong>out</strong> – Vector of labels or expected output </p></li>
+<li><p><strong>indices</strong> – Vector of indices of the samples to evaluate </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
@@ -426,83 +339,83 @@
 </pre></div>
 </div>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE">
-<span id="_CPPv3N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::eval_batch__model.vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1af1c6aa4e60d0b1788a92056ce36f4c14"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">eval_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor*&gt; <em>in</em>, vector&lt;Tensor*&gt; <em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE">
+<span id="_CPPv3N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::eval_batch__model.vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1af1c6aa4e60d0b1788a92056ce36f4c14"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">eval_batch</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">net</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Evaluate the model using the samples of the input vector. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Net to evaluate </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector of samples </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector of labels or expected output </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> – Net to evaluate </p></li>
+<li><p><strong>in</strong> – Vector of samples </p></li>
+<li><p><strong>out</strong> – Vector of labels or expected output </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
-</section>
-<section id="set-mode">
-<h2>set_mode<a class="headerlink" href="#set-mode" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="set-mode">
+<h2>set_mode<a class="headerlink" href="#set-mode" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl8set_modeE5modeli">
-<span id="_CPPv3N4eddl8set_modeE5modeli"></span><span id="_CPPv2N4eddl8set_modeE5modeli"></span><span id="eddl::set_mode__model.i"></span><span class="target" id="namespaceeddl_1aeea7298f723f561454324181111bbc43"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">set_mode</code><span class="sig-paren">(</span>model <em>net</em>, int <em>mode</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8set_modeE5modeli" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl8set_modeE5modeli">
+<span id="_CPPv3N4eddl8set_modeE5modeli"></span><span id="_CPPv2N4eddl8set_modeE5modeli"></span><span id="eddl::set_mode__model.i"></span><span class="target" id="namespaceeddl_1aeea7298f723f561454324181111bbc43"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_mode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">net</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8set_modeE5modeli" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set model mode. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Train 1, Test 0 </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> – Model </p></li>
+<li><p><strong>mode</strong> – Train 1, Test 0 </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">set_mode</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// Test model</span>
 <span class="n">set_mode</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// Train model</span>
 </pre></div>
 </div>
-</section>
-<section id="reset-loss">
-<h2>reset_loss<a class="headerlink" href="#reset-loss" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="reset-loss">
+<h2>reset_loss<a class="headerlink" href="#reset-loss" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl10reset_lossE5model">
-<span id="_CPPv3N4eddl10reset_lossE5model"></span><span id="_CPPv2N4eddl10reset_lossE5model"></span><span id="eddl::reset_loss__model"></span><span class="target" id="namespaceeddl_1a0a7097af07f1ddbb6c840f7b10cac9f9"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reset_loss</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10reset_lossE5model" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl10reset_lossE5model">
+<span id="_CPPv3N4eddl10reset_lossE5model"></span><span id="_CPPv2N4eddl10reset_lossE5model"></span><span id="eddl::reset_loss__model"></span><span class="target" id="namespaceeddl_1a0a7097af07f1ddbb6c840f7b10cac9f9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">reset_loss</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10reset_lossE5model" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Resets model loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>m</strong> – Model </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">reset_loss</span><span class="p">(</span><span class="n">net</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="forward">
-<h2>forward<a class="headerlink" href="#forward" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="forward">
+<h2>forward<a class="headerlink" href="#forward" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl7forwardE5model">
-<span id="_CPPv3N4eddl7forwardE5model"></span><span id="_CPPv2N4eddl7forwardE5model"></span><span id="eddl::forward__model"></span><span class="target" id="namespaceeddl_1af7baefaa6c899a70ca533c1daa64bd5c"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7forwardE5model" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl7forwardE5model">
+<span id="_CPPv3N4eddl7forwardE5model"></span><span id="_CPPv2N4eddl7forwardE5model"></span><span id="eddl::forward__model"></span><span class="target" id="namespaceeddl_1af7baefaa6c899a70ca533c1daa64bd5c"></span><span class="n"><span class="pre">vlayer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">forward</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7forwardE5model" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Computes the gradient of the model through the forward graph. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>m</strong> – Model </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
@@ -515,60 +428,59 @@
 <span class="n">forward</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span><span class="w"> </span><span class="c1">// Forward resizing the batch size to 10</span>
 </pre></div>
 </div>
-</section>
-<section id="zerograds">
-<h2>zeroGrads<a class="headerlink" href="#zerograds" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="zerograds">
+<h2>zeroGrads<a class="headerlink" href="#zerograds" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl9zeroGradsE5model">
-<span id="_CPPv3N4eddl9zeroGradsE5model"></span><span id="_CPPv2N4eddl9zeroGradsE5model"></span><span id="eddl::zeroGrads__model"></span><span class="target" id="namespaceeddl_1a7e56049313cf4b51d76bbbd1c16b7d4b"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">zeroGrads</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9zeroGradsE5model" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl9zeroGradsE5model">
+<span id="_CPPv3N4eddl9zeroGradsE5model"></span><span id="_CPPv2N4eddl9zeroGradsE5model"></span><span id="eddl::zeroGrads__model"></span><span class="target" id="namespaceeddl_1a7e56049313cf4b51d76bbbd1c16b7d4b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">zeroGrads</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9zeroGradsE5model" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set model gradients to zero. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>m</strong> – Model </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">zeroGrads</span><span class="p">(</span><span class="n">net</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="backward">
-<h2>backward<a class="headerlink" href="#backward" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="backward">
+<h2>backward<a class="headerlink" href="#backward" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl8backwardE5model">
-<span id="_CPPv3N4eddl8backwardE5model"></span><span id="_CPPv2N4eddl8backwardE5model"></span><span id="eddl::backward__model"></span><span class="target" id="namespaceeddl_1ac821a1edd54a2d188847071c769d524c"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>model <em>net</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8backwardE5model" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl8backwardE5model">
+<span id="_CPPv3N4eddl8backwardE5model"></span><span id="_CPPv2N4eddl8backwardE5model"></span><span id="eddl::backward__model"></span><span class="target" id="namespaceeddl_1ac821a1edd54a2d188847071c769d524c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">backward</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">net</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8backwardE5model" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Computes the gradient of the model through the backward graph. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>net</strong> – Model </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl8backwardE5model6vectorIP6TensorE">
-<span id="_CPPv3N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="_CPPv2N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="eddl::backward__model.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a9deaeecde0f468cff06ca6d12fc98d11"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>model <em>m</em>, vector&lt;Tensor*&gt; <em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8backwardE5model6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl8backwardE5model6vectorIP6TensorE">
+<span id="_CPPv3N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="_CPPv2N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="eddl::backward__model.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a9deaeecde0f468cff06ca6d12fc98d11"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">backward</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">target</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8backwardE5model6vectorIP6TensorE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Computes the gradient by passing its argument (1x1 unit tensor by default) through the backward graph. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">target</span></code>: Targets </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – Model </p></li>
+<li><p><strong>target</strong> – Targets </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">backward</span><span class="p">(</span><span class="n">net</span><span class="p">);</span><span class="w"></span>
@@ -580,104 +492,103 @@
 </pre></div>
 </div>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl8backwardE4loss">
-<span id="_CPPv3N4eddl8backwardE4loss"></span><span id="_CPPv2N4eddl8backwardE4loss"></span><span id="eddl::backward__loss"></span><span class="target" id="namespaceeddl_1a5ada83693011dff18ecb06a1c9071f27"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>loss <em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8backwardE4loss" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl8backwardE4loss">
+<span id="_CPPv3N4eddl8backwardE4loss"></span><span id="_CPPv2N4eddl8backwardE4loss"></span><span id="eddl::backward__loss"></span><span class="target" id="namespaceeddl_1a5ada83693011dff18ecb06a1c9071f27"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">backward</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">loss</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">l</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8backwardE4loss" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Computes the gradient of the model associated to the given loss object through the backward graph. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>l</strong> – Loss </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Loss </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
-</section>
-<section id="update">
-<h2>update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="update">
+<h2>update<a class="headerlink" href="#update" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl6updateE5model">
-<span id="_CPPv3N4eddl6updateE5model"></span><span id="_CPPv2N4eddl6updateE5model"></span><span id="eddl::update__model"></span><span class="target" id="namespaceeddl_1a0edfd833f2178d9fe8104ecfb533d0a4"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">update</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6updateE5model" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl6updateE5model">
+<span id="_CPPv3N4eddl6updateE5model"></span><span id="_CPPv2N4eddl6updateE5model"></span><span id="eddl::update__model"></span><span class="target" id="namespaceeddl_1a0edfd833f2178d9fe8104ecfb533d0a4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">update</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6updateE5model" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Updates the weights of the model. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>m</strong> – Model </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="print-loss">
-<h2>print_loss<a class="headerlink" href="#print-loss" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="print-loss">
+<h2>print_loss<a class="headerlink" href="#print-loss" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl10print_lossE5modeli">
-<span id="_CPPv3N4eddl10print_lossE5modeli"></span><span id="_CPPv2N4eddl10print_lossE5modeli"></span><span id="eddl::print_loss__model.i"></span><span class="target" id="namespaceeddl_1a4c9b28aa85ff9c12112ddf9b55217bc6"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">print_loss</code><span class="sig-paren">(</span>model <em>m</em>, int <em>batch</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10print_lossE5modeli" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl10print_lossE5modeli">
+<span id="_CPPv3N4eddl10print_lossE5modeli"></span><span id="_CPPv2N4eddl10print_lossE5modeli"></span><span id="eddl::print_loss__model.i"></span><span class="target" id="namespaceeddl_1a4c9b28aa85ff9c12112ddf9b55217bc6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">print_loss</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">batch</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10print_lossE5modeli" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Prints model loss at some batch. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">batch</span></code>: Batch number </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – Model </p></li>
+<li><p><strong>batch</strong> – Batch number </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">print_loss</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="clamp">
-<h2>clamp<a class="headerlink" href="#clamp" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="clamp">
+<h2>clamp<a class="headerlink" href="#clamp" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl5clampE5modelff">
-<span id="_CPPv3N4eddl5clampE5modelff"></span><span id="_CPPv2N4eddl5clampE5modelff"></span><span id="eddl::clamp__model.float.float"></span><span class="target" id="namespaceeddl_1a6fa82826bab70a33a04f26757f268a7e"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">clamp</code><span class="sig-paren">(</span>model <em>m</em>, float <em>min</em>, float <em>max</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5clampE5modelff" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl5clampE5modelff">
+<span id="_CPPv3N4eddl5clampE5modelff"></span><span id="_CPPv2N4eddl5clampE5modelff"></span><span id="eddl::clamp__model.float.float"></span><span class="target" id="namespaceeddl_1a6fa82826bab70a33a04f26757f268a7e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">clamp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">min</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5clampE5modelff" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Model parameters values clipping. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) Performs model clamp between min and max </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code>: Minimum value </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">max</span></code>: Maximum value </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – Model </p></li>
+<li><p><strong>min</strong> – Minimum value </p></li>
+<li><p><strong>max</strong> – Maximum value </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(void) Performs model clamp between min and max </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">clamp</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">);</span><span class="w"> </span><span class="c1">// Clamps all the weights of the model between 0.5 and 0.7</span>
 </pre></div>
 </div>
-</section>
-<section id="compute-loss">
-<h2>compute_loss<a class="headerlink" href="#compute-loss" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="compute-loss">
+<h2>compute_loss<a class="headerlink" href="#compute-loss" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl12compute_lossE4loss">
-<span id="_CPPv3N4eddl12compute_lossE4loss"></span><span id="_CPPv2N4eddl12compute_lossE4loss"></span><span id="eddl::compute_loss__loss"></span><span class="target" id="namespaceeddl_1a9101e8f405a0ead9fb9fe2b7e72438d2"></span>float <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">compute_loss</code><span class="sig-paren">(</span>loss <em>L</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12compute_lossE4loss" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl12compute_lossE4loss">
+<span id="_CPPv3N4eddl12compute_lossE4loss"></span><span id="_CPPv2N4eddl12compute_lossE4loss"></span><span id="eddl::compute_loss__loss"></span><span class="target" id="namespaceeddl_1a9101e8f405a0ead9fb9fe2b7e72438d2"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">compute_loss</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">loss</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">L</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12compute_lossE4loss" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Computes loss of the associated model. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(float) Computed loss </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>L</strong> – Loss </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">L</span></code>: Loss </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(float) Computed loss </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
@@ -693,22 +604,21 @@
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="compute-metric">
-<h2>compute_metric<a class="headerlink" href="#compute-metric" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="compute-metric">
+<h2>compute_metric<a class="headerlink" href="#compute-metric" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl14compute_metricE4loss">
-<span id="_CPPv3N4eddl14compute_metricE4loss"></span><span id="_CPPv2N4eddl14compute_metricE4loss"></span><span id="eddl::compute_metric__loss"></span><span class="target" id="namespaceeddl_1aa884ab3b56ae8f048eede1238277c4c4"></span>float <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">compute_metric</code><span class="sig-paren">(</span>loss <em>L</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14compute_metricE4loss" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl14compute_metricE4loss">
+<span id="_CPPv3N4eddl14compute_metricE4loss"></span><span id="_CPPv2N4eddl14compute_metricE4loss"></span><span id="eddl::compute_metric__loss"></span><span class="target" id="namespaceeddl_1aa884ab3b56ae8f048eede1238277c4c4"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">compute_metric</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">loss</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">L</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14compute_metricE4loss" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Computes loss of the associated model (same as <code class="docutils literal notranslate"><span class="pre">compute_loss</span></code>) </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(float) Computed loss </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>L</strong> – Loss </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">L</span></code>: Loss </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(float) Computed loss </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span><span class="w"> </span><span class="n">mse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newloss</span><span class="p">(</span><span class="n">mse_loss</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">target</span><span class="p">},</span><span class="w"> </span><span class="s">&quot;mse_loss&quot;</span><span class="p">);</span><span class="w"></span>
@@ -723,41 +633,43 @@
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="newloss">
-<h2>newloss<a class="headerlink" href="#newloss" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="newloss">
+<h2>newloss<a class="headerlink" href="#newloss" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string">
-<span id="_CPPv3N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span id="_CPPv2N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span class="target" id="namespaceeddl_1ae42cdc505dc6c016468d06d432037d93"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newloss</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer*<span class="sig-paren">(</span>Layer*<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, Layer *<em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string">
+<span id="_CPPv3N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span id="_CPPv2N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span class="target" id="namespaceeddl_1ae42cdc505dc6c016468d06d432037d93"></span><span class="n"><span class="pre">loss</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">newloss</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Layer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">Layer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span>, <span class="n"><span class="pre">Layer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">in</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create new Loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Created Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Loss function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Loss input </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Loss name </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> – Loss function </p></li>
+<li><p><strong>in</strong> – Loss input </p></li>
+<li><p><strong>name</strong> – Loss name </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Created Loss </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string">
-<span id="_CPPv3N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span id="_CPPv2N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span class="target" id="namespaceeddl_1ac6184b5984b223be1c3a5ad5dfe23ab1"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newloss</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer*<span class="sig-paren">(</span>vector&lt;Layer*&gt;<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, vector&lt;Layer*&gt; <em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string">
+<span id="_CPPv3N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span id="_CPPv2N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span class="target" id="namespaceeddl_1ac6184b5984b223be1c3a5ad5dfe23ab1"></span><span class="n"><span class="pre">loss</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">newloss</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Layer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Layer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Layer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create new Loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Created Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Loss function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Loss input </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Loss name </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> – Loss function </p></li>
+<li><p><strong>in</strong> – Loss input </p></li>
+<li><p><strong>name</strong> – Loss name </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Created Loss </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <p>Example:</p>
@@ -769,133 +681,108 @@
 <span class="n">loss</span><span class="w"> </span><span class="n">mse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newloss</span><span class="p">(</span><span class="n">mse_loss</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">target</span><span class="p">},</span><span class="w"> </span><span class="s">&quot;mse_loss&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="newmetric">
-<h2>newmetric<a class="headerlink" href="#newmetric" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="newmetric">
+<h2>newmetric<a class="headerlink" href="#newmetric" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string">
-<span id="_CPPv3N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span id="_CPPv2N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span class="target" id="namespaceeddl_1acd1e679e6595979d5b1f95ce0f134041"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newmetric</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer*<span class="sig-paren">(</span>Layer*<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, Layer *<em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string">
+<span id="_CPPv3N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span id="_CPPv2N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span class="target" id="namespaceeddl_1acd1e679e6595979d5b1f95ce0f134041"></span><span class="n"><span class="pre">loss</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">newmetric</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Layer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">Layer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span>, <span class="n"><span class="pre">Layer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">in</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create new Loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Created Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Loss function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Loss input </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Loss name </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> – Loss function </p></li>
+<li><p><strong>in</strong> – Loss input </p></li>
+<li><p><strong>name</strong> – Loss name </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Created Loss </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string">
-<span id="_CPPv3N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span id="_CPPv2N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span class="target" id="namespaceeddl_1a0820cb924c0bdb0949729920b16a9909"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newmetric</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer*<span class="sig-paren">(</span>vector&lt;Layer*&gt;<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, vector&lt;Layer*&gt; <em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string">
+<span id="_CPPv3N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span id="_CPPv2N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span class="target" id="namespaceeddl_1a0820cb924c0bdb0949729920b16a9909"></span><span class="n"><span class="pre">loss</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">newmetric</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Layer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Layer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span>, <span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Layer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Create new Loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Created Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Loss function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Loss input </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Loss name </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> – Loss function </p></li>
+<li><p><strong>in</strong> – Loss input </p></li>
+<li><p><strong>name</strong> – Loss name </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Created Loss </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
-</section>
-<section id="detach">
-<h2>detach<a class="headerlink" href="#detach" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="detach">
+<h2>detach<a class="headerlink" href="#detach" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl6detachE5layer">
-<span id="_CPPv3N4eddl6detachE5layer"></span><span id="_CPPv2N4eddl6detachE5layer"></span><span id="eddl::detach__layer"></span><span class="target" id="namespaceeddl_1a33604ce94f505bca73c109a628b01280"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">detach</code><span class="sig-paren">(</span>layer <em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6detachE5layer" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl6detachE5layer">
+<span id="_CPPv3N4eddl6detachE5layer"></span><span id="_CPPv2N4eddl6detachE5layer"></span><span id="eddl::detach__layer"></span><span class="target" id="namespaceeddl_1a33604ce94f505bca73c109a628b01280"></span><span class="n"><span class="pre">layer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">detach</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">layer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">l</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6detachE5layer" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Sets a layer as detached, excluding it from the computation of the gradients. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Detached Layer </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>l</strong> – Layer to detach </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Layer to detach </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Detached Layer </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl6detachE6vlayer">
-<span id="_CPPv3N4eddl6detachE6vlayer"></span><span id="_CPPv2N4eddl6detachE6vlayer"></span><span id="eddl::detach__vlayer"></span><span class="target" id="namespaceeddl_1a9e8aa3afa5301bab5c1f490fb051e162"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">detach</code><span class="sig-paren">(</span>vlayer <em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6detachE6vlayer" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl6detachE6vlayer">
+<span id="_CPPv3N4eddl6detachE6vlayer"></span><span id="_CPPv2N4eddl6detachE6vlayer"></span><span id="eddl::detach__vlayer"></span><span class="target" id="namespaceeddl_1a9e8aa3afa5301bab5c1f490fb051e162"></span><span class="n"><span class="pre">vlayer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">detach</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">vlayer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">l</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6detachE6vlayer" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Sets the provided layers as detached, excluding them from the computation of the gradients. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Detached Layers </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>l</strong> – Layers to detach </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Layers to detach </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Detached Layers </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../test_score/test_score.html" class="btn btn-neutral float-right" title="Test &amp; Score" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="coarse.html" class="btn btn-neutral float-left" title="Coarse training" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="coarse.html" class="btn btn-neutral float-left" title="Coarse training" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../test_score/test_score.html" class="btn btn-neutral float-right" title="Test &amp; Score" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2020, EDDL
-
-    </p>
+    <p>&#169; Copyright 2020, EDDL.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
