@@ -1,8 +1,8 @@
-ONNX
-=====
+Save and load ONNX models
+==========================
 
 
-Exporting to \*.onnx
+Exporting to onnx
 ---------------------
 
 .. doxygenfunction:: save_net_to_onnx_file(Net* net, string path)
@@ -14,8 +14,8 @@ Example:
     save_net_to_onnx_file(net, "my_model.onnx");
 
 
-Importing a \*.onnx file
--------------------------
+Importing onnx files
+----------------------
 
 .. doxygenfunction:: import_net_from_onnx_file(string path, int mem = 0, LOG_LEVEL log_level = LOG_LEVEL::INFO)
 
@@ -36,7 +36,7 @@ Example:
 
 
 
-Simplifying a \*.onnx model
+Simplifying onnx models
 ----------------------------
 
 Not all onnx models can be loaded by the EDDL since in order to read the model correctly, all its layers and arguments must be supported by our library.
