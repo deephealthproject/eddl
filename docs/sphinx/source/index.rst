@@ -28,6 +28,7 @@ The code is open source, and `available on github`_.
     usage/getting_started.rst
     usage/intermediate.rst
     usage/advanced.rst
+    usage/pretrained.rst
 
 
 .. toctree::
