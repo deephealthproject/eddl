@@ -36,6 +36,9 @@ void Net::fts() {
     vector<int> visit;
     vector<int> gin;
 
+    // Clear previous vfts
+    vfts.clear();
+
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
 
@@ -73,6 +76,8 @@ void Net::bts() {
     vector<int> visit;
     vector<int> gout;
 
+    // Clear previous vbts
+    vbts.clear();
 
     //fprintf(stdout,"BTS:");
     for (i = 0; i < layers.size(); i++) {
