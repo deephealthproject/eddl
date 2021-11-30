@@ -20,19 +20,19 @@
 CompServ::CompServ()= default;
 
 // for local
-CompServ::CompServ(int t, const vector<int> g, const vector<int> &f, int lsb, int mem) {
+CompServ::CompServ(int t, const vector<int>& g, const vector<int> &f, int lsb, int mem) {
     type = "local";
     isshared = false;
 
     threads_arg = t;
-    if (t == -1) local_threads = std::thread::hardware_concurrency();  // Avoid eigen dependency
+    if (t == -1) local_threads = (int)std::thread::hardware_concurrency();  // Avoid eigen dependency
     else local_threads = t;
 
     for (auto _ : g) this->local_gpus.push_back(_);
     for (auto _ : f) this->local_fpgas.push_back(_);
 
-    if (local_fpgas.size()>0) hw="FPGA";
-    else if (local_gpus.size()>0) hw="GPU";
+    if (!local_fpgas.empty()) hw="FPGA";
+    else if (!local_gpus.empty()) hw="GPU";
     else hw="CPU";
 
     this->lsb = lsb;
@@ -53,13 +53,12 @@ CompServ::CompServ(int t, const vector<int> g, const vector<int> &f, int lsb, in
     }
 }
 
-CompServ * CompServ::share() {
+CompServ* CompServ::share() {
     CompServ *n = new CompServ(threads_arg,local_gpus,local_fpgas,lsb,mem_level);
     n->isshared = true;
     return n;
 }
-CompServ * CompServ::clone() {
-
+CompServ* CompServ::clone() {
     CompServ *n = new CompServ(threads_arg,local_gpus,local_fpgas,lsb,mem_level);
     return n;
 }
