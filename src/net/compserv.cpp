@@ -38,34 +38,34 @@ CompServ::CompServ(int t, const vector<int> g, const vector<int> &f, int lsb, in
     this->lsb = lsb;
 
     if (lsb < 0) {
-      throw std::runtime_error("Error creating CS with lsb<0 in CompServ::CompServ");
+        throw std::runtime_error("Error creating CS with lsb<0 in CompServ::CompServ");
     }
 
     mem_level = mem;
     if ((mem < 0) || (mem > 2)) {
-      fprintf(stderr,"Error creating CS with incorrect memory saving level param in CompServ::CompServ");
-      exit(EXIT_FAILURE);
+        fprintf(stderr,"Error creating CS with incorrect memory saving level param in CompServ::CompServ");
+        exit(EXIT_FAILURE);
     }
     else {
-      if (mem==0) fprintf(stderr,"CS with full memory setup\n");
-      if (mem==1) fprintf(stderr,"CS with mid memory setup\n");
-      if (mem==2) fprintf(stderr,"CS with low memory setup\n");
+        if (mem==0) fprintf(stderr,"CS with full memory setup\n");
+        if (mem==1) fprintf(stderr,"CS with mid memory setup\n");
+        if (mem==2) fprintf(stderr,"CS with low memory setup\n");
     }
 }
 
 CompServ * CompServ::share() {
-  CompServ *n = new CompServ(threads_arg,local_gpus,local_fpgas,lsb,mem_level);
-  n->isshared = true;
-  return n;
+    CompServ *n = new CompServ(threads_arg,local_gpus,local_fpgas,lsb,mem_level);
+    n->isshared = true;
+    return n;
 }
 CompServ * CompServ::clone() {
-  
-  CompServ *n = new CompServ(threads_arg,local_gpus,local_fpgas,lsb,mem_level);
-  return n;
+
+    CompServ *n = new CompServ(threads_arg,local_gpus,local_fpgas,lsb,mem_level);
+    return n;
 }
 
 
 // for Distributed
 CompServ::CompServ(const string& filename) {
-     std::cerr << "Not implemented error [Computing service with filename]" << std::endl;
+    std::cerr << "Not implemented error [Computing service with filename]" << std::endl;
 }
