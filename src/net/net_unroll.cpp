@@ -42,6 +42,10 @@ bool check_rnn_forward(Layer *l) {
   return frnn;
 }
 
+Net* Net::unroll(int inl, int outl){
+    msg("not implemented error", "Net::unroll");
+}
+
 // Unroll Recurrent net
 Net* Net::unroll_enc(int inl, int outl) {
   int i, j, k, l;
@@ -173,8 +177,7 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
     vector<bool> frnn;
 
 
-    cout<<"Recurrent net encoder input sequence length="<<inl<<", decoder output sequence length="<<outl<<endl;
-
+    std:cerr << "Recurrent net encoder input sequence length=" << inl << ", decoder output sequence length=" << outl << std::endl;
     vlayer backup(layers);
 
     // set vfts sort
@@ -577,7 +580,7 @@ void Net::build_rnet(int inl,int outl) {
    // Create an unrolled version on Device
    ////////////////////////////////////////
    if (todev!=DEV_CPU) {
-     cout<<"Unroll on device"<<endl;
+     std::cerr << "Unroll on device" << std::endl;
      // unroll CS devices and link
      for(i=0;i<snets.size();i++) {
        if ((isencoder)&&(isdecoder))

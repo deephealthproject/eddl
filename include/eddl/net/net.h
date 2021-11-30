@@ -133,15 +133,15 @@ public:
 
     void enable_distributed();
 
-    string summary();
-    void plot(string fname,string mode);
+    string summary(bool print_stdout=true);
+    void plot(const string& fname="model.pdf", const string& rankdir="LR");
 
     void setmode(int m);
 
 
-    void save(const string& filename, string format="");
-    void load(const string& filename, string format="");
-    void setlogfile(string fname);
+    void save(const string& filename, const string& format="");
+    void load(const string& filename, const string& format="");
+    void setlogfile(const string& fname);
 
 
     //Func
