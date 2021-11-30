@@ -134,7 +134,7 @@ public:
     void enable_distributed();
 
     string summary(bool print_stdout=true);
-    void plot(string fname,string mode);
+    void plot(const string& fname="model.pdf", const string& rankdir="LR");
 
     void setmode(int m);
 

@@ -337,43 +337,47 @@ string Net::summary(bool print_stdout) {
     return ss.str();
 }
 
-void Net::plot(string fname,string mode) {
-    ofstream out("tmp.dot");
+void Net::plot(const string& fname, const string& rankdir) {
+    ofstream out("tmp.dot");  // temp file
+
     int ind;
-    string type = fname.substr(fname.find('.') + 1);
+    string type = fname.substr(fname.find('.') + 1);  // extension
     string cmd;
 
-
-    out << "digraph Model {\n";
-    out << "rankdir="<<mode<<";\n";
+    out << "digraph Model {" << std::endl;
+    out << "rankdir=" << rankdir << ";" << std::endl;
 
     // plot layers
-    for (int i = 0; i != layers.size(); i++)
+    for(int i = 0; i != layers.size(); i++){
         if ((!isIn(layers[i], lin, ind)) && (!isIn(layers[i], lout, ind)))
-            out << layers[i]->plot(0) << "\n";
+            out << layers[i]->plot(0) << std::endl;
+    }
 
     // Input Layers
-    for (int i = 0; i != lin.size(); i++)
-        out << lin[i]->plot(1) << "\n";
+    for(int i = 0; i != lin.size(); i++){
+        out << lin[i]->plot(1) << std::endl;
+    }
 
     // Output Layers
-    for (int i = 0; i != lout.size(); i++)
-        out << lout[i]->plot(1) << "\n";
+    for(int i = 0; i != lout.size(); i++){
+        out << lout[i]->plot(1) << std::endl;
+    }
 
-    //plot links
-    for (int i = 0; i != layers.size(); i++) {
-       if (layers[i]->isrecurrent)
-         out << layers[i]->name << "->" << layers[i]->name << "\n";
-
-       for (int j = 0; j < layers[i]->child.size(); j++)
-        out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
+    // Plot links
+    for(int i = 0; i != layers.size(); i++) {
+       if (layers[i]->isrecurrent){
+           out << layers[i]->name << "->" << layers[i]->name << std::endl;
+       }
+       for (int j = 0; j < layers[i]->child.size(); j++){
+           out << layers[i]->name << "->" << layers[i]->child[j]->name << std::endl;
+       }
     }
 
     out << "}" << std::endl;
     out.close();
 
+    // Run Graphviz "dot" command
     cmd = "dot -T " + type + " ./tmp.dot >" + "./" + fname;
-
     int rc = system(cmd.c_str());
     if (rc != EXIT_SUCCESS) {
         std::cerr << "[PLOT] Unable to run the following command:" << std::endl;
