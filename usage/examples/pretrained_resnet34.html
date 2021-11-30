@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Classify ImageNet classes with ResNet34 &mdash; EDDL  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #185070" >
+            <a href="../../index.html">
+            <img src="../../_static/logo-eddl-small-white.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/build-options.html">Build and configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/faq.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intermediate.html">Intermediate models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced.html">Advanced models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pretrained.html">Pretrained models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Videotutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../videotutorials/developers.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../videotutorials/usage.html">Showcase</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Layers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/auxiliar.html">Auxiliar Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/activations.html">Activations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/data_augmentation.html">Data augmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/data_transformation.html">Data transformation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/convolutional.html">Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/noise.html">Noise Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/pooling.html">Pooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/merge.html">Merge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/generators.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/operators.html">Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/reduction.html">Reduce</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers/rnn.html">Recurrent</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../model/model.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../model/onnx.html">Save and load ONNX models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Training</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../training/coarse.html">Coarse training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../training/fine_grained.html">Fine-grained training</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test &amp; Score</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../test_score/test_score.html">Test &amp; Score</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bundle</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../bundle/losses.html">Losses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bundle/metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bundle/regularizers.html">Regularizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bundle/initializers.html">Initializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bundle/optimizers.html">Optimizers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Computing Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../bundle/computing_service.html">CPU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bundle/computing_service.html#gpu">GPU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bundle/computing_service.html#fpga">FPGA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bundle/computing_service.html#compss">COMPSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bundle/computing_service.html#serialization">Serialization</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model Zoo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../models_zoo/classification.html">Classification</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Datasets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets/classification.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets/segmentation.html">Segmentation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tensor</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tensor/create.html">Creation Routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensor/manipulation.html">Manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensor/image.html">Image operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensor/indexing.html">Indexing &amp; Sorting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensor/input_output.html">Input/Output Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensor/linear_algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensor/logic_functions.html">Logic functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensor/math.html">Mathematical functions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #185070" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EDDL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Classify ImageNet classes with ResNet34</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/usage/examples/pretrained_resnet34.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="classify-imagenet-classes-with-resnet34">
+<h1>Classify ImageNet classes with ResNet34<a class="headerlink" href="#classify-imagenet-classes-with-resnet34" title="Permalink to this headline"></a></h1>
+<p>In this example, we are going to classify the following image using a pretrained ResNet34 model. (You can download from <a class="reference external" href="https://github.com/onnx/models/tree/master/vision/classification/resnet">here</a>)</p>
+<a class="reference internal image-reference" href="../../_images/elephant.jpg"><img alt="../../_images/elephant.jpg" src="../../_images/elephant.jpg" style="width: 250.0px; height: 250.0px;" /></a>
+<p>In order to use a pretrained model, we need to know what the models expects and how can we make its output useful for us. That is, we need to know the number
+of inputs, their shape, the preprocessing needed, the number of outputs and the postprocessing required. Luckily, we have this information in the onnx page from which we downloaded our model.</p>
+<p><strong>Steps:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Input/s:</strong> 3-channel RGB images of shape <code class="docutils literal notranslate"><span class="pre">(N</span> <span class="pre">x</span> <span class="pre">3</span> <span class="pre">x</span> <span class="pre">H</span> <span class="pre">x</span> <span class="pre">W)</span></code>, where N is the batch size, and H and W are expected to be at least 224</p></li>
+<li><p><strong>Preprocessing:</strong> Images in range of <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> and then normalized using <code class="docutils literal notranslate"><span class="pre">mean</span> <span class="pre">=</span> <span class="pre">[0.485,</span> <span class="pre">0.456,</span> <span class="pre">0.406]</span></code> and <code class="docutils literal notranslate"><span class="pre">std</span> <span class="pre">=</span> <span class="pre">[0.229,</span> <span class="pre">0.224,</span> <span class="pre">0.225]</span></code>.</p></li>
+<li><p><strong>Output:</strong> Image scores for each of the 1000 classes of ImageNet</p></li>
+<li><p><strong>Postprocessing:</strong> Apply a softmax to get the probability scores for each class.</p></li>
+</ol>
+<div class="section" id="inference">
+<h2>Inference<a class="headerlink" href="#inference" title="Permalink to this headline"></a></h2>
+<p>Here we are going to import a new model, add a softmax layer, compiling it, perform inference on a image and print the top K predicted classes.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;eddl/apis/eddl.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;eddl/serialization/onnx/eddl_onnx.h&quot;</span><span class="cp"></span>
+
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">eddl</span><span class="p">;</span><span class="w"></span>
+
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// ====== SET DEFAULT VARIABLES =============================================</span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+<span class="w">    </span><span class="c1">// Step 0: Download the model, the classes and the image we want to classify</span>
+<span class="w">    </span><span class="n">string</span><span class="w"> </span><span class="n">image_fname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;../../examples/data/elephant.jpg&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">string</span><span class="w"> </span><span class="n">class_names_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;../../examples/data/imagenet_class_names.txt&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">string</span><span class="w"> </span><span class="n">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;models/resnet34-v1-7.onnx&quot;</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// Step 1: Specify input</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">in_channels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">in_height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">224</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">in_width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">224</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// ====== LOAD ONNX MODEL ===================================================</span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+<span class="w">    </span><span class="c1">// Import ONNX model</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Importing ONNX...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">Net</span><span class="w"> </span><span class="o">*</span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_net_from_onnx_file</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">in_channels</span><span class="p">,</span><span class="w"> </span><span class="n">in_height</span><span class="p">,</span><span class="w"> </span><span class="n">in_width</span><span class="p">});</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// ====== APPLY POSTPROCESSING ==============================================</span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+<span class="w">    </span><span class="c1">// Step 4 (optional): Add a softmax layer to get probabilities directly from the model, since it</span>
+<span class="w">    </span><span class="c1">// does not include the softmax layer.</span>
+<span class="w">    </span><span class="n">layer</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">net</span><span class="o">-&gt;</span><span class="n">lin</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w">   </span><span class="c1">// getLayer(net,&quot;input_layer_name&quot;);</span>
+<span class="w">    </span><span class="n">layer</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">net</span><span class="o">-&gt;</span><span class="n">lout</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w">   </span><span class="c1">// getLayer(net,&quot;output_layer_name&quot;);</span>
+<span class="w">    </span><span class="n">layer</span><span class="w"> </span><span class="n">new_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Softmax</span><span class="p">(</span><span class="n">output</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// Create model</span>
+<span class="w">    </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Model</span><span class="p">({</span><span class="n">input</span><span class="p">},{</span><span class="n">new_output</span><span class="p">});</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// ====== COMPILE MODEL =====================================================</span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+<span class="w">    </span><span class="c1">// Build model</span>
+<span class="w">    </span><span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="n">adam</span><span class="p">(</span><span class="mf">0.001f</span><span class="p">),</span><span class="w"> </span><span class="c1">// Optimizer (not used for prediction)</span>
+<span class="w">          </span><span class="p">{</span><span class="s">&quot;softmax_cross_entropy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Losses (not used for prediction)</span>
+<span class="w">          </span><span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span><span class="w"> </span><span class="c1">// Metrics (not used for prediction)</span>
+<span class="w">          </span><span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">}),</span><span class="w"> </span><span class="c1">// Use one GPU</span>
+<span class="w">          </span><span class="nb">false</span><span class="w">       </span><span class="c1">// Disable model initialization, since we want to use the onnx weights</span>
+<span class="w">    </span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// Print and plot our model</span>
+<span class="w">    </span><span class="n">net</span><span class="o">-&gt;</span><span class="n">summary</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">net</span><span class="o">-&gt;</span><span class="n">plot</span><span class="p">(</span><span class="s">&quot;default.pdf&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// ====== INFERENCE =========================================================</span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// Load test image</span>
+<span class="w">    </span><span class="n">Tensor</span><span class="w"> </span><span class="o">*</span><span class="n">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="n">image_fname</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// Step 3: Preprocess input. (Look up the preprocessing required at the model&#39;s page)</span>
+<span class="w">    </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">image_preprocessed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">preprocess_input_resnet34</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">in_height</span><span class="p">,</span><span class="w"> </span><span class="n">in_width</span><span class="p">});</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// Predict image. Returns a vector of tensors (here one).</span>
+<span class="w">    </span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">outputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">net</span><span class="o">-&gt;</span><span class="n">predict</span><span class="p">({</span><span class="n">image_preprocessed</span><span class="p">});</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// ====== PRINT TOP K CLASSES ===============================================</span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// Read imagenet class names from txt file</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Reading imagenet class names...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">class_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eddl</span><span class="o">::</span><span class="n">read_txt_file</span><span class="p">(</span><span class="n">class_names_file</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// Print top K predictions</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">top_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Top &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">top_k</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; predictions:&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">eddl</span><span class="o">::</span><span class="n">get_topk_predictions</span><span class="p">(</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">class_names</span><span class="p">,</span><span class="w"> </span><span class="n">top_k</span><span class="p">)</span><span class="w">  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>If everything has worked correctly, the output of the inference should be:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Top 5 predictions:
+1. n02504013 Indian elephant, Elephas maximus (91.04%)
+2. n01871265 tusker (8.49%)
+3. n02504458 African elephant, Loxodonta africana (0.45%)
+4. n02398521 hippopotamus, hippo, river horse, Hippopotamus amphibius (0.00%)
+5. n02074367 dugong, Dugong dugon (0.00%)
+</pre></div>
+</div>
+</div>
+<div class="section" id="preprocessing">
+<h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline"></a></h2>
+<p>Now we are going to write a simple preprocessing function to prepare our input into the input that ResNet34 expect.
+To do so, we are going to scale the image into an image of 224x224, normalize it so that its values’ range are into [0, 1],
+and standarize it with the known mean and std of the ImageNet dataset.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="nf">preprocess_input_resnet34</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">target_size</span><span class="p">){</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Define preprocessing constants</span>
+<span class="w">    </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">mean_vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="mf">0.485</span><span class="p">,</span><span class="w"> </span><span class="mf">0.456</span><span class="p">,</span><span class="w"> </span><span class="mf">0.406</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="n">input</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">std_vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="mf">0.229</span><span class="p">,</span><span class="w"> </span><span class="mf">0.224</span><span class="p">,</span><span class="w"> </span><span class="mf">0.225</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="n">input</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// ====== SANITY CHECKS =====================================================</span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// Check dimension. Input must be a 3D or 4D tensor</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">input</span><span class="o">-&gt;</span><span class="n">ndim</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">input</span><span class="o">-&gt;</span><span class="n">ndim</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">4</span><span class="p">)){</span><span class="w"></span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;A 3D or 4D tensor is expected. &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">input</span><span class="o">-&gt;</span><span class="n">ndim</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;D tensor received.&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// Convert from 3D to 4D (if needed)</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">input</span><span class="o">-&gt;</span><span class="n">ndim</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">){</span><span class="w"></span>
+<span class="w">        </span><span class="n">input</span><span class="o">-&gt;</span><span class="n">unsqueeze_</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+<span class="w">    </span><span class="c1">// ====== NORMALIZATION =====================================================</span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+<span class="w">    </span><span class="c1">// Resize tensor (creates a new instance)</span>
+<span class="w">    </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">new_input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">input</span><span class="o">-&gt;</span><span class="n">scale</span><span class="p">(</span><span class="n">target_size</span><span class="p">);</span><span class="w">  </span><span class="c1">// (height, width)</span>
+
+<span class="w">    </span><span class="c1">// Normalization [0..1]</span>
+<span class="w">    </span><span class="n">new_input</span><span class="o">-&gt;</span><span class="n">mult_</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">255.0f</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// Standarization: (X-mean)/std</span>
+<span class="w">    </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">broadcast</span><span class="p">(</span><span class="n">mean_vec</span><span class="p">,</span><span class="w"> </span><span class="n">new_input</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">std</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">broadcast</span><span class="p">(</span><span class="n">std_vec</span><span class="p">,</span><span class="w"> </span><span class="n">new_input</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">new_input</span><span class="o">-&gt;</span><span class="n">sub_</span><span class="p">(</span><span class="n">mean</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">new_input</span><span class="o">-&gt;</span><span class="n">div_</span><span class="p">(</span><span class="n">std</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ==========================================================================</span>
+
+<span class="w">    </span><span class="c1">// Free memory</span>
+<span class="w">    </span><span class="k">delete</span><span class="w"> </span><span class="n">mean_vec</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">delete</span><span class="w"> </span><span class="n">std_vec</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">delete</span><span class="w"> </span><span class="n">mean</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">delete</span><span class="w"> </span><span class="n">std</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">new_input</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, EDDL.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

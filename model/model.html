@@ -18,7 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ONNX" href="onnx.html" />
+    <link rel="next" title="Save and load ONNX models" href="onnx.html" />
     <link rel="prev" title="Recurrent" href="../layers/rnn.html" /> 
 </head>
 
@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/pretrained.html">Pretrained models</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Videotutorials</span></p>
 <ul>
@@ -89,7 +90,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#set-parameters">Set parameters</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="onnx.html">ONNX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="onnx.html">Save and load ONNX models</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Training</span></p>
 <ul>
@@ -280,14 +281,15 @@ softmax4                      |  (10)      =&gt;      (10)
 <div class="section" id="plot">
 <h2>Plot<a class="headerlink" href="#plot" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4eddl4plotE5model6string6string">
-<span id="_CPPv3N4eddl4plotE5model6string6string"></span><span id="_CPPv2N4eddl4plotE5model6string6string"></span><span id="eddl::plot__model.string.string"></span><span class="target" id="namespaceeddl_1a1ad21e624bd0160ee12541762a0d7bdf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">plot</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fname</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;LR&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4plotE5model6string6string" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Plots a representation of your model. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl4plotE5modelRK6stringRK6string">
+<span id="_CPPv3N4eddl4plotE5modelRK6stringRK6string"></span><span id="_CPPv2N4eddl4plotE5modelRK6stringRK6string"></span><span id="eddl::plot__model.stringCR.stringCR"></span><span class="target" id="namespaceeddl_1a917dc675f094e2824e4bc7cf3131c6ab"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">plot</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fname</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;model.pdf&quot;</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rankdir</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;LR&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4plotE5modelRK6stringRK6string" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Plots a representation of the model. This method simply calls the “dot” program (graphviz) with the given parameters. To know more about it, go to: <a class="reference external" href="https://graphviz.org/documentation/">https://graphviz.org/documentation/</a>. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>m</strong> – Model to plot </p></li>
-<li><p><strong>fname</strong> – File where the plot will be saved </p></li>
+<li><p><strong>fname</strong> – Filename (with extension). Formats: jpg, pdf, eps, svg, json,… Docs: <a class="reference external" href="https://graphviz.org/docs/outputs/">https://graphviz.org/docs/outputs/</a> </p></li>
+<li><p><strong>rankdir</strong> – Sets direction of graph layout. Values: “TB” (top-bottom), “BT” (bottom-top), “LR” (left-right), “RL” (right-left). Docs: <a class="reference external" href="https://graphviz.org/docs/attrs/rankdir/">https://graphviz.org/docs/attrs/rankdir/</a> </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -309,8 +311,8 @@ softmax4                      |  (10)      =&gt;      (10)
 <h2>Load weights<a class="headerlink" href="#load-weights" title="Permalink to this headline"></a></h2>
 <p>Loads the weights of a model (not the topology).</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4eddl4loadE5modelRK6string6string">
-<span id="_CPPv3N4eddl4loadE5modelRK6string6string"></span><span id="_CPPv2N4eddl4loadE5modelRK6string6string"></span><span id="eddl::load__model.stringCR.string"></span><span class="target" id="namespaceeddl_1ad42db74ad4342e5f73a8636f978590d9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fname</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;bin&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4loadE5modelRK6string6string" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl4loadE5modelRK6stringRK6string">
+<span id="_CPPv3N4eddl4loadE5modelRK6stringRK6string"></span><span id="_CPPv2N4eddl4loadE5modelRK6stringRK6string"></span><span id="eddl::load__model.stringCR.stringCR"></span><span class="target" id="namespaceeddl_1adf78e8ccb867060b91f71664fd578a18"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fname</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;bin&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4loadE5modelRK6stringRK6string" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Load weights to reinstantiate your model. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -334,8 +336,8 @@ softmax4                      |  (10)      =&gt;      (10)
 <h2>Save weights<a class="headerlink" href="#save-weights" title="Permalink to this headline"></a></h2>
 <p>Save the weights of a model (not the topology).</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4eddl4saveE5modelRK6string6string">
-<span id="_CPPv3N4eddl4saveE5modelRK6string6string"></span><span id="_CPPv2N4eddl4saveE5modelRK6string6string"></span><span id="eddl::save__model.stringCR.string"></span><span class="target" id="namespaceeddl_1a2cd174b3944540e952c3e6d691b01d70"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">save</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fname</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;bin&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4saveE5modelRK6string6string" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl4saveE5modelRK6stringRK6string">
+<span id="_CPPv3N4eddl4saveE5modelRK6stringRK6string"></span><span id="_CPPv2N4eddl4saveE5modelRK6stringRK6string"></span><span id="eddl::save__model.stringCR.stringCR"></span><span class="target" id="namespaceeddl_1a28ca7d63347fb8ff064aa306ccc65048"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">save</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fname</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;bin&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4saveE5modelRK6stringRK6string" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Save weights of a model. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -391,8 +393,8 @@ softmax4                      |  (10)      =&gt;      (10)
 <div class="section" id="logging">
 <h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4eddl10setlogfileE5model6string">
-<span id="_CPPv3N4eddl10setlogfileE5model6string"></span><span id="_CPPv2N4eddl10setlogfileE5model6string"></span><span id="eddl::setlogfile__model.string"></span><span class="target" id="namespaceeddl_1a0db24d2563d7c0bdbcb4a27bc18ca240"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setlogfile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">net</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fname</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10setlogfileE5model6string" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl10setlogfileE5modelRK6string">
+<span id="_CPPv3N4eddl10setlogfileE5modelRK6string"></span><span id="_CPPv2N4eddl10setlogfileE5modelRK6string"></span><span id="eddl::setlogfile__model.stringCR"></span><span class="target" id="namespaceeddl_1a6e115ba1d435bf595caedeb580ac3df2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setlogfile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">net</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fname</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10setlogfileE5modelRK6string" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Save the training outputs of a model to a filename. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -521,7 +523,7 @@ softmax4                      |  (10)      =&gt;      (10)
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../layers/rnn.html" class="btn btn-neutral float-left" title="Recurrent" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="onnx.html" class="btn btn-neutral float-right" title="ONNX" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="onnx.html" class="btn btn-neutral float-right" title="Save and load ONNX models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
