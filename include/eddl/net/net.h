@@ -139,9 +139,9 @@ public:
     void setmode(int m);
 
 
-    void save(const string& filename, string format="");
-    void load(const string& filename, string format="");
-    void setlogfile(string fname);
+    void save(const string& filename, const string& format="");
+    void load(const string& filename, const string& format="");
+    void setlogfile(const string& fname);
 
 
     //Func

@@ -386,7 +386,7 @@ void Net::plot(const string& fname, const string& rankdir) {
 }
 
 /////////////////////////////////////////
-void Net::setlogfile(string fname)
+void Net::setlogfile(const string& fname)
 {
     string str=fname+"_tr.log";
     string sts=fname+"_ts.log";
@@ -407,7 +407,7 @@ void Net::setlogfile(string fname)
 }
 
 
-void Net::save(const string& filename, string format){
+void Net::save(const string& filename, const string& format){
     // Open file stream
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 
@@ -424,7 +424,7 @@ void Net::save(const string& filename, string format){
     ofs.close();
 }
 
-void Net::load(const string& filename, string format){
+void Net::load(const string& filename, const string& format){
     // Open file stream
     std::ifstream ifs(filename, std::ios::in | std::ios::binary);
     if (!ifs.good()){
