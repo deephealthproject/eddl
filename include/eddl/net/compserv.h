@@ -47,7 +47,7 @@ public:
     CompServ(int threads, const vector<int> g, const vector<int> &f,int lsb=1, int mem=0);
 
     // for Distributed
-    explicit CompServ(string filename);
+    explicit CompServ(const string& filename);
 
 
 };
