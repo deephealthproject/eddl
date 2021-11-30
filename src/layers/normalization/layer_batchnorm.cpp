@@ -21,7 +21,7 @@ using namespace std;
 int LBatchNorm::total_layers = 0;
 
 
-LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem, "batchnorm") {
     input=parent->output;
     isnorm=true;
 
@@ -47,10 +47,11 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     mean = new Tensor(shape, dev);
     mean->fill_(0.0);
     variance = new Tensor(shape, dev);
-    if (momentum > 0.0)
+    if (momentum > 0.0){
         variance->fill_(0.0f);
-    else
+    }else{
         variance->fill_(1.0f);
+    }
 
     bn_mean = new Tensor(shape, dev);
     bn_var = new Tensor(shape, dev);
