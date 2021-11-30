@@ -133,7 +133,7 @@ public:
 
     void enable_distributed();
 
-    string summary();
+    string summary(bool print_stdout=true);
     void plot(string fname,string mode);
 
     void setmode(int m);

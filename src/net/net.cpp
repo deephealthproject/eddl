@@ -258,18 +258,25 @@ void Net::walk_back(Layer *l) {
 
 
 /////////////////////////////////////////
-string Net::summary() {
+string Net::summary(bool print_stdout) {
+    // Force topological order sort (if vfts is empty
+    if(!this->layers.empty() && this->vfts.empty()){
+        this->fts();
+    }
+
+    // Print stuff
     std::stringstream ss;
-    ss << "-------------------------------------------------------------------------------" << endl;
-    ss << name << endl;
-    ss << "-------------------------------------------------------------------------------" << endl;
+    ss << "-------------------------------------------------------------------------------" << std::endl;
+    ss << name << std::endl;
+    ss << "-------------------------------------------------------------------------------" << std::endl;
 
     int maxl=0;
     for (auto & l : vfts)
-      if (l->name.length() > maxl) maxl=l->name.length();
+      if (l->name.length() > maxl) maxl = (int)l->name.length();
 
-    int tot_size=0;
-    for (auto & l : vfts) {
+    int trainable_params_acc=0;
+    int nontrainable_params_acc=0;
+    for (auto &l : vfts) {
         // Get input/output shapes
         vector<int> ishape(l->input->shape);
         vector<int> oshape(l->output->shape);
@@ -282,20 +289,51 @@ string Net::summary() {
         string istr = "(" + printVector(ishape) + ")";
         string ostr = "(" + printVector(oshape) + ")";
 
-        int size=0;
-        for(auto &p:l->params)
-          size+=p->size;
-        tot_size+=size;
+        int tr_params = 0;
+        int no_tr_params = 0;
+        for(int j=0; j< l->params.size(); j++){
+
+            // Check if it is frozen
+            if (l->trainable){
+
+                // Check layer type
+                if(l->get_name_id() == "batchnorm"){
+                    // 2 params: NTR(mean, variance)
+                    // 4 params: TR(bn_g, bn_b), NTR(mean, variance)
+                    if((l->params.size()==2) || (l->params.size()==4 && j >= 2)){
+                        no_tr_params += (int)l->params[j]->size;
+                    }else{
+                        tr_params += (int)l->params[j]->size;
+                    }
+
+                }else{ // General case
+                    tr_params += (int)l->params[j]->size;
+                }
+
+            }else{  // Frozen layers
+                no_tr_params += (int)l->params[j]->size;
+            }
+        }
+        trainable_params_acc += tr_params;
+        nontrainable_params_acc += no_tr_params;
 
         ss << setw(maxl) << left << l->name << "|  ";
         ss << setw(20) << left << istr;
         ss << setw(5) << left << "=>";
         ss << setw(20) << left << ostr;
-        ss << setw(10) << left << size;
+        ss << setw(10) << left << tr_params+no_tr_params;
         ss << endl;
     }
-    ss << "-------------------------------------------------------------------------------" << endl;
-    ss << "Params: "<<tot_size<<endl;
+    ss << "-------------------------------------------------------------------------------" << std::endl;
+    ss << "Total params: " << trainable_params_acc+nontrainable_params_acc << std::endl;
+    ss << "Trainable params: " << trainable_params_acc << std::endl;
+    ss << "Non-trainable params: " << nontrainable_params_acc << std::endl;
+
+    // Print to the standard output
+    if(print_stdout){
+        std::cout << ss.str() << std::endl;
+    }
+
     return ss.str();
 }
 
