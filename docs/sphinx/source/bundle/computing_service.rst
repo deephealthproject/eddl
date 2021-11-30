@@ -59,7 +59,7 @@ FPGA
 COMPSS
 ======
 
-.. doxygenfunction:: CS_COMPSS(string filename)
+.. doxygenfunction:: CS_COMPSS(const string& filename);
 
 .. code-block:: c++
 

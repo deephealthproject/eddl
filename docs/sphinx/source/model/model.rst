@@ -113,7 +113,7 @@ Load weights
 
 Loads the weights of a model (not the topology).
 
-.. doxygenfunction:: eddl::load(model m, const string& fname, string format="bin")
+.. doxygenfunction:: eddl::load(model m, const string& fname, const string& format="bin");
 
 Example:
 
@@ -127,7 +127,7 @@ Save weights
 
 Save the weights of a model (not the topology).
 
-.. doxygenfunction:: eddl::save(model m, const string& fname, string format="bin")
+.. doxygenfunction:: eddl::save(model m, const string& fname, const string& format="bin");
 
 Example:
 
@@ -164,7 +164,7 @@ Logging
 --------
 
 
-.. doxygenfunction:: eddl::setlogfile(model, string)
+.. doxygenfunction:: eddl::setlogfile(model net, const string& fname);
 
 Example:
 
