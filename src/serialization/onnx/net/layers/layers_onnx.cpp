@@ -330,8 +330,15 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
     case ONNX_LAYERS::CONSTANT:
       new_layer = build_constoftensor_layer(node, map_init_values, output_node_map, dev, mem);
       break;
-    default:
-      msg("Error: The ONNX node type " + layer_type_name + " is not supported!", "ONNX::ImportNet");
+    default: {
+        std::cerr << "==================================================================" << std::endl;
+        std::cerr << "[ONNX IMPORTING ERROR]: " << "The onnx node '" << layer_type_name << "' is not supported yet" << std::endl;
+        std::cerr << "Potential fixes:" << std::endl;
+        std::cerr << "\t- You can try to use 'ONNX Simplifier' to simplify the model in order to remove the redundant operators with their constant outputs." << std::endl;
+        std::cerr << "\t- Documentation: https://deephealthproject.github.io/eddl/model/onnx.html#simplifying-a-onnx-model" << std::endl;
+        std::cerr << "\t- ONNX Simplifier: https://github.com/daquexian/onnx-simplifier" << std::endl;
+        std::cerr << "==================================================================" << std::endl;
+    }
   }
 
   return new_layer;
