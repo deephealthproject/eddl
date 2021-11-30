@@ -331,16 +331,15 @@ void Net::plot(string fname,string mode) {
         out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
     }
 
-    out << "}\n";
-
+    out << "}" << std::endl;
     out.close();
 
     cmd = "dot -T " + type + " ./tmp.dot >" + "./" + fname;
 
     int rc = system(cmd.c_str());
     if (rc != EXIT_SUCCESS) {
-        std::cerr << "Unable to run the following command" << std::endl << std::endl
-                << "   " << cmd << std::endl;
+        std::cerr << "[PLOT] Unable to run the following command:" << std::endl;
+        std::cerr << "\t=> " << cmd << std::endl;
     }
 }
 

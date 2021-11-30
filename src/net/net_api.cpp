@@ -1033,7 +1033,7 @@ void Net::prepare_recurrent_enc_dec(vtensor tin, vtensor tout, int &inl, int &ou
     msg("Output tensors with different time steps","fit_recurrent");
   }
 
-  if (verboserec) cout<<"Seq2Seq "<<inl<<" to "<<outl<<"\n";
+  if (verboserec) std::cerr << "Seq2Seq " << inl << " to " << outl << std::endl;
 
   for(i=0;i<yt.size();i++) {
     offset=yt[i]->size/yt[i]->shape[0];

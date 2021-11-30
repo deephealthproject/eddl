@@ -14,6 +14,7 @@
 #include <thread>
 
 #include <stdexcept>
+#include <iostream>
 #include "eddl/net/compserv.h"
 
 CompServ::CompServ()= default;
@@ -65,6 +66,6 @@ CompServ * CompServ::clone() {
 
 
 // for Distributed
-CompServ::CompServ(string filename) {
-     //TODO: Implement
+CompServ::CompServ(const string& filename) {
+     std::cerr << "Not implemented error [Computing service with filename]" << std::endl;
 }
