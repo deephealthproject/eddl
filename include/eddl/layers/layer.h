@@ -32,6 +32,7 @@ class Net;
 class Layer {
 private:
     int    reference_counter;
+    string name_id; // For instance checking. Else, your compiler must have rtti support.
 
 public:
     string name;
@@ -74,7 +75,8 @@ public:
     bool do_deletes;
     unsigned int verbosity_level = 0;
 
-    Layer(string name, int dev, int mem);
+    Layer(string name, int dev, int mem, const string &name_id="");
+
     // Destructor
     virtual ~Layer();
 
@@ -92,12 +94,15 @@ public:
 
     void set_mem_level(int mem);
 
+    int decrease_and_get_reference_counter();
+    void increase_reference_counter();
+    string get_name_id();
+
+    //virtual
     virtual void mem_delta_parent();
     virtual void mem_delta();
     virtual void free_delta();
 
-
-    //virtual
     virtual void copy(Layer *l2);
 
     virtual void resize(int batch);
@@ -132,9 +137,6 @@ public:
     virtual Layer *clone(int c, int bs, vector<Layer *> p, int todev) { return nullptr; }
 
 	virtual void enable_distributed() {}
-
-    int decrease_and_get_reference_counter();
-    void increase_reference_counter(); 
 };
 
 
@@ -145,7 +147,7 @@ public:
 class LinLayer : public Layer {
 public:
 
-    LinLayer(string name, int dev, int mem);
+    LinLayer(string name, int dev, int mem, const string &name_id="");
 
     void addchild(Layer *l) override;
 
