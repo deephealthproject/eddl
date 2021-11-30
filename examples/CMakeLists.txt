@@ -174,7 +174,13 @@ target_link_libraries(tensor_dev_tests eddl)
 
 # EXAMPLES: ONNX ******************************************************************
 if(BUILD_PROTOBUF)
-    add_executable(onnx_pointer "onnx/1_onnx_pointer.cpp")
+	# EXAMPLES: APPLICATIONS *************************************************************
+	add_executable(app_image_classification_resnet34 "applications/1_image_classification_resnet34.cpp")
+	target_link_libraries(app_image_classification_resnet34 eddl)
+
+
+	# EXAMPLES: RAW ONNX **************************************************************
+	add_executable(onnx_pointer "onnx/1_onnx_pointer.cpp")
     target_link_libraries(onnx_pointer eddl)
 
     add_executable(onnx_export "onnx/2_onnx_save_net_to_file.cpp")
@@ -194,9 +200,6 @@ if(BUILD_PROTOBUF)
 
 	add_executable(onnx_predict "onnx/6_onnx_predict.cpp")
 	target_link_libraries(onnx_predict eddl)
-
-	add_executable(onnx_import_predict "onnx/7_onnx_import_net_and_predict.cpp")
-	target_link_libraries(onnx_import_predict eddl)
 
 	# EXAMPLES: ONNX MNIST ****************************************************
 	add_executable(onnx_mnist_mlp "onnx/nn/1_mnist/1_mnist_mlp.cpp")
