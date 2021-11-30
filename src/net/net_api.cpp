@@ -380,6 +380,11 @@ void Net::forward()
 
 
 //// BACKWARD
+void Net::backward(Layer* (*f)(Layer *),Layer *out){
+    msg("Not implemented error", "Net::backward(Layer* (*f)(Layer *),Layer *out)");
+}
+
+
 void Net::backward(vector<Tensor *> target)
 {
 

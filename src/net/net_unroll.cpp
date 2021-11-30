@@ -42,6 +42,10 @@ bool check_rnn_forward(Layer *l) {
   return frnn;
 }
 
+Net* Net::unroll(int inl, int outl){
+    msg("not implemented error", "Net::unroll");
+}
+
 // Unroll Recurrent net
 Net* Net::unroll_enc(int inl, int outl) {
   int i, j, k, l;

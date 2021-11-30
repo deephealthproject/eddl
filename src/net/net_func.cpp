@@ -102,6 +102,10 @@ void Net::collect_acc_grads() {
         }
 }
 
+void Net::distribute_weights() {
+    msg("Not implemented error", "Net::distribute_weights");
+}
+
 void Net::sync_weights() {
     for (int j = 0; j < layers.size(); j++)
         for (int k = 0; k < layers[j]->params.size(); k++) {
