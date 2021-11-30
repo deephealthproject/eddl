@@ -182,10 +182,8 @@ namespace eddl {
       *  @param filename  File with the setup specification
       *  @return     The computer service itself.
     */
-    compserv CS_COMPSS(string filename);
+    compserv CS_COMPSS(const string& filename);
 
-
-    // Info and logs
 
     /**
       *  @brief  Save the training outputs of a model to a filename
@@ -194,7 +192,8 @@ namespace eddl {
       *  @param fname  Name of the logfile
       *  @return     (void) Outputs log to the given file
     */
-    void setlogfile(model net,string fname);
+    void setlogfile(model net, const string& fname);
+
     /**
       *  @brief  Prints a summary representation of your model.
       *
@@ -202,14 +201,18 @@ namespace eddl {
       *  @return     (void) Prints the model
     */
     void summary(model m);
+
     /**
-      *  @brief  Plots a representation of your model.
+      *  @brief  Plots a representation of the model.
+      *  This method simply calls the "dot" program (graphviz) with the given parameters.
+      *  To know more about it, go to: https://graphviz.org/documentation/
       *
       *  @param m  Model to plot
-      *  @param fname  File where the plot will be saved
+      *  @param fname  Filename (with extension). Formats: jpg, pdf, eps, svg, json,... Docs: https://graphviz.org/docs/outputs/
+      *  @param rankdir  Sets direction of graph layout. Values: "TB" (top-bottom), "BT" (bottom-top), "LR" (left-right), "RL" (right-left). Docs: https://graphviz.org/docs/attrs/rankdir/
       *  @return     (void) Plots the model
     */
-    void plot(model m, string fname, string mode="LR");
+    void plot(model m, const string& fname="model.pdf", const string& rankdir="LR");
 
     // Serialization
     /**
@@ -219,7 +222,7 @@ namespace eddl {
       *  @param fname  File where the model weights are saved
       *  @return     (void) Loads the weights
     */
-    void load(model m, const string& fname, string format="bin");
+    void load(model m, const string& fname, const string& format="bin");
 
     /**
       *  @brief  Save weights of a model.
@@ -228,7 +231,7 @@ namespace eddl {
       *  @param fname  File where the model weights will be saved
       *  @return     (void) Saves the weights
     */
-    void save(model m, const string& fname, string format="bin");
+    void save(model m, const string& fname, const string& format="bin");
 
     // Optimizer
     /**
