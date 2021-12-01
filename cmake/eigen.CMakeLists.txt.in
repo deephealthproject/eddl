@@ -5,13 +5,7 @@ project(eigen-download NONE)
 # Set base dir
 SET(EP_BASE_DIR @EP_BASE_DIR@)
 
-if(CMAKE_GENERATOR MATCHES "Visual Studio")
-    # Visual Studio needs a more recent version of Eigen3
-    # Version 3.3.90
-	SET(TAG ba9d18b9388acdf27a3900a4f981fab587e59b0c) 
-else()
-	SET(TAG "3.3.7") # Eigen3 must be >= 3.3.7
-endif()
+SET(TAG "3.4.0")
 
 include(ExternalProject)
 ExternalProject_Add(eigen
