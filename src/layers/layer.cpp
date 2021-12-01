@@ -25,7 +25,7 @@ using namespace std;
 Layer::Layer(string name, int dev, int mem, const string &name_id) {
     mode = TRMODE;
     target = delta = input = output = nullptr;
-    this->name = name;
+    this->name = normalize_layer_name(name);  // We need to normalize due to some problem with graphviz
     this->name_id = name_id;
     this->dev = dev;
     this->mem_level = mem;

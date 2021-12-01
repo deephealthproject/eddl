@@ -506,6 +506,33 @@ string get_parent_dir(const string& fname){
            : fname.substr(0, pos);
 }
 
+string replace_str(const string& value, const string& oldvalue, const string& newvalue){
+    string new_value = string(value);
+
+    size_t index = 0;
+    while (true) {
+        /* Locate the substring to replace. */
+        index = new_value.find(oldvalue, index);
+        if (index == std::string::npos) break;
+
+        /* Make the replacement. */
+        new_value.replace(index, newvalue.length(), newvalue);
+
+        /* Advance index forward so the next iteration doesn't pick it up as well. */
+        index += newvalue.length();
+    }
+
+    return new_value;
+}
+
+string normalize_layer_name(const string& value){
+    string new_value = string(value);
+    new_value = replace_str(new_value, "/", "_");
+    new_value = replace_str(new_value, "-", "_");
+    new_value = replace_str(new_value, ":", "_");
+    return new_value;
+}
+
 vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch){
     int faxis = axis+(int)ignore_batch;
     int lastdim = (int)(shape.size()-1);
