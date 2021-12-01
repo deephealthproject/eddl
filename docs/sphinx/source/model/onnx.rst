@@ -46,6 +46,8 @@ you try to "standardize" or "simplifying" using *onnx_simplifier_*.
 
 **Installation**
 
+This is only needed is you are not using the conda environment for the EDDL, as we ship ONNX simplifier with it.
+
 .. code-block:: bash
 
     pip3 install -U pip && pip3 install onnx-simplifier

@@ -67,24 +67,23 @@ void RepeatDescriptor::build_indices(){
 
     // Compute index translation (output=>input)
     for (int A_address=0; A_address<isize; A_address++) {
-        auto* A_indices = new unsigned int[ndim];
-        auto* B_indices = new unsigned int[ndim];
+        auto* A_indices = new int[ndim];
+        auto* B_indices = new int[ndim];
 
         // Get A Indices
-        fast_address2indices(A_address, A_indices, reinterpret_cast<const unsigned int *>(this->ishape.data()),
-                             reinterpret_cast<const unsigned int *>(A_strides.data()), ndim);
+        fast_address2indices(A_address, A_indices, this->ishape.data(),A_strides.data(), ndim);
 
         // Get B indices. Same as A indices but changing size in axis to be expanded
         std::copy(A_indices, A_indices+ndim, B_indices);  // Copy A indices
         // Get A_indices[axis]=> repeat(3,2,1) AND "sel_index=2" => start at position: 3+2=5
-        unsigned int A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
-        unsigned int B_idx_axis = 0;
-        for (unsigned int j = 0; j < A_idx_axis; j++) { B_idx_axis+= this->vrepeats[j]; }
+        int A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
+        int B_idx_axis = 0;
+        for (int j = 0; j < A_idx_axis; j++) { B_idx_axis+= (int)this->vrepeats[j]; }
         B_indices[axis] = B_idx_axis;
 
         // Copy value t times
-        unsigned int B_address = fast_indices2address(B_indices, reinterpret_cast<const unsigned int *>(B_strides.data()), ndim);
-        for (unsigned int t = 0; t < vrepeats[A_indices[axis]]; t++) {
+        int B_address = fast_indices2address(B_indices, B_strides.data(), ndim);
+        for (int t = 0; t < vrepeats[A_indices[axis]]; t++) {
             this->cpu_addresses[B_address + t*B_strides[axis]] = A_address;
         }
 

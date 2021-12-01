@@ -70,15 +70,19 @@ bool pathExists(const std::string &s);
 
 string get_parent_dir(const string& fname);
 
+string replace_str(const string& value, const string& oldvalue, const string& newvalue);
+
+string normalize_layer_name(const string& value);
+
 vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch=false);
 vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch=false);
 
-vector<int> address2indices(unsigned int address, const vector<int>& shape, const vector<int>& strides);
+vector<int> address2indices(int address, const vector<int>& shape, const vector<int>& strides);
 unsigned int indices2address(const vector<int>& indices, const vector<int>& strides);
 
 // https://isocpp.org/wiki/faq/inline-functions#inline-member-fns
-inline int fast_indices2address(const unsigned int* indices, const unsigned int* strides, unsigned int ndim){
-    unsigned int address = 0;
+inline int fast_indices2address(const int* indices, const int* strides, int ndim){
+    int address = 0;
     for (int i=0; i< ndim; i++){
         address += indices[i] * strides[i];
     }
@@ -86,7 +90,7 @@ inline int fast_indices2address(const unsigned int* indices, const unsigned int*
 }
 
 
-inline void fast_address2indices( int address, unsigned int* indices, const unsigned int* shape, const unsigned int* strides, unsigned int ndim){
+inline void fast_address2indices( int address, int* indices, const int* shape, const int* strides, int ndim){
     for(int i=0; i<ndim; i++) {
         indices[i] = address / strides[i] % shape[i];
     }

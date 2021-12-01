@@ -56,6 +56,8 @@ If you decide to manually install these dependencies in your system (make sure t
         - sphinx_rtd_theme==1.0.*
         - sphinx-tabs==3.2.*
         - breathe==4.31.*
+        - onnx-simplifier==0.3.*
+        - protobuf==3.19.*
 
 .. note::
 

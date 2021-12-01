@@ -54,7 +54,7 @@
 #endif
 
 
-void msg(const string& text, const string& title) {
+void msg(const string& text, const string& title){
     string s(text);
     if(!title.empty()){
         s += " (" + title + ")";
@@ -65,20 +65,20 @@ void msg(const string& text, const string& title) {
 
     throw std::runtime_error("RuntimeError: " + title);
 }
-void set_text_green()
-{
+
+void set_text_green(){
   printf("\033[0;32m");
 }
-void set_text_red()
-{
+
+void set_text_red(){
   printf("\033[0;31m");
 }
-void set_text_default()
-{
+
+void set_text_default(){
   printf("\033[0m");
 }
-void * eddl_malloc(size_t size, const string & str_info)
-{
+
+void * eddl_malloc(size_t size, const string & str_info){
     constexpr size_t alignment_block_size = 64;
 
     // Careful with memory overcommitment:
@@ -506,6 +506,33 @@ string get_parent_dir(const string& fname){
            : fname.substr(0, pos);
 }
 
+string replace_str(const string& value, const string& oldvalue, const string& newvalue){
+    string new_value = string(value);
+
+    size_t index = 0;
+    while (true) {
+        /* Locate the substring to replace. */
+        index = new_value.find(oldvalue, index);
+        if (index == std::string::npos) break;
+
+        /* Make the replacement. */
+        new_value.replace(index, newvalue.length(), newvalue);
+
+        /* Advance index forward so the next iteration doesn't pick it up as well. */
+        index += newvalue.length();
+    }
+
+    return new_value;
+}
+
+string normalize_layer_name(const string& value){
+    string new_value = string(value);
+    new_value = replace_str(new_value, "/", "_");
+    new_value = replace_str(new_value, "-", "_");
+    new_value = replace_str(new_value, ":", "_");
+    return new_value;
+}
+
 vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch){
     int faxis = axis+(int)ignore_batch;
     int lastdim = (int)(shape.size()-1);
@@ -553,7 +580,7 @@ vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch){
 }
 
 
-vector<int> address2indices(unsigned int address, const vector<int>& shape, const vector<int>& strides){
+vector<int> address2indices(int address, const vector<int>& shape, const vector<int>& strides){
     // Check sizes
     if(shape.size()!=strides.size()){
         msg("Shape and strides must have the same size", "utils::address2indices");
@@ -570,11 +597,11 @@ vector<int> address2indices(unsigned int address, const vector<int>& shape, cons
 
     // Reserve memory
     vector<int> indices;
-    unsigned int ndim = strides.size();
+    int ndim = strides.size();
     indices.reserve(ndim);
 
     // Compute indices
-    fast_address2indices(address, reinterpret_cast<unsigned int *>(indices.data()), (unsigned int *) shape.data(), (unsigned int *) strides.data(), ndim);
+    fast_address2indices(address, indices.data(), shape.data(), strides.data(), ndim);
 
     return indices;
 }
@@ -586,8 +613,7 @@ unsigned int indices2address(const vector<int>& indices, const vector<int>& stri
 
     }
     // Compute address
-    unsigned int address = fast_indices2address(reinterpret_cast<const unsigned int *>(indices.data()),
-                                                reinterpret_cast<const unsigned int *>(strides.data()), indices.size());
+    int address = fast_indices2address(indices.data(), strides.data(), indices.size());
 
     return address;
 }

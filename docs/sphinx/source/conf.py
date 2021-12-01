@@ -74,3 +74,6 @@ pygments_style = 'sphinx'
 # html_sidebars = {
 #     '**': ['searchbox.html'],
 # }
+
+
+github_url = "https://github.com/deephealthproject/eddl"

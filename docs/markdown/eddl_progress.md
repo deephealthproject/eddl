@@ -31,10 +31,13 @@
 | Expand        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Returns a layer with singleton dimensions expanded to a larger size |
 | Where | 🟢️️ | 🟢️️ | 🟢️️ | ️🔴️ | Return elements chosen from x or y depending on condition |
 | Resize          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Resize the input image to the given size. `[height, width]` |
-| Clamp / Clip          | 🟢️️ | 🟢️️ |🟢️️ | 🔴️️ | Clamps all elements in input into the range `[min, max]`.  |
-| Repeat          | 🟢️️ | 🟢️️ |🟢️️ | 🔴️️ | Repeats the elements of a tensor along the specified dimension.  |
-
-
+| Clamp / Clip          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️ | Clamps all elements in input into the range `[min, max]`.  |
+| Repeat          | 🟢️️ | 🟢️️ |🟢️️ | 🔴️️ | Repeats the elements of a tensor along the specified dimension. (Elements in an axis can be repeated independently)  |
+| Tile          | 🔴️️ | 🔴 |🔴️ | 🔴️️ | Repeats the elements of a tensor along the specified dimensions.  |
+| Round          | 🔴️️ | 🔴️️ | 🔴️️ | 🔴️️ | Round of the elements of input |
+| Ceil          | 🔴️ | 🔴️️ | 🔴️ | 🔴️️ | Ceil of the elements of input  |
+| Floor          | 🔴️️ | 🔴 |🔴️ | 🔴️️ | Floor of the elements of input  |
+| Broadcast          | 🔴️️ | 🔴 |🔴️ | 🔴️️ | Produce an object that mimics broadcasting. |
 
 
 ## Activations
