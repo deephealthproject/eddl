@@ -155,7 +155,7 @@ Layer* build_conv_layer(onnx::NodeProto *node,
           parent->lout--;
 
           vector<int> asym_pads = e.get_asymmetric_pads(); // Asymmetric paddings to fix
-          string pad_layer_name = "EDDL_asymmetric_padding_" + name;
+          string pad_layer_name = name + "__asymmetric_padding";
           // Create a parent layer to fix the padding asymmetry
           actual_layer = new LPad(parent, {asym_pads[0], asym_pads[3], asym_pads[1], asym_pads[2]}, 0.0, pad_layer_name, dev, mem);
           // Create again the full Conv layer
