@@ -553,7 +553,7 @@ vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch){
 }
 
 
-vector<int> address2indices(unsigned int address, const vector<int>& shape, const vector<int>& strides){
+vector<int> address2indices(int address, const vector<int>& shape, const vector<int>& strides){
     // Check sizes
     if(shape.size()!=strides.size()){
         msg("Shape and strides must have the same size", "utils::address2indices");
@@ -570,11 +570,11 @@ vector<int> address2indices(unsigned int address, const vector<int>& shape, cons
 
     // Reserve memory
     vector<int> indices;
-    unsigned int ndim = strides.size();
+    int ndim = strides.size();
     indices.reserve(ndim);
 
     // Compute indices
-    fast_address2indices(address, reinterpret_cast<unsigned int *>(indices.data()), (unsigned int *) shape.data(), (unsigned int *) strides.data(), ndim);
+    fast_address2indices(address, indices.data(), shape.data(), strides.data(), ndim);
 
     return indices;
 }
@@ -586,8 +586,7 @@ unsigned int indices2address(const vector<int>& indices, const vector<int>& stri
 
     }
     // Compute address
-    unsigned int address = fast_indices2address(reinterpret_cast<const unsigned int *>(indices.data()),
-                                                reinterpret_cast<const unsigned int *>(strides.data()), indices.size());
+    int address = fast_indices2address(indices.data(), strides.data(), indices.size());
 
     return address;
 }
