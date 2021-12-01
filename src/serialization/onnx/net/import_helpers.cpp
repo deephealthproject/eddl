@@ -43,11 +43,13 @@ map<string, onnx::NodeProto *> initialize_constant_nodes(vector<onnx::NodeProto>
   {
     if (node.op_type() == "Constant")
     {
-      // Only the constant nodes with a Reshape layer as child must be added to the constant_node_queue, as they are
-      // not going to be used to create a ConstOfTensor layer, they are just a parameter for the Reshape layer
+      // There are some constant nodes that will be processed directly from the child node (e.g. the Reshape layer)
+      // because they are a parameter of the child layer, not an input.
+      // In other case, those constant nodes will be used to create a ConstOfTensor layer.
       bool skip_node = false;
       for (const auto& child : input_node_map[node.output(0)])
-        if (child->op_type() != "Reshape")
+        if (child->op_type() != "Reshape" &&
+            child->op_type() != "Tile")
         {
           skip_node = true; // The constant data will be accessed directly from the ConstOfTensor layer constructor
           break;
@@ -455,11 +457,12 @@ void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
       {
         bool skip_node = false;
         for (const auto& child : input_node_map[node->output(0)])
-          if (child->op_type() == "Reshape")
-            skip_node = true; // The constant data will be accessed directly from the Reshape layer constructor
+          if (child->op_type() == "Reshape" ||
+              child->op_type() == "Tile")
+            skip_node = true; // The constant data will be accessed directly from the child layer constructor
         if (skip_node)
         {
-          log_string("Node " + node->name() + " has a Reshape layer as child, going to skip the node in the queue.",
+          log_string("The constant node \"" + node->name() + "\" is a parameter, going to skip the node in the queue.",
                      log_level,
                      LOG_LEVEL::DEBUG);
           continue; // Don't add the node to the nodeQueue

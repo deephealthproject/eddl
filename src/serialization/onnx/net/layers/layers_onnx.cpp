@@ -11,6 +11,7 @@
 #include "eddl/serialization/onnx/layers/core/select_onnx.h"
 #include "eddl/serialization/onnx/layers/core/split_onnx.h"
 #include "eddl/serialization/onnx/layers/core/resize_onnx.h"
+#include "eddl/serialization/onnx/layers/core/repeat_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv1D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv3D_onnx.h"
@@ -123,6 +124,7 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["Split"] = ONNX_LAYERS::SPLIT;
   map_layers["Expand"] = ONNX_LAYERS::EXPAND;
   map_layers["Constant"] = ONNX_LAYERS::CONSTANT;
+  map_layers["Tile"] = ONNX_LAYERS::REPEAT;
 
   return map_layers;
 }
@@ -330,6 +332,9 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
     case ONNX_LAYERS::CONSTANT:
       new_layer = build_constoftensor_layer(node, map_init_values, output_node_map, dev, mem);
       break;
+    case ONNX_LAYERS::REPEAT:
+      new_layer = build_repeat_layer(node, constant_node_map, map_init_values, output_node_map, log_level, dev, mem);
+      break;
     default: {
         std::cerr << "==================================================================" << std::endl;
         std::cerr << "[ONNX IMPORTING ERROR]: " << "The onnx node '" << layer_type_name << "' is not supported yet" << std::endl;
@@ -424,7 +429,7 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
       build_softplus_node(l, graph);
     else 
     {
-      cout << "The activation layer " << layer->name << "has no valid type to export." << endl;
+      cerr << "[ONNX EXPORTING ERROR]: The activation layer " << layer->name << " has no valid type to export." << endl;
       return;
     }
   else if (LConcat *l = dynamic_cast<LConcat *>(layer))
@@ -487,9 +492,11 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_expand_node(l, graph);
   else if (LConstOfTensor *l = dynamic_cast<LConstOfTensor *>(layer))
     build_constant_node(l, graph);
+  else if (LRepeat *l = dynamic_cast<LRepeat *>(layer))
+    build_tile_node(l, graph);
   else
   {
-    cout << "The layer " << layer->name << "has no OpType in Onnx." << endl;
+    cerr << "[ONNX EXPORTING ERROR]: The layer " << layer->name << " has no OpType in Onnx." << endl;
     return;
   }
 }
