@@ -562,7 +562,7 @@ void Net::compute_loss()
 
     int p=0;
     for(int k=0;k<lout.size();k+=decsize)
-     for (int j = 0; j < lout.size(); j++,p+=2) {
+     for (int j = 0; j < decsize; j++,p+=2) {
        total_loss[k] += fiterr[p];  // losses
        total_metric[k] += fiterr[p + 1];  // metric
        fiterr[p] = fiterr[p + 1] = 0.0;
@@ -713,7 +713,7 @@ vector<float> Net::get_metrics(){
     vector<float> metrics_values;
 
     if (this->isrecurrent) {
-        if (this->rnet!=nullptr) { this->rnet->get_metrics(); } // Dangerous A.F.
+        if (this->rnet!=nullptr) { return this->rnet->get_metrics(); } // Dangerous A.F.
     } else {
         int p = 0;
 
