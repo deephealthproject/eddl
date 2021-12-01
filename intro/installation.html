@@ -252,6 +252,7 @@ cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREF
 <span class="c1"># -DCMAKE_C_COMPILER=$(which gcc-7) \</span>
 <span class="c1"># -DCMAKE_CXX_COMPILER=$(which g++-7) \</span>
 
+make -j<span class="k">$(</span>nproc<span class="k">)</span>  <span class="c1"># The -j flag is to parallelize the compilation</span>
 make install
 </pre></div>
 </div>
@@ -268,6 +269,7 @@ mkdir build
 <span class="nb">cd</span> build
 cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
 
+make -j<span class="k">$(</span>sysctl -n hw.logicalcpu<span class="k">)</span>  <span class="c1"># The -j flag is to parallelize the compilation</span>
 make install
 </pre></div>
 </div>
@@ -304,6 +306,16 @@ with:</em> <code class="docutils literal notranslate"><span class="pre">-DCMAKE_
 <li><p>If you don’t want to install <a class="reference external" href="https://www.anaconda.com/">Anaconda</a>, you can compile it using:</p></li>
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake .. -DBUILD_SUPERBUILD<span class="o">=</span>ON -DBUILD_TARGET<span class="o">=</span>CUDNN -DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc -DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li><p>To update/remote the eddl environment type:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update existing environment</span>
+conda env update --file environment.yml --prune
+
+<span class="c1"># Remove environment</span>
+conda remove --name eddl --all
 </pre></div>
 </div>
 </div>
