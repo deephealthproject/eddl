@@ -577,7 +577,8 @@ void Net::enable_distributed(){
     for(Layer* l : layers)
         l->enable_distributed();
 
-    for (int i = 0; i < snets.size(); i++)
-        for(Layer* l : snets[i]->layers)
-                   l->enable_distributed();
+    if (snets[0]->dev != DEV_CPU)
+        for (int i = 0; i < snets.size(); i++)
+            for(Layer* l : snets[i]->layers)
+                l->enable_distributed();
 }
