@@ -125,6 +125,9 @@ if(BUILD_PROTOBUF)
 	add_executable(app_image_classification_resnet34 "applications/1_image_classification_resnet34.cpp")
 	target_link_libraries(app_image_classification_resnet34 eddl)
 
+	add_executable(app_test_model "applications/app_test_model.cpp")
+	target_link_libraries(app_test_model eddl)
+
 
 	# EXAMPLES: RAW ONNX **************************************************************
 	add_executable(onnx_pointer "onnx/1_onnx_pointer.cpp")
