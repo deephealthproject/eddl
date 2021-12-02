@@ -633,6 +633,23 @@ bool isPaddingAsymmetric(vector<int> padding){
     return false;
 }
 
+vector<vector<int>> cartesian_product(const vector<vector<int>>& vectors){
+    vector<vector<int>> results = {{}};
+    for (auto &vec : vectors){ // Vectors: {0, 1}, {5, 6, 7}, {8, 9}
+        vector<vector<int>> temp;
+
+        for(auto &res : results){  // Previous solution: {{0}, {1}}
+            for(auto &elem : vec){  // Elements 1, 2, 3,...
+                vector<int> new_vec = res;
+                new_vec.push_back(elem);
+                temp.push_back(new_vec);
+            }
+        }
+        results.clear();
+        results = temp;
+    }
+    return results;
+}
 
 WrappingMode getWrappingMode(string mode){
     if(mode == "constant"){
