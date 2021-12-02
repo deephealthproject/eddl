@@ -27,5 +27,13 @@ Layer* build_conv_layer(onnx::NodeProto *node,
 // OPSET: 11, 1
 void build_conv_node(LConv *layer, onnx::GraphProto *graph, bool gradients);
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+void update_conv_weights(LConv *layer, vector<Tensor *> weights);
+
+void apply_grads_to_conv(LConv *layer, vector<Tensor *> grads);
+
 #endif // EDDL_CONV_ONNX_H
 #endif // cPROTO

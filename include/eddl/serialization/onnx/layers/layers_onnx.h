@@ -95,5 +95,13 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
 
 void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients, bool is_recurrent);
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+void update_layer_weights(Layer *layer, vector<Tensor *> weights);
+
+void apply_grads_to_layer(Layer *layer, vector<Tensor *> grads);
+
 #endif // EDDL_LAYERS_ONNX_H
 #endif // cPROTO

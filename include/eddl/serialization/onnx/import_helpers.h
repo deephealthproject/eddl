@@ -76,5 +76,9 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
 
 Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LOG_LEVEL log_level);
 
+void set_weights_from_model_proto(Net *net, onnx::ModelProto model_proto);
+
+void apply_grads_from_model_proto(Net *net, onnx::ModelProto model_proto);
+
 #endif // EDDL_IMPORT_HELPERS_H
 #endif // cPROTO

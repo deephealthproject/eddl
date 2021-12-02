@@ -680,4 +680,64 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
   return imported_net;
 }
 
+void set_weights_from_model_proto(Net *net, onnx::ModelProto model_proto)
+{
+  map<string, vector<Tensor *>> tensors = get_tensors_from_onnx(model_proto);
+  for (Layer *l : net->layers)
+  {
+    // Check if we have tensors with weights for the current layer
+    if (!tensors.count(l->name))
+      continue;
+
+    // Get the layer weights
+    vector<Tensor *> layer_tensors = tensors[l->name];
+
+    // Apply the new weights
+    update_layer_weights(l, layer_tensors);
+  }
+
+  // Copy the new weights to devices
+  share_weights(net);
+
+  // Erase the map we used to free the memory
+  map<string, vector<Tensor *>>::iterator it;
+  vector<Tensor *> delete_tensors;
+  for (it = tensors.begin(); it != tensors.end(); ++it)
+  {
+    delete_tensors = it->second;
+    for (int i = 0; i < delete_tensors.size(); ++i)
+      delete delete_tensors[i];
+  }
+}
+
+void apply_grads_from_model_proto(Net *net, onnx::ModelProto model_proto)
+{
+  map<string, vector<Tensor *>> tensors = get_tensors_from_onnx(model_proto);
+  for (Layer *l : net->layers)
+  {
+    // Check if we have tensors with gradients for the current layer
+    if (!tensors.count(l->name))
+      continue;
+
+    // Get the layer gradients
+    vector<Tensor *> layer_tensors = tensors[l->name];
+
+    // Apply the gradients
+    apply_grads_to_layer(l, layer_tensors);
+  }
+
+  // Erase the map we used to free the memory
+  map<string, vector<Tensor *>>::iterator it;
+  vector<Tensor *> delete_tensors;
+  for (it = tensors.begin(); it != tensors.end(); ++it)
+  {
+    delete_tensors = it->second;
+    for (int i = 0; i < delete_tensors.size(); ++i)
+      delete delete_tensors[i];
+  }
+
+  // Copy the new weights to devices
+  share_weights(net);
+}
+
 #endif // defined(cPROTO)
