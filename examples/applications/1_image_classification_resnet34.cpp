@@ -8,8 +8,8 @@ using namespace eddl;
 
 Tensor* preprocess_input_resnet34(Tensor* input, const vector<int> &target_size){
     // Define preprocessing constants
-    auto* mean_vec = new Tensor( {0.485, 0.456, 0.406}, {3, 1}, input->device);
-    auto* std_vec = new Tensor( {0.229, 0.224, 0.225}, {3, 1}, input->device);
+    auto* mean_vec = new Tensor( {0.485, 0.456, 0.406}, {3}, input->device);
+    auto* std_vec = new Tensor( {0.229, 0.224, 0.225}, {3}, input->device);
 
     // ==========================================================================
     // ====== SANITY CHECKS =====================================================
@@ -37,11 +37,8 @@ Tensor* preprocess_input_resnet34(Tensor* input, const vector<int> &target_size)
     new_input->mult_(1/255.0f);
 
     // Standarization: (X-mean)/std
-//    Tensor* mean = Tensor::broadcast(mean_vec, new_input);
-//    Tensor* std = Tensor::broadcast(std_vec, new_input);
-    // 1) [There is no broadcasting...] Repeat dimensions  => Temp!
-    Tensor* mean = Tensor::repeat(mean_vec, target_size[0]*target_size[1], 1);  mean->reshape_(new_input->shape);
-    Tensor* std =  Tensor::repeat(std_vec, target_size[0]*target_size[1], 1); std->reshape_(new_input->shape);
+    Tensor* mean = Tensor::broadcast(mean_vec, new_input);
+    Tensor* std = Tensor::broadcast(std_vec, new_input);
     new_input->sub_(mean);
     new_input->div_(std);
     // ==========================================================================
