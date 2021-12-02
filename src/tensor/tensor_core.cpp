@@ -737,6 +737,33 @@ Tensor* Tensor::repeat_desc(Tensor* A, unsigned int repeats, unsigned int axis, 
     return Tensor::repeat_desc(A, vrepeats, axis, output);
 }
 
+Tensor* Tensor::tile(Tensor* A, const vector<int>& repeats){
+    // Check dimensions
+    if(A->ndim != repeats.size()){
+        msg("The number of dimensions in tensor 'A' must match the size of 'repeats'", "Tensor::tile");
+    }
+
+    // Dimensions must be positive
+    for(int i=0; i<repeats.size(); i++){
+        if(repeats[i] < 1){
+            msg("All repetitions must be greater or equal than 1", "Tensor::tile");
+        }
+    }
+
+    // Build descriptor
+    auto *td = new TileDescriptor(repeats, A->device);
+    td->build(A->shape);
+
+    // Initialize tensor
+    auto* new_t = new Tensor(td->oshape, A->device);
+
+    // Perform select
+    Tensor::select(A, new_t, td);
+
+    delete td;
+    return new_t;
+}
+
 Tensor* Tensor::select(const vector<string>& indices){
     // Build descriptor
     auto *sd = new SelDescriptor(indices, this->device);
@@ -1050,7 +1077,7 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
 
 }
 
-void Tensor::tile(Tensor *A, Tensor *B)
+void Tensor::tile_deprecated(Tensor *A, Tensor *B)
 {
 
     int Asize=A->shape[0];

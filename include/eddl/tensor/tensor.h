@@ -2934,6 +2934,17 @@ public:
     static Tensor* repeat_desc(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr);
 
     /**
+      *  @brief Construct an array by repeating A the number of times given by reps.
+      *
+      *  @param A   Input tensor.
+      *  @param repeats   The number of repetitions of A along each axis.
+      *  @param output   Output tensor
+      *  @param derivative   Apply derivative for: output = repeat(A)
+    */
+    static Tensor* tile(Tensor* A, const vector<int>& repeats);
+
+
+    /**
       *  @brief Returns an array with the selected indices of the tensor.
       *
       *  @param indices  Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: ``"0"`` , ``":5"`` , ``":"`` , ``"3:6"``.
@@ -3173,7 +3184,7 @@ public:
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);  // TODO DEPRECATED
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false); // TODO DEPRECATED
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false); // TODO DEPRECATED
-    static void tile(Tensor *A, Tensor *B);
+    static void tile_deprecated(Tensor *A, Tensor *B);
 
     // TODO: REFACTOR!!! ************************
 
