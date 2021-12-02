@@ -230,6 +230,49 @@ repeat
     // ]
 
 
+
+tile
+^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::tile(Tensor* A, const vector<int>& repeats)
+
+.. code-block:: c++
+
+    // New tensor
+    Tensor* t1 = new Tensor({1, 2}, {2, 1});
+    // [
+    // [1]
+    // [2]
+    // ]
+
+    // Repeat all rows and columns 2 times each
+    Tensor* t1_res = Tensor::tile(t1, {2, 2});
+    // [
+    // [1 1]
+    // [2 2]
+    // [1 1]
+    // [2 2]
+    // ]
+
+
+    // New tensor
+    Tensor* t2 = new Tensor({1, 2, 3}, {3, 1});
+    // [
+    // [1]
+    // [2]
+    // [3]
+    // ]
+
+    // Repeat columns three times but not rows
+    Tensor* t2_res = Tensor::tile(t2, {1, 3});
+    // [
+    // [1 1 1]
+    // [2 2 2]
+    // [3 3 3]
+    // ]
+
+
+
 Transpose-like operations
 --------------------------
 
