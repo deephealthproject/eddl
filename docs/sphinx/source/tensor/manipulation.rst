@@ -275,7 +275,7 @@ tile
 broadcast
 ^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor* broadcast(Tensor* A, Tensor* B);
+.. doxygenfunction:: Tensor::broadcast(Tensor* A, Tensor* B);
 
 .. code-block:: c++
 
