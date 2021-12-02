@@ -236,4 +236,24 @@ void build_dense_with_matmul_node(LDense *layer, onnx::GraphProto *graph, bool g
   }
 }
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+void update_dense_weights(LDense *layer, vector<Tensor *> weights)
+{
+  if (weights.size() > 1)
+    layer->update_weights(weights[0], weights[1]);
+  else
+    layer->update_weights(weights[0]);
+}
+
+void apply_grads_to_dense(LDense *layer, vector<Tensor *> grads)
+{
+  if (grads.size() > 1)
+    layer->accumulate_accumulated_gradients(grads[0], grads[1]);
+  else
+    layer->accumulate_accumulated_gradients(grads[0]);
+}
+
 #endif // defined(cPROTO)
