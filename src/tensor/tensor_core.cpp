@@ -1107,26 +1107,51 @@ void Tensor::tile_deprecated(Tensor *A, Tensor *B)
 Tensor* Tensor::broadcast(Tensor* A, Tensor* B){
     // Source: https://numpy.org/doc/stable/user/basics.broadcasting.html
 
-    // Check dimensions
-    if (A->ndim != B->ndim){
-        msg("The dimensions of both tensors must be equal", "Tensor::broadcast");
-    }
+    bool isCompatible= false;
+    vector<int> old_shape = A->shape;
+    vector<int> broadcast_shape(B->ndim, 1);
 
-    // Check if the shapes can be broadcasted
-    for(int i=0; i<A->ndim; i++){
-        if(A->shape[i]==B->shape[i] || (A->shape[i]==1)  || B->shape[i]==1){
-            // okay. Do nothing
-        }else{
-            msg("These tensors cannot be broadcasted. Two dimensions are compatible when: 1) they are equal, or 2) one of them is 1", "Tensor::broadcast");
+    // Check dimensions
+    if (A->ndim == B->ndim){  // fine
+        isCompatible = true;
+        broadcast_shape = A->shape;
+    }else if(A->ndim==1){  // Check compatibility
+        // Broadcast: [3] AND [12, 3, 7, 7] => [1, 3, 1, 1]
+        for(int i = 0; i < B->shape.size(); ++i) {
+            if (A->shape[0] == B->shape[i]) {
+                isCompatible = true;
+                broadcast_shape[i] = B->shape[i];  // [1, 3, 1, 1]
+                break;
+            }
         }
     }
 
-    std::cerr << "[Experimental function]: Broadcast" << std::endl;
+    // Check compatibility
+    if(!isCompatible){
+        msg("The dimensions of both tensors must be equal or compatible (i.e [3] + [12, 3, 7, 7])", "Tensor::broadcast");
+    }
+
+    // Check if the shapes can be broadcasted
+    vector<int> tile_repetitions;  // Tile repetitions
+    for(int i=0; i<B->ndim; i++){
+        if(broadcast_shape[i]==B->shape[i]) {
+            tile_repetitions.push_back(1);
+        }else if(broadcast_shape[i]==1){  // || B->shape[i]==1){
+            tile_repetitions.push_back(B->shape[i]);
+        }else{
+            // msg("These tensors cannot be broadcasted. Two dimensions are compatible when: 1) they are equal, or 2) one of them is 1", "Tensor::broadcast");
+            msg("These tensors cannot be broadcasted. Two dimensions are compatible when: 1) they are equal, or 2) if the broadcasted dimension is 1", "Tensor::broadcast");
+        }
+    }
+
+    // Change dimension (temporarily). I don't like  this...
+    A->reshape_(broadcast_shape);
 
     // Do broadcast
-    Tensor* new_t;
-//    new_t = Tensor::repeat(A, target_size[0]*target_size[1], 1);
-//    new_t->reshape_(B->shape);
+    Tensor* new_t = Tensor::tile(A, tile_repetitions);
+
+    // Return to original dimension. I don't like  this...
+    A->reshape_(old_shape);
 
     return new_t;
 }

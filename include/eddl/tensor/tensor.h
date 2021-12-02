@@ -2943,6 +2943,13 @@ public:
     */
     static Tensor* tile(Tensor* A, const vector<int>& repeats);
 
+    /**
+      *  @brief Returns a new tensor A to be broadcasted into B
+      *   @param A Input tensor.
+      *   @param B Input tensor.
+      *   @return A new tensor C based on A, but prepared to be broadcasted in to B
+    */
+    static Tensor* broadcast(Tensor* A, Tensor* B);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.
@@ -3307,13 +3314,6 @@ public:
    */
     static string max_accelerator_supported();
 
-    /**
-      *  @brief Returns a new tensor A to be broadcasted into B
-      *   @param A Input tensor.
-      *   @param B Input tensor.
-      *   @return A new tensor C based on A, but prepared to be broadcasted in to B
-    */
-    static Tensor* broadcast(Tensor* A, Tensor* B);
 };
 
 
