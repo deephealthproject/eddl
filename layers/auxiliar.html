@@ -63,6 +63,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Auxiliar Layers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#constant-of-tensor">Constant Of Tensor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#where">Where</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bypass">Bypass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#shape">Shape</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="activations.html">Activations</a></li>
@@ -175,8 +177,13 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">}};</span><span class="w"></span>
-<span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConstOfTensor</span><span class="p">(</span><span class="n">t</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example #1:</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">}};</span><span class="w"></span>
+<span class="n">Layer</span><span class="w"> </span><span class="o">*</span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConstOfTensor</span><span class="p">(</span><span class="n">t</span><span class="p">);</span><span class="w"></span>
+
+<span class="c1">// Example #2:</span>
+<span class="n">layer</span><span class="w"> </span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConstOfTensor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="mf">0.485</span><span class="p">,</span><span class="w"> </span><span class="mf">0.456</span><span class="p">,</span><span class="w"> </span><span class="mf">0.406</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="n">DEV_CPU</span><span class="p">));</span><span class="w"></span>
+<span class="n">layer</span><span class="w"> </span><span class="n">std</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConstOfTensor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="mf">0.229</span><span class="p">,</span><span class="w"> </span><span class="mf">0.224</span><span class="p">,</span><span class="w"> </span><span class="mf">0.225</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="n">DEV_CPU</span><span class="p">));</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -203,6 +210,56 @@
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Where</span><span class="p">(</span><span class="n">parent1</span><span class="p">,</span><span class="w"> </span><span class="n">parent2</span><span class="p">,</span><span class="w"> </span><span class="n">condition</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="bypass">
+<h2>Bypass<a class="headerlink" href="#bypass" title="Permalink to this headline"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl6BypassE5layer6string6string">
+<span id="_CPPv3N4eddl6BypassE5layer6string6string"></span><span id="_CPPv2N4eddl6BypassE5layer6string6string"></span><span id="eddl::Bypass__layer.string.string"></span><span class="target" id="namespaceeddl_1ab0f7457065d2c8bd8baaf52a4ca81520"></span><span class="n"><span class="pre">layer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Bypass</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">layer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">parent</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bypass_name</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6BypassE5layer6string6string" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Virtual layer. Propagates the output of the parent as their own. Used internally for ONNX. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – Parent layer </p></li>
+<li><p><strong>bypass_name</strong> – Name of the layer being bypassed (e.g.: “bypass_unknown_layer) </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Output of repeat operation </p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example #1:</span>
+<span class="n">Layer</span><span class="w"> </span><span class="o">*</span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Bypass</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;fake_layer&quot;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="shape">
+<h2>Shape<a class="headerlink" href="#shape" title="Permalink to this headline"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4eddl5ShapeE5layerb6string">
+<span id="_CPPv3N4eddl5ShapeE5layerb6string"></span><span id="_CPPv2N4eddl5ShapeE5layerb6string"></span><span id="eddl::Shape__layer.b.string"></span><span class="target" id="namespaceeddl_1a7efad6e74a813660878ad4da8654769e"></span><span class="n"><span class="pre">layer</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Shape</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">layer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">parent</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">include_batch</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ShapeE5layerb6string" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This layer returns the shape of its parent as his output. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – Parent layer </p></li>
+<li><p><strong>include_batch</strong> – If True, the batch dimension is included in the output </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Output of repeat operation </p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example #1:</span>
+<span class="n">Layer</span><span class="w"> </span><span class="o">*</span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Shape</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </div>

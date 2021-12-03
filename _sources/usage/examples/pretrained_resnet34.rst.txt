@@ -146,8 +146,8 @@ and standarize it with the known mean and std of the ImageNet dataset.
 
     Tensor* preprocess_input_resnet34(Tensor* input, const vector<int> &target_size){
         // Define preprocessing constants
-        auto* mean_vec = new Tensor( {0.485, 0.456, 0.406}, {3, 1}, input->device);
-        auto* std_vec = new Tensor( {0.229, 0.224, 0.225}, {3, 1}, input->device);
+        auto* mean_vec = new Tensor( {0.485, 0.456, 0.406}, {3}, input->device);
+        auto* std_vec = new Tensor( {0.229, 0.224, 0.225}, {3}, input->device);
 
         // ==========================================================================
         // ====== SANITY CHECKS =====================================================

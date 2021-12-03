@@ -133,6 +133,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#tiling-arrays">Tiling arrays</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#repeat">repeat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tile">tile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#broadcast">broadcast</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#transpose-like-operations">Transpose-like operations</a><ul>
@@ -517,6 +519,122 @@
 <span class="c1">// [1 1 1 2 2 3]</span>
 <span class="c1">// [4 4 4 5 5 6]</span>
 <span class="c1">// ]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="tile">
+<h3>tile<a class="headerlink" href="#tile" title="Permalink to this headline"></a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor4tileEP6TensorRK6vectorIiE">
+<span id="_CPPv3N6Tensor4tileEP6TensorRK6vectorIiE"></span><span id="_CPPv2N6Tensor4tileEP6TensorRK6vectorIiE"></span><span id="Tensor::tile__TensorP.vector:i:CR"></span><span class="target" id="class_tensor_1a83d0e208d4d322b3f679e35bf82c7857"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">tile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">repeats</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4tileEP6TensorRK6vectorIiE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Construct an array by repeating A the number of times given by reps. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – Input tensor. </p></li>
+<li><p><strong>repeats</strong> – The number of repetitions of A along each axis. </p></li>
+<li><p><strong>output</strong> – Output tensor </p></li>
+<li><p><strong>derivative</strong> – Apply derivative for: output = repeat(A) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// New tensor</span>
+<span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">});</span><span class="w"></span>
+<span class="c1">// [</span>
+<span class="c1">// [1]</span>
+<span class="c1">// [2]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Repeat all rows and columns 2 times each</span>
+<span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t1_res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">tile</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">});</span><span class="w"></span>
+<span class="c1">// [</span>
+<span class="c1">// [1 1]</span>
+<span class="c1">// [2 2]</span>
+<span class="c1">// [1 1]</span>
+<span class="c1">// [2 2]</span>
+<span class="c1">// ]</span>
+
+
+<span class="c1">// New tensor</span>
+<span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">});</span><span class="w"></span>
+<span class="c1">// [</span>
+<span class="c1">// [1]</span>
+<span class="c1">// [2]</span>
+<span class="c1">// [3]</span>
+<span class="c1">// ]</span>
+
+<span class="c1">// Repeat columns three times but not rows</span>
+<span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t2_res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">tile</span><span class="p">(</span><span class="n">t2</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span><span class="w"></span>
+<span class="c1">// [</span>
+<span class="c1">// [1 1 1]</span>
+<span class="c1">// [2 2 2]</span>
+<span class="c1">// [3 3 3]</span>
+<span class="c1">// ]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="broadcast">
+<h3>broadcast<a class="headerlink" href="#broadcast" title="Permalink to this headline"></a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor9broadcastEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor9broadcastEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor9broadcastEP6TensorP6TensorP6Tensor"></span><span id="Tensor::broadcast__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a99d03acd2f4c28cf59a8f4421f603ddb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">broadcast</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">output</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9broadcastEP6TensorP6TensorP6Tensor" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Returns a new tensor A to be broadcasted into B. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – Input tensor. </p></li>
+<li><p><strong>B</strong> – Input tensor. </p></li>
+<li><p><strong>output</strong> – Output tensor (optional). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new tensor C based on A, but prepared to be broadcasted in to B </p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example: Image - constant RGB</span>
+
+<span class="c1">// Define mean</span>
+<span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="mf">0.485</span><span class="p">,</span><span class="w"> </span><span class="mf">0.456</span><span class="p">,</span><span class="w"> </span><span class="mf">0.406</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="n">DEV_CPU</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// [0.485 0.456 0.406]</span>
+
+<span class="c1">// Fake image</span>
+<span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">224</span><span class="p">,</span><span class="w"> </span><span class="mi">244</span><span class="p">});</span><span class="w"></span>
+<span class="c1">// -------------------------------</span>
+<span class="c1">// class:         Tensor</span>
+<span class="c1">// ndim:          3</span>
+<span class="c1">// shape:         (3, 224, 244)</span>
+<span class="c1">// strides:       (54656, 244, 1)</span>
+<span class="c1">// itemsize:      163968</span>
+<span class="c1">// contiguous:    1</span>
+<span class="c1">// order:         C</span>
+<span class="c1">// data pointer:  0x56305561baa8</span>
+<span class="c1">// is shared:     0</span>
+<span class="c1">// type:          float (4 bytes)</span>
+<span class="c1">// device:        CPU (code = 0)</span>
+<span class="c1">// -------------------------------</span>
+
+<span class="c1">// Compute broadcast for mean</span>
+<span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">mean_broadcasted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">broadcast</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span><span class="w"> </span><span class="n">image</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// -------------------------------</span>
+<span class="c1">// class:         Tensor</span>
+<span class="c1">// ndim:          3</span>
+<span class="c1">// shape:         (3, 224, 244)</span>
+<span class="c1">// strides:       (54656, 244, 1)</span>
+<span class="c1">// itemsize:      163968</span>
+<span class="c1">// contiguous:    1</span>
+<span class="c1">// order:         C</span>
+<span class="c1">// data pointer:  0x56305561f2c8</span>
+<span class="c1">// is shared:     0</span>
+<span class="c1">// type:          float (4 bytes)</span>
+<span class="c1">// device:        CPU (code = 0)</span>
+<span class="c1">// -------------------------------</span>
+
+<span class="c1">// Apply: X-mean</span>
+<span class="n">image</span><span class="o">-&gt;</span><span class="n">sub_</span><span class="p">(</span><span class="n">mean_broadcasted</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </div>

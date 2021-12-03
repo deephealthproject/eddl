@@ -230,6 +230,97 @@ repeat
     // ]
 
 
+
+tile
+^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::tile(Tensor* A, const vector<int>& repeats)
+
+.. code-block:: c++
+
+    // New tensor
+    Tensor* t1 = new Tensor({1, 2}, {2, 1});
+    // [
+    // [1]
+    // [2]
+    // ]
+
+    // Repeat all rows and columns 2 times each
+    Tensor* t1_res = Tensor::tile(t1, {2, 2});
+    // [
+    // [1 1]
+    // [2 2]
+    // [1 1]
+    // [2 2]
+    // ]
+
+
+    // New tensor
+    Tensor* t2 = new Tensor({1, 2, 3}, {3, 1});
+    // [
+    // [1]
+    // [2]
+    // [3]
+    // ]
+
+    // Repeat columns three times but not rows
+    Tensor* t2_res = Tensor::tile(t2, {1, 3});
+    // [
+    // [1 1 1]
+    // [2 2 2]
+    // [3 3 3]
+    // ]
+
+
+broadcast
+^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::broadcast(Tensor* A, Tensor* B, Tensor *output=nullptr);
+
+.. code-block:: c++
+
+        // Example: Image - constant RGB
+
+        // Define mean
+        auto* mean = new Tensor( {0.485, 0.456, 0.406}, {3}, DEV_CPU);
+        // [0.485 0.456 0.406]
+
+        // Fake image
+        auto* image = Tensor::ones( {3, 224, 244});
+        // -------------------------------
+        // class:         Tensor
+        // ndim:          3
+        // shape:         (3, 224, 244)
+        // strides:       (54656, 244, 1)
+        // itemsize:      163968
+        // contiguous:    1
+        // order:         C
+        // data pointer:  0x56305561baa8
+        // is shared:     0
+        // type:          float (4 bytes)
+        // device:        CPU (code = 0)
+        // -------------------------------
+
+        // Compute broadcast for mean
+        Tensor* mean_broadcasted = Tensor::broadcast(mean, image);
+        // -------------------------------
+        // class:         Tensor
+        // ndim:          3
+        // shape:         (3, 224, 244)
+        // strides:       (54656, 244, 1)
+        // itemsize:      163968
+        // contiguous:    1
+        // order:         C
+        // data pointer:  0x56305561f2c8
+        // is shared:     0
+        // type:          float (4 bytes)
+        // device:        CPU (code = 0)
+        // -------------------------------
+
+        // Apply: X-mean
+        image->sub_(mean_broadcasted);
+
+
 Transpose-like operations
 --------------------------
 
