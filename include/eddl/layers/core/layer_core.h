@@ -275,6 +275,31 @@ public:
 };
 
 
+class LBroadcast : public LinLayer {
+public:
+    static int total_layers;
+    TileDescriptor *td;
+    bool shapes_swapped;
+    Layer *p1;  // Small
+    Layer *p2;  // Big
+
+    // constructors and clones
+    LBroadcast(Layer *parent1, Layer *parent2, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    ~LBroadcast() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
 class LBypass : public LinLayer {
 public:
     static int total_layers;
