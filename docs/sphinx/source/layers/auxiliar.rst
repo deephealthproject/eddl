@@ -30,3 +30,31 @@ Example:
 .. code-block:: c++
 
     l = Where(parent1, parent2, condition);
+
+
+
+Bypass
+-------------------
+
+.. doxygenfunction:: Bypass(layer parent, string bypass_name="", string name="");
+
+Example:
+
+.. code-block:: c++
+
+    // Example #1:
+    Layer *l = Bypass(l, "fake_layer");
+
+
+
+Shape
+-------------------
+
+.. doxygenfunction:: Shape(layer parent, bool include_batch=true, string name="");
+
+Example:
+
+.. code-block:: c++
+
+    // Example #1:
+    Layer *l = Shape(l, true);
