@@ -136,10 +136,10 @@ public:
     void backward() override;
 
 	// Sets the weights to the values of the parameter w
-	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+	void update_weights(vector<Tensor*> weights) override;
 
 	// Adds the values of gw to the current weights of the layer
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+	void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
 
 	// Sets to 0.0 the tensors with the accumulated gradients for W and bias
 	void reset_accumulated_gradients() override;

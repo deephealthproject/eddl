@@ -56,9 +56,9 @@ public:
 
     void initialize() override;
 
-	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+	void update_weights(vector<Tensor*> weights) override;
 
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+	void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
 
 	void reset_accumulated_gradients() override;
 

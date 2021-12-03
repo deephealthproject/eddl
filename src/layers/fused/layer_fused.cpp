@@ -103,14 +103,30 @@ void LConv2dActivation::initialize() {
     params[1]->fill_(0.0f); // Bias
 }
 
-void LConv2dActivation::update_weights(Tensor* w, Tensor* bias) {
-    Tensor::copy( w, cd->K );
-    if ( bias != nullptr ) Tensor::copy( bias, cd->bias );
+void LConv2dActivation::update_weights(vector<Tensor*> weights) {
+    if (weights.size() == 2) {
+        Tensor::copy(weights[0], cd->K);
+        Tensor::copy(weights[1], cd->bias);
+    } else if (weights.size() == 1) {
+        Tensor::copy(weights[0], cd->K);
+    } else {
+        cerr << "[WARNING - LConv2dActivation::update_weights] "
+             << "Unexpected number of weights tensors recieved "
+             << "(weights.size()=" << weights.size() << ")" << endl;
+    }
 }
 
-void LConv2dActivation::accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {
-    cd->K->add_( gw );
-    if ( gbias != nullptr ) cd->bias->add_( gbias );
+void LConv2dActivation::accumulate_accumulated_gradients(vector<Tensor*> grads) {
+    if (grads.size() == 2) {
+        cd->K->add_(grads[0]);
+        cd->bias->add_(grads[1]);
+    } else if (grads.size() == 1) {
+        cd->K->add_(grads[0]);
+    } else {
+        cerr << "[WARNING - LConv2dActivation::accumulate_accumulated_gradients] "
+             << "Unexpected number of gradient tensors recieved "
+             << "(grads.size()=" << grads.size() << ")" << endl;
+    }
 }
 
 void LConv2dActivation::reset_accumulated_gradients() {
