@@ -39,7 +39,7 @@ LRepeat::LRepeat(Layer *parent, const vector<unsigned int>& repeats, unsigned in
     vector<int> input_shape_single_batch(input->shape.begin()+1, input->shape.end());
     input_shape_single_batch.insert(input_shape_single_batch.begin(), 1);
 
-    // Build descriptor
+    // Build descriptor (batch must equal to "1")
     this->rd = new RepeatDescriptor(repeats, axis, dev);
     this->rd->build(input_shape_single_batch);
 

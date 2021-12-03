@@ -480,9 +480,6 @@ int* expand_indices(const vector<int>& ishape, int size){
             B_pos += B_idx * ostride[d];
         }
 
-        if(B_pos!=i){
-            int asd = 3;
-        }
         // Save address translation
         addresses[i] = A_pos;
     }
