@@ -737,6 +737,10 @@ namespace eddl {
         return new LRepeat(parent, vrepeats, axis, name, DEV_CPU, 0);
     }
 
+    layer Bypass(layer parent, string bypass_name, string name){
+        return new LBypass(parent, bypass_name, name, DEV_CPU, 0);
+    }
+
     layer Squeeze(layer parent, const int axis, string name){
         return new LSqueeze(parent, axis, name, DEV_CPU, 0);
     }

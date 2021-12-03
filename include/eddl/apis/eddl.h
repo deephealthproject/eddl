@@ -1074,6 +1074,14 @@ namespace eddl {
     layer Repeat(layer parent, const vector<unsigned int>& repeats, unsigned int axis, string name="");
     layer Repeat(layer parent, unsigned int repeats, unsigned int axis, string name="");
 
+    /**
+      *  @brief Virtual layer. Propagates the output of the parent as their own. Used internally for ONNX.
+      *
+      *  @param parent  Parent layer
+      *  @param bypass_name  Name of the layer being bypassed (e.g.: "bypass_unknown_layer)
+      *  @return     Output of repeat operation
+    */
+    layer Bypass(layer parent, string bypass_name="", string name="");
 
     /**
       *  @brief Dimension of size one is removed at the specified position. (Batch dimension is ignored)
