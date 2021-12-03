@@ -35,11 +35,13 @@ LRepeat::LRepeat(Layer *parent, const vector<unsigned int>& repeats, unsigned in
         msg("The size of 'repeats' (" + std::to_string(repeats.size()) + ") must equal the size the the dimension to repeat " + std::to_string(input->shape[axis]) + ")", "LRepeat::LRepeat");
     }
 
+    // Get input shape, but making sure the batch dimension is 1
+    vector<int> input_shape_single_batch(input->shape.begin()+1, input->shape.end());
+    input_shape_single_batch.insert(input_shape_single_batch.begin(), 1);
+
     // Build descriptor
-    vector<int> shape_single_batch(input->shape.begin()+1, input->shape.end());
-    shape_single_batch.insert(shape_single_batch.begin(), 1);
     this->rd = new RepeatDescriptor(repeats, axis, dev);
-    this->rd->build(shape_single_batch);
+    this->rd->build(input_shape_single_batch);
 
     // Set output tensors
     output=new Tensor(this->rd->oshape, dev);
