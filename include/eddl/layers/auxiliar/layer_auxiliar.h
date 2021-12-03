@@ -24,8 +24,10 @@ using namespace std;
 class LShape : public LinLayer {
 public:
     static int total_layers;
+    vector<float> data;
+    bool include_batch;
 
-    LShape(Layer *parent, string name, int dev, int mem);
+    LShape(Layer *parent, bool include_batch, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
