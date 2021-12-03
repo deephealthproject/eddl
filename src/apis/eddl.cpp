@@ -750,6 +750,10 @@ namespace eddl {
         return new LTile(parent, repeats_with_single_batch, name, DEV_CPU, 0);
     }
 
+    layer Broadcast(layer parent1, layer parent2, string name){
+        return new LBroadcast(parent1, parent2, name, DEV_CPU, 0);
+    }
+
     layer Bypass(layer parent, string bypass_name, string name){
         return new LBypass(parent, bypass_name, name, DEV_CPU, 0);
     }

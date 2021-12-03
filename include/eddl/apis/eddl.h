@@ -1084,6 +1084,18 @@ namespace eddl {
     layer Tile(layer parent, const vector<int>& repeats, string name="");
 
     /**
+      *  @brief Prepares the output of the smaller layer to be broadcasted into the bigger one (parent1 or parent2)
+      *  Example:
+      *     - f(P1(3), P2(4,2,3,5)) => P1 is x.  (P2 has no delta)
+      *     - f(P1(4,2,3,5), P2(3)) => P2 is x.  (P1 has no delta)
+      *
+      *  @param parent1  Parent layer
+      *  @param parent2  Parent layer
+      *  @return     Output of repeat operation
+    */
+    layer Broadcast(layer parent1, layer parent2, string name="");
+
+    /**
       *  @brief Virtual layer. Propagates the output of the parent as their own. Used internally for ONNX.
       *
       *  @param parent  Parent layer
