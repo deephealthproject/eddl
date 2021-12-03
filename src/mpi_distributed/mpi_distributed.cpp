@@ -1,15 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+* MPI support for EDDL Library - European Distributed Deep Learning Library.
+* Version: 
+* copyright (c) 2021, Universidad Politécnica de Valencia (UPV), GAP research group
+* Date: July 2021
+* Author: GAP Research Group (UPV), contact: plopez@disca.upv.es
+* All rights reserved
+*/
 
-/*
- * File:   mpi_distributed.h
- * Author: plopez
- *
- * Created on 27 de julio de 2021, 11:18
- */
 
 #include "eddl/mpi_distributed/mpi_distributed.h"
 
@@ -24,10 +21,11 @@ int use_mpi = 0;
 int mpi_avg = 1;
 int avg_method = 0;
 int x_avg = 0;
-int batch_is_global=1; 
+//int batch_is_global=1; 
 // 1: Global batch=batch; Local batch=batch/n_procs 
 // 0: Local batch=batch; Global_batch=batch*n_procs
 int batches_avg = 0;
+double secs_prev = 1E10;
 
 #ifdef cNCCL
 // NCCL
@@ -164,6 +162,7 @@ void set_method_distributed (int method, int batch_avg, int epoch_avg) {
         } 
 }
 
+
 void end_distributed() {
     int id;
 #ifndef cMPI
@@ -292,12 +291,11 @@ int is_mpi_distributed() {
     return use_mpi;
 }
 
-int get_params_distributed(int* method, int* avg, int* avg_chg, int* batch_global) {
+int get_params_distributed(int* method, int* avg, int* avg_chg) {
 
     *avg = mpi_avg;
     *method = avg_method;
     *avg_chg = x_avg;
-    *batch_global = batch_is_global;
 
     return use_mpi;
 }
@@ -352,14 +350,12 @@ void broadcast_GPU_params_distributed(Net* net){
     }
 }
 
+void Bcast_params_distributed(Net * net) {
+    broadcast_GPU_params_distributed(net);
+}
 
-/**
-     *  @brief Average weights of mpi processes
-     *
-     *  @param curr_batch_id Batch nr (from 0)
-     *  @param batches_per_proc #batches per mpi process
-     *  @return    (void)
-     */
+
+
 void avg_weights_distributed (Net* net, int curr_batch, int batches_per_proc) {
     float * myptr;
     int count;
@@ -395,18 +391,18 @@ void avg_weights_distributed (Net* net, int curr_batch, int batches_per_proc) {
 }
 
 
-void update_batch_avg_distributed (int epoch, double* secs_epoch_prev, double secs_epoch, int max_batch_avg) {
+void update_batch_avg_distributed (int epoch_id, double secs_epoch, int max_batch_avg) {
     float SPEED_UP = 1.05;
     switch (avg_method) {
         case AVG_INC:
-            if (((epoch + 1) % (x_avg)) == 0) {
+            if (((epoch_id + 1) % (x_avg)) == 0) {
                 if (batches_avg < max_batch_avg)
                     batches_avg = batches_avg * 2;
             }
             break;
 
         case SAWTOOTH:
-            if (((epoch + 1) % (x_avg)) == 0) {
+            if (((epoch_id + 1) % (x_avg)) == 0) {
                 batches_avg = batches_avg * 2;
 
                 if (batches_avg >= max_batch_avg)
@@ -415,7 +411,7 @@ void update_batch_avg_distributed (int epoch, double* secs_epoch_prev, double se
             break;
 
         case NEG_SAWTOOTH:
-            if (((epoch + 1) % (x_avg)) == 0) {
+            if (((epoch_id + 1) % (x_avg)) == 0) {
                 batches_avg = batches_avg / 2;
 
                 if (batches_avg < 1)
@@ -425,10 +421,10 @@ void update_batch_avg_distributed (int epoch, double* secs_epoch_prev, double se
 
 
         case AUTO_TIME:
-            if (((epoch + 1) % (x_avg)) == 0) {
-                float speed_up = *secs_epoch_prev / secs_epoch;
+            if (((epoch_id + 1) % (x_avg)) == 0) {
+                float speed_up = secs_prev / secs_epoch;
                 if (speed_up > SPEED_UP) {
-                    *secs_epoch_prev = secs_epoch;
+                    secs_prev = secs_epoch;
 
                     if (batches_avg < max_batch_avg)
                         batches_avg = batches_avg * 2;

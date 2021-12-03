@@ -123,17 +123,17 @@ int main(int argc, char **argv) {
     if (use_cpu) {
         cs = CS_CPU();
     } else { 
-	cs=CS_MPI_DISTRIBUTED();
+	cs = CS_GPU({1}); // one GPU
     }
 
     
     // Init distribuited training
-    id = get_id_distributed();
+    //id = get_id_distributed();
     
             
     
     // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2);
+    //set_method_distributed(AUTO_TIME,1,2);
 
 
     // download CIFAR data
@@ -203,7 +203,6 @@ int main(int argc, char **argv) {
     //         x_train->div_(255.0f);
   
    
-
     
     Tensor* x_test = Tensor::load(ts_images);
     Tensor* y_test = Tensor::load(ts_labels);
@@ -214,22 +213,11 @@ int main(int argc, char **argv) {
 
      //if (id==0)
      //y_train->print();
-    
- 
-     
-     int use_chunks = 0;
+
+    int use_chunks = 1;
 
     if (use_chunks == 0) {
         /* Load whole dataset */
-        
-        /* Split dataset into processes */
-        sprintf(tr_images, "%s/train-images_0_%d.bi8", path, id);
-        sprintf(tr_labels, "%s/train-labels_0_%d.bi8", path, id);
-
-        printf("%s\n", tr_images);
-        printf("%s\n", tr_labels);
-        
-
         x_train = Tensor::load(tr_images);
         y_train = Tensor::load(tr_labels);
         x_train->div_(255.0f);
@@ -239,11 +227,15 @@ int main(int argc, char **argv) {
         {
             y_train
         }, batch_size, epochs);
+        delete x_train;
+        delete y_train;
     } else {
         /* Load chunks */
         for (int i = 0; i < epochs; i++) {
-            for (int chunk = 1; chunk <5; chunk ++) {
-            int selected= 1+(rand() % 5);    
+            for (int chunk = 3; chunk <5; chunk ++) {
+            //int selected= 1+(rand() % 3);
+            int selected=chunk;
+            printf("Chunk %d\n", chunk);
             sprintf(tr_images,"%s/train-images_0_%d.bi8",path,selected);
             sprintf(tr_labels,"%s/train-labels_0_%d.bi8",path,selected);
             
@@ -259,24 +251,27 @@ int main(int argc, char **argv) {
             {
                 y_train
             }, batch_size, 1);
+            printf("Free\n");
+            
+            delete x_train;
+            delete y_train;
             }
         }
     }
     std::cout << "Evaluate test:" << std::endl;
      // Evaluate
     evaluate(net,{x_test},{y_test});
+
     
     
     if (id==0)
         save_net_to_onnx_file (net,"vgg16.onnx");   
 
-    delete x_train;
-    delete y_train;
+    //delete x_train;
+    //delete y_train;
     delete x_test;
     delete y_test;
     delete net;
-
-    end_distributed();
 
     return EXIT_SUCCESS;
 }

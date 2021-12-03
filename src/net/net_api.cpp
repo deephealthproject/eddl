@@ -819,7 +819,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     int mpi_avg ;
     int avg_method ;
     int x_avg ;
-    int batch_is_global; 
+   
 
     
 
@@ -831,11 +831,10 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             //MPI_Comm_rank(MPI_COMM_WORLD, &id);
             n_procs = get_n_procs_distributed();
             id = get_id_distributed();
-            get_params_distributed(&avg_method, &mpi_avg, &x_avg, &batch_is_global);
+            get_params_distributed(&avg_method, &mpi_avg, &x_avg);
 
-            // Set batch size
-            if (batch_is_global)
-                batch = batch / n_procs;
+            // Set local batch size
+            batch = batch / n_procs;
 
         } else {
             n_procs=1;
@@ -997,7 +996,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             printf("loss1 %f\n", loss1);
             printf("loss2 %f\n", loss2);
              */
-            update_batch_avg_distributed (i, &secs_epoch_prev, secs_epoch, batches_per_proc);
+            update_batch_avg_distributed (i, secs_epoch, batches_per_proc);
             
             /*
             switch (avg_method) {

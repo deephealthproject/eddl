@@ -1,8 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+* MPI support for EDDL Library - European Distributed Deep Learning Library.
+* Version: 
+* copyright (c) 2021, Universidad Politécnica de Valencia (UPV), GAP research group
+* Date: July 2021
+* Author: GAP Research Group (UPV), contact: plopez@disca.upv.es
+* All rights reserved
+*/
 
 
 
@@ -196,26 +199,39 @@ int is_mpi_distributed();
  * 
  *  @return true if running in mpi_distributed mode
  */
-int get_params_distributed(int* method, int* avg, int* avg_chg, int* batch_global);
+int get_params_distributed(int* method, int* avg, int* avg_chg);
+
 
 int get_current_batch_avg_distributed ();
 
 
 int get_available_GPUs_distributed();
 
-void broadcast_CPU_params_distributed(Net* net);
-void broadcast_GPU_params_distributed(Net* net);
+/**
+ *  @brief Broadcast net parameters
+ *
+ *  @param[in] net: Ptr to net
+ */
+void Bcast_params_distributed(Net * net);
 
 /**
-     *  @brief Average weights of mpi processes
-     *
-     *  @param curr_batch_id Batch nr (from 0)
-     *  @param batches_per_proc #batches per mpi process
-     *  @return    (void)
-     */
-void avg_weights_distributed (Net* net, int curr_batch, int batches_per_proc);
+ *  @brief Average weights of mpi processes
+ *
+ *  @param curr_batch_id    Batch nr (from 0)
+ *  @param batches_per_proc #batches per mpi process
+ *  @return    (void)
+ */
+void avg_weights_distributed (Net* net, int curr_batch_id, int batches_per_proc);
 
-void update_batch_avg_distributed(int epoch, double * secs_prev, double secs, int batches_per_proc) ;
+/**
+ *  @brief Update batches_avg according to the selected method
+ *
+ *  @param epoch_id:            epoch index (from 0)
+ *  @param secs:                elapsed time in current epoch
+ *  @param batches_per_proc:    nr of batches in every MPI process
+ *  @return    (void)
+ */
+void update_batch_avg_distributed(int epoch_id, double secs, int batches_per_proc) ;
 
 void gpu_layer_print (Net* net, int layer);
 

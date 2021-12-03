@@ -33,10 +33,23 @@ layer Block3_2(layer l,int filters) {
 int main(int argc, char **argv){
   bool testing = false;
   bool use_cpu = false;
+  
+   char path[256] = "medical";
+   char tr_images[256];
+       char tr_labels[256];
+       char ts_images[256];
+       char ts_labels[256];
+  
   for (int i = 1; i < argc; ++i) {
       if (strcmp(argv[i], "--testing") == 0) testing = true;
       else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
   }
+       
+       sprintf(tr_images,"%s/%s",path,"train-images.bin");
+    sprintf(tr_labels,"%s/%s",path,"train-labels.bin");
+    sprintf(ts_images,"%s/%s",path,"test-images.bin");
+    sprintf(ts_labels,"%s/%s",path,"test-labels.bin");
+   
 
   // download CIFAR data
   //download_cifar10();
@@ -44,10 +57,10 @@ int main(int argc, char **argv){
   // Settings
   int epochs = testing ? 2 : 100;
   int batch_size = 100;
-  int num_classes = 1000;
+  int num_classes = 6;
 
   // network
-  layer in=Input({3,224,224});
+  layer in=Input({1,64,64});
   layer l=in;
 
 
@@ -90,17 +103,16 @@ int main(int argc, char **argv){
 
   // get some info from the network
   summary(net);
-
   // Load and preprocess training data
-  Tensor* x_train = Tensor::load("train-images.bi8");
-  Tensor* y_train = Tensor::load("train-labels.bi8");
+  Tensor* x_train = Tensor::load(tr_images);
+  Tensor* y_train = Tensor::load(tr_labels);
 //  Tensor* x_train = Tensor::load("cifar_trX.bin");
 //  Tensor* y_train = Tensor::load("cifar_trY.bin");
   x_train->div_(255.0f);
 
   // Load and preprocess test data
-  Tensor* x_test = Tensor::load("test-images.bi8");
-  Tensor* y_test = Tensor::load("test-labels.bi8");
+  Tensor* x_test = Tensor::load(ts_images);
+  Tensor* y_test = Tensor::load(ts_labels);
 //  Tensor* x_test = Tensor::load("cifar_tsX.bin");
 //  Tensor* y_test = Tensor::load("cifar_tsY.bin");
   x_test->div_(255.0f);

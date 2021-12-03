@@ -42,6 +42,8 @@ using namespace std;
 using std::chrono::high_resolution_clock;
 using std::chrono::duration;
 
+  int DEBUG=0;
+
 // ********* LOAD FUNCTIONS *********
 Tensor* Tensor::load(const string& filename, string format){
     // Infer format from filename
@@ -81,7 +83,8 @@ Tensor* Tensor::load_id(const string& filename, int i1, int i2, string format){
     name.append(".");
     name.append(format);
     
-    fprintf(stderr, "[DISTR] File: %s\n", name.c_str());
+    if (DEBUG)
+        fprintf(stderr, "[DISTR] File: %s\n", name.c_str());
     // Default type to be ignored
     // Ignore IDE warnings (some times they have problems with templates)
     return Tensor::load<float>(name, std::move(format));
@@ -103,8 +106,7 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
 
 Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
     int r_ndim;
-    int DEBUG=1;
-
+  
     high_resolution_clock::time_point e1 = high_resolution_clock::now();
     // Load number of dimensions
     ifs.read(reinterpret_cast<char *>(&r_ndim),  sizeof(int));
@@ -169,8 +171,6 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
 
 Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
     int r_ndim;
-
-    int DEBUG=1;
 
     high_resolution_clock::time_point e1 = high_resolution_clock::now();
     // Load number of dimensions

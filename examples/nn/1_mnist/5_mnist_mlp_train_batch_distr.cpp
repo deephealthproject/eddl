@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
     bool use_cpu = false;
     
     int id;
+     int n_procs;
     
     
     for (int i = 1; i < argc; ++i) {
@@ -44,6 +45,7 @@ int main(int argc, char **argv) {
     }
 
      id=get_id_distributed();
+     n_procs = get_n_procs_distributed();
     
     // Download mnist
     download_mnist();
@@ -108,7 +110,10 @@ int main(int argc, char **argv) {
         x_test  = x_mini_test;
         y_test  = y_mini_test;
     }
-
+    
+    
+    // Batch size
+    // batch_size= batch_size/n_procs;
     Tensor* xbatch = new Tensor({batch_size, 784});
     Tensor* ybatch = new Tensor({batch_size, 10});
 
@@ -120,14 +125,13 @@ int main(int argc, char **argv) {
     // Train model
     int i,j;
     tshape s = x_train->getShape();
-
-    // Batch size
-    // batch_size= batch_size/n_procs;
-
-    int num_batches=s[0]/batch_size;
     
-    int n_procs = get_n_procs_distributed();
+   
+    
+    int num_batches=s[0]/batch_size;
     int batches_per_proc=num_batches/n_procs;
+    
+    Bcast_params_distributed(net);
     
     for(i=0;i<epochs;i++) {
       reset_loss(net);

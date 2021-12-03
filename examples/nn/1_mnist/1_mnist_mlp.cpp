@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
 
 
     // Settings
-    int epochs = (testing) ? 2 : 10;
+    int epochs = (testing) ? 2 : 2;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -184,7 +184,13 @@ int main(int argc, char **argv) {
     // Evaluate
     evaluate(net, {x_test}, {y_test});
 
-   
+    std::vector<Tensor*> preds;
+    preds = predict(net, {x_test});
+    
+    y_test->print();
+    
+    preds[0]->save("predictions.txt");
+    
     
     // Release objects, layers, optimizer and computing service are released by the net object
     delete x_train;

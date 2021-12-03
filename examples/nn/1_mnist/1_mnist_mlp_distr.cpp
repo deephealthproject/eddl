@@ -73,12 +73,11 @@ int main(int argc, char **argv) {
         // cs = CS_FPGA({1});
     }
 
-    // Init distribuited training
-    //id = init_distributed(&argc, &argv);
+    // Get MPI process id
     id=get_id_distributed();
     
-    // Sync every batch, change every 4 epochs
-    set_method_distributed(AUTO_TIME,1,4);
+    // Sync every batch, change every 2 epochs
+    set_method_distributed(AUTO_TIME,1,2);
     
     // Download mnist
     download_mnist();
@@ -195,8 +194,8 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
     x_test->div_(255.0f);
 
-    //broadcast_CPU_params_distributed(net); 
-    broadcast_GPU_params_distributed(net); 
+    // Broadcast params 
+    Bcast_params_distributed(net); 
     
     
     // Train model
