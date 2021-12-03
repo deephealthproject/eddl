@@ -737,6 +737,33 @@ Tensor* Tensor::repeat_desc(Tensor* A, unsigned int repeats, unsigned int axis, 
     return Tensor::repeat_desc(A, vrepeats, axis, output);
 }
 
+Tensor* Tensor::tile(Tensor* A, const vector<int>& repeats){
+    // Check dimensions
+    if(A->ndim != repeats.size()){
+        msg("The number of dimensions in tensor 'A' must match the size of 'repeats'", "Tensor::tile");
+    }
+
+    // Dimensions must be positive
+    for(int i=0; i<repeats.size(); i++){
+        if(repeats[i] < 1){
+            msg("All repetitions must be greater or equal than 1", "Tensor::tile");
+        }
+    }
+
+    // Build descriptor
+    auto *td = new TileDescriptor(repeats, A->device);
+    td->build(A->shape);
+
+    // Initialize tensor
+    auto* new_t = new Tensor(td->oshape, A->device);
+
+    // Perform select
+    Tensor::select(A, new_t, td);
+
+    delete td;
+    return new_t;
+}
+
 Tensor* Tensor::select(const vector<string>& indices){
     // Build descriptor
     auto *sd = new SelDescriptor(indices, this->device);
@@ -1050,7 +1077,7 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
 
 }
 
-void Tensor::tile(Tensor *A, Tensor *B)
+void Tensor::tile_deprecated(Tensor *A, Tensor *B)
 {
 
     int Asize=A->shape[0];
@@ -1077,29 +1104,47 @@ void Tensor::tile(Tensor *A, Tensor *B)
     }
 }
 
-Tensor* Tensor::broadcast(Tensor* A, Tensor* B){
+Tensor* Tensor::broadcast(Tensor* A, Tensor* B, Tensor *output){
     // Source: https://numpy.org/doc/stable/user/basics.broadcasting.html
 
-    // Check dimensions
-    if (A->ndim != B->ndim){
-        msg("The dimensions of both tensors must be equal", "Tensor::broadcast");
+    vector<int> shape1 = A->shape;
+    vector<int> shape2 = B->shape;
+    bool shapes_swapped = false;
+
+    // Shape1 must be smaller (or equal) than Shape2
+    if(shape1.size()>shape2.size()){ shape1.swap(shape2); shapes_swapped = true; }
+
+    // Get shape to broadcast (normalized)
+    vector<int> broadcast_from = getBroadcastShape(shape1, shape2);
+    if(broadcast_from.empty()){
+        msg("The dimensions of both tensors must be equal or compatible (i.e (3)*(1,3), (3)*(6,2,5,3,5), (5, 3)*(5, 3),...)", "Tensor::broadcast");
     }
 
-    // Check if the shapes can be broadcasted
-    for(int i=0; i<A->ndim; i++){
-        if(A->shape[i]==B->shape[i] || (A->shape[i]==1)  || B->shape[i]==1){
-            // okay. Do nothing
-        }else{
-            msg("These tensors cannot be broadcasted. Two dimensions are compatible when: 1) they are equal, or 2) one of them is 1", "Tensor::broadcast");
-        }
+    // Get repetitions to perform a given broadcast
+    vector<int> tile_repetitions = getTilesRepetitions(broadcast_from, shape2);
+    if(tile_repetitions.empty()){
+        msg("These tensors cannot be broadcasted. Two dimensions are compatible when: 1) they are equal, or 2) one of them is 1", "Tensor::broadcast");
     }
 
-    std::cerr << "[Experimental function]: Broadcast" << std::endl;
+    // Build descriptor
+    auto *td = new TileDescriptor(tile_repetitions, A->device);
+    td->build(broadcast_from);
 
-    // Do broadcast
+    // Create new tensor (if needed)
     Tensor* new_t;
-//    new_t = Tensor::repeat(A, target_size[0]*target_size[1], 1);
-//    new_t->reshape_(B->shape);
+    if (output== nullptr){
+        new_t = new Tensor(td->oshape, A->device);
+    }else{
+        new_t = output;
+    }
 
+    // Do broadcast (tile repetitions)
+    if(!shapes_swapped){
+        Tensor::select(A, new_t, td);
+    }else{
+        Tensor::select(B, new_t, td);
+    }
+
+    delete td;
     return new_t;
 }

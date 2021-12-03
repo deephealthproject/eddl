@@ -324,93 +324,17 @@ void share_weights(Net *net)
 // Returns a map containing the name of the layer as key and a tensor with the values of the model as value
 map<string, vector<Tensor *>> get_tensors_from_onnx(onnx::ModelProto model)
 {
-  // TODO: This method should be removed after changing the distibuted functions of ONNX by
-  // a more generic ones (using params vector)
-  map<string, vector<Tensor *>> tensors;
+  onnx::GraphProto graph = model.graph(); // Get the graph of the model
 
-  onnx::GraphProto graph = model.graph(); // Get the graph of the model.
-
-  vector<onnx::TensorProto> initializers = get_initializers(graph); // Retrieves the initializers from the graph.
-  // The weights for the layers can be found in the initializers.
-  map<string, vector<float>> map_init_values;
-  map<string, vector<int>> map_init_dims;
+  // The weights for the layers can be found in the initializers
+  vector<onnx::TensorProto> initializers = get_initializers(graph);
+  map<string, vector<float>> map_init_values; // Key: Layer weights name - Value: Weights
+  map<string, vector<int>> map_init_dims;     // Key: Layer weights name - Value: Shape of the weights
   get_initializers_maps(initializers, map_init_values, map_init_dims); // Creates 2 maps
-  //  Key: Input Name . Value: Weights
-  //  Key: Input Name . Value: Dims
-  vector<onnx::NodeProto> nodes = get_graph_nodes(graph);
 
-  map<string, ONNX_LAYERS> map_layers = create_enum_map();
-  int dev = DEV_CPU;
+  vector<onnx::NodeProto> nodes = get_graph_nodes(graph); // Nodes == model layers
 
-  for (onnx::NodeProto node : nodes)
-  {
-    string layer_type_name = node.op_type();
-    ONNX_LAYERS layer_type = map_layers[layer_type_name];
-    string name = node.name();
-
-    switch (layer_type)
-    {
-    case ONNX_LAYERS::CONV:
-    {
-      vector<Tensor *> conv_tensors;
-
-      string weights_name = node.input(1); // Get weights and dims
-      vector<float> *weights = &(map_init_values[weights_name]);
-      vector<int> dims = map_init_dims[weights_name];
-
-      Tensor * temp = new Tensor(dims, nullptr, dev);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, temp);
-      conv_tensors.push_back(temp);
-
-      if (node.input_size() > 2)
-      { // This means we also have a bias
-        string bias_name = node.input(2);
-        vector<float> *bias = &(map_init_values[bias_name]);
-        vector<int> bias_shape;
-        bias_shape.push_back(bias->size());
-        temp = new Tensor(bias_shape, nullptr, dev);
-        COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, temp);
-        conv_tensors.push_back(temp);
-      }
-
-      tensors[name] = conv_tensors;
-      break;
-    }
-
-    case ONNX_LAYERS::DENSE:
-    {
-      vector<Tensor *> dense_tensors;
-
-      string weights_name = node.input(1); // Get weights and dims
-      vector<float> *weights = &(map_init_values[weights_name]);
-      vector<int> dims = map_init_dims[weights_name];
-
-      Tensor * temp = new Tensor(dims, nullptr, dev);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, temp);
-      dense_tensors.push_back(temp);
-
-      if (node.input_size() > 2)
-      {
-        string bias_name = node.input(2);
-        vector<float> *bias = &(map_init_values[bias_name]);
-        vector<int> bias_dims = map_init_dims[bias_name];
-        temp = new Tensor(bias_dims, nullptr, dev);
-        COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, temp);
-        dense_tensors.push_back(temp);
-      }
-
-      tensors[name] = dense_tensors;
-      break;
-    }
-
-    default:
-      //cout << "The layer with type " << layer_type_name << " has no trainable parameters " << endl;
-      continue;
-      break;
-    }
-  }
-
-  return tensors;
+  return get_tensors_from_onnx_nodes(nodes, map_init_values, map_init_dims);
 }
 
 // Shows basic metadata of the model if the log level is DEBUG or lower
@@ -678,6 +602,66 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
 
   log_string("Finished importing net from ONNX", log_level, LOG_LEVEL::DEBUG);
   return imported_net;
+}
+
+void set_weights_from_model_proto(Net *net, onnx::ModelProto model_proto)
+{
+  map<string, vector<Tensor *>> tensors = get_tensors_from_onnx(model_proto);
+  for (Layer *l : net->layers)
+  {
+    // Check if we have tensors with weights for the current layer
+    if (!tensors.count(l->name))
+      continue;
+
+    // Get the layer weights
+    vector<Tensor *> layer_tensors = tensors[l->name];
+
+    // Apply the new weights
+    update_layer_weights(l, layer_tensors);
+  }
+
+  // Copy the new weights to devices
+  share_weights(net);
+
+  // Erase the map we used to free the memory
+  map<string, vector<Tensor *>>::iterator it;
+  vector<Tensor *> delete_tensors;
+  for (it = tensors.begin(); it != tensors.end(); ++it)
+  {
+    delete_tensors = it->second;
+    for (int i = 0; i < delete_tensors.size(); ++i)
+      delete delete_tensors[i];
+  }
+}
+
+void apply_grads_from_model_proto(Net *net, onnx::ModelProto model_proto)
+{
+  map<string, vector<Tensor *>> tensors = get_tensors_from_onnx(model_proto);
+  for (Layer *l : net->layers)
+  {
+    // Check if we have tensors with gradients for the current layer
+    if (!tensors.count(l->name))
+      continue;
+
+    // Get the layer gradients
+    vector<Tensor *> layer_tensors = tensors[l->name];
+
+    // Apply the gradients
+    apply_grads_to_layer(l, layer_tensors);
+  }
+
+  // Erase the map we used to free the memory
+  map<string, vector<Tensor *>>::iterator it;
+  vector<Tensor *> delete_tensors;
+  for (it = tensors.begin(); it != tensors.end(); ++it)
+  {
+    delete_tensors = it->second;
+    for (int i = 0; i < delete_tensors.size(); ++i)
+      delete delete_tensors[i];
+  }
+
+  // Copy the new weights to devices
+  share_weights(net);
 }
 
 #endif // defined(cPROTO)

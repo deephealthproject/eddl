@@ -187,9 +187,6 @@ TEST(TensorTestSuite, tensor_repeat_timed){
     clock_t begin = clock();
     for(int i=0; i<times; i++){
         Tensor::repeat(t1, factor, 0, t1_res);
-//        tensorNN::ReLu(t1_out, t1_out);
-//        tensorNN::repeat_batch(t1, t1_out);
-//        tensorNN::Conv2D(cd);
     }
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
@@ -198,13 +195,7 @@ TEST(TensorTestSuite, tensor_repeat_timed){
 
     // Delete tensors
     delete t1; delete t1_res;
-
-//    // Print
-//    t1->print();
-//    t1_out->print();
     ASSERT_TRUE(elapsed_secs<1000);  // Dummy test. Just for debugging
-
-
 }
 
 
@@ -244,3 +235,71 @@ TEST(TensorTestSuite, tensor_repeat){
     delete t1_gpu; delete t1_gpu_res;
 #endif
 }
+
+TEST(TensorTestSuite, tensor_tile){
+    Tensor* t1 = new Tensor({1, 2}, {2, 1}, DEV_CPU);
+    Tensor* t1_ref = new Tensor({1,1, 2,2, 1,1, 2,2}, {4, 2}, DEV_CPU);
+
+//    t1->print(0);
+    Tensor* t1_res = Tensor::tile(t1, {2, 2});
+//    t1_res->print(0);
+    ASSERT_TRUE(Tensor::equivalent(t1_res, t1_ref, 1e-3f, 0.0f, true, true));
+
+    Tensor* t2 = new Tensor({1,2,3}, {3, 1}, DEV_CPU);
+    Tensor* t2_ref = new Tensor({1,1,1, 2,2,2, 3,3,3}, {3, 3}, DEV_CPU);
+
+//    t2->print(0);
+    Tensor* t2_res = Tensor::tile(t2, {1, 3});
+//    t2_res->print(0);
+
+    ASSERT_TRUE(Tensor::equivalent(t2_res, t2_ref, 1e-3f, 0.0f, true, true));
+
+    // Test GPU
+#ifdef cGPU
+    // Test #1
+    Tensor* t1_cpu = Tensor::randn({1, 3, 1, 1});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+
+    Tensor* t1_cpu_res = Tensor::tile(t1_cpu, {1, 1, 128, 128});
+    Tensor* t1_gpu_res = Tensor::tile(t1_gpu, {1, 1, 128, 128});; t1_gpu_res->toCPU();
+    ASSERT_TRUE(Tensor::equivalent(t1_cpu_res, t1_gpu_res, 1e-3f, 0.0f, true, true));
+
+    delete t1_cpu; delete t1_cpu_res;
+    delete t1_gpu; delete t1_gpu_res;
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_broadcast){
+    Tensor* t1 = new Tensor({1, 2, 3}, {3}, DEV_CPU);
+    Tensor* t1_t2_ref = new Tensor({1,1,1,1, 2,2,2,2, 3,3,3,3}, {3, 4}, DEV_CPU);
+    Tensor* t2 = Tensor::zeros(t1_t2_ref->shape, DEV_CPU);
+
+//    t1->print(0);
+//    t2->print(0);
+    Tensor* t1_res = Tensor::broadcast(t1, t2);
+//    t1_res->print(0);
+    ASSERT_TRUE(Tensor::equivalent(t1_res, t1_t2_ref, 1e-3f, 0.0f, true, true));
+
+    Tensor* t2_res = Tensor::broadcast(t2, t1);  // Should be commutative
+//    t1_res->print(0);
+    ASSERT_TRUE(Tensor::equivalent(t2_res, t1_t2_ref, 1e-3f, 0.0f, true, true));
+
+    // Test GPU
+#ifdef cGPU
+    // Test #1
+    Tensor* t1_cpu = Tensor::randn({3});
+    Tensor* t2_cpu = Tensor::randn({1, 3, 224, 224});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
+
+    Tensor* t1_cpu_res = Tensor::broadcast(t1_cpu, t2_cpu);
+    Tensor* t1_gpu_res = Tensor::broadcast(t1_gpu, t2_gpu); t1_gpu_res->toCPU();
+    ASSERT_TRUE(Tensor::equivalent(t1_cpu_res, t1_gpu_res, 1e-3f, 0.0f, true, true));
+
+    delete t1_cpu; delete t1_cpu_res;
+    delete t1_gpu; delete t1_gpu_res;
+#endif
+}
+
+//vector<vector<int>> res = cartesian_product({{0,1}, {0,1}, {0,1}});

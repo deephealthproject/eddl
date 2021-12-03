@@ -27,17 +27,14 @@
 | Embedding | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Turns positive integers (indexes) into dense vectors of fixed size; (also known as mapping). e.g. `[[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]` |
 | Transpose | 🟢️️ | 🟢️️ | 🟢️️ | ️🟢️️ | Permute the last two dimensions |
 | ConstOfTensor | 🟢️️ | 🟢️️ | 🟢️️ | 🟢️ | Repeats a tensor across the batch |
-| Equal | 🟢️️ | 🟢️️ | 🟢️️ | ️🔴️ | Return (x1 == x2) element-wise |
 | Expand        |  🟢️️| 🟢️️ |🟢️️ | 🟢️ | Returns a layer with singleton dimensions expanded to a larger size |
 | Where | 🟢️️ | 🟢️️ | 🟢️️ | ️🔴️ | Return elements chosen from x or y depending on condition |
 | Resize          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | Resize the input image to the given size. `[height, width]` |
 | Clamp / Clip          | 🟢️️ | 🟢️️ |🟢️️ | 🟢️ | Clamps all elements in input into the range `[min, max]`.  |
 | Repeat          | 🟢️️ | 🟢️️ |🟢️️ | 🔴️️ | Repeats the elements of a tensor along the specified dimension. (Elements in an axis can be repeated independently)  |
-| Tile          | 🔴️️ | 🔴 |🔴️ | 🔴️️ | Repeats the elements of a tensor along the specified dimensions.  |
-| Round          | 🔴️️ | 🔴️️ | 🔴️️ | 🔴️️ | Round of the elements of input |
-| Ceil          | 🔴️ | 🔴️️ | 🔴️ | 🔴️️ | Ceil of the elements of input  |
-| Floor          | 🔴️️ | 🔴 |🔴️ | 🔴️️ | Floor of the elements of input  |
-| Broadcast          | 🔴️️ | 🔴 |🔴️ | 🔴️️ | Produce an object that mimics broadcasting. |
+| Tile          | 🟢️️ | 🟢️️ |🟢️️ | 🔴️️ | Repeats the elements of a tensor along the specified dimensions.  |
+| Broadcast          | 🟢️️ | 🟢️️ |🟢️️ | 🔴️️ | Produce an object that mimics broadcasting. |
+| Shape          | 🟢️️ | 🟢️️ |🟢️️️ | 🔴️️ | Returns the shape of its parent as his output |
 
 
 ## Activations
@@ -185,7 +182,10 @@ Apply data transformations with random parametrization.
 | Pow           | 🟢️️ | 🟢️️ |🟢️️ | 🟢 | |
 | Sqrt          |  🟢️️| 🟢️️ |🟢️️ | 🟢️️ | |
 | Sub           | 🟢️️ | 🟢️️ |🟢️️ | 🟢️️ | |
-
+| Round          | 🔴️️ | 🔴️️ | 🔴️️ | 🔴️️ | Round of the elements of input |
+| Ceil          | 🔴️ | 🔴️️ | 🔴️ | 🔴️️ | Ceil of the elements of input  |
+| Floor          | 🔴️️ | 🔴 |🔴️ | 🔴️️ | Floor of the elements of input  |
+| Equal | 🟢️️ | 🟢️️ | 🟢️️ | ️🔴️ | Return (x1 == x2) element-wise |
 
 ## Reduction layers
 

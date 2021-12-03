@@ -136,10 +136,10 @@ public:
     void backward() override;
 
 	// Sets the weights to the values of the parameter w
-	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+	void update_weights(vector<Tensor*> weights) override;
 
 	// Adds the values of gw to the current weights of the layer
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+	void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
 
 	// Sets to 0.0 the tensors with the accumulated gradients for W and bias
 	void reset_accumulated_gradients() override;
@@ -252,6 +252,79 @@ public:
 
 };
 
+class LTile : public LinLayer {
+public:
+    static int total_layers;
+    TileDescriptor *td;
+
+    // constructors and clones
+    LTile(Layer *parent, const vector<int>& repeats, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    ~LTile() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
+
+class LBroadcast : public LinLayer {
+public:
+    static int total_layers;
+    TileDescriptor *td;
+    bool shapes_swapped;
+    Layer *p1;  // Small
+    Layer *p2;  // Big
+
+    // constructors and clones
+    LBroadcast(Layer *parent1, Layer *parent2, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    ~LBroadcast() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
+class LBypass : public LinLayer {
+public:
+    static int total_layers;
+    string bypass_name;
+
+    // constructors and clones
+    LBypass(Layer *parent, string bypass_name, string name, int dev, int mem);
+    ~LBypass() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    // implementation
+    void mem_delta() override;
+    void free_delta() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
 /// UpSampling3D Layer
 class LUpSampling3D : public LinLayer {
 public:
@@ -354,27 +427,6 @@ public:
 
 };
 
-/// Transpose Layer
-class LTranspose : public LinLayer {
-public:
-    static int total_layers;
-    vector<int> dims;
-    vector<int> rdims;
-
-    // constructors and clones
-    LTranspose(Layer *parent, vector<int> dims, string name, int dev, int mem);
-
-    Layer *share(int c, int bs, vector<Layer *> p) override;
-
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-    void forward() override;
-
-    void backward() override;
-
-    string plot(int c) override;
-
-};
 
 /// Drop-out Layer
 class LDropout : public LinLayer {

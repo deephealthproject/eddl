@@ -128,8 +128,8 @@ Numpy-like operations over a raw-tensor object
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
 | repeat        | 🟢️    | 🟢️️️ ️   |  Repeats the elements of a tensor along the specified dimension |
-| tile        | 🔴️️    | 🔴️️️ ️   |  Repeats the elements of a tensor along the specified dimensions |
-| broadcast        | 🔴️️    | 🔴️️️ ️   |  Produce an object that mimics broadcasting. |
+| tile        | 🟢️    | 🟢️️️ ️   |  Repeats the elements of a tensor along the specified dimensions |
+| broadcast        | 🟢️    | 🟢️️️ ️   |  Produce an object that mimics broadcasting. |
 
 
 ### Adding and removing elements

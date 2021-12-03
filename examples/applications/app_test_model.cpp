@@ -8,8 +8,8 @@ using namespace eddl;
 
 Tensor* preprocess_input(Tensor* input, const vector<int> &target_size, bool normalize=true, bool standarize=true){
     // Define preprocessing constants
-    auto* mean_vec = new Tensor( {0.485, 0.456, 0.406}, {3, 1}, input->device);
-    auto* std_vec = new Tensor( {0.229, 0.224, 0.225}, {3, 1}, input->device);
+    auto* mean_vec = new Tensor( {0.485, 0.456, 0.406}, {3}, input->device);
+    auto* std_vec = new Tensor( {0.229, 0.224, 0.225}, {3}, input->device);
 
     // ==========================================================================
     // ====== SANITY CHECKS =====================================================
@@ -40,11 +40,8 @@ Tensor* preprocess_input(Tensor* input, const vector<int> &target_size, bool nor
 
     // Standarization: (X-mean)/std
     if(standarize){
-//    Tensor* mean = Tensor::broadcast(mean_vec, new_input);
-//    Tensor* std = Tensor::broadcast(std_vec, new_input);
-        // 1) [There is no broadcasting...] Repeat dimensions  => Temp!
-        Tensor* mean = Tensor::repeat(mean_vec, target_size[0]*target_size[1], 1);  mean->reshape_(new_input->shape);
-        Tensor* std =  Tensor::repeat(std_vec, target_size[0]*target_size[1], 1); std->reshape_(new_input->shape);
+        Tensor* mean = Tensor::broadcast(mean_vec, new_input);
+        Tensor* std = Tensor::broadcast(std_vec, new_input);
         new_input->sub_(mean);
         new_input->div_(std);
 
@@ -77,7 +74,7 @@ int main(int argc, char **argv) {
 //    string model_path = "models/vgg16-7.onnx";  // 3xHxW  // okay
 //    string model_path = "models/bvlcalexnet-3.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
 //    string model_path = "models/bvlcalexnet-12.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
-//    string model_path = "models/googlenet-3.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
+//    string model_path = "models/googlenet-3_simp.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
 //    string model_path = "models/densenet-3.onnx";  // 3x224x224  // okay
 //    string model_path = "models/inception-v1-3.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
 //    string model_path = "models/efficientnet-lite4-11.onnx";  // 224x224x3  // The onnx node 'LRN' is not supported yet
@@ -102,9 +99,9 @@ int main(int argc, char **argv) {
     int in_height = 224;
     int in_width = 224;
     vector<int> input_shape = {in_channels, in_height, in_width};
-    vector<int> dimensions_order = {0, 1, 2, 3};
-    // ==========================================================================
-
+//    vector<int> dimensions_order = {0, 3, 1, 2};
+//    // ==========================================================================
+//    input_shape = {input_shape[dimensions_order[1]], input_shape[dimensions_order[2]], input_shape[dimensions_order[3]]};
 
     // ==========================================================================
     // ====== LOAD ONNX MODEL ===================================================
@@ -125,12 +122,12 @@ int main(int argc, char **argv) {
 
     // Step 4 (optional): Add a softmax layer to get probabilities directly from the model, since it
     // does not include the softmax layer.
-//    layer input = net->lin[0];   // getLayer(net,"input_layer_name");
-//    layer output = net->lout[0];   // getLayer(net,"output_layer_name");
-//    layer new_output = Softmax(output);
-//
-//    // Create model
-//    net = Model({input},{new_output});
+    layer input = net->lin[0];   // getLayer(net,"input_layer_name");
+    layer output = net->lout[0];   // getLayer(net,"output_layer_name");
+    layer new_output = Softmax(output);
+
+    // Create model
+    net = Model({input},{new_output});
     // ==========================================================================
 
     // ==========================================================================
@@ -156,7 +153,7 @@ int main(int argc, char **argv) {
 
     // Step 3: Preprocess input. (Look up the preprocessing required at the model's page)
     Tensor* image_preprocessed = preprocess_input(image, {in_height, in_width});
-    image_preprocessed->permute_(dimensions_order);
+//    image_preprocessed->permute_(dimensions_order);
 
     // Predict image. Returns a vector of tensors (here one).
     vector<Tensor*> outputs = net->predict({image_preprocessed});

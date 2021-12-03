@@ -124,9 +124,9 @@ public:
 
     virtual void backward() {}
 
-	virtual void update_weights(Tensor* w, Tensor* bias) {}
+	virtual void update_weights(vector<Tensor*> weights) {}
 
-	virtual void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {}
+	virtual void accumulate_accumulated_gradients(vector<Tensor*> grads) {}
 
 	virtual void reset_accumulated_gradients() {}
 
@@ -161,9 +161,9 @@ public:
 
     void backward() override {}
 
-	void update_weights(Tensor* w, Tensor* bias) override {}
+	void update_weights(vector<Tensor*> weights) override {}
 
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) override {}
+	void accumulate_accumulated_gradients(vector<Tensor*> grads) override {}
 
 	void reset_accumulated_gradients() override {}
 

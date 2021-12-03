@@ -501,4 +501,78 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
   }
 }
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+void update_layer_weights(Layer *layer, vector<Tensor *> weights)
+{
+  if (weights.size() == 0)
+  {
+    cerr << "[ONNX::WARNING] Trying to update the weights of the layer \""
+         << layer->name << "\" with an empty list of tensors." << endl;
+    return;
+  }
+
+  if (LConv *l = dynamic_cast<LConv *>(layer))
+    update_conv_weights(l, weights);
+  else if (LDense *l = dynamic_cast<LDense *>(layer))
+    update_dense_weights(l, weights);
+  else
+    cerr << "The layer " << layer->name << " has no support for setting weights" << endl;
+}
+
+void apply_grads_to_layer(Layer *layer, vector<Tensor *> grads)
+{
+  if (grads.size() == 0)
+  {
+    cerr << "[ONNX::WARNING] Trying to apply gradients to the layer \""
+         << layer->name << "\" with an empty list of tensors." << endl;
+    return;
+  }
+
+  if (LConv *l = dynamic_cast<LConv *>(layer))
+    apply_grads_to_conv(l, grads);
+  else if (LDense *l = dynamic_cast<LDense *>(layer))
+    apply_grads_to_dense(l, grads);
+  else
+    cerr << "The layer " << layer->name << " has no support for applying gradients" << endl;
+}
+
+map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto> &nodes,
+                                                          map<string, vector<float>> &map_init_values,
+                                                          map<string, vector<int>> &map_init_dims)
+{
+  map<string, ONNX_LAYERS> map_layers = create_enum_map(); // To indentify the layers types
+  int dev = DEV_CPU;
+
+  map<string, vector<Tensor *>> tensors; // To store the layers weights tensors
+  for (onnx::NodeProto node : nodes)
+  {
+    string layer_type_name = node.op_type();
+    ONNX_LAYERS layer_type = map_layers[layer_type_name];
+    string name = node.name();
+
+    switch (layer_type)
+    {
+      case ONNX_LAYERS::CONV:
+      {
+        tensors[name] = get_conv_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::DENSE:
+      {
+        tensors[name] = get_dense_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      default:
+        // This layer has no trainable parameters
+        continue;
+        break;
+    }
+  }
+
+  return tensors;
+}
+
 #endif // defined(cPROTO)

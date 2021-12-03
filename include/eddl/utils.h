@@ -64,6 +64,10 @@ int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges);
 vector<int> expand_shape(const vector<int>& ishape, int size);
 int* expand_indices(const vector<int>& ishape, int size);
 
+vector<int> getBroadcastShape(vector<int> shape1, vector<int> shape2);
+
+vector<int> getTilesRepetitions(const vector<int>& broadcast_from, const vector<int>& broadcast_to);
+
 bool is_number(const std::string& s);
 
 bool pathExists(const std::string &s);
@@ -79,7 +83,6 @@ vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch=fal
 
 vector<int> address2indices(int address, const vector<int>& shape, const vector<int>& strides);
 unsigned int indices2address(const vector<int>& indices, const vector<int>& strides);
-
 // https://isocpp.org/wiki/faq/inline-functions#inline-member-fns
 inline int fast_indices2address(const int* indices, const int* strides, int ndim){
     int address = 0;
@@ -89,14 +92,16 @@ inline int fast_indices2address(const int* indices, const int* strides, int ndim
     return address;
 }
 
-
 inline void fast_address2indices( int address, int* indices, const int* shape, const int* strides, int ndim){
     for(int i=0; i<ndim; i++) {
         indices[i] = address / strides[i] % shape[i];
     }
 }
 
+
 bool isPaddingAsymmetric(vector<int> padding);
+
+vector<vector<int>> cartesian_product(const vector<vector<int>>& vectors);
 
 
 template<typename T>

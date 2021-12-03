@@ -1074,6 +1074,44 @@ namespace eddl {
     layer Repeat(layer parent, const vector<unsigned int>& repeats, unsigned int axis, string name="");
     layer Repeat(layer parent, unsigned int repeats, unsigned int axis, string name="");
 
+    /**
+      *  @brief Constructs a tensor by repeating the elements of input. The repeats argument specifies the number of repetitions in each dimension.
+      *
+      *  @param parent  Parent layer
+      *  @param repeats The number of repetitions per dimension.
+      *  @return     Output of repeat operation
+    */
+    layer Tile(layer parent, const vector<int>& repeats, string name="");
+
+    /**
+      *  @brief Prepares the output of the smaller layer to be broadcasted into the bigger one (parent1 or parent2)
+      *  Example:
+      *     - f(P1(3), P2(4,2,3,5)) => P1 is x.  (P2 has no delta)
+      *     - f(P1(4,2,3,5), P2(3)) => P2 is x.  (P1 has no delta)
+      *
+      *  @param parent1  Parent layer
+      *  @param parent2  Parent layer
+      *  @return     Output of repeat operation
+    */
+    layer Broadcast(layer parent1, layer parent2, string name="");
+
+    /**
+      *  @brief Virtual layer. Propagates the output of the parent as their own. Used internally for ONNX.
+      *
+      *  @param parent  Parent layer
+      *  @param bypass_name  Name of the layer being bypassed (e.g.: "bypass_unknown_layer)
+      *  @return     Output of repeat operation
+    */
+    layer Bypass(layer parent, string bypass_name="", string name="");
+
+    /**
+      *  @brief This layer returns the shape of its parent as his output
+      *
+      *  @param parent  Parent layer
+      *  @param include_batch  If True, the batch dimension is included in the output
+      *  @return     Output of repeat operation
+    */
+    layer Shape(layer parent, bool include_batch=true, string name="");
 
     /**
       *  @brief Dimension of size one is removed at the specified position. (Batch dimension is ignored)

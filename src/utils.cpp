@@ -480,14 +480,56 @@ int* expand_indices(const vector<int>& ishape, int size){
             B_pos += B_idx * ostride[d];
         }
 
-        if(B_pos!=i){
-            int asd = 3;
-        }
         // Save address translation
         addresses[i] = A_pos;
     }
 
     return addresses;  // Be careful! It's easy to forget about this pointer and have a memory leak
+}
+
+vector<int> getBroadcastShape(vector<int> shape1, vector<int> shape2){
+    // Normalize broadcast shape: (3)*(1,3), (3)*(6,2,5,3,5), (5, 3)*(5, 3),...
+    vector<int> broadcast_shape;
+
+    // Check dimensions
+    if (shape1.size() == shape2.size()){  // Same shape
+        broadcast_shape = shape2;
+
+    }else if(shape1.size()==1){  // Shape1 has 1 dimension
+        // Broadcast: [3] AND [12, 3, 7, 7] => [1, 3, 1, 1]
+        for(int i = 0; i < shape2.size(); ++i) {
+            if (shape1[0] == shape2[i]) {
+                broadcast_shape.push_back(shape2[i]);
+            }else{ broadcast_shape.push_back(1); }
+        }
+    }else{
+        // None
+    }
+
+    return broadcast_shape;
+}
+
+vector<int> getTilesRepetitions(const vector<int>& broadcast_from, const vector<int>& broadcast_to){
+    // Compute repetitions to perform a given broadcast: (3, 1, 1)*(3, 28, 28) => (1, 28, 28)
+    vector<int> tile_repetitions;  // Tile repetitions
+
+    // Check dimensions
+    if(broadcast_from.size()!=broadcast_from.size()){
+        msg("'broadcast_from' and 'broadcast_to' must have the same number of dimensions", "utils::getTilesRepetitions");
+    }
+
+    // Compute repetitions
+    for(int i=0; i<broadcast_to.size(); i++){
+        if(broadcast_from[i]==broadcast_to[i]) { // 3=>3: No repeat
+            tile_repetitions.push_back(1);
+        }else if(broadcast_from[i]==1){ // 1=>5: Repeat 5 times
+            tile_repetitions.push_back(broadcast_to[i]);
+        }else{
+            // Error
+        }
+    }
+
+    return tile_repetitions;
 }
 
 bool is_number(const std::string& s){
@@ -633,6 +675,23 @@ bool isPaddingAsymmetric(vector<int> padding){
     return false;
 }
 
+vector<vector<int>> cartesian_product(const vector<vector<int>>& vectors){
+    vector<vector<int>> results = {{}};
+    for (auto &vec : vectors){ // Vectors: {0, 1}, {5, 6, 7}, {8, 9}
+        vector<vector<int>> temp;
+
+        for(auto &res : results){  // Previous solution: {{0}, {1}}
+            for(auto &elem : vec){  // Elements 1, 2, 3,...
+                vector<int> new_vec = res;
+                new_vec.push_back(elem);
+                temp.push_back(new_vec);
+            }
+        }
+        results.clear();
+        results = temp;
+    }
+    return results;
+}
 
 WrappingMode getWrappingMode(string mode){
     if(mode == "constant"){
