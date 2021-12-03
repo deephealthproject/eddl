@@ -1075,6 +1075,15 @@ namespace eddl {
     layer Repeat(layer parent, unsigned int repeats, unsigned int axis, string name="");
 
     /**
+      *  @brief Constructs a tensor by repeating the elements of input. The repeats argument specifies the number of repetitions in each dimension.
+      *
+      *  @param parent  Parent layer
+      *  @param repeats The number of repetitions per dimension.
+      *  @return     Output of repeat operation
+    */
+    layer Tile(layer parent, const vector<int>& repeats, string name="");
+
+    /**
       *  @brief Virtual layer. Propagates the output of the parent as their own. Used internally for ONNX.
       *
       *  @param parent  Parent layer

@@ -737,6 +737,19 @@ namespace eddl {
         return new LRepeat(parent, vrepeats, axis, name, DEV_CPU, 0);
     }
 
+    layer Tile(layer parent, const vector<int>& repeats, string name){
+        // Inset one at the batch dimension
+        vector<int> repeats_with_single_batch = repeats;
+        repeats_with_single_batch.insert(repeats_with_single_batch.begin(), 1);
+
+        // Check dimensions
+        if(parent->output->ndim != repeats_with_single_batch.size()){
+            msg("The number of dimensions of the output layer must match the size of 'repeats' (excluding batch)", "LTile::LTile");
+        }
+
+        return new LTile(parent, repeats_with_single_batch, name, DEV_CPU, 0);
+    }
+
     layer Bypass(layer parent, string bypass_name, string name){
         return new LBypass(parent, bypass_name, name, DEV_CPU, 0);
     }
