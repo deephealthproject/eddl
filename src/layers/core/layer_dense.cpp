@@ -70,14 +70,30 @@ void LDense::backward() {
     if (trainable) if(reg != nullptr) {reg->apply(this->W);}
 }
 
-void LDense::update_weights(Tensor* w, Tensor* bias) {
-    Tensor::copy( w, this->W );
-    if ( bias != nullptr ) Tensor::copy( bias, this->bias );
+void LDense::update_weights(vector<Tensor*> weights) {
+    if (weights.size() == 2) {
+        Tensor::copy(weights[0], this->W);
+        Tensor::copy(weights[1], this->bias);
+    } else if (weights.size() == 1) {
+        Tensor::copy(weights[0], this->W);
+    } else {
+        cerr << "[WARNING - LDense::update_weights] "
+             << "Unexpected number of weights tensors recieved "
+             << "(weights.size()=" << weights.size() << ")" << endl;
+    }
 }
 
-void LDense::accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {
-    W->add_( gw );
-    if ( gbias != nullptr ) bias->add_( gbias );
+void LDense::accumulate_accumulated_gradients(vector<Tensor*> grads) {
+    if (grads.size() == 2) {
+        W->add_(grads[0]);
+        bias->add_(grads[1]);
+    } else if (grads.size() == 1) {
+        W->add_(grads[0]);
+    } else {
+        cerr << "[WARNING - LDense::accumulate_accumulated_gradients] "
+             << "Unexpected number of gradient tensors recieved "
+             << "(grads.size()=" << grads.size() << ")" << endl;
+    }
 
     // Regularizer
     if(reg != nullptr) { reg->apply(this->W); }

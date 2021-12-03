@@ -327,18 +327,12 @@ void build_conv_node(LConv *layer, onnx::GraphProto *graph, bool gradients)
 
 void update_conv_weights(LConv *layer, vector<Tensor *> weights)
 {
-  if (weights.size() > 1)
-    layer->update_weights(weights[0], weights[1]);
-  else
-    layer->update_weights(weights[0]);
+  layer->update_weights(weights);
 }
 
 void apply_grads_to_conv(LConv *layer, vector<Tensor *> grads)
 {
-  if (grads.size() > 1)
-    layer->accumulate_accumulated_gradients(grads[0], grads[1]);
-  else
-    layer->accumulate_accumulated_gradients(grads[0]);
+  layer->accumulate_accumulated_gradients(grads);
 }
 
 vector<Tensor *> get_conv_tensors(onnx::NodeProto &node,
