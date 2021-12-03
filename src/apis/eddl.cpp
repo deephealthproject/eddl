@@ -758,6 +758,10 @@ namespace eddl {
         return new LBypass(parent, bypass_name, name, DEV_CPU, 0);
     }
 
+    layer Shape(layer parent, bool include_batch, string name){
+        return new LShape(parent, include_batch, name, DEV_CPU, 0);
+    }
+
     layer Squeeze(layer parent, const int axis, string name){
         return new LSqueeze(parent, axis, name, DEV_CPU, 0);
     }

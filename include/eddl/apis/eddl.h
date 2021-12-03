@@ -1105,6 +1105,15 @@ namespace eddl {
     layer Bypass(layer parent, string bypass_name="", string name="");
 
     /**
+      *  @brief This layer returns the shape of its parent as his output
+      *
+      *  @param parent  Parent layer
+      *  @param include_batch  If True, the batch dimension is included in the output
+      *  @return     Output of repeat operation
+    */
+    layer Shape(layer parent, bool include_batch=true, string name="");
+
+    /**
       *  @brief Dimension of size one is removed at the specified position. (Batch dimension is ignored)
       *
       *  @param parent  Parent layer
