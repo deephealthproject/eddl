@@ -252,6 +252,29 @@ public:
 
 };
 
+class LTile : public LinLayer {
+public:
+    static int total_layers;
+    TileDescriptor *td;
+
+    // constructors and clones
+    LTile(Layer *parent, const vector<int>& repeats, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    ~LTile() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
+
 class LBypass : public LinLayer {
 public:
     static int total_layers;
