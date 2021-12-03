@@ -519,7 +519,7 @@ void update_layer_weights(Layer *layer, vector<Tensor *> weights)
   else if (LDense *l = dynamic_cast<LDense *>(layer))
     update_dense_weights(l, weights);
   else
-    cerr << "The layer " << l->name << " has no support for setting weights" << endl;
+    cerr << "The layer " << layer->name << " has no support for setting weights" << endl;
 }
 
 void apply_grads_to_layer(Layer *layer, vector<Tensor *> grads)
@@ -536,7 +536,7 @@ void apply_grads_to_layer(Layer *layer, vector<Tensor *> grads)
   else if (LDense *l = dynamic_cast<LDense *>(layer))
     apply_grads_to_dense(l, grads);
   else
-    cerr << "The layer " << l->name << " has no support for applying gradients" << endl;
+    cerr << "The layer " << layer->name << " has no support for applying gradients" << endl;
 }
 
 map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto> &nodes,
