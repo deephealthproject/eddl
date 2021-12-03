@@ -232,6 +232,41 @@ Example:
 
 .. code-block:: c++
 
-   l = Repeat(l, 3, 1);  // Repeat depth (axis=3) 3 times
-   l = Repeat(l, {3, 2, 1}, 1);  // Repeat col 1 => 3 times; col 2 => 2 times; col 3 => 1 time. (repeat=[3,2,1], axis=1)
+    // Example #1:
+    l = Repeat(l, 3, 1);  // Repeat depth (axis=3) 3 times
+    l = Repeat(l, {3, 2, 1}, 1);  // Repeat col 1 => 3 times; col 2 => 2 times; col 3 => 1 time. (repeat=[3,2,1], axis=1)
 
+    // Example #2:
+    l = Reshape(l,{1,28,28});
+    l = Repeat(l, 3, 0);  // l => (3, 28, 28)
+
+
+
+Tile
+-------
+
+.. doxygenfunction:: eddl::Tile(layer parent, const vector<int>& repeats, string name="");
+
+Example:
+
+.. code-block:: c++
+
+    l = Reshape(l,{1,28,28});
+    l = Tile(l, {3, 1, 1});  // l => (3, 28, 28)
+
+
+
+Broadcasting
+-------------
+
+.. doxygenfunction:: eddl::Broadcast(layer parent1, layer parent2, string name="");
+
+Example:
+
+.. code-block:: c++
+
+    // Normalize: (X-mean) / std
+    layer mean = ConstOfTensor(new Tensor( {0.485, 0.456, 0.406}, {3}, DEV_CPU));
+    layer std = ConstOfTensor(new Tensor( {0.229, 0.224, 0.225}, {3}, DEV_CPU));
+    x = Sub(x, Broadcast(mean, x));
+    x = Div(x, Broadcast(std, x));
