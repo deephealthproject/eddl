@@ -64,6 +64,10 @@ int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges);
 vector<int> expand_shape(const vector<int>& ishape, int size);
 int* expand_indices(const vector<int>& ishape, int size);
 
+vector<int> getBroadcastShape(vector<int> shape1, vector<int> shape2);
+
+vector<int> getTilesRepetitions(const vector<int>& broadcast_from, const vector<int>& broadcast_to);
+
 bool is_number(const std::string& s);
 
 bool pathExists(const std::string &s);
