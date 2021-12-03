@@ -252,6 +252,31 @@ public:
 
 };
 
+class LBypass : public LinLayer {
+public:
+    static int total_layers;
+    string bypass_name;
+
+    // constructors and clones
+    LBypass(Layer *parent, string bypass_name, string name, int dev, int mem);
+    ~LBypass() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    // implementation
+    void mem_delta() override;
+    void free_delta() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
 /// UpSampling3D Layer
 class LUpSampling3D : public LinLayer {
 public:
