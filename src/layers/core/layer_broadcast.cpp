@@ -67,13 +67,14 @@ LBroadcast::LBroadcast(Layer *parent1, Layer *parent2, string name, int dev, int
     output = new Tensor(oshape, dev);
 
     // Set parents
-    p1=parent1; p2=parent2;  // Keep references in the same order
     if(!this->shapes_swapped){  // parent1 smaller than parent2
         parent1->addchild(this);
         addparent(parent1);
+        p1=parent1; p2=parent2;
     }else{   // parent2 smaller than parent1
         parent2->addchild(this);
         addparent(parent2);
+        p1=parent2; p2=parent1;
     }
 }
 
@@ -100,14 +101,14 @@ void LBroadcast::backward(){
 }
 
 Layer *LBroadcast::share(int c, int bs, vector<Layer *> p){
-    auto *n = new LBroadcast(this->p1, this->p2, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LBroadcast(p[0], this->p2, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LBroadcast::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LBroadcast(this->p1, this->p2, this->name, todev, this->mem_level);
+    auto *n = new LBroadcast(p[0], this->p2, this->name, todev, this->mem_level);
     n->orig = this;
 
     return n;
