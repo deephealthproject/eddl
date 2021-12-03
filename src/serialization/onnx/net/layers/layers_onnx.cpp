@@ -539,4 +539,40 @@ void apply_grads_to_layer(Layer *layer, vector<Tensor *> grads)
     cerr << "The layer " << l->name << " has no support for applying gradients" << endl;
 }
 
+map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto> &nodes,
+                                                          map<string, vector<float>> &map_init_values,
+                                                          map<string, vector<int>> &map_init_dims)
+{
+  map<string, ONNX_LAYERS> map_layers = create_enum_map(); // To indentify the layers types
+  int dev = DEV_CPU;
+
+  map<string, vector<Tensor *>> tensors; // To store the layers weights tensors
+  for (onnx::NodeProto node : nodes)
+  {
+    string layer_type_name = node.op_type();
+    ONNX_LAYERS layer_type = map_layers[layer_type_name];
+    string name = node.name();
+
+    switch (layer_type)
+    {
+      case ONNX_LAYERS::CONV:
+      {
+        tensors[name] = get_conv_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::DENSE:
+      {
+        tensors[name] = get_dense_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      default:
+        // This layer has no trainable parameters
+        continue;
+        break;
+    }
+  }
+
+  return tensors;
+}
+
 #endif // defined(cPROTO)
