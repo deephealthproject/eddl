@@ -402,27 +402,6 @@ public:
 
 };
 
-/// Transpose Layer
-class LTranspose : public LinLayer {
-public:
-    static int total_layers;
-    vector<int> dims;
-    vector<int> rdims;
-
-    // constructors and clones
-    LTranspose(Layer *parent, vector<int> dims, string name, int dev, int mem);
-
-    Layer *share(int c, int bs, vector<Layer *> p) override;
-
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-    void forward() override;
-
-    void backward() override;
-
-    string plot(int c) override;
-
-};
 
 /// Drop-out Layer
 class LDropout : public LinLayer {

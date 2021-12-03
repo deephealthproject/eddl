@@ -2947,9 +2947,10 @@ public:
       *  @brief Returns a new tensor A to be broadcasted into B
       *   @param A Input tensor.
       *   @param B Input tensor.
+      *   @param output Output tensor (optional).
       *   @return A new tensor C based on A, but prepared to be broadcasted in to B
     */
-    static Tensor* broadcast(Tensor* A, Tensor* B);
+    static Tensor* broadcast(Tensor* A, Tensor* B, Tensor *output=nullptr);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.
