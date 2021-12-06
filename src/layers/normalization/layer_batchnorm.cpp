@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -21,7 +21,7 @@ using namespace std;
 int LBatchNorm::total_layers = 0;
 
 
-LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem, "batchnorm") {
     input=parent->output;
     isnorm=true;
 
@@ -47,10 +47,11 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     mean = new Tensor(shape, dev);
     mean->fill_(0.0);
     variance = new Tensor(shape, dev);
-    if (momentum > 0.0)
+    if (momentum > 0.0){
         variance->fill_(0.0f);
-    else
+    }else{
         variance->fill_(1.0f);
+    }
 
     bn_mean = new Tensor(shape, dev);
     bn_var = new Tensor(shape, dev);
