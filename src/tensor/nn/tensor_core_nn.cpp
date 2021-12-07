@@ -178,14 +178,14 @@ namespace tensorNN {
         PROFILING_FOOTER(set_select_back);
     }
 
-    void transform(Tensor *A, Tensor* B, int mode) {
+    void transform(Tensor *A, Tensor* B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform) {
 
         PROFILING_HEADER(transform);
 
         if (A->isCPU() && B->isCPU()) {
-            printf("Error, transform_nn not implemented in CPU\n");
-            exit(1);
-            //cpu_transform_nn(A, B, mode);
+            //printf("Error, transform_nn not implemented in CPU\n");
+            //exit(1);
+            fpga_transform_nn(A, B, copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
         }
 #ifdef cGPU
         else if (A->isGPU() && B->isGPU())
@@ -198,7 +198,7 @@ namespace tensorNN {
 #ifdef cFPGA
         else if (A->isFPGA() && B->isFPGA())
         {
-            fpga_transform_nn(A, B, mode);
+            fpga_transform_nn(A, B, copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
         }
 #endif
         PROFILING_FOOTER(transform);

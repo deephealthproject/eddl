@@ -1220,7 +1220,7 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     Output of reshape operation
     */
-    layer Transform(layer parent, int mode, string name = "");
+    layer Transform(layer parent, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transforrm, int mode, string name = "");
 
     /**
       *  @brief Flattens the input. Does not affect the batch size.
@@ -2571,7 +2571,7 @@ namespace eddl {
      *
      *  @return The new model adapted for FPGA
    */
-   model model_for_fpga(model m_src);  
+   model model_for_fpga(model m_src, int kernel_version, int kernel_subversion);  
    void model_to_hls(model m_src);
    void show_weight_stats(model m);
 }

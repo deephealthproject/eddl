@@ -151,7 +151,7 @@ namespace tensorNN{
 
     void set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
     void set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd);
-    void transform(Tensor *A, Tensor *B, int mode);
+    void transform(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
 
     void expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
     void expand_back(Tensor *A, Tensor* B, ExpandDescriptor *sd);

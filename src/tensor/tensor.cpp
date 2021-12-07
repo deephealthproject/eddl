@@ -234,7 +234,7 @@ void Tensor::updateData(float *fptr, void *fptr2, bool setshared){
           #ifdef FPGA_DEBUG_VERBOSE
           printf(" initializing FPGA device\n");
           #endif
-          fpga_init(/*fpga_device*/);
+          fpga_init(2, 8);
           initfpga[fpga_device]=1;
         }
         if (fptr == nullptr) {
@@ -257,7 +257,7 @@ void Tensor::updateData(float *fptr, void *fptr2, bool setshared){
             this->fpga_size = this->size;
             this->fpga_tensor_id = next_fpga_tensor_id;
             next_fpga_tensor_id++;
-            fpga_copy_to_fpga(fptr, this);
+            fpga_copy_to_fpga_good(fptr, this);
             #ifdef FPGA_DEBUG_VERBOSE
             printf("  fpga_ptr and fptr2 were null, we create a buffer with tensor id %d\n", this->fpga_tensor_id);
             #endif
@@ -325,7 +325,7 @@ void Tensor::toCPU(int dev){
 
         // In FPGA the CPU buffer is already allocated, so, there is no need to allocate a new one
         // We simply copy the buffer located at the FPGA to the one located at the CPU
-        fpga_copy_from_fpga(this, this->ptr);
+        fpga_copy_from_fpga_good(this, this->ptr);
         this->device = dev;
         return;
     }
@@ -388,12 +388,12 @@ void Tensor::toFPGA(int dev){
 	cl::Buffer *fpga_ptr = fpga_create_tensor(this->fpga_device, this->size);
 
         if (!initfpga[fpga_device]){
-            fpga_init(/*fpga_device*/);
+            fpga_init(2, 8);
             initfpga[fpga_device] = 1;
         }
 
         this->fpga_ptr = fpga_ptr;
-        fpga_copy_to_fpga(cpu_ptr, this);
+        fpga_copy_to_fpga_good(cpu_ptr, this);
 	// we do not remove the cpu_ptr as is used for cpuemu mode
         //delete cpu_ptr;
     }

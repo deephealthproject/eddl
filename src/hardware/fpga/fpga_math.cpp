@@ -500,6 +500,7 @@ void fpga_mult(Tensor *A, Tensor *B, float v) {
   _debug_fpga_funcs("mult");
   _profile_fpga(_FPGA_MULT, 0);
   _profile_fpga_tensor("A: ", A);
+  //printf("float %f\n", v);
 #ifndef K_ENABLED_MULT
   fpga_cpuemu_mult(A, B, v);
 #else
@@ -1005,6 +1006,7 @@ void fpga_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
 
 #endif
     _profile_fpga(_FPGA_MULT2D, 1);
+    printf("fin mult2D\n");
 }
 
 // -----------------------------------------------------------------

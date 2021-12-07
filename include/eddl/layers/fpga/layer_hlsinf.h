@@ -32,33 +32,42 @@ public:
     int PT, PB, PL, PR;          // padding (top, bottom, left, right)
     int enable_relu;    
     float relu_factor;           // relu factor for leaky relu ( = 0 -> ReLU)
+    int enable_clipping;
+    int min_clip;
+    int max_clip;
+    int enable_stm;
     int enable_maxp;
     int enable_avgp;
-    int enable_clipping;
     int enable_shift;
     int pos_shift;
+    int dir_shift;
+    int enable_batch_norm;
     int enable_add;
-    int enable_stm;
+    int enable_upscale;
+    int dense_operation;
 
     Tensor *filter= nullptr;
     Tensor *bias= nullptr;
     Tensor *input_add= nullptr;
+    Tensor *batch_norm_values= nullptr;
 
     static int total_layers;
 
-    LHLSinf(Layer * parent,  int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
-              int enable_relu, float relu_factor, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, int pos_shift,
-              int enable_add, int enable_stm, string name, int dev, int mem);
+    LHLSinf(Layer * parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
+              int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
+              int enable_avgp, int enable_batch_norm, int enable_add, int enable_upscale, int dense_operation, string name, int dev, int mem) ;
 
-    LHLSinf(vector<Layer *> parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr, 
-		    int enable_relu, float relu_factor, int enable_maxp, int enable_avgp, int enable_clipping, int enable_shift, int pos_shift,
-		    int enable_add, int enable_stm, string name, int dev, int mem);
+    LHLSinf(vector<Layer * >parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
+              int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
+              int enable_avgp, int enable_batch_norm, int enable_add, int enable_upscale, int dense_operation, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
     void resize(int batch) override;
+    int get_trainable_params_count();
+
 
     void forward() override;
 

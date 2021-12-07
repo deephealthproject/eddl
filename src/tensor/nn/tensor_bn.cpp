@@ -131,6 +131,7 @@ namespace tensorNN {
 	printf(" bn_b     : "); _profile_cpu_tensor(bn_b);
 	printf(" bn_mean  : "); _profile_cpu_tensor(bn_mean);
 	printf(" bn_var   : "); _profile_cpu_tensor(bn_var);
+        printf(" epsilin  : %f\n", epsilon); 
 #endif
             cpu_batchnorm_forward(input->shape[0], input->shape[1],
                 input->ndim == 2 ? 1 : input->ndim == 3 ? input->shape[2] : input->shape[2] * input->shape[3],
@@ -143,7 +144,7 @@ namespace tensorNN {
 	printf(" output   : "); _profile_cpu_tensor(output);
 	printf(" opa      : "); _profile_cpu_tensor(opa);
 #endif
-        } else {
+        } else if (input->isGPU()) {
 #ifdef cGPU
             gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],
                 input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
@@ -152,6 +153,15 @@ namespace tensorNN {
                 bn_g != NULL ? bn_g->ptr : NULL,
                 bn_b != NULL ? bn_b->ptr : NULL,
                 bn_mean->ptr, bn_var->ptr, trmode, epsilon, momentum);
+#endif
+        } else {
+#ifdef cFPGA
+            fpga_batchnorm_forward(input->shape[0], input->shape[1],
+                input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
+                input, output, opa,
+                mean, variance,
+                bn_g, bn_b,
+                bn_mean, bn_var, trmode, epsilon, momentum);
 #endif
         }
     }
@@ -169,7 +179,7 @@ namespace tensorNN {
                 gbn_b != NULL ? gbn_b->ptr : NULL,
                 bn_g != NULL ? bn_g->ptr : NULL,
                 bn_var->ptr, work1->ptr, work2->ptr);
-        } else  {
+        } else if (delta->isGPU()) {
 #ifdef cGPU
             gpu_batchnorm_backward(delta->gpu_device, delta->shape[0], delta->shape[1],
                 delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],
@@ -178,6 +188,11 @@ namespace tensorNN {
                 gbn_b != NULL ? gbn_b->ptr : NULL,
                 bn_g != NULL ? bn_g->ptr : NULL,
                 bn_var->ptr, work1->ptr, work2->ptr);
+#endif
+        } else {
+#ifdef cFPGA
+            printf("fpga_batchnorm_backward not implemented\n");
+            exit(1);
 #endif
         }
     }

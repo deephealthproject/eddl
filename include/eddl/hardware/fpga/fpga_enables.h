@@ -64,7 +64,7 @@
 //Conv
 #define K_ENABLED_CONV2D 
 #define K_VERSION_CONV2D     2
-#define K_SUBVERSION_CONV2D  2
+#define K_SUBVERSION_CONV2D  9 // 6: 8x8 APF8, 7: 8x8 APF16; 2: 4x4 FP32 // 5: 8x8 API16 // 8: 4x4 FP32 con upsize // 9: 8x8 API8+API32
 
 //#define K_ENALBED_CONV2D_GRAD
 //#define K_ENABLED_CONV2D_BACK

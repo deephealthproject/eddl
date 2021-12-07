@@ -181,8 +181,10 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
         // Set params
         layers[i]->verbosity_level = this->verbosity_level;
     }
+
     // set optimizer
     this->optimizer = opt;
+
     this->optimizer->setlayers(layers);
 
     // set loss functions and create targets tensors
@@ -219,6 +221,7 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
 
     // backward sort
     bts();
+
     // random params
     if(initialize) {
       do_initialize();

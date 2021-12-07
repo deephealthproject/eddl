@@ -30,7 +30,7 @@ PROFILING_ENABLE_EXTERN(FPGA_WRITE);
 
 
 // Defines --------------------------------------------------------------------------------------------------------------------------------
-#define MAX_BUFFER_POOL 10000             // All FPGA tensors are managed in a pool, this define sets the pool size (static)
+#define MAX_BUFFER_POOL 20000             // All FPGA tensors are managed in a pool, this define sets the pool size (static)
 
 
 // Global variables -----------------------------------------------------------------------------------------------------------------------
@@ -122,12 +122,34 @@ cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d;
 // -------------------------------------------------------------------------------------------------------------------------------------------
 // conv2d kernel related global variables
 #ifdef K_ENABLED_CONV2D
-int k_conv2d_cpi;             // number of CPI channels (parallel channels read)
-int k_conv2d_cpo;             // number of CPO channels (parallel channels written)
-int k_conv2d_num_kernels;     // number of kernels present in the FPGA
-int k_conv2d_max_rows;        // maximum number of rows that the kernel can handle
-int k_conv2d_max_ho;          // maximum number of output rows the kernel can handle
-int k_conv2d_max_wo;          // maximum number of output cols the kernel can handle
+//int k_conv2d_num_kernels;     // number of kernels present in the FPGA
+//int k_conv2d_max_rows;        // maximum number of rows that the kernel can handle
+//int k_conv2d_max_ho;          // maximum number of output rows the kernel can handle
+//int k_conv2d_max_wo;          // maximum number of output cols the kernel can handle
+
+
+int hlsinf_filter_format;
+int hlsinf_bias_format;
+int hlsinf_input_format;
+int hlsinf_output_format;
+int hlsinf_cpi;
+int hlsinf_cpo;
+int hlsinf_num_kernels;
+int hlsinf_ho_max;
+int hlsinf_wo_max;
+int hlsinf_max_rows;
+std::string hlsinf_xclbin;
+bool hlsinf_conv_support;
+bool hlsinf_shift_support;
+bool hlsinf_clip_support;
+bool hlsinf_relu_support;
+bool hlsinf_stm_support;
+bool hlsinf_maxp_support;
+bool hlsinf_avgp_support;
+bool hlsinf_bn_support;
+bool hlsinf_add_support;
+bool hlsinf_upsize_support;
+bool hlsinf_dense_support;
 #endif
 
 // -------------------------------------------------------------------------------------------------------------------------------------------
@@ -335,18 +357,13 @@ void _profile_fpga_funcname(int i, char *name) {
       case _FPGA_SUM_2                  : strcpy(name, "sum_2"); break;
       case _FPGA_TRANSFORM              : strcpy(name, "transform"); break;
       case _FPGA_HLSINF                 : strcpy(name, "HLSinf"); break;
+      case _FPGA_BATCHNORM_FORWARD      : strcpy(name, "BatchNorm Fwd"); break;
       default                          : strcpy(name, "?????"); break;
   }
 }
 
 // _profile_fpga(). Function to profile a kernel (function)
 void _profile_fpga(int f_id, int end) {
-  #ifdef FPGA_DEBUG
-  char func_name[50];
-  _profile_fpga_funcname(f_id, func_name);
-  if (!end) printf("FPGA_DEBUG: Function %s starts\n", func_name);
-  if (end)  printf("FPGA_DEBUG: Function %s ends\n", func_name);
-  #endif
 
   num_instances_fpga[f_id]++;
   if (!end) gettimeofday(&time_ini_fpga[f_id], NULL);
@@ -362,8 +379,12 @@ void _profile_fpga(int f_id, int end) {
 // It provides tensor information through the console
 void _profile_fpga_tensor(char *str, Tensor *T) {
   #ifdef FPGA_DEBUG
+  return;
   // We read the tensor from FPGA first
-  fpga_copy_from_fpga(T, T->ptr);
+  int size = T->size * sizeof(float);
+  if (T->fpga_ptr == NULL) T->fpga_ptr = fpga_create_memory(size);
+  fpga_copy_memory_from_fpga((cl::Buffer *)T->fpga_ptr, T->ptr, size);
+
   // Now we calculate statistics (min, max, avg) from the tensor
   float min = FLT_MAX;
   float max = -FLT_MAX;
@@ -388,6 +409,66 @@ void _profile_fpga_tensor(char *str, Tensor *T) {
   printf(" Min %8.4f Max %8.4f Avg %8.4f\n", min, max, avg);
   #endif
 }
+
+// profile_fpga_tensor(). Function to profile a tensor.
+// It provides tensor information through the console
+void _profile_fpga_tensor_good(char *str, Tensor *T, int format_tensor) {
+  #ifdef FPGA_DEBUG
+  // We read the tensor from FPGA first
+  int size;
+  if (format_tensor == HLSINF_FP32) size = T->size * sizeof(float);
+  else if (format_tensor == HLSINF_API32) size = T->size * sizeof(ap_int<32>);
+  else if (format_tensor == HLSINF_API8) size = T->size * sizeof(ap_int<8>);
+  else if (format_tensor == HLSINF_APUI8) size = T->size * sizeof(ap_uint<8>);
+  else {printf("format not supported in profile\n"); exit(1);}
+
+  //if (T->fpga_ptr == NULL) T->fpga_ptr = fpga_create_memory(size);
+
+  float *buf = (float *)malloc(size);
+  fpga_copy_memory_from_fpga((cl::Buffer *)T->fpga_ptr, buf, size);
+
+  // Now we calculate statistics (min, max, avg) from the tensor
+  float min = FLT_MAX;
+  float max = -FLT_MAX;
+  double sum = 0.f;
+  double avg;
+  for (int i=0; i<T->size; i++) {
+    float v;
+    if (format_tensor == HLSINF_FP32) {
+      float *p = buf;
+      v = p[i];
+    } else if (format_tensor == HLSINF_API32) {
+      ap_int<32> *p = (ap_int<32> *)buf;
+      v = float(p[i]);
+    } else if (format_tensor == HLSINF_API8) {
+      ap_int<8> *p = (ap_int<8> *)buf;
+      v = float(p[i]);
+    } else if (format_tensor == HLSINF_APUI8) {
+      ap_uint<8> *p = (ap_uint<8> *)buf;
+      v = p[i];
+    } else {
+      printf("format not supported in profile\n");
+      exit(1);
+    }
+    if (v > max) max = v;
+    if (v < min) min = v;
+    sum += (double)v;
+  }
+  avg = sum / (double)T->size;
+
+  // Now, we print the information (related tensor information and statistics of the tensor)
+  printf("%s: - Tensor (fpga) ", str);
+  printf(" size %10d ", T->size);
+  printf(" dims: ");
+  printf(" %6d ", T->shape[0]);
+  if (T->ndim>=2) printf(" x %6d ", T->shape[1]); else printf("          ");
+  if (T->ndim>=3) printf(" x %6d ", T->shape[2]); else printf("          ");
+  if (T->ndim>=4) printf(" x %6d ", T->shape[3]); else printf("          ");
+  printf(" (cpu_ptr %p). ", T->ptr);
+  printf(" Min %8.4f Max %8.4f Avg %8.4f\n", min, max, avg);
+  #endif
+}
+
 
 // _profile_fpga_tensor_print(). Prints some values of the tensor
 void _profile_fpga_tensor_print(Tensor *T) {
@@ -431,7 +512,7 @@ void _profile_fpga_tensor_print(Tensor *T) {
 
   } else if(T->ndim==1) {
     for (int d0=0; d0<T->shape[0]; d0++) {
-      printf("%f ", T->ptr[0]);
+      printf("%f ", T->ptr[d0]);
     }
     printf("\n\n");
     }
@@ -477,10 +558,24 @@ void _profile_fpga_remove_tensor(int size) {
 // -----------------------------------------------------------------------------------------------------------------------------------
 // FPGA initialization and finalization functions
 
+void close_fpga() {
+  delete q;
+  delete program;
+  delete context;
+}
+
 // fpga_init()
 // Initialices the device, sets up the kernels, prepares everything related to the FPGA device and support infrastructure
 // This function must be called only once and at the begining of operations with the FPGA
-void fpga_init(){
+void fpga_init(int kernel_version, int kernel_subversion) {
+
+  if (context!=NULL) {
+    #ifdef FPGA_DEBUG
+    printf("fpga_init function skipped, previous initialization done\n");
+    //exit(1);
+    return;
+    #endif
+  }
 
   #ifdef FPGA_DEBUG
   printf("initializing FPGA\n");
@@ -488,41 +583,115 @@ void fpga_init(){
 
   cl_int      err;
 
-  // depending on the kernel version we load one binary file or another
-  std::string binaryFile;
-
-  #ifdef K_ENABLED_CONV2D
   // We need to instantiate the proper number of kernels, we also take the specifities of the kernels
-  int kernel_version = K_VERSION_CONV2D;
-  int kernel_subversion = K_SUBVERSION_CONV2D;
-  printf("kernel version %d.%d\n", kernel_version, kernel_subversion);
-  switch (kernel_version) {
-    case 1: switch (kernel_subversion) {
-              case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_fp32_relu_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-              case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_apf8_relu_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-              case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_api8_relu_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-              case 3: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_8x8_apf8_relu_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-              case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_8x8_api8_relu_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-              case 5: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_4x4_fp32_relu_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-              default: printf("Error, unrecognized conv2d kernel subversion\n"); exit(1); break;
-            }
-	    break;
-    // Version 2: Kernels with GIHWCPI format 
-    case 2: switch (kernel_subversion) {
-	      case 0: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 1024; break;
-        case 1: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-        case 2: k_conv2d_cpi = 4; k_conv2d_cpo = 4; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_4x4_fp32_stm_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 1024; break;
-        case 3: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 1; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_1kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-        case 4: k_conv2d_cpi = 8; k_conv2d_cpo = 8; k_conv2d_num_kernels = 2; k_conv2d_max_rows = 256; binaryFile = "conv2D_v2.0_8x8_fp32_stm_2kernel.xclbin"; k_conv2d_max_ho = 256; k_conv2d_max_wo = 256; break;
-	      default: printf("Error, unrecognized conv2d kernel subversion\n"); exit(1); break;
-	    }
-	    break;
-    default: printf("Error, unrecognized conv2d kernel version\n"); exit(1); break;
-  };
-  #else
-  binaryFile = "eddl.xclbin";
-  #endif
+  //
+  // kernel versions:
+  //             -------------------------------------------------------
+  //             |                      Data format                    |
+  //             |-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //     version | input  | conv filter | bias  | batch norm | output  | CPI x CPO | #kernels | HO max | WO max | max rows |   board             | xclbin             | Conv Type | Conv | Shift | Clip | ReLU | STM | MAXP | AVGP | BN | ADD | UPSIZE | Dense |
+  //   ----------|-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //   |   1.0   |  FP32  |   FP32      | FP32  |  FP32      |   FP32  |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.0.xclbin |   Direct  |   X  |       |   X  |  X   |  X  |  X   |  X   |  X |  X  |   X    |       |
+  //   |   1.1   |  FP32  |   FP32      | FP32  |  FP32      |   FP32  |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.0.xclbin |   Direct  |   X  |       |   X  |  X   |  X  |  X   |  X   |  X |  X  |   X    |   X   |
+  //   |   1.2   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |   8 x 8   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.1.xclbin |   Direct  |   X  |   X   |   X  |  X   |  X  |  X   |  X   |  X |  X  |   X    |       |
+  //   |   1.3   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |   8 x 8   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.1.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |   X   |
+  //   |   1.4   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 8   |     2    |   128  |  1024  |    128   | Alveo U200          | hlsinf_v1.2.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |       |
+  //   |   1.5   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 8   |     2    |   128  |  1024  |    128   | Alveo U200          | hlsinf_v1.2.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |   X   |
+  //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+  if ((kernel_version == 1) && (kernel_subversion == 0)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.0.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = false;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.0: \n");
+    printf("  Kernel configuration : FP32, CPIxCPO: 4x4, 2 kernels (hlsinf_v1.0.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, CLIP, ReLU, SoftPlus, Tanh, Multiply Tensors, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 1)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.0.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = true;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.1: \n");
+    printf("  Kernel configuration : FP32, CPIxCPO: 4x4, 2 kernels (hlsinf_v1.0.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, CLIP, ReLU, SoftPlus, Tanh, Multiply Tensors, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : Yes\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 2)) {
+    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.1.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = false;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.2: \n");
+    printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 8x8, 2 kernels (hlsinf_v1.1.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 3)) {
+    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.1.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = true;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.3: \n");
+    printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 8x8, 2 kernels (hlsinf_v1.1.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : Yes\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 4)) {
+    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
+    hlsinf_cpi = 16; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 128; hlsinf_wo_max = 1024; hlsinf_max_rows = 128;
+    hlsinf_xclbin = "hlsinf_v1.2.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = false;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.4: \n");
+    printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 16x8, 2 kernels (hlsinf_v1.2.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 5)) {
+    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
+    hlsinf_cpi = 16; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 128; hlsinf_wo_max = 1024; hlsinf_max_rows = 128;
+    hlsinf_xclbin = "hlsinf_v1.2.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = true;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.4: \n");
+    printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 16x8, 2 kernels (hlsinf_v1.2.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : Yes\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else {
+    printf("Error, kernel version not supported\n"); exit(1);
+  }
   unsigned    fileBufSize;
 
   #ifdef FPGA_DEBUG
@@ -536,7 +705,7 @@ void fpga_init(){
   OCL_CHECK(err, q = new cl::CommandQueue(*context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
     
   std::string device_name = device.getInfo<CL_DEVICE_NAME>();
-  auto fileBuf = xcl::read_binary_file(binaryFile);
+  auto fileBuf = xcl::read_binary_file(hlsinf_xclbin);
   cl::Program::Binaries bins;
 
   bins = cl::Program::Binaries{{fileBuf.data(), fileBuf.size()}};
@@ -904,7 +1073,7 @@ void fpga_init(){
   #endif
 
   #ifdef K_ENABLED_CONV2D
-  for (int k=0; k<k_conv2d_num_kernels; k++) {
+  for (int k=0; k<hlsinf_num_kernels; k++) {
     char dummy[50];
     sprintf(dummy, "k_conv2D:{k_conv2D_%d}", k+1);
     OCL_CHECK(err, kernel_conv2D[k] = cl::Kernel(*program, dummy, &err));
@@ -1271,9 +1440,6 @@ void fpga_init(){
   #endif
 }
 
-void close_fpga() {}
-
-
 // ------------------------------------------------------------------------------------------------------------
 // Tensor creation and delete functions
 //
@@ -1387,7 +1553,9 @@ void fpga_copy_fpga(Tensor *A, Tensor *B) {
   #endif
 }
 
-void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {
+void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {fpga_copy_to_fpga_good(nptr, A, cvt);}
+
+void fpga_copy_to_fpga_good(float *nptr, Tensor *A, int cvt) {
   #ifdef FPGA_DEBUG_VERBOSE
   printf("FPGA_DEBUG: Copy CPU->FPGA. Addr: %p->%p. tensor_id %4d. Size %4d\n", nptr, A->fpga_ptr, A->fpga_tensor_id, A->size);
   #endif
@@ -1398,7 +1566,12 @@ void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {
     PROFILING_HEADER(Precision_Conversion);
     // We allocate a buffer to convert from floats to fpga_data_type
     fpga_data_type *cpu_buff = (fpga_data_type*)malloc(A->size*sizeof(fpga_data_type));
-    for (int x=0; x<A->size; x++) cpu_buff[x] = fpga_data_type(nptr[x]);
+    for (int x=0; x<A->size; x++) {
+      float value = nptr[x];
+      if (nptr[x] < MIN_FLOAT_PRECISION_CONVERSION) value = MIN_FLOAT_PRECISION_CONVERSION;
+      if (nptr[x] > MAX_FLOAT_PRECISION_CONVERSION) value = MAX_FLOAT_PRECISION_CONVERSION;
+      cpu_buff[x] = fpga_data_type(value);
+    }
     PROFILING_FOOTER(Precision_Conversion);
     // now we copy into the FPGA
     cl_int err;
@@ -1430,6 +1603,8 @@ void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {
   PROFILING_FOOTER(FPGA_WRITE);
   #endif
 }
+
+void fpga_copy_from_fpga_good(Tensor *A,float *nptr, int cvt) {fpga_copy_from_fpga(A, nptr, cvt);}
 
 void fpga_copy_from_fpga(Tensor *A,float *nptr, int cvt) {
   #ifdef FPGA_DEBUG_VERBOSE
@@ -1509,6 +1684,41 @@ void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size
   OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &blocking_event));
   (*q).finish();
   PROFILING_FOOTER(FPGA_WRITE);
+}
+
+void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size, int src_format, int dst_format) {
+  #ifdef FPGA_DEBUG_VERBOSE
+  printf("    (copy memory to fpga and format: size %d, ptr_cpu %p)\n", size, ptr_cpu);
+  #endif
+  cl_int err;
+  cl::Event blocking_event;
+
+  if ((src_format == HLSINF_FP32) && (dst_format == HLSINF_API8)) {
+    PROFILING_HEADER(Precision_Conversion);
+    float *src = (float*)ptr_cpu;
+    ap_int<8> *cpu_buff = (ap_int<8> *)malloc(size * sizeof(ap_int<8>));
+    for (int x = 0; x < size; x++) cpu_buff[x] = ap_int<8>(src[x]);
+    PROFILING_FOOTER(Precision_Conversion);
+    PROFILING_HEADER(FPGA_WRITE);
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_int<8>), cpu_buff, nullptr, &blocking_event));
+    (*q).finish();
+    PROFILING_FOOTER(FPGA_WRITE);
+    free(cpu_buff);
+  } else if ((src_format == HLSINF_FP32) && (dst_format == HLSINF_API32)) {
+    PROFILING_HEADER(Precision_Conversion);
+    float *src = (float*)ptr_cpu;
+    ap_int<32> *cpu_buff = (ap_int<32> *)malloc(size * sizeof(ap_int<32>));
+    for (int x = 0; x < size; x++) {cpu_buff[x] = ap_int<32>(src[x]); /*printf("%f -> %f\n", src[x], float(cpu_buff[x]));*/}
+    PROFILING_FOOTER(Precision_Conversion);
+    PROFILING_HEADER(FPGA_WRITE);
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_int<32>), cpu_buff, nullptr, &blocking_event));
+    (*q).finish();
+    PROFILING_FOOTER(FPGA_WRITE);
+    free(cpu_buff);
+  } else {
+    printf("copy with format not supported\n");
+    exit(1);
+  }
 }
 
 void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size) {
@@ -1646,6 +1856,7 @@ void fpga_cpuemu_select(Tensor *A, Tensor *B, SelDescriptor *sd) {
 
 void fpga_select(Tensor *A, Tensor *B, SelDescriptor *sd){
   _profile_fpga(_FPGA_SELECT, 0);
+  printf("FPGA SELECT\n");
   #ifndef K_ENABLED_SELECT
   fpga_cpuemu_select(A, B, sd);
   #else
@@ -1785,33 +1996,82 @@ void fpga_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivativ
 // -----------------------------------------------------------------
 // transform_nn
 //
-void fpga_transform_nn(Tensor *A, Tensor *B, int mode) {
-  _profile_fpga(_FPGA_TRANSFORM, 0);
-  _profile_fpga_tensor("A: ", A);
-
-  #ifdef FPGA_DEBUG
- printf("fpga_transform:\n");
- _profile_fpga_tensor("A: ", A);
+void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform) {
+ _profile_fpga(_FPGA_TRANSFORM, 0);
+ _debug_fpga_funcs("Transform");
+ #ifdef FPGA_DEBUG
+ printf("Transform\n");
+ printf("  params: copy_cpu_to_fpga %d, copy_fpga_to_cpu %d, transform %d\n", copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
 #endif
 
-  int CPI = 4;
-  //int CPI = 8;
+  int CPI = hlsinf_cpi;
 
-  if (mode == 1) {
+  if (!transform && copy_cpu_to_fpga) {
 
-    // transformation from CHW to GHWC
-    fpga_copy_from_fpga(A, A->ptr);
-    int B_in = A->shape[0];
-    int C_in = A->shape[1];
-    int H_in = A->shape[2];
-    int W_in = A->shape[3];
-    int C_out = B->shape[1];
+    #ifdef FPGA_DEBUG
+    printf("  input   "); _profile_cpu_tensor(A);
+    #endif
+
     // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
+    int B_in = A->shape[0]; int C_in = A->shape[1]; int H_in = A->shape[2]; int W_in = A->shape[3]; int C_out = B->shape[1];
+    float *ptr_src = A->ptr; float *ptr_dst = B->ptr;
 
-    float *ptr_src = A->ptr;
-    float *ptr_dst = B->ptr;
+    int size_in = A->size * sizeof(float);
+    int size_out = B->size * sizeof(float);
+    memset(ptr_dst, 0, size_out);
+    memcpy(ptr_dst, ptr_src, size_in);
 
-    memset(ptr_dst, 0, C_out * H_in * W_in * B_in * sizeof(float));
+    #ifdef FPGA_DEBUG
+    printf("  output  "); _profile_cpu_tensor(B);
+    #endif
+
+    // copy to FPGA, source is in CPU and is in FP32, depending on the output format of HLSinf we convert if needed
+    if (hlsinf_input_format == HLSINF_FP32) {
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
+      fpga_copy_memory_to_fpga(B->ptr, (cl::Buffer *)B->fpga_ptr, size_out);
+    } else if (hlsinf_input_format == HLSINF_API8) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_int<8>
+      ap_int<8> *cpu_buff = (ap_int<8>*)malloc(B->size*sizeof(ap_int<8>));
+      for (int x=0; x<B->size; x++) {
+        ap_int<8> value = B->ptr[x];
+        cpu_buff[x] = value;
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size * sizeof(ap_int<8>));
+      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size * sizeof(ap_int<8>));
+      free(cpu_buff);
+    } else if (hlsinf_input_format == HLSINF_APUI8) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_uint<8>
+      unsigned char *cpu_buff = (unsigned char *)malloc(B->size*sizeof(unsigned char));
+      for (int x=0; x<B->size; x++) {
+        unsigned char value = B->ptr[x];
+        cpu_buff[x] = value;
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size*sizeof(ap_uint<8>));
+      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size*sizeof(ap_uint<8>));
+      free(cpu_buff);
+    } else {
+      printf("Transform: input format not supported\n");
+      exit(1);
+    }
+
+
+  } else if (transform && copy_cpu_to_fpga) {
+
+    #ifdef FPGA_DEBUG
+    printf("  input   "); _profile_cpu_tensor(A);
+    #endif
+
+    // transformation from CHW to GHWC (cpu to FPGA)
+    // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
+    int B_in = A->shape[0]; int C_in = A->shape[1]; int H_in = A->shape[2]; int W_in = A->shape[3]; int C_out = B->shape[1];
+    float *ptr_src = A->ptr; float *ptr_dst = B->ptr;
+
+    int size_out = C_out * H_in * W_in * B_in * sizeof(float);
+    memset(ptr_dst, 0, size_out);
 
     for (int b=0; b<B_in; b++) {
       for (int c=0; c<C_in; c++) {
@@ -1826,41 +2086,172 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int mode) {
         }
       }
     }
-    fpga_copy_to_fpga(B->ptr, B);
 
-  } else {
-    // transformation from GHWC to CHW
-    fpga_copy_from_fpga(A, A->ptr);
+    #ifdef FPGA_DEBUG
+    printf("  output  "); _profile_cpu_tensor(B);
+    #endif
+
+    // copy to FPGA, source is in CPU and is in FP32, depending on the output format of HLSinf we convert if needed
+    if (hlsinf_input_format == HLSINF_FP32) {
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
+      fpga_copy_memory_to_fpga(B->ptr, (cl::Buffer *)B->fpga_ptr, size_out);
+    } else if (hlsinf_input_format == HLSINF_API8) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_int<8>
+      ap_int<8> *cpu_buff = (ap_int<8>*)malloc(B->size*sizeof(ap_int<8>));
+      for (int x=0; x<B->size; x++) {
+        float value = B->ptr[x];
+        cpu_buff[x] = ap_int<8>(value);
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      size_out = C_out * H_in * W_in * B_in * sizeof(ap_int<8>);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
+      free(cpu_buff);
+    } else if (hlsinf_input_format == HLSINF_APUI8) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_uint<8>
+      ap_uint<8> *cpu_buff = (ap_uint<8>*)malloc(B->size*sizeof(ap_uint<8>));
+      for (int x=0; x<B->size; x++) {
+        float value = B->ptr[x];
+        cpu_buff[x] = ap_uint<8>(value);
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      size_out = C_out * H_in * W_in * B_in * sizeof(ap_uint<8>);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
+      free(cpu_buff);
+    } else {
+      printf("Transform: input format not supported\n");
+      exit(1);
+    }
+  } else if (!transform && copy_fpga_to_cpu) {
+    
+    float *ptr_dst = B->ptr;
+    int num_elements = B->size;
+
+    if (hlsinf_output_format == HLSINF_FP32) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(float));
+      memcpy(B->ptr, A->ptr, num_elements * sizeof(float));
+    } else if (hlsinf_output_format == HLSINF_API8) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_int<8>));
+      PROFILING_HEADER(Precision_Conversion);
+      for (int x=0; x < num_elements; x++) {ap_int<8> *ptr = (ap_int<8> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
+      PROFILING_FOOTER(Precision_Conversion);
+    } else if (hlsinf_output_format == HLSINF_APUI8) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_uint<8>));
+      PROFILING_HEADER(Precision_Conversion);
+      for (int x=0; x < num_elements; x++) {ap_uint<8> *ptr = (ap_uint<8> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
+      PROFILING_FOOTER(Precision_Conversion);
+    } else {
+      printf("Transform: output format not supported\n");
+      exit(1);
+    }
+
+    #ifdef FPGA_DEBUG
+    printf("  input   "); _profile_cpu_tensor(A);
+    printf("  output  "); _profile_cpu_tensor(B);
+    #endif
+
+  } else if (transform && copy_fpga_to_cpu) {
+
+    // transformation from GHWC to CHW (FPGA to CPU)
+
     int B_in = A->shape[0];
     int C_in = A->shape[1];
     int H_in = A->shape[2];
     int W_in = A->shape[3];
     int C_out = B->shape[1];
+
     // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
 
-    float *ptr_src = A->ptr;
+    //void *ptr_src = A->ptr;
     float *ptr_dst = B->ptr;
+    int num_elements = C_out * H_in * W_in * B_in;
+    int size_dst = C_out * H_in * W_in * B_in * sizeof(float);
 
-    memset(ptr_dst, 0, C_out * H_in * W_in * B_in * sizeof(float));
+    //printf("ptr_fpga %p ptr_dst %p size %d\n", A->fpga_ptr, B->ptr, size_dst);
 
-    for (int b=0; b<B_in; b++) {
-      for (int c=0; c<C_in; c++) {
-        for (int h=0; h<H_in; h++) {
-          for (int w=0; w<W_in; w++) {
-            int g = c / CPI;
-            int cpi = c % CPI; 
-            int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
-            int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
-            ptr_dst[addr_dst] = ptr_src[addr_src];
+    if (hlsinf_output_format == HLSINF_FP32) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(float));
+    } else if (hlsinf_output_format == HLSINF_API8) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_int<8>));
+    } else if (hlsinf_output_format == HLSINF_APUI8) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_uint<8>));
+    } else {
+      printf("Transform: output format not supported\n");
+      exit(1);
+    }
+
+    #ifdef FPGA_DEBUG
+    if (hlsinf_output_format == HLSINF_FP32) printf("  input   "); _profile_cpu_tensor(A);
+    // in a different format we would need to move data to FP32
+    #endif
+
+    memset(ptr_dst, 0, size_dst);
+
+    if (hlsinf_output_format == HLSINF_FP32) {
+      for (int b=0; b<B_in; b++) {
+        for (int c=0; c<C_in; c++) {
+          for (int h=0; h<H_in; h++) {
+            for (int w=0; w<W_in; w++) {
+              int g = c / CPI;
+              int cpi = c % CPI; 
+              int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
+              int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
+              float *ptr_src = A->ptr;
+              ptr_dst[addr_dst] = ptr_src[addr_src];
+            }
           }
         }
       }
-    }
-    fpga_copy_to_fpga(B->ptr, B);
+    } else if (hlsinf_output_format == HLSINF_API8) {  
+      PROFILING_HEADER(Precision_Conversion);
+      for (int b=0; b<B_in; b++) {
+        for (int c=0; c<C_in; c++) {
+          for (int h=0; h<H_in; h++) {
+            for (int w=0; w<W_in; w++) {
+              int g = c / CPI;
+              int cpi = c % CPI; 
+              int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
+              int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
+              ap_int<8> *ptr_src = (ap_int<8> *)A->ptr;
+              float value = float(ptr_src[addr_src]);
+              ptr_dst[addr_dst] = value;
+            }
+          }
+        }
+      }
+    } else if (hlsinf_output_format == HLSINF_APUI8) {  
+      PROFILING_HEADER(Precision_Conversion);
+      for (int b=0; b<B_in; b++) {
+        for (int c=0; c<C_in; c++) {
+          for (int h=0; h<H_in; h++) {
+            for (int w=0; w<W_in; w++) {
+              int g = c / CPI;
+              int cpi = c % CPI; 
+              int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
+              int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
+              ap_uint<8> *ptr_src = (ap_uint<8> *)A->ptr;
+              float value = float(ptr_src[addr_src]);
+              ptr_dst[addr_dst] = value;
+            }
+          }
+        }
+      }
+
+
+      PROFILING_FOOTER(Precision_Conversion);
+    } else {
+      printf("Transform: output format not supported\n");
+      exit(1);
+    } 
+    #ifdef FPGA_DEBUG
+    printf("  output  "); _profile_cpu_tensor(B);
+    #endif
   }
 
   _profile_fpga(_FPGA_TRANSFORM, 1);
-  _profile_fpga_tensor("B: ", B);
 }
 
 
@@ -1881,10 +2272,8 @@ void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B) {
       int dst_KH = B->shape[2];
       int dst_KW = B->shape[3];
 
-      int CPI = 4;  
-      int CPO = 4;
-      //int CPI = 8;  
-      //int CPO = 8;
+      int CPI = hlsinf_cpi;  
+      int CPO = hlsinf_cpo;
 
       int GI      = dst_I / CPI;
       int GO      = dst_O / CPO;
@@ -1914,4 +2303,64 @@ void tensor_padded(Tensor *A, Tensor *B) {
   for (int i = 0; i < A->size; i++){
       B->ptr[i] = A->ptr[i];
   }
+}
+
+void get_batch_norm_values(int ochannels, Tensor *global_mean, Tensor *global_variance, Tensor* affine_g, Tensor* affine_b, Tensor* output) {
+  memset(output->ptr, 0, sizeof(float) * output->size);
+  // 0 (affine_b) 1 (affine_g) 2 (global_mean) 3 (global_variance)
+  
+  #pragma omp parallel for
+  for (int i = 0; i < ochannels; i++){
+      output->ptr[i*4]   = affine_b->ptr[i];
+      output->ptr[i*4+1] = affine_g->ptr[i];
+      output->ptr[i*4+2] = global_mean->ptr[i];
+      output->ptr[i*4+3] = global_variance->ptr[i];
+          printf("[out] %f %f %f %f\n", output->ptr[i*4], output->ptr[i*4+1], output->ptr[i*4+2], output->ptr[i*4+3]);
+          printf("[inp] %f %f %f %f\n",affine_b->ptr[i] ,affine_g->ptr[i], global_mean->ptr[i], global_variance->ptr[i]);
+  }
+}
+
+
+void dense_to_conv(float *ptr_src, int N, int M, float *ptr_dst, int I, int O, int KH, int KW) {
+
+  // this function converts a weight matrix of NxM into a GIHWCPI organization, enabling
+  // the multiplication operation as a convolution
+  //
+
+  memset(ptr_dst, 0, sizeof(float) * I * O * KH * KW);
+
+  printf("ptr_src %p N %d M %d ptr_dst %p I %d O %d KH %d KW %d\n", ptr_src, N, M, ptr_dst, I, O, KH, KW);
+  int CPI = hlsinf_cpi;  
+  int CPO = hlsinf_cpo;
+  int GI      = I / CPI;
+  int GO      = O / CPO;
+
+  for (int n=0; n<N; n++) {
+    for (int m=0; m<M; m++) {
+      int addr_src = n * M + m;
+      int i = (n % CPI) + (CPI * (n/(9*CPI)));
+      int o = m;
+      int kh = (n % (CPI * KW * KH)) / (CPI * KW);
+      int kw = ((n / CPI) % 3);
+
+      int gi = i / CPI;
+      int cpi = i % CPI;
+      int go = o / CPO;
+      int cpo = o % CPO;
+//      printf("n %d m %d i %d kh %d kw %d o %d\n", n, m, i, kh, kw, o);
+      int addr_dst = (go * GI * CPO * CPI * KH * KW) + (gi * CPO * CPI * KH * KW) + (cpo * CPI * KH * KW) + (cpi * KH * KW) + (kh * KW) + kw;
+      ptr_dst[addr_dst] = ptr_src[addr_src];
+    }
+//    printf("fin para m = %d\n", m);
+  }
+//  printf("fin\n");
+}
+
+void fpga_write_buffer(char *file_name, void *ptr, int size, int data_size) {
+  FILE *fd = fopen(file_name, "w");
+  if (fd == NULL) {printf("Error, not able to open file for write\n"); exit(1);}
+  void *buff = malloc(size * data_size);
+  fpga_copy_memory_from_fpga((cl::Buffer *)ptr, buff, size*data_size);
+  fwrite(buff, data_size, size, fd);
+  fclose(fd);
 }

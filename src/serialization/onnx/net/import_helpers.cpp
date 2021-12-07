@@ -58,7 +58,6 @@ queue<onnx::NodeProto *> process_inputs(vector<Layer *> &inputs,
                                         map<string, Layer *> &output_node_map)
 {
   queue<onnx::NodeProto *> nodeQueue;
-  printf("inputs size %d\n", inputs.size());
   for (int i = 0; i < inputs.size(); i++)
   {
     onnx::ValueInfoProto nameContainer = inputs_onnx[i];
@@ -466,6 +465,7 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
   //   Note: Check build_net_onnx() for full algorithm description
   while (!nodeQueue.empty())
   {
+    printf("entra\n");
     onnx::NodeProto *node = nodeQueue.front();
     log_string("Next node: " + node->name(), log_level, LOG_LEVEL::DEBUG);
 

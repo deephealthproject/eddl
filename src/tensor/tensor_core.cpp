@@ -358,11 +358,11 @@ void Tensor::copy(Tensor *A, Tensor *B) {
         }
         else if ((A->isCPU())&&(B->isFPGA()))
           {
-            fpga_copy_to_fpga(A->ptr,B);
+            fpga_copy_to_fpga_good(A->ptr,B);
           }
         else if ((A->isFPGA())&&(B->isCPU()))
           {
-            fpga_copy_from_fpga(A,B->ptr);
+            fpga_copy_from_fpga_good(A,B->ptr);
           }
 #endif
     else {

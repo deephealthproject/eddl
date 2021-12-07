@@ -16,6 +16,8 @@
 #include "eddl/layers/reductions/layer_reductions.h"
 #include "eddl/layers/operators/layer_operators.h"
 
+#include "eddl/hardware/cpu/cpu_tensor.h"
+
 using namespace std;
 
 int LBatchNorm::total_layers = 0;
@@ -48,6 +50,8 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     mean = new Tensor(shape, dev);
     mean->fill_(0.0);
     variance = new Tensor(shape, dev);
+    printf("BatchNorm variance tensor created with address %p ptr %p\n", &variance, variance->ptr);
+
     if (momentum > 0.0)
         variance->fill_(0.0f);
     else
@@ -196,51 +200,15 @@ void LBatchNorm::forward() {
                                     epsilon, momentum);
 
     } else if (input->isFPGA()) { // FPGA
-        int M,N;
-        int b,z,r,c,d;
-        Tensor *in;
 
-        if (input->ndim==2) {
-            N=b=input->shape[0];
-            M=d=input->shape[1];
-            in=input->clone();
-        }
-        else {
-            b=input->shape[0];
-            M=z=input->shape[1];
-            r=input->shape[2];
-            c=input->shape[3];
-            N=b*r*c;
-
-            in=new Tensor({b*r*c*z},input->device);
-            tensorNN::permute_channels_last(input,in);
-            in->reshape_({N,M});
-            opa->reshape_({N,M});
-        }
-
-        BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
-
-        Tensor::copy(in,opa);
-        if (affine) {
-            Tensor *var=new Tensor({N,M},input->device);
-            Tensor *ones=new Tensor({N,1},input->device);
-            ones->fill_(1.0);
-
-            // apply affine transform in=gamma*in+beta
-            rmult(in,bn_g,ones,var);
-            rsum(in,bn_b,ones,var);
-            delete var;
-            delete ones;
-        }
-
-        // copy in to ouput
-        if (input->ndim==4) {
-            tensorNN::permute_channels_first(in,output);
-        }
-        else Tensor::copy(in,output);
-
-        delete in;
-
+        tensorNN::BatchNormForward(input, output, opa,
+                                    mean, variance,
+                                    affine ? bn_g : nullptr,
+                                    affine ? bn_b : nullptr,
+                                    bn_mean, bn_var,
+                                    mode == TRMODE,
+                                    epsilon, momentum);
+        
     } else { // GPU
 #ifdef cCUDNN
         float alpha = 1.0;

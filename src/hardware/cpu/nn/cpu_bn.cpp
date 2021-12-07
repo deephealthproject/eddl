@@ -14,6 +14,7 @@
 
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 // BN
 void cpu_permute_channels_last(Tensor *A,Tensor *B)

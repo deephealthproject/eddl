@@ -90,6 +90,7 @@ void fpga_permute_channels_first(Tensor *A,Tensor *B);
 void fpga_permute_channels_last(Tensor *A,Tensor *B);
 void fpga_permute_batch_first(Tensor *A,Tensor *B);
 void fpga_permute_batch_last(Tensor *A,Tensor *B);
+void fpga_batchnorm_forward(int b, int z, int rc, Tensor *input, Tensor *output, Tensor *opa, Tensor *global_mean, Tensor *global_variance, Tensor *affine_g, Tensor *affine_b, Tensor *mean, Tensor *variance, bool trmode, float epsilon, float momentum);
 
 //Fused
 void fpga_conv_maxpool(ConvolDescriptor *D);
@@ -111,8 +112,8 @@ int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_st
 
 // HLSinf
 void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, int Ochannels, 
-		 int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, 
-		 int enable_relu, float relu_factor, int enable_maxp, int enable_avgp,
-                 int enable_clipping, int enable_shift, int pos_shift, int enable_add, int enable_stm, Tensor *K, Tensor *bias, Tensor *O);
+           int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, 
+           int enable_relu, float relu_factor, int enable_batch_norm, int enable_maxp, int enable_avgp, 
+           int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_add, int enable_stm, int enable_upscale, Tensor *filter, Tensor *bias, Tensor* batch_norm_values, Tensor *output);
 
 #endif //EDDL_FPGA_NN_H

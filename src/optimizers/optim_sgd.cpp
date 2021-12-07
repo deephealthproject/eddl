@@ -54,11 +54,13 @@ void SGD::setlayers(vlayer l) {
     if (isshared) return;
 
     // create momemtum tensors
-    for (int i = 0; i < layers.size(); i++)
+    for (int i = 0; i < layers.size(); i++) {
       for (int j = 0; j < layers[i]->get_trainable_params_count(); j++) {
           mT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
           mT.back()->fill_(0.0);
     }
+    }
+
 
 
 }

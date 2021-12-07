@@ -157,8 +157,8 @@ int fpga_k_conv(ConvolDescriptor *D, Tensor *ADD, int enable_relu, int enable_st
     else I_add = *(cl::Buffer*) fpga_create_memory(sizeof(float)); // Creating dummy buffer for add buffer
    
     fpga_conv_launch(I, I_add, Irows, Icols, Irows, padding_rows, padding_cols, padding_rows, padding_cols, stride_rows, stride_cols, Ichannels, Ochannels, enable_relu, enable_stm, relu_factor, K,
-          B, O, global_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, k_conv2d_cpi,
-          k_conv2d_cpo, k_conv2d_num_kernels, k_conv2d_max_rows);
+          B, O, global_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift, hlsinf_cpi,
+          hlsinf_cpo, hlsinf_num_kernels, hlsinf_max_rows);
 
     return 1;
   }

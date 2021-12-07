@@ -164,10 +164,13 @@
 #define _FPGA_CONV2D_RELU           153
 #define _FPGA_CONV2D_LEAKYRELU      154
 #define _FPGA_HLSINF                155
-#define _NUM_FPGA_FUNCS             156
+#define _FPGA_BATCHNORM_FORWARD     156
+
+#define _NUM_FPGA_FUNCS             157
 
 extern int num_instances_fpga[_NUM_FPGA_FUNCS];
 void _profile_fpga(int f_id, int end);
 void _profile_fpga_tensor(char *str, Tensor *T);
+void _profile_fpga_tensor_good(char *str, Tensor *T, int format_tensor);
 void _profile_fpga_tensor_print(Tensor *T);
 #endif

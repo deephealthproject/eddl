@@ -135,39 +135,13 @@ void fpga_cpuemu_conv2D(ConvolDescriptor *D) {
 //
 void fpga_conv2D(ConvolDescriptor *D) {
   // debug and profiling
-  _debug_fpga_funcs("conv2D");
+  _debug_fpga_funcs("conv2D (emu)");
   _profile_fpga(_FPGA_CONV2D, 0);
   _profile_fpga_tensor("input: ", D->I);
   _profile_fpga_tensor("filter: ", D->K);
   _profile_fpga_tensor("bias: ", D->bias);
 
-  int ret = 0;
-
-  int enable_relu = 0;
-  int enable_stm = 0;
-  float relu_factor = 0;
-  int global_offset = 0;
-  int enable_avgp = 0;
-  int enable_maxp = 0;
-  int enable_clipping = 0;
-  int enable_shift = 0;
-  int enable_add = 0;
-  int min_clip = 0;
-  int max_clip = 0;
-  int dir_shift = 0;
-  int pos_shift = 0;
-
-  //PROFILING_HEADER(fpga_Conv2D);
-
-  //ret = fpga_k_conv(D, NULL,enable_relu, enable_stm, relu_factor, global_offset, 
-  //    enable_maxp, enable_avgp, 
-  //    enable_clipping, enable_shift, enable_add, min_clip, max_clip, dir_shift, pos_shift);
-  //PROFILING_FOOTER(fpga_Conv2D);
-  ret = 0;
-  if (ret == 0) {
-    // we do not have any suitable Conv implementation on FPGA, then revert to CPU
-    fpga_cpuemu_conv2D(D);
-  }
+  fpga_cpuemu_conv2D(D);
 
   // profiling
   _profile_fpga_tensor("output: ", D->O);

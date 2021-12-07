@@ -14,7 +14,7 @@
 #include <utility>
 
 #include "eddl/layers/core/layer_core.h"
-
+#include "eddl/hardware/fpga/fpga_hw.h"
 
 using namespace std;
 
@@ -30,17 +30,27 @@ int LTransform::total_layers = 0;
   @returns 
 
   */
-LTransform::LTransform(Layer *parent, int mode, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LTransform::LTransform(Layer *parent, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     // Set default name
     if(name.empty()) this->name = "transform_" + to_string(++total_layers);
 
-    int CPI = 4;
+    int CPI = 0;
+
+    #ifdef cFPGA
+    CPI = hlsinf_cpi;
+    #endif
+
+    if(!CPI) {
+        msg("Error: LTransform layer with CPI parameter equal to 0 ");
+    }
 
     // Set input
     input=parent->output;
 
     // Set mode
-    this->mode = mode;
+    this->copy_cpu_to_fpga = copy_cpu_to_fpga;
+    this->copy_fpga_to_cpu = copy_fpga_to_cpu;
+    this->transform = transform;
 
     // Set flow tensors
     int ndim = input->ndim;
@@ -72,7 +82,7 @@ void LTransform::resize(int b){
 }
 
 void LTransform::forward(){
-    tensorNN::transform(this->input, this->output, this->mode);
+    tensorNN::transform(this->input, this->output, this->copy_cpu_to_fpga, this->copy_fpga_to_cpu, this->transform);
 }
 
 void LTransform::backward(){
@@ -85,7 +95,7 @@ Layer *LTransform::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LTransform::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LTransform(p[0], mode, name, todev, this->mem_level);
+    auto *n = new LTransform(p[0], copy_cpu_to_fpga, copy_fpga_to_cpu, transform, name, todev, this->mem_level);
     n->orig = this;
     return n;
 }
