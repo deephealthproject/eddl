@@ -27,7 +27,7 @@ class TCP_Sender
 {
 public:
     TCP_Sender(eddl_queue & output_queue,
-               eddl_queue & ack_queue,
+               eddl_queue & generic_ack_queue,
                DistributedEnvironment & distributed_environment);
     ~TCP_Sender();
 
@@ -40,7 +40,7 @@ public:
 
 private:
     eddl_queue &                            output_queue;
-    eddl_queue &                            ack_queue;
+    eddl_queue &                            generic_ack_queue;
     DistributedEnvironment &                distributed_environment;
     bool                                    sender_active;
     std::thread                             sender_thread;

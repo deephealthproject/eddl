@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -1068,6 +1068,7 @@ public:
     *   @param max The upper bound of the clamping range.
     */
     static void clamp(Tensor *A, Tensor *B, float min, float max);
+    static void d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max);
 
     /**
     *   @brief In-place clamp all elements in the input tensor to the range [-infty, max].
@@ -2911,10 +2912,57 @@ public:
     static void argsort(Tensor* A, Tensor* B, bool descending=false, bool stable=true);
 
     // Indexing, Slicing, Joining, Mutating Ops *************
+    /**
+      *  @brief Join a sequence of arrays along an existing axis.
+      *
+      *  @param Vector of Tensors   The Tensors must have the same shape, except in the dimension corresponding to axis (the first, by default).
+      *  @param axis   The axis along which the arrays will be joined. If axis is None, arrays are flattened before use. Default is 0.
+      *  @param output   Output tensor
+    */
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, vector<Tensor*> t, unsigned int axis);
 
+    /**
+      *  @brief Join a sequence of arrays along a new axis.
+      *
+      *  @param A   Input tensor.
+      *  @param axis   The axis in the result array along which the input arrays are stacked.
+      *  @param output   Output tensor
+    */
     static Tensor* stack(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
+
+    /**
+      *  @brief Repeats the elements of a tensor along the specified dimension.
+      *
+      *  @param A   Input tensor.
+      *  @param repeats   The number of repetitions for the specified dimension ("int" or "vector of ints")
+      *  @param axis   The axis along which to repeat values.
+      *  @param output   Output tensor
+      *  @param derivative   Apply derivative for: output = repeat(A)
+    */
+    static Tensor* repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr, bool derivative=false);
+    static Tensor* repeat(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr, bool derivative=false);
+    static Tensor* repeat_desc(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr);
+    static Tensor* repeat_desc(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr);
+
+    /**
+      *  @brief Construct an array by repeating A the number of times given by reps.
+      *
+      *  @param A   Input tensor.
+      *  @param repeats   The number of repetitions of A along each axis.
+      *  @param output   Output tensor
+      *  @param derivative   Apply derivative for: output = repeat(A)
+    */
+    static Tensor* tile(Tensor* A, const vector<int>& repeats);
+
+    /**
+      *  @brief Returns a new tensor A to be broadcasted into B
+      *   @param A Input tensor.
+      *   @param B Input tensor.
+      *   @param output Output tensor (optional).
+      *   @return A new tensor C based on A, but prepared to be broadcasted in to B
+    */
+    static Tensor* broadcast(Tensor* A, Tensor* B, Tensor *output=nullptr);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.
@@ -3156,7 +3204,7 @@ public:
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);  // TODO DEPRECATED
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false); // TODO DEPRECATED
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false); // TODO DEPRECATED
-    static void tile(Tensor *A, Tensor *B);
+    static void tile_deprecated(Tensor *A, Tensor *B);
 
     // TODO: REFACTOR!!! ************************
 
@@ -3272,6 +3320,12 @@ public:
     *   @return 1 if they are equivalent, 0 otherwise.
     */
     static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false, bool verbose=true);  // Previously named "Tensor::equal2"
+
+    /**
+   *   @brief Gets the most efficient accelerator supported
+   *   @return 'cpu', 'cuda', 'cudnn' or 'fpga'
+   */
+    static string max_accelerator_supported();
 
 };
 

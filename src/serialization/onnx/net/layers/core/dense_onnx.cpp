@@ -236,4 +236,45 @@ void build_dense_with_matmul_node(LDense *layer, onnx::GraphProto *graph, bool g
   }
 }
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+void update_dense_weights(LDense *layer, vector<Tensor *> weights)
+{
+  layer->update_weights(weights);
+}
+
+void apply_grads_to_dense(LDense *layer, vector<Tensor *> grads)
+{
+  layer->accumulate_accumulated_gradients(grads);
+}
+
+vector<Tensor *> get_dense_tensors(onnx::NodeProto &node,
+                                   map<string, vector<float>> &map_init_values,
+                                   map<string, vector<int>> &map_init_dims)
+{
+  vector<Tensor *> dense_tensors;
+
+  string weights_name = node.input(1); // Get weights and dims
+  vector<float> *weights = &(map_init_values[weights_name]);
+  vector<int> dims = map_init_dims[weights_name];
+
+  Tensor * temp = new Tensor(dims, nullptr, DEV_CPU);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, temp);
+  dense_tensors.push_back(temp);
+
+  if (node.input_size() > 2)
+  {
+    string bias_name = node.input(2);
+    vector<float> *bias = &(map_init_values[bias_name]);
+    vector<int> bias_dims = map_init_dims[bias_name];
+    temp = new Tensor(bias_dims, nullptr, DEV_CPU);
+    COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, temp);
+    dense_tensors.push_back(temp);
+  }
+
+  return dense_tensors;
+}
+
 #endif // defined(cPROTO)

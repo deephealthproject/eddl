@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -58,19 +58,19 @@ public:
 
     void initialize() override;
 
-	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+    void update_weights(vector<Tensor*> weights) override;
 
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
 
-	void reset_accumulated_gradients() override;
+    void reset_accumulated_gradients() override;
 
-	void apply_accumulated_gradients() override;
+    void apply_accumulated_gradients() override;
 
     string plot(int c) override;
 
-	static void reset_name_counter();
+    static void reset_name_counter();
 
-	void enable_distributed() override;
+    void enable_distributed() override;
 
 };
 
@@ -78,7 +78,7 @@ public:
 class LConv1D : public LinLayer {
 public:
     static int total_layers;
-	bool distributed_training;
+    bool distributed_training;
 
     Tensor* input_reshaped;
     ConvolDescriptor *cd;
@@ -107,19 +107,19 @@ public:
 
     void initialize() override;
 
-    void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+    void update_weights(vector<Tensor*> weights) override;
 
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
 
-	void reset_accumulated_gradients() override;
+    void reset_accumulated_gradients() override;
 
-	void apply_accumulated_gradients() override;
+    void apply_accumulated_gradients() override;
 
     string plot(int c) override;
 
-	static void reset_name_counter();
+    static void reset_name_counter();
 
-	void enable_distributed() override;
+    void enable_distributed() override;
 
 };
 
@@ -160,9 +160,9 @@ public:
 
     void initialize() override;
 
-    void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+    void update_weights(vector<Tensor*> weights) override;
 
-    void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
 
     void reset_accumulated_gradients() override;
 
@@ -207,9 +207,9 @@ public:
 
     void initialize() override;
 
-    void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+    void update_weights(vector<Tensor*> weights) override;
 
-    void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
 
     void reset_accumulated_gradients() override;
 
@@ -255,9 +255,9 @@ public:
 
     void initialize() override;
 
-    void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+    void update_weights(vector<Tensor*> weights) override;
 
-    void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
 
     void reset_accumulated_gradients() override;
 

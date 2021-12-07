@@ -1,5 +1,5 @@
-Reduction Layers
-================
+Reduce
+=======
 
 
 ReduceMean

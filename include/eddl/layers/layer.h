@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -32,6 +32,7 @@ class Net;
 class Layer {
 private:
     int    reference_counter;
+    string name_id; // For instance checking. Else, your compiler must have rtti support.
 
 public:
     string name;
@@ -74,7 +75,8 @@ public:
     bool do_deletes;
     unsigned int verbosity_level = 0;
 
-    Layer(string name, int dev, int mem);
+    Layer(string name, int dev, int mem, const string &name_id="");
+
     // Destructor
     virtual ~Layer();
 
@@ -92,12 +94,15 @@ public:
 
     void set_mem_level(int mem);
 
+    int decrease_and_get_reference_counter();
+    void increase_reference_counter();
+    string get_name_id();
+
+    //virtual
     virtual void mem_delta_parent();
     virtual void mem_delta();
     virtual void free_delta();
 
-
-    //virtual
     virtual void copy(Layer *l2);
 
     virtual void resize(int batch);
@@ -119,9 +124,9 @@ public:
 
     virtual void backward() {}
 
-	virtual void update_weights(Tensor* w, Tensor* bias) {}
+	virtual void update_weights(vector<Tensor*> weights) {}
 
-	virtual void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {}
+	virtual void accumulate_accumulated_gradients(vector<Tensor*> grads) {}
 
 	virtual void reset_accumulated_gradients() {}
 
@@ -132,9 +137,6 @@ public:
     virtual Layer *clone(int c, int bs, vector<Layer *> p, int todev) { return nullptr; }
 
 	virtual void enable_distributed() {}
-
-    int decrease_and_get_reference_counter();
-    void increase_reference_counter(); 
 };
 
 
@@ -145,7 +147,7 @@ public:
 class LinLayer : public Layer {
 public:
 
-    LinLayer(string name, int dev, int mem);
+    LinLayer(string name, int dev, int mem, const string &name_id="");
 
     void addchild(Layer *l) override;
 
@@ -159,9 +161,9 @@ public:
 
     void backward() override {}
 
-	void update_weights(Tensor* w, Tensor* bias) override {}
+	void update_weights(vector<Tensor*> weights) override {}
 
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) override {}
+	void accumulate_accumulated_gradients(vector<Tensor*> grads) override {}
 
 	void reset_accumulated_gradients() override {}
 

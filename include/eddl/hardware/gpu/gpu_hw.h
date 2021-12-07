@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -43,6 +43,7 @@ void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_gather(Tensor *A, Tensor *B, GatherDescriptor *sd);
 void gpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
 
+void gpu_repeat(Tensor* A, Tensor *B, vector<unsigned int> repeats, unsigned int axis, bool derivative);
 void gpu_repeat_batch(Tensor *A, Tensor *B);
 
 void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
@@ -91,6 +92,7 @@ void gpu_asin(Tensor *A, Tensor *B);
 void gpu_atan(Tensor *A, Tensor *B);
 void gpu_ceil(Tensor *A, Tensor *B);
 void gpu_clamp(Tensor *A, Tensor *B, float min, float max);
+void gpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max);
 void gpu_cos(Tensor *A, Tensor *B);
 void gpu_cosh(Tensor *A, Tensor *B);
 void gpu_exp(Tensor *A, Tensor *B);

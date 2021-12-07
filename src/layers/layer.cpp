@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -22,10 +22,11 @@ using namespace std;
 ///// BASE LAYER CLASS
 ////////////////////////////////////
 
-Layer::Layer(string name, int dev, int mem) {
+Layer::Layer(string name, int dev, int mem, const string &name_id) {
     mode = TRMODE;
     target = delta = input = output = nullptr;
-    this->name = name;
+    this->name = normalize_layer_name(name);  // We need to normalize due to some problem with graphviz
+    this->name_id = name_id;
     this->dev = dev;
     this->mem_level = mem;
     lin = lout = 0;
@@ -150,6 +151,18 @@ void Layer::set_mem_level(int mem){
     mem_level=mem;
 }
 
+int Layer::decrease_and_get_reference_counter(){
+    return --reference_counter;
+}
+
+void Layer::increase_reference_counter(){
+    reference_counter++;
+}
+
+string Layer::get_name_id(){
+    return this->name_id;
+}
+
 void Layer::resize(int batch){
     if (output!=nullptr) {
         output->resize(batch);
@@ -252,19 +265,12 @@ void Layer::copy(Layer *l2){
     }
 }
 
-void Layer::increase_reference_counter()
-{
-    reference_counter++;
-}
-int Layer::decrease_and_get_reference_counter()
-{
-    return --reference_counter;
-}
+
 
 ////////////////////////////////////
 ///// LINEAR LAYERS
 ////////////////////////////////////
-LinLayer::LinLayer(string name, int dev, int mem) : Layer(name, dev, mem) {}
+LinLayer::LinLayer(string name, int dev, int mem, const string &name_id) : Layer(name, dev, mem, name_id) {}
 
 void LinLayer::addchild(Layer *l) {
     child.push_back(l);

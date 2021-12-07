@@ -17,7 +17,7 @@ eddl_message_acks::eddl_message_acks(std::vector<eddl_worker_node *> & workers,
                                      eddl_message * message)
 {
     // we need space for the checksum show seq_no is equal to seq_len
-    this->num_acks_per_worker = message->get_seq_len()+1;
+    this->num_acks_per_worker = message->get_seq_len() + 1;
     this->living_workers = 0;
     for (auto w: workers) {
         if (w->is_active()) {
@@ -90,7 +90,7 @@ bool eddl_message_acks::packet_already_acknowledged(size_t seq_no)
 bool eddl_message_acks::lasting_too_much_time()
 {
     // returns true if more than 60 seconds to be acknowledged
-    return (get_system_milliseconds() - this->starting_timestamp) > 60*1000;
+    return (get_system_milliseconds() - this->starting_timestamp) > 60 * 1000;
 }
 
 };

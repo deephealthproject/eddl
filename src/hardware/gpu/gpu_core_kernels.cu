@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -135,6 +135,50 @@ __global__ void gpu_expand(float* A, float* B, long int size, int* indices){
         B[thread_id_x] = A[indices[thread_id_x]];
     }
 }
+
+
+__global__ void gpu_repeat(float *A, float* B, unsigned int* repeats, unsigned int axis,
+                           long int A_size, unsigned int* A_shape, unsigned int* A_strides,  unsigned int* B_strides, unsigned int ndim, bool derivative){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < A_size){
+        auto* A_indices = new unsigned int[ndim];
+        auto* B_indices = new unsigned int[ndim];
+
+        // Get A Indices
+        // Get B indices. Same as A indices but changing size in axis to be expanded
+        for(int i=0; i<ndim; i++) {
+            A_indices[i] = thread_id_x / A_strides[i] % A_shape[i];
+            B_indices[i] = A_indices[i];
+        }
+
+        // Get A_indices[axis]=> repeat(3,2,1) AND "sel_index=2" => start at position: 3+2=5
+        unsigned int A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
+        unsigned int B_idx_axis = 0;
+        for (unsigned int j = 0; j < A_idx_axis; j++) { B_idx_axis += repeats[j]; }
+        B_indices[axis] = B_idx_axis;
+
+        // Get address
+        unsigned int B_address = 0;
+        for (int i=0; i< ndim; i++){
+            B_address += B_indices[i] * B_strides[i];
+        }
+
+        // Copy value t times
+        for (unsigned int t = 0; t < repeats[A_indices[axis]]; t++) {
+            if (!derivative){
+                B[B_address + t*B_strides[axis]] = A[thread_id_x];
+            }else{
+                A[thread_id_x] += B[B_address + t*B_strides[axis]];
+            }
+        }
+
+        // Delete stuff
+        delete[] A_indices;
+        delete[] B_indices;
+    }
+}
+
 
 __global__ void gpu_repeat_batch(float* A, float* B, long int A_size, long int B_size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;

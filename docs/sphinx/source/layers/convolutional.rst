@@ -46,7 +46,19 @@ Example:
 .. code-block:: c++
 
     l = PointwiseConv2D(l, 32, {3,3}, {1,1});
-  
+
+
+Depthwise Convolution 2D
+------------------------
+
+.. doxygenfunction:: eddl::DepthwiseConv2D
+
+Example:
+
+.. code-block:: c++
+
+  l = DepthwiseConv2D(l, {3,3}, {1,1});
+
 
 2D UpSampling
 --------------

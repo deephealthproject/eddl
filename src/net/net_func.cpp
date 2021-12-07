@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -101,6 +101,10 @@ void Net::collect_acc_grads() {
                 Tensor::inc(snets[i]->layers[j]->acc_gradients[k], layers[j]->acc_gradients[k]);
             layers[j]->acc_gradients[k]->div_(snets.size());
         }
+}
+
+void Net::distribute_weights() {
+    msg("Not implemented error", "Net::distribute_weights");
 }
 
 void Net::sync_weights() {

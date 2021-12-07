@@ -20,8 +20,10 @@ int main(int argc, char *argv[])
     eddl::eddl_worker_modes         worker_mode = eddl::eddl_worker_modes::ANY_MASTER;
 
     // manual settings for testing
-    distributed_environment.set_my_ip_addr("10.81.25.1"); // platon.vpn
-    distributed_environment.set_master_ip_addr("10.81.25.6"); // socrates.vpn
+    //distributed_environment.set_my_ip_addr("10.81.25.1"); // platon.vpn
+    //distributed_environment.set_master_ip_addr("10.81.25.6"); // socrates.vpn
+    distributed_environment.set_my_ip_addr("158.42.215.16");  //ebids.etsinf
+    distributed_environment.set_master_ip_addr("158.42.184.139"); // platon.dsic
 
     for (int i=0; i < argc; i++) {
         if (! strcmp(argv[i], "--my-ip-addr")) {
@@ -82,7 +84,8 @@ int main(int argc, char *argv[])
     while (worker_status != eddl::eddl_worker_status::WORKER_TO_SHUTDOWN) {
 
         // independently of the status the input queue must be processed
-        if (! input_queue.empty()) {
+        //if
+        while (! input_queue.empty()) {
             message = input_queue.pop();
             std::cout << "received message: "
                       << std::hex << message->get_message_id() << " "
@@ -101,8 +104,13 @@ int main(int argc, char *argv[])
                         }
                         break;
                     case eddl::eddl_command_types::STOP:
-                        if (worker_status == eddl::eddl_worker_status::WORKER_RUNNING) {
-                            worker_status = eddl::eddl_worker_status::WORKER_STOPPING;
+                        switch (worker_status) {
+                            case eddl::eddl_worker_status::WORKER_WAITING:
+                            case eddl::eddl_worker_status::WORKER_RUNNING:
+                                worker_status = eddl::eddl_worker_status::WORKER_STOPPING;
+                                break;
+                            default:
+                                break;
                         }
                         break;
                     case eddl::eddl_command_types::SHUTDOWN:

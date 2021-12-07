@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -22,7 +22,7 @@
 #include <string>
 #include <sys/stat.h>
 #include <stdexcept>
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <iomanip>
 #include <limits>
@@ -54,7 +54,7 @@
 #endif
 
 
-void msg(const string& text, const string& title) {
+void msg(const string& text, const string& title){
     string s(text);
     if(!title.empty()){
         s += " (" + title + ")";
@@ -65,20 +65,20 @@ void msg(const string& text, const string& title) {
 
     throw std::runtime_error("RuntimeError: " + title);
 }
-void set_text_green()
-{
+
+void set_text_green(){
   printf("\033[0;32m");
 }
-void set_text_red()
-{
+
+void set_text_red(){
   printf("\033[0;31m");
 }
-void set_text_default()
-{
+
+void set_text_default(){
   printf("\033[0m");
 }
-void * eddl_malloc(size_t size, const string & str_info)
-{
+
+void * eddl_malloc(size_t size, const string & str_info){
     constexpr size_t alignment_block_size = 64;
 
     // Careful with memory overcommitment:
@@ -488,14 +488,56 @@ int* expand_indices(const vector<int>& ishape, int size){
             B_pos += B_idx * ostride[d];
         }
 
-        if(B_pos!=i){
-            int asd = 3;
-        }
         // Save address translation
         addresses[i] = A_pos;
     }
 
     return addresses;  // Be careful! It's easy to forget about this pointer and have a memory leak
+}
+
+vector<int> getBroadcastShape(vector<int> shape1, vector<int> shape2){
+    // Normalize broadcast shape: (3)*(1,3), (3)*(6,2,5,3,5), (5, 3)*(5, 3),...
+    vector<int> broadcast_shape;
+
+    // Check dimensions
+    if (shape1.size() == shape2.size()){  // Same shape
+        broadcast_shape = shape2;
+
+    }else if(shape1.size()==1){  // Shape1 has 1 dimension
+        // Broadcast: [3] AND [12, 3, 7, 7] => [1, 3, 1, 1]
+        for(int i = 0; i < shape2.size(); ++i) {
+            if (shape1[0] == shape2[i]) {
+                broadcast_shape.push_back(shape2[i]);
+            }else{ broadcast_shape.push_back(1); }
+        }
+    }else{
+        // None
+    }
+
+    return broadcast_shape;
+}
+
+vector<int> getTilesRepetitions(const vector<int>& broadcast_from, const vector<int>& broadcast_to){
+    // Compute repetitions to perform a given broadcast: (3, 1, 1)*(3, 28, 28) => (1, 28, 28)
+    vector<int> tile_repetitions;  // Tile repetitions
+
+    // Check dimensions
+    if(broadcast_from.size()!=broadcast_from.size()){
+        msg("'broadcast_from' and 'broadcast_to' must have the same number of dimensions", "utils::getTilesRepetitions");
+    }
+
+    // Compute repetitions
+    for(int i=0; i<broadcast_to.size(); i++){
+        if(broadcast_from[i]==broadcast_to[i]) { // 3=>3: No repeat
+            tile_repetitions.push_back(1);
+        }else if(broadcast_from[i]==1){ // 1=>5: Repeat 5 times
+            tile_repetitions.push_back(broadcast_to[i]);
+        }else{
+            // Error
+        }
+    }
+
+    return tile_repetitions;
 }
 
 bool is_number(const std::string& s){
@@ -512,6 +554,33 @@ string get_parent_dir(const string& fname){
     return (std::string::npos == pos)
            ? ""
            : fname.substr(0, pos);
+}
+
+string replace_str(const string& value, const string& oldvalue, const string& newvalue){
+    string new_value = string(value);
+
+    size_t index = 0;
+    while (true) {
+        /* Locate the substring to replace. */
+        index = new_value.find(oldvalue, index);
+        if (index == std::string::npos) break;
+
+        /* Make the replacement. */
+        new_value.replace(index, newvalue.length(), newvalue);
+
+        /* Advance index forward so the next iteration doesn't pick it up as well. */
+        index += newvalue.length();
+    }
+
+    return new_value;
+}
+
+string normalize_layer_name(const string& value){
+    string new_value = string(value);
+    new_value = replace_str(new_value, "/", "_");
+    new_value = replace_str(new_value, "-", "_");
+    new_value = replace_str(new_value, ":", "_");
+    return new_value;
 }
 
 vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch){
@@ -558,6 +627,78 @@ vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch){
     vector<int> new_shape(shape);
     new_shape.insert(new_shape.begin()+faxis, 1); // Add one dimension to the beginning
     return new_shape;
+}
+
+
+vector<int> address2indices(int address, const vector<int>& shape, const vector<int>& strides){
+    // Check sizes
+    if(shape.size()!=strides.size()){
+        msg("Shape and strides must have the same size", "utils::address2indices");
+    }
+
+    // Compute size
+    int tsize = 1;
+    for(auto &s : shape) { tsize *= s; }
+
+    // Check maximum size
+    if(address > tsize-1){
+        msg("The address cannot greater than the maximum possible address with the given shape", "utils::address2indices");
+    }
+
+    // Reserve memory
+    vector<int> indices;
+    int ndim = strides.size();
+    indices.reserve(ndim);
+
+    // Compute indices
+    fast_address2indices(address, indices.data(), shape.data(), strides.data(), ndim);
+
+    return indices;
+}
+
+unsigned int indices2address(const vector<int>& indices, const vector<int>& strides){
+    // Check sizes
+    if(indices.size()!=strides.size()){
+        msg("Indices and strides must have the same size", "utils::indices2address");
+
+    }
+    // Compute address
+    int address = fast_indices2address(indices.data(), strides.data(), indices.size());
+
+    return address;
+}
+
+bool isPaddingAsymmetric(vector<int> padding){
+    // Check if padding is even
+    if(padding.size()%2!=0){
+        msg("'padding' must have an even number of elements");
+    }
+
+    // Check for asymmetric paddings
+    for(int i=0; i<padding.size(); i+=2){
+        if(padding[i]!=padding[i+1]){
+            return true;
+        }
+    }
+    return false;
+}
+
+vector<vector<int>> cartesian_product(const vector<vector<int>>& vectors){
+    vector<vector<int>> results = {{}};
+    for (auto &vec : vectors){ // Vectors: {0, 1}, {5, 6, 7}, {8, 9}
+        vector<vector<int>> temp;
+
+        for(auto &res : results){  // Previous solution: {{0}, {1}}
+            for(auto &elem : vec){  // Elements 1, 2, 3,...
+                vector<int> new_vec = res;
+                new_vec.push_back(elem);
+                temp.push_back(new_vec);
+            }
+        }
+        results.clear();
+        results = temp;
+    }
+    return results;
 }
 
 WrappingMode getWrappingMode(string mode){
@@ -626,6 +767,30 @@ void show_deprecated_warning(const string& deprecated_name, const string& new_na
     std::cerr << "[DEPRECATION WARNING]: The '" << deprecated_name << "' " << type << " will be deprecated in a " << version << " version";
     if (!new_name.empty()) { std::cerr << " in favor of '" << new_name << "'"; }
     std::cerr << "." << std::endl;
+}
+
+
+vector<string> read_lines_from_file(const string& filename){
+    vector<string> lines;
+
+
+    // Read file
+    std::ifstream ifile(filename);
+
+    // Check if the file exists
+    if (!ifile) {
+        throw std::runtime_error("The file does not exists. Filename: " + filename);
+    }
+
+    // Read lines
+    std::string line;
+    while (std::getline(ifile, line)){
+        if(!line.empty()){  // Check if the line is empty
+            lines.push_back(line);
+        }
+    }
+
+    return lines;
 }
 
 
@@ -959,3 +1124,4 @@ void __show_profile() {
   PROFILING_PRINTF(AvgPool2D_back);
 
 }
+

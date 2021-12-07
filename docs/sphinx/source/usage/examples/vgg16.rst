@@ -25,11 +25,11 @@ This example trains and evaluates VGG16 with Group Normalization using CIFAR-10.
     //////////////////////////////////
 
     layer Block1(layer l,int filters) {
-      return ReLu(GroupNormalization(Conv(l,filters,{1,1},{1,1}),4));
+      return ReLu(GroupNormalization(Conv2D(l,filters,{1,1},{1,1}),4));
     }
     layer Block3_2(layer l,int filters) {
-      l=ReLu(GroupNormalization(Conv(l,filters,{3,3},{1,1}),4));
-      l=ReLu(GroupNormalization(Conv(l,filters,{3,3},{1,1}),4));
+      l=ReLu(GroupNormalization(Conv2D(l,filters,{3,3},{1,1}),4));
+      l=ReLu(GroupNormalization(Conv2D(l,filters,{3,3},{1,1}),4));
       return l;
     }
 
@@ -52,11 +52,11 @@ This example trains and evaluates VGG16 with Group Normalization using CIFAR-10.
       l = RandomCropScale(l, {0.8f, 1.0f});
       l = RandomFlip(l,1);
 
-      l=MaxPool(Block3_2(l,64));
-      l=MaxPool(Block3_2(l,128));
-      l=MaxPool(Block1(Block3_2(l,256),256));
-      l=MaxPool(Block1(Block3_2(l,512),512));
-      l=MaxPool(Block1(Block3_2(l,512),512));
+      l=MaxPool2D(Block3_2(l,64));
+      l=MaxPool2D(Block3_2(l,128));
+      l=MaxPool2D(Block1(Block3_2(l,256),256));
+      l=MaxPool2D(Block1(Block3_2(l,512),512));
+      l=MaxPool2D(Block1(Block3_2(l,512),512));
 
       l=Reshape(l,{-1});
       l=ReLu(BatchNormalization(Dense(l,512)));

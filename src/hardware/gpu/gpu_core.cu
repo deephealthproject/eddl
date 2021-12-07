@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -176,7 +176,8 @@ void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool m
   select_rows<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[1], size, ind, ini, mask_zeros);
   check_cuda(cudaDeviceSynchronize(), "gpu_select");
 
-  cudaFree(ind);
+  // Free memory
+    check_cuda(cudaFree(ind), "gpu_select");
 
 }
 
@@ -208,7 +209,8 @@ void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, int 
   deselect_rows<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[1], size, ind, ini, inc,mask_zeros);
   check_cuda(cudaDeviceSynchronize(), "gpu_select");
 
-  cudaFree(ind);
+    // Free memory
+    check_cuda(cudaFree(ind),"gpu_deselect");
 
 }
 
@@ -337,6 +339,37 @@ void gpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
     check_cuda(cudaDeviceSynchronize(), "gpu_expand");
 }
 
+
+void  gpu_repeat(Tensor* A, Tensor *B, vector<unsigned int> repeats, unsigned int axis, bool derivative){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    unsigned int *gpu_vrepeats;
+    cudaMalloc((void **) &gpu_vrepeats, repeats.size() * sizeof(unsigned int));
+    cudaMemcpy(gpu_vrepeats, &repeats[0], repeats.size() * sizeof(unsigned int), cudaMemcpyHostToDevice);
+
+    unsigned int *gpu_A_shape;
+    cudaMalloc((void **) &gpu_A_shape, A->ndim * sizeof(unsigned int));
+    cudaMemcpy(gpu_A_shape, A->shape.data(), A->ndim * sizeof(unsigned int), cudaMemcpyHostToDevice);
+
+    unsigned int *gpu_A_strides;
+    cudaMalloc((void **) &gpu_A_strides, A->ndim * sizeof(unsigned int));
+    cudaMemcpy(gpu_A_strides, A->stride.data(), A->ndim * sizeof(unsigned int), cudaMemcpyHostToDevice);
+
+    unsigned int *gpu_B_strides;
+    cudaMalloc((void **) &gpu_B_strides, B->ndim * sizeof(unsigned int));
+    cudaMemcpy(gpu_B_strides, B->stride.data(), B->ndim * sizeof(unsigned int), cudaMemcpyHostToDevice);
+
+    setDims(A);  // A is the small one. We should use B as is the big one, but this is a direct translation from the CPU code
+    gpu_repeat<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, gpu_vrepeats, axis, A->size, gpu_A_shape,gpu_A_strides, gpu_B_strides, A->ndim, derivative);
+    check_cuda(cudaDeviceSynchronize(), "gpu_repeat");
+
+    // Free memory
+     check_cuda(cudaFree(gpu_vrepeats), "gpu_repeat");
+     check_cuda(cudaFree(gpu_A_shape), "gpu_repeat");
+     check_cuda(cudaFree(gpu_A_strides), "gpu_repeat");
+
+}
 
 void gpu_repeat_batch(Tensor *A, Tensor *B){
     int device=A->gpu_device;

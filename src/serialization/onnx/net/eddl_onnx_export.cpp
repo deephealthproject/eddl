@@ -37,7 +37,7 @@ void save_net_to_onnx_file(Net *net, string path)
 size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gradients)
 {
   collect_params(net); // sync weights from device
-  if (gradients)
+  if (gradients && net->snets[0]->dev != DEV_CPU)
       net->collect_acc_grads();
 
   onnx::ModelProto model = build_onnx_model(net, gradients);
@@ -55,7 +55,7 @@ size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gra
 string *serialize_net_to_onnx_string(Net *net, bool gradients)
 {
   collect_params(net); // sync weights from device
-  if (gradients)
+  if (gradients && net->snets[0]->dev != DEV_CPU)
       net->collect_acc_grads();
 
   onnx::ModelProto model = build_onnx_model(net, gradients);

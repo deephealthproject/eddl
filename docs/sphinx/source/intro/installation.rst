@@ -123,6 +123,7 @@ You can also install ``EDDL`` from source with cmake.
             # -DCMAKE_C_COMPILER=$(which gcc-7) \
             # -DCMAKE_CXX_COMPILER=$(which g++-7) \
 
+            make -j$(nproc)  # The -j flag is to parallelize the compilation
             make install
 
     .. tab:: MacOS
@@ -142,6 +143,7 @@ You can also install ``EDDL`` from source with cmake.
             cd build
             cmake .. -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
 
+            make -j$(sysctl -n hw.logicalcpu)  # The -j flag is to parallelize the compilation
             make install
 
     .. tab:: Windows
@@ -185,6 +187,16 @@ See the :doc:`build-options` section for more details about cmake options.
     .. code:: bash
 
         cmake .. -DBUILD_SUPERBUILD=ON -DBUILD_TARGET=CUDNN -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc -DCMAKE_CXX_COMPILER=/usr/bin/g++-7
+
+    6. To update/remote the eddl environment type:
+
+    .. code:: bash
+
+        # Update existing environment
+        conda env update --file environment.yml --prune
+
+        # Remove environment
+        conda remove --name eddl --all
 
 
 Including EDDL in your project

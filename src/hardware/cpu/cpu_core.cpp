@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -11,6 +11,7 @@
 #include "eddl/profiling.h"
 #include <algorithm>
 #include <numeric>
+#include <omp.h>
 
 int num_instances[_NUM_CPU_FUNCS];
 float mb_memory_needed;
@@ -358,7 +359,7 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
         float *src = t[i]->ptr;
 
         // Walk tensor i
-#pragma omp parallel for
+        #pragma omp parallel for
         for (int j = 0; j < t[i]->size; j++) {
             unsigned int k = j % src_stride;  // Pos (index) in the stride (src)
             unsigned int stride_idx = j / src_stride;  // Index of the stride (src/dst)
@@ -371,6 +372,50 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
     _profile(_CPU_CONCAT, 1);
 }
 
+void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsigned int axis, bool derivative){
+    // if derivative==True: A must be parent_delta and B delta
+//    // Tensor A: Reserve memory
+//    int max_threads = omp_get_max_threads();
+//    omp_set_num_threads(max_threads);
+
+    // OMP does not want 'unsigned int's in the for loop
+    // Source: https://stackoverflow.com/questions/2820621/why-arent-unsigned-openmp-index-variables-allowed
+    #pragma omp parallel for
+    for (int A_address = 0; A_address < A->size; A_address++) {
+        auto* A_indices = new unsigned int[A->ndim];
+        auto* B_indices = new unsigned int[B->ndim];
+
+        // **** Function to transform "A address" into the "B address" ************
+        // Get A Indices
+        for(int i=0; i<A->ndim; i++) { A_indices[i] = A_address / A->stride[i] % A->shape[i]; }
+
+        // Get B indices. Same as A indices but changing size in axis to be expanded
+        std::copy(A_indices, A_indices+A->ndim, B_indices);  // Copy A indices
+        // Get A_indices[axis]=> repeat(3,2,1) AND "sel_index=2" => start at position: 3+2=5
+        unsigned int A_idx_axis = A_indices[axis]; // (2, 0) => axis=0 => 2
+        unsigned int B_idx_axis = 0;
+        for (unsigned int j = 0; j < A_idx_axis; j++) { B_idx_axis+= repeats[j]; }
+        B_indices[axis] = B_idx_axis;
+
+        // Copy value t times
+        int B_address = 0;
+        for (int i=0; i< B->ndim; i++){ B_address += B_indices[i] * B->stride[i]; }
+        // ******************************************************************
+
+        // Copy values from A to B
+        for (unsigned int t = 0; t < repeats[A_indices[axis]]; t++) {
+            if(!derivative){
+                B->ptr[B_address + t*B->stride[axis]] = A->ptr[A_address];
+            }else{
+                A->ptr[A_address] += B->ptr[B_address + t*B->stride[axis]];  // parent_delta += delta
+            }
+        }
+
+        // Delete stuff
+        delete[] A_indices;
+        delete[] B_indices;
+    }
+}
 
 void cpu_sort(Tensor *A, Tensor *B, bool descending, bool stable){
     auto order_desc = std::greater<float>();

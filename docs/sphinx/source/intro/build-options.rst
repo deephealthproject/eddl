@@ -11,7 +11,7 @@ To build EDDL you will need a ``C++11 compiler``
 If you want to compile with CUDA support, install:
 
 - NVIDIA CUDA 10 or above
-- NVIDIA cuDNN to accelerate primitives (optional)
+- NVIDIA cuDNN to accelerate primitfives (optional)
 
 .. note::
 
@@ -38,23 +38,26 @@ If you decide to manually install these dependencies in your system (make sure t
 
 .. code:: yaml
 
-    - cmake>=3.17.2
-    - eigen==3.3.7
+    # Conda versioning: https://docs.conda.io/projects/conda-build/en/latest/resources/package-spec.html
+    - cmake=3.19
+    - eigen=3.3|3.4
     - protobuf==3.11.4
-    - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
+    - libprotobuf==3.11.4
     - zlib==1.2.11
     - openssl==1.1.1i
-    - gtest==1.10.0
-    - graphviz==2.42.3  # Build & Run
-    - wget==1.20.1
-    - doxygen==1.9.1  # Docs
-    - python==3.8.6
-    - pip==21.0.1
-    - pip:
-        - sphinx==3.2.1
-        - sphinx_rtd_theme==0.5.0
-        - sphinx-tabs==1.3.0
-        - breathe==4.22.1
+    - gtest=1.10
+    - graphviz=2.42|2.47 # Build & Run
+    - wget=1.20|1.16
+    - doxygen=1.9  # Docs
+    - python=3.8
+    - pip=21.0
+    - pip:  # Pip versioning: https://www.python.org/dev/peps/pep-0440/#version-specifiers
+        - sphinx==4.3.*
+        - sphinx_rtd_theme==1.0.*
+        - sphinx-tabs==3.2.*
+        - breathe==4.31.*
+        - onnx-simplifier==0.3.*
+        - protobuf==3.19.*
 
 .. note::
 
