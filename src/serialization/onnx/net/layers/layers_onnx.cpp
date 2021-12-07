@@ -526,6 +526,11 @@ map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto
         tensors[name] = get_conv_tensors(node, map_init_values, map_init_dims);
         break;
       }
+      case ONNX_LAYERS::CONVTRANSPOSE:
+      {
+        tensors[name] = get_convT_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
       case ONNX_LAYERS::DENSE:
       {
         tensors[name] = get_dense_tensors(node, map_init_values, map_init_dims);
