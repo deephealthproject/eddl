@@ -127,9 +127,15 @@ public:
     Tensor *gWoh,*gWox;
     Tensor *gWch,*gWcx;
 
+    Tensor *acc_gWih,*acc_gWix;
+    Tensor *acc_gWfh,*acc_gWfx;
+    Tensor *acc_gWoh,*acc_gWox;
+    Tensor *acc_gWch,*acc_gWcx;
+
     Tensor *in,*fn,*on,*cn;
     Tensor *inbias,*fnbias,*onbias,*cnbias;
     Tensor *ginbias,*gfnbias,*gonbias,*gcnbias;
+    Tensor *acc_ginbias,*acc_gfnbias,*acc_gonbias,*acc_gcnbias;
 
     Tensor *incn,*cn1fn;
     Tensor *sh;
@@ -155,7 +161,17 @@ public:
 
     void backward() override;
 
+    void update_weights(vector<Tensor*> weights) override;
+
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
     string plot(int c) override;
+
+    void enable_distributed() override;
 };
 
 

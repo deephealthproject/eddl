@@ -471,7 +471,7 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
   else if (LDropout *l = dynamic_cast<LDropout *>(layer))
     build_dropout_node(l, graph);
   else if (LLSTM *l = dynamic_cast<LLSTM *>(layer))
-    build_lstm_node(l, graph);
+    build_lstm_node(l, graph, gradients);
   else if (LGRU *l = dynamic_cast<LGRU *>(layer))
     build_gru_node(l, graph);
   else if (LRNN *l = dynamic_cast<LRNN *>(layer))
@@ -531,9 +531,30 @@ map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto
         tensors[name] = get_convT_tensors(node, map_init_values, map_init_dims);
         break;
       }
+      case ONNX_LAYERS::LSTM:
+      {
+        tensors[name] = get_lstm_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
       case ONNX_LAYERS::DENSE:
       {
         tensors[name] = get_dense_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::MAT_MUL:
+      {
+        // The matmul operator can be used to simulate a Dense layer, in that case we take the weights
+        vector<Tensor *> matmul_tensors = get_matmul_tensors(node, map_init_values, map_init_dims);
+        if (matmul_tensors.size())
+          tensors[name] = matmul_tensors;
+        break;
+      }
+      case ONNX_LAYERS::ADD:
+      {
+        // The Add operator can be used to simulate a Dense layer bias, in that case we take the weights
+        vector<Tensor *> add_tensors = get_add_tensors(node, map_init_values, map_init_dims);
+        if (add_tensors.size() && tensors.count(name))
+          tensors[name].push_back(add_tensors[0]);
         break;
       }
       default:

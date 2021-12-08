@@ -197,10 +197,19 @@ public:
 
     void backward() override {}
 
+    void update_weights(vector<Tensor*> weights) override {}
+
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override {}
+
+    void reset_accumulated_gradients() override {}
+
+    void apply_accumulated_gradients() override {}
+
     Layer *share(int c, int bs, vector<Layer *> p) override { return nullptr; }
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override { return nullptr; }
 
+    void enable_distributed() override {};
 };
 
 #endif //EDDL_LAYER_H

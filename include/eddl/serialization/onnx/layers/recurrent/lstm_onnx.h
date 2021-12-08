@@ -25,7 +25,15 @@ Layer* build_lstm_layer(onnx::NodeProto *node,
  */
 
 // OPSET: 7, 1
-void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph);
+void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph, bool gradients = false);
+
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_lstm_tensors(onnx::NodeProto &node,
+                                  map<string, vector<float>> &map_init_values,
+                                  map<string, vector<int>> &map_init_dims);
 
 #endif // EDDL_LSTM_ONNX_H
 #endif // cPROTO

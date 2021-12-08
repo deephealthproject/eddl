@@ -191,7 +191,7 @@ void build_dense_with_matmul_node(LDense *layer, onnx::GraphProto *graph, bool g
   // Add an empty node to the graph
   onnx::NodeProto *node = graph->add_node();
   node->set_op_type("MatMul");
-  node->set_name(layer->name + "_MatMul");
+  node->set_name(layer->name);
   // Set the inputs of the node from the parents of the layer
   for (Layer *parentl : layer->parent)
   {
@@ -211,8 +211,13 @@ void build_dense_with_matmul_node(LDense *layer, onnx::GraphProto *graph, bool g
   onnx::TensorProto *weight = graph->add_initializer();
   weight->set_name(layer->name + "_W");
   weight->set_data_type(onnx::TensorProto::FLOAT);
-  weight->mutable_dims()->Add(layer->W->shape.begin(), layer->W->shape.end());      // Set the shape of the weights
-  weight->mutable_float_data()->Add(layer->W->ptr, layer->W->ptr + layer->W->size); // Set the weights values
+  if (!gradients) {
+    weight->mutable_dims()->Add(layer->W->shape.begin(), layer->W->shape.end());      // Set the shape of the weights
+    weight->mutable_float_data()->Add(layer->W->ptr, layer->W->ptr + layer->W->size); // Set the weights values
+  } else {
+    weight->mutable_dims()->Add(layer->acc_gW->shape.begin(), layer->acc_gW->shape.end());      // Set the shape of the weights
+    weight->mutable_float_data()->Add(layer->acc_gW->ptr, layer->acc_gW->ptr + layer->acc_gW->size); // Set the weights values
+  }
 
   // Create the Add node in case of using bias in the Dense layer
   if (layer->use_bias)
@@ -220,7 +225,7 @@ void build_dense_with_matmul_node(LDense *layer, onnx::GraphProto *graph, bool g
     // Add an empty node to the graph
     onnx::NodeProto *node_bias = graph->add_node();
     node_bias->set_op_type("Add");
-    node_bias->set_name(layer->name + "_Add");
+    node_bias->set_name(layer->name);
     // Take the input from the previous MatMul
     node_bias->add_input(layer->name + "_MatMul");
     // Set the input param name of the Bias matrix
@@ -231,24 +236,19 @@ void build_dense_with_matmul_node(LDense *layer, onnx::GraphProto *graph, bool g
     onnx::TensorProto *bias = graph->add_initializer();
     bias->set_name(layer->name + "_b");
     bias->set_data_type(onnx::TensorProto::FLOAT);
-    bias->mutable_dims()->Add(layer->bias->shape.begin(), layer->bias->shape.end());         // Set the bias shape
-    bias->mutable_float_data()->Add(layer->bias->ptr, layer->bias->ptr + layer->bias->size); // Set the bias values
+    if (!gradients) {
+      bias->mutable_dims()->Add(layer->bias->shape.begin(), layer->bias->shape.end());         // Set the bias shape
+      bias->mutable_float_data()->Add(layer->bias->ptr, layer->bias->ptr + layer->bias->size); // Set the bias values
+    } else {
+      bias->mutable_dims()->Add(layer->acc_gbias->shape.begin(), layer->acc_gbias->shape.end());         // Set the bias shape
+      bias->mutable_float_data()->Add(layer->acc_gbias->ptr, layer->acc_gbias->ptr + layer->acc_gbias->size); // Set the bias values
+    }
   }
 }
 
 /*
  * DISTRIBUTED TRAINING
  */
-
-void update_dense_weights(LDense *layer, vector<Tensor *> weights)
-{
-  layer->update_weights(weights);
-}
-
-void apply_grads_to_dense(LDense *layer, vector<Tensor *> grads)
-{
-  layer->accumulate_accumulated_gradients(grads);
-}
 
 vector<Tensor *> get_dense_tensors(onnx::NodeProto &node,
                                    map<string, vector<float>> &map_init_values,

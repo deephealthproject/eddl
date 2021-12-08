@@ -93,9 +93,7 @@ Layer* build_lstm_layer(onnx::NodeProto *node,
   }
 
   if (hidden_size < 0)
-  {
-    cerr << "Model contains a LSTM without the number of neurons" << endl;
-  }
+    msg("The layer " + name + " (LSTM) does not provide the hidden_size attribute.", "[ONNX::ImportNet]");
 
   string weights_gates = node->input(1); // Get weights and dims
   vector<float> *weights_g = &(map_init_values[weights_gates]);
@@ -303,7 +301,7 @@ Layer* build_lstm_layer(onnx::NodeProto *node,
 }
 
 // ONNX export
-void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
+void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph, bool gradients)
 {
   // Add an empty node to the graph
   onnx::NodeProto *node = graph->add_node();
@@ -384,18 +382,33 @@ void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
   /*
    * The Weights are permuted before saving them (required by ONNX standad)
    */
-  Tensor *Wix = layer->Wix->permute({1, 0});
-  w->mutable_float_data()->Add(Wix->ptr, Wix->ptr + Wix->size); // i weights
-  delete Wix;
-  Tensor *Wox = layer->Wox->permute({1, 0});
-  w->mutable_float_data()->Add(Wox->ptr, Wox->ptr + Wox->size); // o weights
-  delete Wox;
-  Tensor *Wfx = layer->Wfx->permute({1, 0});
-  w->mutable_float_data()->Add(Wfx->ptr, Wfx->ptr + Wfx->size); // f weights
-  delete Wfx;
-  Tensor *Wcx = layer->Wcx->permute({1, 0});
-  w->mutable_float_data()->Add(Wcx->ptr, Wcx->ptr + Wcx->size); // c weights
-  delete Wcx;
+  if (!gradients) {
+    Tensor *Wix = layer->Wix->permute({1, 0});
+    w->mutable_float_data()->Add(Wix->ptr, Wix->ptr + Wix->size); // i weights
+    delete Wix;
+    Tensor *Wox = layer->Wox->permute({1, 0});
+    w->mutable_float_data()->Add(Wox->ptr, Wox->ptr + Wox->size); // o weights
+    delete Wox;
+    Tensor *Wfx = layer->Wfx->permute({1, 0});
+    w->mutable_float_data()->Add(Wfx->ptr, Wfx->ptr + Wfx->size); // f weights
+    delete Wfx;
+    Tensor *Wcx = layer->Wcx->permute({1, 0});
+    w->mutable_float_data()->Add(Wcx->ptr, Wcx->ptr + Wcx->size); // c weights
+    delete Wcx;
+  } else {
+    Tensor *Wix = layer->acc_gWix->permute({1, 0});
+    w->mutable_float_data()->Add(Wix->ptr, Wix->ptr + Wix->size); // i weights
+    delete Wix;
+    Tensor *Wox = layer->acc_gWox->permute({1, 0});
+    w->mutable_float_data()->Add(Wox->ptr, Wox->ptr + Wox->size); // o weights
+    delete Wox;
+    Tensor *Wfx = layer->acc_gWfx->permute({1, 0});
+    w->mutable_float_data()->Add(Wfx->ptr, Wfx->ptr + Wfx->size); // f weights
+    delete Wfx;
+    Tensor *Wcx = layer->acc_gWcx->permute({1, 0});
+    w->mutable_float_data()->Add(Wcx->ptr, Wcx->ptr + Wcx->size); // c weights
+    delete Wcx;
+  }
 
   // R input (recurrent weights for all the layers W[iofc])
   onnx::TensorProto *r = graph->add_initializer();
@@ -406,18 +419,33 @@ void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
   /*
    * The Weights are permuted before saving them (required by ONNX standad)
    */
-  Tensor *Wih = layer->Wih->permute({1, 0});
-  r->mutable_float_data()->Add(Wih->ptr, Wih->ptr + Wih->size); // i recurrent weights
-  delete Wih;
-  Tensor *Woh = layer->Woh->permute({1, 0});
-  r->mutable_float_data()->Add(Woh->ptr, Woh->ptr + Woh->size); // o recurrent weights
-  delete Woh;
-  Tensor *Wfh = layer->Wfh->permute({1, 0});
-  r->mutable_float_data()->Add(Wfh->ptr, Wfh->ptr + Wfh->size); // f recurrent weights
-  delete Wfh;
-  Tensor *Wch = layer->Wch->permute({1, 0});
-  r->mutable_float_data()->Add(Wch->ptr, Wch->ptr + Wch->size); // c recurrent weights
-  delete Wch;
+  if (!gradients) {
+    Tensor *Wih = layer->Wih->permute({1, 0});
+    r->mutable_float_data()->Add(Wih->ptr, Wih->ptr + Wih->size); // i recurrent weights
+    delete Wih;
+    Tensor *Woh = layer->Woh->permute({1, 0});
+    r->mutable_float_data()->Add(Woh->ptr, Woh->ptr + Woh->size); // o recurrent weights
+    delete Woh;
+    Tensor *Wfh = layer->Wfh->permute({1, 0});
+    r->mutable_float_data()->Add(Wfh->ptr, Wfh->ptr + Wfh->size); // f recurrent weights
+    delete Wfh;
+    Tensor *Wch = layer->Wch->permute({1, 0});
+    r->mutable_float_data()->Add(Wch->ptr, Wch->ptr + Wch->size); // c recurrent weights
+    delete Wch;
+  } else {
+    Tensor *Wih = layer->acc_gWih->permute({1, 0});
+    r->mutable_float_data()->Add(Wih->ptr, Wih->ptr + Wih->size); // i recurrent weights
+    delete Wih;
+    Tensor *Woh = layer->acc_gWoh->permute({1, 0});
+    r->mutable_float_data()->Add(Woh->ptr, Woh->ptr + Woh->size); // o recurrent weights
+    delete Woh;
+    Tensor *Wfh = layer->acc_gWfh->permute({1, 0});
+    r->mutable_float_data()->Add(Wfh->ptr, Wfh->ptr + Wfh->size); // f recurrent weights
+    delete Wfh;
+    Tensor *Wch = layer->acc_gWch->permute({1, 0});
+    r->mutable_float_data()->Add(Wch->ptr, Wch->ptr + Wch->size); // c recurrent weights
+    delete Wch;
+  }
 
   // B input (biases for all the layers)
   onnx::TensorProto *b = graph->add_initializer();
@@ -426,10 +454,17 @@ void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
   vector<int> b_dims{1, 8 * layer->units};              // b_dims shape[0] = 1 for weights in one directions
   b->mutable_dims()->Add(b_dims.begin(), b_dims.end()); // Set the shape of the weights
 
-  b->mutable_float_data()->Add(layer->inbias->ptr, layer->inbias->ptr + layer->inbias->size); // i bias
-  b->mutable_float_data()->Add(layer->onbias->ptr, layer->onbias->ptr + layer->onbias->size); // o bias
-  b->mutable_float_data()->Add(layer->fnbias->ptr, layer->fnbias->ptr + layer->fnbias->size); // f bias
-  b->mutable_float_data()->Add(layer->cnbias->ptr, layer->cnbias->ptr + layer->cnbias->size); // c bias
+  if (!gradients) {
+    b->mutable_float_data()->Add(layer->inbias->ptr, layer->inbias->ptr + layer->inbias->size); // i bias
+    b->mutable_float_data()->Add(layer->onbias->ptr, layer->onbias->ptr + layer->onbias->size); // o bias
+    b->mutable_float_data()->Add(layer->fnbias->ptr, layer->fnbias->ptr + layer->fnbias->size); // f bias
+    b->mutable_float_data()->Add(layer->cnbias->ptr, layer->cnbias->ptr + layer->cnbias->size); // c bias
+  } else {
+    b->mutable_float_data()->Add(layer->acc_ginbias->ptr, layer->acc_ginbias->ptr + layer->acc_ginbias->size); // i bias
+    b->mutable_float_data()->Add(layer->acc_gonbias->ptr, layer->acc_gonbias->ptr + layer->acc_gonbias->size); // o bias
+    b->mutable_float_data()->Add(layer->acc_gfnbias->ptr, layer->acc_gfnbias->ptr + layer->acc_gfnbias->size); // f bias
+    b->mutable_float_data()->Add(layer->acc_gcnbias->ptr, layer->acc_gcnbias->ptr + layer->acc_gcnbias->size); // c bias
+  }
 
   // Set recurrent forward biases to 0 (only one bias used, not one for x and another for h)
   for (int i = 0; i < 4 * layer->units; ++i)
@@ -476,6 +511,212 @@ void build_lstm_node(LLSTM *layer, onnx::GraphProto *graph)
         {0},                            // axes to squeeze
         graph);
   }
+}
+
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_lstm_tensors(onnx::NodeProto &node,
+                                  map<string, vector<float>> &map_init_values,
+                                  map<string, vector<int>> &map_init_dims)
+{
+  vector<Tensor *> lstm_tensors;
+
+  int hidden_size = -1;
+  for (int j = 0; j < node.attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node.attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("hidden_size"))
+    {
+      hidden_size = attribute.i();
+    }
+  }
+
+  if (hidden_size < 0)
+    msg("The layer " + node.name() + " (LSTM) does not provide the hidden_size attribute.", "[ONNX::ImportNet]");
+
+  string weights_gates = node.input(1); // Get weights and dims
+  vector<float> *weights_g = &(map_init_values[weights_gates]);
+  vector<int> dims_g = map_init_dims[weights_gates];
+  int input_size = dims_g[2];
+
+  // Load input weights with shape [hidden_size, input_size]. After load we transpose
+  //    Note: EDDL input weights are of shape [input_size, hidden_size]
+  vector<int> dims_input_lstm = {dims_g[1] / 4, dims_g[2]};
+
+  vector<float> *weights_input_g = new vector<float>;
+  vector<float> *weights_output_g = new vector<float>;
+  vector<float> *weights_forget_g = new vector<float>;
+  vector<float> *weights_cell_g = new vector<float>;
+  int w_size = input_size * hidden_size;
+  weights_input_g->assign(weights_g->begin() + w_size * 0, weights_g->begin() + w_size * 1);
+  weights_output_g->assign(weights_g->begin() + w_size * 1, weights_g->begin() + w_size * 2);
+  weights_forget_g->assign(weights_g->begin() + w_size * 2, weights_g->begin() + w_size * 3);
+  weights_cell_g->assign(weights_g->begin() + w_size * 3, weights_g->begin() + w_size * 4);
+
+  string recurrence_weights_gates = node.input(2); // Get weights and dims
+  vector<float> *recurrence_weights_g = &(map_init_values[recurrence_weights_gates]);
+  vector<int> recurrence_dims_g = map_init_dims[recurrence_weights_gates];
+
+  vector<int> dims_recurrent_lstm = {recurrence_dims_g[2], recurrence_dims_g[2]};
+
+  vector<float> *recurrence_weights_input_g = new vector<float>;
+  vector<float> *recurrence_weights_output_g = new vector<float>;
+  vector<float> *recurrence_weights_forget_g = new vector<float>;
+  vector<float> *recurrence_weights_cell_g = new vector<float>;
+  w_size = hidden_size * hidden_size;
+  recurrence_weights_input_g->assign(recurrence_weights_g->begin() + w_size * 0, recurrence_weights_g->begin() + w_size * 1);
+  recurrence_weights_output_g->assign(recurrence_weights_g->begin() + w_size * 1, recurrence_weights_g->begin() + w_size * 2);
+  recurrence_weights_forget_g->assign(recurrence_weights_g->begin() + w_size * 2, recurrence_weights_g->begin() + w_size * 3);
+  recurrence_weights_cell_g->assign(recurrence_weights_g->begin() + w_size * 3, recurrence_weights_g->begin() + w_size * 4);
+
+  /*
+   * The Weights are permuted before copying them to the LSTM layer (mismatch between ONNX standad and EDDL implementation)
+   */
+  int dev = DEV_CPU;
+  Tensor *weights_input_tensor = new Tensor(dims_input_lstm, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_input_g, weights_input_tensor);
+  delete weights_input_g;
+  weights_input_tensor->permute_({1, 0});
+
+  Tensor *weights_output_tensor = new Tensor(dims_input_lstm, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_output_g, weights_output_tensor);
+  delete weights_output_g;
+  weights_output_tensor->permute_({1, 0});
+
+  Tensor *weights_forget_tensor = new Tensor(dims_input_lstm, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_forget_g, weights_forget_tensor);
+  delete weights_forget_g;
+  weights_forget_tensor->permute_({1, 0});
+
+  Tensor *weights_cell_tensor = new Tensor(dims_input_lstm, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_cell_g, weights_cell_tensor);
+  delete weights_cell_g;
+  weights_cell_tensor->permute_({1, 0});
+
+  Tensor *recurrence_weights_input_tensor = new Tensor(dims_recurrent_lstm, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_input_g, recurrence_weights_input_tensor);
+  delete recurrence_weights_input_g;
+  recurrence_weights_input_tensor->permute_({1, 0});
+
+  Tensor *recurrence_weights_output_tensor = new Tensor(dims_recurrent_lstm, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_output_g, recurrence_weights_output_tensor);
+  delete recurrence_weights_output_g;
+  recurrence_weights_output_tensor->permute_({1, 0});
+
+  Tensor *recurrence_weights_forget_tensor = new Tensor(dims_recurrent_lstm, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_forget_g, recurrence_weights_forget_tensor);
+  delete recurrence_weights_forget_g;
+  recurrence_weights_forget_tensor->permute_({1, 0});
+
+  Tensor *recurrence_weights_cell_tensor = new Tensor(dims_recurrent_lstm, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(recurrence_weights_cell_g, recurrence_weights_cell_tensor);
+  delete recurrence_weights_cell_g;
+  recurrence_weights_cell_tensor->permute_({1, 0});
+
+  // EDDL LSTM uses the order ifoc not iofc
+  lstm_tensors.push_back(weights_input_tensor);
+  lstm_tensors.push_back(weights_forget_tensor);
+  lstm_tensors.push_back(weights_output_tensor);
+  lstm_tensors.push_back(weights_cell_tensor);
+  lstm_tensors.push_back(recurrence_weights_input_tensor);
+  lstm_tensors.push_back(recurrence_weights_forget_tensor);
+  lstm_tensors.push_back(recurrence_weights_output_tensor);
+  lstm_tensors.push_back(recurrence_weights_cell_tensor);
+
+  /*
+   * Set bias values
+   */
+  vector<int> bias_dims = {hidden_size};
+  // Vectors to store the imported weights
+  vector<float> *bias_input = new vector<float>;
+  vector<float> *bias_output = new vector<float>;
+  vector<float> *bias_forget = new vector<float>;
+  vector<float> *bias_cell = new vector<float>;
+  vector<float> *bias_recurrence_input = new vector<float>;
+  vector<float> *bias_recurrence_output = new vector<float>;
+  vector<float> *bias_recurrence_forget = new vector<float>;
+  vector<float> *bias_recurrence_cell = new vector<float>;
+
+  if (node.input_size() > 3) {
+    string biases_name = node.input(3); //Get weights and dims
+    vector<float> *biases = &(map_init_values[biases_name]);
+
+    bias_input->assign(biases->begin() + hidden_size * 0, biases->begin() + hidden_size * 1);
+    bias_output->assign(biases->begin() + hidden_size * 1, biases->begin() + hidden_size * 2);
+    bias_forget->assign(biases->begin() + hidden_size * 2, biases->begin() + hidden_size * 3);
+    bias_cell->assign(biases->begin() + hidden_size * 3, biases->begin() + hidden_size * 4);
+    bias_recurrence_input->assign(biases->begin() + hidden_size * 4, biases->begin() + hidden_size * 5);
+    bias_recurrence_output->assign(biases->begin() + hidden_size * 5, biases->begin() + hidden_size * 6);
+    bias_recurrence_forget->assign(biases->begin() + hidden_size * 6, biases->begin() + hidden_size * 7);
+    bias_recurrence_cell->assign(biases->begin() + hidden_size * 7, biases->begin() + hidden_size * 8);
+  } else {
+    // Set bias values to 0.0
+    //   Note: In EDDL we don't have use_bias option for LSTM so to achieve the same
+    //         result we set the bias values to 0.0
+    vector<float> zero_bias(hidden_size, 0.0);
+    bias_input->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_output->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_forget->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_cell->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_recurrence_input->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_recurrence_output->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_recurrence_forget->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+    bias_recurrence_cell->assign(zero_bias.begin(), zero_bias.begin() + hidden_size);
+  }
+
+  Tensor *bias_input_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_input, bias_input_tensor);
+  delete bias_input;
+
+  Tensor *bias_output_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_output, bias_output_tensor);
+  delete bias_output;
+
+  Tensor *bias_forget_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_forget, bias_forget_tensor);
+  delete bias_forget;
+
+  Tensor *bias_cell_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_cell, bias_cell_tensor);
+  delete bias_cell;
+
+  // EDDL LSTM uses the order ifoc not iofc
+  lstm_tensors.push_back(bias_input_tensor);
+  lstm_tensors.push_back(bias_forget_tensor);
+  lstm_tensors.push_back(bias_output_tensor);
+  lstm_tensors.push_back(bias_cell_tensor);
+
+  // Add the recurrent bias values
+  /* Not needed for importing gradients
+  Tensor *bias_recurrence_input_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_input, bias_recurrence_input_tensor);
+  Tensor::add(bias_recurrence_input_tensor, lstm->inbias, lstm->inbias);
+  delete bias_recurrence_input_tensor;
+  delete bias_recurrence_input;
+
+  Tensor *bias_recurrence_output_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_output, bias_recurrence_output_tensor);
+  Tensor::add(bias_recurrence_output_tensor, lstm->onbias, lstm->onbias);
+  delete bias_recurrence_output_tensor;
+  delete bias_recurrence_output;
+
+  Tensor *bias_recurrence_forget_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_forget, bias_recurrence_forget_tensor);
+  Tensor::add(bias_recurrence_forget_tensor, lstm->fnbias, lstm->fnbias);
+  delete bias_recurrence_forget_tensor;
+  delete bias_recurrence_forget;
+
+  Tensor *bias_recurrence_cell_tensor = new Tensor(bias_dims, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_recurrence_cell, bias_recurrence_cell_tensor);
+  Tensor::add(bias_recurrence_cell_tensor, lstm->cnbias, lstm->cnbias);
+  delete bias_recurrence_cell_tensor;
+  delete bias_recurrence_cell;
+  */
+
+  return lstm_tensors;
 }
 
 #endif // defined(cPROTO)
