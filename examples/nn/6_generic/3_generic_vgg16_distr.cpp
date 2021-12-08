@@ -237,6 +237,7 @@ int main(int argc, char **argv) {
         }
     }
     std::cout << "Evaluate test:" << std::endl;
+    
     // Evaluate
     evaluate(net,{x_test},
     {
@@ -245,10 +246,11 @@ int main(int argc, char **argv) {
     
     
     if (id==0)
-        save_net_to_onnx_file (net,"vgg16.onnx");   
+        save_net_to_onnx_file (net,onnx_name);   
 
-    delete x_train;
-    delete y_train;
+
+    //delete x_train;
+    //delete y_train;
     delete x_test;
     delete y_test;
     delete net;

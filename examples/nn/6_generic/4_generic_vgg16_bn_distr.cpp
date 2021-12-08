@@ -252,8 +252,8 @@ int main(int argc, char **argv) {
     if (id==0)
         save_net_to_onnx_file (net,"vgg16.onnx");   
 
-    delete x_train;
-    delete y_train;
+   //delete x_train;
+    //delete y_train;
     delete x_test;
     delete y_test;
     delete net;

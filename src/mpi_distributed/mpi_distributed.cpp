@@ -77,7 +77,7 @@ int init_MPI() {
     int n_procs; 
     
 #ifndef cMPI
-    msg("MPI library is not linked", "init_distributed");
+    msg("Error: MPI library is not linked", "init_distributed");
 #endif  
     
     id=0;
@@ -90,6 +90,12 @@ int init_MPI() {
     n_procs=get_n_procs_distributed();
     id=get_id_distributed();
  
+    if (n_procs<2) {
+        msg("Error: Nr of MPI processes must be >1 ", "init_MPI");
+    }
+        
+        
+    
     fprintf(stderr, "[DISTR] setting default method\n");
     set_method_distributed(FIXED, AVG_DEFAULT, 0);
     
