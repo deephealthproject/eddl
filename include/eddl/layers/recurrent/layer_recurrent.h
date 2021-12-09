@@ -202,6 +202,12 @@ public:
     Tensor *gUn_h, *gWn_x;
     Tensor *g_bias_z_t, *g_bias_r_t, *g_bias_n_t, *g_bias_n_t_hidden;
 
+    // Accumulated gradient tensors for distributed training
+    Tensor *acc_gUz_h, *acc_gWz_x;
+    Tensor *acc_gUr_h, *acc_gWr_x;
+    Tensor *acc_gUn_h, *acc_gWn_x;
+    Tensor *acc_g_bias_z_t, *acc_g_bias_r_t, *acc_g_bias_n_t, *acc_g_bias_n_t_hidden;
+
     // Intermediate outputs of the cell
     Tensor *z_t, *r_t, *n_t; // Gates outputs
     Tensor *n_t_hidden, *one_minus_z_t; // Gates interoperations
@@ -228,7 +234,17 @@ public:
 
     void backward() override;
 
+    void update_weights(vector<Tensor*> weights) override;
+
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
     string plot(int c) override;
+
+    void enable_distributed() override;
 };
 
 void reduced_abs_sum(Tensor * input, Tensor *output);
