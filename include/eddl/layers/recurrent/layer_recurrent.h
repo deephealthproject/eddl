@@ -77,11 +77,14 @@ public:
 
     Tensor *Wx;
     Tensor *gWx;
+    Tensor *acc_gWx;
     Tensor *bias;
     Tensor *gbias;
+    Tensor *acc_gbias;
 
     Tensor *Wy;
     Tensor *gWy;
+    Tensor *acc_gWy;
     Tensor *biasy;
 
 
@@ -97,7 +100,17 @@ public:
 
     void backward() override;
 
+    void update_weights(vector<Tensor*> weights) override;
+
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
     string plot(int c) override;
+
+    void enable_distributed() override;
 };
 
 
