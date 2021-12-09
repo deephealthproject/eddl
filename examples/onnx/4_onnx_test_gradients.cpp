@@ -28,8 +28,10 @@ int main(int argc, char **argv) {
   bool export_cpu = false;
   bool import_cpu = false;
   for (int i = 1; i < argc; ++i) {
-    if (strcmp(argv[i], "--export-cpu") == 0) export_cpu = true;
-    else if (strcmp(argv[i], "--import-cpu") == 0) import_cpu = true;
+    if (strcmp(argv[i], "--export-cpu") == 0)
+      export_cpu = true;
+    else if (strcmp(argv[i], "--import-cpu") == 0)
+      import_cpu = true;
   }
 
   // Download mnist
@@ -52,9 +54,9 @@ int main(int argc, char **argv) {
   l = ReLu(Conv(l, 32, {3, 3}, {1, 1}));
   l = MaxPool(l, {2, 2});
 
-  l = Reshape(l, {-1});
+  l = Flatten(l);
   l = Dense(l, 128, false);
-  layer out = Activation(Dense(l, num_classes), "softmax");
+  layer out = Softmax(Dense(l, num_classes));
 
   cout << "Creating model" << endl;
   model net = Model({in}, {out});
@@ -63,7 +65,7 @@ int main(int argc, char **argv) {
   // Build model
   cout << "Building the model" << endl;
   build(net,
-        rmsprop(0.01),            // Optimizer
+        adam(0.001),              // Optimizer
         {"soft_cross_entropy"},   // Losses
         {"categorical_accuracy"}, // Metrics
         export_CS,                // Computing service
@@ -112,12 +114,8 @@ int main(int argc, char **argv) {
   // Export trained model
   void *serialized_net_once_trained;
   cout << "Exporting trained weights" << endl;
-  size_t snot_size = serialize_net_to_onnx_pointer(net, serialized_net_once_trained, false);
+  size_t snet_size = serialize_net_to_onnx_pointer(net, serialized_net_once_trained, false);
   cout << "Trained weights exported" << endl;
-
-  // Reset the counter of the layers index
-  LConv::reset_name_counter();
-  LDense::reset_name_counter();
 
   // Import net topology without trained weights
   cout << "Importing original net topology (without training)" << endl;
@@ -127,7 +125,7 @@ int main(int argc, char **argv) {
   // Build model
   cout << "Building the loaded topology" << endl;
   build(imported_net,
-        rmsprop(0.01),            // Optimizer
+        adam(0.001),              // Optimizer
         {"soft_cross_entropy"},   // Losses
         {"categorical_accuracy"}, // Metrics
         import_CS,                // Computing service
@@ -153,7 +151,7 @@ int main(int argc, char **argv) {
 
   // Set trained weights
   cout << "Putting the trained weights" << endl;
-  set_weights_from_onnx_pointer(imported_net, serialized_net_once_trained, snot_size);
+  set_weights_from_onnx_pointer(imported_net, serialized_net_once_trained, snet_size);
   cout << "Trained weights set" << endl;
 
   // Evaluate with trained weights
