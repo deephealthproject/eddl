@@ -479,7 +479,7 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
   else if (LCopyStates *l = dynamic_cast<LCopyStates *>(layer))
     handle_copy_states(l, graph);
   else if (LEmbedding *l = dynamic_cast<LEmbedding *>(layer))
-    build_embedding_node(l, graph);
+    build_embedding_node(l, graph, gradients);
   else if (LResize *l = dynamic_cast<LResize *>(layer))
     build_resize_node(l, graph);
   else if (LScale *l = dynamic_cast<LScale *>(layer))
@@ -544,6 +544,11 @@ map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto
       case ONNX_LAYERS::RNN:
       {
         tensors[name] = get_rnn_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::GATHER:
+      {
+        tensors[name] = get_embedding_tensors(node, map_init_values, map_init_dims);
         break;
       }
       case ONNX_LAYERS::DENSE:

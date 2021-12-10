@@ -88,6 +88,7 @@ public:
     bool mask_zeros;
     Tensor *E;
     Tensor *gE;
+    Tensor *acc_gE;
     vector<int> sind;
     static int total_layers;
 
@@ -102,6 +103,16 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void update_weights(vector<Tensor*> weights) override;
+
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
+    void enable_distributed() override;
 
     string plot(int c) override;
 

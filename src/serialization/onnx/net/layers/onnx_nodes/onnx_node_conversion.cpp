@@ -106,7 +106,7 @@ void build_cast_node(string node_name, string input, string output, int cast_typ
   to_attr->set_i(cast_type);
 }
 
-void build_gather_node(string node_name, string input, string output, LEmbedding *layer, onnx::GraphProto *graph)
+void build_gather_node(string node_name, string input, string output, LEmbedding *layer, onnx::GraphProto *graph, bool gradients)
 {
   onnx::NodeProto *node = graph->add_node();
   node->set_op_type("Gather");
@@ -122,7 +122,10 @@ void build_gather_node(string node_name, string input, string output, LEmbedding
   embed_data->set_data_type(onnx::TensorProto::FLOAT);
   vector<int> embed_data_dims{layer->vocsize, layer->dim};
   embed_data->mutable_dims()->Add(embed_data_dims.begin(), embed_data_dims.end());      // Set the shape of the weights
-  embed_data->mutable_float_data()->Add(layer->E->ptr, layer->E->ptr + layer->E->size); // Set the data values
+  if (!gradients)
+    embed_data->mutable_float_data()->Add(layer->E->ptr, layer->E->ptr + layer->E->size); // Set the data values
+  else
+    embed_data->mutable_float_data()->Add(layer->acc_gE->ptr, layer->acc_gE->ptr + layer->acc_gE->size); // Set the data values
 }
 
 #endif // defined(cPROTO)

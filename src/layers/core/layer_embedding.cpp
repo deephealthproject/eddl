@@ -61,6 +61,8 @@ LEmbedding::LEmbedding(Layer *parent, int vocsize, int length, int dim, bool mas
     gE=new Tensor({vocsize,dim},dev);
     gradients.push_back(gE);
 
+    distributed_training = false;
+    acc_gE = nullptr;
 
     parent->addchild(this);
     addparent(parent);
@@ -123,8 +125,39 @@ void LEmbedding::backward()
    }
 }
 
+void LEmbedding::update_weights(vector<Tensor*> weights) {
+    if (weights.size() == 1) {
+        Tensor::copy(weights[0], E);
+    } else {
+        cerr << "[WARNING - LEmbedding::update_weights] "
+             << "Unexpected number of weights tensors recieved "
+             << "(weights.size()=" << weights.size() << ")" << endl;
+    }
+}
 
+void LEmbedding::accumulate_accumulated_gradients(vector<Tensor*> grads) {
+    if (grads.size() == 1) {
+        E->add_(grads[0]);
+    } else {
+        cerr << "[WARNING - LEmbedding::accumulate_accumulated_gradients] "
+             << "Unexpected number of gradient tensors recieved "
+             << "(grads.size()=" << grads.size() << ")" << endl;
+    }
+}
 
+void LEmbedding::reset_accumulated_gradients() {
+    acc_gE->fill_(0.0);
+}
+
+void LEmbedding::apply_accumulated_gradients() {
+    E->add_(acc_gE);
+}
+
+void LEmbedding::enable_distributed() {
+    distributed_training = true;
+    acc_gE = new Tensor({vocsize, dim}, dev);
+    acc_gradients.push_back(acc_gE);
+}
 
 Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
     LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim, mask_zeros, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
@@ -148,6 +181,12 @@ Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
     n->params.push_back(this->E);
     n->gradients.push_back(this->gE);
 
+    if (distributed_training) {
+        n->acc_gradients.clear();
+        n->acc_gE = acc_gE;
+        n->acc_gradients.push_back(acc_gE);
+    }
+
     if (n->reg != nullptr) delete n->reg;
     n->reg = reg;
     if (n->init != nullptr) delete n->init;
@@ -167,6 +206,9 @@ Layer *LEmbedding::clone(int c, int bs, vector<Layer *> p, int todev) {
 
     if (n->init != nullptr) delete n->init;
     n->init = this->init;
+
+    if (distributed_training)
+        n->enable_distributed();
 
     return n;
 }
