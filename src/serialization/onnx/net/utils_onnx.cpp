@@ -2,11 +2,9 @@
 #include "eddl/serialization/onnx/utils_onnx.h"
 #include "eddl/layers/auxiliar/layer_auxiliar.h"
 
-void log_string(string log, LOG_LEVEL actual_log_level, LOG_LEVEL string_log_level)
-{
-  if (actual_log_level <= string_log_level)
-  {
-    cout << "[ONNX::LOG] " << log << endl;
+void log_string(string log, LOG_LEVEL actual_log_level, LOG_LEVEL string_log_level){
+  if (actual_log_level <= string_log_level){
+    std::cerr << "[ONNX::LOG] " << log << std::endl;
   }
 }
 

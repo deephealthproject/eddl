@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -49,6 +49,8 @@ void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int i
 
 void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
 
+void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsigned int axis, bool derivative);
+
 // CPU: Create
 void cpu_range(Tensor *A, float min, float step);
 void cpu_eye(Tensor *A, int offset);
@@ -93,6 +95,7 @@ void cpu_asin(Tensor *A, Tensor *B);
 void cpu_atan(Tensor *A, Tensor *B);
 void cpu_ceil(Tensor *A, Tensor *B);
 void cpu_clamp(Tensor *A, Tensor *B, float min, float max);
+void cpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max);
 void cpu_cos(Tensor *A, Tensor *B);
 void cpu_cosh(Tensor *A, Tensor *B);
 void cpu_exp(Tensor *A, Tensor *B);

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -143,7 +143,7 @@ namespace tensorNN{
     void conv_relu_maxpool(ConvolDescriptor *D);
 
 // ***** Tensor operations *****************************
-    void repeat_nn(Tensor *A, Tensor *B, vector<int> size);
+    void repeat_nn(Tensor *A, Tensor *B, vector<int> size);  // Deprecated (for UpSampling2d)
     void d_repeat_nn(Tensor *D, Tensor *P, vector<int> size);
 
     void select(Tensor *A, Tensor* B, SelDescriptor *sd);
@@ -156,7 +156,7 @@ namespace tensorNN{
     void expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
     void expand_back(Tensor *A, Tensor* B, ExpandDescriptor *sd);
 
-    void repeat_batch(Tensor *A, Tensor* B);
+    void repeat_batch(Tensor *A, Tensor* B);  // Used in ConstOfTensor
 
 // ***** Permutations for BatchNorm ********************
     void permute_channels_last(Tensor *A,Tensor *B);

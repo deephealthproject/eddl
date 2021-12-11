@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -103,8 +103,12 @@ LLSTM::LLSTM(vector<Layer *> parent, int units, bool mask_zeros, bool bidirectio
         addparent(parent[i]);
     }
 
-
-
+    distributed_training = false;
+    acc_gWih = acc_gWix = nullptr;
+    acc_gWfh = acc_gWfx = nullptr;
+    acc_gWoh = acc_gWox = nullptr;
+    acc_gWch = acc_gWcx = nullptr;
+    acc_ginbias = acc_gfnbias = acc_gonbias = acc_gcnbias = nullptr;
 }
 
 LLSTM::~LLSTM(){
@@ -437,6 +441,103 @@ void LLSTM::backward() {
 
 }
 
+void LLSTM::update_weights(vector<Tensor*> weights) {
+    if (weights.size() == 12) {
+        Tensor::copy(weights[0], Wix);
+        Tensor::copy(weights[1], Wfx);
+        Tensor::copy(weights[2], Wox);
+        Tensor::copy(weights[3], Wcx);
+        Tensor::copy(weights[4], Wih);
+        Tensor::copy(weights[5], Wfh);
+        Tensor::copy(weights[6], Woh);
+        Tensor::copy(weights[7], Wch);
+        Tensor::copy(weights[8], inbias);
+        Tensor::copy(weights[9], fnbias);
+        Tensor::copy(weights[10], onbias);
+        Tensor::copy(weights[11], cnbias);
+    } else {
+        cerr << "[WARNING - LLSTM::update_weights] "
+             << "Unexpected number of weights tensors recieved "
+             << "(weights.size()=" << weights.size() << ")" << endl;
+    }
+}
+
+void LLSTM::accumulate_accumulated_gradients(vector<Tensor*> grads) {
+    if (grads.size() == 12) {
+        Wix->add_(grads[0]);
+        Wfx->add_(grads[1]);
+        Wox->add_(grads[2]);
+        Wcx->add_(grads[3]);
+        Wih->add_(grads[4]);
+        Wfh->add_(grads[5]);
+        Woh->add_(grads[6]);
+        Wch->add_(grads[7]);
+        inbias->add_(grads[8]);
+        fnbias->add_(grads[9]);
+        onbias->add_(grads[10]);
+        cnbias->add_(grads[11]);
+    } else {
+        cerr << "[WARNING - LLSTM::accumulate_accumulated_gradients] "
+             << "Unexpected number of gradient tensors recieved "
+             << "(grads.size()=" << grads.size() << ")" << endl;
+    }
+}
+
+void LLSTM::reset_accumulated_gradients() {
+    acc_gWih->fill_(0.0); acc_gWix->fill_(0.0);
+    acc_gWfh->fill_(0.0); acc_gWfx->fill_(0.0);
+    acc_gWoh->fill_(0.0); acc_gWox->fill_(0.0);
+    acc_gWch->fill_(0.0); acc_gWcx->fill_(0.0);
+    acc_ginbias->fill_(0.0);
+    acc_gfnbias->fill_(0.0);
+    acc_gonbias->fill_(0.0);
+    acc_gcnbias->fill_(0.0);
+}
+
+void LLSTM::apply_accumulated_gradients() {
+    Wih->add_(acc_gWih); Wix->add_(acc_gWix);
+    Wfh->add_(acc_gWfh); Wfx->add_(acc_gWfx);
+    Woh->add_(acc_gWoh); Wox->add_(acc_gWox);
+    Wch->add_(acc_gWch); Wcx->add_(acc_gWcx);
+    inbias->add_(acc_ginbias);
+    fnbias->add_(acc_gfnbias);
+    onbias->add_(acc_gonbias);
+    cnbias->add_(acc_gcnbias);
+}
+
+void LLSTM::enable_distributed() {
+    distributed_training = true;
+
+    // Initialize the accumlated gradients tensors
+    acc_gWix = new Tensor(vector<int>{input->shape[1], units}, output->device);
+    acc_gWfx = new Tensor(vector<int>{input->shape[1], units}, output->device);
+    acc_gWox = new Tensor(vector<int>{input->shape[1], units}, output->device);
+    acc_gWcx = new Tensor(vector<int>{input->shape[1], units}, output->device);
+    acc_gWih = new Tensor(vector<int>{units, units}, output->device);
+    acc_gWfh = new Tensor(vector<int>{units, units}, output->device);
+    acc_gWoh = new Tensor(vector<int>{units, units}, output->device);
+    acc_gWch = new Tensor(vector<int>{units, units}, output->device);
+    acc_ginbias = new Tensor(vector<int>{units}, output->device);
+    acc_gfnbias = new Tensor(vector<int>{units}, output->device);
+    acc_gonbias = new Tensor(vector<int>{units}, output->device);
+    acc_gcnbias = new Tensor(vector<int>{units}, output->device);
+
+    // Set accumlated gradients to zero
+    reset_accumulated_gradients();
+
+    acc_gradients.push_back(acc_gWix);
+    acc_gradients.push_back(acc_gWfx);
+    acc_gradients.push_back(acc_gWox);
+    acc_gradients.push_back(acc_gWcx);
+    acc_gradients.push_back(acc_gWih);
+    acc_gradients.push_back(acc_gWfh);
+    acc_gradients.push_back(acc_gWoh);
+    acc_gradients.push_back(acc_gWch);
+    acc_gradients.push_back(acc_ginbias);
+    acc_gradients.push_back(acc_gfnbias);
+    acc_gradients.push_back(acc_gonbias);
+    acc_gradients.push_back(acc_gcnbias);
+}
 
 Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
     LLSTM *n = new LLSTM(p, units, mask_zeros, bidirectional, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
@@ -508,6 +609,35 @@ Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
         n->gradients.push_back(gWch);
     }
 
+    if ( distributed_training ) {
+        n->acc_gradients.clear();
+
+        n->acc_gWix = acc_gWix;
+        n->acc_gWfx = acc_gWfx;
+        n->acc_gWox = acc_gWox;
+        n->acc_gWcx = acc_gWcx;
+        n->acc_gWih = acc_gWih;
+        n->acc_gWfh = acc_gWfh;
+        n->acc_gWoh = acc_gWoh;
+        n->acc_gWch = acc_gWch;
+        n->acc_ginbias = acc_ginbias;
+        n->acc_gfnbias = acc_gfnbias;
+        n->acc_gonbias = acc_gonbias;
+        n->acc_gcnbias = acc_gcnbias;
+
+        n->acc_gradients.push_back(acc_gWix);
+        n->acc_gradients.push_back(acc_gWfx);
+        n->acc_gradients.push_back(acc_gWox);
+        n->acc_gradients.push_back(acc_gWcx);
+        n->acc_gradients.push_back(acc_gWih);
+        n->acc_gradients.push_back(acc_gWfh);
+        n->acc_gradients.push_back(acc_gWoh);
+        n->acc_gradients.push_back(acc_gWch);
+        n->acc_gradients.push_back(acc_ginbias);
+        n->acc_gradients.push_back(acc_gfnbias);
+        n->acc_gradients.push_back(acc_gonbias);
+        n->acc_gradients.push_back(acc_gcnbias);
+    }
 
     if (n->reg != nullptr) delete n->reg;
     n->reg = reg;
@@ -520,6 +650,9 @@ Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
 Layer *LLSTM::clone(int c, int bs, vector<Layer *> p, int todev) {
     LLSTM *n = new LLSTM(p, units, mask_zeros, bidirectional,  name, todev, this->mem_level);
     n->orig = this;
+
+    if (distributed_training)
+        n->enable_distributed();
 
     // TODO: Implement
 

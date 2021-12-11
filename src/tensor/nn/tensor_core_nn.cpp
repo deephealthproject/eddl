@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -36,7 +36,8 @@ PROFILING_ENABLE_EXTERN(transform);
 
 namespace tensorNN {
 
-
+    // Deprecated. Used in UpSampling2D.
+    // Repeats the rows and columns of the data by size[0] and size[1] respectively.
     void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
         if ((A->device != B->device)) msg("Tensors in different devices", "Tensor::Repeat_NN");
         if (A->ndim != B->ndim) msg("Incompatible dims", "Tensor::Repeat");

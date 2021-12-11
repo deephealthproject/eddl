@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -24,8 +24,10 @@ using namespace std;
 class LShape : public LinLayer {
 public:
     static int total_layers;
+    vector<float> data;
+    bool include_batch;
 
-    LShape(Layer *parent, string name, int dev, int mem);
+    LShape(Layer *parent, bool include_batch, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

@@ -22,7 +22,7 @@ TEST(NetTestSuite, memory_leaks_select){
     auto l = new LSelect(in, {":", "0:31", "0:31"}, "mylayer", DEV_CPU, 0);
 
     delete l;
-    std::cout << "layer deleted" << std::endl;
+    std::cout << "layer deleted (NetTestSuite::memory_leaks_select)" << std::endl;
     delete in;
 
     ASSERT_TRUE(true);

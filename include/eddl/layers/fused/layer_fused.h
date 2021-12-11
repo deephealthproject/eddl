@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -259,9 +259,9 @@ public:
 
     void initialize() override;
 
-	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+	void update_weights(vector<Tensor*> weights) override;
 
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+	void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
 
 	void reset_accumulated_gradients() override;
 

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -258,18 +258,25 @@ void Net::walk_back(Layer *l) {
 
 
 /////////////////////////////////////////
-string Net::summary() {
+string Net::summary(bool print_stdout) {
+    // Force topological order sort (if vfts is empty
+    if(!this->layers.empty() && this->vfts.empty()){
+        this->fts();
+    }
+
+    // Print stuff
     std::stringstream ss;
-    ss << "-------------------------------------------------------------------------------" << endl;
-    ss << name << endl;
-    ss << "-------------------------------------------------------------------------------" << endl;
+    ss << "-------------------------------------------------------------------------------" << std::endl;
+    ss << name << std::endl;
+    ss << "-------------------------------------------------------------------------------" << std::endl;
 
     int maxl=0;
     for (auto & l : vfts)
-      if (l->name.length() > maxl) maxl=l->name.length();
+      if (l->name.length() > maxl) maxl = (int)l->name.length();
 
-    int tot_size=0;
-    for (auto & l : vfts) {
+    int trainable_params_acc=0;
+    int nontrainable_params_acc=0;
+    for (auto &l : vfts) {
         // Get input/output shapes
         vector<int> ishape(l->input->shape);
         vector<int> oshape(l->output->shape);
@@ -282,70 +289,104 @@ string Net::summary() {
         string istr = "(" + printVector(ishape) + ")";
         string ostr = "(" + printVector(oshape) + ")";
 
-        int size=0;
-        for(auto &p:l->params)
-          size+=p->size;
-        tot_size+=size;
+        int tr_params = 0;
+        int no_tr_params = 0;
+        for(int j=0; j< l->params.size(); j++){
+
+            // Check if it is frozen
+            if (l->trainable){
+
+                // Check layer type
+                if(l->get_name_id() == "batchnorm"){
+                    // 2 params: NTR(mean, variance)
+                    // 4 params: TR(bn_g, bn_b), NTR(mean, variance)
+                    if((l->params.size()==2) || (l->params.size()==4 && j >= 2)){
+                        no_tr_params += (int)l->params[j]->size;
+                    }else{
+                        tr_params += (int)l->params[j]->size;
+                    }
+
+                }else{ // General case
+                    tr_params += (int)l->params[j]->size;
+                }
+
+            }else{  // Frozen layers
+                no_tr_params += (int)l->params[j]->size;
+            }
+        }
+        trainable_params_acc += tr_params;
+        nontrainable_params_acc += no_tr_params;
 
         ss << setw(maxl) << left << l->name << "|  ";
         ss << setw(20) << left << istr;
         ss << setw(5) << left << "=>";
         ss << setw(20) << left << ostr;
-        ss << setw(10) << left << size;
+        ss << setw(10) << left << tr_params+no_tr_params;
         ss << endl;
     }
-    ss << "-------------------------------------------------------------------------------" << endl;
-    ss << "Params: "<<tot_size<<endl;
+    ss << "-------------------------------------------------------------------------------" << std::endl;
+    ss << "Total params: " << trainable_params_acc+nontrainable_params_acc << std::endl;
+    ss << "Trainable params: " << trainable_params_acc << std::endl;
+    ss << "Non-trainable params: " << nontrainable_params_acc << std::endl;
+
+    // Print to the standard output
+    if(print_stdout){
+        std::cout << ss.str() << std::endl;
+    }
+
     return ss.str();
 }
 
-void Net::plot(string fname,string mode) {
-    ofstream out("tmp.dot");
+void Net::plot(const string& fname, const string& rankdir) {
+    ofstream out("tmp.dot");  // temp file
+
     int ind;
-    string type = fname.substr(fname.find('.') + 1);
+    string type = fname.substr(fname.find('.') + 1);  // extension
     string cmd;
 
-
-    out << "digraph Model {\n";
-    out << "rankdir="<<mode<<";\n";
+    out << "digraph Model {" << std::endl;
+    out << "rankdir=" << rankdir << ";" << std::endl;
 
     // plot layers
-    for (int i = 0; i != layers.size(); i++)
+    for(int i = 0; i != layers.size(); i++){
         if ((!isIn(layers[i], lin, ind)) && (!isIn(layers[i], lout, ind)))
-            out << layers[i]->plot(0) << "\n";
-
-    // Input Layers
-    for (int i = 0; i != lin.size(); i++)
-        out << lin[i]->plot(1) << "\n";
-
-    // Output Layers
-    for (int i = 0; i != lout.size(); i++)
-        out << lout[i]->plot(1) << "\n";
-
-    //plot links
-    for (int i = 0; i != layers.size(); i++) {
-       if (layers[i]->isrecurrent)
-         out << layers[i]->name << "->" << layers[i]->name << "\n";
-
-       for (int j = 0; j < layers[i]->child.size(); j++)
-        out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
+            out << layers[i]->plot(0) << std::endl;
     }
 
-    out << "}\n";
+    // Input Layers
+    for(int i = 0; i != lin.size(); i++){
+        out << lin[i]->plot(1) << std::endl;
+    }
 
+    // Output Layers
+    for(int i = 0; i != lout.size(); i++){
+        out << lout[i]->plot(1) << std::endl;
+    }
+
+    // Plot links
+    for(int i = 0; i != layers.size(); i++) {
+       if (layers[i]->isrecurrent){
+           out << layers[i]->name << "->" << layers[i]->name << std::endl;
+       }
+       for (int j = 0; j < layers[i]->child.size(); j++){
+           out << layers[i]->name << "->" << layers[i]->child[j]->name << std::endl;
+       }
+    }
+
+    out << "}" << std::endl;
     out.close();
 
+    // Run Graphviz "dot" command
     cmd = "dot -T " + type + " ./tmp.dot >" + "./" + fname;
-
     int rc = system(cmd.c_str());
     if (rc != EXIT_SUCCESS) {
-        std::cerr << "Unable to run the following command" << std::endl << std::endl
-                << "   " << cmd << std::endl;
+        std::cerr << "[PLOT] Unable to run the following command:" << std::endl;
+        std::cerr << "\t=> " << cmd << std::endl;
     }
 }
 
 /////////////////////////////////////////
-void Net::setlogfile(string fname)
+void Net::setlogfile(const string& fname)
 {
     string str=fname+"_tr.log";
     string sts=fname+"_ts.log";
@@ -366,7 +407,7 @@ void Net::setlogfile(string fname)
 }
 
 
-void Net::save(const string& filename, string format){
+void Net::save(const string& filename, const string& format){
     // Open file stream
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 
@@ -383,7 +424,7 @@ void Net::save(const string& filename, string format){
     ofs.close();
 }
 
-void Net::load(const string& filename, string format){
+void Net::load(const string& filename, const string& format){
     // Open file stream
     std::ifstream ifs(filename, std::ios::in | std::ios::binary);
     if (!ifs.good()){

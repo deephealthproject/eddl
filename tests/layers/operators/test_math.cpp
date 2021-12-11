@@ -48,7 +48,7 @@ TEST(MathTestSuite, layer_argmax)
 
         // Operation
         Tensor::argmax(input, output, RD2);
-        output->print(0);
+//        output->print(0);
         ASSERT_TRUE((bool) Tensor::equivalent(output, output_ref, 1e-3f, 0.0f, true, true));
 
         // Backward
@@ -57,7 +57,7 @@ TEST(MathTestSuite, layer_argmax)
 
         // Operation
         Tensor::argmax_d(delta, output, parent_delta);
-        parent_delta->print(0);
+//        parent_delta->print(0);
         ASSERT_TRUE((bool) Tensor::equivalent(parent_delta, parent_delta_ref, 1e-3f, 0.0f, true, true));
     }
 

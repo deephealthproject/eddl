@@ -92,7 +92,7 @@ Example:
 RandomScale
 --------------
 
-.. doxygenfunction::  RandomScale(layer parent, vector<float> factor, string da_mode = "nearest", float constant = 0.0f, string name = "")
+.. doxygenfunction::  RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string coordinate_transformation_mode="asymmetric", string name= "")
 
 Example:
 

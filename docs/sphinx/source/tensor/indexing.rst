@@ -97,7 +97,7 @@ Example:
 Set Select
 ^^^^^^^^^^^
 
-.. doxygenfunction:: set_select(const vector<string> &indices, float value)
+.. doxygenfunction:: Tensor::set_select(const vector<string>& indices, float value)
 
 Example:
 
@@ -128,7 +128,7 @@ Example:
     // ]
 
 
-.. doxygenfunction:: set_select(const vector<string> &indices, Tensor *A)
+.. doxygenfunction:: Tensor::set_select(const vector<string>& indices, Tensor *A)
 
 Example:
 
@@ -163,7 +163,7 @@ Example:
 
 
 Expand
-^^^^^^^^^
+^^^^^^
 
 .. doxygenfunction:: Tensor::expand(int size)
 

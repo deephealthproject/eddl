@@ -30,5 +30,13 @@ void build_gemm_node(LDense *layer, onnx::GraphProto *graph, bool gradients);
 //         followed by an additon in case of using bias
 void build_dense_with_matmul_node(LDense *layer, onnx::GraphProto *graph, bool gradients);
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_dense_tensors(onnx::NodeProto &node,
+                                   map<string, vector<float>> &map_init_values,
+                                   map<string, vector<int>> &map_init_dims);
+
 #endif // EDDL_DENSE_ONNX_H
 #endif // cPROTO

@@ -18,9 +18,10 @@ Layer* build_pad_layer(onnx::NodeProto *node,
   { // Set the attributes
     const onnx::AttributeProto& attribute = node->attribute(j);
     const string& attr_name = attribute.name();
-    if (attr_name == "mode")
+    if (attr_name == "mode") {
       if (attribute.s() != "constant")
         msg("Error importing layer " + node->name() + ". Only \"constant\" mode is supported (passed \"" + attribute.s() + "\").", "ONNX::ImportNet");
+    }
     else if (attr_name == "pads")
     {
       op_version_11 = false;
@@ -33,6 +34,7 @@ Layer* build_pad_layer(onnx::NodeProto *node,
 
   const string& parent_name = node->input(0);
   Layer *parent = output_node_map[parent_name];
+  vector<int> eddl_pads;
 
   if (op_version_11) // We have to take the pad values from a node input
   {
@@ -50,10 +52,10 @@ Layer* build_pad_layer(onnx::NodeProto *node,
       {
         // pads_values = (batch_begin, ch_begin, h_begin, w_begin, batch_end, ch_end, h_end, w_end)
         // EDDL wants = (h_begin, w_end, h_end, w_begin) == (top, right, bottom, left)
-        pads.push_back(pads_values[2]);
-        pads.push_back(pads_values[7]);
-        pads.push_back(pads_values[6]);
-        pads.push_back(pads_values[3]);
+        eddl_pads.push_back(pads_values[2]);
+        eddl_pads.push_back(pads_values[7]);
+        eddl_pads.push_back(pads_values[6]);
+        eddl_pads.push_back(pads_values[3]);
       }
 
       delete [] pads_values;
@@ -73,8 +75,22 @@ Layer* build_pad_layer(onnx::NodeProto *node,
       delete [] constant_value;
     }
   }
-
-  return new LPad(parent, pads, constant, node->name(), DEV_CPU, 0);
+  else
+  {
+    if (pads.size() != 8)
+      msg("Error importing layer " + node->name() + ". The expected number of padding values is 8, got " +
+          to_string(pads.size()) + ".", "ONNX::ImportNet");
+    else
+    {
+      // pads_values = (batch_begin, ch_begin, h_begin, w_begin, batch_end, ch_end, h_end, w_end)
+      // EDDL wants = (h_begin, w_end, h_end, w_begin) == (top, right, bottom, left)
+      eddl_pads.push_back(pads[2]);
+      eddl_pads.push_back(pads[7]);
+      eddl_pads.push_back(pads[6]);
+      eddl_pads.push_back(pads[3]);
+    }
+  }
+  return new LPad(parent, eddl_pads, constant, node->name(), DEV_CPU, 0);
 }
 
 // ONNX export

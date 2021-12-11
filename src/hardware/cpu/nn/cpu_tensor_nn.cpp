@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -10,7 +10,7 @@
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 #include "eddl/hardware/cpu/cpu_tensor.h" 
 
-void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
+void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){  // Deprecated. Used in UpSampling2D
     _profile(_CPU_REPEAT_NN, 0);
 #pragma omp parallel for
     for(int i=0; i<B->size; i++){
@@ -29,7 +29,7 @@ void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
 }
 
-void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
+void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){ // Deprecated. Used in UpSampling2D
     _profile(_CPU_D_REPEAT_NN, 0);
 
 #pragma omp parallel for

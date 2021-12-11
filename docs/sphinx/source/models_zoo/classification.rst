@@ -14,6 +14,35 @@ Example:
     Net* net = download_vgg16(false); // With dense part
     Net* net = download_vgg16(true, {3, 64, 64}); // With new input shape
 
+.. doxygenfunction:: eddl::download_vgg16_bn
+
+Example:
+
+.. code-block:: c++
+
+    Net* net = download_vgg16_bn(); // Only convolutional part
+    Net* net = download_vgg16_bn(false); // With dense part
+    Net* net = download_vgg16_bn(true, {3, 64, 64}); // With new input shape
+
+.. doxygenfunction:: eddl::download_vgg19
+
+Example:
+
+.. code-block:: c++
+
+    Net* net = download_vgg19(); // Only convolutional part
+    Net* net = download_vgg19(false); // With dense part
+    Net* net = download_vgg19(true, {3, 64, 64}); // With new input shape
+
+.. doxygenfunction:: eddl::download_vgg19_bn
+
+Example:
+
+.. code-block:: c++
+
+    Net* net = download_vgg19_bn(); // Only convolutional part
+    Net* net = download_vgg19_bn(false); // With dense part
+    Net* net = download_vgg19_bn(true, {3, 64, 64}); // With new input shape
 
 ResNet
 -------

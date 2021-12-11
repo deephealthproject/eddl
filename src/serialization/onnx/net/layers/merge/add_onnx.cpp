@@ -158,4 +158,40 @@ void build_add_node(LAdd *layer, onnx::GraphProto *graph)
   node->add_output(layer->name);
 }
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_add_tensors(onnx::NodeProto &node,
+                                 map<string, vector<float>> &map_init_values,
+                                 map<string, vector<int>> &map_init_dims)
+{
+  vector<Tensor *> add_tensors;
+
+  bool parameter_input = false;
+  int index_parameter = -1; // Possible values 0 and 1, we won't expect parameters in an add with more than two parents
+  for (int j = 0; j < node.input_size(); j++)
+  {
+    string parent_name = node.input(j);
+    if (map_init_values.count(parent_name))
+    {
+      parameter_input = true;
+      index_parameter = j;
+      break;
+    }
+  }
+
+  if (parameter_input)
+  {
+    string weights_name = node.input(index_parameter);
+    vector<float> *weights = &(map_init_values[weights_name]);
+    vector<int> dims = map_init_dims[weights_name];
+    Tensor *weights_tensor = new Tensor(dims, nullptr, DEV_CPU);
+    COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
+    add_tensors.push_back(weights_tensor);
+  }
+
+  return add_tensors;
+}
+
 #endif // defined(cPROTO)

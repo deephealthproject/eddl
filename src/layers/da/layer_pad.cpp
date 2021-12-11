@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -42,20 +42,17 @@ LPad::LPad(Layer *parent, vector<int> padding, float constant, string name, int 
 
 void LPad::forward() {
     Tensor::pad(this->input, this->output, this->padding);
-
-//    // For debugging
-//    Tensor* input0 = this->input->select({"0"});
-//    input0->normalize_(0.0f, 255.0f);
-//    input0->save("test_input.jpg");
-//    Tensor* output0 = this->output->select({"0"});
-//    output0->normalize_(0.0f, 255.0f);
-//    output0->save("test_output.jpg");
 }
 
 void LPad::backward(){
     Tensor::pad_back(parent[0]->delta, this->delta, this->padding);
 }
 
+void LPad::resize(int batch) {
+    Layer::resize(batch);
+    // We need to fill again the output tensor because the values are deleted in the resize function
+    this->output->fill_(this->constant);
+}
 
 Layer *LPad::share(int c, int bs, vector<Layer *> p) {
     auto *n = new LPad(p[0], this->padding, this->constant, "share_"+to_string(c)+this->name, this->dev, this->mem_level);

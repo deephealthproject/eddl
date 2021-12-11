@@ -21,7 +21,7 @@ This example trains and evaluates a simple convolutional neural network. Additio
 
     //////////////////////////////////
     // cifar_conv_da.cpp:
-    // A very basic Conv for cifar10
+    // A very basic Conv2D for cifar10
     // Data augmentation
     // Using fit for training
     //////////////////////////////////
@@ -50,10 +50,10 @@ This example trains and evaluates a simple convolutional neural network. Additio
     //   l = RandomCutout(l, {0.0f, 0.3f}, {0.0f, 0.3f});
 
         // l=Select(l, {"1", "1:31", "1:31"});
-        l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
-        l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
-        l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
-        l=MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2});
+        l=MaxPool2D(ReLu(Conv2D(l,32,{3,3},{1,1})),{2,2});
+        l=MaxPool2D(ReLu(Conv2D(l,64,{3,3},{1,1})),{2,2});
+        l=MaxPool2D(ReLu(Conv2D(l,128,{3,3},{1,1})),{2,2});
+        l=MaxPool2D(ReLu(Conv2D(l,256,{3,3},{1,1})),{2,2});
 
         l=Reshape(l,{-1});
 

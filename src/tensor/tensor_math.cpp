@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -1247,6 +1247,36 @@ void Tensor::clamp(Tensor *A, Tensor *B, float min, float max){
 
     PROFILING_FOOTER(clamp);
 }
+
+void Tensor::d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max){
+    // Check devices
+    if ((D->device != I->device) || (D->device != PD->device)) {
+        msg("Tensors in different devices", "Tensor::d_clamp");
+    }
+
+    // Check dims
+    if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::d_clamp");
+
+
+    if (D->isCPU()) {
+        cpu_d_clamp(D, I, PD, min, max);
+    }
+#ifdef cGPU
+    else if (D->isGPU())
+    {
+        //gpu_d_clamp(D, I, PD, min, max);
+    }
+#endif
+#ifdef cFPGA
+        else if (D->isFPGA())
+      {
+        msg("Not implemented for FPGA", "Tensor::Tensor::d_clamp");
+        //fpga_d_clamp(D, I, PD, min, max);
+      }
+#endif
+
+}
+
 
 
 void Tensor::clampmax_(float max){

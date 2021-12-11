@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -12,6 +12,7 @@
 
 #include <cstdint> // uint64_t
 #include <vector>
+
 
 class AsymmetricPaddingException : public std::exception {
     std::string error_msg; // Error message to show
@@ -26,6 +27,7 @@ public:
 };
 
 using namespace std;
+
 
 void msg(const string& text, const string& title="");
 
@@ -62,14 +64,45 @@ int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges);
 vector<int> expand_shape(const vector<int>& ishape, int size);
 int* expand_indices(const vector<int>& ishape, int size);
 
+vector<int> getBroadcastShape(vector<int> shape1, vector<int> shape2);
+
+vector<int> getTilesRepetitions(const vector<int>& broadcast_from, const vector<int>& broadcast_to);
+
 bool is_number(const std::string& s);
 
 bool pathExists(const std::string &s);
 
 string get_parent_dir(const string& fname);
 
+string replace_str(const string& value, const string& oldvalue, const string& newvalue);
+
+string normalize_layer_name(const string& value);
+
 vector<int> compute_squeeze(vector<int> shape, int axis, bool ignore_batch=false);
 vector<int> compute_unsqueeze(vector<int> shape, int axis, bool ignore_batch=false);
+
+vector<int> address2indices(int address, const vector<int>& shape, const vector<int>& strides);
+unsigned int indices2address(const vector<int>& indices, const vector<int>& strides);
+// https://isocpp.org/wiki/faq/inline-functions#inline-member-fns
+inline int fast_indices2address(const int* indices, const int* strides, int ndim){
+    int address = 0;
+    for (int i=0; i< ndim; i++){
+        address += indices[i] * strides[i];
+    }
+    return address;
+}
+
+inline void fast_address2indices( int address, int* indices, const int* shape, const int* strides, int ndim){
+    for(int i=0; i<ndim; i++) {
+        indices[i] = address / strides[i] % shape[i];
+    }
+}
+
+
+bool isPaddingAsymmetric(vector<int> padding);
+
+vector<vector<int>> cartesian_product(const vector<vector<int>>& vectors);
+
 
 template<typename T>
 string printVector(vector<T> myvector){
@@ -92,6 +125,8 @@ void __show_profile();
 void __reset_profile();
 
 void show_deprecated_warning(const string& deprecated_name, const string& new_name="", const string& type="function", const string& version="future");
+
+vector<string> read_lines_from_file(const string& filename);
 
 
 #endif //EDDL_UTILS_H

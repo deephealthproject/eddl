@@ -165,7 +165,7 @@ void MulticastReceiver::receiver()
         }
 
         if (n != l) {
-            print_err_msg("warning received an incomplete packet of "
+            print_err_msg("warning: received an incomplete packet of "
                         + std::to_string(n) + " bytes instead of "
                         + std::to_string(l) + " bytes requrested");
             free(data);
@@ -260,7 +260,8 @@ void MulticastReceiver::receiver()
                                         this->input_queue.push(message);
                                         this->recently_received_messages[message->get_message_id()] = get_system_milliseconds();
                                         this->output_queue.push_front(message->create_acknowledgement());
-                                        print_log_msg(std::string("received message ") + message->get_message_id());
+                                        if (distributed_environment.get_verbose_level() > 1)
+                                            print_log_msg(std::string("received message ") + message->get_message_id());
                                         break;
                                     default:
                                         throw std::runtime_error(err_msg("unexpected message type."));
@@ -271,14 +272,17 @@ void MulticastReceiver::receiver()
                         }
                     }
                     break;
+
                 case eddl_message_types::COMMAND:
                     if (packet->get_command() == eddl_command_types::SHUTDOWN)
                         receiver_active = false;
                     this->input_queue.push(new eddl_message(packet));
                     break;
+
                 case eddl_message_types::PARAMETER:
                     this->input_queue.push(new eddl_message(packet));
                     break;
+
                 case eddl_message_types::PKG_ACK:
                 case eddl_message_types::MSG_ACK_SAMPLES:
                 case eddl_message_types::MSG_ACK_WEIGHTS:

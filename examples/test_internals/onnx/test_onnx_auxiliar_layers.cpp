@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -69,6 +69,9 @@ int main(int argc, char **argv) {
         layer l = in;  // Aux var
 
         l = Reshape(l, {1, 28, 28});
+        l = Repeat(l, 3, 0);
+        l = Repeat(l, 2, 1);
+        l = Repeat(l, 2, 2);
         l = Pad(l, {1, 1, 1, 1}, 0.0);
         l = MaxPool2D(ReLu(Conv2D(l, 30, {3, 3}, {1, 1}, "valid")), {3, 3}, {1, 1}, "same");
 
@@ -84,7 +87,13 @@ int main(int argc, char **argv) {
         l2 = MaxPool2D(ReLu(Conv2D(l2, 64, {5, 5}, {1, 1}, "valid")), {2, 2}, {2, 2}, "same");
         l3 = MaxPool2D(ReLu(Conv2D(l3, 64, {3, 3}, {1, 1}, "same")), {2, 2}, {2, 2}, "same");
 
-        l = Concat({l1, l2, l3});
+        // Create a constant layer
+        vector<int> aux_shape = l3->output->shape;
+        aux_shape.erase(aux_shape.begin()); // Delete the batch dimension
+        Tensor* const_data = Tensor::randn(aux_shape);
+        layer l4 = ConstOfTensor(const_data);
+
+        l = Concat({l1, l2, l3, l4});
         l = MaxPool2D(ReLu(Conv2D(l, 64, {1, 1}, {1, 1})), {2, 2}, {2, 2}, "same");
 
         l = Reshape(l, {-1});
