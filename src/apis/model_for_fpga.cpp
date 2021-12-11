@@ -23,10 +23,10 @@
 
 //
 
-//#define DEBUG_VERBOSE
+#define DEBUG_VERBOSE
 
 
-//#define ENABLE_UPSCALE_SUPPORT
+#define ENABLE_UPSIZE_SUPPORT
 #define ENABLE_CLAMP
 
 ////////////////////////////////////////////////////////
@@ -251,6 +251,7 @@ bool found_diff(model m, int l, int nl)            {return is_diff(m, l, nl);}
 bool found_exp(model m, int l, int nl)             {return is_exp(m, l, nl);}
 bool found_constoft(model m, int l, int nl)        {return is_constoft(m, l, nl);}
 bool found_dropout(model m, int l, int nl)         {return is_dropout(m, l, nl);}
+bool found_leakyrelu(model m, int l, int nl)       {return is_leakyrelu(m, l, nl);}
 
 // Layers fussed supported on HLSinf
 
@@ -280,7 +281,8 @@ bool found_conv_relu_maxp_resize      (model m, int l, int nl) {return is_conv_f
 bool found_conv_relu_maxp_resize      (model m, int l, int nl) {return false;}
 #endif
 
-bool found_conv_relu_maxp             (model m, int l, int nl) {return is_conv_fpga(m, l, nl) && is_relu(m, l+1, nl) && is_maxp(m, l+2, nl) && !found_conv_relu_maxp_resize(m, l, nl);}
+bool found_conv_relu_maxp_bn          (model m, int l, int nl) {return is_conv_fpga(m, l, nl) && is_relu(m, l+1, nl) && is_maxp(m, l+2, nl) && is_bn(m, l+3, nl);}
+bool found_conv_relu_maxp             (model m, int l, int nl) {return is_conv_fpga(m, l, nl) && is_relu(m, l+1, nl) && is_maxp(m, l+2, nl) && !found_conv_relu_maxp_resize(m, l, nl) && !found_conv_relu_maxp_bn(m, l, nl);}
 
 #ifdef ENABLE_UPSIZE_SUPPORT
 bool found_conv_relu_resize           (model m, int l, int nl) {return is_conv_fpga(m, l, nl) && is_relu(m, l+1, nl) && is_resize(m, l+2, nl);}
@@ -290,7 +292,7 @@ bool found_conv_relu_resize           (model m, int l, int nl) {return false;}
 
 bool found_conv_relu                  (model m, int l, int nl) {return is_conv_fpga(m, l, nl) && is_relu(m, l+1, nl) && 
                                                                        !found_conv_relu_maxp(m, l, nl) && !found_conv_relu_maxp_resize(m, l, nl) && 
-                                                                       !found_conv_relu_bn(m, l, nl) && !found_conv_relu_bn_add(m, l, nl) && !found_conv_relu_resize(m, l, nl);}
+                                                                       !found_conv_relu_bn(m, l, nl) && !found_conv_relu_bn_add(m, l, nl) && !found_conv_relu_resize(m, l, nl) && !found_conv_relu_maxp_bn(m, l, nl);}
 
 bool found_conv_leakyrelu             (model m, int l, int nl) {return is_conv_fpga(m, l, nl) && is_leakyrelu(m, l+1, nl);}
 bool found_conv_maxp                  (model m, int l, int nl) {return is_conv_fpga(m, l, nl) && is_maxp(m, l+1, nl);}
@@ -301,7 +303,7 @@ bool found_conv                       (model m, int l, int nl) {return is_conv_f
                                                                                                  !found_conv_mult(m, l, nl) && !found_conv_div(m, l, nl) &&
                                                                                                  !found_conv_div_clamp_relu(m, l, nl) && !found_conv_softplus_tanh_mult_add(m, l, nl) && !found_conv_softplus_tanh_mult(m, l, nl) && !found_conv_relu_bn_add(m, l, nl) &&
                                                                                                  !found_conv_relu_bn(m, l, nl) && !found_conv_relu_maxp(m, l, nl) && !found_conv_relu(m, l, nl) && !found_conv_leakyrelu(m, l, nl) && !found_conv_maxp(m, l, nl) &&
-                                                                                                 !found_conv_add(m, l, nl) && !found_conv_bn(m, l, nl) && !found_conv_relu_maxp_resize(m, l, nl) && !found_conv_relu_resize(m, l, nl);}
+                                                                                                 !found_conv_add(m, l, nl) && !found_conv_bn(m, l, nl) && !found_conv_relu_maxp_resize(m, l, nl) && !found_conv_relu_resize(m, l, nl) && !found_conv_relu_maxp_bn(m, l, nl);}
 
 bool found_pad_conv_sigmoid_tanh_maxp_add(model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_sigmoid(m, l+2, nl) && is_tanh(m, l+3, nl) && is_maxp(m, l+4, nl) && is_add(m, l+5, nl);}
 bool found_pad_conv_sigmoid_tanh_maxp(model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_sigmoid(m, l+2, nl) && is_tanh(m, l+3, nl) && is_maxp(m, l+4, nl) && !found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl);}
@@ -309,16 +311,20 @@ bool found_pad_conv_relu_maxp (model m, int l, int nl) {return is_pad(m, l, nl) 
 bool found_pad_conv_relu      (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_relu(m, l+2, nl) && !found_pad_conv_relu_maxp(m, l, nl);}
 bool found_pad_conv_maxp      (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_maxp(m, l+2, nl);}
 bool found_pad_conv_leakyrelu (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_leakyrelu(m, l+2, nl);}
-bool found_pad_conv           (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && !found_pad_conv_maxp(m, l, nl) && !found_pad_conv_relu(m, l, nl) && !found_pad_conv_leakyrelu(m, l, nl) && !found_pad_conv_relu_maxp(m, l, nl) && !found_pad_conv_sigmoid_tanh_maxp(m, l, nl) && !found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl);}
+bool found_pad_conv_bn        (model m, int l, int nl) {return 0 &&  is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_bn(m, l+2, nl);}
+bool found_pad_conv           (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && !found_pad_conv_bn(m, l, nl) && !found_pad_conv_maxp(m, l, nl) && !found_pad_conv_relu(m, l, nl) && !found_pad_conv_leakyrelu(m, l, nl) && !found_pad_conv_relu_maxp(m, l, nl) && !found_pad_conv_sigmoid_tanh_maxp(m, l, nl) && !found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl);}
 
+// non-fpga layer
+bool found_pad(model m, int l, int nl)             {return is_pad(m, l, nl) && !found_pad_conv(m, l, nl) && !found_pad_conv_bn(m, l, nl) && !found_pad_conv_leakyrelu(m, l, nl) && !found_pad_conv_maxp(m, l, nl) && !found_pad_conv_relu(m, l, nl) && !found_pad_conv_relu_maxp(m, l, nl) && 
+                                                                               !found_pad_conv_sigmoid_tanh_maxp(m, l, nl) && !found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl);}
 
 bool found_fpga_layer(model m, int l, int nl) { return found_conv_mult_clamp_relu_maxp(m, l, nl) || found_conv_mult_clamp_relu(m, l, nl) || found_conv_div_clamp_relu_maxp(m, l, nl) || found_conv_div_clamp_relu(m, l, nl) ||
                                                          found_conv_mult(m, l, nl) || found_conv_div(m, l, nl) ||
                                                          found_conv_softplus_tanh_mult_add(m, l, nl) || found_conv_softplus_tanh_mult(m, l, nl) || 
                                                 found_conv_relu_bn_add(m, l, nl) || found_conv_relu_bn(m, l, nl) || found_conv_relu_maxp(m, l, nl) || found_conv_relu(m, l, nl) || found_conv_leakyrelu(m, l, nl) || found_conv_maxp(m, l, nl) || found_conv_add(m, l, nl) || found_conv_bn(m, l, nl) || found_conv(m, l, nl) || 
-                                                found_conv_relu_maxp_resize(m, l, nl) || found_conv_relu_resize(m, l, nl) ||
+                                                found_conv_relu_maxp_resize(m, l, nl) || found_conv_relu_resize(m, l, nl) || found_conv_relu_maxp_bn(m, l, nl) ||
                                                 found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl) || found_pad_conv_sigmoid_tanh_maxp(m, l, nl) || found_pad_conv_relu_maxp(m, l, nl) || found_pad_conv_relu(m, l, nl) || found_pad_conv_maxp(m, l, nl) || found_pad_conv_leakyrelu(m, l, nl) || 
-                                                found_pad_conv(m, l, nl) || found_dense_hlsinf(m, l, nl) || found_dense_relu(m, l, nl) || found_dense_div_clamp(m, l, nl) || found_dense_div_clamp_relu(m, l, nl);}
+                                                found_pad_conv_bn(m, l, nl) || found_pad_conv(m, l, nl) || found_dense_hlsinf(m, l, nl) || found_dense_relu(m, l, nl) || found_dense_div_clamp(m, l, nl) || found_dense_div_clamp_relu(m, l, nl);}
 bool found_fpga_dense_layer(model m, int l, int nl) {return found_dense_hlsinf(m, l, nl) || found_dense_relu(m, l, nl) || found_dense_div_clamp(m, l, nl) || found_dense_div_clamp_relu(m, l, nl);}                                                
 bool found_with_add(model m, int l, int nl) { return found_conv_relu_bn_add(m, l, nl) || found_conv_softplus_tanh_mult_add(m, l, nl) || found_conv_add(m, l, nl);}
 
@@ -333,17 +339,17 @@ LConv *get_conv_layer(model m, int l, int nl) {
       found_conv_mult(m, l, nl) || found_conv_div(m, l, nl) ||
       found_conv_softplus_tanh_mult_add(m, l, nl) ||
       found_conv_softplus_tanh_mult(m, l, nl) || found_conv_relu_bn_add(m, l, nl) || found_conv_relu_bn(m, l, nl) || found_conv_relu_maxp(m, l, nl) || found_conv_relu(m, l, nl) || found_conv_leakyrelu(m, l, nl) ||
-      found_conv_maxp(m, l, nl) || found_conv_add(m, l, nl) || found_conv_bn(m, l, nl) || found_conv(m, l, nl) || found_conv_relu_maxp_resize(m, l, nl) || found_conv_relu_resize(m, l, nl)) return (LConv *)m->layers[l];
+      found_conv_maxp(m, l, nl) || found_conv_add(m, l, nl) || found_conv_bn(m, l, nl) || found_conv(m, l, nl) || found_conv_relu_maxp_resize(m, l, nl) || found_conv_relu_resize(m, l, nl) || found_conv_relu_maxp_bn(m, l, nl)) return (LConv *)m->layers[l];
 
   if (found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl) || found_pad_conv_sigmoid_tanh_maxp(m, l, nl) || found_pad_conv_relu_maxp(m, l, nl) || found_pad_conv_relu(m, l, nl) || found_pad_conv_maxp(m, l, nl) ||
-      found_pad_conv_leakyrelu(m, l, nl) || found_pad_conv(m, l, nl)) return (LConv *)m->layers[l+1];
+      found_pad_conv_leakyrelu(m, l, nl) || found_pad_conv(m, l, nl) || found_pad_conv_bn(m, l, nl)) return (LConv *)m->layers[l+1];
 
   return (LConv *)NULL;
 }
 
 LPad *get_pad_layer(model m, int l, int nl) {
  if (found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl) || found_pad_conv_sigmoid_tanh_maxp(m, l, nl) || found_pad_conv_relu_maxp(m, l, nl) || found_pad_conv_relu(m, l, nl) || found_pad_conv_maxp(m, l, nl) ||
-      found_pad_conv_leakyrelu(m, l, nl) || found_pad_conv(m, l, nl)) return (LPad *)m->layers[l];
+      found_pad_conv_leakyrelu(m, l, nl) || found_pad_conv(m, l, nl) || found_pad_conv_bn(m, l, nl)) return (LPad *)m->layers[l];
 
   return (LPad *)NULL;
 }
@@ -394,6 +400,8 @@ LBatchNorm *get_bn_layer(model m, int l, int nl) {
   if (found_conv_relu_bn(m, l, nl)) return (LBatchNorm *)m->layers[l+2];
   if (found_conv_relu_bn_add(m, l, nl)) return (LBatchNorm *)m->layers[l+2];
   if (found_conv_bn(m, l, nl)) return (LBatchNorm *)m->layers[l+1];
+  if (found_pad_conv_bn(m, l, nl)) return (LBatchNorm *)m->layers[l+2];
+  if (found_conv_relu_maxp_bn(m, l, nl)) return (LBatchNorm *)m->layers[l+3];
   return NULL;
 }
 
@@ -485,9 +493,9 @@ int get_pr(model m, int l, int nl) {
 int get_enable_relu(model m, int l, int nl) {
   return found_conv_mult_clamp_relu_maxp(m, l, nl) || found_conv_mult_clamp_relu(m, l, nl) || found_conv_div_clamp_relu_maxp(m, l, nl) || found_conv_div_clamp_relu(m, l, nl) || found_conv_relu_bn_add(m, l, nl) ||
          found_conv_relu_bn(m, l, nl) || found_conv_relu_maxp(m, l, nl) || found_conv_relu(m, l, nl) || found_conv_leakyrelu(m, l, nl) || found_pad_conv_relu_maxp(m, l, nl) || found_pad_conv_relu(m, l, nl) || found_pad_conv_leakyrelu(m, l, nl) ||
-         found_conv_relu_maxp_resize(m, l, nl) || found_conv_relu_resize(m, l, nl) || found_dense_relu(m, l, nl) || found_dense_div_clamp_relu(m, l, nl);
+         found_conv_relu_maxp_resize(m, l, nl) || found_conv_relu_resize(m, l, nl) || found_dense_relu(m, l, nl) || found_dense_div_clamp_relu(m, l, nl) || found_conv_relu_maxp_bn(m, l, nl);
 }
-int get_enable_maxp(model m, int l, int nl) {return found_conv_maxp(m, l, nl) || found_conv_relu_maxp(m, l, nl) || found_conv_mult_clamp_relu_maxp(m, l, nl) || found_conv_div_clamp_relu_maxp(m, l, nl) || found_conv_relu_maxp_resize(m, l, nl);}
+int get_enable_maxp(model m, int l, int nl) {return found_conv_maxp(m, l, nl) || found_conv_relu_maxp(m, l, nl) || found_conv_mult_clamp_relu_maxp(m, l, nl) || found_conv_div_clamp_relu_maxp(m, l, nl) || found_conv_relu_maxp_resize(m, l, nl) || found_conv_relu_maxp_bn(m, l, nl);}
 int get_enable_avgp(model m, int l, int nl) {return false;}
 int get_enable_clipping(model m, int l, int nl) {return found_conv_mult_clamp_relu_maxp(m, l, nl) || found_conv_mult_clamp_relu(m, l, nl) || found_conv_div_clamp_relu_maxp(m, l, nl) || found_conv_div_clamp_relu(m, l, nl) || found_dense_div_clamp(m, l, nl) || found_dense_div_clamp_relu(m, l, nl);}
 int get_min_clip(model m, int l, int nl) {
@@ -532,7 +540,7 @@ int get_dir_shift(model m, int l, int nl) {
 
 int get_enable_add(model m, int l, int nl) {return found_conv_softplus_tanh_mult_add(m, l, nl) || found_conv_relu_bn_add(m, l, nl) || found_conv_add(m, l, nl) || found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl);}
 int get_enable_stm(model m, int l, int nl) {return found_conv_softplus_tanh_mult_add(m, l, nl) ||  found_conv_softplus_tanh_mult(m, l, nl); /* ||  found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl) ||  found_pad_conv_sigmoid_tanh_maxp(m, l, nl);*/}
-int get_enable_bn(model m, int l, int nl) {return found_conv_bn(m, l, nl) || found_conv_relu_bn(m, l, nl) || found_conv_relu_bn_add(m, l, nl);}
+int get_enable_bn(model m, int l, int nl) {return found_conv_bn(m, l, nl) || found_conv_relu_bn(m, l, nl) || found_conv_relu_bn_add(m, l, nl) || found_pad_conv_bn(m, l, nl) || found_conv_relu_maxp_bn(m, l, nl);}
 
 float get_relu_factor(model m, int l, int nl) {
   LActivation *act = get_leakyrelu_layer(m, l, nl);
@@ -550,6 +558,8 @@ void get_name(model m, int l, int nl, char *str) { // TODO
   else if (found_conv_relu_maxp(m, l, nl))   strcpy(str, "conv_relu_maxp");
   else if (found_pad_conv(m, l, nl))         strcpy(str, "(pad+) conv");
   else if (found_pad_conv_relu(m, l, nl))    strcpy(str, "(pad+) conv_relu");
+  else if (found_pad_conv_leakyrelu(m, l, nl))    strcpy(str, "(pad+) conv_leakyrelu");
+  else if (found_pad_conv_bn(m, l, nl))      strcpy(str, "(pad+) conv_bn");
   else if (found_conv_add(m, l, nl))         strcpy(str, "conv_add");
   else if (found_conv_mult_clamp_relu(m, l, nl)) strcpy(str, "conv_mult_clamp_relu");
   else if (found_conv_mult_clamp_relu_maxp(m, l, nl)) strcpy(str, "conv_mult_clamp_relu_maxp");
@@ -558,6 +568,7 @@ void get_name(model m, int l, int nl, char *str) { // TODO
   else if (found_conv_div_clamp_relu(m, l, nl)) strcpy(str, "conv_div_clamp_relu");
   else if (found_conv_div_clamp_relu_maxp(m, l, nl)) strcpy(str, "conv_div_clamp_relu_maxp");
   else if (found_conv_relu_maxp_resize(m, l, nl)) strcpy(str, "conv_relu_maxp_resize");
+  else if (found_conv_relu_maxp_bn(m, l, nl)) strcpy(str, "conv_relu_maxp_bn");
   else if (found_conv_relu_resize(m, l, nl)) strcpy(str, "conv_relu_resize");
   else if (found_dense_hlsinf(m, l, nl)) strcpy(str, "dense_hlsinf");
   else if (found_dense_relu(m, l, nl)) strcpy(str, "dense_relu");
@@ -566,6 +577,7 @@ void get_name(model m, int l, int nl, char *str) { // TODO
   else if (found_conv_leakyrelu(m, l, nl)) strcpy(str, "conv_leakyrelu");
   else if (found_dense_div_clamp(m, l, nl)) strcpy(str, "dense_div_clamp");
   else if (found_dense_div_clamp_relu(m, l, nl)) strcpy(str, "dense_div_clamp_relu");
+  else if (found_conv_bn(m, l, nl)) strcpy(str, "conv_bn");
   else strcpy(str, "?????");
 }
 int get_num_layers_fused(model m, int l, int nl) { // TODO
@@ -598,9 +610,12 @@ int get_num_layers_fused(model m, int l, int nl) { // TODO
   if (found_exp(m, l, nl)) return 1;
   if (found_constoft(m, l, nl)) return 1;
   if (found_dropout(m, l, nl)) return 1;
+  if (found_leakyrelu(m, l, nl)) return 1;
+  if (found_pad(m, l, nl)) return 1;
   if (found_conv_relu(m, l, nl)) return 2;
   if (found_conv_add(m, l, nl)) return 2;
   if (found_dense_relu(m, l, nl)) return 2;
+  if (found_conv_bn(m, l, nl)) return 2;
   if (found_conv_relu_bn(m, l, nl)) return 3;
   if (found_conv_relu_bn_add(m, l, nl)) return 4;
   if (found_conv_relu_maxp(m, l, nl)) return 3;
@@ -610,8 +625,11 @@ int get_num_layers_fused(model m, int l, int nl) { // TODO
   if (found_conv_div(m, l, nl)) return 2;
   if (found_conv_leakyrelu(m, l, nl)) return 2;
   if (found_pad_conv_relu(m, l, nl)) return 3;
+  if (found_pad_conv_leakyrelu(m, l, nl)) return 3;
+  if (found_pad_conv_bn(m, l, nl)) return 3;
   if (found_conv_relu_resize(m, l, nl)) return 3;
   if (found_conv_relu_maxp_resize(m, l, nl)) return 4;
+  if (found_conv_relu_maxp_bn(m, l, nl)) return 4;
   if (found_conv_mult_clamp_relu(m, l, nl)) return 4;
   if (found_dense_div_clamp_relu(m, l, nl)) return 4;
   if (found_conv_mult_clamp_relu_maxp(m, l, nl)) return 5;
@@ -641,7 +659,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       associated_source_layer[x].src = NULL; associated_source_layer[x].conv = NULL; associated_source_layer[x].bn = NULL; associated_source_layer[x].dense = NULL; associated_source_layer[x].dst = NULL;
     }
 
-      fpga_init(kernel_version, kernel_subversion);
+    fpga_init(kernel_version, kernel_subversion);
 
       // constants
       const int CPI = hlsinf_cpi;
@@ -807,13 +825,14 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       found_conv_bn(m_src, l_src, num_layers) || found_conv_relu_maxp(m_src, l_src, num_layers) || found_conv_mult_clamp_relu(m_src, l_src, num_layers) ||
       found_conv_mult(m_src, l_src, num_layers) || found_conv_div(m_src, l_src, num_layers) ||
       found_conv_mult_clamp_relu_maxp(m_src, l_src, num_layers) || found_conv_div_clamp_relu(m_src, l_src, num_layers) || found_conv_div_clamp_relu_maxp(m_src, l_src, num_layers) ||
-      found_conv_relu_maxp_resize(m_src, l_src, num_layers) || found_conv_relu_resize(m_src, l_src, num_layers) ||
+      found_conv_relu_maxp_resize(m_src, l_src, num_layers) || found_conv_relu_resize(m_src, l_src, num_layers) || found_conv_relu_maxp_bn(m_src, l_src, num_layers) ||
       found_conv_relu_bn(m_src, l_src, num_layers) || /*found_div_mult_sum_multit_sum_mult_conv(m_src, l_src, num_layers) ||*/ found_conv(m_src, l_src, num_layers) ||
       found_conv_softplus_tanh_mult(m_src, l_src, num_layers) || found_conv_relu_bn_add(m_src, l_src, num_layers) || found_conv_softplus_tanh_mult_add(m_src, l_src, num_layers) ||
-      found_pad_conv(m_src, l_src, num_layers) || found_pad_conv_relu(m_src, l_src, num_layers) || /*found_pad_conv_leakyrelu(m_src, l_src, num_layers) ||*/
+      found_pad_conv(m_src, l_src, num_layers) || found_pad_conv_relu(m_src, l_src, num_layers) || found_pad_conv_leakyrelu(m_src, l_src, num_layers) ||
       found_pad_conv_maxp(m_src, l_src, num_layers) || found_pad_conv_relu_maxp(m_src, l_src, num_layers) || found_pad_conv_sigmoid_tanh_maxp(m_src, l_src, num_layers) ||
       found_pad_conv_sigmoid_tanh_maxp_add(m_src, l_src, num_layers) | found_conv(m_src, l_src, num_layers) || found_conv_add(m_src, l_src, num_layers) ||
-      found_dense_hlsinf(m_src, l_src, num_layers) || found_dense_relu(m_src, l_src, num_layers) || found_dense_div_clamp(m_src, l_src, num_layers) || found_dense_div_clamp_relu(m_src, l_src, num_layers)) {
+      found_dense_hlsinf(m_src, l_src, num_layers) || found_dense_relu(m_src, l_src, num_layers) || found_dense_div_clamp(m_src, l_src, num_layers) || found_dense_div_clamp_relu(m_src, l_src, num_layers) ||
+      found_pad_conv_bn(m_src, l_src, num_layers)) {
 
     vector<Layer *> parent;   
     if (add_layer != NULL) {
@@ -874,7 +893,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
             found_reshape(m_src, l_src, num_layers) || found_dense(m_src, l_src, num_layers) || found_resize(m_src, l_src, num_layers) || found_softmax(m_src, l_src, num_layers) || found_sigmoid(m_src, l_src, num_layers) ||
             found_permute(m_src, l_src, num_layers) || found_concat(m_src, l_src, num_layers) || found_clamp(m_src, l_src, num_layers) || found_mult(m_src, l_src, num_layers) ||
             found_div(m_src, l_src, num_layers) || found_softplus(m_src, l_src, num_layers) || found_tanh(m_src, l_src, num_layers) || found_expand(m_src, l_src, num_layers) || found_select(m_src, l_src, num_layers) || found_diff(m_src, l_src, num_layers) || found_exp(m_src, l_src, num_layers) ||
-            found_constoft(m_src, l_src, num_layers) || found_dropout(m_src, l_src, num_layers)) {
+            found_constoft(m_src, l_src, num_layers) || found_dropout(m_src, l_src, num_layers) || found_leakyrelu(m_src, l_src, num_layers) || found_pad(m_src, l_src, num_layers)) {
 
     LConv *layer_src_conv = found_conv_cpu(m_src, l_src, num_layers) ? (LConv *)cl : NULL;
     LMaxPool *layer_src_maxp = found_maxp(m_src, l_src, num_layers) ? (LMaxPool *)cl : NULL;
@@ -897,6 +916,8 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
     LExp *layer_src_exp = found_exp(m_src, l_src, num_layers) ? (LExp *)cl : NULL;
     LConstOfTensor *layer_src_constoft = found_constoft(m_src, l_src, num_layers) ? (LConstOfTensor *)cl : NULL;
     LDropout *layer_src_dropout = found_dropout(m_src, l_src, num_layers) ? (LDropout *)cl : NULL;
+    LActivation *layer_src_leakyrelu = found_leakyrelu(m_src, l_src, num_layers) ? (LActivation *)cl : NULL;
+    LPad *layer_src_pad = found_pad(m_src, l_src, num_layers) ? (LPad *)cl : NULL;
 
     Layer *fpga_parent;
     if (!found_input(m_src, l_src, num_layers) && !found_constoft(m_src, l_src, num_layers)) {
@@ -931,6 +952,8 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
     if (found_exp(m_src, l_src, num_layers))        printf("%3d: EXP       : prev %d\n", l_dst, dummy);
     if (found_constoft(m_src, l_src, num_layers))   printf("%3d: CONSTOFT  : prev %d\n", l_dst, dummy);
     if (found_dropout(m_src, l_src, num_layers))    printf("%3d: DROPOUT   : prev %d\n", l_dst, dummy);
+    if (found_leakyrelu(m_src, l_src, num_layers))  printf("%3d: LEAKYRELU : prev %d\n", l_dst, dummy);
+    if (found_pad(m_src, l_src, num_layers))        printf("%3d: PAD       : prev %d\n", l_dst, dummy);
     #endif
 
     if (found_input(m_src, l_src, num_layers)) prev_layer = Input({cl->input->shape[1],cl->input->shape[2],cl->input->shape[3]});
@@ -1003,6 +1026,11 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
     if (found_exp(m_src, l_src, num_layers)) prev_layer = Exp(fpga_parent);
     if (found_constoft(m_src, l_src, num_layers)) prev_layer = ConstOfTensor(layer_src_constoft->const_tensor, layer_src_constoft->name);
     if (found_dropout(m_src, l_src, num_layers)) prev_layer = Dropout(fpga_parent, layer_src_dropout->df, layer_src_dropout->iw, layer_src_dropout->name);
+    if (found_leakyrelu(m_src, l_src, num_layers)) {
+      printf("LEAKY\n");
+      prev_layer = LeakyReLu(fpga_parent, layer_src_leakyrelu->params[0], "");
+    }
+    if (found_pad(m_src, l_src, num_layers)) prev_layer = Pad(fpga_parent, layer_src_pad->padding, layer_src_pad->constant, "");
 
     if (found_concat(m_src, l_src, num_layers)) {
       // dst parent layer
@@ -1146,15 +1174,10 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       #endif
 
       // filter
-      printf("1\n");
       collectTensor(layer_src, "param", 0);
-      printf("2\n");
       if(layer_src->cd->K->size != layer_dst->cd->K->size) tensor_padded(layer_src->cd->K, layer_dst->cd->K);
-      printf("3\n");
       Tensor::copy(layer_src->cd->K, layer_dst->cd->K);
-      printf("4\n");
       distributeTensor(layer_dst, "param", 0);
-      printf("5\n");
       //distribute filter to cpu
       Layer *sl=nullptr;
       Net *sn=layer_dst->net;
@@ -1163,8 +1186,6 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
           sl=sn->snets[0]->layers[j];
           break;
       }
-            printf("6\n");
-
 
       // bias
       collectTensor(layer_src, "param", 1);
@@ -1213,18 +1234,18 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       distributeTensor(layer_dst, "param", 3);
 
       //distribute filter to cpu
-      Layer *sl=nullptr;
+      /*Layer *sl=nullptr;
       Net *sn=layer_dst->net;
       for(int j=0;j<sn->snets[0]->layers.size();j++)
       if (sn->snets[0]->layers[j]->orig==layer_dst) {
           sl=sn->snets[0]->layers[j];
           break;
-      }
+      }*/
       //copy to cpu memory
-      cpu_copy(layer_dst->params[0],sl->params[0]); 
-      cpu_copy(layer_dst->params[1],sl->params[1]); 
-      cpu_copy(layer_dst->params[2],sl->params[2]); 
-      cpu_copy(layer_dst->params[3],sl->params[3]); 
+      //cpu_copy(layer_dst->params[0],sl->params[0]); 
+      //cpu_copy(layer_dst->params[1],sl->params[1]); 
+      //cpu_copy(layer_dst->params[2],sl->params[2]); 
+      //cpu_copy(layer_dst->params[3],sl->params[3]); 
 
     } else if (LHLSinf *dl = dynamic_cast<LHLSinf *>(cl)) {
       LHLSinf *layer_dst = (LHLSinf *) net->layers[l]; 
@@ -1246,7 +1267,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
         distributeTensor(layer_dst, "param", 0);
         // conv bias
         collectTensor(layer_src_conv, "param", 1);
-        tensor_padded(layer_src_conv->cd->bias, layer_dst->bias);
+        if (layer_src_conv->cd->use_bias) tensor_padded(layer_src_conv->cd->bias, layer_dst->bias); else memset(layer_dst->bias->ptr, 0, sizeof(float) * layer_dst->bias->size);
         distributeTensor(layer_dst, "param", 1);
       }
 

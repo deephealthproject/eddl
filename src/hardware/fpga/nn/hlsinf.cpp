@@ -81,9 +81,9 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
   int I_ITER = (Ichannels + (CPI-1)) / CPI;
 
 #ifdef DEBUG_VERBOSE
-  printf("I_ITER %d, first %d last %d enable_relu %d relu_factor %f enable_stm %d enable_maxp %d enable_avgp %d enable_clip %d min_clip %d max_clip %d enable_shift %d enable_add %d\n PT %d PB %d PL %d PR %d SH %d SW %d upscale %d\n",
+  printf("I_ITER %d, first %d last %d enable_relu %d relu_factor %f enable_stm %d enable_maxp %d enable_avgp %d enable_clip %d min_clip %d max_clip %d enable_shift %d enable_add %d\n PT %d PB %d PL %d PR %d SH %d SW %d upscale %d batch_norm %d\n",
                   I_ITER, first_o_iter, last_o_iter, enable_relu, relu_factor, enable_stm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift,
-                  enable_add, PT, PB, PL, PR, SH, SW, enable_upscale);
+                  enable_add, PT, PB, PL, PR, SH, SW, enable_upscale, enable_batch_norm);
   printf("H %d W %d rows %d Ich %d Och %d\n", H, W, rows, Ichannels, Ochannels);
   printf("min_clip %d max_clip %d, shifts %d, direction %d enable_upscale %d\n", min_clip, max_clip, pos_shift, dir_shift, enable_upscale);
 #endif
@@ -273,8 +273,7 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   _profile_fpga_tensor_good("  filter  ", filter, hlsinf_filter_format);
   _profile_fpga_tensor_good("  bias    ", bias, hlsinf_bias_format);
   if(enable_batch_norm)  {
-    _profile_fpga_tensor("  bn_v    ", batch_norm_values);
-    _profile_fpga_tensor_print(batch_norm_values);
+    _profile_fpga_tensor_good("  bn_v    ", batch_norm_values, hlsinf_output_format);
   }
 
   // output geometry
@@ -300,6 +299,7 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
     int num_frames = ceil( (float) HO_conv / (float) HO_MAX);
 
     for (int fr = 0; fr < num_frames; fr++) {
+
       // first output row for this frame
       int row_o = fr * HO_MAX;
 
@@ -321,13 +321,13 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
       if (row_i < 0) row_i = 0;
  
       // rows to read for this frame
-      int rows_to_read = (output_rows_frame * SH) - PT_frame - PB_frame + (KH - 1);
+      int rows_to_read = KH + ((output_rows_frame-1) * SH) - PT_frame - PB_frame;
 
       // read and write offsets
       int read_offset_frame = row_i * W;
       int write_offset_frame = (fr * HO_MAX * WO);
 
-      printf("H %d W %d Padding %d %d %d %d read offset %d write offset %d rows to read %d HO_conv %d WO_conv %d HO %d WO %d\n", H, W, PT_frame, PB_frame, PL_frame, PR_frame, read_offset_frame, write_offset_frame, rows_to_read, HO_conv, WO_conv, HO, WO);
+      //printf("H %d W %d Padding %d %d %d %d read offset %d write offset %d rows to read %d HO_conv %d WO_conv %d HO %d WO %d\n", H, W, PT_frame, PB_frame, PL_frame, PR_frame, read_offset_frame, write_offset_frame, rows_to_read, HO_conv, WO_conv, HO, WO);
 
       // run kernel
       HLSinf_launch(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT_frame, PB_frame, PL_frame, PR_frame, enable_relu, relu_factor, enable_batch_norm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip,enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_upscale, filter, bias, batch_norm_values, output, 
@@ -340,7 +340,7 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
 
   gettimeofday(&time2, NULL);
   unsigned long long t = ((time2.tv_sec - time1.tv_sec) * 1000000) + (time2.tv_usec - time1.tv_usec);
-  printf("hlsinf time : %12llu us (H %d W %d I %d O %d\n", t, H, W, Ichannels, Ochannels);
+  printf("HLSinf: Time %llu us - %0dx%0dx%0dx%0d\n", t, Ochannels, Ichannels, H, W);
 
 
   // profiling

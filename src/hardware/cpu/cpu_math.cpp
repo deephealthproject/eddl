@@ -324,7 +324,6 @@ void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
         }
     }
 #ifdef CPU_DEBUG
-    printf("hola\n");
     printf(" output C : "); _profile_cpu_tensor(C);
 #endif
 }

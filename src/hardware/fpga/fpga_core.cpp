@@ -2309,14 +2309,14 @@ void get_batch_norm_values(int ochannels, Tensor *global_mean, Tensor *global_va
   memset(output->ptr, 0, sizeof(float) * output->size);
   // 0 (affine_b) 1 (affine_g) 2 (global_mean) 3 (global_variance)
   
-  #pragma omp parallel for
+ // #pragma omp parallel for
   for (int i = 0; i < ochannels; i++){
       output->ptr[i*4]   = affine_b->ptr[i];
       output->ptr[i*4+1] = affine_g->ptr[i];
       output->ptr[i*4+2] = global_mean->ptr[i];
       output->ptr[i*4+3] = global_variance->ptr[i];
-          printf("[out] %f %f %f %f\n", output->ptr[i*4], output->ptr[i*4+1], output->ptr[i*4+2], output->ptr[i*4+3]);
-          printf("[inp] %f %f %f %f\n",affine_b->ptr[i] ,affine_g->ptr[i], global_mean->ptr[i], global_variance->ptr[i]);
+//          printf("[out] %f %f %f %f\n", output->ptr[i*4], output->ptr[i*4+1], output->ptr[i*4+2], output->ptr[i*4+3]);
+//          printf("[inp] %f %f %f %f\n",affine_b->ptr[i] ,affine_g->ptr[i], global_mean->ptr[i], global_variance->ptr[i]);
   }
 }
 

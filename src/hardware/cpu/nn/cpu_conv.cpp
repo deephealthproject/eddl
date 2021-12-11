@@ -11,6 +11,9 @@
 #include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
 
+
+#include <sys/time.h>
+
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
@@ -428,6 +431,9 @@ void cpu_conv2D(ConvolDescriptor *D)
 	if (D->use_bias) {printf(" bias    : "); _profile_cpu_tensor(D->bias);}
 #endif	
 
+  struct timeval time1, time2;
+  gettimeofday(&time1, NULL);
+
     if (D->mem_level > 1) cpu_low_mem_conv3D(D->I->shape[0],
         D->iz, 1, D->ir, D->ic, D->I->ptr,
         D->nk, 1, D->kr, D->kc, D->K->ptr,
@@ -448,6 +454,11 @@ void cpu_conv2D(ConvolDescriptor *D)
       (*ptrO)+=D->bias->ptr[z];
     }
   }
+
+    gettimeofday(&time2, NULL);
+  unsigned long long t = ((time2.tv_sec - time1.tv_sec) * 1000000) + (time2.tv_usec - time1.tv_usec);
+  printf("Conv2D: Time %llu us - %0dx%0dx%0dx%0d - KHxKW %0dx%0d\n", t, D->O->shape[1], D->I->shape[1], D->I->shape[2], D->I->shape[3], D->kr, D->kc);
+
 
 #ifdef CPU_DEBUG
   printf(" output  : "); _profile_cpu_tensor(D->O);
