@@ -1,3 +1,12 @@
+/*
+* FPGA support for EDDL Library - European Distributed Deep Learning Library.
+* Version: 1.0
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), GAP research group
+* Date: December 2021
+* Author: GAP Research Group (UPV), contact: jflich@disca.upv.es
+* All rights reserved
+*/
+
 #include <sys/time.h>
 
 #include "eddl/apis/eddl.h"
@@ -18,7 +27,7 @@ int main(int argc, char **argv) {
   
   // Model
   net = Model({in}, {conv});
-  build(net, adam(0.001), {"none"}, {"none"}, CS_CPU(), false);
+  build(net);
 
   // model for fpga
   net_fpga = toFPGA(net, 1, 0);

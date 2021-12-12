@@ -1343,4 +1343,13 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
     }  
 }//namespace
 
+#else
+#include "eddl/apis/eddl.h"
+namespace eddl {
+model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
+  msg("toFPGA only available for FPGA compilation","toFPGA");
+  exit(1);
+  return NULL;
+}
+}
 #endif
