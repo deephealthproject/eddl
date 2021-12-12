@@ -146,7 +146,9 @@ namespace tensorNN {
         PROFILING_HEADER(transform);
 
         if (A->isCPU() && B->isCPU()) {
+#ifdef cFPGA
             fpga_transform_nn(A, B, copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
+#endif
         }
 #ifdef cGPU
         else if (A->isGPU() && B->isGPU())

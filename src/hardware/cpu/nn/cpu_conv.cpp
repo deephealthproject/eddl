@@ -11,9 +11,6 @@
 #include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
 
-
-#include <sys/time.h>
-
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
@@ -106,117 +103,6 @@ void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 
     getchar();
     }
-}
-
-int cpu_kernel_offset(int i, int o, int kh, int kw, int I, int O, int KH, int KW) {
-  return (o * KW * KH * I) + (i * KW * KH) + (kh * KW) + kw;
-}
-
-int cpu_data_offset(int i, int h, int w, int H, int W) {
-  return (i * W * H) + (h * W) + w;
-}
-
-
-void cpu_print_data(ConvolDescriptor *D, int KW, int KH, int I, int O, int W, int H) {
-
-  float *ptr = D->K->ptr;
-  // filtro 0 0
-  printf("F[0][0]\n");
-  float f00_00 = ptr[cpu_kernel_offset(0, 0, 0, 0, I, O, KH, KW)];
-  float f00_01 = ptr[cpu_kernel_offset(0, 0, 0, 1, I, O, KH, KW)];
-  float f00_02 = ptr[cpu_kernel_offset(0, 0, 0, 2, I, O, KH, KW)];
-  printf("%6.4f %6.4f %6.4f\n", f00_00, f00_01, f00_02);
-  float f00_10 = ptr[cpu_kernel_offset(0, 0, 1, 0, I, O, KH, KW)];
-  float f00_11 = ptr[cpu_kernel_offset(0, 0, 1, 1, I, O, KH, KW)];
-  float f00_12 = ptr[cpu_kernel_offset(0, 0, 1, 2, I, O, KH, KW)];
-  printf("%6.4f %6.4f %6.4f\n", f00_10, f00_11, f00_12);
-  float f00_20 = ptr[cpu_kernel_offset(0, 0, 2, 0, I, O, KH, KW)];
-  float f00_21 = ptr[cpu_kernel_offset(0, 0, 2, 1, I, O, KH, KW)];
-  float f00_22 = ptr[cpu_kernel_offset(0, 0, 2, 2, I, O, KH, KW)];
-  printf("%6.4f %6.4f %6.4f\n", f00_20, f00_21, f00_22);
-  // filtro 1 0
-  printf("F[1][0]\n");
-  float f10_00 = ptr[cpu_kernel_offset(1, 0, 0, 0, I, O, KH, KW)];
-  float f10_01 = ptr[cpu_kernel_offset(1, 0, 0, 1, I, O, KH, KW)];
-  float f10_02 = ptr[cpu_kernel_offset(1, 0, 0, 2, I, O, KH, KW)];
-  printf("%6.4f %6.4f %6.4f\n", f10_00, f10_01, f10_02);
-  float f10_10 = ptr[cpu_kernel_offset(1, 0, 1, 0, I, O, KH, KW)];
-  float f10_11 = ptr[cpu_kernel_offset(1, 0, 1, 1, I, O, KH, KW)];
-  float f10_12 = ptr[cpu_kernel_offset(1, 0, 1, 2, I, O, KH, KW)];
-  printf("%6.4f %6.4f %6.4f\n", f10_10, f10_11, f10_12);
-  float f10_20 = ptr[cpu_kernel_offset(1, 0, 2, 0, I, O, KH, KW)];
-  float f10_21 = ptr[cpu_kernel_offset(1, 0, 2, 1, I, O, KH, KW)];
-  float f10_22 = ptr[cpu_kernel_offset(1, 0, 2, 2, I, O, KH, KW)];
-  printf("%6.4f %6.4f %6.4f\n", f10_20, f10_21, f10_22);
-  // filtro 2 0
-  printf("F[2][0]\n");
-  float f20_00 = ptr[cpu_kernel_offset(2, 0, 0, 0, I, O, KH, KW)];
-  float f20_01 = ptr[cpu_kernel_offset(2, 0, 0, 1, I, O, KH, KW)];
-  float f20_02 = ptr[cpu_kernel_offset(2, 0, 0, 2, I, O, KH, KW)];
-  printf("%6.4f %6.4f %6.4f\n", f20_00, f20_01, f20_02);
-  float f20_10 = ptr[cpu_kernel_offset(2, 0, 1, 0, I, O, KH, KW)];
-  float f20_11 = ptr[cpu_kernel_offset(2, 0, 1, 1, I, O, KH, KW)];
-  float f20_12 = ptr[cpu_kernel_offset(2, 0, 1, 2, I, O, KH, KW)];
-  printf("%6.4f %6.4f %6.4f\n", f20_10, f20_11, f20_12);
-  float f20_20 = ptr[cpu_kernel_offset(2, 0, 2, 0, I, O, KH, KW)];
-  float f20_21 = ptr[cpu_kernel_offset(2, 0, 2, 1, I, O, KH, KW)];
-  float f20_22 = ptr[cpu_kernel_offset(2, 0, 2, 2, I, O, KH, KW)];
-  printf("%6.4f %6.4f %6.4f\n", f20_20, f20_21, f20_22);
-
-  ptr = D->I->ptr;
-  // data 0
-  printf("D[0]\n");
-  float d0_00 = ptr[cpu_data_offset(0, 0, 0, H, W)];
-  float d0_01 = ptr[cpu_data_offset(0, 0, 1, H, W)];
-  float d0_02 = ptr[cpu_data_offset(0, 0, 2, H, W)];
-  printf("%6.4f %6.4f %6.4f\n", d0_00, d0_01, d0_02);
-  float d0_10 = ptr[cpu_data_offset(0, 1, 0, H, W)];
-  float d0_11 = ptr[cpu_data_offset(0, 1, 1, H, W)];
-  float d0_12 = ptr[cpu_data_offset(0, 1, 2, H, W)];
-  printf("%6.4f %6.4f %6.4f\n", d0_10, d0_11, d0_12);
-  float d0_20 = ptr[cpu_data_offset(0, 2, 0, H, W)];
-  float d0_21 = ptr[cpu_data_offset(0, 2, 1, H, W)];
-  float d0_22 = ptr[cpu_data_offset(0, 2, 2, H, W)];
-  printf("%6.4f %6.4f %6.4f\n", d0_20, d0_21, d0_22);
-  // data 1
-  printf("D[1]\n");
-  float d1_00 = ptr[cpu_data_offset(1, 0, 0, H, W)];
-  float d1_01 = ptr[cpu_data_offset(1, 0, 1, H, W)];
-  float d1_02 = ptr[cpu_data_offset(1, 0, 2, H, W)];
-  printf("%6.4f %6.4f %6.4f\n", d1_00, d1_01, d1_02);
-  float d1_10 = ptr[cpu_data_offset(1, 1, 0, H, W)];
-  float d1_11 = ptr[cpu_data_offset(1, 1, 1, H, W)];
-  float d1_12 = ptr[cpu_data_offset(1, 1, 2, H, W)];
-  printf("%6.4f %6.4f %6.4f\n", d1_10, d1_11, d1_12);
-  float d1_20 = ptr[cpu_data_offset(1, 2, 0, H, W)];
-  float d1_21 = ptr[cpu_data_offset(1, 2, 1, H, W)];
-  float d1_22 = ptr[cpu_data_offset(1, 2, 2, H, W)];
-  printf("%6.4f %6.4f %6.4f\n", d1_20, d1_21, d1_22);
-  // data 2
-  float d2_00 = ptr[cpu_data_offset(2, 0, 0, H, W)];
-  float d2_01 = ptr[cpu_data_offset(2, 0, 1, H, W)];
-  float d2_02 = ptr[cpu_data_offset(2, 0, 2, H, W)];
-  printf("%6.4f %6.4f %6.4f\n", d2_00, d2_01, d2_02);
-  float d2_10 = ptr[cpu_data_offset(2, 1, 0, H, W)];
-  float d2_11 = ptr[cpu_data_offset(2, 1, 1, H, W)];
-  float d2_12 = ptr[cpu_data_offset(2, 1, 2, H, W)];
-  printf("%6.4f %6.4f %6.4f\n", d2_10, d2_11, d2_12);
-  float d2_20 = ptr[cpu_data_offset(2, 2, 0, H, W)];
-  float d2_21 = ptr[cpu_data_offset(2, 2, 1, H, W)];
-  float d2_22 = ptr[cpu_data_offset(2, 2, 2, H, W)];
-  printf("%6.4f %6.4f %6.4f\n", d2_20, d2_21, d2_22);
-
-  // bias 0
-  ptr = D->bias->ptr;
-  printf("BIAS[0]\n");
-  float b0 = ptr[0];
-  printf("%6.4f\n", b0);
-
-  float pixel_out = (f00_11 * d0_00) + (f00_12 * d0_01) + (f00_21 * d0_10) + (f00_22 * d0_11) +
-                    (f10_11 * d1_00) + (f10_12 * d1_01) + (f10_21 * d1_10) + (f10_22 * d1_11) +
-                    (f20_11 * d2_00) + (f20_12 * d2_01) + (f20_21 * d2_10) + (f20_22 * d2_11) + b0;
-
-  printf("expected pixel out: %6.4f\n", pixel_out);
 }
 
 void cpu_im2col_conv2D(ConvolDescriptor *D)
@@ -431,9 +317,6 @@ void cpu_conv2D(ConvolDescriptor *D)
 	if (D->use_bias) {printf(" bias    : "); _profile_cpu_tensor(D->bias);}
 #endif	
 
-  struct timeval time1, time2;
-  gettimeofday(&time1, NULL);
-
     if (D->mem_level > 1) cpu_low_mem_conv3D(D->I->shape[0],
         D->iz, 1, D->ir, D->ic, D->I->ptr,
         D->nk, 1, D->kr, D->kc, D->K->ptr,
@@ -454,13 +337,6 @@ void cpu_conv2D(ConvolDescriptor *D)
       (*ptrO)+=D->bias->ptr[z];
     }
   }
-
-    gettimeofday(&time2, NULL);
-  unsigned long long t = ((time2.tv_sec - time1.tv_sec) * 1000000) + (time2.tv_usec - time1.tv_usec);
-  #ifdef CPU_DEBUG
-  printf("Conv2D: Time %llu us - %0dx%0dx%0dx%0d - KHxKW %0dx%0d\n", t, D->O->shape[1], D->I->shape[1], D->I->shape[2], D->I->shape[3], D->kr, D->kc);
-  #endif
-
 
 #ifdef CPU_DEBUG
   printf(" output  : "); _profile_cpu_tensor(D->O);

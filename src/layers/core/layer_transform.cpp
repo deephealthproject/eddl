@@ -23,7 +23,10 @@ LTransform::LTransform(Layer *parent, int copy_cpu_to_fpga, int copy_fpga_to_cpu
     // Set default name
     if(name.empty()) this->name = "transform_" + to_string(++total_layers);
 
-    int CPI = hlsinf_cpi;
+    int CPI = 0;
+#ifdef cFPGA
+    CPI = hlsinf_cpi;
+#endif
 
     if(!CPI) msg("Error: LTransform layer with CPI parameter equal to 0 ");
 

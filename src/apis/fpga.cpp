@@ -7,6 +7,8 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
+
 #include <cstdio>
 #include <cstdio>
 #include <cstdlib>
@@ -1340,3 +1342,5 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
   #endif
     }  
 }//namespace
+
+#endif
