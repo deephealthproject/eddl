@@ -22,6 +22,7 @@
 //#include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
+
 using namespace std;
 
 ////////////////////////////////////////////////////////
@@ -156,7 +157,6 @@ namespace eddl {
         net->toCPU(th);
     }
 
-
     compserv CS_CPU(int th, const string& mem){
         if (mem=="low_mem") return new CompServ(th, {}, {}, 0, 2);
         else if (mem=="mid_mem") return new CompServ(th, {}, {}, 0, 1);
@@ -196,7 +196,7 @@ namespace eddl {
       }*/
 
     compserv CS_FPGA(const vector<int> &f,int lsb){
-        return new CompServ(0, {}, f,lsb);
+        return new CompServ(0, {}, f, lsb);
     }
 
     compserv CS_COMPSS(const string& filename){

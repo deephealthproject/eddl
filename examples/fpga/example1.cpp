@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
   build(net, adam(0.001), {"none"}, {"none"}, CS_CPU(), false);
 
   // model for fpga
-  net_fpga = model_for_fpga(net, 1, 0);
+  net_fpga = toFPGA(net, 1, 0);
 
   // Input data
   x = new Tensor({1, 64, 256, 256});

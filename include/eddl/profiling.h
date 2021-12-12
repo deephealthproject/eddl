@@ -1,9 +1,9 @@
 /*
-* EDDL Library - European Distributed Deep Learning Library.
+* FPGA support for EDDL Library - European Distributed Deep Learning Library.
 * Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
-* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), GAP research group
+* Date: December 2021
+* Author: GAP Research Group (UPV), contact: jflich@disca.upv.es
 * All rights reserved
 */
 
@@ -23,10 +23,6 @@ int gettimeofday(struct timeval* tp, struct timezone* tzp);
 #else
 #include <sys/time.h>
 #endif
-
-//#define PROFILING_HEADER(fn) \
-//    struct timeval _##_t1; \
-//    gettimeofday(&prof_t1, NULL);
 
 #define PROFILING_ENABLE(fn) \
     unsigned long long prof_##fn##_time; \
@@ -66,12 +62,3 @@ int gettimeofday(struct timeval* tp, struct timezone* tzp);
 #define PROFILING_RESET(fn) \
   prof_##fn##_calls = 0; \
   prof_##fn##_time = 0;
-
-
-//CxHxW
-//
-//HxWxC
-//
-//GxHxWxC (C=4)   Reshape + Permute
-//
-//32xHxW -> Reshape -> 8x4xHxW -> Permute(0, 2, 3, 1) -> 8xHxWx4   // hay capas y funciones

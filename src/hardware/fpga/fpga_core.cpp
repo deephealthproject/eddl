@@ -1,9 +1,9 @@
 /*
 * FPGA support for EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 1.0
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), GAP research group
-* Date: June 2020
-* Author: GAP Research Group (UPV), contact: carlherlu@gap.upv.es, jflich@disca.upv.es
+* Date: December 2021
+* Author: GAP Research Group (UPV), contact: jflich@disca.upv.es
 * All rights reserved
 */
 
@@ -136,7 +136,7 @@ void _profile_fpga(int f_id, int end) {
 
 // profile_fpga_tensor(). Function to profile a tensor.
 // It provides tensor information through the console
-void _profile_fpga_tensor(char *str, Tensor *T, int format_tensor) {
+void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
   #ifdef FPGA_DEBUG
   // We read the tensor from FPGA first
   int size;

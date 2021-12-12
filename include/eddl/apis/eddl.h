@@ -137,6 +137,15 @@ namespace eddl {
     void toGPU(model net, vector<int> g={1}, const string& mem="full_mem");
 
     /**
+      *  @brief Assign model operations to the FPGA.
+      *  @param net  Model
+      *  @param hlsinf_version HLSinf accelerator version to use (default 1)
+      *  @param hlsinf_subversion HLSinf accelerator subversion to use (default 0)
+      *  @return     (void)
+    */
+    model toFPGA(model net, int hlsinf_version=1, int hlsinf_subversion=0);
+
+    /**
       *  @brief Executes the code in the CPU.
       *
       *  @param th  CPU Threads. (if '-1', use all threads)
@@ -2617,17 +2626,5 @@ namespace eddl {
 
     // Auxiliary function
     layer _expand3d_to_4d(layer parent, string name);
-
-
-   /**
-     *  @brief Creates a model adapted to the HLSinf accelerator on FPGA
-     *
-     *  @param m_src Model to be adapted
-     *  @param kernel_version HLSinf version to be used
-     *  @param kernel_subsersion HLSinf subversion to be used
-     *
-     *  @return The new model adapted for HLSinf on FPGA
-   */
-   model model_for_fpga(model m_src, int kernel_version, int kernel_subversion);  
 }
 #endif

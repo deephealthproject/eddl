@@ -518,8 +518,6 @@ public:
     int copy_fpga_to_cpu;
     int transform;
 
-    PermuteDescriptor *sd;
-
     LTransform(Layer *l, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform, string name, int dev, int mem);
 
     ~LTransform() override;
