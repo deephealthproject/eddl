@@ -88,47 +88,47 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
   printf("min_clip %d max_clip %d, shifts %d, direction %d enable_upscale %d\n", min_clip, max_clip, pos_shift, dir_shift, enable_upscale);
 #endif
 
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I_add));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, H));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, W));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, HO));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, WO));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, rows));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, PT));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, PB));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, PL));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, PR));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, SH));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, SW));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Ichannels));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, Ochannels));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, I_ITER));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, first_o_iter));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, last_o_iter));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_relu));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_stm));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, relu_factor));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_batch_norm));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, K));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, B));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, BN_values));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, O));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, read_offset));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, write_offset));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_maxp));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_avgp));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_clipping));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_shift));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_add));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, min_clip));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, max_clip));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, dir_shift));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, pos_shift));
-  OCL_CHECK(err, err = kernel_conv2D[kernel_id].setArg(arg++, enable_upscale));  // upsize
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I_add));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, H));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, W));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, HO));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, WO));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, rows));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, PT));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, PB));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, PL));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, PR));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, SH));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, SW));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, Ichannels));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, Ochannels));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I_ITER));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, first_o_iter));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, last_o_iter));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_relu));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_stm));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, relu_factor));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_batch_norm));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, K));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, B));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, BN_values));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, O));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, read_offset));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, write_offset));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_maxp));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_avgp));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_clipping));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_shift));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_add));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, min_clip));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, max_clip));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, dir_shift));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, pos_shift));
+  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_upscale));  // upsize
 
   // Launch the Kernel
-  OCL_CHECK(err, err = (*q).enqueueNDRangeKernel(kernel_conv2D[kernel_id], 0, 1, 1, NULL, &kernel_events[kernel_id]));
+  OCL_CHECK(err, err = (*q).enqueueNDRangeKernel(kernel_hlsinf[kernel_id], 0, 1, 1, NULL, &kernel_events[kernel_id]));
 
   //set_callback(kernel_events[kernel_id], "ooo_queue");
   OCL_CHECK(err, err = kernel_events[kernel_id].wait());
@@ -268,12 +268,12 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   printf("  params: %0dx%0dx%0dx%0d (KHxKW: %0dx%0d, PAD: %0d-%0d-%0d-%0d, SHxSW: %0dx%0d). ReLU %d, ReLU factor %f, Maxp %d, AvgP %d, Clip %d, min_clip %d, max_clip %d, Shift %d, bit shifts %d, dir_shift %d, Add %d, STM %d BN %d UPSCALE %d\n", 
                    Ochannels, Ichannels, H, W, KH, KW, PT, PB, PL, PR, SH, SW, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_batch_norm, enable_upscale);
   #endif
-  _profile_fpga_tensor_good("  input   ", input, hlsinf_input_format);
-  if(enable_add)   _profile_fpga_tensor("  input add: ", input_add);
-  _profile_fpga_tensor_good("  filter  ", filter, hlsinf_filter_format);
-  _profile_fpga_tensor_good("  bias    ", bias, hlsinf_bias_format);
+  _profile_fpga_tensor("  input   ", input, hlsinf_input_format);
+  if(enable_add)   _profile_fpga_tensor("  input add: ", input_add, hlsinf_input_format);
+  _profile_fpga_tensor("  filter  ", filter, hlsinf_filter_format);
+  _profile_fpga_tensor("  bias    ", bias, hlsinf_bias_format);
   if(enable_batch_norm)  {
-    _profile_fpga_tensor_good("  bn_v    ", batch_norm_values, hlsinf_output_format);
+    _profile_fpga_tensor("  bn_v    ", batch_norm_values, hlsinf_output_format);
   }
 
   // output geometry
@@ -340,11 +340,12 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
 
   gettimeofday(&time2, NULL);
   unsigned long long t = ((time2.tv_sec - time1.tv_sec) * 1000000) + (time2.tv_usec - time1.tv_usec);
+  #ifdef DEBUG_FPGA 
   printf("HLSinf: Time %llu us - %0dx%0dx%0dx%0d\n", t, Ochannels, Ichannels, H, W);
-
+  #endif
 
   // profiling
-  _profile_fpga_tensor_good("  output  ", output, hlsinf_output_format);
+  _profile_fpga_tensor("  output  ", output, hlsinf_output_format);
   _profile_fpga_tensor_print(output);
   /*int size = output->size;
   unsigned char *b = (unsigned char *)malloc(size);

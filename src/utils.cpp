@@ -953,15 +953,6 @@ PROFILING_ENABLE(MPool2D_back);
 PROFILING_ENABLE(AvgPool2D);
 PROFILING_ENABLE(AvgPool2D_back);
 // fpga-specific
-PROFILING_ENABLE(fpga_reshape_input_data_convol);
-PROFILING_ENABLE(fpga_reshape_kernel_data_convol);
-PROFILING_ENABLE(fpga_Conv2D);
-PROFILING_ENABLE(fpga_Conv2D_STM);
-PROFILING_ENABLE(fpga_Conv2D_STM_ADD);
-PROFILING_ENABLE(fpga_Conv2D_MAXPOOL);
-PROFILING_ENABLE(fpga_Conv2D_RELU_MAXPOOL);
-PROFILING_ENABLE(fpga_Conv2D_RELU);
-PROFILING_ENABLE(fpga_Conv2D_LEAKYRELU);
 PROFILING_ENABLE(fpga_hlsinf);
 PROFILING_ENABLE(Precision_Conversion);
 PROFILING_ENABLE(FPGA_READ);
@@ -1133,16 +1124,7 @@ void __show_profile() {
   PROFILING_PRINTF(AvgPool2D);
 
   // fpga-specific
-  PROFILING_PRINTF(fpga_reshape_input_data_convol);
-  PROFILING_PRINTF(fpga_reshape_kernel_data_convol);
-  PROFILING_PRINTF(fpga_Conv2D);
-  PROFILING_PRINTF(fpga_Conv2D_STM);
-  PROFILING_PRINTF(fpga_Conv2D_STM_ADD);
-  PROFILING_PRINTF(fpga_Conv2D_MAXPOOL);
-  PROFILING_PRINTF(fpga_Conv2D_RELU_MAXPOOL);
-  PROFILING_PRINTF(fpga_Conv2D_RELU);
   PROFILING_PRINTF(fpga_hlsinf);
-  PROFILING_PRINTF(fpga_Conv2D_LEAKYRELU);
   PROFILING_PRINTF(Precision_Conversion);
   PROFILING_PRINTF(FPGA_READ);
   PROFILING_PRINTF(FPGA_WRITE);
@@ -1315,16 +1297,7 @@ void __reset_profile() {
   PROFILING_RESET(AvgPool2D);
 
   // fpga-specific
-  PROFILING_RESET(fpga_reshape_input_data_convol);
-  PROFILING_RESET(fpga_reshape_kernel_data_convol);
-  PROFILING_RESET(fpga_Conv2D);
-  PROFILING_RESET(fpga_Conv2D_STM);
-  PROFILING_RESET(fpga_Conv2D_STM_ADD);
-  PROFILING_RESET(fpga_Conv2D_MAXPOOL);
-  PROFILING_RESET(fpga_Conv2D_RELU_MAXPOOL);
-  PROFILING_RESET(fpga_Conv2D_RELU);
   PROFILING_RESET(fpga_hlsinf);
-  PROFILING_RESET(fpga_Conv2D_LEAKYRELU);
   PROFILING_RESET(Precision_Conversion);
   PROFILING_RESET(FPGA_READ);
   PROFILING_RESET(FPGA_WRITE);

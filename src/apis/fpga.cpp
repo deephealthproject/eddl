@@ -26,7 +26,7 @@ extern void fpga_reshape_kernel(ConvolDescriptor *src_D, ConvolDescriptor *D, in
 extern void _profile_fpga_tensor(Tensor *t);
 using namespace std;
 
-extern void build(eddl::model net, eddl::optimizer o, const vector<Loss *> &lo, const vector<Metric *> &me, CompServ *cs, bool init_weights);
+//extern void build(eddl::model net, eddl::optimizer o, const vector<Loss *> &lo, const vector<Metric *> &me, CompServ *cs, bool init_weights);
 
 ////////////////////////////////////////////////////////
 ///// EDDL is a wrapper class to ease and define the API

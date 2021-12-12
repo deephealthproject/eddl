@@ -21,11 +21,6 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
-
 using namespace std;
 
 
@@ -62,11 +57,6 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, WrappingMode mode, f
         gpu_shift(A, B, std::move(shift), mode, cval);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_shift(A, B, std::move(shift), mode, cval);
-    }
-#endif
 
     PROFILING_FOOTER(shift);
 }
@@ -97,11 +87,6 @@ void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center
       {
         gpu_rotate(A, B, angle, std::move(offset_center), mode, cval);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_rotate(A, B, angle, std::move(offset_center), mode, cval);
-    }
 #endif
 
     PROFILING_FOOTER(rotate);
@@ -153,11 +138,6 @@ void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode wra
         gpu_scale(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_scale(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
-    }
-#endif
 
     PROFILING_FOOTER(scale);
 }
@@ -193,11 +173,6 @@ void Tensor::scale_back(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMod
     else if (A->isGPU())
     {
         gpu_scale_back(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
-    }
-#endif
-#ifdef cFPGA
-        else {
-        //fpga_scale(A, B, std::move(new_shape), mode, cval);
     }
 #endif
 
@@ -236,11 +211,6 @@ void Tensor::flip(Tensor *A, Tensor *B, int axis) {
       {
         gpu_flip(A, B, axis);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_flip(A, B, axis);
-    }
 #endif
 
     PROFILING_FOOTER(flip);
@@ -287,11 +257,6 @@ void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coo
         gpu_crop(A, B, std::move(coords_from), std::move(coords_to), cval, false);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_crop(A, B, std::move(coords_from), std::move(coords_to), cval, false);
-    }
-#endif
 
     PROFILING_FOOTER(crop);
 }
@@ -329,11 +294,6 @@ void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<in
       {
         gpu_crop_scale(A, B, std::move(coords_from), std::move(coords_to), mode, cval);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_crop_scale(A, B, std::move(coords_from), std::move(coords_to), mode, cval);
-    }
 #endif
 
     PROFILING_FOOTER(crop_scale);
@@ -375,11 +335,6 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
       {
         gpu_crop(A, B, std::move(coords_from), std::move(coords_to), cval, true);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_crop(A, B, std::move(coords_from), std::move(coords_to), cval, true);
-    }
 #endif
 
     PROFILING_FOOTER(cutout);
@@ -433,11 +388,6 @@ void Tensor::pad(Tensor *A, Tensor *B, vector<int> pads) {
         gpu_pad(A, B, std::move(pads));
     }
 #endif
-#ifdef cFPGA
-        else {
-//        fpga_pad(A, B, std::move(pads));
-    }
-#endif
 
 //    PROFILING_FOOTER(pad);
 }
@@ -475,11 +425,6 @@ void Tensor::pad_back(Tensor *A, Tensor *B, vector<int> pads){
     else if (A->isGPU())
     {
         gpu_pad_back(A, B, std::move(pads));
-    }
-#endif
-#ifdef cFPGA
-    else {
-//        fpga_pad_back(A, B, std::move(pads));
     }
 #endif
 
@@ -522,11 +467,6 @@ void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<f
         gpu_shift_random(A, B, std::move(factor_x), std::move(factor_y), mode, cval);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_shift_random(A, B, std::move(factor_x), std::move(factor_y), mode, cval);
-    }
-#endif
 
     PROFILING_FOOTER(shift_random);
 }
@@ -558,11 +498,6 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
       {
         gpu_rotate_random(A, B,  std::move(factor), std::move(offset_center), mode, cval);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_rotate_random(A, B,  std::move(factor), std::move(offset_center), mode, cval);
-    }
 #endif
 
     PROFILING_FOOTER(rotate_random);
@@ -607,11 +542,6 @@ void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMo
         gpu_scale_random(A, B, std::move(factor), mode, cval, coordinate_transformation_mode);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_scale_random(A, B, std::move(factor), mode, cval, coordinate_transformation_mode);
-    }
-#endif
 
     PROFILING_FOOTER(scale_random);
 }
@@ -648,11 +578,6 @@ void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
       {
         gpu_flip_random(A, B, axis);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_flip_random(A, B, axis);
-    }
 #endif
 
     PROFILING_FOOTER(flip_random);
@@ -699,11 +624,6 @@ void Tensor::crop_random(Tensor *A, Tensor *B) {
         gpu_crop_random(A, B);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_crop_random(A, B);
-    }
-#endif
 
     PROFILING_FOOTER(crop_random);
 }
@@ -738,11 +658,6 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, Wrapp
       {
         gpu_crop_scale_random(A, B, std::move(factor), mode, cval);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_crop_scale_random(A, B, std::move(factor), mode, cval);
-    }
 #endif
 
     PROFILING_FOOTER(crop_scale_random);
@@ -783,11 +698,6 @@ void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<
         gpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), cval);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_cutout_random(A, B, std::move(factor_x), std::move(factor_y), cval);
-    }
-#endif
 
   PROFILING_FOOTER(cutout_random);
 }
@@ -822,12 +732,6 @@ void Tensor::scale3d(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode w
     else if (A->isGPU())
     {
         gpu_scale3d(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
-    }
-#endif
-#ifdef cFPGA
-        else {
-        //fpga_scale3d(A, B, std::move(new_shape), mode, cval);
-        printf("fpga_scale3d not implemented yet\n"); exit(1);
     }
 #endif
 
@@ -865,11 +769,6 @@ void Tensor::scale3d_back(Tensor *A, Tensor *B, vector<int> new_shape, WrappingM
     else if (A->isGPU())
     {
         gpu_scale3d_back(A, B, std::move(new_shape), wrapping_mode, cval, coordinate_transformation_mode);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        //fpga_scale3d(A, B, std::move(new_shape), mode, cval);
     }
 #endif
 

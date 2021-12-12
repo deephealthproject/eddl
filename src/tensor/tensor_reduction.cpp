@@ -19,11 +19,6 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
-
 using namespace std;
 
 int * get_reduction_map(Tensor *A, vector<int> axis)
@@ -118,12 +113,7 @@ void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
       gpu_reduce(A,B,mode,map);
     }
   #endif
-  #ifdef cFPGA
-  else if (A->isFPGA()) {
-    fpga_reduce(A,B,mode,map);
-  }
-  #endif
-
+  
   eddl_free(map);
 
   PROFILING_FOOTER(reduce);
@@ -160,12 +150,7 @@ void reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
       gpu_reduce(A,B,mode,MD);
     }
   #endif
-  #ifdef cFPGA
-  else if (A->isFPGA()) {
-      fpga_reduce(A,B,mode,MD);
-  }
-  #endif
-
+  
   PROFILING_FOOTER(reduce);
 }
 
@@ -218,12 +203,7 @@ void reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
       gpu_reduce_op(A,B,op,map);
     }
   #endif
-  #ifdef cFPGA
-  else if (A->isFPGA()) {
-      fpga_reduce_op(A,B,op,map);
-  }
-  #endif
-
+  
   PROFILING_FOOTER(reduce_op);
 }
 
@@ -257,12 +237,7 @@ void reduce_div(Tensor *A, Tensor *B,vector<int> axis,int* map)
       gpu_reduce_op(A,B,op,MD);
     }
   #endif
-  #ifdef cFPGA
-    else if (A->isFPGA()) {
-    fpga_reduce_op(A,B,op,MD);
-  }
-  #endif
-
+  
   PROFILING_FOOTER(reduce_op);
 }
 
@@ -296,12 +271,7 @@ void reduction(ReduceDescriptor *RD){
         gpu_reduction(RD);
       }
     #endif
-    #ifdef cFPGA
-        else {
-        fpga_reduction(RD);
-        }
-    #endif
-
+    
     PROFILING_FOOTER(reduction);
 }
 
@@ -320,11 +290,6 @@ void reduction_back(ReduceDescriptor *RD)
       gpu_reduction_back(RD);
     }
   #endif
-  #ifdef cFPGA
-      else {
-      fpga_reduction_back(RD);
-      }
-  #endif
-
+  
   PROFILING_FOOTER(reduction_back);
 }

@@ -293,6 +293,10 @@ namespace eddl {
         __show_profile();
     }
 
+    void reset_profile() {
+        __reset_profile();
+    }
+
     void next_batch(vector<Tensor *> in,vector<Tensor *> out){
         int i,n;
         int batch_size;
@@ -1643,16 +1647,6 @@ namespace eddl {
             return true;
         }
         return false;
-    }
-
-    ///////////////////////////////////////
-    //  FUSED LAYERS
-    ///////////////////////////////////////
-
-    layer Conv2dActivation(layer parent, string act, int filters, const vector<int> &kernel_size,
-                           const vector<int> &strides, string padding, bool use_bias,
-                           int groups, const vector<int> &dilation_rate, string name){
-        return new LConv2dActivation(parent, act, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
     ///////////////////////////////////////

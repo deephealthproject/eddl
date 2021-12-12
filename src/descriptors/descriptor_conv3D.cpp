@@ -19,10 +19,6 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#endif
-
 ConvolDescriptor3D::ConvolDescriptor3D() {}
 
 ConvolDescriptor3D::ConvolDescriptor3D(const vector<int> &ks, const vector<int> &st, const vector<int> &p, const vector<int> &dilation_rate, bool ub, int mem) {
@@ -268,16 +264,6 @@ void ConvolDescriptor3D::build(Tensor *A) {
 
 #endif
 
-#ifdef cFPGA
-    if (I->isFPGA()) {
-	// We allocate memory on the FGPA for the im2col buffer
-	fpga_sizeI = A->shape[0] * r * c * kr * kc * kz * sizeof(float);
-	fpga_ptrI = fpga_create_memory(fpga_sizeI);
-	// We allocate also on cpu so to ease the cpuemu flow
-        // mem for ptr, lowering im2col
-        ptrI=get_fmem(A->shape[0] * d * r * c * kz * kd * kr * kc,"ConvolDescriptor3D::build");
-    }
-#endif
 }
 
 void ConvolDescriptor3D::resize(int b)
@@ -322,19 +308,6 @@ void ConvolDescriptor3D::resize(int b)
 #endif
     }
 #endif
-
-#ifdef cFPGA
-    else if (I->isFPGA()) {
-        // We reallocate memory on the FGPA for the im2col buffer
-	fpga_destroy_memory(fpga_ptrI);
-	fpga_sizeI = l_size * sizeof(float);
-        fpga_ptrI = fpga_create_memory(fpga_sizeI);
-        // We do the same on the CPU side (for smooth cpuemu)
-	    eddl_free(ptrI);
-        ptrI=get_fmem(l_size, "ConvolDescriptor3D::build");
-    }
-#endif
-
 
 }
 

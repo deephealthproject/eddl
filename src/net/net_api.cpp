@@ -22,10 +22,6 @@
 #include "eddl/utils.h"
 
 
-#ifdef cFPGA
-extern void _show_profile_fpga();
-#endif
-
 #define VERBOSE 0
 
 int verboserec=1;
@@ -1302,10 +1298,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
   }
 
   compute_loss();
-
-#ifdef cFPGA
-  _show_profile_fpga();
-#endif
 }
 }
 

@@ -24,7 +24,6 @@ TensorDescriptor::TensorDescriptor(int dev){
     // Initialize addresses
     cpu_addresses = nullptr;
     gpu_addresses = nullptr;
-    fpga_addresses = nullptr;
 }
 
 TensorDescriptor::~TensorDescriptor() {
@@ -40,11 +39,5 @@ void TensorDescriptor::free_memory() {
     if (this->gpu_addresses != nullptr){
         gpu_delete_tensor_int(this->device, this->gpu_addresses);  // TODO: Ugly hotfix!
       }
-#endif
-
-#ifdef cFPGA
-    if (this->fpga_addresses != nullptr){
-      // TODO: Missing delete FPGA addresses
-    }
 #endif
 }

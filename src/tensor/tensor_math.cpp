@@ -19,11 +19,6 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
-
 using namespace std;
 
 // Math operations (Tensor-Tensor, Tensor-float) ************************
@@ -53,11 +48,6 @@ void Tensor::maximum(Tensor* A, Tensor* B, float v){
         gpu_maximum(A, B, v);
     }
 #endif
-#ifdef cFPGA
-    else {
-      fpga_maximum(A, B, v);
-    }
-#endif
 
     PROFILING_FOOTER(maximum);
 }
@@ -79,11 +69,6 @@ void Tensor::maximum(Tensor* A, Tensor* B, Tensor* C){
     else if (A->isGPU() && B->isGPU() && C->isGPU())
     {
         gpu_maximum(A, B, C);
-    }
-#endif
-#ifdef cFPGA
-    else {
-       fpga_maximum(A, B, C);
     }
 #endif
 
@@ -115,11 +100,6 @@ void Tensor::minimum(Tensor* A, Tensor* B, float v){
         gpu_minimum(A, B, v);
     }
 #endif
-#ifdef cFPGA
-    else {
-       fpga_minimum(A, B, v);
-    }
-#endif
 
     PROFILING_FOOTER(minimum);
 }
@@ -141,11 +121,6 @@ void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
     else if (A->isGPU() && B->isGPU() && C->isGPU())
     {
         gpu_minimum(A, B, C);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_minimum(A, B, C);
     }
 #endif
 
@@ -172,12 +147,6 @@ float Tensor::max(Tensor* A){
     else if (A->isGPU())
     {
         return gpu_max(A);
-    }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-    {
-        return fpga_max(A);
     }
 #endif
 
@@ -212,11 +181,6 @@ void Tensor::max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         gpu_max(A, B, rd);
     }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_max(A, B, rd);
-    }
-#endif
 
     PROFILING_FOOTER(max);
 }
@@ -241,12 +205,6 @@ int Tensor::argmax(Tensor* A){
     {
         PROFILING_FOOTER(argmax);
         return gpu_argmax(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        PROFILING_FOOTER(argmax);
-        return fpga_argmax(A);
     }
 #endif
 
@@ -282,11 +240,6 @@ void Tensor::argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         gpu_argmax(A, B, rd);
     }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_argmax(A, B, rd);
-    }
-#endif
 
     PROFILING_FOOTER(argmax);
 }
@@ -302,11 +255,6 @@ void Tensor::argmax_d(Tensor *D, Tensor *O, Tensor *PD){
     else if (D->isGPU() && O->isGPU() && PD->isGPU())
     {
         gpu_argmax_d(D, O, PD);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        //fpga_argmax_d(D, O, PD);
     }
 #endif
 
@@ -331,12 +279,6 @@ float Tensor::min(Tensor* A){
     {
         PROFILING_FOOTER(min);
 	return gpu_min(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        PROFILING_FOOTER(min);
-        return fpga_min(A);
     }
 #endif
 
@@ -372,11 +314,6 @@ void Tensor::min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         gpu_min(A, B, rd);
     }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_min(A, B, rd);
-    }
-#endif
 
     PROFILING_FOOTER(min);
 }
@@ -400,12 +337,6 @@ int Tensor::argmin(Tensor* A){
     {
         PROFILING_FOOTER(argmin);
         return gpu_argmin(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        PROFILING_FOOTER(argmin);
-        return fpga_argmin(A);
     }
 #endif
 
@@ -441,12 +372,6 @@ void Tensor::argmin(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         gpu_argmin(A, B, rd);
     }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-    {
-        fpga_argmin(A, B, rd);
-    }
-#endif
 
     PROFILING_FOOTER(argmin);
 }
@@ -471,13 +396,6 @@ float Tensor::sum(Tensor* A){
 
         PROFILING_FOOTER(sum);
         return gpu_sum(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-        PROFILING_FOOTER(sum);
-        return fpga_sum(A);
     }
 #endif
 
@@ -513,11 +431,6 @@ void Tensor::sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
       gpu_sum(A, B, rd);
     }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_sum(A, B, rd);
-    }
-#endif
 
     PROFILING_FOOTER(sum);
 }
@@ -541,12 +454,6 @@ float Tensor::sum_abs(Tensor* A){
     {
         PROFILING_FOOTER(sum_abs);
         return gpu_sum_abs(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        PROFILING_FOOTER(sum_abs);
-        return fpga_sum_abs(A);
     }
 #endif
 
@@ -583,11 +490,6 @@ void Tensor::sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         gpu_sum_abs(A, B, rd);
     }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_sum_abs(A, B, rd);
-    }
-#endif
 
     PROFILING_FOOTER(sum_abs);
 }
@@ -610,12 +512,6 @@ float Tensor::prod(Tensor* A){  // AKA factorial
     {
         PROFILING_FOOTER(prod);
         return gpu_prod(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        PROFILING_FOOTER(prod);
-        return fpga_prod(A);
     }
 #endif
 
@@ -650,11 +546,6 @@ void Tensor::prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_prod(A, B, rd);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_prod(A, B, rd);
     }
 #endif
 
@@ -697,11 +588,6 @@ void Tensor::mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         gpu_mean(A, B, rd);
     }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_mean(A, B, rd);
-    }
-#endif
 
     PROFILING_FOOTER(mean);
 }
@@ -729,11 +615,6 @@ float Tensor::median(Tensor* A){
 #ifdef cGPU
     else if (tmp->isGPU()) {
         res = gpu_median(tmp);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        res = fpga_median(tmp);
     }
 #endif
 
@@ -769,11 +650,6 @@ void Tensor::median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         gpu_median(A, B, rd);
     }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_median(A, B, rd);
-    }
-#endif
 
     PROFILING_FOOTER(median);
 }
@@ -796,12 +672,6 @@ float Tensor::std(Tensor* A, bool unbiased){
     {
         PROFILING_FOOTER(std);
         return gpu_std(A, unbiased);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        PROFILING_FOOTER(std);
-        fpga_std(A, unbiased);
     }
 #endif
 
@@ -838,11 +708,6 @@ void Tensor::std(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
         gpu_std(A, B, rd, unbiased);
     }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_std(A, B, rd, unbiased);
-    }
-#endif
 
     PROFILING_FOOTER(std);
 }
@@ -868,14 +733,6 @@ float Tensor::var(Tensor* A, bool unbiased){
 
         PROFILING_FOOTER(var);
         return gpu_var(A, unbiased);
-    }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-    {
-
-        PROFILING_FOOTER(var);
-        return fpga_var(A, unbiased);
     }
 #endif
 
@@ -912,12 +769,6 @@ void Tensor::var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
         gpu_var(A, B, rd, unbiased);
     }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-    {
-        fpga_var(A, B, rd, unbiased);
-    }
-#endif
 
     PROFILING_FOOTER(var);
 }
@@ -941,13 +792,6 @@ int Tensor::mode(Tensor* A){
     {
 	    PROFILING_FOOTER(mode);
         return gpu_mode(A);
-    }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-    {
-	    PROFILING_FOOTER(mode);
-        return fpga_mode(A);
     }
 #endif
 
@@ -984,12 +828,6 @@ void Tensor::mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
         gpu_mode(A, B, rd);
     }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-    {
-        fpga_mode(A, B, rd);
-    }
-#endif
 
     PROFILING_FOOTER(mode);
 }
@@ -1018,12 +856,6 @@ void Tensor::abs(Tensor *A, Tensor *B){
         gpu_abs(A, B);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_abs(A, B);
-      }
-#endif
 
     PROFILING_FOOTER(abs);
 }
@@ -1050,12 +882,6 @@ void Tensor::acos(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_acos(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_acos(A, B);
       }
 #endif
 
@@ -1095,12 +921,6 @@ void Tensor::add(Tensor *A, Tensor *B, float v){
         gpu_add(A, B, v);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_add(A, B, v);
-      }
-#endif
 
     PROFILING_FOOTER(add);
 }
@@ -1128,12 +948,6 @@ void Tensor::asin(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_asin(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_asin(A, B);
       }
 #endif
 
@@ -1166,12 +980,6 @@ void Tensor::atan(Tensor *A, Tensor *B){
         gpu_atan(A, B);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_atan(A, B);
-      }
-#endif
 
     PROFILING_FOOTER(atan);
 }
@@ -1200,12 +1008,6 @@ void Tensor::ceil(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_ceil(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_ceil(A, B);
       }
 #endif
 
@@ -1238,12 +1040,6 @@ void Tensor::clamp(Tensor *A, Tensor *B, float min, float max){
         gpu_clamp(A, B, min, max);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_clamp(A, B, min, max);
-      }
-#endif
 
     PROFILING_FOOTER(clamp);
 }
@@ -1267,14 +1063,6 @@ void Tensor::d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max){
         //gpu_d_clamp(D, I, PD, min, max);
     }
 #endif
-#ifdef cFPGA
-        else if (D->isFPGA())
-      {
-        msg("Not implemented for FPGA", "Tensor::Tensor::d_clamp");
-        //fpga_d_clamp(D, I, PD, min, max);
-      }
-#endif
-
 }
 
 
@@ -1337,12 +1125,6 @@ void Tensor::cos(Tensor *A, Tensor *B){
         gpu_cos(A, B);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_cos(A, B);
-      }
-#endif
 
     PROFILING_FOOTER(cos);
 }
@@ -1370,12 +1152,6 @@ void Tensor::cosh(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_cosh(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_cosh(A, B);
       }
 #endif
 
@@ -1437,12 +1213,6 @@ void Tensor::exp(Tensor *A, Tensor *B){
         gpu_exp(A, B);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_exp(A, B);
-      }
-#endif
 
     PROFILING_FOOTER(exp);
 }
@@ -1471,12 +1241,6 @@ void Tensor::floor(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_floor(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_floor(A, B);
       }
 #endif
 
@@ -1509,12 +1273,6 @@ void Tensor::inv(Tensor *A, Tensor *B, float v){
         gpu_inv(A, B, v);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_inv(A, B, v);
-      }
-#endif
 
     PROFILING_FOOTER(inv);   
 }
@@ -1543,12 +1301,6 @@ void Tensor::log(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_log(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_log(A, B);
       }
 #endif
 
@@ -1581,12 +1333,6 @@ void Tensor::log2(Tensor *A, Tensor *B){
         gpu_log2(A, B);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_log2(A, B);
-      }
-#endif
 
     PROFILING_FOOTER(log2);
 }
@@ -1615,12 +1361,6 @@ void Tensor::log10(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_log10(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_log10(A, B);
       }
 #endif
 
@@ -1653,12 +1393,6 @@ void Tensor::logn(Tensor *A, Tensor *B, float n){
         gpu_logn(A, B, n);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_logn(A, B, n);
-      }
-#endif
 
     PROFILING_FOOTER(logn);
 }
@@ -1687,12 +1421,6 @@ void Tensor::mod(Tensor *A, Tensor *B, float v){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_mod(A, B, v);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_mod(A, B, v);
       }
 #endif
 
@@ -1735,12 +1463,6 @@ void Tensor::mult(Tensor *A, Tensor *B, float v){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_mult(A, B, v);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_mult(A, B, v);
       }
 #endif
 
@@ -1790,12 +1512,6 @@ void Tensor::normalize(Tensor *A, Tensor *B, float min, float max){
         gpu_normalize(A, B, min, max);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_normalize(A, B, min, max);
-      }
-#endif
 
     PROFILING_FOOTER(normalize);
 }
@@ -1828,12 +1544,6 @@ void Tensor::pow(Tensor *A, Tensor *B, float exp){
             gpu_pow(A, B, exp);
         }
 #endif
-#ifdef cFPGA
-            else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_pow(A, B, exp);
-      }
-#endif
 
         PROFILING_FOOTER(pow);
     }
@@ -1863,12 +1573,6 @@ void Tensor::powb(Tensor *A, Tensor *B, float base){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_powb(A, B, base);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_powb(A, B, base);
       }
 #endif
 
@@ -1918,13 +1622,6 @@ void Tensor::remainder(Tensor *A, Tensor *B, float v){
         gpu_remainder(A, B, v);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_remainder(A, B, v);
-      }
-#endif
-
 
     PROFILING_FOOTER(remainder);
 }
@@ -1953,12 +1650,6 @@ void Tensor::round(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_round(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_round(A, B);
       }
 #endif
 
@@ -1991,12 +1682,6 @@ void Tensor::rsqrt(Tensor *A, Tensor *B){
         gpu_rsqrt(A, B);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_rsqrt(A, B);
-      }
-#endif
 
     PROFILING_FOOTER(rsqrt);
 }
@@ -2025,12 +1710,6 @@ void Tensor::sigmoid(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_sigmoid(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_sigmoid(A, B);
       }
 #endif
 
@@ -2063,12 +1742,6 @@ void Tensor::sign(Tensor *A, Tensor *B, float zero_sign) {
         gpu_sign(A, B, zero_sign);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_sign(A, B, zero_sign);
-      }
-#endif
 
     PROFILING_FOOTER(sign);
 }
@@ -2097,12 +1770,6 @@ void Tensor::sin(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_sin(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_sin(A, B);
       }
 #endif
 
@@ -2135,12 +1802,6 @@ void Tensor::sinh(Tensor *A, Tensor *B){
         gpu_sinh(A, B);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_sinh(A, B);
-      }
-#endif
 
     PROFILING_FOOTER(sinh);
 }
@@ -2171,12 +1832,6 @@ void Tensor::sqr(Tensor *A, Tensor *B){
         gpu_sqr(A, B);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_sqr(A, B);
-      }
-#endif
 
     PROFILING_FOOTER(sqr);
 }
@@ -2205,12 +1860,6 @@ void Tensor::sqrt(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_sqrt(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_sqrt(A, B);
       }
 #endif
 
@@ -2272,12 +1921,6 @@ void Tensor::tan(Tensor *A, Tensor *B){
         gpu_tan(A, B);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_tan(A, B);
-      }
-#endif
 
     PROFILING_FOOTER(tan);
 }
@@ -2308,12 +1951,6 @@ void Tensor::tanh(Tensor *A, Tensor *B){
         gpu_tanh(A, B);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_tanh(A, B);
-      }
-#endif
 
     PROFILING_FOOTER(tanh);
 }
@@ -2342,12 +1979,6 @@ void Tensor::trunc(Tensor *A, Tensor *B){
     else if (A->isGPU() && B->isGPU())
       {
         gpu_trunc(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_trunc(A, B);
       }
 #endif
 
@@ -2565,12 +2196,6 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
         gpu_add(scA, A, scB, B, C, incC);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-      {
-        fpga_add(scA, A, scB, B, C, incC);
-      }
-#endif
 
 
 
@@ -2638,12 +2263,6 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
         gpu_el_div(A,B,C,incC);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-      {
-        fpga_el_div(A,B,C,incC);
-      }
-#endif
 
 
     PROFILING_FOOTER(el_div);
@@ -2691,12 +2310,6 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
         gpu_mult2D(A,tA,B,tB,C,incC);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-      {
-        fpga_mult2D(A,tA,B,tB,C,incC);
-      }
-#endif
 
 
     PROFILING_FOOTER(mult2D);
@@ -2730,13 +2343,6 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
          gpu_el_mult(A,B,C,incC);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-      {
-         fpga_el_mult(A,B,C,incC);
-      }
-#endif
-
 
     PROFILING_FOOTER(el_mult);    
 }
@@ -2766,13 +2372,6 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
         gpu_sum2D_rowwise(A,B,C);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-      {
-        fpga_sum2D_rowwise(A,B,C);
-      }
-#endif
-
 
     PROFILING_FOOTER(sum2D_rowwise);
 }
@@ -2802,13 +2401,6 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
         gpu_reduce_sum2D(A,B,axis,incB);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-      {
-        fpga_reduce_sum2D(A,B,axis,incB);
-      }
-#endif
-
 
     PROFILING_FOOTER(reduce_sum2D);    
 }
@@ -2837,13 +2429,6 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
         gpu_sum2D_colwise(A,B,C);
       }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-      {
-        fpga_sum2D_colwise(A,B,C);
-      }
-#endif
-
 
     PROFILING_FOOTER(sum2D_colwise);    
 }

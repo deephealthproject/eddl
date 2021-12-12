@@ -14,10 +14,6 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#endif
-
 using namespace std;
 
 
@@ -32,11 +28,6 @@ std::pair<unsigned int*, int> Tensor::_nonzero(){
       {
         msg("Not yet implemented for CPU", "Tensor::_nonzero");
       }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
 #endif
 
     return std::make_pair(nullptr, 0);
@@ -84,12 +75,6 @@ void Tensor::where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C){
         gpu_where(condition, A, B, C);
       }
 #endif
-#ifdef cFPGA
-    else if (condition->isFPGA() && A->isFPGA() && B->isFPGA())
-      {
-        fpga_where(condition, A, B, C);
-      }
-#endif
 }
 
 void Tensor::where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D){
@@ -103,11 +88,5 @@ void Tensor::where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D
     {
         gpu_where_back(condition, PD_A, PD_B, D);
     }
-#endif
-#ifdef cFPGA
-    else if (condition->isFPGA() && PD_A->isFPGA() && PD_B->isFPGA())
-      {
-        printf("fpga_where_back not implemented yet\n"); exit(1);
-      }
 #endif
 }

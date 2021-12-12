@@ -119,6 +119,10 @@ target_link_libraries(tensor_io eddl)
 add_executable(tensor_dev_tests "tensor/eddl_dev_tests.cpp")
 target_link_libraries(tensor_dev_tests eddl)
 
+# EXAMPLES: FPGA ******************************************************
+add_executable(fpga_example1 "fpga/example1.cpp")
+target_link_libraries(fpga_example1 eddl)
+
 
 if(BUILD_PROTOBUF)
 	# EXAMPLES: APPLICATIONS *************************************************************

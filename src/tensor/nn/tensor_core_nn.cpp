@@ -21,9 +21,6 @@
 
 #ifdef cFPGA
 #include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-
-extern int next_fpga_tensor_id;
 #endif
 
 PROFILING_ENABLE_EXTERN(repeat_nn);
@@ -59,11 +56,6 @@ namespace tensorNN {
             gpu_repeat_nn(A, B, size);
         }
 #endif
-#ifdef cFPGA
-        else {
-            fpga_repeat_nn(A, B, size);
-        }
-#endif
         PROFILING_FOOTER(repeat_nn);
     }
 
@@ -78,12 +70,6 @@ namespace tensorNN {
 #ifdef cGPU
         else if (D->isGPU() && A->isGPU()) {
             gpu_d_repeat_nn(D, A, size);
-        }
-#endif
-#ifdef cFPGA
-        else {
-            printf("d_repeat_nn not implemented in FPGA yet\n");
-            exit(1);
         }
 #endif
         PROFILING_FOOTER(d_repeat_nn);
@@ -103,12 +89,6 @@ namespace tensorNN {
             gpu_select_nn(A, B, sd);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-            fpga_select_nn(A, B, sd);
-        }
-#endif
         PROFILING_FOOTER(select);
     }
 
@@ -125,12 +105,6 @@ namespace tensorNN {
            gpu_select_back_nn(A, B, sd);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-           fpga_select_back_nn(A, B, sd);
-        }
-#endif
         PROFILING_FOOTER(select_back);
     }
 
@@ -145,12 +119,6 @@ namespace tensorNN {
         else if (A->isGPU() && B->isGPU())
         {
             gpu_set_select_nn(A, B, sd);
-        }
-#endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-            fpga_set_select_nn(A, B, sd);
         }
 #endif
         PROFILING_FOOTER(set_select);
@@ -170,12 +138,6 @@ namespace tensorNN {
             gpu_set_select_back_nn(A, B, sd);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-            fpga_set_select_back_nn(A, B, sd);
-        }
-#endif
         PROFILING_FOOTER(set_select_back);
     }
 
@@ -184,8 +146,6 @@ namespace tensorNN {
         PROFILING_HEADER(transform);
 
         if (A->isCPU() && B->isCPU()) {
-            //printf("Error, transform_nn not implemented in CPU\n");
-            //exit(1);
             fpga_transform_nn(A, B, copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
         }
 #ifdef cGPU
@@ -193,13 +153,6 @@ namespace tensorNN {
         {
             printf("Error, transform_nn not implemented in GPU\n");
             exit(1);
-//            gpu_transform_nn(A, B, mode);
-        }
-#endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-            fpga_transform_nn(A, B, copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
         }
 #endif
         PROFILING_FOOTER(transform);
@@ -218,12 +171,6 @@ namespace tensorNN {
             gpu_expand_nn(A, B, sd);
         }
 #endif
-#ifdef cFPGA
-            else if (A->isFPGA() && B->isFPGA())
-        {
-            fpga_expand_nn(A, B, sd);
-        }
-#endif
     }
 
     void expand_back(Tensor *A, Tensor* B, ExpandDescriptor *sd){
@@ -236,12 +183,6 @@ namespace tensorNN {
         else if (A->isGPU() && B->isGPU())
         {
             gpu_expand_back_nn(A, B, sd);
-        }
-#endif
-#ifdef cFPGA
-            else if (A->isFPGA() && B->isFPGA())
-        {
-//           fpga_expand_back_nn(A, B, sd);
         }
 #endif
     }
@@ -258,12 +199,6 @@ namespace tensorNN {
             gpu_repeat_batch(A, B);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-            fpga_repeat_batch(A, B);
-        }
-#endif
     }
 
     void multithreshold(Tensor *A, Tensor *B, Tensor *thresholds, float out_bias, float out_scale) {
@@ -278,12 +213,6 @@ namespace tensorNN {
 	      exit(1);
 	    }
 #endif
-#ifdef cFPGA
-	    else if (A->isFPGA() && B->isFPGA() && thresholds->isFPGA()) {
-	      printf("multithreshold not supported yet for FPGA\n");
-	      exit(1);
-	    }
-#endif
     }
 
     void topK(Tensor *A, Tensor *B, int axis, int largest, int sorted, int K) {
@@ -294,12 +223,6 @@ namespace tensorNN {
 #ifdef cGPU
             else if (A->isGPU() && B->isGPU()) {
               printf("topK not supported for GPU\n");
-              exit(1);
-            }
-#endif
-#ifdef cFPGA
-            else if (A->isFPGA() && B->isFPGA()) {
-              printf("topK not supported yet for FPGA\n");
               exit(1);
             }
 #endif

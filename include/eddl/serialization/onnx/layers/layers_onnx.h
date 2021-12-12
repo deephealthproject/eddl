@@ -69,7 +69,7 @@ enum ONNX_LAYERS {
   SPLIT,            // OPSET: 13, 11, 2
   EXPAND,           // OPSET: 13, 8
   MULTITHRESHOLD,   // Not in ONNX: Custom
-  TOPK              // OPSET: ????
+  TOPK,             // OPSET: ????
   CONSTANT,         // OPSET: 13, 12, 11, 9, 1
   REPEAT            // OPSET: 13, 6
 };

@@ -138,16 +138,6 @@ public:
 
 
 
-#ifdef cFPGA
-    // FPGA implementation specific variables
-    void *fpga_ptrI;                      // Input data pointer (FPGA DDR memory)
-    long int fpga_sizeI;                  // Size of input data (FPGA DDR memory)
-    int fpga_kernel_in_fpga_format = 0;   // tells whether the kernels have been adapted to the expected format 
-                                          // The FPGA conv kernel expects kernel data in GI * GO * CPI * CPO * KW * KH format
-    int fpga_apply_relu            = 0;   // Whether this operation also should include a RELU operation
-    Tensor *fpga_relu_ptrO;               // Tensor where to produce the output when relu is activated
-#endif
-
     ConvolDescriptor();
 
     ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
@@ -229,12 +219,6 @@ public:
 
     int cudnn_env_init;
     int cudnn_conv_back_init;
-#endif
-
-#ifdef cFPGA
-    // FPGA implementation
-    cl::Buffer *fpga_ptrI;
-    long int fpga_sizeI;
 #endif
 
     ConvolDescriptor3D();
@@ -331,12 +315,6 @@ public:
 
 
 
-#ifdef cFPGA
-    // FPGA implementation
-    cl::Buffer *fpga_ptrI;
-    long int fpga_sizeI;
-#endif
-
     ConvolDescriptorT2D();
 
     ConvolDescriptorT2D(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
@@ -424,12 +402,6 @@ public:
 
     int cudnn_env_init;
     int cudnn_conv_back_init;
-#endif
-
-#ifdef cFPGA
-    // FPGA implementation
-    cl::Buffer *fpga_ptrI;
-    long int fpga_sizeI;
 #endif
 
     ConvolDescriptorT3D();

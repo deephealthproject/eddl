@@ -7,7 +7,6 @@
 * All rights reserved
 */
 
-
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -20,29 +19,13 @@ using namespace std;
 
 int LTransform::total_layers = 0;
 
-/**
-  @brief Transforms input data to an specific output data format
-
-  @param l a Layer.
-  @param name a name for the operation
-  @param dev which computing service utilize
-
-  @returns 
-
-  */
 LTransform::LTransform(Layer *parent, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     // Set default name
     if(name.empty()) this->name = "transform_" + to_string(++total_layers);
 
-    int CPI = 0;
+    int CPI = hlsinf_cpi;
 
-    #ifdef cFPGA
-    CPI = hlsinf_cpi;
-    #endif
-
-    if(!CPI) {
-        msg("Error: LTransform layer with CPI parameter equal to 0 ");
-    }
+    if(!CPI) msg("Error: LTransform layer with CPI parameter equal to 0 ");
 
     // Set input
     input=parent->output;
@@ -64,17 +47,15 @@ LTransform::LTransform(Layer *parent, int copy_cpu_to_fpga, int copy_fpga_to_cpu
     int Cout = ((C + CPI - 1) / CPI) * CPI;
     oshape[1] = Cout;
 
-//    printf("out: ndim %d B %d C %d H %d W %d\n", ndim, B, Cout, H, W);
-
+    // output tensor
     output=new Tensor(oshape, dev);
 
+    // parents-childs relationship
     parent->addchild(this);
     addparent(parent);
 }
 
-LTransform::~LTransform(){
-    delete sd;
-}
+LTransform::~LTransform() {delete sd;}
 
 void LTransform::resize(int b){
     Layer::resize(b);

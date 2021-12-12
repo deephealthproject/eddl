@@ -28,7 +28,6 @@
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/auxiliar/layer_auxiliar.h"
 #include "eddl/layers/da/layer_da.h"
-#include "eddl/layers/fused/layer_fused.h"
 #include "eddl/layers/generators/layer_generators.h"
 #include "eddl/layers/merge/layer_merge.h"
 #include "eddl/layers/noise/layer_noise.h"
@@ -37,7 +36,6 @@
 #include "eddl/layers/reductions/layer_reductions.h"
 #include "eddl/layers/pool/layer_pool.h"
 #include "eddl/layers/recurrent/layer_recurrent.h"
-#include "eddl/layers/fused/layer_fused.h"
 #include "eddl/layers/fpga/layer_hlsinf.h"
 
 // EDDL namespace defines the API
@@ -2620,19 +2618,16 @@ namespace eddl {
     // Auxiliary function
     layer _expand3d_to_4d(layer parent, string name);
 
-<<<<<<< HEAD
 
    /**
-     *  @brief Creates a model adapted to FPGA
+     *  @brief Creates a model adapted to the HLSinf accelerator on FPGA
      *
-     *  @see
+     *  @param m_src Model to be adapted
+     *  @param kernel_version HLSinf version to be used
+     *  @param kernel_subsersion HLSinf subversion to be used
      *
-     *  @return The new model adapted for FPGA
+     *  @return The new model adapted for HLSinf on FPGA
    */
    model model_for_fpga(model m_src, int kernel_version, int kernel_subversion);  
-   void model_to_hls(model m_src);
-   void show_weight_stats(model m);
-=======
->>>>>>> b507b5e44b70f37ac8ddc71976fcf4409fd03908
 }
 #endif

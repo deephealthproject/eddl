@@ -457,7 +457,9 @@ void cpu_conv2D(ConvolDescriptor *D)
 
     gettimeofday(&time2, NULL);
   unsigned long long t = ((time2.tv_sec - time1.tv_sec) * 1000000) + (time2.tv_usec - time1.tv_usec);
+  #ifdef CPU_DEBUG
   printf("Conv2D: Time %llu us - %0dx%0dx%0dx%0d - KHxKW %0dx%0d\n", t, D->O->shape[1], D->I->shape[1], D->I->shape[2], D->I->shape[3], D->kr, D->kc);
+  #endif
 
 
 #ifdef CPU_DEBUG

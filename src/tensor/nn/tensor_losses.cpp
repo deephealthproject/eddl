@@ -16,11 +16,6 @@
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
-
 PROFILING_ENABLE_EXTERN(cent);
 
 #include <cmath>
@@ -45,13 +40,6 @@ namespace tensorNN {
             gpu_cent(A,B,C);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA())
-      {
-         fpga_cent(A,B,C);
-      }
-#endif
-
 
         PROFILING_FOOTER(cent);
     }
@@ -74,13 +62,6 @@ namespace tensorNN {
             return gpu_categorical_cross_entropy(y_true, y_pred);
         }
 #endif
-#ifdef cFPGA
-        else {
-            printf("ERROR, fpga_categorial_cross_entropy not implemented on FPGA yet\n");
-            exit(1);
-        return -1; //fpga_categorical_cross_entropy(y_true, y_pred);
-    }
-#endif
         return std::nanf("");
     }
 
@@ -101,13 +82,6 @@ namespace tensorNN {
             gpu_d_categorical_cross_entropy(y_true, y_pred, delta);
         }
 #endif
-#ifdef cFPGA
-        else {
-            printf("Error, fpga_d_categorical_cross_entropy not implemented yet\n");
-            exit(1);
-        //fpga_d_categorical_cross_entropy(y_true, y_pred, delta);
-    }
-#endif
     }
 
     float binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
@@ -125,13 +99,6 @@ namespace tensorNN {
         {
             return gpu_binary_cross_entropy(y_true, y_pred);
         }
-#endif
-#ifdef cFPGA
-        else {
-            printf("Error, fpga_full_cross_entropy not implemented yet\n"); 
-            exit(1);
-        return -1; //fpga_full_cross_entropy(y_true, y_pred);
-    }
 #endif
         return std::nanf("");
     }
@@ -152,13 +119,6 @@ namespace tensorNN {
         {
             gpu_d_binary_cross_entropy(y_true, y_pred, delta);
         }
-#endif
-#ifdef cFPGA
-        else {
-            printf("Error, fpga_d_binary_cross_entropy not implemented yet\n");
-            exit(1);
-        //fpga_d_binary_cross_entropy(y_true, y_pred, delta);
-    }
 #endif
     }
 

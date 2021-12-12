@@ -21,11 +21,6 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
-//
-
-#define DEBUG_VERBOSE
-
-
 #define ENABLE_UPSIZE_SUPPORT
 #define ENABLE_CLAMP
 
@@ -33,13 +28,12 @@
 ///// EDDL is a wrapper class to ease and define the API
 ////////////////////////////////////////////////////////
 
+using namespace std;
+
 namespace eddl {
 
 extern void fpga_reshape_kernel(ConvolDescriptor *src_D, ConvolDescriptor *D, int KW, int KH, int I, int O, int CPI, int CPO);
-extern void _profile_fpga_tensor(Tensor *t);
-using namespace std;
-
-extern void build(eddl::model net, eddl::optimizer o, const vector<Loss *> &lo, const vector<Metric *> &me, CompServ *cs, bool init_weights);
+extern void _profile_fpga_tensor(char *str, Tensor *t, int format_tensor);
 
 #define MAX_ASSOCIATED_LAYERS 1000
 struct {
@@ -518,7 +512,7 @@ int get_pos_shift(model m, int l, int nl) {
   if (mult != NULL) {
     int pos;
     if (mult->val >= 1.0f) pos = abs(log2(1 / mult->val)); else pos = abs(log2(1 / mult->val));
-    #ifdef DEBUG_VERBOSE
+    #ifdef DEBUG_FPGA
     printf("shift: value %f pos %d\n", mult->val, pos);
     #endif
     return pos;
@@ -530,7 +524,7 @@ int get_dir_shift(model m, int l, int nl) {
   if (mult != NULL) {
     int dir;
     if (mult->val < 1.0f) dir = 0; /* left */ else dir = 1; /* right */
-    #ifdef DEBUG_VERBOSE
+    #ifdef DEBUG_FPGA
     printf("shift: value %f dir %d\n", mult->val, dir);
     #endif
     return dir;
@@ -551,34 +545,34 @@ float get_relu_factor(model m, int l, int nl) {
 int get_upscale(model m, int l, int nl) {return found_conv_relu_resize(m, l, nl) || found_conv_relu_maxp_resize(m, l, nl);}
 
 void get_name(model m, int l, int nl, char *str) { // TODO
-  if (found_conv_relu(m, l, nl)) strcpy(str, "conv_relu");
-  else if (found_conv(m, l, nl)) strcpy(str, "conv");
-  else if (found_conv_relu_bn_add(m, l, nl)) strcpy(str, "conv_relu_bn_add");
-  else if (found_conv_relu_bn(m, l, nl))     strcpy(str, "conv_relu_bn");
-  else if (found_conv_relu_maxp(m, l, nl))   strcpy(str, "conv_relu_maxp");
-  else if (found_pad_conv(m, l, nl))         strcpy(str, "(pad+) conv");
-  else if (found_pad_conv_relu(m, l, nl))    strcpy(str, "(pad+) conv_relu");
-  else if (found_pad_conv_leakyrelu(m, l, nl))    strcpy(str, "(pad+) conv_leakyrelu");
-  else if (found_pad_conv_bn(m, l, nl))      strcpy(str, "(pad+) conv_bn");
-  else if (found_conv_add(m, l, nl))         strcpy(str, "conv_add");
-  else if (found_conv_mult_clamp_relu(m, l, nl)) strcpy(str, "conv_mult_clamp_relu");
-  else if (found_conv_mult_clamp_relu_maxp(m, l, nl)) strcpy(str, "conv_mult_clamp_relu_maxp");
-  else if (found_conv_mult(m, l, nl)) strcpy(str, "conv_mult");
-  else if (found_conv_div(m, l, nl)) strcpy(str, "conv_div");
-  else if (found_conv_div_clamp_relu(m, l, nl)) strcpy(str, "conv_div_clamp_relu");
-  else if (found_conv_div_clamp_relu_maxp(m, l, nl)) strcpy(str, "conv_div_clamp_relu_maxp");
-  else if (found_conv_relu_maxp_resize(m, l, nl)) strcpy(str, "conv_relu_maxp_resize");
-  else if (found_conv_relu_maxp_bn(m, l, nl)) strcpy(str, "conv_relu_maxp_bn");
-  else if (found_conv_relu_resize(m, l, nl)) strcpy(str, "conv_relu_resize");
-  else if (found_dense_hlsinf(m, l, nl)) strcpy(str, "dense_hlsinf");
-  else if (found_dense_relu(m, l, nl)) strcpy(str, "dense_relu");
-  else if (found_conv_softplus_tanh_mult(m, l, nl)) strcpy(str, "conv_softplus_tanh_mult");
-  else if (found_conv_softplus_tanh_mult_add(m, l, nl)) strcpy(str, "conv_softplus_tanh_mult_add");
-  else if (found_conv_leakyrelu(m, l, nl)) strcpy(str, "conv_leakyrelu");
-  else if (found_dense_div_clamp(m, l, nl)) strcpy(str, "dense_div_clamp");
-  else if (found_dense_div_clamp_relu(m, l, nl)) strcpy(str, "dense_div_clamp_relu");
-  else if (found_conv_bn(m, l, nl)) strcpy(str, "conv_bn");
-  else strcpy(str, "?????");
+  if (found_conv_relu(m, l, nl))                        strcpy(str, "HLSinf (Conv + ReLu)");
+  else if (found_conv(m, l, nl))                        strcpy(str, "HLSinf (Conv)");
+  else if (found_conv_relu_bn_add(m, l, nl))            strcpy(str, "HLSinf (Conv + ReLu + BatchNorm + Add)");
+  else if (found_conv_relu_bn(m, l, nl))                strcpy(str, "HLSinf (Conv + ReLu + BatchNorm)");
+  else if (found_conv_relu_maxp(m, l, nl))              strcpy(str, "HLSinf (Conv + ReLu + MaxPool)");
+  else if (found_pad_conv(m, l, nl))                    strcpy(str, "HLSinf (Padding + Conv)");
+  else if (found_pad_conv_relu(m, l, nl))               strcpy(str, "HLSinf (Conv + ReLu)");
+  else if (found_pad_conv_leakyrelu(m, l, nl))          strcpy(str, "HLSinf (Padding + Conv + LeakyReLu)");
+  else if (found_pad_conv_bn(m, l, nl))                 strcpy(str, "HLSinf (Padding + Conv + BatchNorm)");
+  else if (found_conv_add(m, l, nl))                    strcpy(str, "HLSinf (Conv + Add)");
+  else if (found_conv_mult_clamp_relu(m, l, nl))        strcpy(str, "HLSinf (Conv + Mult + Clamp + ReLu)");
+  else if (found_conv_mult_clamp_relu_maxp(m, l, nl))   strcpy(str, "HLSinf (Conv + Mult + Clamp + ReLu + MaxPool)");
+  else if (found_conv_mult(m, l, nl))                   strcpy(str, "HLSinf (Conv + Mult)");
+  else if (found_conv_div(m, l, nl))                    strcpy(str, "HLSinf (Conv + Div)");
+  else if (found_conv_div_clamp_relu(m, l, nl))         strcpy(str, "HLSinf (Conv + Div + Clamp + ReLu)");
+  else if (found_conv_div_clamp_relu_maxp(m, l, nl))    strcpy(str, "HLSinf (Conv + Div + Clamp + ReLu + MaxPool)");
+  else if (found_conv_relu_maxp_resize(m, l, nl))       strcpy(str, "HLSinf (Conv + ReLu + MaxPool + Resize");
+  else if (found_conv_relu_maxp_bn(m, l, nl))           strcpy(str, "HLSinf (Conv + ReLu + MaxPool + BatchNorm)");
+  else if (found_conv_relu_resize(m, l, nl))            strcpy(str, "HLSinf (Conv + ReLu + Resize)");
+  else if (found_dense_hlsinf(m, l, nl))                strcpy(str, "HLSinf (Dense)");
+  else if (found_dense_relu(m, l, nl))                  strcpy(str, "HLSinf (Dense + ReLu");
+  else if (found_conv_softplus_tanh_mult(m, l, nl))     strcpy(str, "HLSinf (Conv + Softplus + Tanh + Mult)");
+  else if (found_conv_softplus_tanh_mult_add(m, l, nl)) strcpy(str, "HLSinf (Conv + Softplus + Tanh + Mult + Add)");
+  else if (found_conv_leakyrelu(m, l, nl))              strcpy(str, "HLSinf (Conv + LeakyReLu)");
+  else if (found_dense_div_clamp(m, l, nl))             strcpy(str, "HLSinf (Dense + Div + Clamp");
+  else if (found_dense_div_clamp_relu(m, l, nl))        strcpy(str, "HLSinf (Dense + Div + Clamp + ReLu");
+  else if (found_conv_bn(m, l, nl))                     strcpy(str, "HLSinf (Conv + BatchNorm)");
+  else                                                  strcpy(str, "?????");
 }
 int get_num_layers_fused(model m, int l, int nl) { // TODO
   if (found_input(m, l, nl)) return 1;
@@ -670,7 +664,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       int num_layers = m_src->layers.size();
 
       // we list the whole source model
-#ifdef DEBUG_VERBOSE
+#ifdef DEBUG_FPGA
       printf("-----------------------------------\n");
       printf("Layers (name, address, and its parents):\n");
       int l=0;
@@ -697,7 +691,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
 
   while (l_src<num_layers) {
 
-    #ifdef DEBUG_VERBOSE
+    #ifdef DEBUG_FPGA
     printf("inspecting from layer %d\n", l_src);
     #endif
 
@@ -721,7 +715,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
           if (parent_layer == NULL) {
             // we add a transform layer
             parent_layer = fn_get_associated_layer(cl->parent[x], 0, &dummy);
-            #ifdef DEBUG_VERBOSE
+            #ifdef DEBUG_FPGA
             printf("%3d: TRANSFORM  : prev %d\n", l_dst, dummy);
             #endif
             int copy_cpu_to_fpga = 1;
@@ -742,7 +736,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
               if (parent_layer == NULL) {
                 // we add a transform layer
                 parent_layer = fn_get_associated_layer(add_layer->parent[x], 0, &dummy);
-                #ifdef DEBUG_VERBOSE
+                #ifdef DEBUG_FPGA
                 printf("%3d: TRANSFORM  : prev %d\n", l_dst, dummy);
                 #endif
                 int copy_cpu_to_fpga = 1;
@@ -764,14 +758,13 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
           if (parent_layer == NULL) {
             // we add a transform layer
             parent_layer = fn_get_associated_layer(cl->parent[x], 1, &dummy);
-            #ifdef DEBUG_VERBOSE
+            #ifdef DEBUG_FPGA
             printf("%3d: TRANSFORM : prev %d\n", l_dst, dummy);
             #endif
             int copy_cpu_to_fpga = 0;
             int copy_fpga_to_cpu = 1;
             int transform;
             int prev_format = fn_get_associated_layer_format(cl->parent[x]);
-            printf("prev format %d\n", prev_format);
             if (prev_format == chw_format) transform = 0; else transform = 1;
             Layer *new_parent_layer = Transform(parent_layer, copy_cpu_to_fpga, copy_fpga_to_cpu, transform, 0);
             fn_set_associated_layer(cl->parent[x], new_parent_layer, 0, chw_format, cpu_device, l_dst);
@@ -816,7 +809,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
   get_name(m_src, l_src, num_layers, str_name);
   int num_layers_fused  = get_num_layers_fused(m_src, l_src, num_layers);
 
-  #ifdef DEBUG_VERBOSE
+  #ifdef DEBUG_FPGA
   printf("h %d w %d ich %d och %d kh %d kw %d sh %d sw %d pt %d pb %d pl %d pr %d relu %d relu_factor %f bn %d maxp %d avgp %d clip %d [%d, %d] shift %d pos_shift %d dir_shift %d add %d stm %d\n", h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
               enable_batch_norm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm);
   #endif
@@ -848,7 +841,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
     fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
     if (fpga_parent == NULL) fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy); // It may be a dense layer with no previous transformation needed
 
-    #ifdef DEBUG_VERBOSE
+    #ifdef DEBUG_FPGA
     printf("%3d: %s         : prev %d\n", l_dst, str_name, dummy);
     #endif  
 
@@ -887,7 +880,6 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
     associated_source_layer[l_dst].bn   = get_bn_layer(m_src, l_src, num_layers);
     associated_source_layer[l_dst].dense= get_dense_layer(m_src, l_src, num_layers);
     l_dst++;
-
  } else if (found_input(m_src, l_src, num_layers) || found_maxp(m_src, l_src, num_layers) || found_upsampling(m_src, l_src, num_layers) || found_linear(m_src, l_src, num_layers) || 
             found_conv_cpu(m_src, l_src, num_layers) || found_relu(m_src, l_src, num_layers) || found_bn(m_src, l_src, num_layers) || found_avgp(m_src, l_src, num_layers) ||
             found_reshape(m_src, l_src, num_layers) || found_dense(m_src, l_src, num_layers) || found_resize(m_src, l_src, num_layers) || found_softmax(m_src, l_src, num_layers) || found_sigmoid(m_src, l_src, num_layers) ||
@@ -925,7 +917,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       if (fpga_parent == NULL) fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
     }
 
-    #ifdef DEBUG_VERBOSE
+    #ifdef DEBUG_FPGA
     if (found_input(m_src, l_src, num_layers))      printf("%3d: I\n", l_dst);
     if (found_maxp(m_src, l_src, num_layers))       printf("%3d: Maxpool : prev %d\n", l_dst, dummy);
     if (found_avgp(m_src, l_src, num_layers))       printf("%3d: Avgpool : prev %d\n", l_dst, dummy);
@@ -1076,7 +1068,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       parent.push_back(fn_get_associated_layer(cl->parent[p], 0, &dummy_el));
       dummy_vect.push_back(dummy_el);
     }
-    #ifdef DEBUG_VERBOSE
+    #ifdef DEBUG_FPGA
     printf("%3d: ADD        : prevs", l_dst);
     for(int p = 0; p < dummy_vect.size();p++){
       printf("%d ", dummy_vect[p]);
@@ -1110,7 +1102,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
     if (device == fpga_device) {
       // The output layer runs on the FPGA, so we need to add a Transform layer and set it as the output layer
       Layer *parent_layer = fn_get_associated_layer(m_src->lout[lout], 1, &dummy);
-      #ifdef DEBUG_VERBOSE
+      #ifdef DEBUG_FPGA
       printf("%3d: TRANSFORM  : prev %d\n", l_dst, dummy);
       #endif
       int copy_cpu_to_fpga = 0;
@@ -1125,7 +1117,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
     last.push_back(l);
   }
 
-#ifdef DEBUG_VERBOSE
+#ifdef DEBUG_FPGA
   printf("input Layers \n"); for(int lin = 0; lin < first.size(); lin++) cout << first[lin]->name << "\n";
   printf("Output Layers \n"); for(int lout = 0; lout < last.size(); lout++) cout << last[lout]->name << "\n";
   printf("End parsing/creating new network\n");
@@ -1133,12 +1125,13 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
 
   // now we create the model
   net = Model({ first }, { last });
-  build(net, m_src->optimizer, m_src->losses, m_src->metrics, /*CS_FPGA({1}*/ CS_CPU({1}), false);
-  #ifdef DEBUG_VERBOSE
+  //build(net, m_src->optimizer, m_src->losses, m_src->metrics, CS_CPU({1}), false);
+  build(net, m_src->optimizer, {"none"}, {"none"}, CS_CPU({1}), false);
+  #ifdef DEBUG_FPGA
   summary(net);
   #endif
 
-#ifdef DEBUG_VERBOSE
+#ifdef DEBUG_FPGA
   // we list the whole FPGA model
   printf("-----------------------------------\n");
   printf("Layers (name, address, and its parents):\n");
@@ -1154,7 +1147,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
   }
 #endif
 
-#ifdef DEBUG_VERBOSE
+#ifdef DEBUG_FPGA
     printf("FIN MODEL\n");
 #endif
   //get_fpga_model_params(net);
@@ -1162,14 +1155,14 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
   // now we adapt the parameters (filter and bias for convs and vectors of normalization layers)
   for (int l=0; l<l_dst; l++) {
     Layer *cl = net->layers[l];
-    #ifdef DEBUG_VERBOSE
+    #ifdef DEBUG_FPGA
     printf("Layer %d \n", l);
     #endif
     if (LConv *conv = dynamic_cast<LConv*>(cl)) { 
       LConv *layer_dst = (LConv *) net->layers[l];
       LConv *layer_src = (LConv *) fn_get_cpu_equivalent_layer(layer_dst, l_dst);
 
-      #ifdef DEBUG_VERBOSE
+      #ifdef DEBUG_FPGA
       cout << "LConv adapting parameters for layer " << l<<" "<<layer_dst->name<<" (associated layer "<< layer_src->name<<")\n";
       #endif
 
@@ -1215,7 +1208,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       LBatchNorm *layer_dst = (LBatchNorm *) net->layers[l];
       LBatchNorm *layer_src = (LBatchNorm *) fn_get_cpu_equivalent_layer(layer_dst, l_dst);
 
-      #ifdef DEBUG_VERBOSE
+      #ifdef DEBUG_FPGA
       cout << "LBatchNormalization adapting parameters for layer " << l<<" "<<layer_dst->name<<" (associated layer "<< layer_src->name<<")\n";
       #endif
 
@@ -1253,7 +1246,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       LDense *layer_src_dense = (LDense *) fn_get_cpu_equivalent_dense_layer(layer_dst, l_dst);
       LBatchNorm *layer_src_bn = (LBatchNorm *) fn_get_cpu_equivalent_bn_layer(layer_dst, l_dst);
 
-      #ifdef DEBUG_VERBOSE
+      #ifdef DEBUG_FPGA
       cout << "LHLSinf adapting parameters for layer" << l << " (" << layer_dst->name << ")\n";
       if (layer_src_conv != NULL) cout << "   associated conv layer " << layer_src_conv->name << "\n";
       if (layer_src_bn != NULL)   cout << "   associated bn layer " << layer_src_bn->name << "\n";
@@ -1319,7 +1312,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       LDense *layer_dst = (LDense *) net->layers[l]; 
       LDense *layer_src = (LDense *) fn_get_cpu_equivalent_layer(layer_dst,l_dst);
 
-      #ifdef DEBUG_VERBOSE
+      #ifdef DEBUG_FPGA
       cout << "LDense adapting parameters for layer " << l<<" "<<layer_dst->name<<" (associated layer "<< layer_src->name<<")\n";
       #endif
       //w
@@ -1334,7 +1327,7 @@ model model_for_fpga(model m_src, int kernel_version, int kernel_subversion) {
       }
     }
 
-    #ifdef DEBUG_VERBOSE
+    #ifdef DEBUG_FPGA
     printf("End adapting parameters\n");
     #endif
     return net;

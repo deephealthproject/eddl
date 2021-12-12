@@ -16,11 +16,6 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
-
 using namespace std;
 
 PROFILING_ENABLE_EXTERN(fill_rand_uniform);
@@ -40,11 +35,6 @@ void Tensor::fill_rand_uniform_(float v) {
       {
         gpu_rand_uniform(this,v);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_rand_uniform(this,v);
-    }
 #endif
 
     PROFILING_FOOTER(fill_rand_uniform);
@@ -70,11 +60,6 @@ void Tensor::fill_rand_signed_uniform_(float v) {
         gpu_rand_signed_uniform(this,v);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_rand_signed_uniform(this, v);
-    }
-#endif
 
     PROFILING_FOOTER(fill_rand_signed_uniform);
 }
@@ -98,11 +83,6 @@ void Tensor::fill_rand_normal_(float m, float s, bool fast_math) {
         gpu_rand_normal(this,m,s);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_rand_normal(this, m, s, fast_math);
-    }
-#endif
 
     PROFILING_FOOTER(fill_rand_normal);
 }
@@ -125,11 +105,6 @@ void Tensor::fill_rand_binary_(float v) {
       {
         gpu_rand_binary(this,v);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_rand_binary(this, v);
-    }
 #endif
 
     PROFILING_FOOTER(fill_rand_binary);

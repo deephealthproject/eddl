@@ -19,7 +19,7 @@ float mb_memory_needed;
 
 void _profile_funcname(int i, char *name) {
   switch(i) {
-case _CPU_ALL             : strcpy(name, "all"); break; 
+case _CPU_ALL              : strcpy(name, "all"); break; 
 case _CPU_ANY              : strcpy(name, "any"); break;
 case _CPU_ISFINITE         : strcpy(name, "isfinite"); break;
 case _CPU_ISINF            : strcpy(name, "isinf"); break;
