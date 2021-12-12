@@ -2624,6 +2624,20 @@ namespace eddl {
     */
     void download_flickr();
 
+    ///////////////////////////////////////
+    //  HLSinf accelerators
+    ///////////////////////////////////////
+    /**
+      *  @brief Downloads HLSinf accelerator.
+      *
+      *  @param version HLSinf accelerator version
+      *  @param subversion HLSinf accelerator subversion
+      *
+      *  @return     (void) The binary files of HLSinf accelerator
+    */
+    void download_hlsinf(int version, int subversion);
+
+
     // Auxiliary function
     layer _expand3d_to_4d(layer parent, string name);
 }

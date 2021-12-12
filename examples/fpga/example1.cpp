@@ -7,7 +7,7 @@
 * All rights reserved
 */
 
-#ifndef EDDL_WINDOWS
+#ifndef _WINDOWS
 #include <sys/time.h>
 #endif
 
@@ -22,6 +22,8 @@ int main(int argc, char **argv) {
   layer in, conv;
   model net, net_fpga;
   Tensor *x;
+
+  download_hlsinf(1, 0);
 
   // Network
   in = Input({64, 256, 256});
