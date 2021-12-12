@@ -39,7 +39,6 @@ int main(int argc, char **argv) {
   forward(net_fpga, {x}); 
 
   // output for fpga
-  printf("\n\n------------------------------------------------\n");
   summary(net_fpga);
   show_profile();
 
@@ -48,7 +47,6 @@ int main(int argc, char **argv) {
   forward(net, {x}); 
 
   // output for cpu
-  printf("\n\n------------------------------------------------\n");
   summary(net);
   show_profile();
   

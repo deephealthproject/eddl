@@ -49,7 +49,7 @@ int gettimeofday(struct timeval* tp, struct timezone* tzp);
     prof_##fn##_calls += 1;
 
 #define PROFILING_PRINTF(fn) \
-    if (prof_##fn##_calls > 0) printf("  %-50s: %8lld calls, %12lld us , %10.4f us/call\n", #fn, \
+    if (prof_##fn##_calls > 0) printf("| %-50s: %8lld calls, %12lld us , %12.4f us/call |\n", #fn, \
                     prof_##fn##_calls, prof_##fn##_time, \
                     (float) prof_##fn##_time / (float) prof_##fn##_calls);
 
