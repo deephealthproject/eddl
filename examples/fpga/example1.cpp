@@ -7,7 +7,9 @@
 * All rights reserved
 */
 
+#ifndef EDDL_WINDOWS
 #include <sys/time.h>
+#endif
 
 #include "eddl/apis/eddl.h"
 
