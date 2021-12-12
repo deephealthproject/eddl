@@ -7,18 +7,12 @@
 * All rights reserved
 */
 
-#ifndef _WINDOWS
-#include <sys/time.h>
-#endif
-
 #include "eddl/apis/eddl.h"
 
 using namespace eddl;
 
 int main(int argc, char **argv) { 
 
-  struct timeval time1, time2;
-  unsigned long long time_forward;
   layer in, conv;
   model net, net_fpga;
   Tensor *x;
@@ -42,32 +36,25 @@ int main(int argc, char **argv) {
 
   // forward on FPGA
   reset_profile();
-  gettimeofday(&time1, NULL);
   forward(net_fpga, {x}); 
-  gettimeofday(&time2, NULL);
-  time_forward = ((time2.tv_sec - time1.tv_sec) * 1000000) + (time2.tv_usec - time1.tv_usec);
 
   // output for fpga
   printf("\n\n------------------------------------------------\n");
-  printf("time forward fpga: %12llu usec\n", time_forward);
   summary(net_fpga);
   show_profile();
 
   // forward on CPU
   reset_profile();
-  gettimeofday(&time1, NULL);
   forward(net, {x}); 
-  gettimeofday(&time2, NULL);
-  time_forward = ((time2.tv_sec - time1.tv_sec) * 1000000) + (time2.tv_usec - time1.tv_usec);
 
   // output for cpu
   printf("\n\n------------------------------------------------\n");
-  printf("time forward cpu:  %12llu usec\n", time_forward);
   summary(net);
   show_profile();
   
-  delete net;
   delete x;
+  delete net;
+  delete net_fpga;
   
   return 0;
 }
