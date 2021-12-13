@@ -66,6 +66,7 @@ int init_distributed(int *argc, char ***argv) {
 
     id = init_MPI();
     //init_NCCL();
+    return id;
 }
 
 int init_MPI() {
@@ -108,7 +109,7 @@ int init_MPI() {
     return id;
 }
 
-int init_NCCL(int nr_gpus) {
+void init_NCCL(int nr_gpus) {
     int id;
     int n_procs;
 
@@ -130,8 +131,6 @@ int init_NCCL(int nr_gpus) {
     if (id == 0)
         fprintf(stderr, "[DISTR] NCCL initialized %d procs\n", n_procs);
 #endif
-
-    return id;
 }
 
 void set_method_distributed(int method, int batch_avg, int epoch_avg) {
@@ -441,6 +440,7 @@ void gpu_layer_print(Net* net, int ii) {
     float * myptr;
     int count;
 
+#ifdef cCUDA
     for (int jj = 0; jj < net->snets[0]->layers[ii]->params.size(); jj++) {
         myptr = net->snets[0]->layers[ii]->params[jj]->ptr;
         count = net->snets[0]->layers[ii]->params[jj]->size;
@@ -457,6 +457,8 @@ void gpu_layer_print(Net* net, int ii) {
         printf("\n\n");
         free(cpu_buffer);
     }
-
+#else
+    printf("Error: CUDA is not available\n");
+#endif
 
 }

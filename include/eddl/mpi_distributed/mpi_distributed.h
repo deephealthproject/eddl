@@ -137,7 +137,7 @@ int init_distributed(int *argc, char ***argv);
 int init_distributed();
 
 int init_MPI();
-int init_NCCL(int nr_gpus);
+void init_NCCL(int nr_gpus);
 
 
 /**
