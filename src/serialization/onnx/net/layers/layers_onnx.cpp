@@ -179,13 +179,13 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_dropout_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::MAXPOOL:
-      new_layer = build_maxpool_layer(node, output_node_map, dev, mem);
+      new_layer = build_maxpool_layer(node, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::GLOBMAXPOOL:
       new_layer = build_globalmaxpool_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::AVGPOOL:
-      new_layer = build_averagepool_layer(node, output_node_map, dev, mem);
+      new_layer = build_averagepool_layer(node, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::GLOBAVGPOOL:
       new_layer = build_globalaveragegpool_layer(node, output_node_map, dev, mem);
