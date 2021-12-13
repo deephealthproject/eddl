@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-#include <mpi.h>
+
 
 #include "eddl/apis/eddl.h"
 
