@@ -1,84 +1,122 @@
 
-#include "eddl/system_info.h"
+
+#include <fstream>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
-#ifdef EDDL_LINUX
-#include <unistd.h>
-#endif
+static void error_fatal
+(
+        char *msg_format,
+        char *msg_value
+        ) {
+    fprintf(stderr, msg_format, msg_value);
+    exit(1);
+} /* end error_fatal */
 
-#ifdef EDDL_APPLE
-#include <unistd.h>
-#endif
-
-#ifdef EDDL_WINDOWS
-#include "getopt.h"
-// yes, it is very ugly, but it is a workaround for Windows
-#include "getopt.c"
-#endif
 
 void process_arguments(int argc, char** argv, char* path, char* tr_images,
-        char* tr_labels, char* ts_images, char* ts_labels, 
-        int* epochs, int* batch_size, int* num_classes, 
-        int* channels, int* width, int* height, 
+        char* tr_labels, char* ts_images, char* ts_labels,
+        int* epochs, int* batch_size, int* num_classes,
+        int* channels, int* width, int* height,
         float* lr, int* initial_mpi_avg, int* chunks, int* use_bi8,
         int* use_distr_dataset) {
 
-    int ch;
-    int opterr = 0;
-    
-    while ((ch = getopt(argc, argv, "m:w:h:c:z:b:e:a:l:s:d8")) != -1) {
-        switch (ch) {
-            case 'm':
-                printf("model path:'%s'\n", optarg);
-                sprintf(path, "%s", optarg);
-                break;
-            case 'w':
-                printf("width:'%s'\n", optarg);
-                *width = atoi(optarg);
-                break;
-            case 'h':
-                printf("height:'%s'\n", optarg);
-                *height = atoi(optarg);
-                break;
-            case 'z':
-                printf("channels:'%s'\n", optarg);
-                *channels = atoi(optarg);
-                break;
-            case 'c':
-                printf("classes:'%s'\n", optarg);
-                *num_classes = atoi(optarg);
-                break;
-            case 'b':
-                printf("batch size:'%s'\n", optarg);
-                *batch_size = atoi(optarg);
-                break;
-            case 'e':
-                printf("epochs:'%s'\n", optarg);
-                *epochs = atoi(optarg);
-                break;
-            case 'a':
-                printf("mpi-average:'%s'\n", optarg);
-                *initial_mpi_avg = atoi(optarg);
-                break;
-            case 'l':
-                printf("learning-rate:'%s'\n", optarg);
-                *lr = std::atof(optarg);
-                break;
-            case 's':
-                printf("use-chunks:'%s'\n", "yes");
-                *chunks = atoi(optarg);
-                break;
-            case 'd':
-                printf("use-distr_dataset:'%s'\n", "yes");
-                *use_distr_dataset = 1;
-                break;
-            case '8':
-                printf("8-bit dataset format:'%s'\n", "yes");
-                *use_bi8 = 1;
-                break;
-            default:
-                printf("other %c\n", ch);
+    int argn;
+    char *uso =
+            "\nError:\n"
+            "%s -m path-to-model -w width -h height -c channels -z nr-of-classes -b batch-size \n"
+            "\t -e nr-of-epochs -a batch-average -l learning-rate -s nr-of-parts \n"
+            "\t -d (distr dataset) -8 (8-bit dataset bin format)\n"
+            "";
+
+    argn = 1;
+
+    while (argn < argc) {
+        if (!strncmp(argv[argn], "-m", 2)) {
+            argn++;
+            if (argn == argc)
+                 error_fatal(uso, argv[0]);
+
+            sprintf(path, "%s", argv[argn]);
+            printf("model path:'%s'\n", path);
+
+            std::ifstream ifile(path);
+            if (!ifile) {
+                fprintf(stderr, "%s: Model not found\n", argv[0], path);
+                error_fatal(uso, argv[0]);
+            } /* endif */
+        } else if (!strncmp(argv[argn], "-w", 2)) {
+            argn++;
+            if (argn == argc)
+                    error_fatal(uso, argv[0]);
+
+            *width = atoi(argv[argn]);
+            printf("width:'%d'\n", *width);
+        } else if (!strncmp(argv[argn], "-h", 2)) {
+            argn++;
+            if (argn == argc)
+                    error_fatal(uso, argv[0]);
+
+            *height = atoi(argv[argn]);
+            printf("height:'%d'\n", *height);
+        } else if (!strncmp(argv[argn], "-z", 2)) {
+            argn++;
+            if (argn == argc)
+                    error_fatal(uso, argv[0]);
+
+            *channels = atoi(argv[argn]);
+            printf("channels:'%d'\n", *channels);
+        } else if (!strncmp(argv[argn], "-c", 2)) {
+            argn++;
+            if (argn == argc)
+                    error_fatal(uso, argv[0]);
+
+            *num_classes = atoi(argv[argn]);
+            printf("classes:'%d'\n", *num_classes);
+        } else if (!strncmp(argv[argn], "-b", 2)) {
+            argn++;
+
+            *batch_size = atoi(argv[argn]);
+            printf("batch size:'%d'\n", *batch_size);
+        } else if (!strncmp(argv[argn], "-e", 2)) {
+            argn++;
+            if (argn == argc)
+                    error_fatal(uso, argv[0]);
+
+            *epochs = atoi(argv[argn]);
+            printf("epochs:'%d'\n", *epochs);
+        } else if (!strncmp(argv[argn], "-a", 2)) {
+            argn++;
+            if (argn == argc)
+                    error_fatal(uso, argv[0]);
+
+            *initial_mpi_avg = atoi(argv[argn]);
+            printf("mpi-average:'%d'\n", *initial_mpi_avg);
+        } else if (!strncmp(argv[argn], "-l", 2)) {
+            argn++;
+            if (argn == argc)
+                    error_fatal(uso, argv[0]);
+
+            *lr = atof(argv[argn]);
+            printf("learning-rate:'%f'\n", *lr);
+        } else if (!strncmp(argv[argn], "-l", 2)) {
+            argn++;
+if (argn == argc)
+                    error_fatal(uso, argv[0]);
+            *chunks = atoi(argv[argn]);
+        } else if (!strncmp(argv[argn], "-l", 2)) {
+            argn++;
+if (argn == argc)
+                    error_fatal(uso, argv[0]);
+            
+            *chunks = atoi(argv[argn]);
+            printf("nr of chunks:'%d'\n", *chunks);
+        } else if (!strncmp(argv[argn], "-l", 2)) {
+            *use_distr_dataset = 1;
+            printf("use-distr_dataset:'%s'\n", "yes");
+        } else if (!strncmp(argv[argn], "-8", 2)) {
+            *use_bi8 = 1;
         }
         if (*use_bi8) {
             sprintf(tr_images, "%s/%s", path, "train-images.bi8");
@@ -91,5 +129,8 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
             sprintf(ts_images, "%s/%s", path, "test-images.bin");
             sprintf(ts_labels, "%s/%s", path, "test-labels.bin");
         }
+    argn++;
     }
+   
+    exit(0);
 }
