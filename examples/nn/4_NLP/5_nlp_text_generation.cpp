@@ -56,7 +56,8 @@ int main(int argc, char **argv) {
     download_flickr();
 
     // Settings
-    int epochs = testing ? 2 : 50;
+    //int epochs = testing ? 2 : 50;
+    int epochs = testing ? 2 : 4;
     int batch_size = 24;
 
     int olength=20;
@@ -177,7 +178,7 @@ int main(int argc, char **argv) {
     Tensor *timage=new Tensor({x_train->shape[0], 512}); //images reshape
 
     model cnn=Model({image_in},{lreshape});
-
+/*
     cs = nullptr;
     if (use_cpu) {
         cs = CS_CPU();
@@ -187,7 +188,7 @@ int main(int argc, char **argv) {
         // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
         // cs = CS_CPU();
     }
-
+*/
     build(cnn,
           adam(0.001), // not relevant
           {"mse"}, // not relevant
@@ -239,7 +240,7 @@ int main(int argc, char **argv) {
     out = Softmax(Dense(lstm, outvs));
 
     model decoder=Model({ldecin,image,lstate},{out});
-
+/*
     cs = nullptr;
     if (use_cpu) {
         cs = CS_CPU();
@@ -249,7 +250,8 @@ int main(int argc, char **argv) {
         // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
         // cs = CS_CPU();
     }
-    // Build model
+
+ */     // Build model
     build(decoder,
           adam(0.001), // not relevant
           {"softmax_cross_entropy"}, // not relevant

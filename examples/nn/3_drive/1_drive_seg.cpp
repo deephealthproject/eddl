@@ -115,14 +115,14 @@ int main(int argc, char **argv){
 
     // Build model for DA
     build(danet);
-    if (! testing) toGPU(danet,{1,1},10,"low_mem");   
+    if (! testing) toGPU(danet,{1},"low_mem");   
     summary(danet);
 
     compserv cs = nullptr;
     if (use_cpu) {
         cs = CS_CPU();
     } else {
-        cs = CS_GPU({1,1}, 100, "low_mem"); // two GPU with weight sync every 10 batches
+        cs = CS_GPU({1},"low_mem"); // one GPU
     }
     //////////////////////////////////////////////////////////////
     // Build SegNet

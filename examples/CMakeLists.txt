@@ -148,6 +148,9 @@ target_link_libraries(drive_seg eddl)
 # EXAMPLES: NLP ****************************************************
 add_executable(nlp_sentiment_rnn "nn/4_NLP/1_nlp_sentiment_rnn.cpp")
 target_link_libraries(nlp_sentiment_rnn eddl)
+#distributed
+add_executable(nlp_sentiment_rnn_distr "nn/4_NLP/1_nlp_sentiment_rnn_distr.cpp")
+target_link_libraries(nlp_sentiment_rnn_distr eddl)
 
 add_executable(nlp_sentiment_lstm "nn/4_NLP/2_nlp_sentiment_lstm.cpp")
 target_link_libraries(nlp_sentiment_lstm eddl)
@@ -157,12 +160,21 @@ target_link_libraries(nlp_sentiment_gru eddl)
 
 add_executable(nlp_machine_translation "nn/4_NLP/3_nlp_machine_translation.cpp")
 target_link_libraries(nlp_machine_translation eddl)
+#distributed
+add_executable(nlp_machine_translation_distr "nn/4_NLP/3_nlp_machine_translation_distr.cpp")
+target_link_libraries(nlp_machine_translation_distr eddl)
 
 add_executable(nlp_video_to_labels "nn/4_NLP/4_nlp_video_to_labels.cpp")
 target_link_libraries(nlp_video_to_labels eddl)
+#distributed
+add_executable(nlp_video_to_labels_distr "nn/4_NLP/4_nlp_video_to_labels_distr.cpp")
+target_link_libraries(nlp_video_to_labels_distr eddl)
 
 add_executable(nlp_text_generation "nn/4_NLP/5_nlp_text_generation.cpp")
 target_link_libraries(nlp_text_generation eddl)
+#distributed
+add_executable(nlp_text_generation_distr "nn/4_NLP/5_nlp_text_generation_distr.cpp")
+target_link_libraries(nlp_text_generation_distr eddl)
 
 
 # EXAMPLES: SYNTHETIC IMAGENET ****************************************************
