@@ -146,8 +146,6 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
   else if (format_tensor == HLSINF_APUI8) size = T->size * sizeof(ap_uint<8>);
   else {printf("format not supported in profile\n"); exit(1);}
 
-  //if (T->fpga_ptr == NULL) T->fpga_ptr = fpga_create_memory(size);
-
   float *buf = (float *)malloc(size);
   fpga_copy_memory_from_fpga((cl::Buffer *)T->fpga_ptr, buf, size);
 
@@ -181,7 +179,6 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
   printf(" Min %8.4f Max %8.4f Avg %8.4f\n", min, max, avg);
   #endif
 }
-
 
 // _profile_fpga_tensor_print(). Prints some values of the tensor
 void _profile_fpga_tensor_print(Tensor *T) {
@@ -422,105 +419,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
 // ------------------------------------------------------------------------------------------------------------------------
 // Copy operations
 //
-void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {fpga_copy_to_fpga_good(nptr, A, cvt);}
 
-void fpga_copy_to_fpga_good(float *nptr, Tensor *A, int cvt) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("FPGA_DEBUG: Copy CPU->FPGA. Addr: %p->%p. tensor_id %4d. Size %4d\n", nptr, A->fpga_ptr, A->fpga_tensor_id, A->size);
-  #endif
-
-  #ifdef PRECISION_CONVERSION
-  if (cvt) {
-    _debug_fpga_funcs("Conversion (CPU->FPGA)");
-    PROFILING_HEADER(Precision_Conversion);
-    // We allocate a buffer to convert from floats to fpga_data_type
-    fpga_data_type *cpu_buff = (fpga_data_type*)malloc(A->size*sizeof(fpga_data_type));
-    for (int x=0; x<A->size; x++) {
-      float value = nptr[x];
-      if (nptr[x] < MIN_FLOAT_PRECISION_CONVERSION) value = MIN_FLOAT_PRECISION_CONVERSION;
-      if (nptr[x] > MAX_FLOAT_PRECISION_CONVERSION) value = MAX_FLOAT_PRECISION_CONVERSION;
-      cpu_buff[x] = fpga_data_type(value);
-    }
-    PROFILING_FOOTER(Precision_Conversion);
-    // now we copy into the FPGA
-    cl_int err;
-    cl::Event blocking_event;
-    cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
-    PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), cpu_buff, nullptr, &blocking_event));
-    (*q).finish();
-    PROFILING_FOOTER(FPGA_WRITE);
-    free(cpu_buff);
-  } else {
-    // regular copy from CPU to FPGA with no precision conversion
-    cl_int err;
-    cl::Event blocking_event;
-    cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
-    PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &blocking_event));
-    (*q).finish();
-    PROFILING_FOOTER(FPGA_WRITE);
-  }
-  #else
-  // regular copy from CPU to FPGA with no precision conversion
-  cl_int err;
-  cl::Event blocking_event;
-  cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
-  PROFILING_HEADER(FPGA_WRITE);
-  OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &blocking_event));
-  (*q).finish();
-  PROFILING_FOOTER(FPGA_WRITE);
-  #endif
-}
-
-void fpga_copy_from_fpga_good(Tensor *A,float *nptr, int cvt) {fpga_copy_from_fpga(A, nptr, cvt);}
-
-void fpga_copy_from_fpga(Tensor *A,float *nptr, int cvt) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("FPGA_DEBUG: Copy FPGA->CPU. Addr: %p->%p. tensor_id %4d. Size %4d\n", A->fpga_ptr, nptr, A->fpga_tensor_id, A->size);
-  #endif
-
-  #ifdef PRECISION_CONVERSION
-  // We read from the FPGA to a temporal buffer and then convert the precision
-  if (cvt) {
-    _debug_fpga_funcs("Conversion (FPGA->CPU)");
-    fpga_data_type *cpu_buff = (fpga_data_type*)malloc(A->size * sizeof(fpga_data_type));
-    cl_int err;
-    cl::Event event;
-    PROFILING_HEADER(FPGA_READ);
-    OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(fpga_data_type), cpu_buff, nullptr, &event));
-    (*q).finish();
-    PROFILING_FOOTER(FPGA_READ);
-    PROFILING_HEADER(Precision_Conversion);
-    // now we perform the precision conversion
-    for (int x=0; x<A->size; x++) nptr[x] = float(cpu_buff[x]);
-    free(cpu_buff);
-    PROFILING_FOOTER(Precision_Conversion);
-  } else {
-    // regular copy from FPGA to CPU with no precision conversion
-    cl_int err;
-    cl::Event event;
-    PROFILING_HEADER(FPGA_READ);
-    OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &event));
-    (*q).finish();
-    PROFILING_FOOTER(FPGA_READ);
-  }
-  #else
-  // regular copy from FPGA to CPU with no precision conversion
-  cl_int err;
-  cl::Event event;
-  PROFILING_HEADER(FPGA_READ);
-  OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &event));
-  (*q).finish();
-  PROFILING_FOOTER(FPGA_READ);
-  #endif
-}
-
-void fpga_destroy_memory(cl::Buffer *fpga_ptrI) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("   destroy_memory buffer in FPGA\n");
-  #endif
-}
 
 cl::Buffer *fpga_create_memory(long int size) {
   cl::Buffer *buffer;

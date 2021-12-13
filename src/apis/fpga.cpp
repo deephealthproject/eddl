@@ -520,7 +520,7 @@ int get_pos_shift(model m, int l, int nl) {
   if (mult != NULL) {
     int pos;
     if (mult->val >= 1.0f) pos = abs(log2(1 / mult->val)); else pos = abs(log2(1 / mult->val));
-    #ifdef DEBUG_FPGA
+    #ifdef FPGA_DEBUG
     printf("shift: value %f pos %d\n", mult->val, pos);
     #endif
     return pos;
@@ -532,7 +532,7 @@ int get_dir_shift(model m, int l, int nl) {
   if (mult != NULL) {
     int dir;
     if (mult->val < 1.0f) dir = 0; /* left */ else dir = 1; /* right */
-    #ifdef DEBUG_FPGA
+    #ifdef FPGA_DEBUG
     printf("shift: value %f dir %d\n", mult->val, dir);
     #endif
     return dir;
@@ -671,7 +671,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
       int num_layers = m_src->layers.size();
 
       // we list the whole source model
-#ifdef DEBUG_FPGA
+#ifdef FPGA_DEBUG
       printf("-----------------------------------\n");
       printf("Layers (name, address, and its parents):\n");
       int l=0;
@@ -698,7 +698,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
 
   while (l_src<num_layers) {
 
-    #ifdef DEBUG_FPGA
+    #ifdef FPGA_DEBUG
     printf("inspecting from layer %d\n", l_src);
     #endif
 
@@ -722,7 +722,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
           if (parent_layer == NULL) {
             // we add a transform layer
             parent_layer = fn_get_associated_layer(cl->parent[x], 0, &dummy);
-            #ifdef DEBUG_FPGA
+            #ifdef FPGA_DEBUG
             printf("%3d: TRANSFORM  : prev %d\n", l_dst, dummy);
             #endif
             int copy_cpu_to_fpga = 1;
@@ -743,7 +743,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
               if (parent_layer == NULL) {
                 // we add a transform layer
                 parent_layer = fn_get_associated_layer(add_layer->parent[x], 0, &dummy);
-                #ifdef DEBUG_FPGA
+                #ifdef FPGA_DEBUG
                 printf("%3d: TRANSFORM  : prev %d\n", l_dst, dummy);
                 #endif
                 int copy_cpu_to_fpga = 1;
@@ -765,7 +765,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
           if (parent_layer == NULL) {
             // we add a transform layer
             parent_layer = fn_get_associated_layer(cl->parent[x], 1, &dummy);
-            #ifdef DEBUG_FPGA
+            #ifdef FPGA_DEBUG
             printf("%3d: TRANSFORM : prev %d\n", l_dst, dummy);
             #endif
             int copy_cpu_to_fpga = 0;
@@ -816,7 +816,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
   get_name(m_src, l_src, num_layers, str_name);
   int num_layers_fused  = get_num_layers_fused(m_src, l_src, num_layers);
 
-  #ifdef DEBUG_FPGA
+  #ifdef FPGA_DEBUG
   printf("h %d w %d ich %d och %d kh %d kw %d sh %d sw %d pt %d pb %d pl %d pr %d relu %d relu_factor %f bn %d maxp %d avgp %d clip %d [%d, %d] shift %d pos_shift %d dir_shift %d add %d stm %d\n", h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
               enable_batch_norm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm);
   #endif
@@ -848,7 +848,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
     fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
     if (fpga_parent == NULL) fpga_parent = fn_get_associated_layer(cl->parent[0], 0, &dummy); // It may be a dense layer with no previous transformation needed
 
-    #ifdef DEBUG_FPGA
+    #ifdef FPGA_DEBUG
     printf("%3d: %s         : prev %d\n", l_dst, str_name, dummy);
     #endif  
 
@@ -924,7 +924,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
       if (fpga_parent == NULL) fpga_parent = fn_get_associated_layer(cl->parent[0], 1, &dummy);
     }
 
-    #ifdef DEBUG_FPGA
+    #ifdef FPGA_DEBUG
     if (found_input(m_src, l_src, num_layers))      printf("%3d: I\n", l_dst);
     if (found_maxp(m_src, l_src, num_layers))       printf("%3d: Maxpool : prev %d\n", l_dst, dummy);
     if (found_avgp(m_src, l_src, num_layers))       printf("%3d: Avgpool : prev %d\n", l_dst, dummy);
@@ -1075,7 +1075,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
       parent.push_back(fn_get_associated_layer(cl->parent[p], 0, &dummy_el));
       dummy_vect.push_back(dummy_el);
     }
-    #ifdef DEBUG_FPGA
+    #ifdef FPGA_DEBUG
     printf("%3d: ADD        : prevs", l_dst);
     for(int p = 0; p < dummy_vect.size();p++){
       printf("%d ", dummy_vect[p]);
@@ -1109,7 +1109,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
     if (device == fpga_device) {
       // The output layer runs on the FPGA, so we need to add a Transform layer and set it as the output layer
       Layer *parent_layer = fn_get_associated_layer(m_src->lout[lout], 1, &dummy);
-      #ifdef DEBUG_FPGA
+      #ifdef FPGA_DEBUG
       printf("%3d: TRANSFORM  : prev %d\n", l_dst, dummy);
       #endif
       int copy_cpu_to_fpga = 0;
@@ -1124,7 +1124,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
     last.push_back(l);
   }
 
-#ifdef DEBUG_FPGA
+#ifdef FPGA_DEBUG
   printf("input Layers \n"); for(int lin = 0; lin < first.size(); lin++) cout << first[lin]->name << "\n";
   printf("Output Layers \n"); for(int lout = 0; lout < last.size(); lout++) cout << last[lout]->name << "\n";
   printf("End parsing/creating new network\n");
@@ -1133,11 +1133,11 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
   // now we create the model
   net = Model({ first }, { last });
   build(net); 
-  #ifdef DEBUG_FPGA
+  #ifdef FPGA_DEBUG
   summary(net);
   #endif
 
-#ifdef DEBUG_FPGA
+#ifdef FPGA_DEBUG
   // we list the whole FPGA model
   printf("-----------------------------------\n");
   printf("Layers (name, address, and its parents):\n");
@@ -1153,7 +1153,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
   }
 #endif
 
-#ifdef DEBUG_FPGA
+#ifdef FPGA_DEBUG
     printf("FIN MODEL\n");
 #endif
   //get_fpga_model_params(net);
@@ -1161,14 +1161,14 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
   // now we adapt the parameters (filter and bias for convs and vectors of normalization layers)
   for (int l=0; l<l_dst; l++) {
     Layer *cl = net->layers[l];
-    #ifdef DEBUG_FPGA
+    #ifdef FPGA_DEBUG
     printf("Layer %d \n", l);
     #endif
     if (LConv *conv = dynamic_cast<LConv*>(cl)) { 
       LConv *layer_dst = (LConv *) net->layers[l];
       LConv *layer_src = (LConv *) fn_get_cpu_equivalent_layer(layer_dst, l_dst);
 
-      #ifdef DEBUG_FPGA
+      #ifdef FPGA_DEBUG
       cout << "LConv adapting parameters for layer " << l<<" "<<layer_dst->name<<" (associated layer "<< layer_src->name<<")\n";
       #endif
 
@@ -1188,12 +1188,9 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
 
       // bias
       collectTensor(layer_src, "param", 1);
-      printf("7\n");
       if (layer_src->cd->bias->size != layer_dst->cd->bias->size) tensor_padded(layer_src->cd->bias, layer_dst->cd->bias);
       else Tensor::copy(layer_src->cd->bias, layer_dst->cd->bias);
-      printf("8\n");
       distributeTensor(layer_dst, "param", 1);
-      printf("9\n");
 
       //distribute bias to cpu
       sn=layer_dst->net;
@@ -1202,19 +1199,16 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
           sl=sn->snets[0]->layers[j];
           break;
       }
-      printf("10\n");
 
       //copy to cpu memory
       //cpu_copy(layer_dst->params[0],sl->params[0]); //filter
       //cpu_copy(layer_dst->params[1],sl->params[1]); //bias
 
-      printf("11\n");
-
     } else if (LBatchNorm *bn = dynamic_cast<LBatchNorm*>(cl)) { 
       LBatchNorm *layer_dst = (LBatchNorm *) net->layers[l];
       LBatchNorm *layer_src = (LBatchNorm *) fn_get_cpu_equivalent_layer(layer_dst, l_dst);
 
-      #ifdef DEBUG_FPGA
+      #ifdef FPGA_DEBUG
       cout << "LBatchNormalization adapting parameters for layer " << l<<" "<<layer_dst->name<<" (associated layer "<< layer_src->name<<")\n";
       #endif
 
@@ -1252,7 +1246,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
       LDense *layer_src_dense = (LDense *) fn_get_cpu_equivalent_dense_layer(layer_dst, l_dst);
       LBatchNorm *layer_src_bn = (LBatchNorm *) fn_get_cpu_equivalent_bn_layer(layer_dst, l_dst);
 
-      #ifdef DEBUG_FPGA
+      #ifdef FPGA_DEBUG
       cout << "LHLSinf adapting parameters for layer" << l << " (" << layer_dst->name << ")\n";
       if (layer_src_conv != NULL) cout << "   associated conv layer " << layer_src_conv->name << "\n";
       if (layer_src_bn != NULL)   cout << "   associated bn layer " << layer_src_bn->name << "\n";
@@ -1318,7 +1312,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
       LDense *layer_dst = (LDense *) net->layers[l]; 
       LDense *layer_src = (LDense *) fn_get_cpu_equivalent_layer(layer_dst,l_dst);
 
-      #ifdef DEBUG_FPGA
+      #ifdef FPGA_DEBUG
       cout << "LDense adapting parameters for layer " << l<<" "<<layer_dst->name<<" (associated layer "<< layer_src->name<<")\n";
       #endif
       //w
@@ -1330,10 +1324,19 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
       collectTensor(layer_src, "param", 1);
       tensor_padded(layer_src->bias, layer_dst->bias);
       distributeTensor(layer_dst, "param", 1);
-      }
+    } else if (LDropout *dl = dynamic_cast<LDropout *>(cl)) {
+      LDropout *layer_dst = (LDropout *) net->layers[l];
+      LDropout *layer_src = (LDropout *) fn_get_cpu_equivalent_layer(layer_dst, l_dst);
+
+      #ifdef FPGA_DEBUG
+      cout << "LDropout adapting mask for layer " << l<<" "<<layer_dst->name<<" (associated layer "<< layer_src->name<<")\n";
+      #endif
+      // mask
+      tensor_padded(layer_src->mask, layer_dst->mask);
+    }
     }
 
-    #ifdef DEBUG_FPGA
+    #ifdef FPGA_DEBUG
     printf("End adapting parameters\n");
     #endif
     return net;
