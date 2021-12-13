@@ -1714,7 +1714,7 @@ namespace eddl {
 
         if (!exist(name)) {
             cout<<name<<" x\n";
-            cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link+"/"+name;
+            cmd = "wget -q  https://www.dropbox.com/s/"+link+"/"+name;
             int status = system(cmd.c_str());
             if (status < 0){
                 msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
@@ -1993,7 +1993,7 @@ namespace eddl {
         for(int i=0;i<link.size();i++) {
             if (!exist(file[i])) {
                 cout<<file[i]<<" x\n";
-                cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
+                cmd = "wget -q  https://www.dropbox.com/s/"+link[i]+"/"+file[i];
                 int status = system(cmd.c_str());
                 if (status < 0){
                     msg("Error executing wget.  Is it installed?", "eddl.download_"+name);

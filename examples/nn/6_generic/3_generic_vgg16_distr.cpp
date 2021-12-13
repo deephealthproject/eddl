@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
             for (int chunk = 0; chunk < chunks; chunk++) {
                 //int selected= 1+(rand() % 3);
                 int selected = chunk;
-                printf("Chunk %d\n", chunk);
+                //printf("Chunk %d\n", chunk);
                 if (use_distr_dataset) {
                     sprintf(tr_images, "%s/train-images_%d_%d.bi8", path, id, selected);
                     sprintf(tr_labels, "%s/train-labels_%d_%d.bi8", path, id, selected);
@@ -228,7 +228,7 @@ int main(int argc, char **argv) {
                 {
                     y_train
                 }, batch_size, 1);
-                printf("Free\n");
+                //printf("Free\n");
 
                 delete x_train;
                 delete y_train;

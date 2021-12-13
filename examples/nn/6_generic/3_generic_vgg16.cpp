@@ -204,7 +204,7 @@ int main(int argc, char **argv) {
             for (int chunk = 0; chunk < chunks; chunk++) {
                 //int selected= 1+(rand() % 3);
                 int selected = chunk;
-                printf("Chunk %d\n", chunk);
+                //printf("Chunk %d\n", chunk);
                 if (use_bi8) {
                     sprintf(tr_images, "%s/train-images_0_%d.bi8", path, selected);
                     sprintf(tr_labels, "%s/train-labels_0_%d.bi8", path, selected);
@@ -225,7 +225,7 @@ int main(int argc, char **argv) {
                 {
                     y_train
                 }, batch_size, 1);
-                printf("Free\n");
+                //printf("Free\n");
 
                 delete x_train;
                 delete y_train;

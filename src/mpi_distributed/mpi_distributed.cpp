@@ -10,9 +10,6 @@
 
 #include "eddl/mpi_distributed/mpi_distributed.h"
 
-#ifdef cCUDA
-#include "cuda.h"
-#endif
 
 #define NUM_STREAMS_COMM 1
 
@@ -283,7 +280,7 @@ void Broadcast_streams_distributed(float* myptr, int count, int layer) {
 
 int get_local_GPU_distributed(int id, int nGPUs) {
     int nDevices = 1;
-    //#ifdef cCUDA
+    //#ifdef cGPU
     //    cudaGetDeviceCount(&nDevices);
     //#endif
     //    return id % nDevices;
@@ -309,7 +306,7 @@ int get_current_batch_avg_distributed() {
 
 int get_available_GPUs_distributed() {
     int count = 0;
-#ifdef cCUDA
+#ifdef cGPU
     cudaGetDeviceCount(&count);
 #endif
     return count;
@@ -441,7 +438,7 @@ void gpu_layer_print(Net* net, int ii) {
     float * myptr;
     int count;
 
-#ifdef cCUDA
+#ifdef cGPU
     for (int jj = 0; jj < net->snets[0]->layers[ii]->params.size(); jj++) {
         myptr = net->snets[0]->layers[ii]->params[jj]->ptr;
         count = net->snets[0]->layers[ii]->params[jj]->size;
