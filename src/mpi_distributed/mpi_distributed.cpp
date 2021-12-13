@@ -309,8 +309,9 @@ int get_current_batch_avg_distributed() {
 
 int get_available_GPUs_distributed() {
     int count = 0;
-
+#ifdef cCUDA
     cudaGetDeviceCount(&count);
+#endif
     return count;
 }
 
