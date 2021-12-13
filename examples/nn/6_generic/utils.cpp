@@ -1,9 +1,12 @@
 
+#include "eddl/system_info.h"
 #include <cstdio>
 #include <cstdlib>
+
 #ifdef EDDL_LINUX
 #include <unistd.h>
 #endif
+
 #ifdef EDDL_APPLE
 #include <unistd.h>
 #endif
