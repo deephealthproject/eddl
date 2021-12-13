@@ -177,16 +177,15 @@ namespace eddl {
         return nullptr; // To silent warnings
     }
 
-compserv CS_MPI_DISTR_1_GPU_PER_PROC(int nr_gpus) {
+    compserv CS_MPI_DISTR_1_GPU_PER_PROC(int nr_gpus) {
         vector<int> gpus;
         int id;
-        char node_name[256];
-        int len;
-        compserv aux;
         
+        compserv aux;
+   
         id = init_MPI();
-        MPICHECK(MPI_Get_processor_name(node_name, &len));
-        printf("[DISTR] CS: Node %s, one GPUs per process. %d/%d GPUS used/available per node\n",node_name,nr_gpus,get_available_GPUs_distributed());
+        //MPICHECK(MPI_Get_processor_name(node_name, &len));
+        fprintf(stderr, "[DISTR] Node %d. CS: one GPUs per process. %d/%d GPUS used/available per node\n",id,nr_gpus,get_available_GPUs_distributed());
         switch (nr_gpus) {
             case 1: GPU_1_distributed;
                 break;
@@ -206,13 +205,12 @@ compserv CS_MPI_DISTR_1_GPU_PER_PROC(int nr_gpus) {
     }
   
   compserv CS_MPI_DISTR_X_GPU_PER_PROC(const vector<int> g, int lsb, string mem) {
-      char node_name[256];
-      int len;
       compserv aux;
+       int id;
       
-      init_MPI();
-      MPICHECK(MPI_Get_processor_name(node_name, &len));
-      printf("[DISTR] CS: Node %s, several GPUs per process. %d GPUS available per node\n", node_name, get_available_GPUs_distributed());
+      id=init_MPI();
+      //MPICHECK(MPI_Get_processor_name(node_name, &len));
+      fprintf(stderr,"[DISTR] Node %d. CS: several GPUs per process. %d GPUS available per node\n", id,get_available_GPUs_distributed());
       aux= CS_GPU(g, lsb, mem);
       init_NCCL(1);
       return aux;
