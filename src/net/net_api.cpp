@@ -1489,62 +1489,60 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 void Net::evaluate(vtensor tin, vtensor tout,int bs) {
 
   int i, j, k, n;
-  int id;
+    int id;
 
-  if (isrecurrent) {
-    evaluate_recurrent(tin,tout,bs);
-  }
-  else{
-if (is_mpi_distributed()) {
-            //MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
-            MPI_Comm_rank(MPI_COMM_WORLD, &id);
+    if (isrecurrent) {
+        evaluate_recurrent(tin, tout, bs);
+    } else {
+        if (is_mpi_distributed()) {
+            id = get_id_distributed();
         } else id = 0;
         if (id == 0) {
-    // Check list shape
-    if (tin.size() != lin.size())
-    msg("input tensor list does not match with defined input layers", "Net.evaluate");
-    if (tout.size() != lout.size())
-    msg("output tensor list does not match with defined output layers", "Net.evaluate");
+            // Check list shape
+            if (tin.size() != lin.size())
+                msg("input tensor list does not match with defined input layers", "Net.evaluate");
+            if (tout.size() != lout.size())
+                msg("output tensor list does not match with defined output layers", "Net.evaluate");
 
-    // Check data consistency
-    n = tin[0]->shape[0];
+            // Check data consistency
+            n = tin[0]->shape[0];
 
-    for (i = 1; i < tin.size(); i++)
-    if (tin[i]->shape[0] != n)
-    msg("different number of samples in input tensor", "Net.evaluate");
+            for (i = 1; i < tin.size(); i++)
+                if (tin[i]->shape[0] != n)
+                    msg("different number of samples in input tensor", "Net.evaluate");
 
-    for (i = 1; i < tout.size(); i++)
-    if (tout[i]->shape[0] != n)
-    msg("different number of samples in output tensor", "Net.evaluate");
+            for (i = 1; i < tout.size(); i++)
+                if (tout[i]->shape[0] != n)
+                    msg("different number of samples in output tensor", "Net.evaluate");
 
-    if (bs!=-1) resize(bs);
-    else if (!isresized) resize(10);  // to avoid some issues when no previous fit is performed, TODO
+            if (bs != -1) resize(bs);
+            else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
 
-    printf("Evaluate with batch size %d\n",batch_size);
+            printf("Evaluate with batch size %d\n", batch_size);
 
-    // Create internal variables
-    vind sind;
-    for (k=0;k<batch_size;k++)
-    sind.push_back(0);
+            // Create internal variables
+            vind sind;
+            for (k = 0; k < batch_size; k++)
+                sind.push_back(0);
 
 
-    // Start eval
-    setmode(TSMODE);
-    reset_loss();
-    for (j = 0; j < n / batch_size; j++) {
+            // Start eval
+            setmode(TSMODE);
+            reset_loss();
+            for (j = 0; j < n / batch_size; j++) {
 
-      for (k=0;k<batch_size;k++)
-        sind [k]=(j*batch_size)+k;
+                for (k = 0; k < batch_size; k++)
+                    sind [k] = (j * batch_size) + k;
 
-      train_batch(tin, tout, sind, 1);
+                train_batch(tin, tout, sind, 1);
 
-      print_loss(j+1,n / batch_size);
-      fprintf(stdout, "\r");
-      fflush(stdout);
+                print_loss(j + 1, n / batch_size);
+                fprintf(stdout, "\r");
+                fflush(stdout);
+            }
+            fprintf(stdout, "\n");
+        }
     }
-    fprintf(stdout, "\n");
-}
-  }
 }
 
 ///////////////////////////////////////////
