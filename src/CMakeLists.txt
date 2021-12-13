@@ -388,7 +388,7 @@ endif()
 
 # NCCL ***************************************
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
-find_package(NCCL REQUIRED)
+find_package(NCCL)
 #if (NOT NCCL_FOUND)
     # Local search 
 #    if (EXISTS "/usr/lib64/libnccl.so")
