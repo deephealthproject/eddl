@@ -1,9 +1,15 @@
 
 #include <cstdio>
 #include <cstdlib>
+#ifndef EDDL_WINDOWS
 #include <unistd.h>
+#endif
 
-
+#ifdef EDDL_WINDOWS
+#include "getopt.h"
+// yes, it is very ugly, but it is a workaround for Windows
+#include "getopt.c"
+#endif
 
 void process_arguments(int argc, char** argv, char* path, char* tr_images,
         char* tr_labels, char* ts_images, char* ts_labels, 
