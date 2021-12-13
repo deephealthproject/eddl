@@ -1,7 +1,10 @@
 
 #include <cstdio>
 #include <cstdlib>
-#ifndef EDDL_WINDOWS
+#ifdef EDDL_LINUX
+#include <unistd.h>
+#endif
+#ifdef EDDL_APPLE
 #include <unistd.h>
 #endif
 
