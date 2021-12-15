@@ -3301,10 +3301,16 @@ public:
     static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false, bool verbose=true);  // Previously named "Tensor::equal2"
 
     /**
-   *   @brief Gets the most efficient accelerator supported
-   *   @return 'cpu', 'cuda', or 'cudnn'
-   */
-    static string max_accelerator_supported();
+    *   @brief Returns a list with hardware accelerators for which this library has been compiled
+    *   @return vector of strings with the supported accelerator
+    */
+    static vector<string> hardware_supported();
+
+    /**
+    *   @brief Check if a specific hardware is supported
+    *   @return bool
+    */
+    static bool is_hardware_supported(string hardware);
 
 };
 

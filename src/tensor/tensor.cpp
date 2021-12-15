@@ -471,16 +471,25 @@ void Tensor::resize(int b, float *fptr, void *fptr2, bool delete_data) {
     updateData(fptr, fptr2);
 }
 
-string Tensor::max_accelerator_supported() {
-    string device = "cpu";
+vector<string> Tensor::hardware_supported() {
+    // Get supported hardware
+    vector<string> hw_supported = {"cpu"};
+#ifdef cGPU
+    hw_supported.emplace_back("cuda");
+#ifdef cCUDNN
+    hw_supported.emplace_back("cudnn");
+#endif
+#endif
+#ifdef cFPGA
+    hw_supported.emplace_back("fpga");
+#endif
 
-    #ifdef cGPU
-        device = "cuda";
+    return hw_supported;
+}
 
-        #ifdef cCUDNN
-            device = "cudnn";
-        #endif
-    #endif
-
-    return device;
+bool Tensor::is_hardware_supported(string hardware){
+    vector<string> hw_supported = Tensor::hardware_supported();
+    if(hardware=="gpu") { hardware = "cuda"; }  // gpu could be both "cuda" and "cudnn"
+    bool hw_found = std::find(hw_supported.begin(), hw_supported.end(), hardware) != hw_supported.end();
+    return hw_found;
 }
