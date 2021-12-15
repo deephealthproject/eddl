@@ -232,6 +232,19 @@ unsigned long get_free_mem() {
 }
 #endif
 
+vector<string> split_string(const string& str, const char& delimiter){
+    std::stringstream test(str);
+    std::string segment;
+    std::vector<std::string> tokens;
+
+    // Split string
+    while(std::getline(test, segment, delimiter)){
+        tokens.push_back(segment);
+    }
+
+    return tokens;
+}
+
 string get_extension(string filename){
     std::string::size_type idx = filename.rfind('.');
     if(idx != std::string::npos){
