@@ -93,11 +93,11 @@ int main(int argc, char **argv) {
 
     // Image Classification
 //    string model_path = "models/resnet34-v1-7.onnx";  // 3x224x224  // okay
-//    string model_path = "models/mobilenetv2-7.onnx"; // 3x224x224 // Signal: SIGSEGV (Segmentation fault)
+    string model_path = "models/mobilenetv2-7.onnx"; // 3x224x224 // Signal: SIGSEGV (Segmentation fault)
 //    string model_path = "models/vgg16-7.onnx";  // 3xHxW  // okay
 //    string model_path = "models/bvlcalexnet-3.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
-    string model_path = "models/bvlcalexnet-12.onnx";  // 3x224x224  // ***not okay. bad predictions
-//    string model_path = "models/googlenet-3_simp.onnx";  // 3x224x224  //***not okay. bad predictions
+//    string model_path = "models/bvlcalexnet-12.onnx";  // 3x224x224  // okay
+//    string model_path = "models/googlenet-3.onnx";  // 3x224x224  // **okay**. bad predictions
 //    string model_path = "models/densenet-3.onnx";  // 3x224x224  // okay
 //    string model_path = "models/inception-v1-3.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
 //    string model_path = "models/efficientnet-lite4-11.onnx";  // 224x224x3  // The onnx node 'LRN' is not supported yet
@@ -121,11 +121,11 @@ int main(int argc, char **argv) {
     int in_channels = 3;
     int in_height = 224;
     int in_width = 224;
-    string channels_order = "bgr";
+    string channels_order = "rgb";
     vector<int> input_shape = {in_channels, in_height, in_width};
-    vector<float> mean = {123.68, 116.779, 103.939};
-    vector<float> std = {1.0, 1.0, 1.0};
-    bool normalize = false;  // Between [0..1]?
+    vector<float> mean = {0.485, 0.456, 0.406};
+    vector<float> std = {0.229, 0.224, 0.225};
+    bool normalize = true;  // Between [0..1]?
     bool standarize = true;  // X = (X-mean)/std
 //    vector<int> dimensions_order = {0, 3, 1, 2};
 
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
 
     // Import ONNX model
     std::cout << "Importing ONNX..." << std::endl;
-    Net *net = import_net_from_onnx_file(model_path, input_shape);
+    Net *net = import_net_from_onnx_file(model_path, input_shape, 0, LOG_LEVEL::DEBUG);
 
     // ==========================================================================
     // Print and plot our model
