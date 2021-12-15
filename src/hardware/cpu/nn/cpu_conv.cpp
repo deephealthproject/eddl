@@ -312,6 +312,7 @@ void cpu_conv2D(ConvolDescriptor *D)
 
 #ifdef CPU_DEBUG
         printf("conv2D:\n");
+        printf("KHxKW: %dx%d, PAD: %dx%d, SHxSW: %dx%d\n", D->kr, D->kc, D->padrt, D->padcl, D->sr, D->sc);
         printf(" input   : "); _profile_cpu_tensor(D->I);
         printf(" filters : "); _profile_cpu_tensor(D->K);
 	if (D->use_bias) {printf(" bias    : "); _profile_cpu_tensor(D->bias);}

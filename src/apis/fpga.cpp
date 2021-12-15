@@ -313,7 +313,7 @@ bool found_pad_conv_relu_maxp (model m, int l, int nl) {return is_pad(m, l, nl) 
 bool found_pad_conv_relu      (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_relu(m, l+2, nl) && !found_pad_conv_relu_maxp(m, l, nl);}
 bool found_pad_conv_maxp      (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_maxp(m, l+2, nl);}
 bool found_pad_conv_leakyrelu (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_leakyrelu(m, l+2, nl);}
-bool found_pad_conv_bn        (model m, int l, int nl) {return 0 &&  is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_bn(m, l+2, nl);}
+bool found_pad_conv_bn        (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_bn(m, l+2, nl);}
 bool found_pad_conv           (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && !found_pad_conv_bn(m, l, nl) && !found_pad_conv_maxp(m, l, nl) && !found_pad_conv_relu(m, l, nl) && !found_pad_conv_leakyrelu(m, l, nl) && !found_pad_conv_relu_maxp(m, l, nl) && !found_pad_conv_sigmoid_tanh_maxp(m, l, nl) && !found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl);}
 
 // non-fpga layer
@@ -1026,7 +1026,6 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
     if (found_constoft(m_src, l_src, num_layers)) prev_layer = ConstOfTensor(layer_src_constoft->const_tensor, layer_src_constoft->name);
     if (found_dropout(m_src, l_src, num_layers)) prev_layer = Dropout(fpga_parent, layer_src_dropout->df, layer_src_dropout->iw, layer_src_dropout->name);
     if (found_leakyrelu(m_src, l_src, num_layers)) {
-      printf("LEAKY\n");
       prev_layer = LeakyReLu(fpga_parent, layer_src_leakyrelu->params[0], "");
     }
     if (found_pad(m_src, l_src, num_layers)) prev_layer = Pad(fpga_parent, layer_src_pad->padding, layer_src_pad->constant, "");
