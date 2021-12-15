@@ -614,10 +614,16 @@ void set_weights_from_model_proto(Net *net, onnx::ModelProto model_proto)
       continue;
 
     // Get the layer weights
-    vector<Tensor *> layer_tensors = tensors[l->name];
+    vector<Tensor *> new_weights = tensors[l->name];
+    if (new_weights.size() == 0)
+    {
+      cerr << "[ONNX::WARNING] Trying to update the weights of the layer \""
+           << l->name << "\" with an empty list of tensors." << endl;
+      continue;
+    }
 
     // Apply the new weights
-    update_layer_weights(l, layer_tensors);
+    l->update_weights(new_weights);
   }
 
   // Copy the new weights to devices
@@ -644,10 +650,16 @@ void apply_grads_from_model_proto(Net *net, onnx::ModelProto model_proto)
       continue;
 
     // Get the layer gradients
-    vector<Tensor *> layer_tensors = tensors[l->name];
+    vector<Tensor *> acc_grads = tensors[l->name];
+    if (acc_grads.size() == 0)
+    {
+      cerr << "[ONNX::WARNING] Trying to apply gradients to the layer \""
+           << l->name << "\" with an empty list of tensors." << endl;
+      continue;
+    }
 
     // Apply the gradients
-    apply_grads_to_layer(l, layer_tensors);
+    l->accumulate_accumulated_gradients(acc_grads);
   }
 
   // Erase the map we used to free the memory

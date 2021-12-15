@@ -34,10 +34,6 @@ void build_dense_with_matmul_node(LDense *layer, onnx::GraphProto *graph, bool g
  * DISTRIBUTED TRAINING
  */
 
-void update_dense_weights(LDense *layer, vector<Tensor *> weights);
-
-void apply_grads_to_dense(LDense *layer, vector<Tensor *> grads);
-
 vector<Tensor *> get_dense_tensors(onnx::NodeProto &node,
                                    map<string, vector<float>> &map_init_values,
                                    map<string, vector<int>> &map_init_dims);

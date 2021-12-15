@@ -49,4 +49,40 @@ Layer* build_matmul_layer(onnx::NodeProto *node,
   return new LMatMul(parents, node->name(), dev, mem);
 }
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_matmul_tensors(onnx::NodeProto &node,
+                                    map<string, vector<float>> &map_init_values,
+                                    map<string, vector<int>> &map_init_dims)
+{
+  vector<Tensor *> dense_tensors;
+
+  bool dense_detected = false;
+  int index_parameter = -1;
+  for (int j = 0; j < node.input_size(); j++)
+  {
+    string parent_name = node.input(j);
+    if (map_init_values.count(parent_name))
+    {
+      // Dense detected
+      dense_detected = true;
+      index_parameter = j;
+      break;
+    }
+  }
+  if (dense_detected)
+  {
+    string weights_name = node.input(index_parameter);
+    vector<float> *weights = &(map_init_values[weights_name]);
+    vector<int> dims = map_init_dims[weights_name];
+    Tensor *weights_tensor = new Tensor(dims, nullptr, DEV_CPU);
+    COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
+    dense_tensors.push_back(weights_tensor);
+  }
+
+  return dense_tensors;
+}
+
 #endif // defined(cPROTO)

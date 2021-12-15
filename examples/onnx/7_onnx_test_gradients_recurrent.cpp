@@ -17,10 +17,11 @@
 using namespace eddl;
 
 ///////////////////////////////////////////
-// 4_onnx_test_gradients.cpp:
+// 7_onnx_test_gradients_recurrent.cpp:
 // An example on how to use the functions
 // for exporting weights and gradients
-// using the ONNX format
+// using the ONNX format, with a recurrent
+// network
 ///////////////////////////////////////////
 
 int main(int argc, char **argv) {
@@ -34,29 +35,28 @@ int main(int argc, char **argv) {
       import_cpu = true;
   }
 
-  // Download mnist
-  download_mnist();
+  // Download dataset
+  download_imdb_2000();
 
   // Settings
-  int epochs = 1;
-  int batch_size = 100;
-  int num_classes = 10;
+  int epochs = 2;
+  int batch_size = 64;
   CompServ *export_CS = export_cpu ? CS_CPU() : CS_GPU({1});
   CompServ *import_CS = import_cpu ? CS_CPU() : CS_GPU({1});
 
+  int length = 250;
+  int embed_dim = 33;
+  int vocsize = 2000;
+
   // Define network
-  layer in = Input({784});
-  layer l = in; // Aux var
+  layer in = Input({1}); // 1 word
+  layer l = in;
 
-  l = Reshape(l, {1, 28, 28});
-  l = ReLu(Conv(l, 32, {3, 3}, {1, 1}, "same", false));
-  l = MaxPool(l, {2, 2});
-  l = ReLu(Conv(l, 32, {3, 3}, {1, 1}));
-  l = MaxPool(l, {2, 2});
+  layer l_embed = RandomUniform(Embedding(l, vocsize, 1, embed_dim), -0.05, 0.05);
 
-  l = Flatten(l);
-  l = Dense(l, 128, false);
-  layer out = Softmax(Dense(l, num_classes));
+  l = LSTM(l_embed, 37);
+  l = ReLu(Dense(l, 256));
+  layer out = Sigmoid(Dense(l, 1));
 
   cout << "Creating model" << endl;
   model net = Model({in}, {out});
@@ -66,8 +66,8 @@ int main(int argc, char **argv) {
   cout << "Building the model" << endl;
   build(net,
         adam(0.001),              // Optimizer
-        {"soft_cross_entropy"},   // Losses
-        {"categorical_accuracy"}, // Metrics
+        {"binary_cross_entropy"}, // Losses
+        {"binary_accuracy"},      // Metrics
         export_CS,                // Computing service
         true                      // Enable parameters initialization
   );
@@ -87,14 +87,16 @@ int main(int argc, char **argv) {
   summary(net);
 
   // Load dataset
-  Tensor *x_train = Tensor::load("mnist_trX.bin");
-  Tensor *y_train = Tensor::load("mnist_trY.bin");
-  Tensor *x_test = Tensor::load("mnist_tsX.bin");
-  Tensor *y_test = Tensor::load("mnist_tsY.bin");
+  Tensor *x_train = Tensor::load("imdb_2000_trX.bin");
+  Tensor *y_train = Tensor::load("imdb_2000_trY.bin");
+  Tensor *x_test = Tensor::load("imdb_2000_tsX.bin");
+  Tensor *y_test = Tensor::load("imdb_2000_tsY.bin");
 
-  // Preprocessing
-  x_train->div_(255.0f);
-  x_test->div_(255.0f);
+  x_train->reshape_({x_train->shape[0], length, 1}); // batch x timesteps x input_dim
+  x_test->reshape_({x_test->shape[0], length, 1}); // batch x timesteps x input_dim
+
+  y_train->reshape_({y_train->shape[0], 1, 1}); // batch x timesteps x input_dim
+  y_test->reshape_({y_test->shape[0], 1, 1});   // batch x timesteps x input_dim
 
   // Train model
   cout << "Training the first model" << endl;
@@ -126,8 +128,8 @@ int main(int argc, char **argv) {
   cout << "Building the loaded topology" << endl;
   build(imported_net,
         adam(0.001),              // Optimizer
-        {"soft_cross_entropy"},   // Losses
-        {"categorical_accuracy"}, // Metrics
+        {"binary_cross_entropy"}, // Losses
+        {"binary_accuracy"},      // Metrics
         import_CS,                // Computing service
         false                     // Disable parameters initialization
   );

@@ -69,7 +69,8 @@ enum ONNX_LAYERS {
   SPLIT,            // OPSET: 13, 11, 2
   EXPAND,           // OPSET: 13, 8
   CONSTANT,         // OPSET: 13, 12, 11, 9, 1
-  REPEAT            // OPSET: 13, 6
+  REPEAT,           // OPSET: 13, 6
+  LRN               // Skiped with LBypass
 };
 
 map<string, ONNX_LAYERS> create_enum_map();
@@ -98,10 +99,6 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
 /*
  * DISTRIBUTED TRAINING
  */
-
-void update_layer_weights(Layer *layer, vector<Tensor *> weights);
-
-void apply_grads_to_layer(Layer *layer, vector<Tensor *> grads);
 
 map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto> &nodes,
                                                           map<string, vector<float>> &map_init_values,

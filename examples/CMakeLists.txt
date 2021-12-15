@@ -145,6 +145,9 @@ if(BUILD_PROTOBUF)
     add_executable(onnx_gradients "onnx/4_onnx_test_gradients.cpp")
     target_link_libraries(onnx_gradients eddl)
 
+    add_executable(onnx_gradients_recurrent "onnx/7_onnx_test_gradients_recurrent.cpp")
+    target_link_libraries(onnx_gradients_recurrent eddl)
+
     add_executable(onnx_import_reshape "onnx/5_onnx_import_net_and_reshape.cpp")
     target_link_libraries(onnx_import_reshape eddl)
 

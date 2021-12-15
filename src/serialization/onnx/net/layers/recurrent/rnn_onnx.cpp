@@ -114,7 +114,7 @@ Layer* build_rnn_layer(onnx::NodeProto *node,
   }
 
   if (hidden_size < 0)
-    msg("RNN layer " + name + " doesn't have the number of neurons.", "ONNX::ImportNet");
+    msg("The layer " + name + " (RNN) does not provide the hidden_size attribute.", "[ONNX::ImportNet]");
 
   string parent_name = node->input(0); // Get parent
   Layer *parent = output_node_map[parent_name];
@@ -222,7 +222,7 @@ Layer* build_rnn_layer(onnx::NodeProto *node,
 }
 
 // ONNX export
-void build_rnn_node(LRNN *layer, onnx::GraphProto *graph)
+void build_rnn_node(LRNN *layer, onnx::GraphProto *graph, bool gradients)
 {
   // Add an empty node to the graph
   onnx::NodeProto *node = graph->add_node();
@@ -233,11 +233,12 @@ void build_rnn_node(LRNN *layer, onnx::GraphProto *graph)
   node->add_input(layer->name + "_W");
   node->add_input(layer->name + "_R");
   if (layer->use_bias) node->add_input(layer->name + "_B");
-  else node->add_input("");
-  node->add_input(""); // Empty str to skip the sequence_lens input
+
   // Check if we have to copy states for a decoder RNN
   if (layer->parent.size() > 1 && layer->isdecoder)
   {
+    if (!layer->use_bias) node->add_input(""); // Empty str to skip the bias input
+    node->add_input(""); // Empty str to skip the sequence_lens input
     string l_copyStates_name = layer->parent[1]->name;
     node->add_input(l_copyStates_name + "_h");
   }
@@ -310,9 +311,15 @@ void build_rnn_node(LRNN *layer, onnx::GraphProto *graph)
   /*
    * The Weights are permuted before saving them (required by ONNX standad)
    */
-  Tensor *Wx = layer->Wx->permute({1, 0});
-  w->mutable_float_data()->Add(Wx->ptr, Wx->ptr + Wx->size);
-  delete Wx;
+  if (!gradients) {
+    Tensor *Wx = layer->Wx->permute({1, 0});
+    w->mutable_float_data()->Add(Wx->ptr, Wx->ptr + Wx->size);
+    delete Wx;
+  } else {
+    Tensor *Wx = layer->acc_gWx->permute({1, 0});
+    w->mutable_float_data()->Add(Wx->ptr, Wx->ptr + Wx->size);
+    delete Wx;
+  }
 
   // Recurrent weights
   onnx::TensorProto *r = graph->add_initializer();
@@ -323,9 +330,15 @@ void build_rnn_node(LRNN *layer, onnx::GraphProto *graph)
   /*
    * The Weights are permuted before saving them (required by ONNX standad)
    */
-  Tensor *Wy = layer->Wy->permute({1, 0});
-  r->mutable_float_data()->Add(Wy->ptr, Wy->ptr + Wy->size);
-  delete Wy;
+  if (!gradients) {
+    Tensor *Wy = layer->Wy->permute({1, 0});
+    r->mutable_float_data()->Add(Wy->ptr, Wy->ptr + Wy->size);
+    delete Wy;
+  } else {
+    Tensor *Wy = layer->acc_gWy->permute({1, 0});
+    r->mutable_float_data()->Add(Wy->ptr, Wy->ptr + Wy->size);
+    delete Wy;
+  }
 
   // Bias
   if (layer->use_bias) {
@@ -334,7 +347,10 @@ void build_rnn_node(LRNN *layer, onnx::GraphProto *graph)
     b->set_data_type(onnx::TensorProto::FLOAT);
     vector<int> b_dims{1, 2 * layer->units};              // b_dims shape[0] = 1 for weights in one directions
     b->mutable_dims()->Add(b_dims.begin(), b_dims.end()); // Set the shape of the weights
-    b->mutable_float_data()->Add(layer->bias->ptr, layer->bias->ptr + layer->bias->size);
+    if (!gradients)
+      b->mutable_float_data()->Add(layer->bias->ptr, layer->bias->ptr + layer->bias->size);
+    else
+      b->mutable_float_data()->Add(layer->acc_gbias->ptr, layer->acc_gbias->ptr + layer->acc_gbias->size);
     // Set recurrent biases to 0
     for (int i = 0; i < layer->units; ++i)
       b->add_float_data(0.0);
@@ -375,6 +391,95 @@ void build_rnn_node(LRNN *layer, onnx::GraphProto *graph)
         {0},                            // axes to squeeze
         graph);
   }
+}
+
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_rnn_tensors(onnx::NodeProto &node,
+                                 map<string, vector<float>> &map_init_values,
+                                 map<string, vector<int>> &map_init_dims)
+{
+  vector<Tensor*> rnn_tensors;
+  int hidden_size = -1;
+
+  for (int j = 0; j < node.attribute_size(); j++)
+  { // Set the attributes
+    onnx::AttributeProto attribute = node.attribute(j);
+    string attr_name = attribute.name();
+    if (!attr_name.compare("hidden_size"))
+      hidden_size = attribute.i();
+  }
+
+  if (hidden_size < 0)
+    msg("The layer " + node.name() + " (RNN) does not provide the hidden_size attribute.", "[ONNX::ImportNet]");
+
+  string weights_gates = node.input(1); // Get weights and dims
+  vector<float> *weights_g = &(map_init_values[weights_gates]);
+  vector<int> dims_g = map_init_dims[weights_gates];
+  int input_size = dims_g[2];
+
+  // Load input weights with shape [hidden_size, input_size]. After load we transpose
+  //    Note: EDDL input weights are of shape [input_size, hidden_size]
+  vector<int> dims_input_gru = {dims_g[1], input_size};
+
+  vector<float> *weights_x = new vector<float>;
+  int w_size = input_size * hidden_size;
+  weights_x->assign(weights_g->begin() , weights_g->begin() + w_size);
+
+  string recurrence_weights_gates = node.input(2); // Get weights and dims
+  vector<float> *recurrence_weights_g = &(map_init_values[recurrence_weights_gates]);
+  vector<int> recurrence_dims_g = map_init_dims[recurrence_weights_gates];
+
+  vector<int> dims_recurrent_gru = {recurrence_dims_g[2], recurrence_dims_g[2]};
+
+  vector<float> *weights_h = new vector<float>;
+  w_size = hidden_size * hidden_size;
+  weights_h->assign(recurrence_weights_g->begin(), recurrence_weights_g->begin() + w_size);
+
+  /*
+   * The Weights are permuted before copying them to the RNN layer (mismatch between ONNX standad and EDDL implementation)
+   */
+  int dev = DEV_CPU;
+  Tensor *weights_x_tensor = new Tensor(dims_input_gru, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_x, weights_x_tensor);
+  weights_x_tensor->permute_({1, 0});
+  delete weights_x;
+
+  Tensor *weights_h_tensor = new Tensor(dims_recurrent_gru, nullptr, dev);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights_h, weights_h_tensor);
+  weights_h_tensor->permute_({1, 0});
+  delete weights_h;
+
+  rnn_tensors.push_back(weights_x_tensor);
+  rnn_tensors.push_back(weights_h_tensor);
+
+  if (node.input_size() > 3) { // If use_bias
+    string biases_name = node.input(3);
+    vector<float> *biases = &(map_init_values[biases_name]);
+    vector<int> bias_dims = {hidden_size};
+
+    vector<float> *bias_x = new vector<float>;
+    bias_x->assign(biases->begin() + hidden_size * 0, biases->begin() + hidden_size * 1);
+    Tensor *bias_x_tensor = new Tensor(bias_dims, nullptr, dev);
+    COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_x, bias_x_tensor);
+    delete bias_x;
+
+    rnn_tensors.push_back(bias_x_tensor);
+
+    /* Not needed for importing gradients
+    vector<float> *bias_h = new vector<float>;
+    bias_h->assign(biases->begin() + hidden_size * 1, biases->begin() + hidden_size * 2);
+    Tensor *bias_h_tensor = new Tensor(bias_dims, nullptr, dev);
+    COPY_FROM_VECTOR_PTR_TO_TENSOR(bias_h, bias_h_tensor);
+    Tensor::add(bias_h_tensor, bias_x_tensor, bias_x_tensor);
+    delete bias_h_tensor;
+    delete bias_h;
+    */
+  }
+
+  return rnn_tensors;
 }
 
 #endif // defined(cPROTO)

@@ -3,7 +3,7 @@
 #include "eddl/serialization/onnx/layers/core/squeeze_onnx.h"
 #include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 
-void build_embedding_node(LEmbedding *layer, onnx::GraphProto *graph)
+void build_embedding_node(LEmbedding *layer, onnx::GraphProto *graph, bool gradients)
 {
   /*
    * To create the embedding operation in ONNX we have to use the following steps:
@@ -48,7 +48,27 @@ void build_embedding_node(LEmbedding *layer, onnx::GraphProto *graph)
       cast_node_output, // node input from cast node
       layer->name,      // node output name
       layer,
-      graph);
+      graph,
+      gradients);
+}
+
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_embedding_tensors(onnx::NodeProto &node,
+                                       map<string, vector<float>> &map_init_values,
+                                       map<string, vector<int>> &map_init_dims)
+{
+  // Get weights and dims
+  string weights_name = node.input(0);
+  vector<float> *weights = &(map_init_values[weights_name]);
+  vector<int> dims = map_init_dims[weights_name];
+
+  Tensor *weights_tensor = new Tensor(dims, nullptr, DEV_CPU);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
+
+  return {weights_tensor};
 }
 
 #endif // defined(cPROTO)

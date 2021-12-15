@@ -325,16 +325,6 @@ void build_conv_node(LConv *layer, onnx::GraphProto *graph, bool gradients)
  * DISTRIBUTED TRAINING
  */
 
-void update_conv_weights(LConv *layer, vector<Tensor *> weights)
-{
-  layer->update_weights(weights);
-}
-
-void apply_grads_to_conv(LConv *layer, vector<Tensor *> grads)
-{
-  layer->accumulate_accumulated_gradients(grads);
-}
-
 vector<Tensor *> get_conv_tensors(onnx::NodeProto &node,
                                   map<string, vector<float>> &map_init_values,
                                   map<string, vector<int>> &map_init_dims)
@@ -344,6 +334,11 @@ vector<Tensor *> get_conv_tensors(onnx::NodeProto &node,
   string weights_name = node.input(1); // Get weights and dims
   vector<float> *weights = &(map_init_values[weights_name]);
   vector<int> dims = map_init_dims[weights_name];
+
+  // Our Conv1D layers are computed using the backend of the Conv2D, so we
+  // need to add one extra dimension to have the shape of the kernels of a Conv2D
+  if (dims.size() == 3)
+      dims.push_back(1);
 
   Tensor * temp = new Tensor(dims, nullptr, DEV_CPU);
   COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, temp);
