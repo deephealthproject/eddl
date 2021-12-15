@@ -70,8 +70,11 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2){
     updateData(fptr, fptr2);
 }
 
+//Tensor::Tensor(const vector<int> &shape, string dev) : Tensor(shape, nullptr, Tensor::getDeviceID(dev)){}
+
+
 // From shape and device
-Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
+Tensor::Tensor(const vector<int> &shape, int dev) : Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
 Tensor::Tensor(const vector<int> &shape, Tensor *T) : Tensor(shape,T->ptr, T->device) {}
@@ -443,6 +446,35 @@ int Tensor::getDeviceID(int dev){
     else if ((dev >= DEV_GPU) && (dev < DEV_FPGA)) { return 1; }
     else if (dev >= DEV_FPGA) { return 2; }
     return -1;
+}
+
+int Tensor::getDeviceID(const string& dev){
+    string dev_name;
+    int dev_rank;
+
+    try{
+        // Check tokens
+        vector<string> tokens = split_string(dev, ':');
+        if (tokens.size()==2){
+            dev_name = tokens[0];
+            dev_rank = stoi(tokens[1]);
+        }else{
+            dev_name = dev;
+            dev_rank = 0;
+        }
+    }catch (...) {
+        throw runtime_error("Invalid format. Expected 'device_name' or 'device_name:rank'");
+    }
+
+    if (dev_name == "cpu"){
+       return DEV_CPU;
+   }else if (dev_name == "cuda"  || dev_name == "gpu"){
+       return DEV_GPU + dev_rank;
+   }else if (dev_name == "fpga") {
+        return DEV_FPGA + dev_rank;
+    }else{
+        throw runtime_error("Invalid value for device");
+   }
 }
 
 bool Tensor::isSquared(Tensor *A){

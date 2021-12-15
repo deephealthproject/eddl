@@ -127,6 +127,15 @@ public:
     */
     Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=nullptr);
 
+//    /**
+//    *  @brief Construct of an uninitialized tensor
+//    *
+//    *  @param shape Vector of ints specifying the shape of the tensor
+//    *  @param dev  name of the device ('cpu', 'cuda', 'fpga', 'cuda:0',...)
+//    *  @return a tensor
+//    */
+//    Tensor(const vector<int> &shape, string dev);
+
     /**
     *  @brief Construct an uninitialized tensor
     *
@@ -227,11 +236,18 @@ public:
     string getDeviceName() const;
 
     /**
-      *  @brief Returns the device name given a device number
+      *  @brief Returns the device ID given a device number
       *
-      *  @return    string
+      *  @return int
     */
     static int getDeviceID(int dev);
+
+    /**
+      *  @brief Returns the device ID given a device name
+      *
+      *  @return int
+    */
+    static int getDeviceID(const string& dev);
 
     // Core
     vector<int> getShape();
