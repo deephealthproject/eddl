@@ -71,7 +71,8 @@ enum ONNX_LAYERS {
   MULTITHRESHOLD,   // Not in ONNX: Custom
   TOPK,             // OPSET: ????
   CONSTANT,         // OPSET: 13, 12, 11, 9, 1
-  REPEAT            // OPSET: 13, 6
+  REPEAT,           // OPSET: 13, 6
+  LRN               // Skiped with LBypass
 };
 
 map<string, ONNX_LAYERS> create_enum_map();

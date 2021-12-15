@@ -1,9 +1,11 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/layers/pool/maxpool_onnx.h"
+#include "eddl/layers/da/layer_da.h"
 
 // ONNX import
 Layer* build_maxpool_layer(onnx::NodeProto *node,
                            map<string, Layer *> &output_node_map,
+                           LOG_LEVEL log_level,
                            int dev,
                            int mem)
 {
@@ -97,7 +99,33 @@ Layer* build_maxpool_layer(onnx::NodeProto *node,
     return new LMaxPool1D(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
   }
   else
-    return new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+  {
+    LMaxPool *pool_layer;
+    PoolDescriptor *pd;
+    try
+    {
+      pd = new PoolDescriptor(kernel_shape, strides, pads);
+      pool_layer = new LMaxPool(parent, pd, name, dev, mem);
+    }
+    catch (AsymmetricPaddingException& e)
+    {
+        log_string("Detected a padding asymmetry in the MaxPool layer \"" + name + "\". Going to add an explicit Pad layer before to fix it.", log_level, LOG_LEVEL::INFO);
+        // Remove the invalid pool layer from the parent child vector
+        parent->child.pop_back();
+        parent->lout--;
+
+        vector<int> asym_pads = e.get_asymmetric_pads(); // Asymmetric paddings to fix
+        string pad_layer_name = name + "__asymmetric_padding";
+        // Create a parent layer to fix the padding asymmetry
+        parent = new LPad(parent, {asym_pads[0], asym_pads[3], asym_pads[1], asym_pads[2]}, 0.0, pad_layer_name, dev, mem);
+        // Create again the full MaxPool layer
+        vector<int> new_pads = {0, 0, 0, 0};
+        pd = new PoolDescriptor(kernel_shape, strides, new_pads, mem);
+        pool_layer = new LMaxPool(parent, pd, name, dev, mem);
+    }
+
+    return pool_layer;
+  }
 }
 
 // ONNX import

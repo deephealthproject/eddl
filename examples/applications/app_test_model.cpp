@@ -6,10 +6,10 @@
 using namespace eddl;
 
 
-Tensor* preprocess_input(Tensor* input, const vector<int> &target_size, bool normalize=true, bool standarize=true){
+Tensor* preprocess_input(Tensor* input, const vector<int> &target_size, const vector<float>& mean, const vector<float>& std, bool normalize=true, bool standarize=true, const string& channels_order="rgb"){
     // Define preprocessing constants
-    auto* mean_vec = new Tensor( {0.485, 0.456, 0.406}, {3}, input->device);
-    auto* std_vec = new Tensor( {0.229, 0.224, 0.225}, {3}, input->device);
+    auto* mean_vec = new Tensor(mean, {3}, input->device);
+    auto* std_vec = new Tensor( std, {3}, input->device);
 
     // ==========================================================================
     // ====== SANITY CHECKS =====================================================
@@ -51,6 +51,29 @@ Tensor* preprocess_input(Tensor* input, const vector<int> &target_size, bool nor
     }
     // ==========================================================================
 
+    // ==========================================================================
+    // ====== RE-ODER CHANNELS ==================================================
+    // ==========================================================================
+
+    if (channels_order == "bgr"){
+        // Take each channel of the image
+        Tensor *r_channel = new_input->select({":", "0", ":", ":"});
+        Tensor *g_channel = new_input->select({":", "1", ":", ":"});
+        Tensor *b_channel = new_input->select({":", "2", ":", ":"});
+
+        // Concat the channels reordering them
+        Tensor *bgr_input = Tensor::concat({b_channel, g_channel, r_channel}, 1);
+        Tensor::copy(bgr_input, new_input);
+
+        delete bgr_input;
+        delete r_channel;
+        delete g_channel;
+        delete b_channel;
+    }else{
+
+    }
+
+    // ==========================================================================
     // Free memory
     delete mean_vec;
     delete std_vec;
@@ -69,12 +92,12 @@ int main(int argc, char **argv) {
     string class_names_file = "../../examples/data/imagenet_class_names.txt";
 
     // Image Classification
-    string model_path = "models/resnet34-v1-7.onnx";  // 3x224x224  // okay
-//    string model_path = "models/mobilenetv2-7.onnx"; // 3x224x224 // Signal: SIGSEGV (Segmentation fault)
+//    string model_path = "models/resnet34-v1-7.onnx";  // 3x224x224  // okay
+    string model_path = "models/mobilenetv2-7.onnx"; // 3x224x224 // Signal: SIGSEGV (Segmentation fault)
 //    string model_path = "models/vgg16-7.onnx";  // 3xHxW  // okay
 //    string model_path = "models/bvlcalexnet-3.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
-//    string model_path = "models/bvlcalexnet-12.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
-//    string model_path = "models/googlenet-3_simp.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
+//    string model_path = "models/bvlcalexnet-12.onnx";  // 3x224x224  // okay
+//    string model_path = "models/googlenet-3.onnx";  // 3x224x224  // **okay**. bad predictions
 //    string model_path = "models/densenet-3.onnx";  // 3x224x224  // okay
 //    string model_path = "models/inception-v1-3.onnx";  // 3x224x224  // The onnx node 'LRN' is not supported yet
 //    string model_path = "models/efficientnet-lite4-11.onnx";  // 224x224x3  // The onnx node 'LRN' is not supported yet
@@ -98,8 +121,14 @@ int main(int argc, char **argv) {
     int in_channels = 3;
     int in_height = 224;
     int in_width = 224;
+    string channels_order = "rgb";
     vector<int> input_shape = {in_channels, in_height, in_width};
+    vector<float> mean = {0.485, 0.456, 0.406};
+    vector<float> std = {0.229, 0.224, 0.225};
+    bool normalize = true;  // Between [0..1]?
+    bool standarize = true;  // X = (X-mean)/std
 //    vector<int> dimensions_order = {0, 3, 1, 2};
+
 //    // ==========================================================================
 //    input_shape = {input_shape[dimensions_order[1]], input_shape[dimensions_order[2]], input_shape[dimensions_order[3]]};
 
@@ -109,7 +138,7 @@ int main(int argc, char **argv) {
 
     // Import ONNX model
     std::cout << "Importing ONNX..." << std::endl;
-    Net *net = import_net_from_onnx_file(model_path, input_shape);
+    Net *net = import_net_from_onnx_file(model_path, input_shape, 0, LOG_LEVEL::DEBUG);
 
     // ==========================================================================
     // Print and plot our model
@@ -152,7 +181,7 @@ int main(int argc, char **argv) {
     Tensor *image = Tensor::load(image_fname);
 
     // Step 3: Preprocess input. (Look up the preprocessing required at the model's page)
-    Tensor* image_preprocessed = preprocess_input(image, {in_height, in_width});
+    Tensor* image_preprocessed = preprocess_input(image, {in_height, in_width}, mean, std, normalize, standarize, channels_order);
 //    image_preprocessed->permute_(dimensions_order);
 
     // Predict image. Returns a vector of tensors (here one).
