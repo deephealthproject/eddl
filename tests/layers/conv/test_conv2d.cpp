@@ -423,7 +423,7 @@ TEST(Conv2DTestSuite, conv2d_cpu_gpu){
                     cout << "\t=> Asymmetric padding: " << asymmetricPads << endl;
 
                     // Check if padding is asymmetric and if we're using cuDNN
-                    if(asymmetricPads==0 || (asymmetricPads==1 && Tensor::max_accelerator_supported() != "cudnn")) {
+                    if(asymmetricPads==0 || (asymmetricPads==1 && !Tensor::is_hardware_supported("cudnn"))) {
                         // GPU Operation
                         auto *cd_gpu = new ConvolDescriptor(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
                         cd_gpu->build(t_gpu);
