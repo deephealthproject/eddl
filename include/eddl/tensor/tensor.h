@@ -17,10 +17,6 @@
 #include <string>
 #include <mutex>
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/xcl2.hpp"
-#endif
-
 #include "Eigen/Dense"
 
 #include "eddl/utils.h"
@@ -102,13 +98,8 @@ public:
     // Aux variables
     int gpu_device;
 
-#ifdef cFPGA
     // fpga-related information
-    int fpga_device;         // fpga device
-    cl::Buffer *fpga_ptr;     // open-cl buffer pointer to data
-    int fpga_tensor_id;      // for debuging and tracking tensors
-    long int fpga_size;      // buffer size (in elements)
-#endif
+    void *fpga_ptr;               // open-cl buffer pointer to data
 
     // Constructors
     /**
@@ -3311,7 +3302,7 @@ public:
 
     /**
    *   @brief Gets the most efficient accelerator supported
-   *   @return 'cpu', 'cuda', 'cudnn' or 'fpga'
+   *   @return 'cpu', 'cuda', or 'cudnn'
    */
     static string max_accelerator_supported();
 

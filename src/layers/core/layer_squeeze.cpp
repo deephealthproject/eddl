@@ -37,12 +37,7 @@ LSqueeze::~LSqueeze(){
 
 // virtual
 void LSqueeze::resize(int batch){
-#ifdef cFPGA
-    printf("voy a hacer resize!!!! batch %d shape[0] %d tensor_id %d, tensor_id parent %d fpga_ptr %p\n", batch, output->shape[0], output->fpga_tensor_id, parent[0]->output->fpga_tensor_id, parent[0]->output->fpga_ptr);
-    output->resize(batch, parent[0]->output->ptr, parent[0]->output->fpga_ptr, false);
-#else
     output->resize(batch, parent[0]->output->ptr, nullptr, false);
-#endif
 }
 
 
@@ -52,9 +47,6 @@ void LSqueeze::mem_delta() {
         parent[0]->mem_delta();
 
         // Problem: Delta is always created, regardless of the low_mem
-#ifdef cFPGA
-	printf("creating new delta tensor for reshape at mem_delta\n");
-#endif
         delta = new Tensor(this->output->shape, parent[0]->delta);
 
         if(this->verbosity_level >= 2){
@@ -68,9 +60,6 @@ void LSqueeze::free_delta() {
     if(this->delta != nullptr) {
         // Do not delete its delta directly (It's pointer points to parent's delta)
         delta->ptr = nullptr;
-#ifdef cFPGA
-        delta->fpga_ptr = nullptr;
-#endif
         delete delta;
         delta = nullptr;
 

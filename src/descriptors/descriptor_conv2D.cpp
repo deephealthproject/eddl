@@ -19,10 +19,6 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#endif
-
 ConvolDescriptor::ConvolDescriptor() {}
 
 ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
@@ -168,7 +164,7 @@ void ConvolDescriptor::build(Tensor *A) {
     gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
     gbias = new Tensor(vector<int>{nk}, I->device);
 
-    if (I->isCPU()) {
+    if (I->isCPU() || (I->isFPGA())) {
         if (mem_level < 2) {
             // mem for ptr, lowering im2col
             unsigned long int l_size =  (unsigned long)(A->shape[0] * r * c) * (unsigned long)(kr * kc * kz);
@@ -240,16 +236,6 @@ void ConvolDescriptor::build(Tensor *A) {
 #endif
 #endif
 
-#ifdef cFPGA
-    if (I->isFPGA()) {
-	// We allocate memory on the FGPA for the im2col buffer
-	fpga_sizeI = A->shape[0] * r * c * kr * kc * kz * sizeof(float);
-	fpga_ptrI = fpga_create_memory(fpga_sizeI);
-	// We allocate also on cpu so to ease the cpuemu flow
-        // mem for ptr, lowering im2col
-        ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
-    }
-#endif
 }
 
 void ConvolDescriptor::resize(int b)
@@ -289,19 +275,6 @@ void ConvolDescriptor::resize(int b)
 #endif
 }
 #endif
-
-#ifdef cFPGA
-    else if (I->isFPGA()) {
-        // We reallocate memory on the FGPA for the im2col buffer
-	fpga_destroy_memory(fpga_ptrI);
-	fpga_sizeI = l_size * sizeof(float);
-        fpga_ptrI = fpga_create_memory(fpga_sizeI);
-        // We do the same on the CPU side (for smooth cpuemu)
-        eddl_free(ptrI); // because get_fmem() now uses posix_memalign()
-        ptrI=get_fmem(l_size, "ConvolDescriptor::build");
-    }
-#endif
-
 
 }
 

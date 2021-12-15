@@ -16,11 +16,6 @@
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
-
 PROFILING_ENABLE_EXTERN(accuracy);
 PROFILING_ENABLE_EXTERN(bin_accuracy);
 
@@ -46,13 +41,6 @@ namespace tensorNN {
             gpu_accuracy(A, B, &acc);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA()) {
-            acc = fpga_accuracy(A, B);
-        }
-#endif
-
-
         PROFILING_FOOTER(accuracy);
 
         return acc;
@@ -81,13 +69,6 @@ namespace tensorNN {
             gpu_bin_accuracy(A, B, &acc);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA()) {
-            acc = fpga_bin_accuracy(A, B);
-        }
-#endif
-
-
         PROFILING_FOOTER(bin_accuracy);
         
         return acc;

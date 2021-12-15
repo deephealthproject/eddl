@@ -16,11 +16,6 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
-
 using namespace std;
 
 // ***** Core (in-place) *****************************
@@ -43,11 +38,6 @@ void Tensor::fill(Tensor* A, float v){
       {
         gpu_fill_(A, v);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_fill_(A,v);
-    }
 #endif
 }
 
@@ -313,12 +303,6 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
 
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_transpose(A, N);
-    }
-#endif
-
 
     if (A == B) delete N;
 
@@ -350,19 +334,6 @@ void Tensor::copy(Tensor *A, Tensor *B) {
         else if ((A->isGPU())&&(B->isCPU()))
           {
             gpu_copy_from_gpu(A,B->ptr);
-          }
-#endif
-#ifdef cFPGA
-        else if ((A->isFPGA())&&(B->isFPGA())) {
-          fpga_copy_fpga(A,B);
-        }
-        else if ((A->isCPU())&&(B->isFPGA()))
-          {
-            fpga_copy_to_fpga(A->ptr,B);
-          }
-        else if ((A->isFPGA())&&(B->isCPU()))
-          {
-            fpga_copy_from_fpga(A,B->ptr);
           }
 #endif
     else {
@@ -416,11 +387,6 @@ void Tensor::sort(Tensor* A, Tensor* B, bool descending, bool stable){
         gpu_sort(A, B, descending, stable);
     }
 #endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
 }
 
 
@@ -439,11 +405,6 @@ void Tensor::argsort(Tensor* A, Tensor* B, bool descending, bool stable){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_argsort(A, B, descending, stable);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        msg("Function not implemented for FPGA", "Tensor::argsort");
     }
 #endif
 }
@@ -511,12 +472,6 @@ Tensor* Tensor::concat(const vector<Tensor*> A, unsigned int axis, Tensor* outpu
         gpu_concat(output, A, axis, false);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_concat(output, A, axis, false);
-    }
-#endif
-
     return output;
 }
 
@@ -579,11 +534,6 @@ void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
       {
         gpu_concat(A, t, axis, true);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_concat(A, t, axis, true);
-    }
 #endif
 }
 
@@ -678,11 +628,6 @@ Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned 
     else if (A->isGPU() && output->isGPU())
     {
         gpu_repeat(A, output, repeats, axis, derivative);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        msg("Function not implemented for FPGA", "Tensor::repeat");
     }
 #endif
     return output;
@@ -789,12 +734,6 @@ void Tensor::select(Tensor *A, Tensor* B, SelDescriptor *sd){
         gpu_select(A, B, sd);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_select(A, B, sd);
-    }
-#endif
-
 }
 
 void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
@@ -807,12 +746,6 @@ void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
         gpu_select_back(A, B, sd);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_select_back(A, B, sd);
-    }
-#endif
-
 }
 
 void Tensor::set_select(const vector<string>& indices, float value){
@@ -860,11 +793,6 @@ void Tensor::set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
         gpu_set_select(A, B, sd);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_set_select(A, B, sd);
-    }
-#endif
 }
 
 
@@ -878,11 +806,6 @@ void Tensor::set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
         gpu_set_select_back(A, B, sd);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_set_select_back(A, B, sd);
-    }
-#endif
 
 }
 
@@ -894,11 +817,6 @@ void Tensor::gather(Tensor *A, Tensor *B, GatherDescriptor *sd){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_gather(A, B, sd);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_gather(A, B, sd);
     }
 #endif
 }
@@ -931,11 +849,6 @@ void Tensor::expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_expand(A, B, sd);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_expand(A, B, sd);
     }
 #endif
 }
@@ -998,13 +911,6 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
       }
     #endif
 
-    #ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_select(A, B, sind, ini, end,mask_zeros);
-      }
-    #endif
-
     else {
         msg("unsuppoted select", "Tensor::select");
     }
@@ -1061,13 +967,6 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
         else if (A->isGPU() && B->isGPU())
       {
         gpu_deselect(A, B, sind, ini, end, inc,mask_zeros);
-      }
-    #endif
-
-    #ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_deselect(A, B, sind, ini, end, inc,mask_zeros);
       }
     #endif
 

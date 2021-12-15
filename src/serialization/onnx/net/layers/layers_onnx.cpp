@@ -53,6 +53,8 @@
 #include "eddl/serialization/onnx/layers/da/pad_onnx.h"
 #include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 #include "eddl/serialization/onnx/layers/auxiliar/expand_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/multithreshold_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/topk_onnx.h"
 #include "eddl/serialization/onnx/layers/auxiliar/constoftensor_onnx.h"
 
 /*
@@ -124,6 +126,8 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["Slice"] = ONNX_LAYERS::SLICE;
   map_layers["Split"] = ONNX_LAYERS::SPLIT;
   map_layers["Expand"] = ONNX_LAYERS::EXPAND;
+  map_layers["MultiThreshold"] = ONNX_LAYERS::MULTITHRESHOLD;
+  map_layers["TopK"] = ONNX_LAYERS::TOPK;
   map_layers["Constant"] = ONNX_LAYERS::CONSTANT;
   map_layers["Tile"] = ONNX_LAYERS::REPEAT;
   map_layers["LRN"] = ONNX_LAYERS::LRN;
@@ -330,6 +334,12 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       break;
     case ONNX_LAYERS::EXPAND:
       new_layer = build_expand_layer(node, map_init_values, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::MULTITHRESHOLD:
+      new_layer = build_multithreshold_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::TOPK:
+      new_layer = build_topk_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::CONSTANT:
       new_layer = build_constoftensor_layer(node, map_init_values, output_node_map, dev, mem);

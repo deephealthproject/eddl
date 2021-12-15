@@ -10,10 +10,6 @@
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 #include "eddl/profiling.h"
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
-
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
@@ -64,13 +60,6 @@ namespace tensorNN {
           gpu_relu(A,B);
           }
 #endif
-#ifdef cFPGA
-        else {
-            fpga_relu(A,B);
-        }
-#endif
-
-
 
 	PROFILING_FOOTER(ReLu);
     }
@@ -95,13 +84,6 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_relu(D,I,PD);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_ReLu);
     }
 
@@ -122,14 +104,6 @@ namespace tensorNN {
           gpu_thresholded_relu(A,B,param);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_thresholded_relu(A,B,param);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(ThresholdedReLu);
     }
 
@@ -152,13 +126,6 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_thresholded_relu(D, I, PD, param);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_ThresholdedReLu);
     }
 
@@ -179,14 +146,6 @@ namespace tensorNN {
           gpu_leaky_relu(A,B,param);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_leaky_relu(A,B,param);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(LeakyReLu);
     }
 
@@ -209,13 +168,6 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_leaky_relu(D,I,PD,param);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_LeakyReLu);
     }
 
@@ -237,14 +189,6 @@ namespace tensorNN {
           gpu_elu(A,B ,param);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_elu(A,B,param);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(ELu);
     }
 
@@ -266,13 +210,6 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_elu(D, I, PD, param);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_ELu);
     }
 
@@ -294,14 +231,6 @@ namespace tensorNN {
           gpu_softplus(A, B);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_softplus(A, B);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(Softplus);
     }
 
@@ -324,13 +253,6 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_softplus(D, I, PD);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_softplus);
     }
 
@@ -352,14 +274,6 @@ namespace tensorNN {
           gpu_softsign(A,B);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_softsign(A, B);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(Softsign);
     }
 
@@ -382,13 +296,6 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_softsign(D, I, PD);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_softsign);
     }
 
@@ -409,14 +316,6 @@ namespace tensorNN {
           gpu_linear(A,B ,param);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_linear(A, B, param);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(Linear);
     }
 
@@ -439,15 +338,7 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_linear(D, I, PD, param);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_Linear);
-
     }
 
 // Sigmoid
@@ -467,14 +358,6 @@ namespace tensorNN {
           gpu_sigmoid(A,B);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_sigmoid(A, B);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(Sigmoid);
     }
 
@@ -497,13 +380,6 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_sigmoid(D, I, PD);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_Sigmoid);
     }
 
@@ -524,14 +400,6 @@ namespace tensorNN {
           gpu_hard_sigmoid(A,B);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_hard_sigmoid(A, B);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(HardSigmoid);
     }
 
@@ -554,13 +422,6 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_hard_sigmoid(D, I, PD);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_HardSigmoid);
     }
 
@@ -582,14 +443,6 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_exp(A, B);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(Exp);
     }
 
@@ -610,13 +463,6 @@ namespace tensorNN {
              gpu_d_exp(D,I,PD);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_exp(D, I, PD);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_Exp);
     }
 
@@ -637,14 +483,6 @@ namespace tensorNN {
           gpu_tanh(A,B);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_tanh(A, B);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(Tanh);
     }
 
@@ -667,13 +505,6 @@ namespace tensorNN {
 
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_tanh(D, I, PD);
-    }
-#endif
-
-
         PROFILING_FOOTER(D_Tanh);
     }
 
@@ -697,14 +528,6 @@ namespace tensorNN {
             gpu_softmax(A,B);
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_softmax(A, B);
-    }
-#endif
-
-
-
         PROFILING_FOOTER(Softmax);
     }
 
@@ -734,14 +557,7 @@ namespace tensorNN {
             delete aux;
           }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_d_softmax(D, I, PD);
-    }
-#endif
-
     PROFILING_FOOTER(D_Softmax);
-
     }
 
 
@@ -752,6 +568,8 @@ namespace tensorNN {
         if (!Tensor::sameDevice(A, B)) msg("Tensors in different devices", "Tensor::FullSoftmax");
         if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::FullSoftmax");
 
+        PROFILING_HEADER(Softmax);
+
         if (A->isCPU()) {
             cpu_full_softmax(A, B, axis,true);
         }
@@ -761,14 +579,7 @@ namespace tensorNN {
             gpu_full_softmax(A, B, axis, true);
         }
 #endif
-#ifdef cFPGA
-        else {
-                        msg("Not Implemented Error", "FullSoftmax");
-
-    }
-#endif
-
-
+        PROFILING_FOOTER(Softmax);
     }
 
     // FULL SOFTMAX DERIVATIVE
@@ -785,11 +596,6 @@ namespace tensorNN {
         {
             gpu_d_full_softmax(D, I, PD, axis);
         }
-#endif
-#ifdef cFPGA
-        else {
-                        msg("Not Implemented Error", "D_FullSoftmax");
-    }
 #endif
     }
 

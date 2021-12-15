@@ -155,4 +155,55 @@ public:
     string plot(int c) override;
 };
 
+/// MultiThreshold Layer
+class LMultiThreshold : public LinLayer {
+public:
+
+      static int total_layers;
+      int size;
+
+      Tensor *thresholds;
+      float out_bias;
+      float out_scale;
+
+      LMultiThreshold(Layer *parent, vector<int> thresholds_shape, string name, int dev, int mem, float out_bias, float out_scale);
+
+      Layer *share(int c, int bs, vector<Layer *> p) override;
+
+      Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+      void resize(int batch) override;
+
+      void forward() override;
+
+      void backward() override;
+
+      string plot(int c) override;
+};
+
+/// TopK Layer
+class LTopK : public LinLayer {
+public:
+
+	static int total_layers;
+	int axis;
+	int largest;
+	int sorted;
+	int K;
+
+	LTopK(Layer *parent, vector<int> K_shape, string name, int dev, int mem, int axis, int largest, int sorted, int K);
+
+      Layer *share(int c, int bs, vector<Layer *> p) override;
+
+      Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+      void resize(int batch) override;
+
+      void forward() override;
+
+      void backward() override;
+
+      string plot(int c) override;
+};
+
 #endif //EDDL_LAYER_AUXILIAR_H

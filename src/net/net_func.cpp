@@ -18,6 +18,7 @@
 #include "eddl/utils.h"
 #include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
+#include "eddl/profiling.h"
 
 
 using namespace std;
@@ -46,9 +47,10 @@ void Net::do_reset_grads() {
 }
 
 void Net::do_forward() {
-
+    PROFILING_HEADER_EXTERN(forward);
     for (int i = 0; i < vfts.size(); i++)
         vfts[i]->forward();
+    PROFILING_FOOTER(forward);
 
 }
 
@@ -236,7 +238,7 @@ void distributeTensor(Layer *l,string tname, int p)
             Tensor::select(l->delta, sl->delta, sind, start, end);
         }
         else if (tname=="param") {
-            cout<<"Distribute param "<<p<<" to device "<<i<<endl;
+            //cout<<"Distribute param "<<p<<" to device "<<i<<endl;
             Tensor::copy(l->params[p],sl->params[p]);
         }
         else if (tname=="gradient") {

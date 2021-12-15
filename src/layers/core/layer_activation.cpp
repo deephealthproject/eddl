@@ -166,7 +166,6 @@ void LActivation::resize(int batch){
 #endif
 
 void LActivation::forward(){
-
 #ifdef cCUDNN
 
 if(!this->input->isCPU())

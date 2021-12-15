@@ -314,17 +314,18 @@ if(USE_FPGA)
     find_package(OpenCL)
     if (OpenCL_FOUND)
 
-        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include}>")
+        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include>")
+	target_include_directories(${PROJECT_NAME} PUBLIC /opt/xilinx/xrt/include)
         #target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:/opt/Xilinx/Vivado/2018.3/include)  # Is this cross-platform?
 
         target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCL_LIBRARY})
         if(APPLE)
-            target_link_options(${PROJECT_NAME} PUBLIC -framework opencl)
+            target_link_options(${PROJECT_NAME} PUBLIC -framework opencl -lpthread)
         endif()
 
         # TODO: Why this? Flags should be specific
         #set(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS}")  # DO NOT REPLACE "CMAKE_CXX_FLAGS
-        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS})
+        #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS})
 
         # Add extra files
         target_sources(${PROJECT_NAME} PRIVATE ${FPGA_HEADERS} ${FPGA_SOURCES})

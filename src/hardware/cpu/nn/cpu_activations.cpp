@@ -13,8 +13,13 @@
 #include <iostream>
 
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 void cpu_relu(Tensor *A, Tensor *B){
+#ifdef CPU_DEBUG
+    printf("cpu_relu\n");
+    _profile_cpu_tensor(A);
+#endif  
     _profile(_CPU_RELU, 0);
 #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {
@@ -22,6 +27,9 @@ void cpu_relu(Tensor *A, Tensor *B){
         else B->ptr[i] = 0.0;
     }
     _profile(_CPU_RELU, 1);
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(B);
+#endif
 }
 
 void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
@@ -96,10 +104,19 @@ void cpu_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
 
 void cpu_softplus(Tensor *A, Tensor *B){
     _profile(_CPU_SOFTPLUS, 0);
+
+#ifdef CPU_DEBUG
+    printf("cpu_softplus:\n");
+    printf(" A tensor: "); _profile_cpu_tensor(A);
+#endif
+
 #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {
         B->ptr[i] = ::logf(1 + ::expf(A->ptr[i]));
     }
+#ifdef CPU_DEBUG
+    printf(" B tensor: "); _profile_cpu_tensor(B);
+#endif
     _profile(_CPU_SOFTPLUS, 1);
 }
 
@@ -253,6 +270,7 @@ void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
 
 
 void cpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable){
+    _profile(_CPU_SOFTMAX, 0);
     cpu_full_softmax_nd(A, B, axis, stable);
 //
 //    if(axis==1 && A->ndim==2){  // TODO: Temp. This should be generic for n-dimensions
@@ -260,6 +278,7 @@ void cpu_full_softmax(Tensor *A, Tensor *B, int axis, bool stable){
 //    }else{
 //        cpu_full_softmax_nd(A, B, axis, stable);
 //    }
+    _profile(_CPU_SOFTMAX, 1);
 }
 
 void cpu_full_softmax_batched_2d(Tensor *A, Tensor *B, bool stable){

@@ -11,6 +11,7 @@
 #include "eddl/profiling.h"
 #include <algorithm>
 #include <numeric>
+#include <float.h>
 #include <omp.h>
 
 int num_instances[_NUM_CPU_FUNCS];
@@ -18,7 +19,7 @@ float mb_memory_needed;
 
 void _profile_funcname(int i, char *name) {
   switch(i) {
-case _CPU_ALL             : strcpy(name, "all"); break; 
+case _CPU_ALL              : strcpy(name, "all"); break; 
 case _CPU_ANY              : strcpy(name, "any"); break;
 case _CPU_ISFINITE         : strcpy(name, "isfinite"); break;
 case _CPU_ISINF            : strcpy(name, "isinf"); break;
@@ -168,6 +169,30 @@ default                          : strcpy(name, "?????"); break;
 }
 }
 
+void _profile_cpu_tensor(Tensor *T) {
+#ifdef CPU_DEBUG
+  float min = FLT_MAX;
+  float max = -FLT_MAX;
+  float sum = 0.f;
+  float avg;
+  for (int i=0; i<T->size; i++) {
+    if (T->ptr[i] > max) max = T->ptr[i];
+    if (T->ptr[i] < min) min = T->ptr[i];
+    sum += T->ptr[i];
+  }
+  avg = sum / (float)T->size;
+  printf("  - Tensor (cpu)  ");
+  printf(" size %10d ", T->size);
+  printf(" dims: ");
+  printf(" %6d ", T->shape[0]);
+  if (T->ndim>=2) printf(" x %6d ", T->shape[1]); else printf("          ");
+  if (T->ndim>=3) printf(" x %6d ", T->shape[2]); else printf("          ");
+  if (T->ndim>=4) printf(" x %6d ", T->shape[3]); else printf("          ");
+  printf(" (cpu_ptr %p). ", T->ptr);
+  printf(" Min %8.4f Max %8.4f Avg %8.4f\n", min, max, avg);
+#endif
+}
+
 struct timeval time_ini[_NUM_CPU_FUNCS];
 unsigned long long acc_time[_NUM_CPU_FUNCS];
 
@@ -183,7 +208,6 @@ void _profile(int f_id, int end) {
 }
 
 void _show_profile() {
-  #ifdef CPU_DEBUG
   printf("\nCPU functions called:\n");
   for (int i=0; i<_NUM_CPU_FUNCS; i++) {
     if (num_instances[i] != 0) {
@@ -193,7 +217,6 @@ void _show_profile() {
     }
   }
   printf("Memory: %f MB\n", mb_memory_needed);
-  #endif
 }
 
 void _profile_add_tensor(unsigned long int size) {

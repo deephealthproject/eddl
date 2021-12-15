@@ -13,7 +13,10 @@
 #include <iostream>
 
 #include "eddl/layers/merge/layer_merge.h"
-
+#include "eddl/layers/operators/layer_operators.h"
+#include "eddl/tensor/nn/tensor_nn.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/profiling.h"
 
 using namespace std;
 

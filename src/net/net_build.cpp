@@ -190,8 +190,10 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
         // Set params
         layers[i]->verbosity_level = this->verbosity_level;
     }
+
     // set optimizer
     this->optimizer = opt;
+
     this->optimizer->setlayers(layers);
 
     // set loss functions and create targets tensors
@@ -228,6 +230,7 @@ void Net::make_graph(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
 
     // backward sort
     bts();
+
     // random params
     if(initialize) {
       do_initialize();
@@ -317,33 +320,6 @@ void Net::set_compserv(CompServ *cs, bool do_compserv_delete){
         }
 
 
-#endif
-        } else {
-            // split on multiple FPGAs
-#ifndef cFPGA
-        msg("EDDL not compiled for FPGA", "Net.build");
-#else
-        int nfpgas=1;  //fpga_devices();
-
-        if (nfpgas==0) msg("FPGA devices not found","Net.build");
-        if (cs->local_fpgas.size()>nfpgas) msg("FPGA list on ComputingService is larger than available devices","Net.build");
-
-        fprintf(stderr,"Selecting FPGAs from CS_FPGA\n");
-
-        for(int i=0;i<cs->local_fpgas.size();i++)
-          if (cs->local_fpgas[i]) {
-            devsel.push_back(i);
-            fprintf(stderr,"FPGA(%d) ",i);
-          }
-
-        fprintf(stderr,"\n");
-
-        if (!devsel.size()) msg("No fpga selected","Net.build");
-
-        cout<<"split into "<<devsel.size()<<" FPGAs devices\n";
-        if (!cs->isshared) {
-            split(devsel.size(),DEV_FPGA);
-        }
 #endif
       }
     }

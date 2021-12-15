@@ -28,7 +28,6 @@
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/auxiliar/layer_auxiliar.h"
 #include "eddl/layers/da/layer_da.h"
-#include "eddl/layers/fused/layer_fused.h"
 #include "eddl/layers/generators/layer_generators.h"
 #include "eddl/layers/merge/layer_merge.h"
 #include "eddl/layers/noise/layer_noise.h"
@@ -37,7 +36,7 @@
 #include "eddl/layers/reductions/layer_reductions.h"
 #include "eddl/layers/pool/layer_pool.h"
 #include "eddl/layers/recurrent/layer_recurrent.h"
-
+#include "eddl/layers/fpga/layer_hlsinf.h"
 
 // EDDL namespace defines the API
 namespace eddl {
@@ -136,6 +135,15 @@ namespace eddl {
     void toGPU(model net, vector<int> g={1}, int lsb=1, const string& mem="full_mem");
     void toGPU(model net, const string& mem="full_mem");
     void toGPU(model net, vector<int> g={1}, const string& mem="full_mem");
+
+    /**
+      *  @brief Assign model operations to the FPGA.
+      *  @param net  Model
+      *  @param hlsinf_version HLSinf accelerator version to use (default 1)
+      *  @param hlsinf_subversion HLSinf accelerator subversion to use (default 0)
+      *  @return     (void)
+    */
+    model toFPGA(model net, int hlsinf_version=1, int hlsinf_subversion=0);
 
     /**
       *  @brief Executes the code in the CPU.
@@ -661,6 +669,11 @@ namespace eddl {
     */
     void show_profile();
 
+    /**
+     *  @brief Resets profile information.
+     */
+    void reset_profile();
+
 
     ///////////////////////////////////////
     //  LAYERS
@@ -835,6 +848,104 @@ namespace eddl {
       *  @return     Convolution layer
     */
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    /**
+      *  @brief Convolution layer + STM.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param padding  One of "none", "valid" or "same"
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer ConvSTM(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+
+   /**
+      *  @brief Convolution layer + STM + Add.
+      *
+      *  @param layers  List of layers
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param padding  One of "none", "valid" or "same"
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer ConvSTMAdd(const vector<layer> &layers, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    /**
+      *  @brief Convolution layer + MaxPooling.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param padding  One of "none", "valid" or "same"
+      *  @param pool_size  Size of the max pooling windows
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */               
+    layer ConvMaxPool(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &conv_strides = {1, 1}, string conv_padding = "same", 
+               const vector<int> &pool_size = {2, 2}, const vector<int> &pool_strides = {2, 2}, //TODO: check pool stride for k_conv
+               string pool_padding = "none",bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");  
+
+         /**
+      *  @brief Convolution layer + MaxPooling.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param conv_strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param conv_padding  One of "none", "valid" or "same"
+      *  @param pool_size  Size of the max pooling windows
+      *  @param pool_strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param pool_padding  One of "none", "valid" or "same"
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */               
+    layer ConvReLUMaxPool(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &conv_strides = {1, 1}, string conv_padding = "same", 
+               const vector<int> &pool_size = {2, 2}, const vector<int> &pool_strides = {2, 2}, //TODO: check pool stride for k_conv
+               string pool_padding = "none",bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");          
+    /**
+      *  @brief 2D Convolution layer + ReLU.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param padding  One of "none", "valid" or "same"
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer ConvReLU(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
                int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
@@ -1053,6 +1164,17 @@ namespace eddl {
       *  @return     Output of reshape operation
     */
     layer Reshape(layer parent, const vector<int> &shape, string name = "");
+
+
+    /**
+      *  @brief Transforms an input to an output format
+      *
+      *  @param parent  Parent layer
+      *  @param mode Mode (0 = CHW to GHWC; 1 = GHWC to CHW)
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Transform(layer parent, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transforrm, int mode, string name = "");
 
     /**
       *  @brief Flattens the input. Does not affect the batch size.
@@ -2502,8 +2624,21 @@ namespace eddl {
     */
     void download_flickr();
 
+    ///////////////////////////////////////
+    //  HLSinf accelerators
+    ///////////////////////////////////////
+    /**
+      *  @brief Downloads HLSinf accelerator.
+      *
+      *  @param version HLSinf accelerator version
+      *  @param subversion HLSinf accelerator subversion
+      *
+      *  @return     (void) The binary files of HLSinf accelerator
+    */
+    void download_hlsinf(int version, int subversion);
+
+
     // Auxiliary function
     layer _expand3d_to_4d(layer parent, string name);
-
 }
 #endif
