@@ -5,11 +5,11 @@ Misc
 hardware_supported
 ----------------------------
 
-.. doxygenfunction:: vector<string> hardware_supported()
+.. doxygenfunction:: hardware_supported();
 
 .. code-block:: c++
 
-    vector<string> = new Tensor:hardware_supported();
+    vector<string> = Tensor::hardware_supported();
     // {"cpu", "cuda", "cuda", "fpga"}
 
 
@@ -20,7 +20,7 @@ is_hardware_supported
 
 .. code-block:: c++
 
-    bool supported = new Tensor:is_hardware_supported("cudnn");
+    bool supported = Tensor::is_hardware_supported("cudnn");
     // true
 
 
