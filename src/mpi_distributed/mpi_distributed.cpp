@@ -351,10 +351,11 @@ void broadcast_GPU_params_distributed(Net* net) {
 }
 
 void Bcast_params_distributed(Net * net) {
-    broadcast_GPU_params_distributed(net);
+    if (net->cs->hw=="GPU")
+        broadcast_GPU_params_distributed(net);
 }
 
-void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
+void avg_GPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
     float * myptr;
     int count;
     int n_procs;
@@ -367,26 +368,36 @@ void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
 
     if ((((curr_batch) % batches_avg) == 0) || ((curr_batch) == batches_per_proc)) {
         //printf("Proc %d Sincronizando %d\n", id, j);
-        for (int ii = 0; ii < net->snets[0]->layers.size(); ii++) {
-            for (int jj = 0; jj < net->snets[0]->layers[ii]->params.size(); jj++) {
+        for (int i = 0; i < net->layers.size(); i++) {
+            if (net->layers[i]->trainable) {
+                for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
+                    //for (int ii = 0; ii < net->snets[0]->layers.size(); ii++) {
+                    //    for (int jj = 0; jj < net->snets[0]->layers[ii]->params.size(); jj++) {
 
-                myptr = net->snets[0]->layers[ii]->params[jj]->ptr;
-                count = net->snets[0]->layers[ii]->params[jj]->size;
-                //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
-                if (count != 0) {
-                    // AllReduce params
-                    //AllReduce_distributed(myptr, count);
-                    AllReduce_streams_distributed(myptr, count, ii);
-                    //fn_mpi_AllReduce(myptr, count)
-                    //fn_nccl_AllReduce(myptr, count);
+                    myptr = net->snets[0]->layers[i]->params[j]->ptr;
+                    count = net->snets[0]->layers[i]->params[j]->size;
+                    //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
+                    if (count != 0) {
+                        // AllReduce params
+                        //AllReduce_distributed(myptr, count);
+                        AllReduce_streams_distributed(myptr, count, i);
+                        //fn_mpi_AllReduce(myptr, count)
+                        //fn_nccl_AllReduce(myptr, count);
 
-                    // Average params
-                    net->snets[0]->layers[ii]->params[jj]->div_(n_procs);
+                        // Average params
+                        net->snets[0]->layers[i]->params[j]->div_(n_procs);
+                    }
                 }
             }
         }
     }
 }
+
+void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
+    if (net->cs->hw=="GPU")
+        avg_GPU_weights_distributed(net, curr_batch, batches_per_proc);
+}
+
 
 void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch_avg) {
     float SPEED_UP = 1.05;
