@@ -363,6 +363,9 @@ void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
         for (int j = 0; j < A->shape[1]; j++, p++)
             C->ptr[p] = A->ptr[p] + B->ptr[j];
     }
+#ifdef CPU_DEBUG
+        printf(" output C : "); _profile_cpu_tensor(C);
+#endif
 }
 
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {

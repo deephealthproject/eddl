@@ -25,36 +25,9 @@
 extern cl::CommandQueue *q;
 
 //#define FPGA_DEBUG
+//#define WRITE_TENSORS_TO_FILE
 
 #include "eddl/hardware/fpga/fpga_enables.h"
-
-// ----------------------------------------------------------------------------------------------------------
-// Precision support
-//
-// data_type is the basic precision format used for tensors in FPGA
-//
-// Three supported formats:
-//  - float. This format has been tested and works well within EDDL. Indeed, is the single format used by EDDL
-//  - ap_fixed. This format is under test. Aproximated precision fixed point format
-//  - ap_int. This format is under test. Aproximated precision integer
-//
-// The PRECISION_CONVERSION define must be set if either ap_fixed or ap_int formats are used. This define
-// enables the precision conversion from CPU to FPGA and viceversa. Whenever a tensor is read or written
-// from/to the FPGA the precision conversion is performed on a temporary CPU buffer.
-// If float precision is used, then PRECISION_CONVERSION should not be used
-//
-//#define PRECISION_CONVERSION
-//#define MIN_FLOAT_PRECISION_CONVERSION -32767
-//#define MAX_FLOAT_PRECISION_CONVERSION 32768
-#define fpga_data_type float
-//#define fpga_data_type ap_fixed<8,4,AP_TRN,AP_WRAP>
-//#define fpga_data_type ap_fixed<16,8,AP_TRN,AP_WRAP>
-//#define fpga_data_type ap_int<8>
-//#define fpga_data_type ap_int<16>
-//#define fpga_data_type ap_int<32>
-//
-//
-
 
 #define MAX_KERNELS 16
 
@@ -104,21 +77,12 @@ void event_cb(cl_event event1, cl_int cmd_status, void *data);
 
 void fpga_init(int kernel_version, int kernel_subversion);
 
-void fpga_destroy_memory(cl::Buffer *fpga_ptrI);
 cl::Buffer *fpga_create_memory(long int size);
 void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size);
 void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size, int src_format, int dst_format);
 void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size);
 
-void fpga_copy_fpga(Tensor *A, Tensor *B);
-void fpga_copy_to_fpga_good(float *nptr, Tensor *A, int cvt=1);
-void fpga_copy_from_fpga_good(Tensor *A,float *nptr, int cvt=1);
-void fpga_copy_from_fpga(Tensor *A,float *nptr, int cvt=1);
-
-
-
 void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
-
 void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B);
 void dense_to_conv(float *ptr_src, int N, int M, float *ptr_dst, int I, int O, int KH, int KW);
 void tensor_padded(Tensor *A, Tensor *B);

@@ -64,11 +64,21 @@ void cpu_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
 
 void cpu_leaky_relu(Tensor *A, Tensor *B,float param){
     _profile(_CPU_LEAKY_RELU, 0);
+#ifdef CPU_DEBUG
+    printf("leaky_relu:\n");
+    printf(" param: %f\n", param);
+    printf(" input   : "); _profile_cpu_tensor(A);
+#endif
+
 #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {
         if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
         else B->ptr[i] = param*A->ptr[i];;
     }
+
+#ifdef CPU_DEBUG
+    printf(" output  : "); _profile_cpu_tensor(B);
+#endif
     _profile(_CPU_LEAKY_RELU, 1);
 }
 

@@ -289,7 +289,6 @@ namespace eddl {
     }
 
     void show_profile() {
-        printf("profile:\n");
         __show_profile();
     }
 

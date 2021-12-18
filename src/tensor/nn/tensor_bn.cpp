@@ -97,6 +97,14 @@ namespace tensorNN {
                             bool trmode, float epsilon, float momentum)
     {
         if (input->isCPU()) {
+#ifdef CPU_DEBUG
+            printf("batchnorm_forward:\n");
+            printf(" input   : "); _profile_cpu_tensor(input);
+            printf(" mean    : "); _profile_cpu_tensor(mean);
+	        printf(" variance: "); _profile_cpu_tensor(variance);
+            printf(" bn_g    : "); _profile_cpu_tensor(bn_g);
+            printf(" bn_b    : "); _profile_cpu_tensor(bn_b);
+#endif	
             cpu_batchnorm_forward(input->shape[0], input->shape[1],
                 input->ndim == 2 ? 1 : input->ndim == 3 ? input->shape[2] : input->shape[2] * input->shape[3],
                 input->ptr, output->ptr, opa->ptr,
@@ -104,6 +112,9 @@ namespace tensorNN {
                 bn_g != NULL ? bn_g->ptr : NULL,
                 bn_b != NULL ? bn_b->ptr : NULL,
                 bn_mean->ptr, bn_var->ptr, trmode, epsilon, momentum);
+#ifdef CPU_DEBUG
+            printf(" output  : "); _profile_cpu_tensor(output);
+#endif
         } else if (input->isGPU()) {
 #ifdef cGPU
             gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],
