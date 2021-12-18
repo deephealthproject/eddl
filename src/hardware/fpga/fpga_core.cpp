@@ -444,7 +444,12 @@ cl::Buffer *fpga_create_memory(long int size) {
   printf("    (creating memory in fpga size %d)\n", size);
   #endif
 
-  OCL_CHECK(err,buffer = new cl::Buffer(*context, CL_MEM_READ_WRITE, size, NULL, &err));
+  cl_mem_ext_ptr_t data_ddr;
+  data_ddr.flags  =  0 | XCL_MEM_TOPOLOGY;
+  data_ddr.obj = NULL;
+  data_ddr.param = 0;
+
+  OCL_CHECK(err, buffer = new cl::Buffer(*context, CL_MEM_READ_WRITE | CL_MEM_EXT_PTR_XILINX, size, &data_ddr, &err));
   return buffer;
 }
 
@@ -876,13 +881,27 @@ void dense_to_conv(float *ptr_src, int N, int M, float *ptr_dst, int I, int O, i
 //  printf("fin\n");
 }
 
-void fpga_write_buffer(char *file_name, void *ptr, int size, int data_size) {
+
+#ifdef WRITE_TENSORS_TO_FILE
+
+void fpga_write_buffer(char *file_name, void *ptr, int size, int data_format) {
   FILE *fd = fopen(file_name, "w");
   if (fd == NULL) {printf("Error, not able to open file for write\n"); exit(1);}
+
+  int data_size;
+  if (data_format == HLSINF_API32) data_size = 4; else
+  if (data_format == HLSINF_FP32) data_size = 4; else
+  if (data_format == HLSINF_APUI8) data_size = 1; else
+  if (data_format == HLSINF_API8) data_size = 1; else
+  {printf("Error, no data format recognized\n"); exit(1);}
+  printf("data_format %d data_size %d\n", data_format, data_size);
+  
   void *buff = malloc(size * data_size);
   fpga_copy_memory_from_fpga((cl::Buffer *)ptr, buff, size*data_size);
+  float *buff1 = (float *)buff;
   fwrite(buff, data_size, size, fd);
   fclose(fd);
 }
+#endif
 
 #endif
