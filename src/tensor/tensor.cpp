@@ -70,8 +70,11 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2){
     updateData(fptr, fptr2);
 }
 
+//Tensor::Tensor(const vector<int> &shape, string dev) : Tensor(shape, nullptr, Tensor::getDeviceID(dev)){}
+
+
 // From shape and device
-Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
+Tensor::Tensor(const vector<int> &shape, int dev) : Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
 Tensor::Tensor(const vector<int> &shape, Tensor *T) : Tensor(shape,T->ptr, T->device) {}
@@ -445,6 +448,35 @@ int Tensor::getDeviceID(int dev){
     return -1;
 }
 
+int Tensor::getDeviceID(const string& dev){
+    string dev_name;
+    int dev_rank;
+
+    try{
+        // Check tokens
+        vector<string> tokens = split_string(dev, ':');
+        if (tokens.size()==2){
+            dev_name = tokens[0];
+            dev_rank = stoi(tokens[1]);
+        }else{
+            dev_name = dev;
+            dev_rank = 0;
+        }
+    }catch (...) {
+        throw runtime_error("Invalid format. Expected 'device_name' or 'device_name:rank'");
+    }
+
+    if (dev_name == "cpu"){
+       return DEV_CPU;
+   }else if (dev_name == "cuda"  || dev_name == "gpu"){
+       return DEV_GPU + dev_rank;
+   }else if (dev_name == "fpga") {
+        return DEV_FPGA + dev_rank;
+    }else{
+        throw runtime_error("Invalid value for device");
+   }
+}
+
 bool Tensor::isSquared(Tensor *A){
     int last_dim = A->shape[0];
     for(int i=0; i<A->ndim; i++){
@@ -471,16 +503,25 @@ void Tensor::resize(int b, float *fptr, void *fptr2, bool delete_data) {
     updateData(fptr, fptr2);
 }
 
-string Tensor::max_accelerator_supported() {
-    string device = "cpu";
+vector<string> Tensor::hardware_supported() {
+    // Get supported hardware
+    vector<string> hw_supported = {"cpu"};
+#ifdef cGPU
+    hw_supported.emplace_back("cuda");
+#ifdef cCUDNN
+    hw_supported.emplace_back("cudnn");
+#endif
+#endif
+#ifdef cFPGA
+    hw_supported.emplace_back("fpga");
+#endif
 
-    #ifdef cGPU
-        device = "cuda";
+    return hw_supported;
+}
 
-        #ifdef cCUDNN
-            device = "cudnn";
-        #endif
-    #endif
-
-    return device;
+bool Tensor::is_hardware_supported(string hardware){
+    vector<string> hw_supported = Tensor::hardware_supported();
+    if(hardware=="gpu") { hardware = "cuda"; }  // gpu could be both "cuda" and "cudnn"
+    bool hw_found = std::find(hw_supported.begin(), hw_supported.end(), hardware) != hw_supported.end();
+    return hw_found;
 }

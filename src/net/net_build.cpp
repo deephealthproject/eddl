@@ -415,21 +415,25 @@ void Net::resize(int b)
 {
   int i,j;
 
-  if (batch_size==b) return;
+  // Check we need to resize the network for the given batch size
+  if (batch_size==b) { return; }
 
-  isresized=true;
-  batch_size=b;
+  // Check if there are snets (later is it used to divide the batch size)
+  if(snets.empty()){
+      throw std::runtime_error("The number of 'snets' is equal to zero. (This might indicate a bug in our code)");
+  }
 
-  int c=snets.size();
-  int bs,m;
+    isresized=true;
+    batch_size=b;
+    int c=snets.size();
+    int bs,m;
 
-  if (batch_size<c) {
+  if (batch_size<c){
     printf("=====> Warning: batch_size (%d) lower than compserv resources (%d)\n",batch_size,c);
     bs=1;
     m=0;
     c=batch_size;
-  }
-  else {
+  }else {
     bs = batch_size / c;
     m = batch_size % c;
   }
