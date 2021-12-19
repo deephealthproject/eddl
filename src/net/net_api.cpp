@@ -652,7 +652,9 @@ void Net::print_loss(int b, int nb) {
 
             if (losses.size() >= (k + 1)) {
                 if (is_mpi_distributed()) {
-                    MPI_Reduce(&total_loss[k], &loss, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
+#ifdef cMPI
+                    MPICHECK(MPI_Reduce(&total_loss[k], &loss, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
+#endif
                     loss = loss / n_procs;
                 } else {
                     loss = total_loss[k];
@@ -664,7 +666,9 @@ void Net::print_loss(int b, int nb) {
             }
             if (this->metrics.size() >= (k + 1)) {
                 if (is_mpi_distributed()) {
-                    MPI_Reduce(&total_metric[k], &metric, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
+#ifdef cMPI                    
+                    MPICHECK(MPI_Reduce(&total_metric[k], &metric, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
+#endif                    
                     metric = metric / n_procs;
                 } else {
                     metric = total_metric[k];
