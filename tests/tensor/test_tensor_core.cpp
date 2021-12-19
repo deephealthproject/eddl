@@ -303,3 +303,35 @@ TEST(TensorTestSuite, tensor_broadcast){
 }
 
 //vector<vector<int>> res = cartesian_product({{0,1}, {0,1}, {0,1}});
+
+TEST(TensorTestSuite, tensor_getDeviceID) {
+    // CPU
+    ASSERT_TRUE(0 == Tensor::getDeviceID("cpu"));
+    ASSERT_TRUE(0 == Tensor::getDeviceID("cpu:0"));
+    ASSERT_TRUE(0 == Tensor::getDeviceID("cpu:1"));
+    ASSERT_TRUE(0 == Tensor::getDeviceID("cpu:2"));
+
+    // GPU: cuda
+    ASSERT_TRUE(1000 == Tensor::getDeviceID("cuda"));
+    ASSERT_TRUE(1000 == Tensor::getDeviceID("cuda:0"));
+    ASSERT_TRUE(1001 == Tensor::getDeviceID("cuda:1"));
+    ASSERT_TRUE(1002 == Tensor::getDeviceID("cuda:2"));
+
+    // GPU
+    ASSERT_TRUE(1000 == Tensor::getDeviceID("gpu"));
+    ASSERT_TRUE(1000 == Tensor::getDeviceID("gpu:0"));
+    ASSERT_TRUE(1001 == Tensor::getDeviceID("gpu:1"));
+    ASSERT_TRUE(1002 == Tensor::getDeviceID("gpu:2"));
+
+    // FPGA
+    ASSERT_TRUE(2000 == Tensor::getDeviceID("fpga"));
+    ASSERT_TRUE(2000 == Tensor::getDeviceID("fpga:0"));
+    ASSERT_TRUE(2001 == Tensor::getDeviceID("fpga:1"));
+    ASSERT_TRUE(2002 == Tensor::getDeviceID("fpga:2"));
+
+    // Other
+//    ASSERT_TRUE(-1 == Tensor::getDeviceID("fpga:error:error"));
+//    ASSERT_TRUE(-1 == Tensor::getDeviceID("1:fpga"));
+//    ASSERT_TRUE(-1 == Tensor::getDeviceID("nodevice"));
+//    ASSERT_TRUE(-1 == Tensor::getDeviceID(""));
+}

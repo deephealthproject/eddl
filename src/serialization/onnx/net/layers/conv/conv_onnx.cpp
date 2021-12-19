@@ -325,16 +325,6 @@ void build_conv_node(LConv *layer, onnx::GraphProto *graph, bool gradients)
  * DISTRIBUTED TRAINING
  */
 
-void update_conv_weights(LConv *layer, vector<Tensor *> weights)
-{
-  layer->update_weights(weights);
-}
-
-void apply_grads_to_conv(LConv *layer, vector<Tensor *> grads)
-{
-  layer->accumulate_accumulated_gradients(grads);
-}
-
 vector<Tensor *> get_conv_tensors(onnx::NodeProto &node,
                                   map<string, vector<float>> &map_init_values,
                                   map<string, vector<int>> &map_init_dims)

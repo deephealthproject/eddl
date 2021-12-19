@@ -24,8 +24,16 @@ void cpu_acos(Tensor *A, Tensor *B){
 }
 
 void cpu_add(Tensor *A, Tensor *B, float v) {
+#ifdef CPU_DEBUG
+        printf("cpu_add (v = %f)\n", v);
+        _profile_cpu_tensor(A);
+#endif
 #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] + v;
+
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(B);
+#endif
 }
 
 
@@ -51,6 +59,33 @@ void cpu_clamp(Tensor *A, Tensor *B, float min, float max){
         else if(A->ptr[i] > max){ B->ptr[i] = max; }
         else { B->ptr[i] = A->ptr[i]; }
     }
+    #ifdef CPU_DEBUG
+
+    _profile_cpu_tensor(B);
+    //B->print();
+    /*int CPI = 8;
+    unsigned char *buff = (unsigned char *) malloc(B->size);
+    int C_in = B->shape[1]; int H_in = B->shape[2]; int W_in = B->shape[3];
+    
+    for (int c=0; c<C_in; c++) {
+      for (int h=0; h<H_in; h++) {
+        for (int w=0; w<W_in; w++) {
+          int addr_src = (c * H_in * W_in) + (h * W_in) + w;
+          int g = c / CPI;
+          int cpi = c % CPI; 
+          int addr_dst = (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
+          unsigned char v = B->ptr[addr_src];
+          buff[addr_dst] = v;
+        }
+      }
+    }
+
+  FILE *fd = fopen("output_cpu.bin", "w");
+  if (fd == NULL) {printf("Error, not able to open file for write\n"); exit(1);}
+  fwrite(buff, B->size, sizeof(unsigned char), fd);
+  fclose(fd);
+  exit(1);*/
+#endif
 }
 
 void cpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max){
@@ -113,8 +148,15 @@ void cpu_mod(Tensor *A, Tensor *B, float v){
 }
 
 void cpu_mult(Tensor *A, Tensor *B, float v) {
+#ifdef CPU_DEBUG
+	printf("cpu_mult (v = %f)\n", v);
+	_profile_cpu_tensor(A);
+#endif
 #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] * v;
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(B);
+#endif
 }
 
 void cpu_normalize(Tensor *A, Tensor *B, float min, float max){
@@ -216,8 +258,17 @@ void cpu_tanh(Tensor *A, Tensor *B){
 }
 
 void cpu_trunc(Tensor *A, Tensor *B){
+#ifdef CPU_DEBUG
+    printf("cpu_trunc\n");
+    _profile_cpu_tensor(A);
+#endif
 #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) B->ptr[i] = ::truncf(A->ptr[i]);
+
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(B);
+#endif
+
 }
 
 
@@ -225,6 +276,11 @@ void cpu_trunc(Tensor *A, Tensor *B){
 // CPU: Math (static) ***************************
 
 void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
+#ifdef CPU_DEBUG
+        printf("add:\n");
+        printf(" input A : "); _profile_cpu_tensor(A);
+        printf(" input B : "); _profile_cpu_tensor(B);
+#endif
 #pragma omp parallel for
     for (int i = 0; i < A->size; i++)
         if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
@@ -244,6 +300,11 @@ void cpu_inc(Tensor *A, Tensor *B) {
 }
 
 void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
+#ifdef CPU_DEBUG
+	printf("mult2d:\n");
+	printf(" input A : "); _profile_cpu_tensor(A);
+	printf(" input B : "); _profile_cpu_tensor(B);
+#endif
     if (!tB) {
         if (!tA) {
             if (!incC) *(C->ptr2) = *(B->ptr2) * (*(A->ptr2));
@@ -261,6 +322,9 @@ void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
             else *(C->ptr2) += (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
         }
     }
+#ifdef CPU_DEBUG
+    printf(" output C : "); _profile_cpu_tensor(C);
+#endif
 }
 
 void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
@@ -272,20 +336,36 @@ void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
 
 void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
+#ifdef CPU_DEBUG
+  printf("EL_MULT:\n");
+  _profile_cpu_tensor(A);
+  _profile_cpu_tensor(B);
+#endif
 #pragma omp parallel for
     for (int i = 0; i < A->size; i++)
         if (incC) C->ptr[i] += A->ptr[i] * B->ptr[i];
         else C->ptr[i] = A->ptr[i] * B->ptr[i];
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(C);
+#endif
 }
 
 
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
+#ifdef CPU_DEBUG
+        printf("sum2D_rowwise:\n");
+        printf(" input A : "); _profile_cpu_tensor(A);
+        printf(" input B : "); _profile_cpu_tensor(B);
+#endif
 #pragma omp parallel for
     for (int i = 0; i < A->shape[0]; i++) {
         int p=i*A->shape[1];
         for (int j = 0; j < A->shape[1]; j++, p++)
             C->ptr[p] = A->ptr[p] + B->ptr[j];
     }
+#ifdef CPU_DEBUG
+        printf(" output C : "); _profile_cpu_tensor(C);
+#endif
 }
 
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
