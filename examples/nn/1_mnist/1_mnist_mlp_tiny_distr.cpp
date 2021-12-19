@@ -26,54 +26,21 @@ using namespace eddl;
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
-    bool use_mpiall = false;
-    bool use_mpi1 = false;
-    bool use_mpi2 = false;
-    bool use_mpi4 = false;
-    bool use_mpix = false;
+    bool use_mpi = false;
     int id;
     
-    if (argc != 2) {
-        printf("ERROR. Missing parameter\n");
-        exit(1);
-    }
-    // Process arguments
+   // Process arguments
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
-        else if (strcmp(argv[i], "--mpi1pall") == 0) use_mpiall = true;
-        else if (strcmp(argv[i], "--mpi1p1gpu") == 0) use_mpi1 = true;
-        else if (strcmp(argv[i], "--mpi1p2gpu") == 0) use_mpi2 = true;
-        else if (strcmp(argv[i], "--mpi1p4gpu") == 0) use_mpi4 = true;
-        else if (strcmp(argv[i], "--mpixgpu") == 0) use_mpix = true;
+         else if (strcmp(argv[i], "--mpi") == 0) use_mpi= true;
     }
-    
-    testing=true;
+    if (use_mpi)
+  init_distributed("MPI");
+    else 
+      init_distributed("NCCL");  
 
-    // Define computing service
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else if (use_mpi1) {
- 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(1);
-	cs=CS_MPI_DISTRIBUTED(1);
-    } else if (use_mpi2) {
- 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(2);
-	cs=CS_MPI_DISTRIBUTED(2);
-    } else if (use_mpi4) {
- 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(4);
-	cs=CS_MPI_DISTRIBUTED(4);
-    } else if (use_mpiall) {
-	cs=CS_MPI_DISTRIBUTED();
-    } else if (use_mpix) {
-        //cs=CS_MPI_DISTR_X_GPU_PER_PROC({1},100,"low_mem");
-        cs=CS_MPI_DISTRIBUTED({1},100,"low_mem");
-    } else {
-        cs = CS_GPU({1}, "low_mem"); // one GPU
-        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-        // cs = CS_CPU();
-        // cs = CS_FPGA({1});
-    }
+    
 
     // Init distribuited training
     //id = init_distributed(&argc, &argv);
@@ -88,7 +55,7 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = (testing) ? 1 : 1;
-    int batch_size = 27;
+    int batch_size = 100;
     int num_classes = 10;
 
     // Define network
@@ -110,7 +77,16 @@ int main(int argc, char **argv) {
        plot(net, "model.pdf");
     }
   
-    
+  // Define computing service
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU(); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+        // cs = CS_FPGA({1});
+    }  
 
     // Build model
     build(net,

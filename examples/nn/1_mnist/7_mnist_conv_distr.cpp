@@ -33,14 +33,8 @@ int main(int argc, char **argv) {
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
     
-    // Define computing service
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else { 
-	cs=CS_MPI_DISTRIBUTED();
-    }
-
+  
+    init_distributed();
     
     // Init distribuited training
     id = get_id_distributed();
@@ -83,7 +77,13 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
-    
+      // Define computing service
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else { 
+	cs=CS_GPU();
+    }
 
     // Build model
     build(net,

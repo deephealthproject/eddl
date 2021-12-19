@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
 
 
     // Settings
-    int epochs = (testing) ? 2 : 2;
+    int epochs = (testing) ? 2 : 10;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -127,7 +127,8 @@ int main(int argc, char **argv) {
         // cs = CS_CPU();
         // cs = CS_FPGA({1});
     }
-
+   
+    
     // Build model
     build(net,
           adam(0.001), // Optimizer
@@ -168,7 +169,7 @@ int main(int argc, char **argv) {
     x_test->div_(255.0f);
 
     //suggest_batch_size(128, 1, batch_size);
- 
+ setlogfile(net,"mnist_mlp");
        
      // Train model
     fit(net,{x_train},{y_train}, batch_size, epochs);
@@ -187,7 +188,7 @@ int main(int argc, char **argv) {
     std::vector<Tensor*> preds;
     preds = predict(net, {x_test});
     
-    y_test->print();
+    //y_test->print();
     
     preds[0]->save("predictions.txt");
     

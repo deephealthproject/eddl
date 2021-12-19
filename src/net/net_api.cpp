@@ -38,6 +38,10 @@ extern void _show_profile_fpga();
 
 #define VERBOSE 0
 
+#define mpi_id0(...)   \
+    if (id==0) \
+        __VA_ARGS__; 
+
 int verboserec=1;
 
 using namespace std;
@@ -592,103 +596,139 @@ void Net::compute_loss()
   }
 }
 
+void Net::print_loss(int b, int nb) {
+    int lbar = 50;
+    int p = 0;
+    int id, n_procs;
+    float loss;
+    float metric;
+    char symbol[10];
 
-void Net::print_loss(int b,int nb)
-{
-  int lbar=50;
-  int p = 0;
-
-  if (isrecurrent) {
-    if (rnet!=nullptr) rnet->print_loss(b,nb);
-  }
-  else {
-
-
-    if (nb!=-1) {
-      int pc=((b+1)*lbar)/nb;
-      if (b>=nb) pc=lbar;
-
-      printf("[");
-    
-      set_text_green();
-      for(int k=0;k<pc;k++) printf("█");
-
-      //if (pc<lbar) {
-      //  if (b%4<2) printf(".");
-      //  else printf(".");
-      //}
-
-      set_text_red();
-      for(int k=pc+1;k<lbar;k++) printf("-");
-
-      set_text_default();
-      printf("] ");
-    }
-
-
-    fprintf(stdout,"%d ",b);
-
-    int length=decsize;
-    for (int k = 0; k < lout.size(); k+=decsize) {
-      string name=lout[k]->name;
-      if (lout[k]->sorig!=nullptr)
-         name=lout[k]->sorig->name;
-
-      fprintf(stdout, "%s[", name.c_str());
-      if (losses.size()>=(k+1)) {
-        //fprintf(stdout, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
-        fprintf(stdout, "loss=%1.3f ", total_loss[k] / (length*inferenced_samples));
-
-      }
-      if (this->metrics.size()>=(k+1)) {
-        //fprintf(stdout, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
-        fprintf(stdout, "metric=%1.3f", total_metric[k] / (length*inferenced_samples));
-      }
-
-      fprintf(stdout, "] ");
-
-
-      if ((flog_tr!=nullptr)&&(trmode)) {
-        fprintf(flog_tr, "%s ", name.c_str());
-        if (losses.size()>=(k+1)) {
-          fprintf(flog_tr, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+    loss = 0;
+    if (isrecurrent) {
+        if (rnet != nullptr) rnet->print_loss(b, nb);
+    } else {
+        if (is_mpi_distributed()) {
+            n_procs = get_n_procs_distributed();
+            id = get_id_distributed();
+            sprintf (symbol, "%s", ">");
+        } else {
+            n_procs = 1;
+            id = 0;
+            sprintf(symbol, "%s", "█");
         }
-        if (this->metrics.size()>=(k+1)) {
-          if (this->metrics[k]->name!="none")
-          fprintf(flog_tr, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+        if (id == 0) {
+            if (nb != -1) {
+                int pc = ((b + 1) * lbar) / nb;
+                if (b >= nb) pc = lbar;
+
+                printf("[");
+
+                set_text_green();
+//                for (int k = 0; k < pc; k++) printf("█");
+                for (int k = 0; k < pc; k++) printf(symbol);
+                //if (pc<lbar) {
+                //  if (b%4<2) printf(".");
+                //  else printf(".");
+                //}
+
+                set_text_red();
+                for (int k = pc + 1; k < lbar; k++) printf("-");
+
+                set_text_default();
+                printf("] ");
+            }
+
+            fprintf(stdout, "%d ", b);
         }
+        int length = decsize;
+        for (int k = 0; k < lout.size(); k += decsize) {
+            string name = lout[k]->name;
 
-        fprintf(flog_tr, " -- ");
+            if (lout[k]->sorig != nullptr)
+                name = lout[k]->sorig->name;
+
+            mpi_id0(fprintf(stdout, "%s[", name.c_str()));
+
+            if (losses.size() >= (k + 1)) {
+                if (is_mpi_distributed()) {
+                    MPI_Reduce(&total_loss[k], &loss, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
+                    loss = loss / n_procs;
+                } else {
+                    loss = total_loss[k];
+                }
+                //fprintf(stdout, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
+                //mpi_id0(fprintf(stdout, "loss=%1.3f ", total_loss[k] / (length * inferenced_samples)));                
+                mpi_id0(fprintf(stdout, "loss=%1.3f ", loss / (length * inferenced_samples)));
+
+            }
+            if (this->metrics.size() >= (k + 1)) {
+                if (is_mpi_distributed()) {
+                    MPI_Reduce(&total_metric[k], &metric, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
+                    metric = metric / n_procs;
+                } else {
+                    metric = total_metric[k];
+                }
+                //fprintf(stdout, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
+                //mpi_id0(fprintf(stdout, "metric=%1.3f", total_metric[k] / (length * inferenced_samples)));
+                mpi_id0(fprintf(stdout, "metric=%1.3f", metric / (length * inferenced_samples)));
+            }
+
+            mpi_id0(fprintf(stdout, "] "));
+           
+
+            // Log files. Only process 0
+            if (id == 0) {
+                if ((flog_tr != nullptr)&&(trmode)) {
+                    fprintf(flog_tr, "%s ", name.c_str());
+                    if (losses.size() >= (k + 1)) {
+                        //fprintf(flog_tr, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+                        fprintf(flog_tr, "loss[%s]=%1.4f ", losses[k]->name.c_str(), loss / inferenced_samples);
+                    }
+                    if (this->metrics.size() >= (k + 1)) {
+                        if (this->metrics[k]->name != "none")
+                            //fprintf(flog_tr, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+                            fprintf(flog_tr, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), metric / inferenced_samples);
+                    }
+
+                    fprintf(flog_tr, " -- ");
 
 
-      }
-      if ((flog_ts!=nullptr)&&(!trmode)) {
-        fprintf(flog_ts, "%s ", name.c_str());
-        if (losses.size()>=(k+1)) {
-          fprintf(flog_ts, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+                }
+                if ((flog_ts != nullptr)&&(!trmode)) {
+                    fprintf(flog_ts, "%s ", name.c_str());
+                    if (losses.size() >= (k + 1)) {
+                        //fprintf(flog_ts, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+                        fprintf(flog_ts, "loss[%s]=%1.4f ", losses[k]->name.c_str(), loss / inferenced_samples);
+                    }
+                    if (this->metrics.size() >= (k + 1)) {
+                        if (this->metrics[k]->name != "none")
+                            //fprintf(flog_ts, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+                            fprintf(flog_ts, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), metric / inferenced_samples);
+                    }
+
+                    fprintf(flog_ts, " -- ");
+                }
+            }
+
+
         }
-        if (this->metrics.size()>=(k+1)) {
-          if (this->metrics[k]->name!="none")
-          fprintf(flog_ts, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+        
+        mpi_id0(fflush(stdout));
+
+        // Log files. Only process 0
+        if (id == 0) {
+            if ((flog_tr != nullptr)&&(trmode)) {
+                fprintf(flog_tr, "\n");
+                fflush(flog_tr);
+            }
+
+            if ((flog_ts != nullptr)&&(!trmode)) {
+                fprintf(flog_ts, "\n");
+                fflush(flog_ts);
+            }
         }
-
-        fprintf(flog_ts, " -- ");
-      }
-
-
     }
-    fflush(stdout);
-
-    if ((flog_tr!=nullptr)&&(trmode)) {
-      fprintf(flog_tr, "\n");
-      fflush(flog_tr);
-    }
-
-    if ((flog_ts!=nullptr)&&(!trmode)) {
-      fprintf(flog_ts, "\n");
-      fflush(flog_ts);
-    }
-  }
 }
 
 
@@ -826,7 +866,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     int n_procs;
     float * myptr;
     int count;
-    int batches = 0;
+   // int batches = 0;
     int batches_per_proc = 0;
    // int batches_avg = 0;
     double secs_epoch = 1e10;
@@ -851,8 +891,8 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             get_params_distributed(&avg_method, &mpi_avg, &x_avg);
 
             // Set local batch size
-            batch = batch / n_procs;
-
+            batch = batch / n_procs;           
+            //mpi_id0(fprintf(stderr, "[DISTR] fit\n"));
         } else {
             n_procs=1;
             id = 0;
@@ -929,10 +969,10 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             }
             reset_loss();
 
-            batches = 0;
+            //batches = 0;
             // For each batch
             for (j = 0; j < (batches_per_proc); j++) {
-                batches = batches + n_procs;
+                //batches = batches + n_procs;
 
                 //printf("Batch nr %d\n", j);
                 // Set random indices
@@ -979,10 +1019,10 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                 */
                  
 
-                if (id == 0) {
-                    print_loss(batches, num_batches);
+                //if (id == 0) {
+                    print_loss(j+1, batches_per_proc);
                     //print_loss(j+1,num_batches);
-                }
+                //}
                 high_resolution_clock::time_point e2 = high_resolution_clock::now();
                 duration<double> epoch_time_span = e2 - e1;
                 if (id == 0) {
@@ -1486,63 +1526,82 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 
 
 ///////////////////////////////////////////
-void Net::evaluate(vtensor tin, vtensor tout,int bs) {
 
-  int i, j, k, n;
-    int id;
+void Net::evaluate(vtensor tin, vtensor tout, int bs) {
+
+    int i, j, k, n;
+    int id, n_procs;
+    int batches_per_proc;
+    //int batches;
 
     if (isrecurrent) {
         evaluate_recurrent(tin, tout, bs);
     } else {
         if (is_mpi_distributed()) {
+            n_procs = get_n_procs_distributed();
             id = get_id_distributed();
-        } else id = 0;
-        if (id == 0) {
-            // Check list shape
-            if (tin.size() != lin.size())
-                msg("input tensor list does not match with defined input layers", "Net.evaluate");
-            if (tout.size() != lout.size())
-                msg("output tensor list does not match with defined output layers", "Net.evaluate");
-
-            // Check data consistency
-            n = tin[0]->shape[0];
-
-            for (i = 1; i < tin.size(); i++)
-                if (tin[i]->shape[0] != n)
-                    msg("different number of samples in input tensor", "Net.evaluate");
-
-            for (i = 1; i < tout.size(); i++)
-                if (tout[i]->shape[0] != n)
-                    msg("different number of samples in output tensor", "Net.evaluate");
-
-            if (bs != -1) resize(bs);
-            else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
-
-            printf("Evaluate with batch size %d\n", batch_size);
-
-            // Create internal variables
-            vind sind;
-            for (k = 0; k < batch_size; k++)
-                sind.push_back(0);
-
-
-            // Start eval
-            setmode(TSMODE);
-            reset_loss();
-            for (j = 0; j < n / batch_size; j++) {
-
-                for (k = 0; k < batch_size; k++)
-                    sind [k] = (j * batch_size) + k;
-
-                train_batch(tin, tout, sind, 1);
-
-                print_loss(j + 1, n / batch_size);
-                fprintf(stdout, "\r");
-                fflush(stdout);
-            }
-            fprintf(stdout, "\n");
+            // local batch_size is already set
+            //mpi_id0(fprintf(stderr, "[DISTR] evaluate\n\n"));
+        } else {
+            n_procs = 1;
+            id = 0;
         }
+        //       if (id == 0) {  // MPI distributed. Only process 0 evaluates
+        // Check list shape
+        if (tin.size() != lin.size())
+            msg("input tensor list does not match with defined input layers", "Net.evaluate");
+        if (tout.size() != lout.size())
+            msg("output tensor list does not match with defined output layers", "Net.evaluate");
+
+        // Check data consistency
+        n = tin[0]->shape[0];
+
+        for (i = 1; i < tin.size(); i++)
+            if (tin[i]->shape[0] != n)
+                msg("different number of samples in input tensor", "Net.evaluate");
+
+        for (i = 1; i < tout.size(); i++)
+            if (tout[i]->shape[0] != n)
+                msg("different number of samples in output tensor", "Net.evaluate");
+
+        if (bs != -1) resize(bs);
+        else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
+        
+        
+        mpi_id0(printf("Evaluate with batch size %d\n", batch_size));
+
+        // Create internal variables
+        vind sind;
+        for (k = 0; k < batch_size; k++)
+            sind.push_back(0);
+
+
+        // Set some parameters
+        int num_batches = n / batch_size;
+        batches_per_proc = num_batches / n_procs;
+        //batches = 0;
+
+        // Start eval
+        setmode(TSMODE);
+        reset_loss();
+        //for (j = 0; j < n / batch_size; j++) {
+        for (j = 0; j < batches_per_proc; j++) {
+            //batches = batches + n_procs;
+            for (k = 0; k < batch_size; k++) {
+                //sind [k] = (j * batch_size) + k;
+                sind [k] = (((id*batches_per_proc)+j) * batch_size) + k;
+                //printf("%5d ",sind[k]);
+            }
+            train_batch(tin, tout, sind, 1);
+            //         print_loss(batches, num_batches);
+            print_loss(j + 1, batches_per_proc);
+            //print_loss(j + 1, n / batch_size);
+            mpi_id0(fprintf(stdout, "\r"));
+            mpi_id0(fflush(stdout));
+        }
+       mpi_id0(fprintf(stdout, "\n"));
     }
+    //   }
 }
 
 ///////////////////////////////////////////

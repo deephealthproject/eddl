@@ -83,14 +83,7 @@ int main(int argc, char **argv) {
             &chunks, &use_bi8, &use_distr_dataset);
             
    
-    // Define computing service
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else { 
-	cs = CS_GPU({1}); // one GPU
-    }
-
+  
     
     // Init distribuited training
     //id = get_id_distributed();
@@ -129,6 +122,13 @@ int main(int argc, char **argv) {
     // net define input and output layers list
     model net = Model({in}, {out});
 
+  // Define computing service
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else { 
+	cs = CS_GPU({1}); // one GPU
+    }
 
 
     // Build model

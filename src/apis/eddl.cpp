@@ -164,6 +164,10 @@ namespace eddl {
         return nullptr; // To silent warnings
     }
 
+    compserv CS_GPU(){
+        return CS_GPU(get_gpu_vec_distributed(), 1, "full_mem");
+    }
+    
     compserv CS_GPU(const vector<int>& g, const string& mem){
         return CS_GPU(g, 1, mem);
     }
@@ -177,75 +181,7 @@ namespace eddl {
         return nullptr; // To silent warnings
     }
 
-    compserv CS_MPI_DISTR_1_GPU_PER_PROC(int nr_gpus) {
-        vector<int> gpus;
-        int id;
-        
-        compserv aux;
-   
-        id = init_MPI();
-        //MPICHECK(MPI_Get_processor_name(node_name, &len));
-        fprintf(stderr, "[DISTR] Node %d. CS: one GPUs per process. %d/%d GPUS used/available per node\n",id,nr_gpus,get_available_GPUs_distributed());
-        switch (nr_gpus) {
-            case 1: GPU_1_distributed;
-                break;
-            case 2: GPU_2_distributed;
-                break;
-            case 4: GPU_4_distributed;
-                break;
-            case 8: GPU_8_distributed;
-                break;
-            default: msg("Error nr_gpus param", "CS_MPI"); // Exits
-                return nullptr; // To silent warnings
-        }
-        //return new CompServ(0, {1},{}, lsb, 0);
-        aux= CS_GPU(gpus, 0, "full_mem");
-        init_NCCL(nr_gpus);
-        return aux;
-    }
-  
-  compserv CS_MPI_DISTR_X_GPU_PER_PROC(const vector<int> g, int lsb, string mem) {
-      compserv aux;
-       int id;
-      
-      id=init_MPI();
-      //MPICHECK(MPI_Get_processor_name(node_name, &len));
-      fprintf(stderr,"[DISTR] Node %d. CS: several GPUs per process. %d GPUS available per node\n", id,get_available_GPUs_distributed());
-      aux= CS_GPU(g, lsb, mem);
-      init_NCCL(1);
-      return aux;
-    }
-  
-  compserv CS_MPI_DISTRIBUTED() {
-        return CS_MPI_DISTR_1_GPU_PER_PROC(get_available_GPUs_distributed());
-    } 
-  
-  compserv CS_MPI_DISTRIBUTED(int nr_gpus) {
-        return CS_MPI_DISTR_1_GPU_PER_PROC(nr_gpus);
-    } 
-  
-  compserv CS_MPI_DISTRIBUTED(const vector<int> g, int lsb, string mem) {
-        return CS_MPI_DISTR_X_GPU_PER_PROC(g, lsb, mem);
-    }
-  
-
-    /*compserv CS_FPGA(const vector<int> g){
-      return CS_FPGA(g, 1, "full_mem");
-      }
-      compserv CS_FPGA(const vector<int> g, string mem){
-      return CS_FPGA(g, 1, mem);
-      }
-      compserv CS_FPGA(const vector<int> g, int lsb){
-      return CS_FPGA(g, lsb, "full_mem");
-      }
-      compserv CS_FPGA(const vector<int> g, int lsb, string mem){
-      if (mem=="low_mem") return new CompServ(0, g, {}, lsb, 2);
-      else if (mem=="mid_mem") return new CompServ(0, g, {}, lsb, 1);
-      else if (mem=="full_mem") return new CompServ(0, g, {}, lsb, 0);
-      else msg("Error mem param","CS_FPGA"); // Exits
-      return nullptr; // To silent warnings
-      }*/
-
+    
     compserv CS_FPGA(const vector<int> &f,int lsb){
         return new CompServ(0, {}, f,lsb);
     }

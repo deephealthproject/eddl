@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     bool use_cpu = false;
     int id;
  
-    id = init_distributed(&argc, &argv);
+    id = init_distributed();
     
     // Sync every batch, change every 2 epochs
     set_method_distributed(AUTO_TIME,1,2);
@@ -112,16 +112,12 @@ int main(int argc, char **argv) {
         out
     });
 
-    compserv cs = nullptr;
+compserv cs = nullptr;
     if (use_cpu) {
         cs = CS_CPU();
     } else {
-        cs = CS_GPU({1}); // one GPU
-        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-        // cs = CS_CPU();
-        // cs = CS_FPGA({1});
+        cs = CS_GPU(); 
     }
-
     // Build model
     build(net,
             sgd(0.001, 0.9), // Optimizer

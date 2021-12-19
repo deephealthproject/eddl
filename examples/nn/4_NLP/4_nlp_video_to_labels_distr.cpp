@@ -27,27 +27,19 @@ int main(int argc, char **argv) {
 
     bool testing = false;
     bool use_cpu = false;
+     int id;
+     
+    
+    id=init_distributed();
+    
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
-    
-     int id;
-     
-     compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else {
-         cs=CS_MPI_DISTRIBUTED();
-        //cs = CS_GPU({1}); // one GPU
-        // cs = CS_GPU({1}, "low_mem"); // one GPU
-        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-        // cs = CS_CPU();
-    }
    
     
-    // Get MPI process id
-    id=get_id_distributed();
+  
+    
     
     // Sync every batch, change every 2 epochs
     set_method_distributed(AUTO_TIME,1,2);
@@ -70,6 +62,15 @@ int main(int argc, char **argv) {
     layer out = ReLu(l);
     model net = Model({in},{out});
 
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        //cs = CS_GPU({1}, "low_mem"); // one GPU
+        cs = CS_GPU(); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+    }
     
     build(net,
           adam(),

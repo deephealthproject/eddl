@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = (testing) ? 2 : 10;
-    int batch_size = 100;
+    int batch_size = 10;
     int num_classes = 10;
 
     // Define network

@@ -41,6 +41,9 @@ Tensor *onehot(Tensor *in, int vocs)
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
+    
+     init_distributed();
+     
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -48,16 +51,7 @@ int main(int argc, char **argv) {
     
      int id;
      
-     compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else {
-         cs=CS_MPI_DISTRIBUTED();
-        //cs = CS_GPU({1}); // one GPU
-        // cs = CS_GPU({1}, "low_mem"); // one GPU
-        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-        // cs = CS_CPU();
-    }
+    
    
     
     // Get MPI process id
@@ -106,6 +100,12 @@ int main(int argc, char **argv) {
 
     optimizer opt=adam(0.01);
     
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU(); 
+    }
 
     // Build model
     build(net,

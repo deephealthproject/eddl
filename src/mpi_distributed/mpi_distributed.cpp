@@ -10,6 +10,94 @@
 
 #include "eddl/mpi_distributed/mpi_distributed.h"
 
+#define MPICHECK(cmd) do {                          \
+  int e = cmd;                                      \
+  if( e != MPI_SUCCESS ) {                          \
+    printf("Failed: MPI error %s:%d '%d'\n",        \
+        __FILE__,__LINE__, e);   \
+    exit(EXIT_FAILURE);                             \
+  }                                                 \
+} while(0)
+
+#define CUDACHECK(cmd) do {                         \
+  cudaError_t e = cmd;                              \
+  if( e != cudaSuccess ) {                          \
+    printf("Failed: Cuda error %s:%d '%s'\n",             \
+        __FILE__,__LINE__,cudaGetErrorString(e));   \
+    exit(EXIT_FAILURE);                             \
+  }                                                 \
+} while(0)
+
+#define NCCLCHECK(cmd) do {                         \
+  ncclResult_t r = cmd;                             \
+  if (r!= ncclSuccess) {                            \
+    printf("Failed, NCCL error %s:%d '%s'\n",             \
+        __FILE__,__LINE__,ncclGetErrorString(r));   \
+    exit(EXIT_FAILURE);                             \
+  }                                                 \
+} while(0)
+
+#define GPU_1_distributed \
+    switch (id % 1) { \
+        case 0: gpus={1}; \
+                gpu_str="1"; \
+            break; \
+        }  
+
+#define GPU_2_distributed \
+    switch (id % 2) { \
+        case 0: gpus={1, 0}; \
+                gpu_str="1,0"; \
+            break; \
+        case 1: gpus={0, 1}; \
+                gpu_str="0,0"; \
+            break; \
+        }          
+
+#define GPU_4_distributed \
+    switch (id % 4) { \
+        case 0: gpus={1, 0, 0, 0}; \
+                gpu_str="1,0,0,0"; \
+            break; \
+        case 1: gpus={0, 1, 0, 0}; \
+                gpu_str="0,1,0,0"; \
+            break; \
+        case 2: gpus={0, 0, 1, 0}; \
+                gpu_str="0,0,1,0"; \
+            break; \
+        case 3: gpus={0, 0, 0, 1}; \
+                gpu_str="0,0,0,0,1"; \
+            break; \
+        }          
+
+#define GPU_8_distributed \
+    switch (id % 8) { \
+        case 0: gpus={1, 0, 0, 0, 0, 0, 0, 0}; \
+                gpu_str="1,0,0,0,0,0,0,0"; \
+            break; \
+        case 1: gpus={0, 1, 0, 0, 0, 0, 0, 0}; \
+                gpu_str="0,1,0,0,0,0,0,0"; \
+            break; \
+        case 2: gpus={0, 0, 1, 0, 0, 0, 0, 0}; \
+                gpu_str="0,0,1,0,0,0,0,0"; \
+            break; \
+        case 3: gpus={0, 0, 0, 1, 0, 0, 0, 0}; \
+                gpu_str="0,0,0,1,0,0,0,0"; \
+            break; \
+        case 4: gpus={0, 0, 0, 0, 1, 0, 0, 0}; \
+                gpu_str="0,0,0,0,1,0,0,0"; \
+            break; \
+        case 5: gpus={0, 0, 0, 0, 0, 1, 0, 0}; \
+                gpu_str="0,0,0,0,0,1,0,0"; \
+            break; \
+        case 6: gpus={0, 0, 0, 0, 0, 0, 1, 0}; \
+                gpu_str="0,0,0,0,0,0,1,0"; \
+            break; \
+        case 7: gpus={0, 0, 0, 0, 0, 0, 0, 1}; \
+                gpu_str="0,0,0,0,0,0,0,1"; \
+            break; \
+        }         
+
 
 #define NUM_STREAMS_COMM 1
 
@@ -23,6 +111,7 @@ int x_avg = 0;
 // 0: Local batch=batch; Global_batch=batch*n_procs
 int batches_avg = 0;
 double secs_prev = 1E10;
+string lib;
 
 #ifdef cNCCL
 // NCCL
@@ -50,21 +139,14 @@ int get_n_procs_distributed() {
     return n_procs;
 }
 
-int init_distributed() {
-    int *argc;
-    char ***argv;
-
-    init_distributed(argc, argv);
+void get_nodename_distributed(char* node_name) {
+    int len;
+#ifdef cMPI
+    MPICHECK(MPI_Get_processor_name(node_name, &len));
+#endif
 }
 
-int init_distributed(int *argc, char ***argv) {
-    int id;
-    int n_procs;
 
-    id = init_MPI();
-    //init_NCCL();
-    return id;
-}
 
 int init_MPI() {
     int *argc;
@@ -72,7 +154,7 @@ int init_MPI() {
 
     int id;
     int n_procs;
-    char node_name[256];
+    char node_name[256]="unknown";
     int len;
 
 #ifndef cMPI
@@ -91,9 +173,9 @@ int init_MPI() {
     if (n_procs < 2) {
         msg("Error: Nr of MPI processes must be >1 ", "init_MPI");
     }
-
-    MPICHECK(MPI_Get_processor_name(node_name, &len));
-    fprintf(stderr, "[DISTR] MPI init. Node %d (%s). %d GPUS available\n", id, node_name, get_available_GPUs_distributed());
+    
+    get_nodename_distributed(node_name);
+    fprintf(stderr, "[DISTR] MPI init. Node %d (%s). %d GPUS available per node\n", id, node_name, get_available_GPUs_distributed());
 
 
     fprintf(stderr, "[DISTR] setting default batch avg method\n");
@@ -126,9 +208,70 @@ void init_NCCL(int nr_gpus) {
     //initializing NCCL
     NCCLCHECK(ncclCommInitRank(&nccl_comm, n_procs, nccl_id, id));
     if (id == 0)
-        fprintf(stderr, "[DISTR] NCCL initialized %d procs\n", n_procs);
+        fprintf(stderr, "[DISTR] GPU: NCCL initialized %d procs\n", n_procs);
 #endif
 }
+
+
+
+int init_distributed() {
+    
+    init_distributed("NCCL");
+}
+
+int init_distributed(string comm) {
+    int id;
+    int n_procs;
+
+    id = init_MPI();
+    if (comm == "NCCL") {
+        lib = "NCCL";
+        init_NCCL(get_available_GPUs_distributed());
+    } else if (comm == "MPI") {
+        lib = "MPI";
+    } else {
+        msg("Error unsupported communication library", "init_distributed"); // Exits
+    }
+    //fprintf(stderr, "[DISTR] using %s\n", lib.c_str());
+    return id;
+}
+
+void end_distributed() {
+    int id;
+#ifndef cMPI
+    msg("MPI library is not linked", "end_distributed");
+#endif    
+
+
+    if (use_mpi) {
+#ifdef cMPI 
+        MPI_Barrier(MPI_COMM_WORLD);
+        //  Get the individual process ID.
+        MPI_Comm_rank(MPI_COMM_WORLD, &id);
+#endif
+
+#ifdef cNCCL
+        if (lib == "NCCL") {
+            //finalizing NCCL
+            ncclCommDestroy(nccl_comm);
+            if (id == 0)
+                fprintf(stdout, "[DISTR] GPU: NCCL End\n");
+        }
+#endif
+
+#ifdef cMPI
+        if (id == 0)
+            fprintf(stdout, "[DISTR] End\n");
+        MPI_Finalize();
+#endif
+    }
+}
+
+
+int is_mpi_distributed() {
+    return use_mpi;
+}
+
 
 void set_method_distributed(int method, int batch_avg, int epoch_avg) {
 
@@ -159,137 +302,51 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg) {
         } else if (avg_method == AUTO_TIME) {
             fprintf(stderr, "[DISTR] method %s, batch_avg %d changing every %d epochs\n", "AUTO TIME", mpi_avg, x_avg);
         } else {
-            fprintf(stderr, "[DISTR] Error sync method %d not implemented\n", avg_method);
-            exit(EXIT_FAILURE);
+            msg("Error avg_method", "set_method_distributed"); // Exits
+            //fprintf(stderr, "[DISTR] Error avg method %d not implemented\n", avg_method);
+            //exit(EXIT_FAILURE);
         }
 }
 
-void end_distributed() {
+
+vector<int> get_gpu_vec_distributed() {
     int id;
-#ifndef cMPI
-    msg("MPI library is not linked", "end_distributed");
-#endif    
+    vector<int> gpus;
+    string gpu_str;
+    char node_name[256]="unknown";
 
-#ifdef cMPI
-    if (use_mpi) {
-        MPI_Barrier(MPI_COMM_WORLD);
-        //  Get the individual process ID.
-        MPI_Comm_rank(MPI_COMM_WORLD, &id);
-#endif
+    int nr_gpus = get_available_GPUs_distributed();
 
-#ifdef cNCCL
-        //finalizing NCCL
-        ncclCommDestroy(nccl_comm);
-        if (id == 0)
-            fprintf(stdout, "[DISTR] NCCL End\n");
-#endif
-
-#ifdef cMPI
-        if (id == 0)
-            fprintf(stdout, "[DISTR] End\n");
-        MPI_Finalize();
+    if (is_mpi_distributed()) {
+        id = get_id_distributed();
+    } else {
+        id = 0;
     }
-#endif
-}
-
-void fn_mpi_AllReduce(float* myptr, int count) {
-#ifndef cMPI
-    msg("invalid call to MPI_Allreduce. MPI library is not linked", "fn_mpi_AllReduce");
-#endif
-
-#ifdef cMPI
-    if (count > 0) {
-        MPICHECK(MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD));
+   
+    switch (nr_gpus) {
+        case 1: GPU_1_distributed;
+            break;
+        case 2: GPU_2_distributed;
+            break;
+        case 4: GPU_4_distributed;
+            break;
+        case 8: GPU_8_distributed;
+            break;
+        default: msg("Error nr_gpus param", "mpi_distributed CS_GPU()"); // Exits
     }
-#endif
-}
-
-void fn_mpi_Broadcast(float* myptr, int count) {
-#ifndef cMPI
-    msg("invalid call to MPI_Allreduce. MPI library is not linked", "fn_mpi_AllReduce");
-#endif
-
-#ifdef cMPI
-    if (count > 0) {
-        MPICHECK(MPI_Bcast(myptr, count, MPI_FLOAT, 0, MPI_COMM_WORLD));
+    
+    if (is_mpi_distributed()) {
+        get_nodename_distributed(node_name);
+        fprintf(stderr, "[DISTR] Node: %s. Process %d. CS: GPU mask: %s\n", node_name, id, gpu_str.c_str());
+    } else {
+        fprintf(stderr, "[CS_GPU()] CS: GPU mask: %s\n", gpu_str.c_str());
     }
-#endif
+
+
+    return gpus;
 }
 
-void fn_nccl_AllReduce(float* myptr, int count) {
-#ifdef cNCCL
-    if (count > 0) {
-        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
-        //completing NCCL operation by synchronizing on the CUDA stream
-        CUDACHECK(cudaStreamSynchronize(cuda_stream));
-    }
-#endif
-}
 
-void fn_nccl_AllReduce_streams(float* myptr, int count, int layer) {
-    int stream;
-#ifdef cNCCL
-    if (count > 0) {
-        // TODO cuda_stream
-        // stream= layer % NUM_STREAMS_COMM;
-        //printf("Using stream %d\n", stream);
-        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
-        //completing NCCL operation by synchronizing on the CUDA stream
-        CUDACHECK(cudaStreamSynchronize(cuda_stream));
-    }
-#endif
-}
-
-void fn_nccl_Broadcast_streams(float* myptr, int count, int layer) {
-    int stream;
-#ifdef cNCCL
-    if (count > 0) {
-        // TODO cuda_stream
-        //stream= layer % NUM_STREAMS_COMM;
-        //printf("Using stream %d\n", stream);
-        NCCLCHECK(ncclBcast((void *) myptr, count, ncclFloat, 0, nccl_comm, cuda_stream));
-        //completing NCCL operation by synchronizing on the CUDA stream
-        CUDACHECK(cudaStreamSynchronize(cuda_stream));
-    }
-#endif
-}
-
-void AllReduce_distributed(float* myptr, int count) {
-#ifdef cNCCL
-    fn_nccl_AllReduce(myptr, count);
-#else
-    fn_mpi_AllReduce(myptr, count);
-#endif
-}
-
-void AllReduce_streams_distributed(float* myptr, int count, int layer) {
-#ifdef cNCCL
-    fn_nccl_AllReduce_streams(myptr, count, layer);
-#else
-    fn_mpi_AllReduce(myptr, count);
-#endif
-}
-
-void Broadcast_streams_distributed(float* myptr, int count, int layer) {
-#ifdef cNCCL
-    fn_nccl_Broadcast_streams(myptr, count, layer);
-#else
-    fn_mpi_Broadcast(myptr, count);
-#endif
-}
-
-int get_local_GPU_distributed(int id, int nGPUs) {
-    int nDevices = 1;
-    //#ifdef cGPU
-    //    cudaGetDeviceCount(&nDevices);
-    //#endif
-    //    return id % nDevices;
-    return id % nGPUs;
-}
-
-int is_mpi_distributed() {
-    return use_mpi;
-}
 
 int get_params_distributed(int* method, int* avg, int* avg_chg) {
 
@@ -312,7 +369,105 @@ int get_available_GPUs_distributed() {
     return count;
 }
 
-void broadcast_CPU_params_distributed(Net* net) {
+
+void fn_mpi_AllReduce(float* myptr, int count) {
+
+
+#ifdef cMPI
+    if (count > 0) {
+        MPICHECK(MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD));
+    }
+#else
+     msg("invalid call. MPI library is not linked", "fn_mpi_AllReduce");
+#endif
+}
+
+void fn_mpi_Bcast(float* myptr, int count) {
+#ifdef cMPI
+    if (count > 0) {
+        MPICHECK(MPI_Bcast(myptr, count, MPI_FLOAT, 0, MPI_COMM_WORLD));
+        printf("======fn_mpi_Bcast\n");
+    }
+#else
+     msg("invalid call. MPI library is not linked", "fn_mpi_Broadcast");
+#endif
+}
+
+void fn_nccl_AllReduce(float* myptr, int count) {
+#ifdef cNCCL
+    if (count > 0) {
+        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
+        //completing NCCL operation by synchronizing on the CUDA stream
+        CUDACHECK(cudaStreamSynchronize(cuda_stream));
+    }
+#else
+     msg("invalid call. NCCL library is not linked", "fn_nccl_Allreduce");
+#endif
+}
+
+void fn_nccl_AllReduce_streams(float* myptr, int count, int layer) {
+    int stream;
+#ifdef cNCCL
+    if (count > 0) {
+        // TODO cuda_stream
+        // stream= layer % NUM_STREAMS_COMM;
+        //printf("Using stream %d\n", stream);
+        NCCLCHECK(ncclAllReduce((const void*) myptr, (void*) myptr, count, ncclFloat, ncclSum, nccl_comm, cuda_stream));
+        //completing NCCL operation by synchronizing on the CUDA stream
+        CUDACHECK(cudaStreamSynchronize(cuda_stream));
+    }
+#else
+     msg("invalid call. NCCL library is not linked", "fn_nccl_AllReduce_streams");
+#endif
+}
+
+void fn_nccl_Bcast(float* myptr, int count) {
+#ifdef cNCCL
+    if (count > 0) {
+        NCCLCHECK(ncclBcast((void *) myptr, count, ncclFloat, 0, nccl_comm, cuda_stream));
+        //completing NCCL operation by synchronizing on the CUDA stream
+        CUDACHECK(cudaStreamSynchronize(cuda_stream));
+    }
+#else
+     msg("invalid call. NCCL library is not linked", "fn_nccl_Broadcast");
+#endif
+}
+
+void fn_nccl_Bcast_streams(float* myptr, int count, int layer) {
+    int stream;
+#ifdef cNCCL
+    if (count > 0) {
+        // TODO cuda_stream
+        //stream= layer % NUM_STREAMS_COMM;
+        //printf("Using stream %d\n", stream);
+        NCCLCHECK(ncclBcast((void *) myptr, count, ncclFloat, 0, nccl_comm, cuda_stream));
+        //completing NCCL operation by synchronizing on the CUDA stream
+        CUDACHECK(cudaStreamSynchronize(cuda_stream));
+    }
+#else
+     msg("invalid call. NCCL library is not linked", "fn_nccl_Broadcast_streams");
+#endif
+}
+
+void fn_GPU_AllReduce(float* myptr, int count) {
+    if (lib=="NCCL") {
+    fn_nccl_AllReduce(myptr, count);
+     } else {     
+    fn_mpi_AllReduce(myptr, count);
+     }
+}
+
+
+int get_local_GPU_distributed(int id, int nGPUs) {
+    int nDevices = 1;
+    //#ifdef cGPU
+    //    cudaGetDeviceCount(&nDevices);
+    //#endif
+    //    return id % nDevices;
+    return id % nGPUs;
+}
+
+void fn_Bcast_CPU_weights(Net* net) {
     int i, j;
     int root = 0;
     int size;
@@ -321,41 +476,77 @@ void broadcast_CPU_params_distributed(Net* net) {
     for (i = 0; i < layers.size(); i++) {
         if (layers[i]->trainable) {
             for (j = 0; j < layers[i]->get_trainable_params_count(); j++) {
-
-
                 float* myptr = layers[i]->params[j]->ptr;
                 size = layers[i]->params[j]->size;
-                fn_mpi_Broadcast(myptr, size);
+                fn_mpi_Bcast(myptr, size);
             }
         }
     }
 }
 
-void broadcast_GPU_params_distributed(Net* net) {
+void fn_Bcast_GPU_weights(Net* net) {
+    float * myptr;
+    int count;
     int i, j;
-    int root = 0;
-    int size;
-
-    vlayer layers = net->snets[0]->layers;
-    for (i = 0; i < layers.size(); i++) {
-        if (layers[i]->trainable) {
-            for (j = 0; j < layers[i]->get_trainable_params_count(); j++) {
 
 
-                float* myptr = layers[i]->params[j]->ptr;
-                size = layers[i]->params[j]->size;
-                Broadcast_streams_distributed(myptr, size, i);
+    for (int i = 0; i < net->layers.size(); i++) {
+        if (net->layers[i]->trainable) {
+            for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
+                myptr = net->snets[0]->layers[i]->params[j]->ptr;
+                count = net->snets[0]->layers[i]->params[j]->size;
+                if (lib == "NCCL")
+                    fn_nccl_Bcast(myptr, count);
+                else
+                    fn_mpi_Bcast(myptr, count);
             }
         }
     }
 }
 
-void Bcast_params_distributed(Net * net) {
+void bcast_weights_distributed(Net * net) {
     if (net->cs->hw=="GPU")
-        broadcast_GPU_params_distributed(net);
+        fn_Bcast_GPU_weights(net);
+    else if (net->cs->hw=="CPU")
+        fn_Bcast_CPU_weights(net);
+    else 
+        msg("Error unsupported device", "bcast_params_distributed"); // Exits
 }
 
 void avg_GPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
+    float * myptr;
+    int count;
+    int n_procs;
+
+
+    int batches_avg;
+
+    n_procs = get_n_procs_distributed();
+    batches_avg = get_current_batch_avg_distributed();
+
+    if (((curr_batch % batches_avg) == 0) || (curr_batch == batches_per_proc)) {
+        //printf("Proc %d Sincronizando %d\n", id, j);
+        for (int i = 0; i < net->layers.size(); i++) {
+            if (net->layers[i]->trainable) {
+                for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
+                    //for (int ii = 0; ii < net->snets[0]->layers.size(); ii++) {
+                    //    for (int jj = 0; jj < net->snets[0]->layers[ii]->params.size(); jj++) {                
+                    myptr = net->snets[0]->layers[i]->params[j]->ptr;
+                    count = net->snets[0]->layers[i]->params[j]->size;
+                    //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
+                    if (count != 0) {
+                        // AllReduce params
+                        fn_GPU_AllReduce(myptr, count);
+                        // Average params
+                        net->snets[0]->layers[i]->params[j]->div_(n_procs);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void avg_CPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
     float * myptr;
     int count;
     int n_procs;
@@ -373,19 +564,14 @@ void avg_GPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
                 for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
                     //for (int ii = 0; ii < net->snets[0]->layers.size(); ii++) {
                     //    for (int jj = 0; jj < net->snets[0]->layers[ii]->params.size(); jj++) {
-
-                    myptr = net->snets[0]->layers[i]->params[j]->ptr;
-                    count = net->snets[0]->layers[i]->params[j]->size;
+                    myptr = net->layers[i]->params[j]->ptr;
+                    count = net->layers[i]->params[j]->size;
                     //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
                     if (count != 0) {
                         // AllReduce params
-                        //AllReduce_distributed(myptr, count);
-                        AllReduce_streams_distributed(myptr, count, i);
-                        //fn_mpi_AllReduce(myptr, count)
-                        //fn_nccl_AllReduce(myptr, count);
-
+                        fn_mpi_AllReduce(myptr, count);
                         // Average params
-                        net->snets[0]->layers[i]->params[j]->div_(n_procs);
+                        net->layers[i]->params[j]->div_(n_procs);
                     }
                 }
             }
@@ -396,6 +582,10 @@ void avg_GPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
 void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
     if (net->cs->hw=="GPU")
         avg_GPU_weights_distributed(net, curr_batch, batches_per_proc);
+    else if (net->cs->hw=="CPU")
+        avg_CPU_weights_distributed(net, curr_batch, batches_per_proc);
+    else 
+        msg("Error unsupported device", "avg_weights_distributed"); // Exits
 }
 
 

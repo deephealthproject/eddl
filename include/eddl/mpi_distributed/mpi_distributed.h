@@ -39,78 +39,6 @@
 #define NEG_SAWTOOTH 3
 #define AUTO_TIME 4
 
-#define MPICHECK(cmd) do {                          \
-  int e = cmd;                                      \
-  if( e != MPI_SUCCESS ) {                          \
-    printf("Failed: MPI error %s:%d '%d'\n",        \
-        __FILE__,__LINE__, e);   \
-    exit(EXIT_FAILURE);                             \
-  }                                                 \
-} while(0)
-
-#define CUDACHECK(cmd) do {                         \
-  cudaError_t e = cmd;                              \
-  if( e != cudaSuccess ) {                          \
-    printf("Failed: Cuda error %s:%d '%s'\n",             \
-        __FILE__,__LINE__,cudaGetErrorString(e));   \
-    exit(EXIT_FAILURE);                             \
-  }                                                 \
-} while(0)
-
-#define NCCLCHECK(cmd) do {                         \
-  ncclResult_t r = cmd;                             \
-  if (r!= ncclSuccess) {                            \
-    printf("Failed, NCCL error %s:%d '%s'\n",             \
-        __FILE__,__LINE__,ncclGetErrorString(r));   \
-    exit(EXIT_FAILURE);                             \
-  }                                                 \
-} while(0)
-
-#define GPU_1_distributed \
-    switch (id % 1) { \
-        case 0: gpus={1}; \
-            break; \
-        }  
-
-#define GPU_2_distributed \
-    switch (id % 2) { \
-        case 0: gpus={1, 0}; \
-            break; \
-        case 1: gpus={0, 1}; \
-            break; \
-        }          
-
-#define GPU_4_distributed \
-    switch (id % 4) { \
-        case 0: gpus={1, 0, 0, 0}; \
-            break; \
-        case 1: gpus={0, 1, 0, 0}; \
-            break; \
-        case 2: gpus={0, 0, 1, 0}; \
-            break; \
-        case 3: gpus={0, 0, 0, 1}; \
-            break; \
-        }          
-
-#define GPU_8_distributed \
-    switch (id % 8) { \
-        case 0: gpus={1, 0, 0, 0, 0, 0, 0, 0}; \
-            break; \
-        case 1: gpus={0, 1, 0, 0, 0, 0, 0, 0}; \
-            break; \
-        case 2: gpus={0, 0, 1, 0, 0, 0, 0, 0}; \
-            break; \
-        case 3: gpus={0, 0, 0, 1, 0, 0, 0, 0}; \
-            break; \
-        case 4: gpus={0, 0, 0, 0, 1, 0, 0, 0}; \
-            break; \
-        case 5: gpus={0, 0, 0, 0, 0, 1, 0, 0}; \
-            break; \
-        case 6: gpus={0, 0, 0, 0, 0, 0, 1, 0}; \
-            break; \
-        case 7: gpus={0, 0, 0, 0, 0, 0, 0, 1}; \
-            break; \
-        }         
 
 
 /**
@@ -128,16 +56,38 @@ int get_id_distributed();
 int get_n_procs_distributed();
 
 /**
+ *  @brief Get name of node running the process
+ *
+ *  @return node name
+ */
+void get_nodename_distributed(char* node_name);
+
+/**
+ *  @brief Get boolean vector for GPU 
+ *  GPUs are assigned to processes following a module operation id % nr_gpus
+ * 
+ *  @return boolean vector with assinged GPU
+ */
+vector<int> get_gpu_vec_distributed();
+
+/**
  *  @brief Initializes distributed training
  *
- *  @param argc,argv Command line arguments
+ *  @param comm  NCCL MPI
  *  @return id MPI rank of process
  */
-int init_distributed(int *argc, char ***argv);
+int init_distributed(string comm);
+
+
+/**
+ *  @brief Initializes distributed training
+ *  NCCL is used
+ *  @return id MPI rank of process
+ */
 int init_distributed();
 
-int init_MPI();
-void init_NCCL(int nr_gpus);
+//int init_MPI();
+//void init_NCCL(int nr_gpus);
 
 
 /**
@@ -154,32 +104,6 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg);
  *
  */
 void end_distributed();
-
-/**
- *  @brief Performs AllReduction of buffer using MPI
- *
- *  @param myptr pointer to buffer
- *  @param count buffer size in floats
- */
-void fn_mpi_AllReduce(float* myptr, int count);
-
-/**
- *  @brief Performs AllReduction of buffer using NCCL
- *
- *  @param myptr pointer to buffer
- *  @param count buffer size in floats
- */
-void fn_nccl_AllReduce(float* myptr, int count);
-
-/**
- *  @brief Performs AllReduction of buffer using NCCL if available, MPI otherwise
- *
- *  @param myptr pointer to buffer
- *  @param count buffer size in floats
- */
-void AllReduce_distributed(float* myptr, int count);
-
-void AllReduce_streams_distributed(float* myptr, int count, int layer);
 
 
 /**
@@ -201,10 +125,19 @@ int is_mpi_distributed();
  */
 int get_params_distributed(int* method, int* avg, int* avg_chg);
 
-
+/**
+ *  @brief Get current batches_avg value
+ *
+ *  @return batches_avg
+ */
 int get_current_batch_avg_distributed ();
 
 
+/**
+ *  @brief Get nr of GPUs per node
+ *
+ *  @return nr of GPUs
+ */
 int get_available_GPUs_distributed();
 
 /**
@@ -212,10 +145,10 @@ int get_available_GPUs_distributed();
  *
  *  @param[in] net: Ptr to net
  */
-void Bcast_params_distributed(Net * net);
+void bcast_weights_distributed(Net * net);
 
 /**
- *  @brief Average weights of mpi processes
+ *  @brief Averages weights and bias of mpi processes
  *
  *  @param curr_batch_id    Batch nr (from 0)
  *  @param batches_per_proc #batches per mpi process
@@ -233,5 +166,6 @@ void avg_weights_distributed (Net* net, int curr_batch_id, int batches_per_proc)
  */
 void update_batch_avg_distributed(int epoch_id, double secs, int batches_per_proc) ;
 
+// For Debugging purposes
 void gpu_layer_print (Net* net, int layer);
 

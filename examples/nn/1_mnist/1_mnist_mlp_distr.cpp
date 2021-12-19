@@ -26,52 +26,21 @@ using namespace eddl;
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
-    bool use_mpiall = false;
-    bool use_mpi1 = false;
-    bool use_mpi2 = false;
-    bool use_mpi4 = false;
-    bool use_mpix = false;
+    bool use_mpi = false;
     int id;
     
-    if (argc != 2) {
-        printf("ERROR. Missing parameter\n");
-        exit(1);
-    }
+    
+    
     // Process arguments
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
-        else if (strcmp(argv[i], "--mpi1pall") == 0) use_mpiall = true;
-        else if (strcmp(argv[i], "--mpi1p1gpu") == 0) use_mpi1 = true;
-        else if (strcmp(argv[i], "--mpi1p2gpu") == 0) use_mpi2 = true;
-        else if (strcmp(argv[i], "--mpi1p4gpu") == 0) use_mpi4 = true;
-        else if (strcmp(argv[i], "--mpixgpu") == 0) use_mpix = true;
+         else if (strcmp(argv[i], "--mpi") == 0) use_mpi= true;
     }
-
-    // Define computing service
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else if (use_mpi1) {
- 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(1);
-	cs=CS_MPI_DISTRIBUTED(1);
-    } else if (use_mpi2) {
- 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(2);
-	cs=CS_MPI_DISTRIBUTED(2);
-    } else if (use_mpi4) {
- 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(4);
-	cs=CS_MPI_DISTRIBUTED(4);
-    } else if (use_mpiall) {
-	cs=CS_MPI_DISTRIBUTED();
-    } else if (use_mpix) {
-        //cs=CS_MPI_DISTR_X_GPU_PER_PROC({1},100,"low_mem");
-        cs=CS_MPI_DISTRIBUTED({1},100,"low_mem");
-    } else {
-        cs = CS_GPU({1}, "low_mem"); // one GPU
-        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-        // cs = CS_CPU();
-        // cs = CS_FPGA({1});
-    }
+    if (use_mpi)
+  init_distributed("MPI");
+    else 
+      init_distributed("NCCL");  
 
     // Get MPI process id
     id=get_id_distributed();
@@ -85,19 +54,19 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = (testing) ? 2 : 10;
-    int batch_size = 100;
-//    int num_classes = 10;
+    int batch_size = 100; 
+    int num_classes = 10;
     // medical
-    int num_classes = 6;
+    //int num_classes = 6;
     //apples
     //int num_classes = 4;
 
     // Define network
     //layer in = Input({64*64});
     // mnsit
-    //layer in = Input({1, 28, 28});
+    layer in = Input({1, 28, 28});
     // medical
-     layer in = Input({1, 64, 64});
+    // layer in = Input({1, 64, 64});
      // apples
     //  layer in = Input({3, 256, 256});
     layer l = in; // Aux var
@@ -116,7 +85,13 @@ int main(int argc, char **argv) {
        plot(net, "model.pdf");
     }
   
-    
+      // Define computing service
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU();
+    }
 
     // Build model
     build(net,
@@ -138,12 +113,12 @@ int main(int argc, char **argv) {
     //Distributed dataset
     //Tensor* x_train = Tensor::load_id("mnist_trX.bin");
     //Tensor* y_train = Tensor::load_id("mnist_trY.bin");
-    /*
+   
     Tensor* x_train = Tensor::load("mnist_trX.bin");
     Tensor* y_train = Tensor::load("mnist_trY.bin");
     Tensor* x_test = Tensor::load("mnist_tsX.bin");
     Tensor* y_test = Tensor::load("mnist_tsY.bin");
-    */
+   
     /*
     Tensor* x_train = Tensor::load("small/train-images.bin");
     Tensor* y_train = Tensor::load("small/train-labels.bin");
@@ -158,12 +133,12 @@ int main(int argc, char **argv) {
     Tensor* y_test = Tensor::load("large/test-labels.bin");
     */
   
-    
+    /*
     Tensor* x_train = Tensor::load("medical/train-images.bin");
     Tensor* y_train = Tensor::load("medical/train-labels.bin");
     Tensor* x_test = Tensor::load("medical/test-images.bin");
     Tensor* y_test = Tensor::load("medical/test-labels.bin");
-     
+     */
     /*
     Tensor* x_train = Tensor::load("apples/train-images.bin");
     Tensor* y_train = Tensor::load("apples/train-labels.bin");
@@ -194,15 +169,20 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
     x_test->div_(255.0f);
 
+    setlogfile(net,"mnist_mlp_distr");
+    
     // Broadcast params 
-    Bcast_params_distributed(net); 
+    bcast_weights_distributed(net); 
     
     
+      
     // Train model
     fit(net,{x_train},{y_train}, batch_size, epochs);
     //printf("%f",net->get_accuracy());
     
 
+  
+    
     // Evaluate
     evaluate(net,{x_test}, {y_test});
 

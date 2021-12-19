@@ -133,7 +133,7 @@ int main(int argc, char **argv){
     // training, list of input and output tensors, batch, epochs
     fit(net,{x_train},{y_train},batch_size, 1);
     // Evaluate test
-    std::cout << "Evaluate test:" << std::endl;
+    //std::cout << "Evaluate test:" << std::endl;
     evaluate(net,{x_test},{y_test});
   }
 

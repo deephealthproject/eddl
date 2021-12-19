@@ -30,19 +30,14 @@ int main(int argc, char **argv) {
     int id;
      int n_procs;
     
-    
+     init_distributed();
+     
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
     
-    // Define computing service
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else { 
-	cs=CS_MPI_DISTRIBUTED();
-    }
+    
 
      id=get_id_distributed();
      n_procs = get_n_procs_distributed();
@@ -69,7 +64,13 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
-    
+    // Define computing service
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else { 
+	cs=CS_GPU();
+    }
 
     // Build model
     build(net,
@@ -131,7 +132,7 @@ int main(int argc, char **argv) {
     int num_batches=s[0]/batch_size;
     int batches_per_proc=num_batches/n_procs;
     
-    Bcast_params_distributed(net);
+    bcast_weights_distributed(net);
     
     for(i=0;i<epochs;i++) {
       reset_loss(net);

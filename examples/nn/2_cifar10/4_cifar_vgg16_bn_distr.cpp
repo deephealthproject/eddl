@@ -45,21 +45,15 @@ int main(int argc, char **argv){
   bool use_cpu = false;
   int id;
   
+  init_distributed();
+  
   for (int i = 1; i < argc; ++i) {
       if (strcmp(argv[i], "--testing") == 0) testing = true;
       else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
   }
 
   
-    
-    // Define computing service
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else { 
-	cs=CS_MPI_DISTRIBUTED();
-    }
-
+   
     
     // Init distribuited training
     id = get_id_distributed();
@@ -98,6 +92,13 @@ int main(int argc, char **argv){
   model net=Model({in},{out});
 
 
+  compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU(); 
+    }
+  
   // Build model
   build(net,
       adam(0.001), // Optimizer
@@ -143,7 +144,7 @@ int main(int argc, char **argv){
     // training, list of input and output tensors, batch, epochs
     fit(net,{x_train},{y_train},batch_size, 1);
     // Evaluate test
-    std::cout << "Evaluate test:" << std::endl;
+    //std::cout << "Evaluate test:" << std::endl;
     evaluate(net,{x_test},{y_test});
   }
 

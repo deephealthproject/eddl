@@ -46,20 +46,14 @@ int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
     int id;
+    
+    init_distributed();
 
 for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
-    
-    // Define computing service
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else { 
-	cs=CS_MPI_DISTRIBUTED();
-    }
-
+  
     
     // Init distribuited training
     id = get_id_distributed();
@@ -98,7 +92,12 @@ for (int i = 1; i < argc; ++i) {
         out
     });
 
-    
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU(); 
+    }
 
     // Build model
     build(net,

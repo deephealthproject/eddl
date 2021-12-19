@@ -79,14 +79,7 @@ int main(int argc, char **argv) {
             &chunks, &use_bi8, &use_distr_dataset);
 
 
-    // Define computing service
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else {
-        cs = CS_GPU({1}); // one GPU
-    }
-
+ 
     // network
     layer in = Input({channels, width, height});
     //layer in = Input({3, 224, 224});
@@ -123,6 +116,14 @@ int main(int argc, char **argv) {
     {
         out
     });
+
+       // Define computing service
+    compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU({1}); // one GPU
+    }
 
     
     // Build model

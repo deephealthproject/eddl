@@ -57,6 +57,8 @@ int main(int argc, char **argv) {
       exit (1);
   }
 
+    init_distributed();
+    
     sprintf(pdf_name, "%s.pdf", model_name);
     sprintf(onnx_name, "%s.onnx", model_name);
 
@@ -80,30 +82,7 @@ int main(int argc, char **argv) {
 
     
     
-    // Define computing service
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else if (use_mpi1) {
- 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(1);
-	cs=CS_MPI_DISTRIBUTED(1);
-    } else if (use_mpi2) {
- 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(2);
-	cs=CS_MPI_DISTRIBUTED(2);
-    } else if (use_mpi4) {
- 	//cs=CS_MPI_DISTR_1_GPU_PER_PROC(4);
-	cs=CS_MPI_DISTRIBUTED(4);
-    } else if (use_mpiall) {
-	cs=CS_MPI_DISTRIBUTED();
-    } else if (use_mpix) {
-        //cs=CS_MPI_DISTR_X_GPU_PER_PROC({1},100,"low_mem");
-        cs=CS_MPI_DISTRIBUTED({1},100,"low_mem");
-    } else {
-        cs = CS_GPU({1}, "low_mem"); // one GPU
-        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-        // cs = CS_CPU();
-        // cs = CS_FPGA({1});
-    }
+    
 
     // Get MPI process id
     id=get_id_distributed();
@@ -128,7 +107,12 @@ int main(int argc, char **argv) {
     model net = Model({in},{out});
     net->verbosity_level = 0;
   
-      
+   compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU(); // one GPU
+    }    
 
     // Build model
     build(net,

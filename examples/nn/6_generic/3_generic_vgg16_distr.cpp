@@ -69,6 +69,8 @@ int main(int argc, char **argv) {
     int chunks = 0;
     int use_bi8 = 0;
     int use_distr_dataset = 0;
+    
+      init_distributed();
 
     sprintf(pdf_name, "%s.pdf", model_name);
     sprintf(onnx_name, "%s.onnx", model_name);
@@ -80,13 +82,8 @@ int main(int argc, char **argv) {
             &chunks, &use_bi8, &use_distr_dataset);   
    
    
-    // Define computing service
-    compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else { 
-	cs=CS_MPI_DISTRIBUTED();
-    }
+  
+    
 
     
     // Init distribuited training
@@ -126,6 +123,12 @@ int main(int argc, char **argv) {
     // net define input and output layers list
     model net = Model({in}, {out});
 
+compserv cs = nullptr;
+    if (use_cpu) {
+        cs = CS_CPU();
+    } else {
+        cs = CS_GPU(); // one GPU
+    }
 
 
     // Build model
