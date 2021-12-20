@@ -44,11 +44,19 @@ void *train_batch_t(void *t) {
   net->do_reset_grads();
   net->do_forward();
   net->do_compute_loss();
-
   net->do_delta();
   net->do_backward();
+    printf("train_batch_t: before apply\n");
   net->do_applygrads();
+            Tensor *aux = nullptr;
+            if (net->layers[1]->params[0]->isCPU()) {
+                aux = net->layers[1]->params[0];
+            }else{
+                aux = new Tensor(net->layers[1]->params[0]->shape, DEV_CPU);
+                Tensor::copy(net->layers[1]->params[0], aux);
 
+            }
+    printf("train_batch_t: after do_applygrads %f (%x) \n", aux->ptr[0], net->layers[1]->params[0]);
   return nullptr;
 }
 
@@ -153,6 +161,7 @@ void Net::run_snets(void *(*F)(void *t))
 
   if((snets[0]->dev != DEV_CPU) && (comp > 1))
   {
+    printf("GPU? %d \n", comp);
     #pragma omp parallel for
     for (int i = 0; i < comp; i++) {
       // Thread params
@@ -163,11 +172,22 @@ void Net::run_snets(void *(*F)(void *t))
   }
   else
   {
+    printf("CPU? %d\n", comp);
     // Thread params
     td[0].net = snets[0];
     // Call function
     F(&td[0]);
   }
+
+              
+    Tensor *aux = nullptr;
+    if (layers[1]->params[0]->isCPU()) {
+        aux = layers[1]->params[0];
+    }else{
+        aux = new Tensor(layers[1]->params[0]->shape, DEV_CPU);
+        Tensor::copy(layers[1]->params[0], aux);
+    }
+    printf("Net::run_snets: after ex  %f (%x) \n", aux->ptr[0], layers[1]->params[0]);
 }
 
 //////////////////////////////////////////////////////////////
@@ -864,8 +884,17 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
         // Train batch
         tr_batches++;
-
+printf("Net::fit: Before train_batch\n");
         train_batch(tin, tout, sind);
+            Tensor *aux = nullptr;
+            if (layers[1]->params[0]->isCPU()) {
+                aux = layers[1]->params[0];
+            }else{
+                aux = new Tensor(layers[1]->params[0]->shape, DEV_CPU);
+                Tensor::copy(layers[1]->params[0], aux);
+
+            }
+    printf("Net::fit despues train_batch %f (%x)\n", aux->ptr[0], layers[1]->params[0]);
 
         print_loss(j+1,num_batches);
 
@@ -1243,7 +1272,6 @@ void Net::train_batch_recurrent(vtensor tin, vtensor tout,vind sind, int eval) {
 
 
 void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
-
   if (isrecurrent) {
     verboserec=0;
     train_batch_recurrent(X,Y,sind,eval);
@@ -1283,12 +1311,30 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
       Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
     }
   }
+printf("Net::train_batch: antes run_snets ");
+              Tensor *aux1 = nullptr;
+            if (layers[1]->params[0]->isCPU()) {
+                aux1 = layers[1]->params[0];
+            }else{
+                aux1 = new Tensor(layers[1]->params[0]->shape, DEV_CPU);
+                Tensor::copy(layers[1]->params[0], aux1);
+
+            }
+    printf(" %f (%x)\n", aux1->ptr[0], layers[1]->params[0]);
 
   if (eval)
   run_snets(eval_batch_t);
   else
   run_snets(train_batch_t);
-
+printf("Net::train_batch: despues run_snets ");
+              Tensor *aux22 = nullptr;
+            if (layers[1]->params[0]->isCPU()) {
+                aux22 = layers[1]->params[0];
+            }else{
+                aux22 = new Tensor(layers[1]->params[0]->shape, DEV_CPU);
+                Tensor::copy(layers[1]->params[0], aux22);
+            }
+                printf("N %f (%x)\n", aux22->ptr[0], layers[1]->params[0]);
   // If training (eval==0), apply gradients
   if (!eval) {
     // In case of multiple GPUS or FPGA synchronize params
@@ -1296,8 +1342,26 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
       sync_weights();
     }
   }
+printf("Net::train_batch: antes computeloss ");
+              Tensor *aux2 = nullptr;
+            if (layers[1]->params[0]->isCPU()) {
+                aux2 = layers[1]->params[0];
+            }else{
+                aux2 = new Tensor(layers[1]->params[0]->shape, DEV_CPU);
+                Tensor::copy(layers[1]->params[0], aux2);
 
+            }
+    printf(" %f (%x)\n", aux2->ptr[0],  layers[1]->params[0]);
   compute_loss();
+              Tensor *aux3 = nullptr;
+            if (layers[1]->params[0]->isCPU()) {
+                aux3 = layers[1]->params[0];
+            }else{
+                aux3 = new Tensor(layers[1]->params[0]->shape, DEV_CPU);
+                Tensor::copy(layers[1]->params[0], aux3);
+
+            }
+    printf("Net::train_batch: DESPUES compute_loss %f (%x)\n", aux3->ptr[0], layers[1]->params[0]);
 }
 }
 
