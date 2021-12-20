@@ -134,7 +134,7 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
   // Launch the Kernel
   OCL_CHECK(err, err = (*q).enqueueNDRangeKernel(kernel_hlsinf[kernel_id], 0, 1, 1, NULL, &kernel_events[kernel_id]));
 
-  //set_callback(kernel_events[kernel_id], "ooo_queue");
+  set_callback(kernel_events[kernel_id], "ooo_queue");
   OCL_CHECK(err, err = kernel_events[kernel_id].wait());
 }
 
