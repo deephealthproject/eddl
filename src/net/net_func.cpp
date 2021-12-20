@@ -18,7 +18,6 @@
 #include "eddl/utils.h"
 #include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
-#include "eddl/mpi_distributed/mpi_distributed.h"
 #include "eddl/profiling.h"
 
 
@@ -110,7 +109,6 @@ void Net::distribute_weights() {
 }
 
 void Net::sync_weights() {
-        printf("==== sync_weights ====\n");
     for (int j = 0; j < layers.size(); j++)
         for (int k = 0; k < layers[j]->params.size(); k++) {
             // Taking average
@@ -249,4 +247,3 @@ void distributeTensor(Layer *l,string tname, int p)
     }
 
 }
-

@@ -480,9 +480,9 @@ void fn_Bcast_GPU_weights(Net* net) {
 }
 
 void bcast_weights_distributed(Net * net) {
-    if (net->cs->hw=="GPU")
+    if (net->cs->hw=="gpu")
         fn_Bcast_GPU_weights(net);
-    else if (net->cs->hw=="CPU")
+    else if (net->cs->hw=="cpu")
         fn_Bcast_CPU_weights(net);
     else 
         msg("Error unsupported device", "bcast_params_distributed"); // Exits
@@ -555,9 +555,9 @@ void avg_CPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
 }
 
 void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
-    if (net->cs->hw=="GPU")
+    if (net->cs->hw=="gpu")
         avg_GPU_weights_distributed(net, curr_batch, batches_per_proc);
-    else if (net->cs->hw=="CPU")
+    else if (net->cs->hw=="cpu")
         avg_CPU_weights_distributed(net, curr_batch, batches_per_proc);
     else 
         msg("Error unsupported device", "avg_weights_distributed"); // Exits
