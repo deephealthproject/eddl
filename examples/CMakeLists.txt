@@ -198,6 +198,15 @@ target_link_libraries(tensor_io eddl)
 add_executable(tensor_dev_tests "tensor/eddl_dev_tests.cpp")
 target_link_libraries(tensor_dev_tests eddl)
 
+# EXAMPLES: FPGA ******************************************************
+add_executable(fpga_example1 "fpga/example1.cpp")
+target_link_libraries(fpga_example1 eddl)
+
+add_executable(fpga_example2 "fpga/example2.cpp")
+target_link_libraries(fpga_example2 eddl)
+
+add_executable(fpga_example3 "fpga/example3.cpp")
+target_link_libraries(fpga_example3 eddl)
 
 if(BUILD_PROTOBUF)
 	# EXAMPLES: APPLICATIONS *************************************************************
@@ -223,6 +232,9 @@ if(BUILD_PROTOBUF)
 
     add_executable(onnx_gradients "onnx/4_onnx_test_gradients.cpp")
     target_link_libraries(onnx_gradients eddl)
+
+    add_executable(onnx_gradients_recurrent "onnx/7_onnx_test_gradients_recurrent.cpp")
+    target_link_libraries(onnx_gradients_recurrent eddl)
 
     add_executable(onnx_import_reshape "onnx/5_onnx_import_net_and_reshape.cpp")
     target_link_libraries(onnx_import_reshape eddl)

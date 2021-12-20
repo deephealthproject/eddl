@@ -2653,6 +2653,5 @@ namespace eddl {
 
     // Auxiliary function
     layer _expand3d_to_4d(layer parent, string name);
-
 }
 #endif

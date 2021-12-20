@@ -902,15 +902,6 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             id = 0;
         }
 
-        /*
-      CUDACHECK(cudaMalloc(sendbuff + 0, SIZE * sizeof(float)));
-      CUDACHECK(cudaMalloc(recvbuff + 0, SIZE * sizeof(float)));
-      CUDACHECK(cudaMemset(sendbuff[0], 1, SIZE * sizeof(float)));
-      CUDACHECK(cudaMemset(recvbuff[0], 0, SIZE * sizeof(float)));
-         */
-        //     for (i = 1; i < SIZE; i++) ptr[i]=(float) i;
-
-
         // Check current optimizer
         if (optimizer == nullptr)
             msg("Net is not build", "Net.fit");
@@ -1059,54 +1050,11 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
              */
             update_batch_avg_distributed (i, secs_epoch, batches_per_proc);
             
-            /*
-            switch (avg_method) {
-                case AVG_INC:
-                    if (((i + 1) % (x_avg)) == 0) {
-                        if (batches_avg < batches_per_proc)
-                            batches_avg = batches_avg * 2;
-                    }
-                    break;
-
-                case SAWTOOTH:
-                    if (((i + 1) % (x_avg)) == 0) {
-                        batches_avg = batches_avg * 2;
-
-                        if (batches_avg >= batches_per_proc)
-                            batches_avg = mpi_avg;
-                    }
-                    break;
-
-                case NEG_SAWTOOTH:
-                    if (((i + 1) % (x_avg)) == 0) {
-                        batches_avg = batches_avg / 2;
-
-                        if (batches_avg < 1)
-                            batches_avg = mpi_avg;
-                    }
-                    break;
-
-
-                case AUTO_TIME:
-                    if (((i + 1) % (x_avg)) == 0) {
-                        float speed_up = secs_epoch_prev / secs_epoch;
-                        if (speed_up > SPEED_UP) {
-                            secs_epoch_prev = secs_epoch;
-
-                            if (batches_avg < batches_per_proc)
-                                batches_avg = batches_avg * 2;
-                        }
-                    }
-                    break;
-
-            }
-             */
+            
         }
         fflush(stdout);
     }
 }
-
-
 
 
 void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z)
@@ -1521,10 +1469,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
   }
 
   compute_loss();
-
-#ifdef cFPGA
-  _show_profile_fpga();
-#endif
 }
 }
 
