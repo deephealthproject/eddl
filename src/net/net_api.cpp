@@ -42,6 +42,8 @@ extern void _show_profile_fpga();
     if (id==0) \
         __VA_ARGS__; 
 
+int train_reduce=0;
+
 int verboserec=1;
 
 using namespace std;
@@ -611,7 +613,7 @@ void Net::print_loss(int b, int nb) {
         if (is_mpi_distributed()) {
             n_procs = get_n_procs_distributed();
             id = get_id_distributed();
-            sprintf (symbol, "%s", ">");
+            sprintf(symbol, "%s", ">");
         } else {
             n_procs = 1;
             id = 0;
@@ -625,7 +627,7 @@ void Net::print_loss(int b, int nb) {
                 printf("[");
 
                 set_text_green();
-//                for (int k = 0; k < pc; k++) printf("█");
+                //                for (int k = 0; k < pc; k++) printf("█");
                 for (int k = 0; k < pc; k++) printf(symbol);
                 //if (pc<lbar) {
                 //  if (b%4<2) printf(".");
@@ -653,7 +655,10 @@ void Net::print_loss(int b, int nb) {
             if (losses.size() >= (k + 1)) {
                 if (is_mpi_distributed()) {
 #ifdef cMPI
-                    MPICHECK(MPI_Reduce(&total_loss[k], &loss, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
+                    if (!trmode || train_reduce)
+                        MPICHECK(MPI_Reduce(&total_loss[k], &loss, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
+                    else
+                        loss = total_loss[k];
 #endif
                     loss = loss / n_procs;
                 } else {
@@ -667,7 +672,10 @@ void Net::print_loss(int b, int nb) {
             if (this->metrics.size() >= (k + 1)) {
                 if (is_mpi_distributed()) {
 #ifdef cMPI                    
-                    MPICHECK(MPI_Reduce(&total_metric[k], &metric, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
+                    if (!trmode || train_reduce)
+                        MPICHECK(MPI_Reduce(&total_metric[k], &metric, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
+                    else
+                        metric = total_metric[k];
 #endif                    
                     metric = metric / n_procs;
                 } else {
@@ -679,7 +687,7 @@ void Net::print_loss(int b, int nb) {
             }
 
             mpi_id0(fprintf(stdout, "] "));
-           
+
 
             // Log files. Only process 0
             if (id == 0) {
@@ -717,7 +725,7 @@ void Net::print_loss(int b, int nb) {
 
 
         }
-        
+
         mpi_id0(fflush(stdout));
 
         // Log files. Only process 0
@@ -735,14 +743,15 @@ void Net::print_loss(int b, int nb) {
     }
 }
 
-
-vector<float> Net::get_losses(){
+vector<float> Net::get_losses() {
     // NOTE: I have no idea how the internals of the metrics/loss values work,
     // so I did a sort of copy and paste from print_loss fuction with minor workarounds
     vector<float> loss_values;
 
     if (this->isrecurrent) {
-        if (this->rnet!=nullptr) { return this->rnet->get_losses(); } // Dangerous A.F.
+        if (this->rnet != nullptr) {
+            return this->rnet->get_losses();
+        } // Dangerous A.F.
     } else {
         int p = 0;
 
@@ -752,18 +761,18 @@ vector<float> Net::get_losses(){
         for (auto _ : total_loss) tmp_total_error.push_back(_);
         for (auto _ : fiterr) tmp_fiterr.push_back(_);
 
-        int length=decsize;
-        for (int k = 0; k < lout.size(); k+=decsize) {
+        int length = decsize;
+        for (int k = 0; k < lout.size(); k += decsize) {
 
             // Do stuff
-            for(int l=0;l<length;l++,p+=2) {
-                tmp_total_error[k] += tmp_fiterr[p];  // loss
+            for (int l = 0; l < length; l++, p += 2) {
+                tmp_total_error[k] += tmp_fiterr[p]; // loss
                 tmp_fiterr[p] = tmp_fiterr[p + 1] = 0.0;
             }
 
             // Compute average loss
-            if (losses.size()>=(k+1)) {
-                loss_values.push_back(tmp_total_error[k] /  (float)(length*inferenced_samples));
+            if (losses.size() >= (k + 1)) {
+                loss_values.push_back(tmp_total_error[k] / (float) (length * inferenced_samples));
             }
         }
     }

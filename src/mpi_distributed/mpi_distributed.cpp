@@ -41,8 +41,8 @@
                 gpu_str="0,0,1,0"; \
             break; \
         case 3: gpus={0, 0, 0, 1}; \
-                gpu_str="0,0,0,0,1"; \
-            break; \
+                gpu_str="0,0,0,1"; \
+                          break; \
         }          
 
 #define GPU_8_distributed \
@@ -121,15 +121,13 @@ void get_nodename_distributed(char* node_name) {
 #endif
 }
 
-
-
 int init_MPI() {
     int *argc;
     char ***argv;
 
     int id;
     int n_procs;
-    char node_name[256]="unknown";
+    char node_name[256] = "unknown";
     int len;
 
 #ifndef cMPI
@@ -148,7 +146,7 @@ int init_MPI() {
     if (n_procs < 2) {
         msg("Error: Nr of MPI processes must be >1 ", "init_MPI");
     }
-    
+
     get_nodename_distributed(node_name);
     fprintf(stderr, "[DISTR] MPI init. Node %d (%s). %d GPUS available per node\n", id, node_name, get_available_GPUs_distributed());
 
@@ -187,10 +185,8 @@ void init_NCCL(int nr_gpus) {
 #endif
 }
 
-
-
 int init_distributed() {
-    
+
     init_distributed("NCCL");
 }
 
@@ -242,11 +238,9 @@ void end_distributed() {
     }
 }
 
-
 int is_mpi_distributed() {
     return use_mpi;
 }
-
 
 void set_method_distributed(int method, int batch_avg, int epoch_avg) {
 
@@ -283,12 +277,11 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg) {
         }
 }
 
-
 vector<int> get_gpu_vec_distributed() {
     int id;
     vector<int> gpus;
     string gpu_str;
-    char node_name[256]="unknown";
+    char node_name[256] = "unknown";
 
     int nr_gpus = get_available_GPUs_distributed();
 
@@ -297,7 +290,7 @@ vector<int> get_gpu_vec_distributed() {
     } else {
         id = 0;
     }
-   
+
     switch (nr_gpus) {
         case 1: GPU_1_distributed;
             break;
@@ -309,7 +302,7 @@ vector<int> get_gpu_vec_distributed() {
             break;
         default: msg("Error nr_gpus param", "mpi_distributed CS_GPU()"); // Exits
     }
-    
+
     if (is_mpi_distributed()) {
         get_nodename_distributed(node_name);
         fprintf(stderr, "[DISTR] Node: %s. Process %d. CS: GPU mask: %s\n", node_name, id, gpu_str.c_str());
@@ -320,8 +313,6 @@ vector<int> get_gpu_vec_distributed() {
 
     return gpus;
 }
-
-
 
 int get_params_distributed(int* method, int* avg, int* avg_chg) {
 
@@ -344,7 +335,6 @@ int get_available_GPUs_distributed() {
     return count;
 }
 
-
 void fn_mpi_AllReduce(float* myptr, int count) {
 
 
@@ -353,7 +343,7 @@ void fn_mpi_AllReduce(float* myptr, int count) {
         MPICHECK(MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD));
     }
 #else
-     msg("invalid call. MPI library is not linked", "fn_mpi_AllReduce");
+    msg("invalid call. MPI library is not linked", "fn_mpi_AllReduce");
 #endif
 }
 
@@ -364,7 +354,7 @@ void fn_mpi_Bcast(float* myptr, int count) {
         printf("======fn_mpi_Bcast\n");
     }
 #else
-     msg("invalid call. MPI library is not linked", "fn_mpi_Broadcast");
+    msg("invalid call. MPI library is not linked", "fn_mpi_Broadcast");
 #endif
 }
 
@@ -376,7 +366,7 @@ void fn_nccl_AllReduce(float* myptr, int count) {
         CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #else
-     msg("invalid call. NCCL library is not linked", "fn_nccl_Allreduce");
+    msg("invalid call. NCCL library is not linked", "fn_nccl_Allreduce");
 #endif
 }
 
@@ -392,7 +382,7 @@ void fn_nccl_AllReduce_streams(float* myptr, int count, int layer) {
         CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #else
-     msg("invalid call. NCCL library is not linked", "fn_nccl_AllReduce_streams");
+    msg("invalid call. NCCL library is not linked", "fn_nccl_AllReduce_streams");
 #endif
 }
 
@@ -404,7 +394,7 @@ void fn_nccl_Bcast(float* myptr, int count) {
         CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #else
-     msg("invalid call. NCCL library is not linked", "fn_nccl_Broadcast");
+    msg("invalid call. NCCL library is not linked", "fn_nccl_Broadcast");
 #endif
 }
 
@@ -420,18 +410,17 @@ void fn_nccl_Bcast_streams(float* myptr, int count, int layer) {
         CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #else
-     msg("invalid call. NCCL library is not linked", "fn_nccl_Broadcast_streams");
+    msg("invalid call. NCCL library is not linked", "fn_nccl_Broadcast_streams");
 #endif
 }
 
 void fn_GPU_AllReduce(float* myptr, int count) {
-    if (lib=="NCCL") {
-    fn_nccl_AllReduce(myptr, count);
-     } else {     
-    fn_mpi_AllReduce(myptr, count);
-     }
+    if (lib == "NCCL") {
+        fn_nccl_AllReduce(myptr, count);
+    } else {
+        fn_mpi_AllReduce(myptr, count);
+    }
 }
-
 
 int get_local_GPU_distributed(int id, int nGPUs) {
     int nDevices = 1;
@@ -480,11 +469,11 @@ void fn_Bcast_GPU_weights(Net* net) {
 }
 
 void bcast_weights_distributed(Net * net) {
-    if (net->cs->hw=="gpu")
+    if (net->cs->hw == "gpu")
         fn_Bcast_GPU_weights(net);
-    else if (net->cs->hw=="cpu")
+    else if (net->cs->hw == "cpu")
         fn_Bcast_CPU_weights(net);
-    else 
+    else
         msg("Error unsupported device", "bcast_params_distributed"); // Exits
 }
 
@@ -555,14 +544,13 @@ void avg_CPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
 }
 
 void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
-    if (net->cs->hw=="gpu")
+    if (net->cs->hw == "gpu")
         avg_GPU_weights_distributed(net, curr_batch, batches_per_proc);
-    else if (net->cs->hw=="cpu")
+    else if (net->cs->hw == "cpu")
         avg_CPU_weights_distributed(net, curr_batch, batches_per_proc);
-    else 
+    else
         msg("Error unsupported device", "avg_weights_distributed"); // Exits
 }
-
 
 void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch_avg) {
     float SPEED_UP = 1.05;
