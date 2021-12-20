@@ -17,10 +17,6 @@
 #include <string>
 #include <mutex>
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/xcl2.hpp"
-#endif
-
 #include "Eigen/Dense"
 
 #include "eddl/utils.h"
@@ -103,13 +99,8 @@ public:
     // Aux variables
     int gpu_device;
 
-#ifdef cFPGA
     // fpga-related information
-    int fpga_device;         // fpga device
-    cl::Buffer *fpga_ptr;     // open-cl buffer pointer to data
-    int fpga_tensor_id;      // for debuging and tracking tensors
-    long int fpga_size;      // buffer size (in elements)
-#endif
+    void *fpga_ptr;               // open-cl buffer pointer to data
 
     // Constructors
     /**
@@ -136,6 +127,15 @@ public:
     *  @return a tensor
     */
     Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=nullptr);
+
+//    /**
+//    *  @brief Construct of an uninitialized tensor
+//    *
+//    *  @param shape Vector of ints specifying the shape of the tensor
+//    *  @param dev  name of the device ('cpu', 'cuda', 'fpga', 'cuda:0',...)
+//    *  @return a tensor
+//    */
+//    Tensor(const vector<int> &shape, string dev);
 
     /**
     *  @brief Construct an uninitialized tensor
@@ -237,11 +237,18 @@ public:
     string getDeviceName() const;
 
     /**
-      *  @brief Returns the device name given a device number
+      *  @brief Returns the device ID given a device number
       *
-      *  @return    string
+      *  @return int
     */
     static int getDeviceID(int dev);
+
+    /**
+      *  @brief Returns the device ID given a device name
+      *
+      *  @return int
+    */
+    static int getDeviceID(const string& dev);
 
     // Core
     vector<int> getShape();
@@ -278,16 +285,7 @@ public:
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
 
-     /**
-      *  @brief Load tensor from file. Actual filename is obtained by appending the id of the process.
-      *
-      *  @param filename  Name of the file to load the tensor from.
-      *  @param format    Filetype. The accepted filetypes are the following:
-      *                     - Images: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm.
-      *                     - Other: bin
-      *  @return    Tensor
-    */
-    static Tensor* load_id(const string& filename, int i1, int i2, string format="");
+     
         
 //    /**
 //      *  @brief Load data from a text file
@@ -3322,10 +3320,16 @@ public:
     static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false, bool verbose=true);  // Previously named "Tensor::equal2"
 
     /**
-   *   @brief Gets the most efficient accelerator supported
-   *   @return 'cpu', 'cuda', 'cudnn' or 'fpga'
-   */
-    static string max_accelerator_supported();
+    *   @brief Returns a list with hardware accelerators for which this library has been compiled
+    *   @return vector of strings with the supported accelerator
+    */
+    static vector<string> hardware_supported();
+
+    /**
+    *   @brief Check if a specific hardware is supported
+    *   @return bool
+    */
+    static bool is_hardware_supported(string hardware);
 
 };
 

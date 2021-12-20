@@ -199,6 +199,7 @@ Net::~Net(){
         delete this->cs;
         this->cs = nullptr;
     }
+
 }
 
 

@@ -88,6 +88,7 @@ public:
     bool mask_zeros;
     Tensor *E;
     Tensor *gE;
+    Tensor *acc_gE;
     vector<int> sind;
     static int total_layers;
 
@@ -102,6 +103,16 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void update_weights(vector<Tensor*> weights) override;
+
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
+    void enable_distributed() override;
 
     string plot(int c) override;
 
@@ -487,6 +498,29 @@ public:
     LPermute(Layer *l, vector<int> dims, string name, int dev, int mem);
 
     ~LPermute() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int b) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
+/// Transform Layer
+class LTransform : public LinLayer {
+public:
+    static int total_layers;
+    int copy_cpu_to_fpga;
+    int copy_fpga_to_cpu;
+    int transform;
+
+    LTransform(Layer *l, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform, string name, int dev, int mem);
+
+    ~LTransform() override;
 
     void forward() override;
 

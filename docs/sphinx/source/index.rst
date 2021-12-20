@@ -127,6 +127,7 @@ The code is open source, and `available on github`_.
     tensor/linear_algebra.rst
     tensor/logic_functions.rst
     tensor/math.rst
+    tensor/misc.rst
 
 
 Indices and tables

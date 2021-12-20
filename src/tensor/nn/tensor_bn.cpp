@@ -8,12 +8,8 @@
 */
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 #include "eddl/profiling.h"
-
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -42,11 +38,6 @@ namespace tensorNN {
               gpu_permute_channels_last(A,B);
             }
 #endif
-#ifdef cFPGA
-        else {
-          fpga_permute_channels_last(A, B);
-        }
-#endif
         PROFILING_FOOTER(permute_channels_last);
         }
 
@@ -62,11 +53,6 @@ namespace tensorNN {
             {
               gpu_permute_channels_first(A,B);
             }
-#endif
-#ifdef cFPGA
-        else {
-          fpga_permute_channels_first(A, B);
-        }
 #endif
         PROFILING_FOOTER(permute_channels_first);
     }
@@ -85,11 +71,6 @@ namespace tensorNN {
               gpu_permute_batch_last(A,B);
             }
 #endif
-#ifdef cFPGA
-        else {
-          fpga_permute_batch_last(A, B);
-        }
-#endif
         PROFILING_FOOTER(permute_batch_last);
     }
 
@@ -106,12 +87,7 @@ namespace tensorNN {
               gpu_permute_batch_first(A,B);
             }
 #endif
-#ifdef cFPGA
-        else {
-          fpga_permute_batch_first(A, B);
-        }
-#endif
-        PROFILING_FOOTER(permute_batch_last);
+        PROFILING_FOOTER(permute_batch_first);
     }
 
     void BatchNormForward(Tensor *input, Tensor *output, Tensor *opa,
@@ -120,16 +96,26 @@ namespace tensorNN {
                             Tensor *bn_mean, Tensor *bn_var,
                             bool trmode, float epsilon, float momentum)
     {
-
         if (input->isCPU()) {
+#ifdef CPU_DEBUG
+            printf("batchnorm_forward:\n");
+            printf(" input   : "); _profile_cpu_tensor(input);
+            printf(" mean    : "); _profile_cpu_tensor(mean);
+	        printf(" variance: "); _profile_cpu_tensor(variance);
+            printf(" bn_g    : "); _profile_cpu_tensor(bn_g);
+            printf(" bn_b    : "); _profile_cpu_tensor(bn_b);
+#endif	
             cpu_batchnorm_forward(input->shape[0], input->shape[1],
-                input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
+                input->ndim == 2 ? 1 : input->ndim == 3 ? input->shape[2] : input->shape[2] * input->shape[3],
                 input->ptr, output->ptr, opa->ptr,
                 mean->ptr, variance->ptr,
                 bn_g != NULL ? bn_g->ptr : NULL,
                 bn_b != NULL ? bn_b->ptr : NULL,
                 bn_mean->ptr, bn_var->ptr, trmode, epsilon, momentum);
-        } else {
+#ifdef CPU_DEBUG
+            printf(" output  : "); _profile_cpu_tensor(output);
+#endif
+        } else if (input->isGPU()) {
 #ifdef cGPU
             gpu_batchnorm_forward(input->gpu_device, input->shape[0], input->shape[1],
                 input->ndim == 2 ? 1 : input->shape[2] * input->shape[3],
@@ -155,7 +141,7 @@ namespace tensorNN {
                 gbn_b != NULL ? gbn_b->ptr : NULL,
                 bn_g != NULL ? bn_g->ptr : NULL,
                 bn_var->ptr, work1->ptr, work2->ptr);
-        } else  {
+        } else if (delta->isGPU()) {
 #ifdef cGPU
             gpu_batchnorm_backward(delta->gpu_device, delta->shape[0], delta->shape[1],
                 delta->ndim == 2 ? 1 : delta->shape[2] * delta->shape[3],

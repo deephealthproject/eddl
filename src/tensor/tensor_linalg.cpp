@@ -44,11 +44,6 @@ float Tensor::norm(Tensor *A, string ord){
         return gpu_norm(A, ord);
     }
 #endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
     return 0.0f;
 }
 
@@ -74,11 +69,6 @@ void Tensor::norm(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, string ord){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_norm(A, B, rd, ord);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
     }
 #endif
 }

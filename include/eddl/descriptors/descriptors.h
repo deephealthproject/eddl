@@ -138,12 +138,6 @@ public:
 
 
 
-#ifdef cFPGA
-    // FPGA implementation
-    cl::Buffer *fpga_ptrI;
-    long int fpga_sizeI;
-#endif
-
     ConvolDescriptor();
 
     ConvolDescriptor(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
@@ -225,12 +219,6 @@ public:
 
     int cudnn_env_init;
     int cudnn_conv_back_init;
-#endif
-
-#ifdef cFPGA
-    // FPGA implementation
-    cl::Buffer *fpga_ptrI;
-    long int fpga_sizeI;
 #endif
 
     ConvolDescriptor3D();
@@ -327,12 +315,6 @@ public:
 
 
 
-#ifdef cFPGA
-    // FPGA implementation
-    cl::Buffer *fpga_ptrI;
-    long int fpga_sizeI;
-#endif
-
     ConvolDescriptorT2D();
 
     ConvolDescriptorT2D(int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding, const vector<int> &pads,
@@ -420,12 +402,6 @@ public:
 
     int cudnn_env_init;
     int cudnn_conv_back_init;
-#endif
-
-#ifdef cFPGA
-    // FPGA implementation
-    cl::Buffer *fpga_ptrI;
-    long int fpga_sizeI;
 #endif
 
     ConvolDescriptorT3D();

@@ -15,10 +15,6 @@
 #include <string>
 #include <mutex>
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/xcl2.hpp"
-#endif
-
 using namespace std;
 
 
@@ -28,12 +24,6 @@ public:
 
     int* cpu_addresses;
     int* gpu_addresses;
-    int* fpga_addresses;  // TODO: Is this used?
-
-// TODO: I don't like this
-#ifdef cFPGA
-    cl::Buffer *fpga_ptr;
-#endif
 
     explicit TensorDescriptor(int dev);
     ~TensorDescriptor();
@@ -133,11 +123,6 @@ public:
     vector<int> ishape;
     vector<int> oshape;
     int size_reduction;
-
-    // fpga
-    #ifdef cFPGA
-    cl::Buffer *fpga_index;
-    #endif
 
     ReduceDescriptor2(const vector<int>& axis, bool keepdims, int dev);
 

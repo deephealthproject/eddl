@@ -296,5 +296,4 @@ public:
 
 };
 
-
 #endif //EDDL_LAYER_CONV_H

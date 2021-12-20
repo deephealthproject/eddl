@@ -24,5 +24,13 @@ Layer* build_add_layer(onnx::NodeProto *node,
 // OPSET: 13, 7
 void build_add_node(LAdd *layer, onnx::GraphProto *graph);
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_add_tensors(onnx::NodeProto &node,
+                                 map<string, vector<float>> &map_init_values,
+                                 map<string, vector<int>> &map_init_dims);
+
 #endif // EDDL_ADD_ONNX_H
 #endif // cPROTO

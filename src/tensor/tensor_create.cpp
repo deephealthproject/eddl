@@ -14,11 +14,6 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
-
 using namespace std;
 
 Tensor* raw_range(float start, float step, int size, int dev){
@@ -31,11 +26,6 @@ Tensor* raw_range(float start, float step, int size, int dev){
       {
         gpu_range(t, start, step);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_range(t, start, step);
-    }
 #endif
     return t;
 }
@@ -131,11 +121,6 @@ Tensor* Tensor::eye(int rows, int offset, int dev){
         gpu_eye(t, offset);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_eye(t, offset);
-    }
-#endif
     return t;
 
 }
@@ -182,12 +167,6 @@ void Tensor::diag(Tensor* A, Tensor* B, int k){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_diag(A, B, k);
-    }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-    {
-        fpga_diag(A, B, k);
     }
 #endif
 }

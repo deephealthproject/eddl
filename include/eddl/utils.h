@@ -45,8 +45,9 @@ string bytes2human(unsigned long long int bytes, int decimals=2);
 
 unsigned long get_free_mem();
 
+vector<string> split_string(const string& str, const char& delimiter);
+
 string get_extension(string filename);
-string get_name(string filename);
 
 vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>& shape);
 
@@ -123,6 +124,7 @@ TransformationMode getTransformationMode(string mode);
 string getTransformationModeName(TransformationMode mode);
 
 void __show_profile();
+void __reset_profile();
 
 void show_deprecated_warning(const string& deprecated_name, const string& new_name="", const string& type="function", const string& version="future");
 

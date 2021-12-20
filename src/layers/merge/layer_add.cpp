@@ -57,12 +57,10 @@ string LAdd::plot(int c) {
     return s;
 }
 
-
 void LAdd::forward() {
     output->fill_(0.0);
     for (int i = 0; i < parent.size(); ++i)
         Tensor::inc(parent[i]->output, output);
-
 }
 
 void LAdd::backward() {
