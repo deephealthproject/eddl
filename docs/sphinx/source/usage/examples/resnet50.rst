@@ -41,19 +41,19 @@ This example trains and evaluates ResNet50 using CIFAR-10. `[source] <https://gi
     layer ResBlock(layer l, int filters,int half, int expand=0) {
       layer in=l;
 
-      l=ReLu(BG(Conv(l,filters,{1,1},{1,1},"same",false)));
+      l=ReLu(BG(Conv2D(l,filters,{1,1},{1,1},"same",false)));
 
       if (half)
-        l=ReLu(BG(Conv(l,filters,{3,3},{2,2},"same",false)));
+        l=ReLu(BG(Conv2D(l,filters,{3,3},{2,2},"same",false)));
       else
-        l=ReLu(BG(Conv(l,filters,{3,3},{1,1},"same",false)));
+        l=ReLu(BG(Conv2D(l,filters,{3,3},{1,1},"same",false)));
 
-      l=BG(Conv(l,4*filters,{1,1},{1,1},"same",false));
+      l=BG(Conv2D(l,4*filters,{1,1},{1,1},"same",false));
 
       if (half)
-        return ReLu(Sum(BG(Conv(in,4*filters,{1,1},{2,2},"same",false)),l));
+        return ReLu(Sum(BG(Conv2D(in,4*filters,{1,1},{2,2},"same",false)),l));
       else
-        if (expand) return ReLu(Sum(BG(Conv(in,4*filters,{1,1},{1,1},"same",false)),l));
+        if (expand) return ReLu(Sum(BG(Conv2D(in,4*filters,{1,1},{1,1},"same",false)),l));
         else return ReLu(Sum(in,l));
     }
 
@@ -78,8 +78,8 @@ This example trains and evaluates ResNet50 using CIFAR-10. `[source] <https://gi
 
       // Resnet-50
 
-      l=ReLu(BG(Conv(l,64,{3,3},{1,1},"same",false))); //{1,1}
-      //l=MaxPool(l,{3,3},{1,1},"same");
+      l=ReLu(BG(Conv2D(l,64,{3,3},{1,1},"same",false))); //{1,1}
+      //l=MaxPool2D(l,{3,3},{1,1},"same");
 
       for(int i=0;i<3;i++)
         l=ResBlock(l, 64, 0, i==0); // not half but expand the first
@@ -93,7 +93,7 @@ This example trains and evaluates ResNet50 using CIFAR-10. `[source] <https://gi
       for(int i=0;i<3;i++)
         l=ResBlock(l,512,i==0);
 
-      l=MaxPool(l,{4,4});  // should be avgpool
+      l=MaxPool2D(l,{4,4});  // should be avgpool
 
       l=Reshape(l,{-1});
 

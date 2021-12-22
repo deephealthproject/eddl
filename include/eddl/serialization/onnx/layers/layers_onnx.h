@@ -68,7 +68,11 @@ enum ONNX_LAYERS {
   SLICE,            // OPSET: 13, 11, 10
   SPLIT,            // OPSET: 13, 11, 2
   EXPAND,           // OPSET: 13, 8
-  CONSTANT          // OPSET: 13, 12, 11, 9, 1
+  MULTITHRESHOLD,   // Not in ONNX: Custom
+  TOPK,             // OPSET: ????
+  CONSTANT,         // OPSET: 13, 12, 11, 9, 1
+  REPEAT,           // OPSET: 13, 6
+  LRN               // Skiped with LBypass
 };
 
 map<string, ONNX_LAYERS> create_enum_map();
@@ -94,5 +98,12 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
 
 void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients, bool is_recurrent);
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto> &nodes,
+                                                          map<string, vector<float>> &map_init_values,
+                                                          map<string, vector<int>> &map_init_dims);
 #endif // EDDL_LAYERS_ONNX_H
 #endif // cPROTO

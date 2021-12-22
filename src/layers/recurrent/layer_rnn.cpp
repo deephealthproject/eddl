@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -50,7 +50,6 @@ LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, 
     gWy = new Tensor(vector<int>{units, units}, dev);
     gradients.push_back(gWy);
 
-
     if (use_bias) {
         bias = new Tensor(vector<int>{units}, dev);
         params.push_back(bias);
@@ -58,12 +57,15 @@ LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, 
         gradients.push_back(gbias);
     }
 
-
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
         addparent(parent[i]);
     }
 
+    distributed_training = false;
+    acc_gWx = nullptr;
+    acc_gWy = nullptr;
+    acc_gbias = nullptr;
 }
 
 LRNN::~LRNN(){
@@ -135,6 +137,63 @@ void LRNN::backward() {
 
 }
 
+void LRNN::update_weights(vector<Tensor*> weights) {
+    if (weights.size() == 3) {
+        Tensor::copy(weights[0], Wx);
+        Tensor::copy(weights[1], Wy);
+        Tensor::copy(weights[2], bias);
+    } else if (weights.size() == 2) {
+        Tensor::copy(weights[0], Wx);
+        Tensor::copy(weights[1], Wy);
+    } else {
+        cerr << "[WARNING - LRNN::update_weights] "
+             << "Unexpected number of weights tensors recieved "
+             << "(weights.size()=" << weights.size() << ")" << endl;
+    }
+}
+
+void LRNN::accumulate_accumulated_gradients(vector<Tensor*> grads) {
+    if (grads.size() == 3) {
+        Wx->add_(grads[0]);
+        Wy->add_(grads[1]);
+        bias->add_(grads[2]);
+    } else if (grads.size() == 2) {
+        Wx->add_(grads[0]);
+        Wy->add_(grads[1]);
+    } else {
+        cerr << "[WARNING - LRNN::accumulate_accumulated_gradients] "
+             << "Unexpected number of gradient tensors recieved "
+             << "(grads.size()=" << grads.size() << ")" << endl;
+    }
+}
+
+void LRNN::reset_accumulated_gradients() {
+    acc_gWx->fill_(0.0);
+    acc_gWy->fill_(0.0);
+    if (use_bias) acc_gbias->fill_(0.0);
+}
+
+void LRNN::apply_accumulated_gradients() {
+    Wx->add_(acc_gWx);
+    Wy->add_(acc_gWy);
+    if (use_bias) bias->add_(acc_gbias);
+}
+
+void LRNN::enable_distributed() {
+    distributed_training = true;
+
+    // Initialize the accumlated gradients tensors
+    acc_gWx = new Tensor(vector<int>{input->shape[1], units}, output->device);
+    acc_gWy = new Tensor(vector<int>{units, units}, output->device);
+    if (use_bias) acc_gbias = new Tensor(vector<int>{units}, output->device);
+
+    // Set accumlated gradients to zero
+    reset_accumulated_gradients();
+
+    acc_gradients.push_back(acc_gWx);
+    acc_gradients.push_back(acc_gWy);
+    if (use_bias) acc_gradients.push_back(acc_gbias);
+}
 
 Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
     LRNN *n = new LRNN(p, units, activation, use_bias, bidirectional, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
@@ -166,6 +225,18 @@ Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
     n->gradients.push_back(n->gWy);
     if (use_bias) n->gradients.push_back(n->gbias);
 
+    if (distributed_training) {
+        n->acc_gradients.clear();
+
+        n->acc_gWx = acc_gWx;
+        n->acc_gWy = acc_gWy;
+        if (use_bias) n->acc_gbias = acc_gbias;
+
+        n->acc_gradients.push_back(acc_gWx);
+        n->acc_gradients.push_back(acc_gWy);
+        if (use_bias) n->acc_gradients.push_back(acc_gbias);
+    }
+
     if (n->reg != nullptr) delete n->reg;
     n->reg = reg;
     if (n->init != nullptr) delete n->init;
@@ -177,6 +248,9 @@ Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
 Layer *LRNN::clone(int c, int bs, vector<Layer *> p, int todev) {
     LRNN *n = new LRNN(p, units, activation, use_bias, bidirectional,  "clone_" + name, todev, this->mem_level);
     n->orig = this;
+
+    if (distributed_training)
+        n->enable_distributed();
 
     // TODO: Implement
 

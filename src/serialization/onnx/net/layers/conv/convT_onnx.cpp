@@ -279,4 +279,39 @@ void build_convT_node(LConvT2D *layer, onnx::GraphProto *graph, bool gradients)
   }
 }
 
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_convT_tensors(onnx::NodeProto &node,
+                                   map<string, vector<float>> &map_init_values,
+                                   map<string, vector<int>> &map_init_dims)
+{
+  vector<Tensor *> conv_tensors;
+
+  string weights_name = node.input(1); // Get weights and dims
+  vector<float> *weights = &(map_init_values[weights_name]);
+  vector<int> dims = map_init_dims[weights_name];
+
+  if (dims.size() == 3)
+      msg("Error: ConvT1D is not supported.", "[ONNX::get_convT_tensors]");
+
+  Tensor * temp = new Tensor(dims, nullptr, DEV_CPU);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, temp);
+  conv_tensors.push_back(temp);
+
+  if (node.input_size() > 2)
+  { // This means we also have a bias
+    string bias_name = node.input(2);
+    vector<float> *bias = &(map_init_values[bias_name]);
+    vector<int> bias_shape;
+    bias_shape.push_back(bias->size());
+    temp = new Tensor(bias_shape, nullptr, DEV_CPU);
+    COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, temp);
+    conv_tensors.push_back(temp);
+  }
+
+  return conv_tensors;
+}
+
 #endif // defined(cPROTO)

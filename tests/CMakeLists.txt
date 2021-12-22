@@ -8,12 +8,14 @@ SET(PROJECT_TESTS_NAME unit_tests)
 enable_testing()
 if(GTEST_ROOT)
     # Find libraries (need absolute paths)
-    find_library(GTEST_LIBRARY NAMES gtest HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
-    find_library(GTEST_MAIN_LIBRARY NAMES gtest_main HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTEST_LIBRARIES NAMES gtest HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    find_library(GTEST_MAIN_LIBRARIES NAMES gtest_main HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
     find_library(GTESTD_LIBRARY NAMES gtestd HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
     find_library(GTEST_MAIND_LIBRARY NAMES gtest_maind HINTS ${GTEST_ROOT} PATHS ${GTEST_ROOT} PATH_SUFFIXES "lib" "lib64")
+    message(STATUS "Using GTest from ${GTEST_ROOT}")
 else()
     find_package(GTest REQUIRED)
+    message(STATUS "Using GTest from system")
 endif()
 
 # Find tests (recursively, from here)
@@ -31,12 +33,12 @@ target_include_directories(${PROJECT_TESTS_NAME} PUBLIC $<BUILD_INTERFACE:${GTES
 # Add libraries
 if(MSVC)
     target_link_libraries(${PROJECT_TESTS_NAME} PUBLIC eddl 
-        optimized ${GTEST_LIBRARY} optimized ${GTEST_MAIN_LIBRARY}
+        optimized ${GTEST_LIBRARIES} optimized ${GTEST_MAIN_LIBRARIES}
         debug ${GTESTD_LIBRARY} debug ${GTEST_MAIND_LIBRARY}
     )
 else()
     find_package(Threads REQUIRED)
-    target_link_libraries(${PROJECT_TESTS_NAME} PUBLIC eddl ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(${PROJECT_TESTS_NAME} PUBLIC eddl ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 
@@ -157,7 +159,7 @@ message(STATUS "===========================================" )
 message(STATUS "===========================================" )
 message(STATUS "GTest root: " ${GTEST_ROOT} )
 message(STATUS "GTest include dirs: " ${GTEST_INCLUDE_DIRS} )
-message(STATUS "GTest libraries: ${GTEST_LIBRARY}; ${GTEST_MAIN_LIBRARY} ")
+message(STATUS "GTest libraries: ${GTEST_LIBRARIES}; ${GTEST_MAIN_LIBRARIES} ")
 #message(STATUS "GTest libraries (debug): ${GTESTD_LIBRARY}; ${GTESTD_MAIN_LIBRARY} ")
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )

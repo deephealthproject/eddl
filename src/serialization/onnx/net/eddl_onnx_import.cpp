@@ -8,9 +8,6 @@
 #include "eddl/serialization/onnx/utils_onnx.h"
 #include "eddl/serialization/onnx/import_helpers.h"
 
-#include "eddl/layers/core/layer_core.h"
-#include "eddl/layers/conv/layer_conv.h"
-
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/onnx.pb.h"
 #endif
@@ -102,231 +99,41 @@ Net *import_net_from_onnx_string(string *model_string, int mem)
 // Sets the weights of a input Net to the ones stored in the onnx net inside the pointer
 void set_weights_from_onnx_pointer(Net *net, void *ptr_model, size_t model_size)
 {
-  // TODO: Change implementation and use a generic one changing the params vectors
-  onnx::ModelProto model;
-  if (!model.ParseFromArray(ptr_model, model_size))
+  onnx::ModelProto model_proto;
+  if (!model_proto.ParseFromArray(ptr_model, model_size))
     cerr << "Failed to parse model." << endl;
 
-  map<string, vector<Tensor *>> tensors = get_tensors_from_onnx(model);
-  LConv *conv;
-  LDense *dense;
-  for (Layer *l : net->layers)
-  {
-    if (!tensors.count(l->name))
-    {
-      //cout << "Layer with name " << l->name << " is not trainable " << endl;
-      continue;
-    }
-    vector<Tensor *> layer_tensors = tensors[l->name];
-    if ((conv = dynamic_cast<LConv *>(l)))
-    {
-      if (layer_tensors.size() > 1)
-        conv->update_weights(layer_tensors[0], layer_tensors[1]);
-      else
-      {
-        cerr << "EDDL has not implemented convolutional without bias " << endl;
-        //conv.update_weights(layer_tensors[0]);
-      }
-    }
-    else if ((dense = dynamic_cast<LDense *>(l)))
-    {
-      if (layer_tensors.size() > 1)
-        dense->update_weights(layer_tensors[0], layer_tensors[1]);
-      else
-        dense->update_weights(layer_tensors[0]);
-    }
-    else
-      cerr << "not implemented layer type" << endl;
-  }
-
-  // copy the new weights to devices
-  share_weights(net);
-
-  // erase the map we used to free the memory
-  map<string, vector<Tensor *>>::iterator it;
-  vector<Tensor *> delete_tensors;
-  for (it = tensors.begin(); it != tensors.end(); ++it)
-  {
-    delete_tensors = it->second;
-    for (int i = 0; i < delete_tensors.size(); ++i)
-    {
-      delete delete_tensors[i];
-    }
-  }
+  set_weights_from_model_proto(net, model_proto);
 }
 
 // Sets the weights of a input Net to the ones stored in the onnx net inside the c++ string
 void set_weights_from_onnx(Net *net, std::string *model_string)
 {
-  // TODO: Change implementation and use a generic one changing the params vectors
-  onnx::ModelProto model;
-  if (!model.ParseFromString(*model_string))
-  {
+  onnx::ModelProto model_proto;
+  if (!model_proto.ParseFromString(*model_string))
     cerr << "Failed to parse model." << endl;
-  }
 
-  map<string, vector<Tensor *>> tensors = get_tensors_from_onnx(model);
-  LConv *conv;
-  LDense *dense;
-  for (Layer *l : net->layers)
-  {
-    if (!tensors.count(l->name))
-    {
-      //cout << "Layer with name " << l->name << " is not trainable " << endl;
-      continue;
-    }
-    vector<Tensor *> layer_tensors = tensors[l->name];
-    if ((conv = dynamic_cast<LConv *>(l)))
-    {
-      if (layer_tensors.size() > 1)
-        conv->update_weights(layer_tensors[0], layer_tensors[1]);
-      else
-      {
-        cerr << "EDDL has not implemented convolutional without bias " << endl;
-        //conv.update_weights(layer_tensors[0]);
-      }
-    }
-    else if ((dense = dynamic_cast<LDense *>(l)))
-    {
-      if (layer_tensors.size() > 1)
-        dense->update_weights(layer_tensors[0], layer_tensors[1]);
-      else
-        dense->update_weights(layer_tensors[0]);
-    }
-    else
-      cerr << "not implemented layer type" << endl;
-  }
-
-  // copy the new weights to devices
-  share_weights(net);
-
-  // erase the map we used to free the memory
-  map<string, vector<Tensor *>>::iterator it;
-  vector<Tensor *> delete_tensors;
-  for (it = tensors.begin(); it != tensors.end(); ++it)
-  {
-    delete_tensors = it->second;
-    for (int i = 0; i < delete_tensors.size(); ++i)
-    {
-      delete delete_tensors[i];
-    }
-  }
+  set_weights_from_model_proto(net, model_proto);
 }
 
 // Accumulates the gradients stored in the pointer to the input net
 void apply_grads_from_onnx_pointer(Net *net, void *ptr_onnx, size_t count)
 {
-  // TODO: Change implementation and use a generic one adding the grads to the params vectors
-  onnx::ModelProto model;
-  if (!model.ParseFromArray(ptr_onnx, count))
-  {
+  onnx::ModelProto model_proto;
+  if (!model_proto.ParseFromArray(ptr_onnx, count))
     cerr << "Failed to parse model." << endl;
-  }
 
-  map<string, vector<Tensor *>> tensors = get_tensors_from_onnx(model);
-  LConv *conv;
-  LDense *dense;
-  for (Layer *l : net->layers)
-  {
-    if (!tensors.count(l->name))
-    {
-      continue;
-    }
-    vector<Tensor *> layer_tensors = tensors[l->name];
-    if ((conv = dynamic_cast<LConv *>(l)))
-    {
-      if (layer_tensors.size() > 1)
-      {
-        conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
-      }
-      else
-      {
-        cerr << "EDDL has not implemented convolutional without bias." << endl;
-        //conv.update_weights(layer_tensors[0]);
-      }
-    }
-    else if ((dense = dynamic_cast<LDense *>(l)))
-    {
-      if (layer_tensors.size() > 1)
-      {
-        dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
-      }
-      else
-      {
-        dense->accumulate_accumulated_gradients(layer_tensors[0]);
-      }
-    }
-    else
-      cerr << "not implemented layer type" << endl;
-  }
-  // erase the map we used to free the memory
-  map<string, vector<Tensor *>>::iterator it;
-  vector<Tensor *> delete_tensors;
-  for (it = tensors.begin(); it != tensors.end(); ++it)
-  {
-    delete_tensors = it->second;
-    for (int i = 0; i < delete_tensors.size(); ++i)
-    {
-      delete delete_tensors[i];
-    }
-  }
-
-  // copy the new weights to devices
-  share_weights(net);
+  apply_grads_from_model_proto(net, model_proto);
 }
 
 // Accumulates the gradients stored in the c++ string to the input net
 void apply_grads_from_onnx(Net *net, std::string *model_string)
 {
-  // TODO: Change implementation and use a generic one adding the grads to the params vectors
-  onnx::ModelProto model;
-  if (!model.ParseFromString(*model_string))
-  {
+  onnx::ModelProto model_proto;
+  if (!model_proto.ParseFromString(*model_string))
     cerr << "Failed to parse model." << endl;
-  }
 
-  map<string, vector<Tensor *>> tensors = get_tensors_from_onnx(model);
-  LConv *conv;
-  LDense *dense;
-  for (Layer *l : net->layers)
-  {
-    if (!tensors.count(l->name))
-      continue;
-    vector<Tensor *> layer_tensors = tensors[l->name];
-    if ((conv = dynamic_cast<LConv *>(l)))
-    {
-      if (layer_tensors.size() > 1)
-        conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
-      else
-      {
-        cerr << "EDDL has not implemented convolutional without bias " << endl;
-        //conv.update_weights(layer_tensors[0]);
-      }
-    }
-    else if ((dense = dynamic_cast<LDense *>(l)))
-    {
-      if (layer_tensors.size() > 1)
-        dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
-      else
-        dense->accumulate_accumulated_gradients(layer_tensors[0]);
-    }
-    else
-      cerr << "not implemented layer type" << endl;
-  }
-  // erase the map we used to free the memory
-  map<string, vector<Tensor *>>::iterator it;
-  vector<Tensor *> delete_tensors;
-  for (it = tensors.begin(); it != tensors.end(); ++it)
-  {
-    delete_tensors = it->second;
-    for (int i = 0; i < delete_tensors.size(); ++i)
-    {
-      delete delete_tensors[i];
-    }
-  }
-
-  // copy the new weights to devices
-  share_weights(net);
+  apply_grads_from_model_proto(net, model_proto);
 }
 
 #else // If protobuf is not enabled

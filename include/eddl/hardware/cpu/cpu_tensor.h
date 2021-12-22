@@ -1,14 +1,16 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 #ifndef EDDL_CPU_TENSOR_H
 #define EDDL_CPU_TENSOR_H
+
+//#define CPU_DEBUG
 
 #include "cpu_profile.h"
 
@@ -19,6 +21,8 @@
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
+
+void _profile_cpu_tensor(Tensor *T);
 
 // CPU: Core (static)
 void cpu_transpose(Tensor *A, Tensor *B);
@@ -44,6 +48,8 @@ void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool ma
 void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0,bool mask_zeros=false); // TODO: Legacy
 
 void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
+
+void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsigned int axis, bool derivative);
 
 // CPU: Create
 void cpu_range(Tensor *A, float min, float step);
@@ -89,6 +95,7 @@ void cpu_asin(Tensor *A, Tensor *B);
 void cpu_atan(Tensor *A, Tensor *B);
 void cpu_ceil(Tensor *A, Tensor *B);
 void cpu_clamp(Tensor *A, Tensor *B, float min, float max);
+void cpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max);
 void cpu_cos(Tensor *A, Tensor *B);
 void cpu_cosh(Tensor *A, Tensor *B);
 void cpu_exp(Tensor *A, Tensor *B);

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -16,12 +16,8 @@
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
 #endif
 
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-#endif
-
 PROFILING_ENABLE_EXTERN(Conv2D);
+PROFILING_ENABLE_EXTERN(Conv2DReLU);
 PROFILING_ENABLE_EXTERN(Conv2D_grad);
 PROFILING_ENABLE_EXTERN(Conv2D_back);
 
@@ -65,14 +61,6 @@ void Conv2D(ConvolDescriptor *D) {
          gpu_conv2D(D);
       }
 #endif
-#ifdef cFPGA
-    else {
-        if (is_dilated)
-            msg("Dilated convolutions are only supported using GPU with CUDNN." "Tensor::Conv2D");
-        fpga_conv2D(D);
-    }
-#endif
-
 
     PROFILING_FOOTER(Conv2D);
 }
@@ -98,13 +86,6 @@ void Conv2D_grad(ConvolDescriptor *D) {
          gpu_conv2D_grad(D);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_conv2D_grad(D);
-    }
-#endif
-
-
     PROFILING_FOOTER(Conv2D_grad);
 }
 
@@ -129,12 +110,6 @@ void Conv2D_back(ConvolDescriptor *D) {
          gpu_conv2D_back(D);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_conv2D_back(D);
-    }
-#endif
-
     PROFILING_FOOTER(Conv2D_back);
 }
 
@@ -172,15 +147,6 @@ void Conv3D(ConvolDescriptor3D *D) {
         gpu_conv3D(D);
     }
 #endif
-#ifdef cFPGA
-    else {
-        if (is_dilated)
-            msg("Dilated convolutions are only supported using GPU with CUDNN." "Tensor::Conv3D");
-        fpga_conv3D(D);
-    }
-#endif
-
-
 //    PROFILING_FOOTER(Conv3D);
 }
 
@@ -204,11 +170,6 @@ void Conv3D_grad(ConvolDescriptor3D *D) {
     {
         gpu_conv3D_grad(D);
     }
-#endif
-#ifdef cFPGA
-        else {
-    fpga_conv3D_grad(D);
-}
 #endif
 
 
@@ -235,11 +196,6 @@ void Conv3D_back(ConvolDescriptor3D *D) {
     {
         gpu_conv3D_back(D);
     }
-#endif
-#ifdef cFPGA
-        else {
-    fpga_conv3D_back(D);
-}
 #endif
 
 //    PROFILING_FOOTER(Conv3D_back);
@@ -268,13 +224,6 @@ void Conv3D_back(ConvolDescriptor3D *D) {
             gpu_convT2D(D);
         }
 #endif
-#ifdef cFPGA
-            else {
-            msg("NotImplementedError", "Tensor::Conv2DT");
-    }
-#endif
-
-
 //        PROFILING_FOOTER(Conv2DT);
     }
 
@@ -299,13 +248,6 @@ void Conv3D_back(ConvolDescriptor3D *D) {
             gpu_convT2D_grad(D);
         }
 #endif
-#ifdef cFPGA
-            else {
-            msg("NotImplementedError", "Tensor::Conv2DT");
-    }
-#endif
-
-
 //        PROFILING_FOOTER(Conv2DT_grad);
     }
 
@@ -330,12 +272,6 @@ void Conv3D_back(ConvolDescriptor3D *D) {
             gpu_convT2D_back(D);
         }
 #endif
-#ifdef cFPGA
-            else {
-            msg("NotImplementedError", "Tensor::Conv2DT");
-    }
-#endif
-
 //        PROFILING_FOOTER(Conv2DT_back);
     }
 
@@ -362,13 +298,6 @@ void Conv3D_back(ConvolDescriptor3D *D) {
             gpu_convT3D(D);
         }
 #endif
-#ifdef cFPGA
-        else {
-            msg("NotImplementedError", "Tensor::ConvT3D");
-    }
-#endif
-
-
 //        PROFILING_FOOTER(ConvT3D);
     }
 
@@ -393,13 +322,6 @@ void Conv3D_back(ConvolDescriptor3D *D) {
             gpu_convT3D_grad(D);
         }
 #endif
-#ifdef cFPGA
-        else {
-            msg("NotImplementedError", "Tensor::ConvT3D_grad");
-    }
-#endif
-
-
 //        PROFILING_FOOTER(ConvT3D_grad);
     }
 
@@ -424,12 +346,6 @@ void Conv3D_back(ConvolDescriptor3D *D) {
             gpu_convT3D_back(D);
         }
 #endif
-#ifdef cFPGA
-        else {
-            msg("NotImplementedError", "Tensor::ConvT3D_back");
-    }
-#endif
-
 //        PROFILING_FOOTER(ConvT3D_back);
     }
 

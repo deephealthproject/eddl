@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -54,11 +54,13 @@ void SGD::setlayers(vlayer l) {
     if (isshared) return;
 
     // create momemtum tensors
-    for (int i = 0; i < layers.size(); i++)
+    for (int i = 0; i < layers.size(); i++) {
       for (int j = 0; j < layers[i]->get_trainable_params_count(); j++) {
           mT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
           mT.back()->fill_(0.0);
     }
+    }
+
 
 
 }

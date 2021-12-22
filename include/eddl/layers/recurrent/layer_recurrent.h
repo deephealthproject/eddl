@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -77,11 +77,14 @@ public:
 
     Tensor *Wx;
     Tensor *gWx;
+    Tensor *acc_gWx;
     Tensor *bias;
     Tensor *gbias;
+    Tensor *acc_gbias;
 
     Tensor *Wy;
     Tensor *gWy;
+    Tensor *acc_gWy;
     Tensor *biasy;
 
 
@@ -97,7 +100,17 @@ public:
 
     void backward() override;
 
+    void update_weights(vector<Tensor*> weights) override;
+
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
     string plot(int c) override;
+
+    void enable_distributed() override;
 };
 
 
@@ -127,9 +140,15 @@ public:
     Tensor *gWoh,*gWox;
     Tensor *gWch,*gWcx;
 
+    Tensor *acc_gWih,*acc_gWix;
+    Tensor *acc_gWfh,*acc_gWfx;
+    Tensor *acc_gWoh,*acc_gWox;
+    Tensor *acc_gWch,*acc_gWcx;
+
     Tensor *in,*fn,*on,*cn;
     Tensor *inbias,*fnbias,*onbias,*cnbias;
     Tensor *ginbias,*gfnbias,*gonbias,*gcnbias;
+    Tensor *acc_ginbias,*acc_gfnbias,*acc_gonbias,*acc_gcnbias;
 
     Tensor *incn,*cn1fn;
     Tensor *sh;
@@ -155,7 +174,17 @@ public:
 
     void backward() override;
 
+    void update_weights(vector<Tensor*> weights) override;
+
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
     string plot(int c) override;
+
+    void enable_distributed() override;
 };
 
 
@@ -186,6 +215,12 @@ public:
     Tensor *gUn_h, *gWn_x;
     Tensor *g_bias_z_t, *g_bias_r_t, *g_bias_n_t, *g_bias_n_t_hidden;
 
+    // Accumulated gradient tensors for distributed training
+    Tensor *acc_gUz_h, *acc_gWz_x;
+    Tensor *acc_gUr_h, *acc_gWr_x;
+    Tensor *acc_gUn_h, *acc_gWn_x;
+    Tensor *acc_g_bias_z_t, *acc_g_bias_r_t, *acc_g_bias_n_t, *acc_g_bias_n_t_hidden;
+
     // Intermediate outputs of the cell
     Tensor *z_t, *r_t, *n_t; // Gates outputs
     Tensor *n_t_hidden, *one_minus_z_t; // Gates interoperations
@@ -212,7 +247,17 @@ public:
 
     void backward() override;
 
+    void update_weights(vector<Tensor*> weights) override;
+
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
     string plot(int c) override;
+
+    void enable_distributed() override;
 };
 
 void reduced_abs_sum(Tensor * input, Tensor *output);

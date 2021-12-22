@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -57,12 +57,10 @@ string LAdd::plot(int c) {
     return s;
 }
 
-
 void LAdd::forward() {
     output->fill_(0.0);
     for (int i = 0; i < parent.size(); ++i)
         Tensor::inc(parent[i]->output, output);
-
 }
 
 void LAdd::backward() {

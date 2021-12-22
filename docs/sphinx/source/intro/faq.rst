@@ -79,6 +79,21 @@ Is it more memory-efficient than PyTorch/TensorFlow/etc?
 Depends on your memory setting. 
 You can take a look at our benchmarks: `EDDL benchmarks`_
 
+
+Problems with ONNX models
+--------------------------
+
+I cannot import a \*.onnx model
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If a \*.onnx model cannot be imported by the EDDL, you can try to simplifying it. (More on: :doc:`my document <../model/onnx>`)
+
+
+My \*.onnx model is not exported correctly
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Exporting an \*.onnx is hard since each framework has its way of importing/exporting \*.onnx files. Due to this problematic, we try to make sure that the EDDL can import/export with itself, ONNX Runtime, and then, we focus our efforts on the other frameworks.
+
 .. _PyEDDL: https://github.com/deephealthproject/pyeddl
 .. _`EDDL benchmarks`: https://github.com/jofuelo/eddl_benchmark
 .. _`issue`: https://github.com/deephealthproject/eddl/issues

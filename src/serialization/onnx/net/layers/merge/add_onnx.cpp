@@ -103,14 +103,6 @@ Layer* build_add_layer(onnx::NodeProto *node,
       // Create the tensor with the constant values to add
       vector<float> *tensor_values = &(map_init_values[tensor_name]);
       vector<int> tensor_shape = map_init_dims[tensor_name];
-      // Check that the tensor shape is valid
-      if (tensor_shape.size() < 2)
-        msg("Error in Add node " + node->name() + ". The number of dimensions of the constant operator must be 2 or higher", "ONNX::ImportNet");
-      else if (tensor_shape[0] != 1)
-        msg("Error in Add node " + node->name() + ". The first dimension (batch) of the constant operator must be 1, got " +
-            to_string(tensor_shape[0]), "ONNX::ImportNet");
-      else
-        tensor_shape.erase(tensor_shape.begin()); // Delete the batch dimension
 
       // Check if the constant tensor has only one number
       int tensor_size = 1;
@@ -123,6 +115,15 @@ Layer* build_add_layer(onnx::NodeProto *node,
         log_string("The constant input to the Add node has only one value, going to use a Sum layer...", log_level, LOG_LEVEL::DEBUG);
         return new LSum(parents[0], tensor_values->at(0), node->name(), dev, mem);
       }
+
+      // Check that the tensor shape is valid
+      if (tensor_shape.size() < 2)
+        msg("Error in Add node " + node->name() + ". The number of dimensions of the constant operator must be 2 or higher", "ONNX::ImportNet");
+      else if (tensor_shape[0] != 1)
+        msg("Error in Add node " + node->name() + ". The first dimension (batch) of the constant operator must be 1, got " +
+            to_string(tensor_shape[0]), "ONNX::ImportNet");
+      else
+        tensor_shape.erase(tensor_shape.begin()); // Delete the batch dimension
 
       Tensor *t = new Tensor(tensor_shape, nullptr, dev);
       COPY_FROM_VECTOR_PTR_TO_TENSOR(tensor_values, t);
@@ -155,6 +156,42 @@ void build_add_node(LAdd *layer, onnx::GraphProto *graph)
   }
   // Set the name of the output of the node to link with other nodes
   node->add_output(layer->name);
+}
+
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_add_tensors(onnx::NodeProto &node,
+                                 map<string, vector<float>> &map_init_values,
+                                 map<string, vector<int>> &map_init_dims)
+{
+  vector<Tensor *> add_tensors;
+
+  bool parameter_input = false;
+  int index_parameter = -1; // Possible values 0 and 1, we won't expect parameters in an add with more than two parents
+  for (int j = 0; j < node.input_size(); j++)
+  {
+    string parent_name = node.input(j);
+    if (map_init_values.count(parent_name))
+    {
+      parameter_input = true;
+      index_parameter = j;
+      break;
+    }
+  }
+
+  if (parameter_input)
+  {
+    string weights_name = node.input(index_parameter);
+    vector<float> *weights = &(map_init_values[weights_name]);
+    vector<int> dims = map_init_dims[weights_name];
+    Tensor *weights_tensor = new Tensor(dims, nullptr, DEV_CPU);
+    COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
+    add_tensors.push_back(weights_tensor);
+  }
+
+  return add_tensors;
 }
 
 #endif // defined(cPROTO)

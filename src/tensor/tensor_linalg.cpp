@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -44,11 +44,6 @@ float Tensor::norm(Tensor *A, string ord){
         return gpu_norm(A, ord);
     }
 #endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
     return 0.0f;
 }
 
@@ -74,11 +69,6 @@ void Tensor::norm(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, string ord){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_norm(A, B, rd, ord);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
     }
 #endif
 }

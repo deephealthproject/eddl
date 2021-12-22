@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -42,7 +42,9 @@ if(!D->I->isCPU()){
 
     // Check padding asymmetries
     if(D->pad[0] != D->pad[1] || D->pad[2] != D->pad[3]){
-        msg("Padding asymmetry detected. (top=" + to_string(D->pad[0]) + ", bottom=" + to_string(D->pad[1]) + ", left=" + to_string(D->pad[2]) + ", right=" + to_string(D->pad[3]) + ").\nLayer name: " + this->name, "LAveragePool::LAveragePool");
+        string err_msg = "In layer " + this->name + ": Padding asymmetry detected (top=" + to_string(D->pad[0]) + ", bottom=" + to_string(D->pad[1]) + ", left=" + to_string(D->pad[2]) + ", right=" + to_string(D->pad[3]) + "). "
+                         + "The padding asymmetry is not allowed in a AveragePool layer, we suggest you to use an explicit padding layer before this layer to fix the asymmetry.";
+        throw AsymmetricPaddingException(err_msg, D->pad);
     }
 }
 

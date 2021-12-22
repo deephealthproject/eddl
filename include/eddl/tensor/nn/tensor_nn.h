@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -84,6 +84,7 @@ namespace tensorNN{
 // ***** Deep Learning *****************************
     // Conv2D
     void Conv2D(ConvolDescriptor *D);
+    void Conv2DReLU(ConvolDescriptor *D);
     void Conv2D_grad(ConvolDescriptor *D);
     void Conv2D_back(ConvolDescriptor *D);
 
@@ -118,12 +119,31 @@ namespace tensorNN{
     void AvgPool3D(PoolDescriptor3D *D);
     void AvgPool3D_back(PoolDescriptor3D *D);
 
-    // ***** Deep Learning: Fused *****************************
+// ***** Deep Learning: Fused *****************************
+
     // Conv2D + Activation
     void conv2d_activation(string act, ConvolDescriptor *D);
 
+    // Conv2D + Softplus + Tanh + Mut
+    void conv_stm(ConvolDescriptor *D);
+   
+    // Conv2D + Softplus + tanh + mult + Add
+    void conv_stm_add(ConvolDescriptor *D, Tensor *Add);
+
+    // Conv2D + Maxpooling
+    void conv_maxpool(ConvolDescriptor *D);
+
+    //Conv2D + ReLU 
+    void conv_relu(ConvolDescriptor *D);
+
+    //Conv2D + LeakyReLU 
+    void conv_leakyrelu(ConvolDescriptor *D, float alpha);
+
+    //Conv2D + ReLU + Maxpooling
+    void conv_relu_maxpool(ConvolDescriptor *D);
+
 // ***** Tensor operations *****************************
-    void repeat_nn(Tensor *A, Tensor *B, vector<int> size);
+    void repeat_nn(Tensor *A, Tensor *B, vector<int> size);  // Deprecated (for UpSampling2d)
     void d_repeat_nn(Tensor *D, Tensor *P, vector<int> size);
 
     void select(Tensor *A, Tensor* B, SelDescriptor *sd);
@@ -131,11 +151,12 @@ namespace tensorNN{
 
     void set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
     void set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd);
+    void transform(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
 
     void expand(Tensor *A, Tensor *B, ExpandDescriptor *sd);
     void expand_back(Tensor *A, Tensor* B, ExpandDescriptor *sd);
 
-    void repeat_batch(Tensor *A, Tensor* B);
+    void repeat_batch(Tensor *A, Tensor* B);  // Used in ConstOfTensor
 
 // ***** Permutations for BatchNorm ********************
     void permute_channels_last(Tensor *A,Tensor *B);
@@ -150,6 +171,10 @@ namespace tensorNN{
     void BatchNormBackward(Tensor *delta, Tensor *opa, Tensor *pdelta, Tensor *gbn_g,
             Tensor *gbn_b, Tensor *bn_g, Tensor *variance,
             Tensor *work1, Tensor *work2);
+
+// ***** FPGA specific ************************************
+    void multithreshold(Tensor *A, Tensor *B, Tensor *thresholds, float out_bias, float out_scale);
+    void topK(Tensor *A, Tensor *B, int axis, int largest, int sorted, int K);
 
 }
 

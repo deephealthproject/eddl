@@ -42,8 +42,9 @@ Layer* build_conv_layer(onnx::NodeProto *node,
       for (int h = 0; h < attribute.ints_size(); h++)
         dilation_rate.push_back(attribute.ints(h));
     }
-    //else if (!attr_name.compare("group")) { It isn't implemented in eddl
-    //}
+    else if (!attr_name.compare("group")) {
+        groups = attribute.i();
+    }
     else if (!attr_name.compare("kernel_shape"))
     {
       for (int h = 0; h < attribute.ints_size(); h++)
@@ -108,6 +109,11 @@ Layer* build_conv_layer(onnx::NodeProto *node,
     msg("Error in layer " + name + + ", the number of values in the dilations attribute (" + to_string(dilation_rate.size()) +
         ") doesn't match the number of dimensions of the convolutional layer (" + to_string(conv_dim) + ").");
 
+  // If the padding values are not provided and the padding type is custom we default to padding 0
+  if (pads.empty() && auto_pad_option == "custom")
+      for (int i = 0; i < conv_dim * 2; ++i)
+          pads.push_back(0);
+
   Layer *actual_layer;
   if (conv_dim < 3) // Handle Conv1D and Conv2D (they use the same ConvolDescriptor)
   {
@@ -149,7 +155,7 @@ Layer* build_conv_layer(onnx::NodeProto *node,
           parent->lout--;
 
           vector<int> asym_pads = e.get_asymmetric_pads(); // Asymmetric paddings to fix
-          string pad_layer_name = "EDDL_asymmetric_padding_" + name;
+          string pad_layer_name = name + "__asymmetric_padding";
           // Create a parent layer to fix the padding asymmetry
           actual_layer = new LPad(parent, {asym_pads[0], asym_pads[3], asym_pads[1], asym_pads[2]}, 0.0, pad_layer_name, dev, mem);
           // Create again the full Conv layer
@@ -245,7 +251,7 @@ void build_conv_node(LConv *layer, onnx::GraphProto *graph, bool gradients)
   onnx::AttributeProto *conv_group = node->add_attribute();
   conv_group->set_name("group");
   conv_group->set_type(onnx::AttributeProto::INT);
-  conv_group->set_i(1);
+  conv_group->set_i(layer->cd->groups);
 
   // Attr kernel_shape
   onnx::AttributeProto *conv_kernel_shape = node->add_attribute();
@@ -313,6 +319,43 @@ void build_conv_node(LConv *layer, onnx::GraphProto *graph, bool gradients)
       //conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gbias->ptr), sizeof(float) * layer->cd->acc_gbias->size );
     }
   }
+}
+
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+vector<Tensor *> get_conv_tensors(onnx::NodeProto &node,
+                                  map<string, vector<float>> &map_init_values,
+                                  map<string, vector<int>> &map_init_dims)
+{
+  vector<Tensor *> conv_tensors;
+
+  string weights_name = node.input(1); // Get weights and dims
+  vector<float> *weights = &(map_init_values[weights_name]);
+  vector<int> dims = map_init_dims[weights_name];
+
+  // Our Conv1D layers are computed using the backend of the Conv2D, so we
+  // need to add one extra dimension to have the shape of the kernels of a Conv2D
+  if (dims.size() == 3)
+      dims.push_back(1);
+
+  Tensor * temp = new Tensor(dims, nullptr, DEV_CPU);
+  COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, temp);
+  conv_tensors.push_back(temp);
+
+  if (node.input_size() > 2)
+  { // This means we also have a bias
+    string bias_name = node.input(2);
+    vector<float> *bias = &(map_init_values[bias_name]);
+    vector<int> bias_shape;
+    bias_shape.push_back(bias->size());
+    temp = new Tensor(bias_shape, nullptr, DEV_CPU);
+    COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, temp);
+    conv_tensors.push_back(temp);
+  }
+
+  return conv_tensors;
 }
 
 #endif // defined(cPROTO)

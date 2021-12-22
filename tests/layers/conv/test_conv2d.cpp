@@ -393,19 +393,23 @@ TEST(Conv2DTestSuite, conv2d_k3x3_s2x2_pad_same){
 }
 
 #ifdef cGPU
+//#ifndef cCUDNN
 TEST(Conv2DTestSuite, conv2d_cpu_gpu){
     // Image
-    Tensor* t_cpu = Tensor::randu({1, 3, 1000, 500});
+    Tensor* t_cpu = Tensor::randu({1, 3, 512, 512});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
-    vector<string> padding = {"valid", "same"};
-    vector<int> strides = {1, 2, 3, 5};
-    vector<int> kernels = {1, 2, 3, 5, 7};
+    vector<string> padding = {"same"};
+    vector<int> strides = {1};
+    vector<int> kernels = {2};
 
     for(auto& p : padding){
         for(auto& s : strides){
             for(auto& k : kernels){
                 try{
+                    // Print results to ease debugging
+                    cout << "Testing conv2d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" << endl;
+
                     // CPU Operation
                     auto *cd_cpu = new ConvolDescriptor(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
                     cd_cpu->build(t_cpu);
@@ -414,56 +418,69 @@ TEST(Conv2DTestSuite, conv2d_cpu_gpu){
                     cd_cpu->ID = Tensor::zeros(cd_cpu->I->getShape());
                     cd_cpu->D = Tensor::randu(cd_cpu->O->getShape());
 
-                    // GPU Operation
-                    auto *cd_gpu = new ConvolDescriptor(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
-                    cd_gpu->build(t_gpu);
-                    cd_gpu->K = cd_cpu->K->clone(); cd_gpu->K->toGPU();
-                    cd_gpu->bias = Tensor::zeros(cd_gpu->bias->getShape(), t_gpu->device);
-                    cd_gpu->ID = Tensor::zeros(cd_gpu->I->getShape(), t_gpu->device);
-                    cd_gpu->D = cd_cpu->D->clone(); cd_gpu->D->toGPU();
+                    // Check for asymmetric paddings
+                    bool asymmetricPads = isPaddingAsymmetric(cd_cpu->pads);
+                    cout << "\t=> Asymmetric padding: " << asymmetricPads << endl;
 
-                    // Forward
-                    tensorNN::Conv2D(cd_cpu);
-                    tensorNN::Conv2D(cd_gpu);
-                    Tensor *cd_gpu_O = cd_gpu->O->clone(); cd_gpu_O->toCPU();  // Tensor::equivalent is only for CPU (at the moment)
-                    bool test_fwrd = (bool) Tensor::equivalent(cd_cpu->O, cd_gpu_O, 1e-3f, 0.0f, true, true);
+                    // Check if padding is asymmetric and if we're using cuDNN
+                    if(asymmetricPads==0 || (asymmetricPads==1 && !Tensor::is_hardware_supported("cudnn"))) {
+                        // GPU Operation
+                        auto *cd_gpu = new ConvolDescriptor(1, {k, k}, {s, s}, p, {}, 1, {1, 1}, true);
+                        cd_gpu->build(t_gpu);
+                        cd_gpu->K = cd_cpu->K->clone();
+                        cd_gpu->K->toGPU();
+                        cd_gpu->bias = Tensor::zeros(cd_gpu->bias->getShape(), t_gpu->device);
+                        cd_gpu->ID = Tensor::zeros(cd_gpu->I->getShape(), t_gpu->device);
+                        cd_gpu->D = cd_cpu->D->clone();
+                        cd_gpu->D->toGPU();
 
-                    // Backward
-                    tensorNN::Conv2D_back(cd_cpu);
-                    tensorNN::Conv2D_back(cd_gpu);
-                    Tensor *cd_gpu_ID = cd_gpu->ID->clone(); cd_gpu_ID->toCPU(); // Tensor::equivalent is only for CPU (at the moment)
-                    bool test_bwrd = (bool) Tensor::equivalent(cd_cpu->ID, cd_gpu_ID, 1e-3f, 0.0f, true, true);
+                        // Forward
+                        tensorNN::Conv2D(cd_cpu);
+                        tensorNN::Conv2D(cd_gpu);
+                        Tensor *cd_gpu_O = cd_gpu->O->clone();
+                        cd_gpu_O->toCPU();  // Tensor::equivalent is only for CPU (at the moment)
+                        bool test_fwrd = (bool) Tensor::equivalent(cd_cpu->O, cd_gpu_O, 1e-3f, 0.0f, true, true);
 
-                    // Print results to ease debugging
-                    cout << "Testing conv2d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<
-                         " [Forward="<< test_fwrd << "; Backward=" << test_bwrd << "]" << endl;
+                        // Backward
+                        tensorNN::Conv2D_back(cd_cpu);
+                        tensorNN::Conv2D_back(cd_gpu);
+                        Tensor *cd_gpu_ID = cd_gpu->ID->clone();
+                        cd_gpu_ID->toCPU(); // Tensor::equivalent is only for CPU (at the moment)
+                        bool test_bwrd = (bool) Tensor::equivalent(cd_cpu->ID, cd_gpu_ID, 1e-3f, 0.0f, true, true);
 
-                    // Test correctness
-                    ASSERT_TRUE(test_fwrd);
-                    ASSERT_TRUE(test_bwrd);
+                        // Improve debugging
+                        cout << "\t=> [Forward=" << test_fwrd << "; Backward=" << test_bwrd << "]" << endl;
+
+                        // Test correctness
+                        ASSERT_TRUE(test_fwrd);
+                        ASSERT_TRUE(test_bwrd);
+
+                        delete cd_gpu->K;
+                        delete cd_gpu->bias;
+                        delete cd_gpu->ID;
+                        delete cd_gpu->D;
+                        delete cd_gpu;
+
+                        delete cd_gpu_O;
+                        delete cd_gpu_ID;
+                    }else{
+                        cout << "\t=> Skipping test. We cannot use cuDNN + Asymmetric padding" << endl;
+                    }
 
                     delete cd_cpu->K;
                     delete cd_cpu->bias;
                     delete cd_cpu->ID;
                     delete cd_cpu->D;
                     delete cd_cpu;
-
-                    delete cd_gpu->K;
-                    delete cd_gpu->bias;
-                    delete cd_gpu->ID;
-                    delete cd_gpu->D;
-                    delete cd_gpu;
-
-                    delete cd_gpu_O;
-                    delete cd_gpu_ID;
                 }
                 catch (...) {
-                    cout << "[FAILED] Testing conv2d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<endl;
+                    cout << "=> [FAILED] Testing conv2d_cpu_gpu (" << "padding=" << p << "; kernel=" << k << "; stride=" << s << ")" <<endl;
                 }
             }
         }
     }
 }
 #endif
+//#endif
 
 

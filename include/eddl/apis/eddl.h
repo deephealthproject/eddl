@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -28,7 +28,6 @@
 #include "eddl/layers/core/layer_core.h"
 #include "eddl/layers/auxiliar/layer_auxiliar.h"
 #include "eddl/layers/da/layer_da.h"
-#include "eddl/layers/fused/layer_fused.h"
 #include "eddl/layers/generators/layer_generators.h"
 #include "eddl/layers/merge/layer_merge.h"
 #include "eddl/layers/noise/layer_noise.h"
@@ -37,7 +36,7 @@
 #include "eddl/layers/reductions/layer_reductions.h"
 #include "eddl/layers/pool/layer_pool.h"
 #include "eddl/layers/recurrent/layer_recurrent.h"
-
+#include "eddl/layers/fpga/layer_hlsinf.h"
 
 // EDDL namespace defines the API
 namespace eddl {
@@ -89,86 +88,72 @@ namespace eddl {
     */
     void set_parameters(model net, const vector<vtensor>& params);
 
+    /**
+      *  @brief Configures the model for training.
+      *
+      *  @param net  Model
+      *  @param o  Optimizer
+      *  @param cs  Computing service
+      *  @param init_weights  'True' if the weights can be initialized to random values, else False (e.g.: Used when loading a pretrained model)
+      *  @return     (void)
+    */
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
 
     /**
-      *  @brief Tell the model which optimizer, losses, metrics and computing services to use.
+      *  @brief Configures the model for training.
       *
       *  @param net  Model
       *  @param o  Optimizer
       *  @param lo  Vector with losses
       *  @param me  Vector with metrics
       *  @param cs  Computing service
+      *  @param init_weights  'True' if the weights can be initialized to random values, else False (e.g.: Used when loading a pretrained model)
       *  @return     (void)
     */
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, bool init_weights=true);
 
     // Computing services
 
-    void toGPU(model net, vector<int> g, int lsb);
-    void toGPU(model net, vector<int> g, string mem);
-    /**
-      *  @brief Assign model operations to the GPU.
-      *
-      *  @param net  Model
-      *  @param g  Vector with gpu ids to allocate the model
-      *  @param lsb  Number of batches to sync model weights
-      *  @param mem  String. One of ``low_mem``, ``mid_mem`` or ``full_mem``.
-      *  @return     (void)
-    */
-    void toGPU(model net, vector<int> g, int lsb, string mem);
-    void toGPU(model net, vector<int> g);
-    void toGPU(model net, string mem);
-    void toGPU(model net);
 
-    //void toGPU(model net, string mem);
+
     /**
       *  @brief Assign model operations to the CPU.
-      *
       *  @param net  Model
-      *  @param t  CPU Threads
+      *  @param th  CPU Threads. (if '-1', use all threads)
       *  @return     (void)
     */
-    void toCPU(model net, int t=std::thread::hardware_concurrency());
+    void toCPU(model net, int th=-1);
+
+
+    /**
+      *  @brief Assign model operations to the GPU.
+      *  @param net  Model
+      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
+      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     (void)
+    */
+    void toGPU(model net, vector<int> g={1}, int lsb=1, const string& mem="full_mem");
+    void toGPU(model net, const string& mem="full_mem");
+    void toGPU(model net, vector<int> g={1}, const string& mem="full_mem");
+
+    /**
+      *  @brief Assign model operations to the FPGA.
+      *  @param net  Model
+      *  @param hlsinf_version HLSinf accelerator version to use (default 1)
+      *  @param hlsinf_subversion HLSinf accelerator subversion to use (default 0)
+      *  @return     (void)
+    */
+    model toFPGA(model net, int hlsinf_version=1, int hlsinf_subversion=0);
 
     /**
       *  @brief Executes the code in the CPU.
       *
-      *  @param th  Indicates the number of threads to use (-1 = all available threads)
+      *  @param th  CPU Threads. (if '-1', use all threads)
       *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-    compserv CS_CPU();
+    compserv CS_CPU(int th=-1, const string& mem="full_mem");
 
-
-    /**
-      *  @brief Executes the code in the CPU.
-      *
-      *  @param th  Indicates the number of threads to use (-1 = all available threads)
-      *  @return     The computer service itself.
-    */
-    compserv CS_CPU(int th);
-
-
-    /**
-      *  @brief Executes the code in the GPU.
-      *
-      *  @param th  Integer to set which GPUs will be used (1=on, 0=off)
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
-      *  @return     The computer service itself.
-    */
-
-    compserv CS_CPU(int th,string mem);
-
-
-    /**
-      *  @brief Executes the code in the GPU.
-      *
-      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
-      *  @return     The computer service itself.
-    */
-
-    compserv CS_GPU(const vector<int> g);
 
     /**
       *  @brief Executes the code in the GPU.
@@ -177,16 +162,7 @@ namespace eddl {
       *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-    compserv CS_GPU(const vector<int> g, string mem);
-
-    /**
-      *  @brief Executes the code in the GPU.
-      *
-      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
-      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different GPUs
-      *  @return     The computer service itself.
-    */
-    compserv CS_GPU(const vector<int> g, int lsb);
+    compserv CS_GPU(const vector<int>& g, const string& mem="full_mem");
 
     /**
       *  @brief Executes the code in the GPU.
@@ -196,46 +172,7 @@ namespace eddl {
       *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-    compserv CS_GPU(const vector<int> g, int lsb,string mem);
-
-    /**
-      *  @brief Executes the code in the FPGA.
-      *
-      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
-      *  @return     The computer service itself.
-    */
-
-//    compserv CS_FPGA(const vector<int> g);
-
-    /**
-      *  @brief Executes the code in the FPGA.
-      *
-      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
-      *  @return     The computer service itself.
-    */
-//    compserv CS_FPGA(const vector<int> g, string mem);
-
-    /**
-      *  @brief Executes the code in the FPGA.
-      *
-      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
-      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different FPGAs
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
-      *  @return     The computer service itself.
-    */
-//    compserv CS_FPGA(const vector<int> g, int lsb);
-
-    /**
-      *  @brief Executes the code in the FPGA.
-      *
-      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
-      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different FGPAs
-      *  @param mem  Indicates the memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
-      *  @return     The computer service itself.
-    */
-//    compserv CS_FPGA(const vector<int> g, int lsb,string mem);
+    compserv CS_GPU(const vector<int>& g, int lsb, const string& mem="full_mem");
 
 
     /**
@@ -245,7 +182,7 @@ namespace eddl {
       *  @param lsb  (Multi-fpga setting) Number of batches to run before synchronizing the weights of the different FPGAs
       *  @return     The computer service itself.
     */
-    compserv CS_FPGA(const vector<int> &f,int lsb=1);
+    compserv CS_FPGA(const vector<int> &f, int lsb=1);
 
     /**
       *  @brief Executes the code through the COMP Superscalar (COMPSs) framework.
@@ -253,10 +190,8 @@ namespace eddl {
       *  @param filename  File with the setup specification
       *  @return     The computer service itself.
     */
-    compserv CS_COMPSS(string filename);
+    compserv CS_COMPSS(const string& filename);
 
-
-    // Info and logs
 
     /**
       *  @brief  Save the training outputs of a model to a filename
@@ -265,7 +200,8 @@ namespace eddl {
       *  @param fname  Name of the logfile
       *  @return     (void) Outputs log to the given file
     */
-    void setlogfile(model net,string fname);
+    void setlogfile(model net, const string& fname);
+
     /**
       *  @brief  Prints a summary representation of your model.
       *
@@ -273,14 +209,18 @@ namespace eddl {
       *  @return     (void) Prints the model
     */
     void summary(model m);
+
     /**
-      *  @brief  Plots a representation of your model.
+      *  @brief  Plots a representation of the model.
+      *  This method simply calls the "dot" program (graphviz) with the given parameters.
+      *  To know more about it, go to: https://graphviz.org/documentation/
       *
       *  @param m  Model to plot
-      *  @param fname  File where the plot will be saved
+      *  @param fname  Filename (with extension). Formats: jpg, pdf, eps, svg, json,... Docs: https://graphviz.org/docs/outputs/
+      *  @param rankdir  Sets direction of graph layout. Values: "TB" (top-bottom), "BT" (bottom-top), "LR" (left-right), "RL" (right-left). Docs: https://graphviz.org/docs/attrs/rankdir/
       *  @return     (void) Plots the model
     */
-    void plot(model m, string fname, string mode="LR");
+    void plot(model m, const string& fname="model.pdf", const string& rankdir="LR");
 
     // Serialization
     /**
@@ -290,7 +230,8 @@ namespace eddl {
       *  @param fname  File where the model weights are saved
       *  @return     (void) Loads the weights
     */
-    void load(model m, const string& fname, string format="bin");
+    void load(model m, const string& fname, const string& format="bin");
+
     /**
       *  @brief  Save weights of a model.
       *
@@ -298,7 +239,7 @@ namespace eddl {
       *  @param fname  File where the model weights will be saved
       *  @return     (void) Saves the weights
     */
-    void save(model m, const string& fname, string format="bin");
+    void save(model m, const string& fname, const string& format="bin");
 
     // Optimizer
     /**
@@ -728,6 +669,11 @@ namespace eddl {
     */
     void show_profile();
 
+    /**
+     *  @brief Resets profile information.
+     */
+    void reset_profile();
+
 
     ///////////////////////////////////////
     //  LAYERS
@@ -905,6 +851,104 @@ namespace eddl {
                const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
                int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
+    /**
+      *  @brief Convolution layer + STM.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param padding  One of "none", "valid" or "same"
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer ConvSTM(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+
+   /**
+      *  @brief Convolution layer + STM + Add.
+      *
+      *  @param layers  List of layers
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param padding  One of "none", "valid" or "same"
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer ConvSTMAdd(const vector<layer> &layers, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    /**
+      *  @brief Convolution layer + MaxPooling.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param padding  One of "none", "valid" or "same"
+      *  @param pool_size  Size of the max pooling windows
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */               
+    layer ConvMaxPool(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &conv_strides = {1, 1}, string conv_padding = "same", 
+               const vector<int> &pool_size = {2, 2}, const vector<int> &pool_strides = {2, 2}, //TODO: check pool stride for k_conv
+               string pool_padding = "none",bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");  
+
+         /**
+      *  @brief Convolution layer + MaxPooling.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param conv_strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param conv_padding  One of "none", "valid" or "same"
+      *  @param pool_size  Size of the max pooling windows
+      *  @param pool_strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param pool_padding  One of "none", "valid" or "same"
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */               
+    layer ConvReLUMaxPool(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &conv_strides = {1, 1}, string conv_padding = "same", 
+               const vector<int> &pool_size = {2, 2}, const vector<int> &pool_strides = {2, 2}, //TODO: check pool stride for k_conv
+               string pool_padding = "none",bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");          
+    /**
+      *  @brief 2D Convolution layer + ReLU.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param padding  One of "none", "valid" or "same"
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer ConvReLU(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
 
     /**
    *  @brief 1D Convolution layer.
@@ -1022,6 +1066,20 @@ namespace eddl {
                         int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
     /**
+      *  @brief DepthwiseConv 2D convolution
+      *
+      *  @param parent  Parent layer
+      *  @param kernel_size  The depth, height and width of the convolution window
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param use_bias  Boolean, whether the layer uses a bias vector
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer DepthwiseConv2D(layer parent, const vector<int> &kernel_size, const vector<int> &strides = {1, 1}, string padding = "same",
+                          bool use_bias = true, const vector<int> &dilation_rate = {1, 1}, string name = "");
+
+    /**
       *  @brief Regular densely-connected NN layer.
       *
       *  @param parent  Parent layer
@@ -1107,6 +1165,17 @@ namespace eddl {
     */
     layer Reshape(layer parent, const vector<int> &shape, string name = "");
 
+
+    /**
+      *  @brief Transforms an input to an output format
+      *
+      *  @param parent  Parent layer
+      *  @param mode Mode (0 = CHW to GHWC; 1 = GHWC to CHW)
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Transform(layer parent, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transforrm, int mode, string name = "");
+
     /**
       *  @brief Flattens the input. Does not affect the batch size.
       *
@@ -1115,6 +1184,56 @@ namespace eddl {
       *  @return     Output of reshape operation
     */
     layer Flatten(layer parent, string name = "");
+
+    /**
+      *  @brief Repeats the elements of a tensor (layer's output) along the specified dimension.
+      *
+      *  @param parent  Parent layer
+      *  @param repeats  The number of repetitions for the specified dimension ("int" or "vector of ints")
+      *  @param axis  The axis along which to repeat values. (Batch is ignored)
+      *  @return     Output of repeat operation
+    */
+    layer Repeat(layer parent, const vector<unsigned int>& repeats, unsigned int axis, string name="");
+    layer Repeat(layer parent, unsigned int repeats, unsigned int axis, string name="");
+
+    /**
+      *  @brief Constructs a tensor by repeating the elements of input. The repeats argument specifies the number of repetitions in each dimension.
+      *
+      *  @param parent  Parent layer
+      *  @param repeats The number of repetitions per dimension.
+      *  @return     Output of repeat operation
+    */
+    layer Tile(layer parent, const vector<int>& repeats, string name="");
+
+    /**
+      *  @brief Prepares the output of the smaller layer to be broadcasted into the bigger one (parent1 or parent2)
+      *  Example:
+      *     - f(P1(3), P2(4,2,3,5)) => P1 is x.  (P2 has no delta)
+      *     - f(P1(4,2,3,5), P2(3)) => P2 is x.  (P1 has no delta)
+      *
+      *  @param parent1  Parent layer
+      *  @param parent2  Parent layer
+      *  @return     Output of repeat operation
+    */
+    layer Broadcast(layer parent1, layer parent2, string name="");
+
+    /**
+      *  @brief Virtual layer. Propagates the output of the parent as their own. Used internally for ONNX.
+      *
+      *  @param parent  Parent layer
+      *  @param bypass_name  Name of the layer being bypassed (e.g.: "bypass_unknown_layer)
+      *  @return     Output of repeat operation
+    */
+    layer Bypass(layer parent, string bypass_name="", string name="");
+
+    /**
+      *  @brief This layer returns the shape of its parent as his output
+      *
+      *  @param parent  Parent layer
+      *  @param include_batch  If True, the batch dimension is included in the output
+      *  @return     Output of repeat operation
+    */
+    layer Shape(layer parent, bool include_batch=true, string name="");
 
     /**
       *  @brief Dimension of size one is removed at the specified position. (Batch dimension is ignored)
@@ -1719,14 +1838,16 @@ namespace eddl {
     layer Log10(layer l);
 
     /**
-      *  @brief Layer that clamps the values of another layer
+      *  @brief Clamps all elements in input into the range [ min, max ].
       *
-      *  @param l  Parent layer
-      *  @param min  Minimum value
-      *  @param max  Maximum value
-      *  @return     Parent layer `l` after computing its logarithm to base 10
+      *  @param parent  Parent layer
+      *  @param min  Lower-bound of the range to be clamped to
+      *  @param max  Upper-bound of the range to be clamped to
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
     */
-    layer Clamp(layer l, float min, float max);
+    layer Clamp(layer parent, float min, float max, string name = "");
+    layer Clip(layer parent, float min, float max, string name = "");
 
     /**
       *  @brief  Layer that computes the element-wise multiplication of two layers.
@@ -2306,6 +2427,31 @@ namespace eddl {
                            const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
                            int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
+
+    ///////////////////////////////////////
+    // UTILS FUNCTIONS
+    ///////////////////////////////////////
+
+    /**
+     *  @brief Reads a text file
+     *
+     *  @param filename  Path for the file
+     *  @return  Vector of string, where each strings represets a line in the file
+   */
+    vector<string> read_txt_file(const string& filename);
+
+    /**
+      *  @brief Get top k class names along with their probabilities
+      *
+      *  @param class_probs  Tensor with class probabilities (shapes: (n), (1, n) or (n, 1)
+      *  @param class_names  Vector of strings containing the class names
+      *  @param k  Number of classes to return. (default 5)
+      *  @param decimals  Number of decimal places for the probability values
+      *  @return   string
+    */
+    string get_topk_predictions(Tensor* class_probs, const vector<string>& class_names, int k=5, int decimals=2);
+
+
     ///////////////////////////////////////
     // MODELS
     ///////////////////////////////////////
@@ -2413,7 +2559,7 @@ namespace eddl {
     /**
       *  @brief Returns a DenseNet121 model pretrained with imagenet.
       *
-      *  @param top  If true, returns the model without the densely connected part and
+      *  @param top  If true, returns the feature extraction part and
       *              the last layer of the returned model is named "top".
       *  @param input_shape  Optional. To change the input shape of the model.
       *                      The shape vector must not have the batch dimension.
@@ -2477,6 +2623,20 @@ namespace eddl {
       *  @return     (void) The binary files of Flickr
     */
     void download_flickr();
+
+    ///////////////////////////////////////
+    //  HLSinf accelerators
+    ///////////////////////////////////////
+    /**
+      *  @brief Downloads HLSinf accelerator.
+      *
+      *  @param version HLSinf accelerator version
+      *  @param subversion HLSinf accelerator subversion
+      *
+      *  @return     (void) The binary files of HLSinf accelerator
+    */
+    void download_hlsinf(int version, int subversion);
+
 
     // Auxiliary function
     layer _expand3d_to_4d(layer parent, string name);

@@ -28,6 +28,7 @@ The code is open source, and `available on github`_.
     usage/getting_started.rst
     usage/intermediate.rst
     usage/advanced.rst
+    usage/pretrained.rst
 
 
 .. toctree::
@@ -126,6 +127,7 @@ The code is open source, and `available on github`_.
     tensor/linear_algebra.rst
     tensor/logic_functions.rst
     tensor/math.rst
+    tensor/misc.rst
 
 
 Indices and tables

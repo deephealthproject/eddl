@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -16,12 +16,14 @@
 #include "eddl/layers/reductions/layer_reductions.h"
 #include "eddl/layers/operators/layer_operators.h"
 
+#include "eddl/hardware/cpu/cpu_tensor.h"
+
 using namespace std;
 
 int LBatchNorm::total_layers = 0;
 
 
-LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem, "batchnorm") {
     input=parent->output;
     isnorm=true;
 
@@ -29,7 +31,8 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     if ((input->ndim != 2)&&(input->ndim != 4)) {
         input->info();
-        msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
+	printf("LBatchNorm only works over 1D or 2D tensors, however, we do not exit here and allow 3D tensors (JFLICH)\n");
+//        msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
     }
 
     if(name.empty()) this->name = "batchnorm" + to_string(++total_layers);
@@ -47,10 +50,11 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     mean = new Tensor(shape, dev);
     mean->fill_(0.0);
     variance = new Tensor(shape, dev);
-    if (momentum > 0.0)
+    if (momentum > 0.0){
         variance->fill_(0.0f);
-    else
+    }else{
         variance->fill_(1.0f);
+    }
 
     bn_mean = new Tensor(shape, dev);
     bn_var = new Tensor(shape, dev);
@@ -195,51 +199,15 @@ void LBatchNorm::forward() {
                                     epsilon, momentum);
 
     } else if (input->isFPGA()) { // FPGA
-        int M,N;
-        int b,z,r,c,d;
-        Tensor *in;
 
-        if (input->ndim==2) {
-            N=b=input->shape[0];
-            M=d=input->shape[1];
-            in=input->clone();
-        }
-        else {
-            b=input->shape[0];
-            M=z=input->shape[1];
-            r=input->shape[2];
-            c=input->shape[3];
-            N=b*r*c;
-
-            in=new Tensor({b*r*c*z},input->device);
-            tensorNN::permute_channels_last(input,in);
-            in->reshape_({N,M});
-            opa->reshape_({N,M});
-        }
-
-        BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
-
-        Tensor::copy(in,opa);
-        if (affine) {
-            Tensor *var=new Tensor({N,M},input->device);
-            Tensor *ones=new Tensor({N,1},input->device);
-            ones->fill_(1.0);
-
-            // apply affine transform in=gamma*in+beta
-            rmult(in,bn_g,ones,var);
-            rsum(in,bn_b,ones,var);
-            delete var;
-            delete ones;
-        }
-
-        // copy in to ouput
-        if (input->ndim==4) {
-            tensorNN::permute_channels_first(in,output);
-        }
-        else Tensor::copy(in,output);
-
-        delete in;
-
+        tensorNN::BatchNormForward(input, output, opa,
+                                    mean, variance,
+                                    affine ? bn_g : nullptr,
+                                    affine ? bn_b : nullptr,
+                                    bn_mean, bn_var,
+                                    mode == TRMODE,
+                                    epsilon, momentum);
+        
     } else { // GPU
 #ifdef cCUDNN
         float alpha = 1.0;

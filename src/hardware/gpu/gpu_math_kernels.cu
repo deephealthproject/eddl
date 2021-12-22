@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -68,16 +68,21 @@
  __global__ void gpu_clamp(float *A, float *B, long int size, float min, float max){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-    if (thread_id_x < size)
-        if (A[thread_id_x] < min){
-            B[thread_id_x] = min;
-        }else if(A[thread_id_x] > max){
-            B[thread_id_x] = max;
-        }else {
-            B[thread_id_x] = A[thread_id_x];
-        }
+    if (thread_id_x < size){
+        if (A[thread_id_x] < min){ B[thread_id_x] = min; }
+        else if(A[thread_id_x] > max){ B[thread_id_x] = max; }
+        else { B[thread_id_x] = A[thread_id_x]; }
+    }
 }
 
+__global__ void gpu_d_clamp(float *D, float *I, float *PD, long int size, float min, float max){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < size){
+        if (I[thread_id_x] < min || I[thread_id_x] > max){ PD[thread_id_x] += 0.0f; }  // * 0.0f
+        else{ PD[thread_id_x] += D[thread_id_x]; }  // *1.0f
+    }
+}
  __global__ void gpu_cos(float *A, float *B, long int size){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 

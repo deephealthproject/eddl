@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -14,11 +14,6 @@
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#endif
-
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
 
 using namespace std;
@@ -40,11 +35,6 @@ void Tensor::fill_rand_uniform_(float v) {
       {
         gpu_rand_uniform(this,v);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_rand_uniform(this,v);
-    }
 #endif
 
     PROFILING_FOOTER(fill_rand_uniform);
@@ -70,11 +60,6 @@ void Tensor::fill_rand_signed_uniform_(float v) {
         gpu_rand_signed_uniform(this,v);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_rand_signed_uniform(this, v);
-    }
-#endif
 
     PROFILING_FOOTER(fill_rand_signed_uniform);
 }
@@ -98,11 +83,6 @@ void Tensor::fill_rand_normal_(float m, float s, bool fast_math) {
         gpu_rand_normal(this,m,s);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_rand_normal(this, m, s, fast_math);
-    }
-#endif
 
     PROFILING_FOOTER(fill_rand_normal);
 }
@@ -125,11 +105,6 @@ void Tensor::fill_rand_binary_(float v) {
       {
         gpu_rand_binary(this,v);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_rand_binary(this, v);
-    }
 #endif
 
     PROFILING_FOOTER(fill_rand_binary);

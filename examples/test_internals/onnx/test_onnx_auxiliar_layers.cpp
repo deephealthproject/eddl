@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -69,6 +69,9 @@ int main(int argc, char **argv) {
         layer l = in;  // Aux var
 
         l = Reshape(l, {1, 28, 28});
+        l = Repeat(l, 3, 0);
+        l = Repeat(l, 2, 1);
+        l = Repeat(l, 2, 2);
         l = Pad(l, {1, 1, 1, 1}, 0.0);
         l = MaxPool2D(ReLu(Conv2D(l, 30, {3, 3}, {1, 1}, "valid")), {3, 3}, {1, 1}, "same");
 

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -44,6 +44,8 @@ __global__ void deselect_rows(float *A, float* B, int rowsize, int size, int* in
 __global__ void gpu_gather(float *A, float* B, long int size, int* indices);
 __global__ void gpu_expand(float *A, float* B, long int size, int* indices);
 
+__global__ void gpu_repeat(float *A, float* B, unsigned int* repeats, unsigned int axis,
+                           long int A_size, unsigned int* A_shape, unsigned int* A_strides,  unsigned int* B_strides, unsigned int ndim, bool derivative);
 __global__ void gpu_repeat_batch(float *A, float* B, long int A_size, long int B_size);
 
 __global__ void concat(float *dest, float *src, unsigned int src_size, unsigned int src_stride, unsigned int dest_stride, bool derivative);
@@ -93,6 +95,7 @@ __global__ void gpu_asin(float *A, float *B, long int size);
 __global__ void gpu_atan(float *A, float *B, long int size);
 __global__ void gpu_ceil(float *A, float *B, long int size);
 __global__ void gpu_clamp(float *A, float *B, long int size, float min, float max);
+__global__ void gpu_d_clamp(float *D, float *I, float *PD, long int size, float min, float max);
 __global__ void gpu_cos(float *A, float *B, long int size);
 __global__ void gpu_cosh(float *A, float *B, long int size);
 __global__ void gpu_exp(float *A, float *B, long int size);

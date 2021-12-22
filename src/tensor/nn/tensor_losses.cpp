@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -14,11 +14,6 @@
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
-#endif
-
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
 
 PROFILING_ENABLE_EXTERN(cent);
@@ -45,13 +40,6 @@ namespace tensorNN {
             gpu_cent(A,B,C);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA())
-      {
-         fpga_cent(A,B,C);
-      }
-#endif
-
 
         PROFILING_FOOTER(cent);
     }
@@ -74,11 +62,6 @@ namespace tensorNN {
             return gpu_categorical_cross_entropy(y_true, y_pred);
         }
 #endif
-#ifdef cFPGA
-        else {
-        return fpga_categorical_cross_entropy(y_true, y_pred);
-    }
-#endif
         return std::nanf("");
     }
 
@@ -99,11 +82,6 @@ namespace tensorNN {
             gpu_d_categorical_cross_entropy(y_true, y_pred, delta);
         }
 #endif
-#ifdef cFPGA
-        else {
-        fpga_d_categorical_cross_entropy(y_true, y_pred, delta);
-    }
-#endif
     }
 
     float binary_cross_entropy(Tensor* y_true, Tensor* y_pred){
@@ -121,11 +99,6 @@ namespace tensorNN {
         {
             return gpu_binary_cross_entropy(y_true, y_pred);
         }
-#endif
-#ifdef cFPGA
-        else {
-        return fpga_full_cross_entropy(y_true, y_pred);
-    }
 #endif
         return std::nanf("");
     }
@@ -146,11 +119,6 @@ namespace tensorNN {
         {
             gpu_d_binary_cross_entropy(y_true, y_pred, delta);
         }
-#endif
-#ifdef cFPGA
-        else {
-        fpga_d_binary_cross_entropy(y_true, y_pred, delta);
-    }
 #endif
     }
 

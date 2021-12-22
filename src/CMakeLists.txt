@@ -90,7 +90,6 @@ FOREACH(item ${SPECIAL_FILES})
 ENDFOREACH(item)
 
 
-
 ###########################################################################
 ############################# SET LIBRARY #################################
 ###########################################################################
@@ -117,6 +116,16 @@ if(MSVC)
     # Install the debug library with "d" suffix
     set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 endif()
+
+
+###########################################################################
+########################## COMPILE FOR RISK-V #############################
+###########################################################################
+
+if(RISKV_COMPILER_PATH)
+    message(STATUS "Compiling for Risk-V...")
+endif()
+
 
 ###########################################################################
 ########################### LINK LIBRARIES ################################
@@ -305,17 +314,18 @@ if(USE_FPGA)
     find_package(OpenCL)
     if (OpenCL_FOUND)
 
-        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include}>")
+        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include>")
+	target_include_directories(${PROJECT_NAME} PUBLIC /opt/xilinx/xrt/include)
         #target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:/opt/Xilinx/Vivado/2018.3/include)  # Is this cross-platform?
 
         target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCL_LIBRARY})
         if(APPLE)
-            target_link_options(${PROJECT_NAME} PUBLIC -framework opencl)
+            target_link_options(${PROJECT_NAME} PUBLIC -framework opencl -lpthread)
         endif()
 
         # TODO: Why this? Flags should be specific
         #set(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS}")  # DO NOT REPLACE "CMAKE_CXX_FLAGS
-        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS})
+        #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS})
 
         # Add extra files
         target_sources(${PROJECT_NAME} PRIVATE ${FPGA_HEADERS} ${FPGA_SOURCES})
@@ -488,6 +498,10 @@ if(USE_FPGA)
     message(STATUS "OpenCL version: " ${OpenCL_VERSION_MAJOR} )
     message(STATUS "OpenCL include: " ${OpenCL_INCLUDE_DIRS} )
     message(STATUS "OpenCL libraries: " ${OpenCL_LIBRARIES} )
+endif()
+if(RISKV_COMPILER_PATH)
+    message(STATUS "-------------------------------------------" )
+    message(STATUS "Risk-V compiler: " ${RISKV_COMPILER_PATH} )
 endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 root dir: " ${Eigen3_DIR} )

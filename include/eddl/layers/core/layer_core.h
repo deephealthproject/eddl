@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -88,6 +88,7 @@ public:
     bool mask_zeros;
     Tensor *E;
     Tensor *gE;
+    Tensor *acc_gE;
     vector<int> sind;
     static int total_layers;
 
@@ -102,6 +103,16 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void update_weights(vector<Tensor*> weights) override;
+
+    void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
+
+    void reset_accumulated_gradients() override;
+
+    void apply_accumulated_gradients() override;
+
+    void enable_distributed() override;
 
     string plot(int c) override;
 
@@ -136,10 +147,10 @@ public:
     void backward() override;
 
 	// Sets the weights to the values of the parameter w
-	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+	void update_weights(vector<Tensor*> weights) override;
 
 	// Adds the values of gw to the current weights of the layer
-	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+	void accumulate_accumulated_gradients(vector<Tensor*> grads) override;
 
 	// Sets to 0.0 the tensors with the accumulated gradients for W and bias
 	void reset_accumulated_gradients() override;
@@ -223,6 +234,103 @@ public:
     void backward() override;
 
     void resize(int batch) override;
+
+    string plot(int c) override;
+
+};
+
+
+class LRepeat : public LinLayer {
+public:
+    static int total_layers;
+    RepeatDescriptor *rd;
+
+    // constructors and clones
+    LRepeat(Layer *parent, const vector<unsigned int>& repeats, unsigned int axis, string name, int dev, int mem);
+    LRepeat(Layer *parent, unsigned int repeats, unsigned int axis, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    ~LRepeat() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
+class LTile : public LinLayer {
+public:
+    static int total_layers;
+    TileDescriptor *td;
+
+    // constructors and clones
+    LTile(Layer *parent, const vector<int>& repeats, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    ~LTile() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
+
+class LBroadcast : public LinLayer {
+public:
+    static int total_layers;
+    TileDescriptor *td;
+    bool shapes_swapped;
+    Layer *p1;  // Small
+    Layer *p2;  // Big
+
+    // constructors and clones
+    LBroadcast(Layer *parent1, Layer *parent2, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    ~LBroadcast() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
+class LBypass : public LinLayer {
+public:
+    static int total_layers;
+    string bypass_name;
+
+    // constructors and clones
+    LBypass(Layer *parent, string bypass_name, string name, int dev, int mem);
+    ~LBypass() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    // implementation
+    void mem_delta() override;
+    void free_delta() override;
+
+    void forward() override;
+
+    void backward() override;
 
     string plot(int c) override;
 
@@ -330,27 +438,6 @@ public:
 
 };
 
-/// Transpose Layer
-class LTranspose : public LinLayer {
-public:
-    static int total_layers;
-    vector<int> dims;
-    vector<int> rdims;
-
-    // constructors and clones
-    LTranspose(Layer *parent, vector<int> dims, string name, int dev, int mem);
-
-    Layer *share(int c, int bs, vector<Layer *> p) override;
-
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-    void forward() override;
-
-    void backward() override;
-
-    string plot(int c) override;
-
-};
 
 /// Drop-out Layer
 class LDropout : public LinLayer {
@@ -411,6 +498,29 @@ public:
     LPermute(Layer *l, vector<int> dims, string name, int dev, int mem);
 
     ~LPermute() override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int b) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
+/// Transform Layer
+class LTransform : public LinLayer {
+public:
+    static int total_layers;
+    int copy_cpu_to_fpga;
+    int copy_fpga_to_cpu;
+    int transform;
+
+    LTransform(Layer *l, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform, string name, int dev, int mem);
+
+    ~LTransform() override;
 
     void forward() override;
 

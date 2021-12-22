@@ -10,7 +10,7 @@ Input
 load
 ^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::load(const string &filename, string format = "")
+.. .. doxygenfunction:: Tensor::load(const string &filename, string format = "")
 
 .. code-block:: c++
 
@@ -28,7 +28,7 @@ Output
 save
 ^^^^^^^^
 
-.. doxygenfunction:: Tensor::save
+.. doxygenfunction:: Tensor::save(const string& filename, string format="")
 
 .. code-block:: c++
 

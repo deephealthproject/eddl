@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -16,10 +16,6 @@
 #include <vector>
 #include <string>
 #include <mutex>
-
-#ifdef cFPGA
-#include "eddl/hardware/fpga/xcl2.hpp"
-#endif
 
 #include "Eigen/Dense"
 
@@ -102,13 +98,8 @@ public:
     // Aux variables
     int gpu_device;
 
-#ifdef cFPGA
     // fpga-related information
-    int fpga_device;         // fpga device
-    cl::Buffer *fpga_ptr;     // open-cl buffer pointer to data
-    int fpga_tensor_id;      // for debuging and tracking tensors
-    long int fpga_size;      // buffer size (in elements)
-#endif
+    void *fpga_ptr;               // open-cl buffer pointer to data
 
     // Constructors
     /**
@@ -135,6 +126,15 @@ public:
     *  @return a tensor
     */
     Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=nullptr);
+
+//    /**
+//    *  @brief Construct of an uninitialized tensor
+//    *
+//    *  @param shape Vector of ints specifying the shape of the tensor
+//    *  @param dev  name of the device ('cpu', 'cuda', 'fpga', 'cuda:0',...)
+//    *  @return a tensor
+//    */
+//    Tensor(const vector<int> &shape, string dev);
 
     /**
     *  @brief Construct an uninitialized tensor
@@ -236,11 +236,18 @@ public:
     string getDeviceName() const;
 
     /**
-      *  @brief Returns the device name given a device number
+      *  @brief Returns the device ID given a device number
       *
-      *  @return    string
+      *  @return int
     */
     static int getDeviceID(int dev);
+
+    /**
+      *  @brief Returns the device ID given a device name
+      *
+      *  @return int
+    */
+    static int getDeviceID(const string& dev);
 
     // Core
     vector<int> getShape();
@@ -1056,6 +1063,7 @@ public:
     *   @param max The upper bound of the clamping range.
     */
     static void clamp(Tensor *A, Tensor *B, float min, float max);
+    static void d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max);
 
     /**
     *   @brief In-place clamp all elements in the input tensor to the range [-infty, max].
@@ -2899,10 +2907,57 @@ public:
     static void argsort(Tensor* A, Tensor* B, bool descending=false, bool stable=true);
 
     // Indexing, Slicing, Joining, Mutating Ops *************
+    /**
+      *  @brief Join a sequence of arrays along an existing axis.
+      *
+      *  @param Vector of Tensors   The Tensors must have the same shape, except in the dimension corresponding to axis (the first, by default).
+      *  @param axis   The axis along which the arrays will be joined. If axis is None, arrays are flattened before use. Default is 0.
+      *  @param output   Output tensor
+    */
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, vector<Tensor*> t, unsigned int axis);
 
+    /**
+      *  @brief Join a sequence of arrays along a new axis.
+      *
+      *  @param A   Input tensor.
+      *  @param axis   The axis in the result array along which the input arrays are stacked.
+      *  @param output   Output tensor
+    */
     static Tensor* stack(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
+
+    /**
+      *  @brief Repeats the elements of a tensor along the specified dimension.
+      *
+      *  @param A   Input tensor.
+      *  @param repeats   The number of repetitions for the specified dimension ("int" or "vector of ints")
+      *  @param axis   The axis along which to repeat values.
+      *  @param output   Output tensor
+      *  @param derivative   Apply derivative for: output = repeat(A)
+    */
+    static Tensor* repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr, bool derivative=false);
+    static Tensor* repeat(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr, bool derivative=false);
+    static Tensor* repeat_desc(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis=0, Tensor* output=nullptr);
+    static Tensor* repeat_desc(Tensor* A, unsigned int repeats, unsigned int axis=0, Tensor* output=nullptr);
+
+    /**
+      *  @brief Construct an array by repeating A the number of times given by reps.
+      *
+      *  @param A   Input tensor.
+      *  @param repeats   The number of repetitions of A along each axis.
+      *  @param output   Output tensor
+      *  @param derivative   Apply derivative for: output = repeat(A)
+    */
+    static Tensor* tile(Tensor* A, const vector<int>& repeats);
+
+    /**
+      *  @brief Returns a new tensor A to be broadcasted into B
+      *   @param A Input tensor.
+      *   @param B Input tensor.
+      *   @param output Output tensor (optional).
+      *   @return A new tensor C based on A, but prepared to be broadcasted in to B
+    */
+    static Tensor* broadcast(Tensor* A, Tensor* B, Tensor *output=nullptr);
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.
@@ -3144,7 +3199,7 @@ public:
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);  // TODO DEPRECATED
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false); // TODO DEPRECATED
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false); // TODO DEPRECATED
-    static void tile(Tensor *A, Tensor *B);
+    static void tile_deprecated(Tensor *A, Tensor *B);
 
     // TODO: REFACTOR!!! ************************
 
@@ -3260,6 +3315,18 @@ public:
     *   @return 1 if they are equivalent, 0 otherwise.
     */
     static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false, bool verbose=true);  // Previously named "Tensor::equal2"
+
+    /**
+    *   @brief Returns a list with hardware accelerators for which this library has been compiled
+    *   @return vector of strings with the supported accelerator
+    */
+    static vector<string> hardware_supported();
+
+    /**
+    *   @brief Check if a specific hardware is supported
+    *   @return bool
+    */
+    static bool is_hardware_supported(string hardware);
 
 };
 

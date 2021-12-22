@@ -3,6 +3,7 @@
 #define EDDL_AVGPOOL_ONNX_H
 #include "eddl/serialization/onnx/onnx.pb.h"
 #include "eddl/layers/pool/layer_pool.h"
+#include "eddl/serialization/onnx/utils_onnx.h"
 
 /*
  * ONNX EXPORT
@@ -11,6 +12,7 @@
 // OPSET: 11, 10, 7, 1
 Layer* build_averagepool_layer(onnx::NodeProto *node,
                                map<string, Layer *> &output_node_map,
+                               LOG_LEVEL log_level,
                                int dev,
                                int mem);
 

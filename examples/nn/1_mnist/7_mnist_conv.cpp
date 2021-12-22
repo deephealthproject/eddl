@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -43,6 +43,10 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     l = Reshape(l,{1,28,28});
+
+//    l = Repeat(l, 3, 0);
+//    l = Concat({l, l, l}, 0);
+
     l = MaxPool2D(ReLu(Conv2D(l,32, {3,3},{1,1})),{3,3}, {1,1}, "same");
     l = MaxPool2D(ReLu(Conv2D(l,64, {3,3},{1,1})),{2,2}, {2,2}, "same");
     l = MaxPool2D(ReLu(Conv2D(l,128,{3,3},{1,1})),{3,3}, {2,2}, "none");
@@ -60,10 +64,10 @@ int main(int argc, char **argv) {
     if (use_cpu) {
         cs = CS_CPU();
     } else {
-        cs = CS_GPU({1}, "low_mem"); // one GPU
+        cs = CS_GPU({1}, "full_mem"); // one GPU
         // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
         // cs = CS_CPU();
-        // cs = CS_FPGA({1});
+//       cs = CS_FPGA({1});
     }
 
     // Build model

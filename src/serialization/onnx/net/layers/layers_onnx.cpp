@@ -11,6 +11,8 @@
 #include "eddl/serialization/onnx/layers/core/select_onnx.h"
 #include "eddl/serialization/onnx/layers/core/split_onnx.h"
 #include "eddl/serialization/onnx/layers/core/resize_onnx.h"
+#include "eddl/serialization/onnx/layers/core/repeat_onnx.h"
+#include "eddl/serialization/onnx/layers/core/bypass_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv1D_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv3D_onnx.h"
@@ -51,6 +53,8 @@
 #include "eddl/serialization/onnx/layers/da/pad_onnx.h"
 #include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 #include "eddl/serialization/onnx/layers/auxiliar/expand_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/multithreshold_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/topk_onnx.h"
 #include "eddl/serialization/onnx/layers/auxiliar/constoftensor_onnx.h"
 
 /*
@@ -122,7 +126,11 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["Slice"] = ONNX_LAYERS::SLICE;
   map_layers["Split"] = ONNX_LAYERS::SPLIT;
   map_layers["Expand"] = ONNX_LAYERS::EXPAND;
+  map_layers["MultiThreshold"] = ONNX_LAYERS::MULTITHRESHOLD;
+  map_layers["TopK"] = ONNX_LAYERS::TOPK;
   map_layers["Constant"] = ONNX_LAYERS::CONSTANT;
+  map_layers["Tile"] = ONNX_LAYERS::REPEAT;
+  map_layers["LRN"] = ONNX_LAYERS::LRN;
 
   return map_layers;
 }
@@ -175,13 +183,13 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_dropout_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::MAXPOOL:
-      new_layer = build_maxpool_layer(node, output_node_map, dev, mem);
+      new_layer = build_maxpool_layer(node, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::GLOBMAXPOOL:
       new_layer = build_globalmaxpool_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::AVGPOOL:
-      new_layer = build_averagepool_layer(node, output_node_map, dev, mem);
+      new_layer = build_averagepool_layer(node, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::GLOBAVGPOOL:
       new_layer = build_globalaveragegpool_layer(node, output_node_map, dev, mem);
@@ -327,11 +335,30 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
     case ONNX_LAYERS::EXPAND:
       new_layer = build_expand_layer(node, map_init_values, output_node_map, dev, mem);
       break;
+    case ONNX_LAYERS::MULTITHRESHOLD:
+      new_layer = build_multithreshold_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::TOPK:
+      new_layer = build_topk_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::CONSTANT:
       new_layer = build_constoftensor_layer(node, map_init_values, output_node_map, dev, mem);
       break;
-    default:
-      msg("Error: The ONNX node type " + layer_type_name + " is not supported!", "ONNX::ImportNet");
+    case ONNX_LAYERS::REPEAT:
+      new_layer = build_repeat_layer(node, constant_node_map, map_init_values, output_node_map, log_level, dev, mem);
+      break;
+    case ONNX_LAYERS::LRN:
+      new_layer = build_lrn_layer(node, output_node_map, log_level, dev, mem);
+      break;
+    default: {
+        std::cerr << "==================================================================" << std::endl;
+        std::cerr << "[ONNX IMPORTING ERROR]: " << "The onnx node '" << layer_type_name << "' is not supported yet" << std::endl;
+        std::cerr << "Potential fixes:" << std::endl;
+        std::cerr << "\t- You can try to use 'ONNX Simplifier' to simplify the model in order to remove the redundant operators with their constant outputs." << std::endl;
+        std::cerr << "\t- Documentation: https://deephealthproject.github.io/eddl/model/onnx.html#simplifying-a-onnx-model" << std::endl;
+        std::cerr << "\t- ONNX Simplifier: https://github.com/daquexian/onnx-simplifier" << std::endl;
+        std::cerr << "==================================================================" << std::endl;
+    }
   }
 
   return new_layer;
@@ -417,7 +444,7 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
       build_softplus_node(l, graph);
     else 
     {
-      cout << "The activation layer " << layer->name << "has no valid type to export." << endl;
+      cerr << "[ONNX EXPORTING ERROR]: The activation layer " << layer->name << " has no valid type to export." << endl;
       return;
     }
   else if (LConcat *l = dynamic_cast<LConcat *>(layer))
@@ -459,15 +486,15 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
   else if (LDropout *l = dynamic_cast<LDropout *>(layer))
     build_dropout_node(l, graph);
   else if (LLSTM *l = dynamic_cast<LLSTM *>(layer))
-    build_lstm_node(l, graph);
+    build_lstm_node(l, graph, gradients);
   else if (LGRU *l = dynamic_cast<LGRU *>(layer))
-    build_gru_node(l, graph);
+    build_gru_node(l, graph, gradients);
   else if (LRNN *l = dynamic_cast<LRNN *>(layer))
-    build_rnn_node(l, graph);
+    build_rnn_node(l, graph, gradients);
   else if (LCopyStates *l = dynamic_cast<LCopyStates *>(layer))
     handle_copy_states(l, graph);
   else if (LEmbedding *l = dynamic_cast<LEmbedding *>(layer))
-    build_embedding_node(l, graph);
+    build_embedding_node(l, graph, gradients);
   else if (LResize *l = dynamic_cast<LResize *>(layer))
     build_resize_node(l, graph);
   else if (LScale *l = dynamic_cast<LScale *>(layer))
@@ -480,11 +507,96 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
     build_expand_node(l, graph);
   else if (LConstOfTensor *l = dynamic_cast<LConstOfTensor *>(layer))
     build_constant_node(l, graph);
+  else if (LRepeat *l = dynamic_cast<LRepeat *>(layer))
+    build_tile_node(l, graph);
+  else if (LBypass *l = dynamic_cast<LBypass *>(layer))
+    build_identity_node(l, graph);
   else
   {
-    cout << "The layer " << layer->name << "has no OpType in Onnx." << endl;
+    cerr << "[ONNX EXPORTING ERROR]: The layer " << layer->name << " has no OpType in Onnx." << endl;
     return;
   }
+}
+
+/*
+ * DISTRIBUTED TRAINING
+ */
+
+map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto> &nodes,
+                                                          map<string, vector<float>> &map_init_values,
+                                                          map<string, vector<int>> &map_init_dims)
+{
+  map<string, ONNX_LAYERS> map_layers = create_enum_map(); // To indentify the layers types
+  int dev = DEV_CPU;
+
+  map<string, vector<Tensor *>> tensors; // To store the layers weights tensors
+  for (onnx::NodeProto node : nodes)
+  {
+    string layer_type_name = node.op_type();
+    ONNX_LAYERS layer_type = map_layers[layer_type_name];
+    string name = node.name();
+
+    switch (layer_type)
+    {
+      case ONNX_LAYERS::CONV:
+      {
+        tensors[name] = get_conv_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::CONVTRANSPOSE:
+      {
+        tensors[name] = get_convT_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::LSTM:
+      {
+        tensors[name] = get_lstm_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::GRU:
+      {
+        tensors[name] = get_gru_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::RNN:
+      {
+        tensors[name] = get_rnn_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::GATHER:
+      {
+        tensors[name] = get_embedding_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::DENSE:
+      {
+        tensors[name] = get_dense_tensors(node, map_init_values, map_init_dims);
+        break;
+      }
+      case ONNX_LAYERS::MAT_MUL:
+      {
+        // The matmul operator can be used to simulate a Dense layer, in that case we take the weights
+        vector<Tensor *> matmul_tensors = get_matmul_tensors(node, map_init_values, map_init_dims);
+        if (matmul_tensors.size())
+          tensors[name] = matmul_tensors;
+        break;
+      }
+      case ONNX_LAYERS::ADD:
+      {
+        // The Add operator can be used to simulate a Dense layer bias, in that case we take the weights
+        vector<Tensor *> add_tensors = get_add_tensors(node, map_init_values, map_init_dims);
+        if (add_tensors.size() && tensors.count(name))
+          tensors[name].push_back(add_tensors[0]);
+        break;
+      }
+      default:
+        // This layer has no trainable parameters
+        continue;
+        break;
+    }
+  }
+
+  return tensors;
 }
 
 #endif // defined(cPROTO)

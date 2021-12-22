@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -40,6 +40,10 @@ bool check_rnn_forward(Layer *l) {
   }
 
   return frnn;
+}
+
+Net* Net::unroll(int inl, int outl){
+    msg("not implemented error", "Net::unroll");
 }
 
 // Unroll Recurrent net
@@ -173,8 +177,7 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
     vector<bool> frnn;
 
 
-    cout<<"Recurrent net encoder input sequence length="<<inl<<", decoder output sequence length="<<outl<<endl;
-
+    std:cerr << "Recurrent net encoder input sequence length=" << inl << ", decoder output sequence length=" << outl << std::endl;
     vlayer backup(layers);
 
     // set vfts sort
@@ -577,7 +580,7 @@ void Net::build_rnet(int inl,int outl) {
    // Create an unrolled version on Device
    ////////////////////////////////////////
    if (todev!=DEV_CPU) {
-     cout<<"Unroll on device"<<endl;
+     std::cerr << "Unroll on device" << std::endl;
      // unroll CS devices and link
      for(i=0;i<snets.size();i++) {
        if ((isencoder)&&(isdecoder))

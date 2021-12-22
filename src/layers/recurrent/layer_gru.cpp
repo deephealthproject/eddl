@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -91,6 +91,12 @@ LGRU::LGRU(vector<Layer *> parent, int units, bool mask_zeros, bool bidirectiona
         parent[i]->addchild(this);
         addparent(parent[i]);
     }
+
+    distributed_training = false;
+    acc_gUz_h = acc_gWz_x = nullptr;
+    acc_gUr_h = acc_gWr_x = nullptr;
+    acc_gUn_h = acc_gWn_x = nullptr;
+    acc_g_bias_z_t = acc_g_bias_r_t = acc_g_bias_n_t = acc_g_bias_n_t_hidden = nullptr;
 }
 
 LGRU::~LGRU() {
@@ -400,6 +406,99 @@ void LGRU::backward() {
     }
 }
 
+void LGRU::update_weights(vector<Tensor*> weights) {
+    if (weights.size() == 10) {
+        Tensor::copy(weights[0], Wz_x);
+        Tensor::copy(weights[1], Wr_x);
+        Tensor::copy(weights[2], Wn_x);
+        Tensor::copy(weights[3], Uz_h);
+        Tensor::copy(weights[4], Ur_h);
+        Tensor::copy(weights[5], Un_h);
+        Tensor::copy(weights[6], bias_z_t);
+        Tensor::copy(weights[7], bias_r_t);
+        Tensor::copy(weights[8], bias_n_t);
+        Tensor::copy(weights[9], bias_n_t_hidden);
+    } else {
+        cerr << "[WARNING - LGRU::update_weights] "
+             << "Unexpected number of weights tensors recieved "
+             << "(weights.size()=" << weights.size() << ")" << endl;
+    }
+}
+
+void LGRU::accumulate_accumulated_gradients(vector<Tensor*> grads) {
+    if (grads.size() == 10) {
+        Wz_x->add_(grads[0]);
+        Wr_x->add_(grads[1]);
+        Wn_x->add_(grads[2]);
+        Uz_h->add_(grads[3]);
+        Ur_h->add_(grads[4]);
+        Un_h->add_(grads[5]);
+        bias_z_t->add_(grads[6]);
+        bias_r_t->add_(grads[7]);
+        bias_n_t->add_(grads[8]);
+        bias_n_t_hidden->add_(grads[9]);
+    } else {
+        cerr << "[WARNING - LGRU::accumulate_accumulated_gradients] "
+             << "Unexpected number of gradient tensors recieved "
+             << "(grads.size()=" << grads.size() << ")" << endl;
+    }
+}
+
+void LGRU::reset_accumulated_gradients() {
+    acc_gWz_x->fill_(0.0);
+    acc_gWr_x->fill_(0.0);
+    acc_gWn_x->fill_(0.0);
+    acc_gUz_h->fill_(0.0);
+    acc_gUr_h->fill_(0.0);
+    acc_gUn_h->fill_(0.0);
+    acc_g_bias_z_t->fill_(0.0);
+    acc_g_bias_r_t->fill_(0.0);
+    acc_g_bias_n_t->fill_(0.0);
+    acc_g_bias_n_t_hidden->fill_(0.0);
+}
+
+void LGRU::apply_accumulated_gradients() {
+    Wz_x->add_(acc_gWz_x);
+    Wr_x->add_(acc_gWr_x);
+    Wn_x->add_(acc_gWn_x);
+    Uz_h->add_(acc_gUz_h);
+    Ur_h->add_(acc_gUr_h);
+    Un_h->add_(acc_gUn_h);
+    bias_z_t->add_(acc_g_bias_z_t);
+    bias_r_t->add_(acc_g_bias_r_t);
+    bias_n_t->add_(acc_g_bias_n_t);
+    bias_n_t_hidden->add_(acc_g_bias_n_t_hidden);
+}
+
+void LGRU::enable_distributed() {
+    distributed_training = true;
+
+    // Initialize the accumlated gradients tensors
+    acc_gWz_x = new Tensor(vector<int>{input->shape[1], units}, output->device);
+    acc_gWr_x = new Tensor(vector<int>{input->shape[1], units}, output->device);
+    acc_gWn_x = new Tensor(vector<int>{input->shape[1], units}, output->device);
+    acc_gUz_h = new Tensor(vector<int>{units, units}, output->device);
+    acc_gUr_h = new Tensor(vector<int>{units, units}, output->device);
+    acc_gUn_h = new Tensor(vector<int>{units, units}, output->device);
+    acc_g_bias_z_t = new Tensor(vector<int>{units}, output->device);
+    acc_g_bias_r_t = new Tensor(vector<int>{units}, output->device);
+    acc_g_bias_n_t = new Tensor(vector<int>{units}, output->device);
+    acc_g_bias_n_t_hidden = new Tensor(vector<int>{units}, output->device);
+
+    // Set accumlated gradients to zero
+    reset_accumulated_gradients();
+
+    acc_gradients.push_back(acc_gWz_x);
+    acc_gradients.push_back(acc_gWr_x);
+    acc_gradients.push_back(acc_gWn_x);
+    acc_gradients.push_back(acc_gUz_h);
+    acc_gradients.push_back(acc_gUr_h);
+    acc_gradients.push_back(acc_gUn_h);
+    acc_gradients.push_back(acc_g_bias_z_t);
+    acc_gradients.push_back(acc_g_bias_r_t);
+    acc_gradients.push_back(acc_g_bias_n_t);
+    acc_gradients.push_back(acc_g_bias_n_t_hidden);
+}
 
 Layer *LGRU::share(int c, int bs, vector<Layer *> p) {
     LGRU *n = new LGRU(p, units, mask_zeros, bidirectional, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
@@ -461,6 +560,32 @@ Layer *LGRU::share(int c, int bs, vector<Layer *> p) {
         n->gradients.push_back(n->gUn_h);
     }
 
+    if (distributed_training) {
+        n->acc_gradients.clear();
+
+        n->acc_gWz_x = acc_gWz_x;
+        n->acc_gWr_x = acc_gWr_x;
+        n->acc_gWn_x = acc_gWn_x;
+        n->acc_gUz_h = acc_gUz_h;
+        n->acc_gUr_h = acc_gUr_h;
+        n->acc_gUn_h = acc_gUn_h;
+        n->acc_g_bias_z_t = acc_g_bias_z_t;
+        n->acc_g_bias_r_t = acc_g_bias_r_t;
+        n->acc_g_bias_n_t = acc_g_bias_n_t;
+        n->acc_g_bias_n_t_hidden = acc_g_bias_n_t_hidden;
+
+        n->acc_gradients.push_back(acc_gWz_x);
+        n->acc_gradients.push_back(acc_gWr_x);
+        n->acc_gradients.push_back(acc_gWn_x);
+        n->acc_gradients.push_back(acc_gUz_h);
+        n->acc_gradients.push_back(acc_gUr_h);
+        n->acc_gradients.push_back(acc_gUn_h);
+        n->acc_gradients.push_back(acc_g_bias_z_t);
+        n->acc_gradients.push_back(acc_g_bias_r_t);
+        n->acc_gradients.push_back(acc_g_bias_n_t);
+        n->acc_gradients.push_back(acc_g_bias_n_t_hidden);
+    }
+
     n->do_deletes = false;
     if (n->reg != nullptr) delete n->reg;
     n->reg = reg;
@@ -473,6 +598,9 @@ Layer *LGRU::share(int c, int bs, vector<Layer *> p) {
 Layer *LGRU::clone(int c, int bs, vector<Layer *> p, int todev) {
     LGRU *n = new LGRU(p, units, mask_zeros, bidirectional,  name, todev, this->mem_level);
     n->orig = this;
+
+    if (distributed_training)
+        n->enable_distributed();
 
     // TODO: Implement
 

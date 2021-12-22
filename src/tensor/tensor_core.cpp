@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -14,11 +14,6 @@
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#endif
-
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
 
 using namespace std;
@@ -43,11 +38,6 @@ void Tensor::fill(Tensor* A, float v){
       {
         gpu_fill_(A, v);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_fill_(A,v);
-    }
 #endif
 }
 
@@ -313,12 +303,6 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
 
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_transpose(A, N);
-    }
-#endif
-
 
     if (A == B) delete N;
 
@@ -350,19 +334,6 @@ void Tensor::copy(Tensor *A, Tensor *B) {
         else if ((A->isGPU())&&(B->isCPU()))
           {
             gpu_copy_from_gpu(A,B->ptr);
-          }
-#endif
-#ifdef cFPGA
-        else if ((A->isFPGA())&&(B->isFPGA())) {
-          fpga_copy_fpga(A,B);
-        }
-        else if ((A->isCPU())&&(B->isFPGA()))
-          {
-            fpga_copy_to_fpga(A->ptr,B);
-          }
-        else if ((A->isFPGA())&&(B->isCPU()))
-          {
-            fpga_copy_from_fpga(A,B->ptr);
           }
 #endif
     else {
@@ -416,11 +387,6 @@ void Tensor::sort(Tensor* A, Tensor* B, bool descending, bool stable){
         gpu_sort(A, B, descending, stable);
     }
 #endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
 }
 
 
@@ -439,11 +405,6 @@ void Tensor::argsort(Tensor* A, Tensor* B, bool descending, bool stable){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_argsort(A, B, descending, stable);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
     }
 #endif
 }
@@ -511,12 +472,6 @@ Tensor* Tensor::concat(const vector<Tensor*> A, unsigned int axis, Tensor* outpu
         gpu_concat(output, A, axis, false);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_concat(output, A, axis, false);
-    }
-#endif
-
     return output;
 }
 
@@ -580,11 +535,6 @@ void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
         gpu_concat(A, t, axis, true);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_concat(A, t, axis, true);
-    }
-#endif
 }
 
 Tensor* Tensor::stack(const vector<Tensor*> A, unsigned int axis, Tensor* output){
@@ -635,6 +585,129 @@ Tensor* Tensor::stack(const vector<Tensor*> A, unsigned int axis, Tensor* output
     return output;
 }
 
+Tensor* Tensor::repeat(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis, Tensor* output, bool derivative){
+    // NOT USED ANYWHERE. REPEAT DONE THROUGH A SELECT
+    // Check axis values
+    if(axis<0 || axis > A->ndim-1){
+        msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Tensor::repeat");
+    }
+
+    // Check that there are enough values in
+    if(repeats.size()!=A->shape[axis]){
+        msg("The size of 'repeats' (" + std::to_string(repeats.size()) + ") must equal the size the the dimension to repeat " + std::to_string(A->shape[axis]) + ")", "Tensor::repeat");
+    }
+
+    // Compute new shape
+    vector<int> new_shape;
+    for(int i=0; i<A->ndim; i++){
+        unsigned int dsize = 0;
+        if(i!=axis){
+            dsize = A->shape[i];
+        }else{
+            for(auto &d : repeats) { dsize+= d; }
+        }
+        new_shape.push_back((int)dsize);
+    }
+
+    // Create new tensor
+    if(output==nullptr){
+        output = new Tensor(new_shape, A->device);
+    }else{
+        // Check dimensions
+        if(output->shape!=new_shape){
+            msg("The dimension of the output tensor is incorrect", "Tensor::repeat");
+        }else if(output->device != A->device){
+            msg("The output tensor and the input ones must be on the same device", "Tensor::repeat");
+        }
+    }
+
+    if (A->isCPU() && output->isCPU()){
+        cpu_repeat(A, output, repeats, axis, derivative);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && output->isGPU())
+    {
+        gpu_repeat(A, output, repeats, axis, derivative);
+    }
+#endif
+    return output;
+}
+
+Tensor* Tensor::repeat(Tensor* A, unsigned int repeats, unsigned int axis, Tensor* output, bool derivative){
+    // Check axis values
+    if(axis<0 || axis > A->ndim-1){
+        msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Tensor::repeat");
+    }
+    // Repeat n times each dimension
+    vector<unsigned int> vrepeats = vector<unsigned int>(A->shape[axis], repeats);
+
+    // Call main function
+    return Tensor::repeat(A, vrepeats, axis, output, derivative);
+}
+
+Tensor* Tensor::repeat_desc(Tensor* A, const vector<unsigned int>& repeats, unsigned int axis, Tensor* output){
+    // Build descriptor
+    auto *rd = new RepeatDescriptor(repeats, axis, A->device);
+    rd->build(A->shape);
+
+    // Create new tensor
+    if(output==nullptr){
+        output = new Tensor(rd->oshape, A->device);
+    }else{
+        // Check dimensions
+        if(output->shape!=rd->oshape){
+            msg("The dimension of the output tensor is incorrect", "Tensor::repeat_desc");
+        }else if(output->device != A->device){
+            msg("The output tensor and the input ones must be on the same device", "Tensor::repeat_desc");
+        }
+    }
+
+    // Fill new tensor
+    Tensor::select(A, output, rd);
+
+    delete rd;
+    return output;
+}
+
+
+Tensor* Tensor::repeat_desc(Tensor* A, unsigned int repeats, unsigned int axis, Tensor* output){
+    // Check axis values
+    if(axis<0 || axis > A->ndim-1){
+        msg("The axis must be a number between 0 and the maximum dimension of the tensor", "Tensor::repeat_desc");
+    }
+    // Repeat n times each dimension
+    vector<unsigned int> vrepeats = vector<unsigned int>(A->shape[axis], repeats);
+
+    // Call main function
+    return Tensor::repeat_desc(A, vrepeats, axis, output);
+}
+
+Tensor* Tensor::tile(Tensor* A, const vector<int>& repeats){
+    // Check dimensions
+    if(A->ndim != repeats.size()){
+        msg("The number of dimensions in tensor 'A' must match the size of 'repeats'", "Tensor::tile");
+    }
+
+    // Dimensions must be positive
+    for(int i=0; i<repeats.size(); i++){
+        if(repeats[i] < 1){
+            msg("All repetitions must be greater or equal than 1", "Tensor::tile");
+        }
+    }
+
+    // Build descriptor
+    auto *td = new TileDescriptor(repeats, A->device);
+    td->build(A->shape);
+
+    // Initialize tensor
+    auto* new_t = new Tensor(td->oshape, A->device);
+
+    // Perform select
+    Tensor::select(A, new_t, td);
+
+    delete td;
+    return new_t;
+}
 
 Tensor* Tensor::select(const vector<string>& indices){
     // Build descriptor
@@ -661,12 +734,6 @@ void Tensor::select(Tensor *A, Tensor* B, SelDescriptor *sd){
         gpu_select(A, B, sd);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_select(A, B, sd);
-    }
-#endif
-
 }
 
 void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
@@ -679,12 +746,6 @@ void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
         gpu_select_back(A, B, sd);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_select_back(A, B, sd);
-    }
-#endif
-
 }
 
 void Tensor::set_select(const vector<string>& indices, float value){
@@ -732,11 +793,6 @@ void Tensor::set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
         gpu_set_select(A, B, sd);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_set_select(A, B, sd);
-    }
-#endif
 }
 
 
@@ -750,11 +806,6 @@ void Tensor::set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
         gpu_set_select_back(A, B, sd);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_set_select_back(A, B, sd);
-    }
-#endif
 
 }
 
@@ -766,11 +817,6 @@ void Tensor::gather(Tensor *A, Tensor *B, GatherDescriptor *sd){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_gather(A, B, sd);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_gather(A, B, sd);
     }
 #endif
 }
@@ -803,11 +849,6 @@ void Tensor::expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_expand(A, B, sd);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_expand(A, B, sd);
     }
 #endif
 }
@@ -870,13 +911,6 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
       }
     #endif
 
-    #ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_select(A, B, sind, ini, end,mask_zeros);
-      }
-    #endif
-
     else {
         msg("unsuppoted select", "Tensor::select");
     }
@@ -936,20 +970,13 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
       }
     #endif
 
-    #ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-      {
-        fpga_deselect(A, B, sind, ini, end, inc,mask_zeros);
-      }
-    #endif
-
     else {
         msg("unsuppoted select", "Tensor::select");
     }
 
 }
 
-void Tensor::tile(Tensor *A, Tensor *B)
+void Tensor::tile_deprecated(Tensor *A, Tensor *B)
 {
 
     int Asize=A->shape[0];
@@ -974,4 +1001,49 @@ void Tensor::tile(Tensor *A, Tensor *B)
         for(int i=0;i<Bsize;i++) sind[i]=i;
         Tensor::select(A, B, sind, 0, Bsize);
     }
+}
+
+Tensor* Tensor::broadcast(Tensor* A, Tensor* B, Tensor *output){
+    // Source: https://numpy.org/doc/stable/user/basics.broadcasting.html
+
+    vector<int> shape1 = A->shape;
+    vector<int> shape2 = B->shape;
+    bool shapes_swapped = false;
+
+    // Shape1 must be smaller (or equal) than Shape2
+    if(shape1.size()>shape2.size()){ shape1.swap(shape2); shapes_swapped = true; }
+
+    // Get shape to broadcast (normalized)
+    vector<int> broadcast_from = getBroadcastShape(shape1, shape2);
+    if(broadcast_from.empty()){
+        msg("The dimensions of both tensors must be equal or compatible (i.e (3)*(1,3), (3)*(6,2,5,3,5), (5, 3)*(5, 3),...)", "Tensor::broadcast");
+    }
+
+    // Get repetitions to perform a given broadcast
+    vector<int> tile_repetitions = getTilesRepetitions(broadcast_from, shape2);
+    if(tile_repetitions.empty()){
+        msg("These tensors cannot be broadcasted. Two dimensions are compatible when: 1) they are equal, or 2) one of them is 1", "Tensor::broadcast");
+    }
+
+    // Build descriptor
+    auto *td = new TileDescriptor(tile_repetitions, A->device);
+    td->build(broadcast_from);
+
+    // Create new tensor (if needed)
+    Tensor* new_t;
+    if (output== nullptr){
+        new_t = new Tensor(td->oshape, A->device);
+    }else{
+        new_t = output;
+    }
+
+    // Do broadcast (tile repetitions)
+    if(!shapes_swapped){
+        Tensor::select(A, new_t, td);
+    }else{
+        Tensor::select(B, new_t, td);
+    }
+
+    delete td;
+    return new_t;
 }

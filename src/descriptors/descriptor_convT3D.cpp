@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -17,10 +17,6 @@
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#endif
-
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
 #endif
 
 ConvolDescriptorT3D::ConvolDescriptorT3D() {}
@@ -259,16 +255,6 @@ void ConvolDescriptorT3D::build(Tensor *A) {
 
 #endif
 
-#ifdef cFPGA
-    if (I->isFPGA()) {
-	// We allocate memory on the FGPA for the im2col buffer
-	fpga_sizeI = A->shape[0] * r * c * kr * kc * kz * sizeof(float);
-	fpga_ptrI = fpga_create_memory(fpga_sizeI);
-	// We allocate also on cpu so to ease the cpuemu flow
-        // mem for ptr, lowering im2col
-        ptrI=get_fmem(A->shape[0] * d * r * c * kz * kd * kr * kc,"ConvolDescriptorT3D::build");
-    }
-#endif
 }
 
 void ConvolDescriptorT3D::resize(int b)
@@ -308,24 +294,11 @@ void ConvolDescriptorT3D::resize(int b)
 
    //cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
 
-
-
+   cudnn_env_init = -1;
+   cudnn_conv_back_init = -1;
 #endif
     }
 #endif
-
-#ifdef cFPGA
-    else if (I->isFPGA()) {
-        // We reallocate memory on the FGPA for the im2col buffer
-	fpga_destroy_memory(fpga_ptrI);
-	fpga_sizeI = l_size * sizeof(float);
-        fpga_ptrI = fpga_create_memory(fpga_sizeI);
-        // We do the same on the CPU side (for smooth cpuemu)
-	    eddl_free(ptrI);
-        ptrI=get_fmem(l_size, "ConvolDescriptorT3D::build");
-    }
-#endif
-
 
 }
 
