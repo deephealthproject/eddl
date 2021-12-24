@@ -187,8 +187,10 @@ int main(int argc, char **argv){
 
     setlr(net,{lr,0.9});
 fit(net,{x_train},{y_train}, batch_size, epochs);
+
     // Evaluate
     evaluate(net,{x_test},{y_test});
+    evaluate_distr(net,{x_test},{y_test});
 
     /*
     for(int i=0;i<epochs;i++) {

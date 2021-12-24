@@ -185,6 +185,7 @@ int main(int argc, char **argv) {
     
     // Evaluate
     evaluate(net,{x_test}, {y_test});
+    evaluate_distr(net,{x_test}, {y_test});
 
     /*
     float acc_goal = 0.98;

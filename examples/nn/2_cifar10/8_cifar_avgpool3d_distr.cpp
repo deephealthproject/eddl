@@ -199,6 +199,7 @@ cd->O->toCPU();
     plot(net,"model.pdf","LR");
     summary(net);
 
+  
     Tensor * x_train = Tensor::ones({batch_size*100,channels, size,size});
     Tensor * y_train = Tensor::ones({batch_size*100,outs});
     fit(net, {x_train}, {y_train}, batch_size, testing ? 100 : 10);

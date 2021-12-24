@@ -36,13 +36,10 @@ int main(int argc, char **argv) {
     
         init_distributed();
 
-for (int i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
-    
-
-
     
     // Init distribuited training
     id = get_id_distributed();
@@ -55,7 +52,7 @@ for (int i = 1; i < argc; ++i) {
     download_cifar10();
 
     // Settings
-    int epochs = testing ? 2 : 32;
+    int epochs = testing ? 2 : 10;
     int batch_size = 100;
     int num_classes = 10;
 

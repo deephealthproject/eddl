@@ -48,18 +48,33 @@ target_link_libraries(mnist_mlp_tiny_distr eddl)
 
 add_executable(mnist_mlp_initializers "nn/1_mnist/2_mnist_mlp_initializers.cpp")
 target_link_libraries(mnist_mlp_initializers eddl)
+#distributed
+add_executable(mnist_mlp_initializers_distr "nn/1_mnist/2_mnist_mlp_initializers_distr.cpp")
+target_link_libraries(mnist_mlp_initializers_distr eddl)
 
 add_executable(mnist_mlp_regularizers "nn/1_mnist/3_mnist_mlp_regularizers.cpp")
 target_link_libraries(mnist_mlp_regularizers eddl)
+#distributed
+add_executable(mnist_mlp_regularizers_distr "nn/1_mnist/3_mnist_mlp_regularizers_distr.cpp")
+target_link_libraries(mnist_mlp_regularizers_distr eddl)
 
 add_executable(mnist_mlp_da "nn/1_mnist/4_mnist_mlp_da.cpp")
 target_link_libraries(mnist_mlp_da eddl)
+#distributed
+add_executable(mnist_mlp_da_distr "nn/1_mnist/4_mnist_mlp_da_distr.cpp")
+target_link_libraries(mnist_mlp_da_distr eddl)
 
 add_executable(mnist_mlp_train_batch "nn/1_mnist/5_mnist_mlp_train_batch.cpp")
 target_link_libraries(mnist_mlp_train_batch eddl)
+# distributed
+add_executable(mnist_mlp_train_batch_distr "nn/1_mnist/5_mnist_mlp_train_batch_distr.cpp")
+target_link_libraries(mnist_mlp_train_batch_distr eddl)
 
 add_executable(mnist_auto_encoder "nn/1_mnist/6_mnist_auto_encoder.cpp")
 target_link_libraries(mnist_auto_encoder eddl)
+#distributed
+add_executable(mnist_auto_encoder_distr "nn/1_mnist/6_mnist_auto_encoder_distr.cpp")
+target_link_libraries(mnist_auto_encoder_distr eddl)
 
 add_executable(mnist_conv "nn/1_mnist/7_mnist_conv.cpp")
 target_link_libraries(mnist_conv eddl)
@@ -75,9 +90,15 @@ target_link_libraries(mnist_rnn_distr eddl)
 
 add_executable(mnist_mlp_func "nn/1_mnist/9_mnist_mlp_func.cpp")
 target_link_libraries(mnist_mlp_func eddl)
+#distributed
+add_executable(mnist_mlp_func_distr "nn/1_mnist/9_mnist_mlp_func_distr.cpp")
+target_link_libraries(mnist_mlp_func_distr eddl)
 
 add_executable(mnist_rnn_func "nn/1_mnist/10_mnist_rnn_func.cpp")
 target_link_libraries(mnist_rnn_func eddl)
+#distributed
+add_executable(mnist_rnn_func_distr "nn/1_mnist/10_mnist_rnn_func_distr.cpp")
+target_link_libraries(mnist_rnn_func_distr eddl)
 
 add_executable(mnist_conv1D "nn/1_mnist/11_mnist_conv1D.cpp")
 target_link_libraries(mnist_conv1D eddl)
@@ -87,9 +108,15 @@ target_link_libraries(mnist_conv1D_distr eddl)
 
 add_executable(mnist_conv_dice "nn/1_mnist/13_mnist_conv_dice.cpp")
 target_link_libraries(mnist_conv_dice eddl)
+#distributed
+add_executable(mnist_conv_dice_distr "nn/1_mnist/13_mnist_conv_dice_distr.cpp")
+target_link_libraries(mnist_conv_dice_distr eddl)
 
 add_executable(mnist_losses "nn/1_mnist/14_mnist_losses.cpp")
 target_link_libraries(mnist_losses eddl)
+#distributed
+add_executable(mnist_losses_distr "nn/1_mnist/14_mnist_losses_distr.cpp")
+target_link_libraries(mnist_losses_distr eddl)
 
 
 # EXAMPLES: CIFAR10 ****************************************************
@@ -102,6 +129,9 @@ target_link_libraries(cifar_conv_distr eddl)
 
 add_executable(cifar_conv_da "nn/2_cifar10/2_cifar_conv_da.cpp")
 target_link_libraries(cifar_conv_da eddl)
+#distributed
+add_executable(cifar_conv_da_distr "nn/2_cifar10/2_cifar_conv_da_distr.cpp")
+target_link_libraries(cifar_conv_da_distr eddl)
 
 add_executable(cifar_vgg16 "nn/2_cifar10/3_cifar_vgg16.cpp")
 target_link_libraries(cifar_vgg16 eddl)
@@ -129,6 +159,9 @@ target_link_libraries(cifar_resnet_distr eddl)
 
 add_executable(cifar_resnet_da_bn "nn/2_cifar10/6_cifar_resnet_da_bn.cpp")
 target_link_libraries(cifar_resnet_da_bn eddl)
+#distributed
+add_executable(cifar_resnet_da_bn_distr "nn/2_cifar10/6_cifar_resnet_da_bn_distr.cpp")
+target_link_libraries(cifar_resnet_da_bn_distr eddl)
 
 add_executable(cifar_resnet50_da_bn "nn/2_cifar10/7_cifar_resnet50_da_bn.cpp")
 target_link_libraries(cifar_resnet50_da_bn eddl)
@@ -138,11 +171,17 @@ target_link_libraries(cifar_resnet50_da_bn_distr eddl)
 
 add_executable(cifar_avgpool3d "nn/2_cifar10/8_cifar_avgpool3d.cpp")
 target_link_libraries(cifar_avgpool3d eddl)
+#distributed
+add_executable(cifar_avgpool3d_distr "nn/2_cifar10/8_cifar_avgpool3d_distr.cpp")
+target_link_libraries(cifar_avgpool3d_distr eddl)
 
 
 # EXAMPLES: Drive segmentation ****************************************************
 add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
 target_link_libraries(drive_seg eddl)
+#distributed
+add_executable(drive_seg_distr "nn/3_drive/1_drive_seg_distr.cpp")
+target_link_libraries(drive_seg_distr eddl)
 
 
 # EXAMPLES: NLP ****************************************************
@@ -154,9 +193,15 @@ target_link_libraries(nlp_sentiment_rnn_distr eddl)
 
 add_executable(nlp_sentiment_lstm "nn/4_NLP/2_nlp_sentiment_lstm.cpp")
 target_link_libraries(nlp_sentiment_lstm eddl)
+#distributed
+add_executable(nlp_sentiment_lstm_distr "nn/4_NLP/2_nlp_sentiment_lstm_distr.cpp")
+target_link_libraries(nlp_sentiment_lstm_distr eddl)
 
 add_executable(nlp_sentiment_gru "nn/4_NLP/2_nlp_sentiment_gru.cpp")
 target_link_libraries(nlp_sentiment_gru eddl)
+#distributed
+add_executable(nlp_sentiment_gru_distr "nn/4_NLP/2_nlp_sentiment_gru_distr.cpp")
+target_link_libraries(nlp_sentiment_gru_distr eddl)
 
 add_executable(nlp_machine_translation "nn/4_NLP/3_nlp_machine_translation.cpp")
 target_link_libraries(nlp_machine_translation eddl)
@@ -180,10 +225,15 @@ target_link_libraries(nlp_text_generation_distr eddl)
 # EXAMPLES: SYNTHETIC IMAGENET ****************************************************
 add_executable(synthetic_imagenet_vgg16 "nn/5_synthetic_imagenet/1_imagenet_vgg16.cpp")
 target_link_libraries(synthetic_imagenet_vgg16 eddl)
+#distributed
+add_executable(synthetic_imagenet_vgg16_distr "nn/5_synthetic_imagenet/1_imagenet_vgg16_distr.cpp")
+target_link_libraries(synthetic_imagenet_vgg16_distr eddl)
 
 add_executable(synthetic_imagenet_vgg16_bn "nn/5_synthetic_imagenet/2_imagenet_vgg16_bn.cpp")
 target_link_libraries(synthetic_imagenet_vgg16_bn eddl)
-
+#distributed
+add_executable(synthetic_imagenet_vgg16_bn_distr "nn/5_synthetic_imagenet/2_imagenet_vgg16_bn_distr.cpp")
+target_link_libraries(synthetic_imagenet_vgg16_bn_distr eddl)
 
 # EXAMPLES: Tensor ****************************************************
 add_executable(tensor_ops "tensor/eddl_ops.cpp")
@@ -219,25 +269,25 @@ if(BUILD_PROTOBUF)
 
 	# EXAMPLES: RAW ONNX **************************************************************
 	add_executable(onnx_pointer "onnx/1_onnx_pointer.cpp")
-    target_link_libraries(onnx_pointer eddl)
+        target_link_libraries(onnx_pointer eddl)
 
-    add_executable(onnx_export "onnx/2_onnx_save_net_to_file.cpp")
-    target_link_libraries(onnx_export eddl)
+        add_executable(onnx_export "onnx/2_onnx_save_net_to_file.cpp")
+        target_link_libraries(onnx_export eddl)
 
-    add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
-    target_link_libraries(onnx_import eddl)
+        add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
+        target_link_libraries(onnx_import eddl)
 
-    add_executable(onnx_utils_serialization "onnx/4_onnx_utils_serialization.cpp")
-    target_link_libraries(onnx_utils_serialization eddl)
+        add_executable(onnx_utils_serialization "onnx/4_onnx_utils_serialization.cpp")
+        target_link_libraries(onnx_utils_serialization eddl)
 
-    add_executable(onnx_gradients "onnx/4_onnx_test_gradients.cpp")
-    target_link_libraries(onnx_gradients eddl)
+        add_executable(onnx_gradients "onnx/4_onnx_test_gradients.cpp")
+        target_link_libraries(onnx_gradients eddl)
 
-    add_executable(onnx_gradients_recurrent "onnx/7_onnx_test_gradients_recurrent.cpp")
-    target_link_libraries(onnx_gradients_recurrent eddl)
+        add_executable(onnx_gradients_recurrent "onnx/7_onnx_test_gradients_recurrent.cpp")
+        target_link_libraries(onnx_gradients_recurrent eddl)
 
-    add_executable(onnx_import_reshape "onnx/5_onnx_import_net_and_reshape.cpp")
-    target_link_libraries(onnx_import_reshape eddl)
+        add_executable(onnx_import_reshape "onnx/5_onnx_import_net_and_reshape.cpp")
+        target_link_libraries(onnx_import_reshape eddl)
 
 	add_executable(onnx_predict "onnx/6_onnx_predict.cpp")
 	target_link_libraries(onnx_predict eddl)
@@ -246,6 +296,9 @@ if(BUILD_PROTOBUF)
 	# EXAMPLES: ONNX MNIST ****************************************************
 	add_executable(onnx_mnist_mlp "onnx/nn/1_mnist/1_mnist_mlp.cpp")
 	target_link_libraries(onnx_mnist_mlp eddl)
+        #distributed
+        add_executable(onnx_mnist_mlp_distr "onnx/nn/1_mnist/1_mnist_mlp_distr.cpp")
+	target_link_libraries(onnx_mnist_mlp_distr eddl)
 
 	add_executable(onnx_mnist_mlp_initializers "onnx/nn/1_mnist/2_mnist_mlp_initializers.cpp")
 	target_link_libraries(onnx_mnist_mlp_initializers eddl)

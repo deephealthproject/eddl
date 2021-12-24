@@ -28,9 +28,11 @@ int main(int argc, char **argv) {
     bool use_cpu = false;
     
     int id;
-     int n_procs;
+    int n_procs;
     
-     init_distributed();
+    id= init_distributed();
+    n_procs = get_n_procs_distributed();
+
      
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
@@ -39,17 +41,18 @@ int main(int argc, char **argv) {
     
     
 
-     id=get_id_distributed();
-     n_procs = get_n_procs_distributed();
+  
     
     // Download mnist
     download_mnist();
 
     // Settings
     int epochs = 10;
-    int batch_size = 128;
+    int global_batch_size = 128;
+    int batch_size;
     int num_classes = 10;
 
+    
     // Define network
     layer in = Input({784});
     layer l = in;  // Aux var
@@ -95,7 +98,7 @@ int main(int argc, char **argv) {
     Tensor* y_test = Tensor::load("mnist_tsY.bin");
 
     if (testing) {
-        std::string _range_ = "0:" + std::to_string(2 * batch_size);
+        std::string _range_ = "0:" + std::to_string(2 * global_batch_size);
         Tensor* x_mini_train = x_train->select({_range_, ":"});
         Tensor* y_mini_train = y_train->select({_range_, ":"});
         Tensor* x_mini_test  = x_test->select({_range_, ":"});
@@ -112,9 +115,13 @@ int main(int argc, char **argv) {
         y_test  = y_mini_test;
     }
     
+    tshape s = x_train->getShape();
     
-    // Batch size
-    // batch_size= batch_size/n_procs;
+    int num_batches=s[0]/global_batch_size;
+    int batches_per_proc=num_batches/n_procs;
+    batch_size=global_batch_size/n_procs;
+
+   
     Tensor* xbatch = new Tensor({batch_size, 784});
     Tensor* ybatch = new Tensor({batch_size, 10});
 
@@ -125,13 +132,8 @@ int main(int argc, char **argv) {
 
     // Train model
     int i,j;
-    tshape s = x_train->getShape();
     
-   
-    
-    int num_batches=s[0]/batch_size;
-    int batches_per_proc=num_batches/n_procs;
-    
+     
     bcast_weights_distributed(net);
     
     for(i=0;i<epochs;i++) {
@@ -147,10 +149,11 @@ int main(int argc, char **argv) {
         //sync_batch
         avg_weights_distributed(net, j, batches_per_proc);  
         
-        if (id==0) {
+        //if (id==0) {
             print_loss(net,j);
-            printf("\r");
-        }
+            if (id==0)
+                printf("\n");
+        //}
       }
       // adjust batches_avg
       if (id==0)
@@ -170,24 +173,27 @@ int main(int argc, char **argv) {
 
 
     // Evaluate model
-    if (id==0) {
+    
     
      printf("Evaluate:\n");
     s=x_test->getShape();
-    num_batches=s[0]/batch_size;
-
+    num_batches=s[0]/global_batch_size;
+    batches_per_proc=num_batches/n_procs;
+    
     reset_loss(net);  // Important
-    for(j=0;j<num_batches;j++)  {
+//      for(j=0;j<num_batches;j++)  {
+      for(j=0;j<batches_per_proc;j++)  {
         vector<int> indices(batch_size);
         for(int i=0;i<indices.size();i++)
-          indices[i]=(j*batch_size)+i;
-
+          // indices[i]=(j*batch_size)+i;
+          indices [i] = (((id*batches_per_proc)+j) * batch_size) + i;
+        
         eval_batch(net, {x_test}, {y_test}, indices);
 
-        if (id==0) {
+        //if (id==0) {
             print_loss(net,j);
             printf("\r");
-        }
+        //}
 
       }
 
@@ -207,17 +213,19 @@ int main(int argc, char **argv) {
       int last_batch_size=s[0]%batch_size;
       vector<int> indices(last_batch_size);
       for(int i=0;i<indices.size();i++)
-        indices[i]=(j*batch_size)+i;
+        //indices[i]=(j*batch_size)+i;
+        indices [i] = (((id*batches_per_proc)+j) * batch_size) + i;
 
       eval_batch(net, {x_test}, {y_test}, indices);
 
-//      print_loss(net,j);
-//      printf("\r");
+      print_loss(net,j);
+      printf("\r");
     }
     
 
 
     // Print loss and metrics
+    if (id==0) {
     vector<float> losses3 = get_losses(net);
     vector<float> metrics3 = get_metrics(net);
     for(int i=0; i<losses3.size(); i++) {
@@ -225,6 +233,7 @@ int main(int argc, char **argv) {
     }
     cout << endl;
     }
+    
     
     delete xbatch;
     delete ybatch;

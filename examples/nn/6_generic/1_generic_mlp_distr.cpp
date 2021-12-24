@@ -221,12 +221,10 @@ int main(int argc, char **argv) {
             }
         }
     }
-    std::cout << "Evaluate test:" << std::endl;
+    //std::cout << "Evaluate test:" << std::endl;
     // Evaluate
-    evaluate(net,{x_test},
-    {
-        y_test
-    });
+    evaluate(net,{x_test},{y_test});
+    evaluate_distr(net,{x_test},{y_test});
 
     
     

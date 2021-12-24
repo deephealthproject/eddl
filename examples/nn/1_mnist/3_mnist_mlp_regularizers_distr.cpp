@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.9
-* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: November 2020
+* Version: 1.0
+* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: November 2021
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -17,49 +17,39 @@
 using namespace eddl;
 
 //////////////////////////////////
-// mnist_rnn.cpp:
-// A recurrent NN for mnist
+// mnist_mlp_regularizer.cpp:
+// A very basic MLP for mnist
+// Playing with regularizers
 // Using fit for training
 //////////////////////////////////
 
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
-      int id;
+    int id=0;
+    
+    id = init_distributed();
     
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
-    
-    init_distributed();
-
-    
-    // Init distribuited training
-    id = get_id_distributed();
-    
-    // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2);
-
-    
 
     // Download mnist
     download_mnist();
 
     // Settings
-    int epochs = 10;
+    int epochs = (testing) ? 2 : 5;
     int batch_size = 100;
     int num_classes = 10;
 
     // Define network
-    layer in = Input({28});
+    layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = LeakyReLu(Dense(l, 32));
-    //l = L2(RNN(l, 128, "relu"),0.001);
-    l = L2(LSTM(l, 128),0.001);
-    layer ls=l;
-    l = LeakyReLu(Dense(l, 32));
+    l = ReLu(L2(Dense(l, 1024),0.0001));
+    l = ReLu(L1(Dense(l, 1024),0.0001));
+    l = ReLu(L1L2(Dense(l, 1024),0.00001,0.0001));
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
@@ -68,25 +58,25 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
-  // Define computing service
     compserv cs = nullptr;
     if (use_cpu) {
         cs = CS_CPU();
-    } else { 
-	cs=CS_GPU();
+    } else {
+        cs = CS_GPU(); // one GPU
+        // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
+        // cs = CS_CPU();
+        // cs = CS_FPGA({1});
     }
-    
+
     // Build model
     build(net,
-          rmsprop(0.001), // Optimizer
+          sgd(0.001, 0.9), // Optimizer
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-           cs);
-
+          cs);
 
     // View model
     summary(net);
-
 
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
@@ -94,18 +84,12 @@ int main(int argc, char **argv) {
     Tensor* x_test = Tensor::load("mnist_tsX.bin");
     Tensor* y_test = Tensor::load("mnist_tsY.bin");
 
-    // Reshape to fit recurrent batch x timestep x dim
-    x_train->reshape_({60000,28,28});
-    y_train->reshape_({60000,1,10});
-    x_test->reshape_({10000,28,28});
-    y_test->reshape_({10000,1,10});
-
     if (testing) {
         std::string _range_ = "0:" + std::to_string(2 * batch_size);
-        Tensor* x_mini_train = x_train->select({_range_, ":", ":"});
-        Tensor* y_mini_train = y_train->select({_range_, ":", ":"});
-        Tensor* x_mini_test  = x_test->select({_range_, ":", ":"});
-        Tensor* y_mini_test  = y_test->select({_range_, ":", ":"});
+        Tensor* x_mini_train = x_train->select({_range_, ":"});
+        Tensor* y_mini_train = y_train->select({_range_, ":"});
+        Tensor* x_mini_test  = x_test->select({_range_, ":"});
+        Tensor* y_mini_test  = y_test->select({_range_, ":"});
 
         delete x_train;
         delete y_train;
@@ -122,36 +106,18 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
     x_test->div_(255.0f);
 
-    setlogfile(net,"recurrent_mnist");
-
     // Train model
-    for (int i = 0; i < epochs; i++) {
-        fit(net,{x_train},
-        {
-            y_train
-        }, batch_size, 1);
-        evaluate(net,{x_test},
-        {
-            y_test
-        }, 100);
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
 
-        if (id == 0) {
-            Tensor *input = getInput(ls);
+    // Evaluate
+    evaluate(net, {x_test}, {y_test});
 
-            input->info();
-            Tensor *out = getOutput(ls);
-            out->info();
-        }
-
-    }
- 
     delete x_train;
     delete y_train;
     delete x_test;
     delete y_test;
     delete net;
     
-     // Finalize distributed training
     end_distributed();
     
     return EXIT_SUCCESS;

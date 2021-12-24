@@ -149,7 +149,7 @@ int main(int argc, char **argv){
   
     // Train model
     fit(net, {x_train}, {y_train}, 128, 1);
-    fit(net, {x_train}, {y_train}, 128, 1);
+    //fit(net, {x_train}, {y_train}, 128, 1);
 
     // Evaluate
     evaluate(net, {x_test}, {y_test});

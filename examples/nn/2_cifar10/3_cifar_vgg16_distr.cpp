@@ -66,7 +66,7 @@ for (int i = 1; i < argc; ++i) {
     download_cifar10();
 
     // Settings
-    int epochs = testing ? 2 : 32;
+    int epochs = testing ? 2 : 10;
     int batch_size = 100;
     int num_classes = 10;
 
