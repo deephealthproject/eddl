@@ -168,7 +168,7 @@ public:
     void forward();
     void forward_recurrent(vector<Tensor*> tin);
     void reset_loss();
-    void print_loss(int b,int nb=-1);
+    void print_loss(int b,int nb=-1, bool reduce=false);
     void backward(vector<Tensor *> target);
     void backward(Layer* (*f)(Layer *),Layer *out);
     void backward();
@@ -197,6 +197,8 @@ public:
     void train_batch_recurrent(vtensor X, vtensor Y, vind sind, int eval = 0);
     void evaluate(vtensor tin, vtensor tout, int bs=100);
     void evaluate_recurrent(vtensor tin, vtensor tout, int bs);
+    void evaluate_distr(vtensor tin, vtensor tout, int bs=100);
+    void evaluate_recurrent_distr(vtensor tin, vtensor tout, int bs);
     vtensor predict_recurrent(vtensor tin);
     vtensor predict(vtensor tin);
 

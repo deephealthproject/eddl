@@ -186,8 +186,10 @@ void init_NCCL(int nr_gpus) {
 }
 
 int init_distributed() {
+    int id;
 
-    init_distributed("NCCL");
+    id= init_distributed("NCCL");
+    return id;
 }
 
 int init_distributed(string comm) {

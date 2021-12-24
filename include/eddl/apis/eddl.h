@@ -391,7 +391,7 @@ namespace eddl {
     */
     void fit(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs);
     /**
-      *  @brief Returns the loss value & metrics values for the model in test mode.
+      *  @brief Returns the loss value & metrics values for the model in test mode. Only *1* MPI process
       *
       *  @param m  Model to train
       *  @param in  Input data (features)
@@ -400,6 +400,16 @@ namespace eddl {
       *  @return     (void) Evaluates the model
     */
     void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int bs=-1);
+    /**
+      *  @brief Returns the loss value & metrics values for the model in test mode. All MPI processes
+      *
+      *  @param m  Model to train
+      *  @param in  Input data (features)
+      *  @param out  Output data (labels)
+      *  @param bs  Batch size (size [100])
+      *  @return     (void) Evaluates the model
+    */
+    void evaluate_distr(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int bs=-1);
 
     /**
       *  @brief Performs a prediction with input data
@@ -565,7 +575,7 @@ namespace eddl {
       *  @param batch  Batch number
       *  @return     (void)
     */
-    void print_loss(model m, int batch);
+    void print_loss(model m, int batch, bool reduce=false);
 
     /**
       *  @brief Get model losses

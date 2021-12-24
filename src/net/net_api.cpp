@@ -42,8 +42,6 @@ extern void _show_profile_fpga();
     if (id==0) \
         __VA_ARGS__; 
 
-int train_reduce=0;
-
 int verboserec=1;
 
 using namespace std;
@@ -598,7 +596,7 @@ void Net::compute_loss()
   }
 }
 
-void Net::print_loss(int b, int nb) {
+void Net::print_loss(int b, int nb, bool reduce) {
     int lbar = 50;
     int p = 0;
     int id, n_procs;
@@ -608,7 +606,7 @@ void Net::print_loss(int b, int nb) {
 
     loss = 0;
     if (isrecurrent) {
-        if (rnet != nullptr) rnet->print_loss(b, nb);
+        if (rnet != nullptr) rnet->print_loss(b, nb, reduce);
     } else {
         if (is_mpi_distributed()) {
             n_procs = get_n_procs_distributed();
@@ -653,31 +651,27 @@ void Net::print_loss(int b, int nb) {
             mpi_id0(fprintf(stdout, "%s[", name.c_str()));
 
             if (losses.size() >= (k + 1)) {
-                if (is_mpi_distributed()) {
+                if (is_mpi_distributed() && reduce) {
 #ifdef cMPI
-                    if (!trmode || train_reduce)
-                        MPICHECK(MPI_Reduce(&total_loss[k], &loss, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
-                    else
-                        loss = total_loss[k];
-#endif
+                    //MPICHECK(MPI_Reduce(&total_loss[k], &total_loss[k], 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));                        
+                    MPICHECK(MPI_Reduce(&total_loss[k], &loss, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
                     loss = loss / n_procs;
-                } else {
+#endif
+                } else
                     loss = total_loss[k];
-                }
+
                 //fprintf(stdout, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
                 //mpi_id0(fprintf(stdout, "loss=%1.3f ", total_loss[k] / (length * inferenced_samples)));                
                 mpi_id0(fprintf(stdout, "loss=%1.3f ", loss / (length * inferenced_samples)));
 
             }
             if (this->metrics.size() >= (k + 1)) {
-                if (is_mpi_distributed()) {
-#ifdef cMPI                    
-                    if (!trmode || train_reduce)
-                        MPICHECK(MPI_Reduce(&total_metric[k], &metric, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
-                    else
-                        metric = total_metric[k];
-#endif                    
+                if (is_mpi_distributed() && reduce) {
+#ifdef cMPI                                     
+                    //MPICHECK(MPI_Reduce(&total_metric[k], &total_metric[k], 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
+                    MPICHECK(MPI_Reduce(&total_metric[k], &metric, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
                     metric = metric / n_procs;
+#endif                    
                 } else {
                     metric = total_metric[k];
                 }
@@ -995,46 +989,18 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                   
                 // synchronize
                 if (is_mpi_distributed()) 
-                    avg_weights_distributed(this, j+1, batches_per_proc);   
-                /*
-                {
-                    if ((((j + 1) % batches_avg) == 0) || ((j + 1) == batches_per_proc)) {
-                        //printf("Proc %d Sincronizando %d\n", id, j);
-                        for (ii = 0; ii < snets[0]->layers.size(); ii++) {
-                            for (jj = 0; jj < snets[0]->layers[ii]->params.size(); jj++) {
-
-                                myptr = snets[0]->layers[ii]->params[jj]->ptr;
-                                count = snets[0]->layers[ii]->params[jj]->size;
-                                //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
-                                if (count != 0) {
-                                    // AllReduce params
-                                    //AllReduce_distributed(myptr, count);
-                                    AllReduce_streams_distributed(myptr, count, ii);
-                                    //fn_mpi_AllReduce(myptr, count)
-                                    //fn_nccl_AllReduce(myptr, count);
-
-                                    // Average params
-                                    snets[0]->layers[ii]->params[jj]->div_(n_procs);
-                                }
-                            }
-                        }
-                    }
-                }
-                */
+                    avg_weights_distributed(this, j+1, batches_per_proc);
                  
-
-                //if (id == 0) {
-                    print_loss(j+1, batches_per_proc);
-                    //print_loss(j+1,num_batches);
-                //}
+                // In training mode, do not reduce
+                print_loss(j+1, batches_per_proc, false);
+                //print_loss(j+1,num_batches);
+                
                 high_resolution_clock::time_point e2 = high_resolution_clock::now();
                 duration<double> epoch_time_span = e2 - e1;
                 if (id == 0) {
                     fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count() / ((j + 1) * n_procs));
                     fflush(stdout);
                 }
-
-
             }
             high_resolution_clock::time_point e2 = high_resolution_clock::now();
             duration<double> epoch_time_span = e2 - e1;
@@ -1057,9 +1023,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             printf("loss1 %f\n", loss1);
             printf("loss2 %f\n", loss2);
              */
-            update_batch_avg_distributed (i, secs_epoch, batches_per_proc);
-            
-            
+            update_batch_avg_distributed (i, secs_epoch, batches_per_proc);           
         }
         fflush(stdout);
     }
@@ -1482,84 +1446,69 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 }
 
 
-///////////////////////////////////////////
 
+///////////////////////////////////////////
 void Net::evaluate(vtensor tin, vtensor tout, int bs) {
 
     int i, j, k, n;
-    int id, n_procs;
-    int batches_per_proc;
-    //int batches;
+    int id;
+    
 
     if (isrecurrent) {
         evaluate_recurrent(tin, tout, bs);
     } else {
         if (is_mpi_distributed()) {
-            n_procs = get_n_procs_distributed();
             id = get_id_distributed();
-            // local batch_size is already set
-            //mpi_id0(fprintf(stderr, "[DISTR] evaluate\n\n"));
         } else {
-            n_procs = 1;
             id = 0;
         }
-        //       if (id == 0) {  // MPI distributed. Only process 0 evaluates
-        // Check list shape
-        if (tin.size() != lin.size())
-            msg("input tensor list does not match with defined input layers", "Net.evaluate");
-        if (tout.size() != lout.size())
-            msg("output tensor list does not match with defined output layers", "Net.evaluate");
+        if (id == 0) { // MPI distributed. Only process 0 evaluates
+            // Check list shape
+            if (tin.size() != lin.size())
+                msg("input tensor list does not match with defined input layers", "Net.evaluate");
+            if (tout.size() != lout.size())
+                msg("output tensor list does not match with defined output layers", "Net.evaluate");
 
-        // Check data consistency
-        n = tin[0]->shape[0];
+            // Check data consistency
+            n = tin[0]->shape[0];
 
-        for (i = 1; i < tin.size(); i++)
-            if (tin[i]->shape[0] != n)
-                msg("different number of samples in input tensor", "Net.evaluate");
+            for (i = 1; i < tin.size(); i++)
+                if (tin[i]->shape[0] != n)
+                    msg("different number of samples in input tensor", "Net.evaluate");
 
-        for (i = 1; i < tout.size(); i++)
-            if (tout[i]->shape[0] != n)
-                msg("different number of samples in output tensor", "Net.evaluate");
+            for (i = 1; i < tout.size(); i++)
+                if (tout[i]->shape[0] != n)
+                    msg("different number of samples in output tensor", "Net.evaluate");
 
-        if (bs != -1) resize(bs);
-        else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
-        
-        
-        mpi_id0(printf("Evaluate with batch size %d\n", batch_size));
-
-        // Create internal variables
-        vind sind;
-        for (k = 0; k < batch_size; k++)
-            sind.push_back(0);
+            if (bs != -1) resize(bs);
+            else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
 
 
-        // Set some parameters
-        int num_batches = n / batch_size;
-        batches_per_proc = num_batches / n_procs;
-        //batches = 0;
+            printf("Evaluate with batch size %d\n", batch_size);
 
-        // Start eval
-        setmode(TSMODE);
-        reset_loss();
-        //for (j = 0; j < n / batch_size; j++) {
-        for (j = 0; j < batches_per_proc; j++) {
-            //batches = batches + n_procs;
-            for (k = 0; k < batch_size; k++) {
-                //sind [k] = (j * batch_size) + k;
-                sind [k] = (((id*batches_per_proc)+j) * batch_size) + k;
-                //printf("%5d ",sind[k]);
+            // Create internal variables
+            vind sind;
+            for (k = 0; k < batch_size; k++)
+                sind.push_back(0);
+
+            // Start eval
+            setmode(TSMODE);
+            reset_loss();
+            for (j = 0; j < n / batch_size; j++) {
+                for (k = 0; k < batch_size; k++) {
+                    sind [k] = (j * batch_size) + k;
+                    //printf("%5d ",sind[k]);
+                }
+                train_batch(tin, tout, sind, 1);
+                print_loss(j + 1, n / batch_size);
+                fprintf(stdout, "\r");
+                fflush(stdout);
             }
-            train_batch(tin, tout, sind, 1);
-            //         print_loss(batches, num_batches);
-            print_loss(j + 1, batches_per_proc);
-            //print_loss(j + 1, n / batch_size);
-            mpi_id0(fprintf(stdout, "\r"));
-            mpi_id0(fflush(stdout));
+            fprintf(stdout, "\n");
         }
-       mpi_id0(fprintf(stdout, "\n"));
     }
-    //   }
 }
+
 
 ///////////////////////////////////////////
 void Net::evaluate_recurrent(vtensor tin, vtensor tout, int bs) {
@@ -1597,6 +1546,119 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout, int bs) {
 
 }
 
+///////////////////////////////////////////
+
+void Net::evaluate_distr(vtensor tin, vtensor tout, int bs) {
+
+    int i, j, k, n;
+    int id, n_procs;
+    int batches_per_proc;
+    //int batches;
+
+    if (!is_mpi_distributed()) {
+        msg("not running with MPI", "Net.evaluate_distr");
+    }
+
+    if (isrecurrent) {
+        evaluate_recurrent_distr(tin, tout, bs);
+    } else {
+        n_procs = get_n_procs_distributed();
+        id = get_id_distributed();
+        // local batch_size is already set
+        mpi_id0(fprintf(stderr, "[DISTR] evaluate\n"));
+
+        // Check list shape
+        if (tin.size() != lin.size())
+            msg("input tensor list does not match with defined input layers", "Net.evaluate");
+        if (tout.size() != lout.size())
+            msg("output tensor list does not match with defined output layers", "Net.evaluate");
+
+        // Check data consistency
+        n = tin[0]->shape[0];
+
+        for (i = 1; i < tin.size(); i++)
+            if (tin[i]->shape[0] != n)
+                msg("different number of samples in input tensor", "Net.evaluate");
+
+        for (i = 1; i < tout.size(); i++)
+            if (tout[i]->shape[0] != n)
+                msg("different number of samples in output tensor", "Net.evaluate");
+
+        if (bs != -1) resize(bs);
+        else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
+
+
+        mpi_id0(printf("Evaluate with batch size %d\n", batch_size));
+
+        // Create internal variables
+        vind sind;
+        for (k = 0; k < batch_size; k++)
+            sind.push_back(0);
+
+
+        // Set some parameters
+        int num_batches = n / batch_size;
+        batches_per_proc = num_batches / n_procs;
+        //batches = 0;
+
+        // Start eval
+        setmode(TSMODE);
+        reset_loss();
+        //for (j = 0; j < n / batch_size; j++) {
+        for (j = 0; j < batches_per_proc; j++) {
+            //batches = batches + n_procs;
+            for (k = 0; k < batch_size; k++) {
+                //sind [k] = (j * batch_size) + k;
+                sind [k] = (((id * batches_per_proc) + j) * batch_size) + k;
+                //printf("%5d ",sind[k]);
+            }
+            train_batch(tin, tout, sind, 1);
+            //         print_loss(batches, num_batches);
+            print_loss(j + 1, batches_per_proc, true);
+            //print_loss(j + 1, n / batch_size);
+            mpi_id0(fprintf(stdout, "\r"));
+            mpi_id0(fflush(stdout));
+        }
+        mpi_id0(fprintf(stdout, "\n"));
+    }
+}
+
+
+///////////////////////////////////////////
+void Net::evaluate_recurrent_distr(vtensor tin, vtensor tout, int bs) {
+
+  int i;
+
+  // prepare data for unroll net
+  vtensor xt;
+  vtensor xtd;
+  vtensor yt;
+
+  vtensor toutr;
+  vtensor tinr;
+
+  int inl;
+  int outl;
+
+  prepare_recurrent(tin,tout,inl,outl,xt,xtd,yt,tinr,toutr);
+
+  build_rnet(inl,outl);
+
+  rnet->evaluate_distr(tinr,toutr,bs);
+
+  for(i=0;i<tinr.size();i++) delete(tinr[i]);
+  for(i=0;i<toutr.size();i++) delete(toutr[i]);
+
+  for(i=0;i<xt.size();i++)
+      delete xt[i];
+  xt.clear();
+
+  for(i=0;i<yt.size();i++)
+      delete yt[i];
+  yt.clear();
+
+
+}
 
 
 ///////////////////////////////////////////

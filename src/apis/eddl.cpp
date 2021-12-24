@@ -272,6 +272,11 @@ namespace eddl {
         net->evaluate(in, out, bs);
     }
 
+    void evaluate_distr(model net, const vector<Tensor *> &in, const vector<Tensor *> &out,int bs){
+        net->evaluate_distr(in, out, bs);
+    }
+
+    
     vector<Tensor *> predict(model m, const vector<Tensor *> &in){
         return m->predict(in);
     }
@@ -399,8 +404,8 @@ namespace eddl {
     {
         m->reset_loss();
     }
-    void print_loss(model m, int batch){
-        m->print_loss(batch);
+    void print_loss(model m, int batch, bool reduce){
+        m->print_loss(batch, reduce);
     }
 
     vector<float> get_losses(model m){
