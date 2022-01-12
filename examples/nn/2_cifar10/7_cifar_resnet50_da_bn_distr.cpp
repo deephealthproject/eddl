@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-#include <mpi.h>
+
 
 using namespace eddl;
 
