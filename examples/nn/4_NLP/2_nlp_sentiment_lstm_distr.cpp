@@ -57,7 +57,8 @@ int main(int argc, char **argv) {
     model net = Model({in}, {out});
 
     // dot from graphviz should be installed:
-    plot(net, "model.pdf");
+    if (id==0)
+        plot(net, "model.pdf");
 
     optimizer opt=adam(0.001);
     //opt->set_clip_val(0.01);
@@ -81,7 +82,8 @@ int main(int argc, char **argv) {
     );
 
     // View model
-    summary(net);
+    if (id==0)
+        summary(net);
 
     // Load dataset
     Tensor* x_train=Tensor::load("imdb_2000_trX.bin");

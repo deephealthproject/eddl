@@ -78,9 +78,12 @@ int main(int argc, char **argv) {
           {"mse"},
           cs
           );
-    plot(net,"model.pdf","LR");
-    summary(net);
-
+          
+    if (id==0) {
+        plot(net,"model.pdf","LR");
+        summary(net);
+    }
+        
     // Input: 32 samples that are sequences of 10  3D RGB images of 256x256. 
     Tensor* seqImages = Tensor::randu({32, 10, 3, 10, size, size});
     

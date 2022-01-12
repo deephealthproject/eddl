@@ -24,7 +24,7 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
     int argn;
     char *uso =
             "\nError:\n"
-            "%s -m path-to-model -w width -h height -c channels -z nr-of-classes -b batch-size \n"
+            "%s -m path-to-model -w width -h height -z channels -c nr-of-classes -b batch-size \n"
             "\t -e nr-of-epochs -a batch-average -l learning-rate -s nr-of-parts \n"
             "\t -d (distr dataset) -8 (8-bit dataset bin format)\n"
             "";

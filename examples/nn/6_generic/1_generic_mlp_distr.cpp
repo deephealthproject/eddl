@@ -87,15 +87,15 @@ int main(int argc, char **argv) {
     // Get MPI process id
     id=get_id_distributed();
     
-    // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2);
+   
+    set_method_distributed(FIXED,4,0);
     
     // Download mnist
     //download_mnist();
 
 
     // network
-    layer in = Input({channels, width, height});
+    layer in = Input({channels, height, width});
     layer l = in; // Aux var
 
     l = Flatten(l);
@@ -192,8 +192,8 @@ int main(int argc, char **argv) {
         /* Load chunks */
         for (int i = 0; i < epochs; i++) {
             for (int chunk = 0; chunk < chunks; chunk++) {
-                //int selected= 1+(rand() % 3);
-                int selected = chunk;
+                int selected= rand() % chunks;
+                //int selected = chunk;
                 //printf("Chunk %d\n", chunk);
                 if (use_distr_dataset) {
                     sprintf(tr_images, "%s/train-images_%d_%d.bi8", path, id, selected);

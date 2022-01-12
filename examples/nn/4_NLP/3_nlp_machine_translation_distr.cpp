@@ -96,7 +96,8 @@ int main(int argc, char **argv) {
 
     model net = Model({in}, {out});
 
-    plot(net, "model.pdf");
+    if (id==0)
+        plot(net, "model.pdf");
 
     optimizer opt=adam(0.01);
     
@@ -116,7 +117,8 @@ int main(int argc, char **argv) {
 
 
     // View model
-    summary(net);
+    if (id==0)
+        summary(net);
 
     // Load dataset
     Tensor *x_train=Tensor::load("eutrans_trX.bin","bin");

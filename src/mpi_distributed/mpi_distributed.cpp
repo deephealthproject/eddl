@@ -25,7 +25,7 @@
                 gpu_str="1,0"; \
             break; \
         case 1: gpus={0, 1}; \
-                gpu_str="0,0"; \
+                gpu_str="0,1"; \
             break; \
         }          
 

@@ -85,8 +85,9 @@ layer UNetWithPadding(layer x)
 int main(int argc, char **argv){
     bool testing = false;
     bool use_cpu = false;
+    int id;
     
-    init_distributed();
+    id=init_distributed();
     
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
@@ -119,8 +120,11 @@ int main(int argc, char **argv){
     // Build model for DA
     build(danet);
     if (! testing) toGPU(danet,{1},"low_mem");   
-    summary(danet);
-
+    
+    if (id==0) {
+        summary(danet);
+    }
+    
     compserv cs = nullptr;
     if (use_cpu) {
         cs = CS_CPU();
@@ -138,8 +142,11 @@ int main(int argc, char **argv){
         {"mse"}, // Metrics
         cs
     );
-    summary(segnet);
-    plot(segnet,"segnet.pdf");
+        
+    if (id==0) {
+        summary(segnet);
+        plot(segnet,"segnet.pdf");
+    }
 
     //////////////////////////////////////////////////////////////
     // Load and preprocess training data

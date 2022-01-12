@@ -62,8 +62,10 @@ int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
     int id=0;
+    int n_procs;
     
     id = init_distributed();
+    n_procs = get_n_procs_distributed();
 
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
@@ -76,7 +78,8 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = 1;
-    int batch_size = 100;
+    int global_batch_size = 100;
+     int batch_size;
 
 
     // Define network
@@ -107,12 +110,15 @@ int main(int argc, char **argv) {
           {}, // Metrics
           cs);
 
-    summary(net);
+      
+    if (id==0)      
+        summary(net);
+          
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
-
+    
     if (testing) {
-        std::string _range_ = "0:" + std::to_string(2 * batch_size);
+        std::string _range_ = "0:" + std::to_string(2 * global_batch_size);
         Tensor* x_mini_train = x_train->select({_range_, ":"});
 
         delete x_train;
@@ -126,9 +132,17 @@ int main(int argc, char **argv) {
     loss mse=newloss(mse_loss,{out,target},"mse_loss");
     loss dicei=newloss(dice_loss_img,{out,target},"dice_loss_img");
     loss dicep=newloss(dice_loss_pixel,{out,target},"dice_loss_pixel");
+    
+     int num_batches=x_train->shape[0]/global_batch_size;
+    int batches_per_proc=num_batches/n_procs;
+    batch_size=global_batch_size/n_procs;
+
 
     Tensor *batch=new Tensor({batch_size,784});
-    int num_batches=x_train->shape[0]/batch_size;
+    
+   
+    //int num_batches=x_train->shape[0]/batch_size;
+    
     for(i=0;i<epochs;i++) {
 
       fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
@@ -136,7 +150,8 @@ int main(int argc, char **argv) {
       float diceiloss=0.0;
       float mseloss=0;
 
-      for(j=0;j<num_batches;j++)  {
+    //      for(j=0;j<num_batches;j++)  {
+      for(j=0;j<batches_per_proc;j++)  {
 
         cout<<"Batch "<<j;
         next_batch({x_train},{batch});

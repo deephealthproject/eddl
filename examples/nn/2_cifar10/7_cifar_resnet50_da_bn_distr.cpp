@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-
+#include <mpi.h>
 
 using namespace eddl;
 
@@ -63,8 +63,7 @@ int main(int argc, char **argv){
   
   id = init_distributed();
     
-  // Sync every batch, change every 2 epochs
-  set_method_distributed(AUTO_TIME,1,2);
+  set_method_distributed(FIXED,4,0);
 
   for (int i = 1; i < argc; ++i) {
       if (strcmp(argv[i], "--testing") == 0) testing = true;
@@ -177,10 +176,11 @@ compserv cs = nullptr;
     lr/=10.0;
 
     setlr(net,{lr,0.9});
-fit(net,{x_train},{y_train}, batch_size, epochs);
+    fit(net,{x_train},{y_train}, batch_size, 1);
     // Evaluate
     evaluate(net,{x_test},{y_test});
-
+    evaluate_distr(net,{x_test},{y_test});
+    MPI_Barrier(MPI_COMM_WORLD);
     /*
     for(int i=0;i<epochs;i++) {
       // training, list of input and output tensors, batch, epochs

@@ -26,10 +26,13 @@ using namespace eddl;
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
-    bool use_mpi = false;
+    bool use_mpi = true;
     int id;
+    char command[100];
     
-    
+//    system("export");
+//    sprintf(command, "ldd %s",argv[0]); 
+//    system(command);    
     
     // Process arguments
     for (int i = 1; i < argc; ++i) {
@@ -172,7 +175,7 @@ int main(int argc, char **argv) {
     setlogfile(net,"mnist_mlp_distr");
     
     // Broadcast params 
-    bcast_weights_distributed(net); 
+//    bcast_weights_distributed(net); 
     
     
       

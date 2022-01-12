@@ -28,10 +28,7 @@ int main(int argc, char **argv) {
 
     bool testing = false;
     bool use_cpu = false;
-    int id=0;
     
-    id = init_distributed();
-
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -216,8 +213,7 @@ cd->O->toCPU();
     convt_out->print(2,true);
 
     delete net;
-    
-    end_distributed();
+   
     
     return EXIT_SUCCESS;
 }

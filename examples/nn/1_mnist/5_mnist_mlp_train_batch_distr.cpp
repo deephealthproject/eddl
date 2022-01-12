@@ -65,7 +65,8 @@ int main(int argc, char **argv) {
     model net = Model({in}, {out});
 
     // dot from graphviz should be installed:
-    plot(net, "model.pdf");
+    if (id == 0)
+        plot(net, "model.pdf");
 
     // Define computing service
     compserv cs = nullptr;

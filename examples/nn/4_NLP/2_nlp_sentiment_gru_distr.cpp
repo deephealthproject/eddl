@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
     int id=0;
     
     id = init_distributed();
+    
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -59,7 +60,8 @@ int main(int argc, char **argv) {
     model net = Model({in}, {out});
 
     // dot from graphviz should be installed:
-    plot(net, "model.pdf");
+    if (id==0)
+        plot(net, "model.pdf");
 
     //optimizer opt = sgd(0.001);
     //optimizer opt = rmsprop(0.001);
@@ -85,7 +87,8 @@ int main(int argc, char **argv) {
     );
 
     // View model
-    summary(net);
+    if (id==0)
+        summary(net);
 
     // Load dataset
     Tensor* x_train=Tensor::load("imdb_2000_trX.bin");

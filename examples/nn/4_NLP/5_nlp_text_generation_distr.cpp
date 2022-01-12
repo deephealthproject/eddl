@@ -48,15 +48,16 @@ int main(int argc, char **argv) {
 
     bool testing = false;
     bool use_cpu = false;
+    int id;
     
-    init_distributed();
+    id=init_distributed();
     
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
     
-    int id;
+   
      
    
      
@@ -102,7 +103,8 @@ int main(int argc, char **argv) {
 
     delete old_net;
 
-    plot(net, "model.pdf");
+    if (id==0)
+        plot(net, "model.pdf");
 
     optimizer opt=adam(0.01);
     //opt->set_clip_val(0.01);
@@ -124,7 +126,8 @@ int main(int argc, char **argv) {
           cs);
 
     // View model
-    summary(net);
+    if (id==0)      
+        summary(net);
 
 
     // Load dataset
@@ -167,7 +170,7 @@ int main(int argc, char **argv) {
     fit(net, {xtrain}, {y_train}, batch_size, epochs);
 
     if (id==0)
-    save(net,"img2text.bin","bin");
+        save(net,"img2text.bin","bin");
 
     /////////////////////////////////////////////
     // INFERENCE
@@ -209,8 +212,11 @@ int main(int argc, char **argv) {
     }, // not relevant
     cs
             );
-    summary(cnn);
-    plot(cnn, "cnn.pdf");
+    
+    if (id==0) {
+        summary(cnn);
+        plot(cnn, "cnn.pdf");
+    }
 
 
     // forward images
@@ -284,8 +290,10 @@ int main(int argc, char **argv) {
             );
 
     // View model
-    summary(decoder);
-    plot(decoder, "decoder.pdf");
+    if (id==0) {
+        summary(decoder);
+        plot(decoder, "decoder.pdf");
+    }
 
     // Copy params from trained net
     copyParam(getLayer(net, "LSTM1"), getLayer(decoder, "LSTM2"));

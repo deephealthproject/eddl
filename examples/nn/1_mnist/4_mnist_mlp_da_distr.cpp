@@ -65,7 +65,8 @@ int main(int argc, char **argv) {
     net->verbosity_level = 0;
 
     // dot from graphviz should be installed:
-    plot(net, "model.pdf");
+    if (id == 0)
+        plot(net, "model.pdf");
 
     compserv cs = nullptr;
     if (use_cpu) {
@@ -84,7 +85,8 @@ int main(int argc, char **argv) {
           cs);
 
     // View model
-    summary(net);
+    if (id == 0)
+        summary(net);
 
     setlogfile(net,"mnist_bn_da_lra");
 

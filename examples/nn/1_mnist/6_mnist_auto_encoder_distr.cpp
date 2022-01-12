@@ -74,9 +74,11 @@ int main(int argc, char **argv) {
           cs);
 
     // View model
-    summary(net);
-    plot(net, "model.pdf");
-
+    if (id == 0) {
+        summary(net);
+        plot(net, "model.pdf");
+    }
+          
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
 

@@ -90,10 +90,12 @@ int main(int argc, char **argv){
 
 
     // plot the model
-    plot(net,"model.pdf");
+    if (id==0)
+        plot(net,"model.pdf");
 
     // get some info from the network
-    summary(net);
+    if (id==0)        
+        summary(net);
 
     // Load and preprocess training data
     Tensor* x_train = Tensor::load("cifar_trX.bin");
