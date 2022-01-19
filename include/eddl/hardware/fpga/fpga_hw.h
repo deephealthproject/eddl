@@ -26,8 +26,6 @@ extern cl::CommandQueue *q;
 
 //#define FPGA_DEBUG
 
-#include "eddl/hardware/fpga/fpga_enables.h"
-
 // ----------------------------------------------------------------------------------------------------------
 // Precision support
 //
