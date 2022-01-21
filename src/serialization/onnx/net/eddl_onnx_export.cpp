@@ -12,7 +12,7 @@ using namespace std;
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/onnx.pb.h"
 
-void save_net_to_onnx_file(Net *net, string path)
+void save_net_to_onnx_file(Net *net, string path, int seq_len)
 {
   // Check if the folder exists
   string folder = path.substr(0, path.find_last_of("\\/"));
@@ -24,7 +24,7 @@ void save_net_to_onnx_file(Net *net, string path)
   collect_params(net); // sync weights from device
 
   bool export_gradients = false; // We always store weights to file
-  onnx::ModelProto model = build_onnx_model(net, export_gradients);
+  onnx::ModelProto model = build_onnx_model(net, export_gradients, seq_len);
   // Create the file stream and save the serialization of the onnx model in it
   fstream ofs(path, ios::out | ios::binary);
   if (!model.SerializeToOstream(&ofs))
@@ -34,13 +34,13 @@ void save_net_to_onnx_file(Net *net, string path)
   ofs.close();
 }
 
-size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gradients)
+size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gradients, int seq_len)
 {
   collect_params(net); // sync weights from device
   if (gradients && net->snets[0]->dev != DEV_CPU)
       net->collect_acc_grads();
 
-  onnx::ModelProto model = build_onnx_model(net, gradients);
+  onnx::ModelProto model = build_onnx_model(net, gradients, seq_len);
   // Serialization of the model to an array of bytes
   size_t size = model.ByteSizeLong(); // Get the size of the serialized model
   serialized_model = new char[size];
@@ -52,13 +52,13 @@ size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gra
   return size;
 }
 
-string *serialize_net_to_onnx_string(Net *net, bool gradients)
+string *serialize_net_to_onnx_string(Net *net, bool gradients, int seq_len)
 {
   collect_params(net); // sync weights from device
   if (gradients && net->snets[0]->dev != DEV_CPU)
       net->collect_acc_grads();
 
-  onnx::ModelProto model = build_onnx_model(net, gradients);
+  onnx::ModelProto model = build_onnx_model(net, gradients, seq_len);
   // Serialization of the model to an array of bytes
   string *model_string = new string();
   if (!model.SerializeToString(model_string))

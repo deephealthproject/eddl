@@ -2,6 +2,7 @@
 #include "eddl/serialization/onnx/import_helpers.h"
 #include "eddl/serialization/onnx/layers/layers_onnx.h"
 #include "eddl/layers/core/layer_core.h"
+#include <queue>
 
 // Gets the initializers from the onnx layer graph
 vector<onnx::TensorProto> get_initializers(onnx::GraphProto graph)
@@ -32,6 +33,78 @@ map<string, vector<onnx::NodeProto *>> initialize_input_node_map(vector<onnx::No
     }
   }
   return input_node_map;
+}
+
+vector<INPUT_TYPE> check_recurrent_inputs(vector<onnx::ValueInfoProto> inputs_onnx, map<string, vector<onnx::NodeProto *>> &input_node_map)
+{
+    vector<INPUT_TYPE> inputs_types(inputs_onnx.size(), INPUT_TYPE::NORMAL);
+    map<string, ONNX_LAYERS> map_layers = create_enum_map();
+
+    int input_index = 0;
+    for (onnx::ValueInfoProto &in : inputs_onnx)
+    {
+      map<string, bool> visited;
+      queue<onnx::NodeProto*> queue;
+      for (onnx::NodeProto *child : input_node_map[in.name()])
+        queue.push(child);
+
+      while (!queue.empty()) {
+        // Get the next node in the queue
+        onnx::NodeProto *current = queue.front(); queue.pop();
+        const string node_name = current->name();
+
+        // Check if we already visited this node
+        if (visited.find(node_name) != visited.end())
+          continue;
+        visited[node_name] = true; // Mark as visited
+
+        if (node_is_recurrent(current, map_layers))
+        {
+          if (node_is_decoder(current, input_node_map))
+            inputs_types[input_index] = INPUT_TYPE::SEQUENCE_DECODER;
+          else
+            inputs_types[input_index] = INPUT_TYPE::SEQUENCE_ENCODER;
+          break;
+        }
+
+        // Try to detect the Unsqueeze + Tile operators to repeat the tensor to create a sequence
+        // If we detect it, we have to remove this operators and conect the parent of the Unsqueeze
+        // to the childs of the Tile
+        if (current->op_type() == "Unsqueeze")
+        {
+          bool unsq_tile_detected = false;
+          // Check if it is adding a sequence dimension on position 0
+          for (int attr_idx = 0; attr_idx < current->attribute_size(); ++attr_idx)
+          {
+            onnx::AttributeProto attribute = current->attribute(attr_idx);
+            if (attribute.name() == "axes")
+            {
+              vector<int> axes;
+              for (int h = 0; h < attribute.ints_size(); h++)
+                axes.push_back(attribute.ints(h));
+
+              // Check if the Unsqueeze is adding a dimension before the batch
+              if (std::find(axes.begin(), axes.end(), 0) != axes.end())
+                // Check if one of the child nodes is a Tile
+                for (int o = 0; o < current->output_size(); ++o)
+                  for (onnx::NodeProto *child : input_node_map[current->output(o)])
+                    if (child->op_type() == "Tile")
+                      unsq_tile_detected = true;
+            }
+          }
+          if (unsq_tile_detected)
+            break; // The current processed input is not recurrent
+        }
+
+        // Push the current node childs to the queue
+        for (int o = 0; o < current->output_size(); ++o)
+          for (onnx::NodeProto *child : input_node_map[current->output(o)])
+            queue.push(child);
+      }
+      input_index++;
+    }
+
+    return inputs_types;
 }
 
 // Creates a map with the name of the constant node as key and the node container from onnx as value.
@@ -77,7 +150,6 @@ queue<onnx::NodeProto *> process_inputs(vector<Layer *> &inputs,
     onnx::ValueInfoProto nameContainer = inputs_onnx[i];
     string name = nameContainer.name();
     output_node_map[name] = inputs[i];
-    vector<onnx::NodeProto *> v = input_node_map[name];
     for (onnx::NodeProto *layer : input_node_map[name])
     {
       nodeQueue.push(layer);
@@ -108,13 +180,13 @@ void get_initializers_maps(vector<onnx::TensorProto> tensors,
 }
 
 // Parses one TensorProto pointer (Input or output) to eddl Tensor pointer
-vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor, bool recurrent_net)
+vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor, INPUT_TYPE input_type)
 {
   onnx::TensorShapeProto tensorShape = tensor.shape();
   vector<int> shape;
   shape.push_back(1); // Set batch to 1
   int start_index = 1;
-  if (recurrent_net)
+  if (input_type == INPUT_TYPE::SEQUENCE_DECODER || input_type == INPUT_TYPE::SEQUENCE_ENCODER)
     start_index = 2; // Avoid sequence dim
 
   for (int i = start_index; i < tensorShape.dim_size(); i++)
@@ -127,7 +199,7 @@ vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor, bool recurrent_net)
 
 // Converts one vector of TensorProto pointers (Input or output)
 // to one vector of eddl Tensor pointers.
-vector<Layer *> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, vector<int> input_shape, int mem, bool recurrent_net)
+vector<Layer *> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, vector<int> input_shape, int mem, vector<INPUT_TYPE> inputs_types)
 {
   vector<Layer *> io;
   onnx::TypeProto::Tensor tensor;
@@ -148,11 +220,14 @@ vector<Layer *> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, vector<in
   } 
   else 
   {
+    int input_index = 0;
     for (onnx::ValueInfoProto infoProto : io_onnx)
     {
       tensor = infoProto.type().tensor_type();
       string name = infoProto.name();
-      io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor, recurrent_net)), name, dev, mem));
+      vector<int> input_shape = parse_IO_tensor(tensor, inputs_types[input_index]);
+      io.push_back(new LInput(new Tensor(input_shape), name, dev, mem));
+      input_index++;
     }
   }
 
@@ -242,9 +317,11 @@ bool node_is_recurrent(onnx::NodeProto *node, map<string, ONNX_LAYERS> &map_laye
 
 void set_decoder(Layer *l)
 {
-  l->isdecoder = true;
-  for (int i = 0; i < l->parent.size(); i++)
-    set_decoder(l->parent[i]);
+  l->isdecoder=true;
+
+  int p=l->child.size();
+  for(int i=0;i<p;i++)
+    set_decoder(l->child[i]);
 }
 
 bool node_is_decoder(onnx::NodeProto *node, map<string, vector<onnx::NodeProto *>> &input_node_map)
@@ -406,7 +483,6 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
                         map<string, vector<onnx::NodeProto *>> &input_node_map,
                         map<string, Layer *> &output_node_map,
                         map<string, onnx::NodeProto *> &constant_node_map,
-                        vector<string> &inputs2remove,
                         bool recurrent_net,
                         int mem,
                         LOG_LEVEL log_level)
@@ -467,7 +543,6 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
                                                 input_node_map,
                                                 output_node_map,
                                                 constant_node_map,
-                                                inputs2remove,
                                                 recurrent_net,
                                                 log_level,
                                                 dev,
@@ -532,9 +607,6 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
    *   We design this map as map<string, onnx::NodeProto> and called constant_node_map
    */
 
-  // Parse ONNX inputs to EDDL inputs layers
-  vector<Layer *> inputs = parse_IO_tensors(inputs_onnx, input_shape, mem, recurrent_net);
-
   // Get the initializers that store the layers weights and params
   vector<onnx::TensorProto> initializers = get_initializers(graph);
 
@@ -549,17 +621,15 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
   // 4 and 5: Create queue of NodeProto
   map<string, onnx::NodeProto *> constant_node_map = initialize_constant_nodes(nodes, input_node_map);
 
+  // Parse ONNX inputs to EDDL inputs layers
+  vector<INPUT_TYPE> inputs_types = check_recurrent_inputs(inputs_onnx, input_node_map);
+  vector<Layer *> inputs = parse_IO_tensors(inputs_onnx, input_shape, mem, inputs_types);
+
   map<string, Layer *> output_node_map;
   queue<onnx::NodeProto *> nodeQueue = process_inputs(inputs, inputs_onnx, input_node_map, output_node_map);
 
   // Check if any node only has initializers and constant nodes as parameters, so we can process it right away
   queue_constant_nodes(nodes, map_init_values, input_node_map, constant_node_map, nodeQueue, log_level);
-
-  /*
-   * In the case of models with recurrent decoders, we have to track the input layers of the decoder layers
-   * and avoid adding them to the input layers of the model
-   */
-  vector<string> inputs2remove = {};
 
   // 6: Process the node queue and create the model layers 
   process_node_queue(nodeQueue,
@@ -568,28 +638,28 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
                      input_node_map,
                      output_node_map,
                      constant_node_map,
-                     inputs2remove,
                      recurrent_net,
                      mem,
                      log_level);
 
   // Get input layers of the model
-  vector<Layer *> input_layers;
+  vector<Layer *> model_input_layers;
+  int aux_idx = 0;
   for (Layer *layer : inputs)
   {
-    bool valid_input = true;
     // Check if we have to avoid setting the current input layer as an input for the model
-    for (string lname : inputs2remove)
-      if (lname.compare(layer->name) == 0)
-      {
-        log_string("The input layer " + lname + " is not going to be a required input for the model. The EDDL will handle the input data for this layer.",
+    // Note: The EDDL handles the input data for the decoders inputs
+    if (inputs_types[aux_idx] == INPUT_TYPE::SEQUENCE_DECODER)
+    {
+        set_decoder(layer);
+        log_string("The input layer " + layer->name + " is not going to be a required input for the model because it is the input of the decoder. "
+                   "The EDDL will handle the input data for this layer.",
                    log_level,
                    LOG_LEVEL::DEBUG);
-        valid_input = false;
-      }
-
-    if (valid_input)
-      input_layers.push_back(layer);
+    }
+    else
+      model_input_layers.push_back(layer);
+    aux_idx++;
   }
 
   // Get output layers of the model
@@ -598,7 +668,7 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
   for (int i = 0; i < output_names.size(); i++)
     output_layers.push_back(output_node_map[output_names[i]]);
 
-  Net *imported_net = new Net(input_layers, output_layers);
+  Net *imported_net = new Net(model_input_layers, output_layers);
 
   log_string("Finished importing net from ONNX", log_level, LOG_LEVEL::DEBUG);
   return imported_net;

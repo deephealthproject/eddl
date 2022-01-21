@@ -15,6 +15,8 @@ vector<onnx::TensorProto> get_initializers(onnx::GraphProto graph);
 
 map<string, vector<onnx::NodeProto *>> initialize_input_node_map(vector<onnx::NodeProto> &nodes);
 
+vector<INPUT_TYPE> check_recurrent_inputs(vector<onnx::ValueInfoProto> inputs_onnx, map<string, vector<onnx::NodeProto *>> *input_node_map);
+
 map<string, onnx::NodeProto *> initialize_constant_nodes(vector<onnx::NodeProto> &nodes,
                                                          map<string, vector<onnx::NodeProto *>> &input_node_map);
 
@@ -27,12 +29,12 @@ void get_initializers_maps(vector<onnx::TensorProto> tensors,
                            map<string, vector<float>> &values_map, 
                            map<string, vector<int>> &dims_map);
 
-vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor, bool recurrent_net);
+vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor, INPUT_TYPE input_type);
 
 vector<Layer *> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, 
                                  vector<int> input_shape, 
                                  int mem, 
-                                 bool recurrent_net);
+                                 vector<INPUT_TYPE> inputs_types);
 
 vector<onnx::ValueInfoProto> get_inputs(onnx::GraphProto graph);
 
@@ -69,7 +71,6 @@ void process_node_queue(queue<onnx::NodeProto *> &nodeQueue,
                         map<string, vector<onnx::NodeProto *>> &input_node_map,
                         map<string, Layer *> &output_node_map,
                         map<string, onnx::NodeProto *> &constant_node_map,
-                        vector<string> &inputs2remove,
                         bool recurrent_net,
                         int mem,
                         LOG_LEVEL log_level);

@@ -4,6 +4,7 @@
 // ONNX import
 Layer* build_rargmax_layer(onnx::NodeProto *node,
                            map<string, Layer *> &output_node_map,
+                           bool is_recurrent,
                            int dev,
                            int mem)
 {
@@ -32,7 +33,10 @@ Layer* build_rargmax_layer(onnx::NodeProto *node,
 
   // Prepare the axis for EDDL. Because in EDDL you can't reduce the batch axis (0).
   if (axis > 0)
+  {
     axis--;
+    if (is_recurrent && axis > 0) axis--;
+  }
   else if (axis == 0)
     msg("You can't select the batch axis in Arg Max layer.", "ONNX::ImportNet");
   else
@@ -64,7 +68,11 @@ void build_rargmax_node(LRArgmax *layer, onnx::GraphProto *graph)
   onnx::AttributeProto *axis_attr = node->add_attribute();
   axis_attr->set_name("axis");
   axis_attr->set_type(onnx::AttributeProto::INT);
-  axis_attr->set_i(layer->axis[0] + 1);
+  if (layer->isrecurrent || layer->isdecoder)
+    // Skip the secuence dimension
+    axis_attr->set_i(layer->axis[0] + 2);
+  else
+    axis_attr->set_i(layer->axis[0] + 1);
 
   // Attr keepdims
   onnx::AttributeProto *keepdims_attr = node->add_attribute();

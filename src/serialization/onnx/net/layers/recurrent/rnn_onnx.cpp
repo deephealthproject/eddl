@@ -9,7 +9,6 @@ Layer* build_rnn_layer(onnx::NodeProto *node,
                        map<string, vector<int>> &map_init_dims,
                        map<string, vector<onnx::NodeProto *>> &input_node_map,
                        map<string, Layer *> &output_node_map,
-                       vector<string> &inputs2remove,
                        LOG_LEVEL log_level,
                        int dev,
                        int mem)
@@ -127,7 +126,7 @@ Layer* build_rnn_layer(onnx::NodeProto *node,
    */
   bool is_decoder = node_is_decoder(node, input_node_map);
 
-  if (is_decoder)
+  if (is_decoder && node->input_size() > 5)
   {
     log_string("The layer " + name + " is decoder", log_level, LOG_LEVEL::DEBUG);
     // We have to create the copy states layer for the decoder
@@ -160,20 +159,6 @@ Layer* build_rnn_layer(onnx::NodeProto *node,
   weights_h->assign(recurrence_weights_g->begin(), recurrence_weights_g->begin() + w_size);
 
   LRNN *rnn = new LRNN(parents, hidden_size, activation, use_bias, false, name, dev, mem);
-
-  if (is_decoder)
-  {
-    // Set attribute for unrolling
-    rnn->isdecoder = true;
-    set_decoder(rnn->parent[0]);
-    // We also have to remove the input layer that feeds the decoder from the input layers of the model
-    // First we search the corresponding input layer for the decoder
-    Layer *dec_linput = get_model_input_layer(rnn);
-    if (dec_linput != nullptr)
-      inputs2remove.push_back(dec_linput->name);
-    else
-      msg("Input layer for decoder " + name + " not found", "ONNX::ImportNet");
-  }
 
   /*
    * The Weights are permuted before copying them to the RNN layer (mismatch between ONNX standad and EDDL implementation)
