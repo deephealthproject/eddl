@@ -127,7 +127,7 @@ void TCP_Receiver::drop_stopped()
     // Critical region starts
     std::unique_lock<std::mutex> lck(mutex_active_threads);
 
-    for (unsigned int i=0; i < active_threads.size(); i++) {
+    for (unsigned int i = 0; i < active_threads.size(); i++) {
 
         // pops an active thread from queue
         ActiveThread * at = active_threads.front(); active_threads.pop();

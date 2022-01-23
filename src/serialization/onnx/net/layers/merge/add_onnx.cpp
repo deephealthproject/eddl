@@ -5,6 +5,7 @@
 #include "eddl/layers/normalization/layer_normalization.h"
 #include "eddl/layers/auxiliar/layer_auxiliar.h"
 #include "eddl/layers/operators/layer_operators.h"
+#include "eddl/serialization/onnx/utils_onnx.h"
 
 // ONNX import
 Layer* build_add_layer(onnx::NodeProto *node,
@@ -143,16 +144,21 @@ Layer* build_add_layer(onnx::NodeProto *node,
 }
 
 // ONNX export
-void build_add_node(LAdd *layer, onnx::GraphProto *graph)
+void build_add_node(LAdd *layer, onnx::GraphProto *graph, int seq_len)
 {
+  // We need to call this function before creating the node for the Add Op
+  // to store the operators in a topological order
+  const tuple<bool, vector<string>> check_outputs = mlayer_check_and_fix_recurrent_input(layer, graph, seq_len);
+  const vector<string> parents = get<1>(check_outputs);
+
   // Add an empty node to the graph
   onnx::NodeProto *node = graph->add_node();
   node->set_op_type("Add");
   node->set_name(layer->name);
   // Set the inputs names of the node from the parents of the layer
-  for (Layer *parentl : layer->parent)
+  for (const string p_name : parents)
   {
-    node->add_input(parentl->name);
+    node->add_input(p_name);
   }
   // Set the name of the output of the node to link with other nodes
   node->add_output(layer->name);

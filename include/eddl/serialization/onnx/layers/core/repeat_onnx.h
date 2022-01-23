@@ -25,5 +25,7 @@ Layer* build_repeat_layer(onnx::NodeProto *node,
 // OPSET: 13, 6
 void build_tile_node(LRepeat *layer, onnx::GraphProto *graph);
 
+void tile_node_builder(string node_name, string input, string output, vector<int> repeats, onnx::GraphProto *graph);
+
 #endif // EDDL_REPEAT_ONNX_H
 #endif // cPROTO
