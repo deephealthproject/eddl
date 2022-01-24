@@ -180,7 +180,7 @@ compserv cs = nullptr;
     // Evaluate
     evaluate(net,{x_test},{y_test});
     evaluate_distr(net,{x_test},{y_test});
-    MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);
     /*
     for(int i=0;i<epochs;i++) {
       // training, list of input and output tensors, batch, epochs
