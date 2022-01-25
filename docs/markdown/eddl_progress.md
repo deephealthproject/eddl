@@ -49,26 +49,26 @@
 | ReLu          | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Rectified Linear Unit |
 | Softmax       | 🟢️️ | 🟢️️ | 🟢️ | 🟢️️ | Softmax activation function |
 | Selu          | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Scaled Exponential Linear Unit (SELU) |
-| Sigmoid        | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Sigmoid activation function |
-| Softplus       | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Softplus activation function |
-| Softsign       | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Softsign activation function |
-| Tanh           | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Hyperbolic tangent activation function |
+| Sigmoid       | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Sigmoid activation function |
+| Softplus      | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Softplus activation function |
+| Softsign      | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Softsign activation function |
+| Tanh          | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Hyperbolic tangent activation function |
 | ThresholdedReLU | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Thresholded Rectified Linear Unit |
-| PReLU         |  ⚫️️ | ⚫️ |⚫️ | ⚫️️ | Parametric Rectified Linear Unit |
+| PReLU         | ⚫️️ | ⚫️ | ⚫️ | ⚫️️ | Parametric Rectified Linear Unit |
 
 
 ## Convolutional layers
 
 | Functionality | CPU | GPU | cuDNN | ONNX | Comments |
 | ------------- |------| -----| -----| ------|---------|
-| Conv1D            | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | 1D convolution |
+| Conv1D            | 🟢️️ | 🟢️️ | 🟢️ | 🟢️️ | 1D convolution |
 | Conv2D            | 🟢️️ | 🟢️️ | 🟢️ | 🟢️️ | 2D convolution |
-| Conv3D            |  ⚫️️ | ⚫️  | 🟢️️ | 🟢️ | 3D convolution |
+| Conv3D            | ⚫️️ | ⚫️ | 🟢️️ | 🟢️ | 3D convolution |
 | Pointwise         | 🟢️️ | 🟢️️ | 🟢️ | 🟢️️ | 2D pointwise convolution |
-| DepthwiseConv2D   | ⚫️ | ⚫  | 🟢️ | 🟢️ | 2D depthsise convolution |
+| DepthwiseConv2D   | ⚫️ | ⚫ | 🟢️ | 🟢️ | 2D depthsise convolution |
 | TransposedConv2D  | ⚫️️ | ⚫️ | 🟢️ | 🟢️ | 2D Transposed convolution |
 | TransposedConv3D  | ⚫️️ | ⚫️ | 🟢️ | 🟢️ | 3D Transposed convolution |
-| UpSampling2D        | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
+| UpSampling2D      | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
 | UpSampling3D        | 🟢️️ | 🟢️️ | ⚫️️ | ️️🟢️️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]` |
 
 
@@ -87,7 +87,7 @@
 | GlobalMaxPool3D     | 🟢️️ | 🟢️ | 🟢️️️ | 🟢️️️ | 3D GlobalMaxPooling operation |
 | GlobalAveragePool1D | 🟢️️ | 🟢️️ | 🟢️️️ | 🟢️️ | 1D GlobalAveragePooling operation |
 | GlobalAveragePool2D | 🟢️️ | 🟢️️ | 🟢️️️ | 🟢️️ | 2D GlobalAveragePooling operation |
-| GlobalAveragePool3D | 🟢️️ | 🟢️  | 🟢️️️️ | 🟢️️️ | 3D GlobalAveragePooling operation |
+| GlobalAveragePool3D | 🟢️️ | 🟢️ | 🟢️️️️ | 🟢️️️ | 3D GlobalAveragePooling operation |
 
 
 ## Data transformation/augmentation
@@ -134,12 +134,12 @@ Apply data transformations with random parametrization.
 | ------------- |------| -----| -----| ------|---------|
 | Add           | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️  | Layer that adds a list of inputs |
 | Concatenate   | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | Layer that concatenates a list of inputs |
-| Average       | ⚫ | ⚫️ | ⚫️| ⚫ | Layer that averages a list of inputs |
-| Dot           | ⚫ | ⚫️ | ⚫️| ⚫ | Layer that computes a dot product between samples in two tensors |
-| Multiply      | ⚫ | ⚫️ | ⚫️| ⚫ | Layer that multiplies (element-wise) a list of inputs |
-| Maximum       | ⚫ | ⚫️ | ⚫️| ⚫ | Layer that computes the maximum (element-wise) a list of inputs |
-| Minimum       | ⚫ | ⚫️ | ⚫️| ⚫ | Layer that computes the minimum (element-wise) a list of inputs |
-| Substract     | ⚫ | ⚫️ | ⚫️| ⚫ | Layer that subtracts two inputs |
+| Average       | ⚫ | ⚫️ | ⚫️ | ⚫ | Layer that averages a list of inputs |
+| Dot           | ⚫ | ⚫️ | ⚫️ | ⚫ | Layer that computes a dot product between samples in two tensors |
+| Multiply      | ⚫ | ⚫️ | ⚫️ | ⚫ | Layer that multiplies (element-wise) a list of inputs |
+| Maximum       | ⚫ | ⚫️ | ⚫️ | ⚫ | Layer that computes the maximum (element-wise) a list of inputs |
+| Minimum       | ⚫ | ⚫️ | ⚫️ | ⚫ | Layer that computes the minimum (element-wise) a list of inputs |
+| Substract     | ⚫ | ⚫️ | ⚫️ | ⚫ | Layer that subtracts two inputs |
 
 
 ## Normalization
@@ -158,7 +158,7 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | cuDNN | ONNX | Comments |
 | ------------- |------| -----| -----| ------|---------|
-| GaussianNoise | 🟢️️ | 🟢️️ | ⚫️️ |⚫ (Not in ONNX) | Apply additive zero-centered Gaussian noise |
+| GaussianNoise | 🟢️️ | 🟢️️ | ⚫️️ | ⚫ (Not in ONNX) | Apply additive zero-centered Gaussian noise |
 | UniformNoise  | 🟢️️ | 🟢️️ | ⚫️️ | ⚫ (Not in ONNX) | Apply additive zero-centered uniform noise |
 
 
@@ -186,12 +186,12 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | cuDNN | ONNX | Comments |
 | ------------- |------| -----| -----| ------|---------|
-| Max    | 🟢️️ | 🟢️️ | ⚫️️ |🟢️️ | |
-| Mean   | 🟢️️ | 🟢️️ | ⚫️️ |🟢️️ | |
-| Min    | 🟢️️ | 🟢️️ | ⚫️️ |🟢️️ | |
-| Sum    | 🟢️️ | 🟢️️ | ⚫️️ |🟢️️ | |
-| Var    | 🟢️️ | 🟢️️ | ⚫️️ |⚫ (Not in ONNX) | |
-| Argmax | 🟢️️ | 🟢️️ | ⚫️️ |🟢️️ | |
+| Max    | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | |
+| Mean   | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | |
+| Min    | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | |
+| Sum    | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | |
+| Var    | 🟢️️ | 🟢️️ | ⚫️️ | ⚫ (Not in ONNX) | |
+| Argmax | 🟢️️ | 🟢️️ | ⚫️️ | 🟢️️ | |
 
 
 ## Reurrent layers
@@ -209,7 +209,7 @@ Apply data transformations with random parametrization.
 | ------------- |------| -----| -----| ------|---------|
 | L1   | 🟢️️ | 🟢️️ | ⚫️️ | ⚫ | Lasso Regression |
 | L2   | 🟢️️ | 🟢️️ | ⚫️️ | ⚫ | Ridge Regression |
-| L1L2 | 🟢️️ | 🟢️️ | ⚫️️ | ⚫ |  |
+| L1L2 | 🟢️️ | 🟢️️ | ⚫️️ | ⚫ | Lasso Regression + Ridge Regression |
 
 
 # Initializers
@@ -220,14 +220,14 @@ Apply data transformations with random parametrization.
 | GlorotNormal    | 🟢️️ | 🟢️️ | ⚫️️ | Glorot normal initializer, also called Xavier normal initializer |
 | GlorotUniform   | 🟢️️ | 🟢️️ | ⚫️️ | Glorot uniform initializer, also called Xavier uniform initializer |
 | HeNormal        | 🟢️️ | 🟢️️ | ⚫️️ | _He_ normal initializer |
-| HeUniform       | 🟢️️ | 🟢️️  | ⚫️️️️ | _He_ uniform initializer |
+| HeUniform       | 🟢️️ | 🟢️️ | ⚫️️️️ | _He_ uniform initializer |
 | RandomNormal    | 🟢️️ | 🟢️️ | ⚫️️ | Initializer that generates tensors with a normal distribution |
 | RandomUniform   | 🟢️️ | 🟢️️ | ⚫️️ | Initializer that generates tensors with a uniform distribution |
 | Identity        | ⚫️ | ⚫️ | ⚫️ | Initializer that generates the identity matrix |
 | LeCunUniform    | ⚫ | ⚫ | ⚫ | LeCun uniform initializer |
 | LeCunNormal     | ⚫ | ⚫ | ⚫ | LeCun normal initializer |
-| Orthogonal      |  ⚫️| ⚫ | ⚫ | Initializer that generates a random orthogonal matrix |
-| TruncatedNormal | ⚫ | ⚫  |⚫  | Initializer that generates a truncated normal distribution |
+| Orthogonal      | ⚫️ | ⚫ | ⚫ | Initializer that generates a random orthogonal matrix |
+| TruncatedNormal | ⚫ | ⚫ | ⚫ | Initializer that generates a truncated normal distribution |
 | VarianceScaling | ⚫ | ⚫️ | ⚫️ | Initializer capable of adapting its scale to the shape of weights |
 
 
@@ -235,25 +235,25 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | cuDNN | Comments |
 | ------------- |------| -----| ------| ---------|
-| MaxNorm    | ⚫️  | ⚫️️ |⚫️️ | MaxNorm weight constraint |
-| MinMaxNorm | ⚫️  | ⚫️️ |⚫️️ | MinMaxNorm weight constraint |
-| NonNeg     | ⚫️  | ⚫️️ |⚫️️ | Constrains the weights to be non-negative |
-| UnitNorm   | ⚫️  | ⚫️️ |⚫️️ | Constrains the weights incident to each hidden unit to have unit norm |
+| MaxNorm    | ⚫️  | ⚫️️ | ⚫️️ | MaxNorm weight constraint |
+| MinMaxNorm | ⚫️  | ⚫️️ | ⚫️️ | MinMaxNorm weight constraint |
+| NonNeg     | ⚫️  | ⚫️️ | ⚫️️ | Constrains the weights to be non-negative |
+| UnitNorm   | ⚫️  | ⚫️️ | ⚫️️ | Constrains the weights incident to each hidden unit to have unit norm |
 
 
 # Loss functions
 
 | Functionality | CPU | GPU | cuDNN | Comments |
 | ------------- |------| -----| ------| ---------|
-| CategoricalCrossEntropy | 🟢️️ | 🟢️️ | ⚫️️ |  |
-| BinaryCrossEntropy      | 🟢️️ | 🟢️️ | ⚫️️ |  |
+| CategoricalCrossEntropy | 🟢️️ | 🟢️️ | ⚫️️ | CCE (The output is represented by n values that represent the probabilities each class) |
+| BinaryCrossEntropy      | 🟢️️ | 🟢️️ | ⚫️️ | BCE (The output is represented by a single value that represent the probability of the second class) |
 | MSE                     | 🟢️️ | 🟢️️ | ⚫️️ | Mean Squared Error |
 | Min                     | 🟢️️ | 🟢️️ | ⚫️️ | Minimum Error |
 | Dice                    | 🟢️️ | 🟢️️ | ⚫️️ | Dice loss |
 | SoftCrossEntropy        | 🟢️️ | 🟢️️ | ⚫️️ | Soft-Categorical Cross-Entropy Error |
-| MAE                     | ⚫️    | ⚫️️  | Mean Absolute Error  |
-| MRE                     | ⚫️    | ⚫️️  | Mean Relative Error |
-| MSLE                    | ⚫️    | ⚫️️  | Mean Squared Logarithmic Error |
+| MAE                     | ⚫ | ⚫ | ⚫ | Mean Absolute Error  |
+| MRE                     | ⚫ | ⚫ | ⚫ | Mean Relative Error |
+| MSLE                    | ⚫ | ⚫ | ⚫ | Mean Squared Logarithmic Error |
 | Hinge                   | ⚫ | ⚫ | ⚫ | Hinge Error |
 
 
