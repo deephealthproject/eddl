@@ -324,8 +324,8 @@ conda remove --name eddl --all
 <h2>Including EDDL in your project<a class="headerlink" href="#including-eddl-in-your-project" title="Permalink to this headline"></a></h2>
 <p>The different packages of <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> are built with cmake, so whatever the
 installation mode you choose, you can add <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> to your project using cmake:</p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">eddl</span> <span class="s">REQUIRED</span><span class="p">)</span>
-<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">your_target</span> <span class="s">PUBLIC</span> <span class="s">EDDL::eddl</span><span class="p">)</span>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">eddl</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">your_target</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">EDDL::eddl</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
