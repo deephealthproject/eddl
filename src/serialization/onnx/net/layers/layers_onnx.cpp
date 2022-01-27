@@ -54,6 +54,8 @@
 #include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 #include "eddl/serialization/onnx/layers/auxiliar/expand_onnx.h"
 #include "eddl/serialization/onnx/layers/auxiliar/multithreshold_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/quantizerlinear_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/dequantizelinear_onnx.h"
 #include "eddl/serialization/onnx/layers/auxiliar/topk_onnx.h"
 #include "eddl/serialization/onnx/layers/auxiliar/constoftensor_onnx.h"
 
@@ -127,6 +129,8 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["Split"] = ONNX_LAYERS::SPLIT;
   map_layers["Expand"] = ONNX_LAYERS::EXPAND;
   map_layers["MultiThreshold"] = ONNX_LAYERS::MULTITHRESHOLD;
+  map_layers["QuantizeLinear"] = ONNX_LAYERS::QUANTIZELINEAR;
+  map_layers["DequantizeLinear"] = ONNX_LAYERS::DEQUANTIZELINEAR;
   map_layers["TopK"] = ONNX_LAYERS::TOPK;
   map_layers["Constant"] = ONNX_LAYERS::CONSTANT;
   map_layers["Tile"] = ONNX_LAYERS::REPEAT;
@@ -337,6 +341,12 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       break;
     case ONNX_LAYERS::MULTITHRESHOLD:
       new_layer = build_multithreshold_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::QUANTIZELINEAR:
+      new_layer = build_quantizelinear_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::DEQUANTIZELINEAR:
+      new_layer = build_dequantizelinear_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::TOPK:
       new_layer = build_topk_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);

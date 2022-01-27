@@ -133,4 +133,7 @@ __global__ void gpu_batchnorm_backward_1(int b, int rc, int rcz, float *delta, f
 __global__ void gpu_batchnorm_backward_2(int z, float inv_N, float *mean1, float *mean2, float *gbn_g, float *gbn_b, float *bn_g);
 __global__ void gpu_batchnorm_backward_3(int b, int rc, int rcz, float *delta, float *opa, float *pdelta, float *mean1, float *mean2, float *variance);
 
+//quantize
+__global__ void gpu_quantize_linear(float *A, float *B, float y_scale, int y_zero_point, int size);
+__global__ void gpu_dequantize_linear(float *A, float *B, float x_scale, int x_zero_point, int size);
 #endif

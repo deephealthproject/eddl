@@ -57,8 +57,8 @@ void cpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
             B->ptr[b*B->stride[0] + i] = A->ptr[b*A->stride[0] + sd->cpu_addresses[i]];
         }
     }
-    _profile_cpu_tensor(A);
-    _profile_cpu_tensor(B);
+    //_profile_cpu_tensor(A);
+    //_profile_cpu_tensor(B);
 }
 
 void cpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
@@ -159,6 +159,67 @@ void cpu_multithreshold(Tensor *A, Tensor *B, Tensor *thresholds, float out_bias
 
 #ifdef CPU_DEBUG
 	_profile_cpu_tensor(B);
+#endif
+}
+
+void cpu_quantize_linear(Tensor *A, Tensor *B, float y_scale, int y_zero_point){
+#ifdef CPU_DEBUG
+	printf("quantizelinear:\n");
+	printf(" input    : "); _profile_cpu_tensor(A);
+#endif
+
+    int num;
+    for (int i = 0; i < A->size; ++i) {
+      num = round(A->ptr[i]/y_scale) + y_zero_point;
+      if(num> 127){
+        B->ptr[i] = 127;
+      }else if(num < -128){
+        B->ptr[i] = -128;
+      }else{
+        B->ptr[i] = num;
+      }
+    }
+
+#ifdef CPU_DEBUG
+	printf(" output   : "); _profile_cpu_tensor(B);
+#endif
+}
+
+// void cpu_quantize_linear(Tensor *A, Tensor *B, float y_scale, uint8_t y_zero_point){
+// #ifdef CPU_DEBUG
+// 	printf("quantizelinear:\n");
+// 	printf(" input    : "); _profile_cpu_tensor(A);
+// #endif
+
+//     int num;
+//     for (int i = 0; i < A->size; ++i) {
+//       num = round(A->ptr[i]/y_scale) + y_zero_point;
+//       if(num > 255){
+//         B->ptr[i] = 255;
+//       }else if(num < 0){
+//         B->ptr[i] = 0;
+//       }else{
+//         B->ptr[i] = num;
+//       }
+//     }
+
+// #ifdef CPU_DEBUG
+// 	printf(" output   : "); _profile_cpu_tensor(B);
+// #endif
+// }
+
+void cpu_dequantize_linear(Tensor *A, Tensor *B, float x_scale, int x_zero_point){
+#ifdef CPU_DEBUG
+	printf("quantizelinear:\n");
+	printf(" input    : "); _profile_cpu_tensor(A);
+#endif
+
+    for (int i = 0; i < A->size; ++i) {
+      B->ptr[i] = (A->ptr[i]-x_zero_point) * x_scale;
+    }
+
+#ifdef CPU_DEBUG
+	printf(" output   : "); _profile_cpu_tensor(B);
 #endif
 }
 

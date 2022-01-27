@@ -181,6 +181,61 @@ public:
       string plot(int c) override;
 };
 
+/// MultiThreshold Layer
+class LQuantizeLinear : public LinLayer {
+public:
+
+      static int total_layers;
+      int size;
+
+      Tensor *x;
+      Tensor *y;
+      float y_scale;
+      int y_zero_point;
+      uint8_t y_zero_point_uint;
+
+      LQuantizeLinear(Layer *parent, string name, int dev, int mem, float y_scale, int y_zero_point);
+
+      Layer *share(int c, int bs, vector<Layer *> p) override;
+
+      Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+      void resize(int batch) override;
+
+      void forward() override;
+
+      void backward() override;
+
+      string plot(int c) override;
+};
+
+/// MultiThreshold Layer
+class LDequantizeLinear : public LinLayer {
+public:
+
+      static int total_layers;
+      int size;
+
+      Tensor *x;
+      Tensor *y;
+      float x_scale;
+      int x_zero_point;
+
+      LDequantizeLinear(Layer *parent, string name, int dev, int mem, float x_scale, int x_zero_point);
+
+      Layer *share(int c, int bs, vector<Layer *> p) override;
+
+      Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+      void resize(int batch) override;
+
+      void forward() override;
+
+      void backward() override;
+
+      string plot(int c) override;
+};
+
 /// TopK Layer
 class LTopK : public LinLayer {
 public:

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 0.9
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: November 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -13,18 +13,25 @@
 
 #include "eddl/apis/eddl.h"
 
-
 using namespace eddl;
 
 //////////////////////////////////
 // mnist_mlp.cpp:
-// A very basic CNN for mnist
+// A very basic Conv1D for mnist
 // Using fit for training
 //////////////////////////////////
 
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
+    int id;
+    
+    // Init distribuited training
+    id = init_distributed(&argc, &argv);
+    
+    // Sync every batch, change every 2 epochs
+    set_method_distributed(AUTO_TIME,1,2); 
+
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
@@ -34,7 +41,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = (testing) ? 2 : 10;
+    int epochs = testing ? 2 : 5;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -42,15 +49,11 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = Reshape(l,{1,28,28});
-
-//    l = Repeat(l, 3, 0);
-//    l = Concat({l, l, l}, 0);
-
-    l = MaxPool2D(ReLu(Conv2D(l,32, {3,3},{1,1})),{3,3}, {1,1}, "same");
-    l = MaxPool2D(ReLu(Conv2D(l,64, {3,3},{1,1})),{2,2}, {2,2}, "same");
-    l = MaxPool2D(ReLu(Conv2D(l,128,{3,3},{1,1})),{3,3}, {2,2}, "none");
-    l = MaxPool2D(ReLu(Conv2D(l,256,{3,3},{1,1})),{2,2}, {2,2}, "none");
+    l = Reshape(l,{1,784}); //image as a 1D signal with depth=1
+    l = MaxPool1D(ReLu(Conv1D(l,16, {3},{1})),{4},{4});  //MaxPool 4 stride 4
+    l = MaxPool1D(ReLu(Conv1D(l,32, {3},{1})),{4},{4});
+    l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
+    l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
     l = Reshape(l,{-1});
 
     layer out = Softmax(Dense(l, num_classes));
@@ -64,10 +67,10 @@ int main(int argc, char **argv) {
     if (use_cpu) {
         cs = CS_CPU();
     } else {
-        //cs = CS_GPU({1}, "low_mem"); // one GPU
+        cs = CS_GPU({1}, "low_mem"); // one GPU
         // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
         // cs = CS_CPU();
-         cs = CS_FPGA({1});
+        // cs = CS_FPGA({1});
     }
 
     // Build model
@@ -119,6 +122,9 @@ int main(int argc, char **argv) {
     delete x_test;
     delete y_test;
     delete net;
-
+    
+    // Finalize distributed training
+    end_distributed();
+    
     return EXIT_SUCCESS;
 }

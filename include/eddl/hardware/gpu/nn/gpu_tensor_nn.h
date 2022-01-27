@@ -134,6 +134,10 @@ void gpu_permute_channels_last(Tensor *A,Tensor *B);
 void gpu_permute_batch_first(Tensor *A,Tensor *B);
 void gpu_permute_batch_last(Tensor *A,Tensor *B);
 
+//quantize
+void gpu_quantize_linear(Tensor *A, Tensor *B, float y_scale, int y_zero_point);
+void gpu_dequantize_linear(Tensor *A, Tensor *B, float x_scale, int x_zero_point);
+
 // new batchnorm implementation
 void gpu_batchnorm_forward(int gpu_device, int b, int z, int rc,
         float *input, float *output, float *opa,

@@ -126,6 +126,32 @@ __global__ void gpu_expand_nn(float* A, float* B, long int size, int* indices, i
     }
 }
 
+
+__global__ void gpu_quantize_linear(float *A, float *B, float y_scale, int y_zero_point, int size){
+    
+    int num;
+    for (int i = 0; i < size; ++i) {
+      num = round(A[i]/y_scale) + y_zero_point;
+      if(num> 127){
+        B[i] = 127;
+      }else if(num < -128){
+        B[i] = -128;
+      }else{
+        B[i] = num;
+      }
+    }
+
+}
+
+__global__ void gpu_dequantize_linear(float *A, float *B, float x_scale, int x_zero_point, int size){
+    
+    int num;
+    for (int i = 0; i < size; ++i) {
+      B[i] = (A[i] - x_zero_point) * x_scale;
+    }
+
+}
+
 __global__ void gpu_expand_back_nn(float* A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 

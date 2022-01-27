@@ -175,7 +175,9 @@ namespace tensorNN{
 // ***** FPGA specific ************************************
     void multithreshold(Tensor *A, Tensor *B, Tensor *thresholds, float out_bias, float out_scale);
     void topK(Tensor *A, Tensor *B, int axis, int largest, int sorted, int K);
-
+    void quantize_linear(Tensor *A, Tensor *B, float y_scale, int y_zero_point);
+    void dequantize_linear(Tensor *A, Tensor *B, float x_scale, int x_zero_point);
+    //void quantize_linear(Tensor *A, Tensor *B, float y_scale, uint8_t y_zero_point);
 }
 
 #endif //EDDL_TENSOR_NN_H

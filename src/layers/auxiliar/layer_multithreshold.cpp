@@ -11,7 +11,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-
 #include "eddl/layers/auxiliar/layer_auxiliar.h"
 
 

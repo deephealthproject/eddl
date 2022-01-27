@@ -217,6 +217,33 @@ namespace tensorNN {
 #endif
     }
 
+
+    void quantize_linear(Tensor *A, Tensor *B, float y_scale, int y_zero_point) {
+
+
+	    if (A->isCPU() && B->isCPU()) {
+	      cpu_quantize_linear(A, B, y_scale, y_zero_point);
+	    }
+#ifdef cGPU
+	    else if (A->isGPU() && B->isGPU()) {
+          gpu_quantize_linear(A, B, y_scale, y_zero_point);
+	    }
+#endif
+    }
+
+    void dequantize_linear(Tensor *A, Tensor *B, float x_scale, int x_zero_point) {
+
+
+	    if (A->isCPU() && B->isCPU()) {
+	      cpu_dequantize_linear(A, B, x_scale, x_zero_point);
+	    }
+#ifdef cGPU
+	    else if (A->isGPU() && B->isGPU()) {
+          gpu_dequantize_linear(A, B, x_scale, x_zero_point);
+	    }
+#endif
+    }
+
     void topK(Tensor *A, Tensor *B, int axis, int largest, int sorted, int K) {
 
             if (A->isCPU() && B->isCPU()) {

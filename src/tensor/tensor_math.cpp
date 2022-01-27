@@ -2197,6 +2197,8 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
       }
 #endif
 
+
+
     PROFILING_FOOTER(add);
 }
 
@@ -2228,7 +2230,8 @@ void Tensor::inc(Tensor *A, Tensor *B) {
     else if ((A->isFPGA())&&(B->isFPGA())) {
         Tensor::add(1,A,1,B,B,0);
     }
-    else if (((A->isCPU())&&(B->isFPGA()))||((A->isFPGA())&&(B->isCPU()))){
+    else if (((A->isCPU())&&(B->isFPGA()))||((A->isFPGA())&&(B->isCPU())))
+    {   
         Tensor *n=new Tensor(B->getShape(),B->device);
         Tensor::copy(A,n);
         Tensor::add(1,n,1,B,B,0);

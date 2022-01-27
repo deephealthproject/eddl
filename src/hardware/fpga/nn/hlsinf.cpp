@@ -22,10 +22,6 @@
 
 extern vector<cl::Event> kernel_events; // Kernel events (completion)
 
-#ifdef WRITE_TENSORS_TO_FILE
-int id_write_tensors_to_file = 0;
-#endif
-
 PROFILING_ENABLE_EXTERN(fpga_hlsinf);
 
 // -----------------------------------------------------------------
@@ -184,10 +180,10 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
   int CPI = hlsinf_cpi;
   int CPO = hlsinf_cpo;
 
-  //#ifdef FPGA_DEBUG
-  //printf("HLSinf:  In=%3dx%3dx%3d, Out=%3dx%3dx%3d K=%1dx%1d S=%1dx%1d P=%1dx%1dx%1dx%1d RELU %d RELU_FACTOR %f MAXP %d AVGP %d CLIPPING %d MINCLIP %d MAXCLIP %d SHIFT %d ADD %d STM %d UPSCALE %d\n",
-  //       Ichannels, H, W, Ochannels, HO, WO, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift, enable_add, enable_stm, enable_upscale);
-  //#endif
+  #ifdef DEBUG_VERBOSE
+  printf("HLSinf:  In=%3dx%3dx%3d, Out=%3dx%3dx%3d K=%1dx%1d S=%1dx%1d P=%1dx%1dx%1dx%1d RELU %d RELU_FACTOR %f MAXP %d AVGP %d CLIPPING %d MINCLIP %d MAXCLIP %d SHIFT %d ADD %d STM %d UPSCALE %d\n",
+         Ichannels, H, W, Ochannels, HO, WO, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift, enable_add, enable_stm, enable_upscale);
+  #endif
 
   // arguments
   cl::Buffer I     = *(cl::Buffer*)input->fpga_ptr;     // input activations
@@ -245,6 +241,9 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
         first_o_iter = o_iter_per_kernel * k + extra_iter ;
         last_o_iter = first_o_iter + o_iter_per_kernel - 1;
       }
+#ifdef DEBUG_VERBOSE
+      printf("Kernel %d first iter %d last %d\n", k, first_o_iter, last_o_iter);
+#endif
       HLSinf_launch_kernel(I, I_add, H, W, HO, WO, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu, enable_stm, relu_factor, enable_batch_norm, K, B, BN_values, O, read_offset, write_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, enable_upscale, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, k);
     }
   }
@@ -269,17 +268,19 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   printf("  params: %0dx%0dx%0dx%0d (KHxKW: %0dx%0d, PAD: %0d-%0d-%0d-%0d, SHxSW: %0dx%0d). ReLU %d, ReLU factor %f, Maxp %d, AvgP %d, Clip %d, min_clip %d, max_clip %d, Shift %d, bit shifts %d, dir_shift %d, Add %d, STM %d BN %d UPSCALE %d\n", 
                    Ochannels, Ichannels, H, W, KH, KW, PT, PB, PL, PR, SH, SW, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_batch_norm, enable_upscale);
   #endif
-                        _profile_fpga_tensor("  input   ", input, hlsinf_input_format);
-  if(enable_add)        _profile_fpga_tensor("  input add: ", input_add, hlsinf_input_format);
-                        _profile_fpga_tensor("  filter  ", filter, hlsinf_filter_format);
-                        _profile_fpga_tensor("  bias    ", bias, hlsinf_bias_format);
-  if(enable_batch_norm) _profile_fpga_tensor("  bn_v    ", batch_norm_values, hlsinf_output_format);
+  _profile_fpga_tensor("  input   ", input, hlsinf_input_format);
+  if(enable_add)   _profile_fpga_tensor("  input add: ", input_add, hlsinf_input_format);
+  _profile_fpga_tensor("  filter  ", filter, hlsinf_filter_format);
+  _profile_fpga_tensor("  bias    ", bias, hlsinf_bias_format);
+  if(enable_batch_norm)  {
+    _profile_fpga_tensor("  bn_v    ", batch_norm_values, hlsinf_output_format);
+  }
 
   // output geometry
   int HO;
   int WO;
-  int HO_conv = (H + PT + PB - KH + SH) / SH;
-  int WO_conv = (W + PL + PR - KW + SW) / SW;
+  int HO_conv = (H + PT + PB - (KH - 1)) / SH;
+  int WO_conv = (W + PL + PR - (KW - 1)) / SW;
   if (enable_maxp || enable_avgp) {
     HO = HO_conv / 2;
     WO = WO_conv / 2;
@@ -326,9 +327,7 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
       int read_offset_frame = row_i * W;
       int write_offset_frame = (fr * HO_MAX * WO);
 
-      #ifdef FPGA_DEBUG
-      printf("H %d W %d Padding %d %d %d %d read offset %d write offset %d rows to read %d HO_conv %d WO_conv %d HO %d WO %d\n", H, W, PT_frame, PB_frame, PL_frame, PR_frame, read_offset_frame, write_offset_frame, rows_to_read, HO_conv, WO_conv, HO, WO);
-      #endif
+      //printf("H %d W %d Padding %d %d %d %d read offset %d write offset %d rows to read %d HO_conv %d WO_conv %d HO %d WO %d\n", H, W, PT_frame, PB_frame, PL_frame, PR_frame, read_offset_frame, write_offset_frame, rows_to_read, HO_conv, WO_conv, HO, WO);
 
       // run kernel
       HLSinf_launch(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT_frame, PB_frame, PL_frame, PR_frame, enable_relu, relu_factor, enable_batch_norm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip,enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_upscale, filter, bias, batch_norm_values, output, 
@@ -348,29 +347,20 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   // profiling
   _profile_fpga_tensor("  output  ", output, hlsinf_output_format);
   _profile_fpga_tensor_print(output);
+  /*int size = output->size;
+  unsigned char *b = (unsigned char *)malloc(size);
+  fpga_copy_memory_from_fpga((cl::Buffer*)output->fpga_ptr, b, size);
+  for (int x=0; x<size; x++) {
+      printf("%d ", b[x]);
+      printf("\n");
+  }
+  free(b);*/
+  /*fpga_write_buffer("input.bin", input->fpga_ptr, input->size, 1);
+  fpga_write_buffer("weights.bin", filter->fpga_ptr, filter->size, 1);
+  fpga_write_buffer("bias.bin", bias->fpga_ptr, bias->size, 4);
+  fpga_write_buffer("output.bin", output->fpga_ptr, output->size, 1);
+  exit(1);*/
   _profile_fpga(_FPGA_HLSINF, 1);
-
-  #ifdef WRITE_TENSORS_TO_FILE
-  char dummy[100];
-  sprintf(dummy, "input_%03d.bin", id_write_tensors_to_file);
-  fpga_write_buffer(dummy, input->fpga_ptr, input->size, hlsinf_input_format);
-  sprintf(dummy, "weights_%03d.bin", id_write_tensors_to_file);
-  fpga_write_buffer(dummy, filter->fpga_ptr, filter->size, hlsinf_filter_format);
-  sprintf(dummy, "bias_%03d.bin", id_write_tensors_to_file);
-  fpga_write_buffer(dummy, bias->fpga_ptr, bias->size, hlsinf_bias_format);
-  if (enable_add) {
-    sprintf(dummy, "add_%03d.bin", id_write_tensors_to_file);
-    fpga_write_buffer(dummy, input_add->fpga_ptr, input_add->size, hlsinf_input_format);
-  }
-  if (enable_batch_norm) {
-    sprintf(dummy, "batchnorm_%03d.bin", id_write_tensors_to_file);
-    fpga_write_buffer(dummy, batch_norm_values->fpga_ptr, batch_norm_values->size, hlsinf_input_format);
-  }
-  sprintf(dummy, "output_%03d.bin", id_write_tensors_to_file);
-  fpga_write_buffer(dummy, output->fpga_ptr, output->size, hlsinf_output_format);
-  id_write_tensors_to_file++;
-  #endif
-
 }
 
 #endif

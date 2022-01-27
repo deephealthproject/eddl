@@ -160,6 +160,26 @@ void gpu_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd){
     check_cuda(cudaDeviceSynchronize(), "gpu_expand_nn");
 }
 
+void gpu_quantize_linear(Tensor *A, Tensor *B, float y_scale, int y_zero_point){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_quantize_linear<<<dimGrid,dimBlock>>>(A->ptr,B->ptr, y_scale, y_zero_point, (int)A->size);
+    check_cuda(cudaDeviceSynchronize(),"gpu_quantize_linear");
+}
+
+void gpu_dequantize_linear(Tensor *A, Tensor *B, float x_scale, int x_zero_point){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_dequantize_linear<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, x_scale, x_zero_point, (int)A->size);
+    check_cuda(cudaDeviceSynchronize(),"gpu_dequantize_linear");
+}
+
 void gpu_expand_back_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd){
     int device=A->gpu_device;
     cudaSetDevice(device);
