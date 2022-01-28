@@ -55,16 +55,10 @@ int main(int argc, char **argv) {
     layer l = in; // Aux var
 
     l = Reshape(l,{1, 28, 28});
-    l = MaxPool2D(ReLu(Conv2D(l, 32,{3, 3},
-    {
-        1, 1
-    })),{3, 3},
-    {
-        1, 1
-    }, "same");
-    //    l = MaxPool2D(ReLu(Conv2D(l,64, {3,3},{1,1})),{2,2}, {2,2}, "same");
-    //    l = MaxPool2D(ReLu(Conv2D(l,128,{3,3},{1,1})),{3,3}, {2,2}, "none");
-    //    l = MaxPool2D(ReLu(Conv2D(l,256,{3,3},{1,1})),{2,2}, {2,2}, "none");
+    l = MaxPool2D(ReLu(Conv2D(l, 32,{3, 3}, {1, 1})),{3, 3},{1, 1}, "same");
+    l = MaxPool2D(ReLu(Conv2D(l,64, {3,3},{1,1})),{2,2}, {2,2}, "same");
+    l = MaxPool2D(ReLu(Conv2D(l,128,{3,3},{1,1})),{3,3}, {2,2}, "none");
+    l = MaxPool2D(ReLu(Conv2D(l,256,{3,3},{1,1})),{2,2}, {2,2}, "none");
     l = Reshape(l,{-1});
 
     layer out = Softmax(Dense(l, num_classes));

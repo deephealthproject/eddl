@@ -86,8 +86,10 @@ int main(int argc, char **argv){
     bool testing = false;
     bool use_cpu = false;
     int id;
+    int n_procs;
     
     id=init_distributed();
+    n_procs = get_n_procs_distributed();
     
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
@@ -100,6 +102,10 @@ int main(int argc, char **argv){
     // Settings
     int epochs = testing ? 2 : 100000;
     int batch_size = testing ? 1 : 4;
+ 
+    batch_size=batch_size/n_procs;
+   
+
 
     //////////////////////////////////////////////////////////////
     // Network for Data Augmentation
@@ -163,9 +169,12 @@ int main(int argc, char **argv){
     //////////////////////////////////////////////////////////////
     // Training
     int num_batches = testing ? 2 : 1000;
+    int nbpp_training=num_batches/n_procs;
+    
     for(int i=0;i<epochs;i++) {
         reset_loss(segnet);
-        for(int j=0;j<num_batches;j++)  {
+        //for(int j=0;j<num_batches;j++)  {
+        for(int j=0;j<nbpp_training;j++)  {
 
             next_batch({x_train,y_train},{xbatch,ybatch});
 
@@ -188,10 +197,12 @@ int main(int argc, char **argv){
 
             // SegNet
             train_batch(segnet, {xbatch_da},{ybatch_da});
+            //sync_batch
+            avg_weights_distributed(segnet, j, nbpp_training);  
 
-            print_loss(segnet, j);
-            // printf("  sum=%f",yout->sum());
-            printf("\r");
+            print_loss(segnet,j);
+            if (id==0)
+                printf("\r");
 
             delete xbatch_da;
             delete ybatch_da;

@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
    
      
      // Sync every batch, change every 2 epochs
-    set_method_distributed(FIXED,2,1);
+    //set_method_distributed(FIXED,2,1);
 
     download_flickr();
 

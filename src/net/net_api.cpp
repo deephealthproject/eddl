@@ -561,7 +561,6 @@ void Net::reset_loss()
 //// COMPUTE Loss
 void Net::compute_loss()
 {
-
   if (isrecurrent) {
     if (rnet==nullptr) {
       msg("Error compute loss unroll net","compute_loss");
@@ -876,6 +875,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
    // int batches = 0;
     int batches_per_proc = 0;
    // int batches_avg = 0;
+    int local_batch;
     double secs_epoch = 1e10;
     double secs_epoch_prev = 0;
     float SPEED_UP = 1.05;
@@ -898,11 +898,12 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             get_params_distributed(&avg_method, &mpi_avg, &x_avg);
 
             // Set local batch size
-            batch = batch / n_procs;           
+            local_batch = batch / n_procs;           
             //mpi_id0(fprintf(stderr, "[DISTR] fit\n"));
         } else {
             n_procs=1;
             id = 0;
+            local_batch = batch;
         }
 
         // Check current optimizer
@@ -934,7 +935,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
 
         // Set batch size
-        resize(batch);
+        resize(local_batch);
 
 
         // Create array to store batch indices (later random)
@@ -952,7 +953,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
         // Train network
         if (id == 0) {
-            fprintf(stdout, "%d epochs of %d batches of size %d (local) %d (global)\n", epochs, num_batches, batch_size, n_procs * batch_size);
+            fprintf(stdout, "%d epochs of (global: %d batches of size %d),(local: %d batches of size %d) \n", epochs, num_batches/n_procs, n_procs * batch_size, num_batches, batch_size);
             if (is_mpi_distributed()) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, mpi_avg);
         }
 
@@ -998,7 +999,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                 high_resolution_clock::time_point e2 = high_resolution_clock::now();
                 duration<double> epoch_time_span = e2 - e1;
                 if (id == 0) {
-                    fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count() / ((j + 1) * n_procs));
+                    fprintf(stdout, "%1.4f secs/batch\r", epoch_time_span.count() / (j + 1)) ;
                     fflush(stdout);
                 }
             }

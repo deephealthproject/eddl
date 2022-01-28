@@ -110,10 +110,11 @@ int main(int argc, char **argv) {
     }
     
     tshape s = x_train->getShape();
-        
-    int num_batches=s[0]/global_batch_size;
+    
+    int batch_size=global_batch_size/n_procs;    
+    int num_batches=s[0]/batch_size;
     int batches_per_proc=num_batches/n_procs;
-    int batch_size=global_batch_size/n_procs;
+    
 
 
     Tensor* xbatch = new Tensor({batch_size,784});

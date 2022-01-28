@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = testing ? 1 : 10;
-    int batch_size = 32;
+    int batch_size = 128;
 
     int length=250;
     int embdim=33;

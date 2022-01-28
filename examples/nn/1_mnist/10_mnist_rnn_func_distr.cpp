@@ -110,10 +110,10 @@ int main(int argc, char **argv) {
     }
 
    
-        
-    int num_batches=x_train->shape[0]/global_batch_size;
-    int batches_per_proc=num_batches/n_procs;
     int batch_size=global_batch_size/n_procs;
+    int num_batches=x_train->shape[0]/batch_size;
+    int batches_per_proc=num_batches/n_procs;
+    
     
     // Preprocessing
     x_train->div_(255.0);

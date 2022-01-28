@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
     
     
     // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2);
+    //set_method_distributed(AUTO_TIME,1,2);
 
     int size = 256/2;
 

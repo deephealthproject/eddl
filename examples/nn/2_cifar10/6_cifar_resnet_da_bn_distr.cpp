@@ -53,6 +53,7 @@ int main(int argc, char **argv){
   int id=0;
     
   id = init_distributed();
+  
   for (int i = 1; i < argc; ++i) {
       if (strcmp(argv[i], "--testing") == 0) testing = true;
       else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;

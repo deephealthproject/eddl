@@ -38,17 +38,13 @@ int main(int argc, char **argv) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
-    
-    
-
-  
-    
+      
     // Download mnist
     download_mnist();
 
     // Settings
-    int epochs = 10;
-    int global_batch_size = 128;
+    int epochs = 2;
+    int global_batch_size = 100;
     int batch_size;
     int num_classes = 10;
 
@@ -118,9 +114,10 @@ int main(int argc, char **argv) {
     
     tshape s = x_train->getShape();
     
-    int num_batches=s[0]/global_batch_size;
-    int batches_per_proc=num_batches/n_procs;
     batch_size=global_batch_size/n_procs;
+    int num_batches_training=s[0]/batch_size;
+    int nbpp_training=num_batches_training/n_procs;
+   
 
    
     Tensor* xbatch = new Tensor({batch_size, 784});
@@ -140,20 +137,20 @@ int main(int argc, char **argv) {
     for(i=0;i<epochs;i++) {
       reset_loss(net);
       if (id == 0) {
-            fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs, num_batches);
+            fprintf(stdout, "Epoch %d/%d (%d batches, %d batches per proc)\n", i + 1, epochs, num_batches_training, nbpp_training);
         }
 //      for(j=0;j<num_batches;j++)  {
-      for(j=0;j<batches_per_proc;j++)  {
+      for(j=0;j<nbpp_training;j++)  {
 
         next_batch({x_train,y_train},{xbatch,ybatch});
         train_batch(net, {xbatch}, {ybatch});
         //sync_batch
-        avg_weights_distributed(net, j, batches_per_proc);  
+        avg_weights_distributed(net, j, nbpp_training);  
         
         //if (id==0) {
             print_loss(net,j);
             if (id==0)
-                printf("\n");
+                printf("\r");
         //}
       }
       // adjust batches_avg
@@ -167,72 +164,83 @@ int main(int argc, char **argv) {
     // Print loss and metrics
     vector<float> losses1 = get_losses(net);
     vector<float> metrics1 = get_metrics(net);
-    for(int i=0; i<losses1.size(); i++) {
-        cout << "Loss: " << losses1[i] << "\t" << "Metric: " << metrics1[i] << "   |   ";
+    if (id == 0) {
+        for (int i = 0; i < losses1.size(); i++) {
+            cout << "Loss: " << losses1[i] << "\t" << "Metric: " << metrics1[i] << "   |   ";
+        cout << endl;
+        }
     }
-    cout << endl;
-
 
     // Evaluate model
     
     
-     printf("Evaluate:\n");
-    s=x_test->getShape();
-    num_batches=s[0]/global_batch_size;
-    batches_per_proc=num_batches/n_procs;
+    if (id==0)
+        printf("Evaluate:\n");
     
-    reset_loss(net);  // Important
-//      for(j=0;j<num_batches;j++)  {
-      for(j=0;j<batches_per_proc;j++)  {
-        vector<int> indices(batch_size);
-        for(int i=0;i<indices.size();i++)
-          // indices[i]=(j*batch_size)+i;
-          indices [i] = (((id*batches_per_proc)+j) * batch_size) + i;
-        
-        eval_batch(net, {x_test}, {y_test}, indices);
+    s=x_test->getShape();
+    int num_batches_val=s[0]/batch_size;
+    int nbpp_val=num_batches_val/n_procs;
 
-        //if (id==0) {
-            print_loss(net,j);
+    reset_loss(net); // Important
+    if (id == 0) {
+        for (j = 0; j < num_batches_val; j++) {
+            vector<int> indices(batch_size);
+            for (int i = 0; i < indices.size(); i++)
+                indices[i] = (j * batch_size) + i;
+
+            eval_batch(net,{x_test},
+            {
+                y_test
+            }, indices);
+            print_loss(net, j);
+
             printf("\r");
-        //}
 
-      }
+        }
 
         printf("\n");
-
+    }
+    
     // Print loss and metrics
     vector<float> losses2 = get_losses(net);
     vector<float> metrics2 = get_metrics(net);
-    for(int i=0; i<losses2.size(); i++) {
-        cout << "Loss: " << losses2[i] << "\t" << "Metric: " << metrics2[i] << "   |   ";
+    if (id == 0) {
+        for (int i = 0; i < losses2.size(); i++) {
+            cout << "Loss: " << losses2[i] << "\t" << "Metric: " << metrics2[i] << "   |   ";
+        cout << endl;
+        }
     }
-    cout << endl;
-
 
     //last batch
-    if (s[0]%batch_size) {
-      int last_batch_size=s[0]%batch_size;
-      vector<int> indices(last_batch_size);
-      for(int i=0;i<indices.size();i++)
-        //indices[i]=(j*batch_size)+i;
-        indices [i] = (((id*batches_per_proc)+j) * batch_size) + i;
+    if (id == 0) {
+        if (s[0] % batch_size) {
+            int last_batch_size = s[0] % batch_size;
+            vector<int> indices(last_batch_size);
+            for (int i = 0; i < indices.size(); i++)
+                indices[i] = (j * batch_size) + i;
 
-      eval_batch(net, {x_test}, {y_test}, indices);
+            eval_batch(net,{x_test},
+            {
+                y_test
+            }, indices);
 
-      print_loss(net,j);
-      printf("\r");
+            print_loss(net, j);
+
+            printf("\r");
+        }
     }
     
 
 
     // Print loss and metrics
-    if (id==0) {
+    
     vector<float> losses3 = get_losses(net);
     vector<float> metrics3 = get_metrics(net);
-    for(int i=0; i<losses3.size(); i++) {
-        cout << "Loss: " << losses3[i] << "\t" << "Metric: " << metrics3[i] << "   |   ";
-    }
-    cout << endl;
+    if (id == 0) {
+        for (int i = 0; i < losses3.size(); i++) {
+            cout << "Loss: " << losses3[i] << "\t" << "Metric: " << metrics3[i] << "   |   ";
+        }
+        cout << endl;
     }
     
     

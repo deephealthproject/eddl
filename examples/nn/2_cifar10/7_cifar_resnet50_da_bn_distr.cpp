@@ -63,7 +63,6 @@ int main(int argc, char **argv){
   
   id = init_distributed();
     
-  set_method_distributed(FIXED,4,0);
 
   for (int i = 1; i < argc; ++i) {
       if (strcmp(argv[i], "--testing") == 0) testing = true;

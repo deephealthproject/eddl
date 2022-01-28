@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     id=get_id_distributed();
     
     // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2);
+    //set_method_distributed(AUTO_TIME,1,2);
     
 
     // Download EuTrans
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = testing ? 1 : 5;
-    int batch_size = 32;
+    int batch_size = 64;
 
     int ilength=30;
     int olength=30;

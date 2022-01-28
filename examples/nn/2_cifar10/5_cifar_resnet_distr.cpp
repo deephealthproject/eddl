@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
     id = init_distributed();
     
     // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2);
+    //set_method_distributed(AUTO_TIME,1,2);
 
 
     for (int i = 1; i < argc; ++i) {
@@ -163,24 +163,16 @@ compserv cs = nullptr;
         y_test = y_mini_test;
     }
 
-    fit(net,{x_train},{y_train}, batch_size, epochs);
-    // Evaluate
-    evaluate(net,{x_test},{y_test});
-    /*
-    for (int i = 0; i < epochs; i++) {
+    //fit(net,{x_train},{y_train}, batch_size, epochs);
+    //evaluate(net,{x_test},{y_test});
+    for(int i=0;i<epochs;i++) {
         // training, list of input and output tensors, batch, epochs
-        fit(net,{x_train},
-        {
-            y_train
-        }, batch_size, 1);
+        fit(net,{x_train},{y_train},batch_size, 1);
         // Evaluate train
         std::cout << "Evaluate test:" << std::endl;
-        evaluate(net,{x_test},
-        {
-            y_test
-        });
+        evaluate(net,{x_test},{y_test});
     }
-     */
+
     delete x_train;
     delete y_train;
     delete x_test;

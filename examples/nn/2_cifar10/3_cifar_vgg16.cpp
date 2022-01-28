@@ -34,7 +34,7 @@ int main(int argc, char **argv){
   bool testing = false;
   bool use_cpu = false;
   
-   char path[256] = "medical";
+   char path[256] = ".";
    char tr_images[256];
        char tr_labels[256];
        char ts_images[256];
@@ -45,10 +45,10 @@ int main(int argc, char **argv){
       else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
   }
        
-       sprintf(tr_images,"%s/%s",path,"train-images.bin");
-    sprintf(tr_labels,"%s/%s",path,"train-labels.bin");
-    sprintf(ts_images,"%s/%s",path,"test-images.bin");
-    sprintf(ts_labels,"%s/%s",path,"test-labels.bin");
+    sprintf(tr_images,"%s/%s",path,"cifar_trX.bin");
+    sprintf(tr_labels,"%s/%s",path,"cifar_trY.bin");
+    sprintf(ts_images,"%s/%s",path,"cifar_tsX.bin");
+    sprintf(ts_labels,"%s/%s",path,"cifar_tsY.bin");
    
 
   // download CIFAR data
@@ -57,10 +57,10 @@ int main(int argc, char **argv){
   // Settings
   int epochs = testing ? 2 : 100;
   int batch_size = 100;
-  int num_classes = 6;
+  int num_classes = 10;
 
   // network
-  layer in=Input({1,64,64});
+  layer in = Input({3, 32, 32});
   layer l=in;
 
 
