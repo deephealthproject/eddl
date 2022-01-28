@@ -9,18 +9,20 @@ Layer* build_quantizelinear_layer(onnx::NodeProto *node,
                           int dev,
                           int mem)
 {
+  string name = node->name();
+  cout << "##################################################################" << endl;
+  cout << "[DEBUG] Going to import quantize layer \"" << name << "\"" << endl;
   string parent_name;
   Layer *parent;
   vector<int> parent_shape;
 
   string shape_name = node->input(1);
   vector<float> shape_values = map_init_values[shape_name];
-
  
   string yscale_name;
   string yzeropoint_name;
   float y_scale;
-  int y_zero_point;
+  int y_zero_point = 0; // 0 is the default value in the ONNX standard
 
   // inputs
   for (int i = 0; i < 3; i++) {
@@ -34,25 +36,21 @@ Layer* build_quantizelinear_layer(onnx::NodeProto *node,
       // param
       yscale_name = node->input(i);
       vector<float> *input1 = &(map_init_values[yscale_name]);
-      vector<int> dims1 = map_init_dims[yscale_name];
-      Tensor *input1_tensor = new Tensor(dims1, nullptr, DEV_CPU);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(input1, input1_tensor);
-      y_scale = input1_tensor->ptr[0];
-    }else if(i==2){
+      y_scale = input1->data()[0];
+    }else if(i==2 && node->input_size() > 2){ // y_zero_point is an optional input
       // param
       yzeropoint_name = node->input(i);
       vector<float> *input2 = &(map_init_values[yzeropoint_name]);
-      vector<int> dims2 = map_init_dims[yzeropoint_name];
-      Tensor *input2_tensor = new Tensor(dims2, nullptr, DEV_CPU);
-      COPY_FROM_VECTOR_PTR_TO_TENSOR(input2, input2_tensor);
-      y_zero_point = input2_tensor->ptr[0];
+      if (input2->size() == 0)
+        cerr << "y_zero_point is empty in operator " << name << endl;
+      else
+        y_zero_point = input2->data()[0];
     }
   }
 
-
-  string name = node->name();
-
   LQuantizeLinear *quantize_linear = new LQuantizeLinear(parent, name, dev, mem, y_scale, y_zero_point);
+  cout << "[DEBUG] Quantize layer \"" << name << "\" imported!" << endl;
+  cout << "##################################################################" << endl;
 
   return quantize_linear;
 
