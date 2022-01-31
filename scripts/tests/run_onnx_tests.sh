@@ -178,6 +178,39 @@ do
     echo ""
 done
 
+# Store each test as a tuple separated by ";" -> "[TEST_NAME_TO_SHOW];[BIN_FILE_NAME],[POSSIBLE_FLAGS,]"
+#   Note: The second element can be a list separated by "," to add possible script arguments
+scripts_to_run=()
+scripts_to_run+=("EDDL_gradients_conv_GPU2GPU;test_onnx_gradients")
+scripts_to_run+=("EDDL_gradients_recurrent_GPU2GPU;test_onnx_gradients,--recurrent")
+scripts_to_run+=("EDDL_gradients_conv_GPU2CPU;test_onnx_gradients,--import-cpu")
+scripts_to_run+=("EDDL_gradients_recurrent_GPU2CPU;test_onnx_gradients,--recurrent,--import-cpu")
+scripts_to_run+=("EDDL_gradients_conv_CPU2GPU;test_onnx_gradients,--export-cpu")
+scripts_to_run+=("EDDL_gradients_recurrent_CPU2GPU;test_onnx_gradients,--recurrent,--export-cpu")
+scripts_to_run+=("EDDL_gradients_conv_CPU2CPU;test_onnx_gradients,--export-cpu,--import-cpu")
+scripts_to_run+=("EDDL_gradients_recurrent_CPU2CPU;test_onnx_gradients,--recurrent,--export-cpu,--import-cpu")
+
+# Run export gradients tests and store results
+print_header "EDDL export/import gradients (distributed functionalities)" >> $tests_results_path
+for test_data in "${scripts_to_run[@]}"
+do
+    # Split the test data to get each element
+    IFS=';'; read -r -a test_data_arr <<< "${test_data}"  # Split string by ";"
+
+    test_name="${test_data_arr[0]}"   # Get test name to show
+
+    script_args="${test_data_arr[1]}" # Get comma separated list or script args
+
+    # Get script file path and args to execute the test
+    IFS=','; read -r -a script_argv <<< "${script_args}"  # Split string by ","
+
+    echo "Running $test_name"
+    print_header "${script_argv[@]}" >> ${scripts_output_path}
+    ./${script_argv[@]} &>> ${scripts_output_path}
+    handle_exit_status "$test_name" ${tests_results_path}
+    echo ""
+done
+
 popd > /dev/null  # Go back to build dir
 
 if [[ $only_eddl -eq 0 ]]
