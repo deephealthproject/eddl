@@ -270,6 +270,9 @@ if(BUILD_PROTOBUF)
 	add_executable(test_onnx_dilated_conv3D "test_internals/onnx/test_onnx_dilated_conv3D.cpp")
 	target_link_libraries(test_onnx_dilated_conv3D eddl)
 
+    add_executable(test_onnx_grouped_conv2D "test_internals/onnx/test_onnx_grouped_conv2D.cpp")
+    target_link_libraries(test_onnx_grouped_conv2D eddl)
+
 	add_executable(test_onnx_convT2D "test_internals/onnx/test_onnx_convT2D.cpp")
 	target_link_libraries(test_onnx_convT2D eddl)
 

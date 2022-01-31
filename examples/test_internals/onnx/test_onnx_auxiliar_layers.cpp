@@ -69,9 +69,9 @@ int main(int argc, char **argv) {
         layer l = in;  // Aux var
 
         l = Reshape(l, {1, 28, 28});
-        l = Repeat(l, 3, 0);
-        l = Repeat(l, 2, 1);
-        l = Repeat(l, 2, 2);
+        // l = Repeat(l, 3, 0);
+        // l = Repeat(l, 2, 1);
+        // l = Repeat(l, 2, 2);
         l = Pad(l, {1, 1, 1, 1}, 0.0);
         l = MaxPool2D(ReLu(Conv2D(l, 30, {3, 3}, {1, 1}, "valid")), {3, 3}, {1, 1}, "same");
 

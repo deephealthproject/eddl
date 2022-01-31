@@ -15,18 +15,16 @@
 
 using namespace eddl;
 
-////////////////////////////////////
-// test_onnx_upsample3D.cpp:
-// A synthetic encoder-decoder
-// example with UpSampling3D layers
-// to test the ONNX module
-////////////////////////////////////
+///////////////////////////////////////
+// test_onnx_grouped_conv2D.cpp:
+// A MNIST example with grouped conv2D 
+// net to test ONNX module
+///////////////////////////////////////
 
 int main(int argc, char **argv) {
   bool use_cpu = false;
   bool only_import = false;
-  bool channels_last = false;
-  string onnx_model_path("model_test_onnx_upsample3D.onnx");
+  string onnx_model_path("model_test_onnx_grouped_conv2D.onnx");
   string target_metric_file("");
   // Process provided args
   for (int i = 1; i < argc; ++i) {
@@ -35,63 +33,46 @@ int main(int argc, char **argv) {
     else if (strcmp(argv[i], "--import") == 0)
       only_import = true;
     else if (strcmp(argv[i], "--onnx-file") == 0) {
-      onnx_model_path = argv[i + 1];
+      onnx_model_path = argv[i+1];
       ++i; // Skip model file path for next iteration
     } else if (strcmp(argv[i], "--target-metric") == 0) {
-      target_metric_file = argv[i + 1];
+      target_metric_file = argv[i+1];
       ++i; // Skip metric file path for next iteration
-    } else if (strcmp(argv[i], "--channels-last") == 0) {
-      channels_last = true;
     }
   }
 
   // Settings
   int epochs = use_cpu ? 1 : 2;
-  int batch_size = 2;
+  int batch_size = 100;
+  int num_classes = 10;
 
-  // Synthetic data shape
-  int n_samples = 6;
-  int channels = 3;
-  int depth = 16;
-  int height = 16;
-  int width = 16;
+  // Download mnist
+  download_mnist();
 
-  // Create synthetic dataset
-  Tensor *aux_x_values = Tensor::linspace(0, 1, n_samples * channels * depth * height * width);
-  Tensor *x = Tensor::reshape(aux_x_values, {n_samples, channels, depth, height, width});
-  delete aux_x_values;
-  if (channels_last)
-    x->permute_({0, 2, 3, 4, 1});
+  // Load dataset
+  Tensor *x_train = Tensor::load("mnist_trX.bin");
+  Tensor *y_train = Tensor::load("mnist_trY.bin");
+  Tensor *x_test = Tensor::load("mnist_tsX.bin");
+  Tensor *y_test = Tensor::load("mnist_tsY.bin");
+
+  // Preprocessing
+  x_train->div_(255.0f);
+  x_test->div_(255.0f);
 
   float net_loss = -1;
+  float net_acc = -1;
 
   if (!only_import) {
     // Define network
-    layer in = Input({channels, depth, height, width});
+    layer in = Input({784});
     layer l = in; // Aux var
 
-    // Encoder
-    // x = [batch, 3, 16, 16, 16]
-    l = ReLu(Conv3D(l, 32, {3, 3, 3}));
-    // x = [batch, 32, 16, 16, 16]
-    l = MaxPool3D(l, {2, 2, 2});
-    // x = [batch, 32, 8, 8, 8]
-    l = ReLu(Conv3D(l, 64, {3, 3, 3}));
-    // x = [batch, 64, 8, 8, 8]
-    l = MaxPool3D(l, {2, 2, 2});
-    // x = [batch, 64, 4, 4]
-
-    // Decoder
-    l = ReLu(Conv3D(l, 64, {3, 3, 3}));
-    // x = [batch, 64, 4, 4]
-    l = UpSampling3D(l, {8, 8, 8});
-    // x = [batch, 64, 8, 8, 8]
-    l = ReLu(Conv3D(l, 32, {3, 3, 3}));
-    // x = [batch, 32, 8, 8, 8]
-    l = UpSampling3D(l, {16, 16, 16});
-    // x = [batch, 32, 16, 16, 16]
-    layer out = Sigmoid(Conv3D(l, channels, {1, 1, 1}));
-    // x = [batch, 3, 16, 16, 16]
+    l = Reshape(l, {1, 28, 28});
+    l = MaxPool2D(ReLu(Conv2D(l, 16, {3, 3}, {1, 1})), {2, 2}, {2, 2}, "same");
+    l = AveragePool2D(ReLu(Conv2D(l, 32, {3, 3}, {1, 1}, "valid", 16)), {3, 3}, {2, 2}, "none");
+    l = GlobalAveragePool2D(ReLu(Conv2D(l, 32, {3, 3}, {2, 2}, "same", false, 8)));
+    l = Flatten(l);
+    layer out = Softmax(Dense(l, num_classes));
 
     model net = Model({in}, {out});
 
@@ -103,20 +84,21 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          adam(0.001), // Optimizer
-          {"mse"},     // Losses
-          {"mse"},     // Metrics
-          cs);         // Computing Service
+          adam(0.001),               // Optimizer
+          {"softmax_cross_entropy"}, // Losses
+          {"categorical_accuracy"},  // Metrics
+          cs);                       // Computing Service
 
     // View model
     summary(net);
 
     // Train model
-    fit(net, {x}, {x}, batch_size, epochs);
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
 
     // Evaluate
-    evaluate(net, {x}, {x}, batch_size);
+    evaluate(net, {x_test}, {y_test}, batch_size);
     net_loss = get_losses(net)[0];
+    net_acc = get_metrics(net)[0];
 
     // Export the model to ONNX
     save_net_to_onnx_file(net, onnx_model_path);
@@ -124,7 +106,7 @@ int main(int argc, char **argv) {
   }
 
   // Import the trained model from ONNX
-  model net2 = import_net_from_onnx_file(onnx_model_path, 0, LOG_LEVEL::DEBUG);
+  model net2 = import_net_from_onnx_file(onnx_model_path);
 
   compserv cs2 = nullptr;
   if (use_cpu)
@@ -134,30 +116,33 @@ int main(int argc, char **argv) {
 
   // Build model
   build(net2,
-        adam(0.001), // Optimizer
-        {"mse"},     // Losses
-        {"mse"},     // Metrics
-        cs2,         // Computing Service
-        false);      // Avoid weights initialization
+        adam(0.001),               // Optimizer
+        {"softmax_cross_entropy"}, // Losses
+        {"categorical_accuracy"},  // Metrics
+        cs2,                       // Computing Service
+        false);                    // Avoid weights initialization
 
   // View model
   summary(net2);
 
   // Evaluate
-  evaluate(net2, {x}, {x}, batch_size);
+  evaluate(net2, {x_test}, {y_test}, batch_size);
   float net2_loss = get_losses(net2)[0];
+  float net2_acc = get_metrics(net2)[0];
 
   if (!only_import) {
     cout << "Original Net vs Imported Net" << endl;
     cout << "loss: " << net_loss << " == " << net2_loss << endl;
+    cout << "acc: " << net_acc << " == " << net2_acc << endl;
     // Write metric to file
     ofstream ofile;
     ofile.open(target_metric_file);
-    ofile << net_loss;
+    ofile << net_acc;
     ofile.close();
   } else {
     cout << "Imported net results:" << endl;
     cout << "loss: " << net2_loss << endl;
+    cout << "acc: " << net2_acc << endl;
   }
 
   bool ok_test = true;
@@ -168,18 +153,19 @@ int main(int argc, char **argv) {
     float target_metric = -1.0;
     ifile >> target_metric;
     ifile.close();
-    float metrics_diff = abs(target_metric - net2_loss);
-    if (metrics_diff > 0.01) {
-      cout << "Test failed: Metric difference too high target=" << target_metric
-           << ", pred=" << net2_loss << endl;
+    float metrics_diff = abs(target_metric - net2_acc);
+    if (metrics_diff > 0.001) {
+      cout << "Test failed: Metric difference too high target=" << target_metric << ", pred=" << net2_acc << endl;
       ok_test = false;
     } else {
-      cout << "Test passed!: target=" << target_metric << ", pred=" << net2_loss
-           << endl;
+      cout << "Test passed!: target=" << target_metric << ", pred=" << net2_acc << endl;
     }
   }
 
-  delete x;
+  delete x_train;
+  delete y_train;
+  delete x_test;
+  delete y_test;
   delete net2;
 
   if (ok_test)

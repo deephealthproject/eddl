@@ -2,11 +2,13 @@ import numpy as np
 import argparse
 import os
 
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv3D, Flatten, MaxPooling3D, Input
 from tensorflow.keras.datasets import mnist
 from keras.utils.np_utils import to_categorical
-import keras2onnx
+import onnx
+import tf2onnx
 
 # Training settings
 parser = argparse.ArgumentParser(description='Keras Conv3D synthetic example')
@@ -46,7 +48,7 @@ model.add(Flatten())
 model.add(Dense(100))
 model.add(Dense(num_classes))
 
-model.build(input_shape=(16, 16, 16, 3))  # For keras2onnx
+model.build(input_shape=(16, 16, 16, 3)) 
 
 model.compile(loss='mse',
               optimizer="adam")
@@ -66,6 +68,7 @@ if args.output_metric != "":
         ofile.write(str(mse))
 
 # Convert to ONNX
-onnx_model = keras2onnx.convert_keras(model, "conv3D_mnist", debug_mode=1)
+input_spec = (tf.TensorSpec((args.batch_size, 16, 16, 16, 3), dtype=tf.float32),)
+onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature=input_spec)
 # Save ONNX to file
-keras2onnx.save_model(onnx_model, args.output_path)
+onnx.save(onnx_model, args.output_path)
