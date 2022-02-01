@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 2;
+    int epochs = 100;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -69,8 +69,6 @@ int main(int argc, char **argv) {
           {"softmax_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           cs);
-
-    printf("after build\n");
 
     // View model
     summary(net);
@@ -108,7 +106,7 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
     x_test->div_(255.0f);
 
-
+  
     // Train model
     int i,j;
     tshape s = x_train->getShape();
@@ -124,8 +122,12 @@ int main(int argc, char **argv) {
 
         print_loss(net,j);
         printf("\r");
+        
       }
       printf("\n");
+      if (early_stopping_on_loss_var (net, 0, 10, 0.1, i)) break;
+      //if (early_stopping_on_metric_var (net, 0, 0.0001, 2, i)) break;
+      if (early_stopping_on_metric (net, 0, 0.97, 2, i)) break;
     }
     printf("\n");   
 
@@ -137,7 +139,6 @@ int main(int argc, char **argv) {
         cout << "Loss: " << losses1[i] << "\t" << "Metric: " << metrics1[i] << "   |   ";
     }
     cout << endl;
-
 
     // Evaluate model
     printf("Evaluate:\n");
@@ -167,6 +168,135 @@ int main(int argc, char **argv) {
     }
     cout << endl;
 
+    
+    // Quantization
+     quantize_network_distributed(net, 1, 5);
+
+      // Evaluate model
+    printf("Evaluate w/quantization:\n");
+    s=x_test->getShape();
+    num_batches=s[0]/batch_size;
+
+    reset_loss(net);  // Important
+    for(j=0;j<num_batches;j++)  {
+        vector<int> indices(batch_size);
+        for(int i=0;i<indices.size();i++)
+          indices[i]=(j*batch_size)+i;
+
+        eval_batch(net, {x_test}, {y_test}, indices);
+
+        print_loss(net,j);
+        printf("\r");
+
+      }
+
+    printf("\n");
+
+    // Print loss and metrics
+    losses2 = get_losses(net);
+    metrics2 = get_metrics(net);
+    for(int i=0; i<losses2.size(); i++) {
+        cout << "Loss: " << losses2[i] << "\t" << "Metric: " << metrics2[i] << "   |   ";
+    }
+    cout << endl;
+    
+    
+    
+     // Train model
+    
+    s = x_train->getShape();
+    num_batches=s[0]/batch_size;
+
+    for(i=0;i<epochs;i++) {
+      reset_loss(net);
+      fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
+      for(j=0;j<num_batches;j++)  {
+
+        next_batch({x_train,y_train},{xbatch,ybatch});
+        train_batch(net, {xbatch}, {ybatch});
+
+        print_loss(net,j);
+        printf("\r");
+        
+      }
+      printf("\n");
+      //if (early_stopping_on_loss_var (net, 0, 0.001, 2, i)) break;
+      //if (early_stopping_on_metric_var (net, 0, 0.0001, 2, i)) break;
+      if (early_stopping_on_metric (net, 0, 0.99, 2, i)) break;
+    }
+    printf("\n");   
+
+
+    // Print loss and metrics
+    losses1 = get_losses(net);
+    metrics1 = get_metrics(net);
+    for(int i=0; i<losses1.size(); i++) {
+        cout << "Loss: " << losses1[i] << "\t" << "Metric: " << metrics1[i] << "   |   ";
+    }
+    cout << endl;
+
+    // Evaluate model
+    printf("Evaluate:\n");
+    s=x_test->getShape();
+    num_batches=s[0]/batch_size;
+
+    reset_loss(net);  // Important
+    for(j=0;j<num_batches;j++)  {
+        vector<int> indices(batch_size);
+        for(int i=0;i<indices.size();i++)
+          indices[i]=(j*batch_size)+i;
+
+        eval_batch(net, {x_test}, {y_test}, indices);
+
+        print_loss(net,j);
+        printf("\r");
+
+      }
+
+    printf("\n");
+
+    // Print loss and metrics
+    losses2 = get_losses(net);
+    metrics2 = get_metrics(net);
+    for(int i=0; i<losses2.size(); i++) {
+        cout << "Loss: " << losses2[i] << "\t" << "Metric: " << metrics2[i] << "   |   ";
+    }
+    cout << endl;
+
+    
+    // Quantization
+     quantize_network_distributed(net, 1, 7);
+
+      // Evaluate model
+    printf("Evaluate w/quantization:\n");
+    s=x_test->getShape();
+    num_batches=s[0]/batch_size;
+
+    reset_loss(net);  // Important
+    for(j=0;j<num_batches;j++)  {
+        vector<int> indices(batch_size);
+        for(int i=0;i<indices.size();i++)
+          indices[i]=(j*batch_size)+i;
+
+        eval_batch(net, {x_test}, {y_test}, indices);
+
+        print_loss(net,j);
+        printf("\r");
+
+      }
+
+    printf("\n");
+
+    // Print loss and metrics
+    losses2 = get_losses(net);
+    metrics2 = get_metrics(net);
+    for(int i=0; i<losses2.size(); i++) {
+        cout << "Loss: " << losses2[i] << "\t" << "Metric: " << metrics2[i] << "   |   ";
+    }
+    cout << endl;
+    
+    
+    
 
     //last batch
     if (s[0]%batch_size) {

@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     int use_bi8 = 0;
     int use_distr_dataset = 0;
     
-       init_distributed();
+    init_distributed();
 
     sprintf(pdf_name, "%s.pdf", model_name);
     sprintf(onnx_name, "%s.onnx", model_name);
@@ -81,18 +81,18 @@ int main(int argc, char **argv) {
             &initial_mpi_avg,
             &chunks, &use_bi8, &use_distr_dataset);
    
-  
-
     
     // Init distribuited training
     id = get_id_distributed();
-    
             
     
     // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2);
+    //set_method_distributed(AUTO_TIME,1,2);
 
-
+    if (id==0) {
+        printf("Train: %s, %s\n ", tr_images, tr_labels);
+                printf("Val: %s, %s\n", ts_images, ts_labels);
+    }
     // download CIFAR data
     //download_cifar10();
 
@@ -108,8 +108,8 @@ int main(int argc, char **argv) {
 
 
    // Data augmentation
-  l = RandomCropScale(l, {0.8f, 1.0f});
-  l = RandomFlip(l,1);
+  //l = RandomCropScale(l, {0.8f, 1.0f});
+  //l = RandomFlip(l,1);
 
   l=MaxPool(Block3_2(l,64));
   l=MaxPool(Block3_2(l,128));
@@ -118,7 +118,8 @@ int main(int argc, char **argv) {
   l=MaxPool(Block1(Block3_2(l,512),512));
 
   l=Reshape(l,{-1});
-  l=ReLu(Dense(l,512));
+  l = Activation(Dense(l, 4096), "relu");
+  l = Activation(Dense(l, 4096), "relu");
 
   layer out= Softmax(Dense(l, num_classes));
     // net define input and output layers list
@@ -135,6 +136,7 @@ int main(int argc, char **argv) {
     build(net,
 //            adam(0.0001), // Optimizer
             adam(lr), // Optimizer
+            //sgd(lr), // Optimizer
     {"softmax_cross_entropy"}, // Losses
     {
         "categorical_accuracy"
@@ -169,7 +171,7 @@ int main(int argc, char **argv) {
     //         x_train->div_(255.0f);
   
    
-
+    
     
     Tensor* x_test = Tensor::load(ts_images);
     Tensor* y_test = Tensor::load(ts_labels);
@@ -215,11 +217,11 @@ int main(int argc, char **argv) {
                 int selected = chunk;
                 printf("Chunk %d\n", chunk);
                 if (use_distr_dataset) {
-                    sprintf(tr_images, "%s/train-images_%d_%d.bi8", path, id, selected);
-                    sprintf(tr_labels, "%s/train-labels_%d_%d.bi8", path, id, selected);
+                    sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
+                    sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
                 } else {
-                    sprintf(tr_images, "%s/train-images_0_%d.bi8", path, selected);
-                    sprintf(tr_labels, "%s/train-labels_0_%d.bi8", path, selected);
+                    sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
+                    sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
                 }
                 printf("%s\n", tr_images);
                 printf("%s\n", tr_labels);
@@ -242,7 +244,7 @@ int main(int argc, char **argv) {
     }
     //std::cout << "Evaluate test:" << std::endl;
     // Evaluate
-    evaluate(net,{x_test},{y_test});
+    //evaluate(net,{x_test},{y_test});
     evaluate_distr(net,{x_test},{y_test});
     
     

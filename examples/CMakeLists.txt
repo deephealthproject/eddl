@@ -33,6 +33,10 @@ target_link_libraries(generic_resnet50_da_bn eddl)
 add_executable(generic_resnet50_da_bn_distr "nn/6_generic/7_generic_resnet50_da_bn_distr.cpp" "nn/6_generic/utils.cpp")
 target_link_libraries(generic_resnet50_da_bn_distr eddl)
 
+add_executable(generic "nn/6_generic/9_generic.cpp" "nn/6_generic/utils.cpp")
+target_link_libraries(generic eddl)
+
+
 # EXAMPLES: MNIST ****************************************************
 add_executable(mnist_mlp "nn/1_mnist/1_mnist_mlp.cpp")
 target_link_libraries(mnist_mlp eddl)

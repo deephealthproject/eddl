@@ -52,7 +52,7 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = testing ? 2 : 5;
+  int epochs = testing ? 2 : 100;
   int batch_size = 100;
   int num_classes = 10;
 
@@ -135,8 +135,15 @@ int main(int argc, char **argv){
     // Evaluate test
     //std::cout << "Evaluate test:" << std::endl;
     evaluate(net,{x_test},{y_test});
+    if (early_stopping_on_loss_var (net, 0, 0.1, 10, i)) break;
+    if (early_stopping_on_metric (net, 0, 0.85, 2, i)) break;
   }
 
+  // Quantization
+   quantize_network_distributed(net, 1, 7);
+   std::cout << "Evaluate test w/quantization:" << std::endl;
+   evaluate(net,{x_test},{y_test});
+  
     delete x_train;
     delete y_train;
     delete x_test;

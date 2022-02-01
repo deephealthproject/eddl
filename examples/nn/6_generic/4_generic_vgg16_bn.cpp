@@ -117,7 +117,9 @@ int main(int argc, char **argv) {
   l=MaxPool(Block1(Block3_2(l,512),512));
 
   l=Reshape(l,{-1});
-  l=ReLu(Dense(l,512));
+//  l = Activation(Dense(l, 4096), "relu");
+//  l = Activation(Dense(l, 4096), "relu");
+  l = Activation(Dense(l, 512), "relu");
 
   layer out= Softmax(Dense(l, num_classes));
 
@@ -193,12 +195,14 @@ int main(int argc, char **argv) {
         x_train = Tensor::load(tr_images);
         y_train = Tensor::load(tr_labels);
         x_train->div_(255.0f);
-
-        // Train
-        fit(net,{x_train},
-        {
-            y_train
-        }, batch_size, epochs);
+        for (int i = 0; i < epochs; i++) {
+            printf("Epoch: %d\n", i);
+            // Train
+            fit(net,{x_train},{y_train}, batch_size, 1);
+            std::cout << "Evaluate test:" << std::endl;
+            // Evaluate
+            evaluate(net,{x_test},{y_test});
+        }
         delete x_train;
         delete y_train;
     } else {
@@ -209,11 +213,11 @@ int main(int argc, char **argv) {
                 int selected = chunk;
                 printf("Chunk %d\n", chunk);
                 if (use_bi8) {
-                    sprintf(tr_images, "%s/train-images_0_%d.bi8", path, selected);
-                    sprintf(tr_labels, "%s/train-labels_0_%d.bi8", path, selected);
+                    sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
+                    sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
                 } else {
-                    sprintf(tr_images, "%s/train-images_0_%d.bin", path, selected);
-                    sprintf(tr_labels, "%s/train-labels_0_%d.bin", path, selected);
+                    sprintf(tr_images, "%s/%03d/train-images.bin", path, chunk);
+                    sprintf(tr_labels, "%s/%03d/train-labels.bin", path, chunk);
                 }
 
                 printf("%s\n", tr_images);
@@ -237,10 +241,7 @@ int main(int argc, char **argv) {
     }
     std::cout << "Evaluate test:" << std::endl;
     // Evaluate
-    evaluate(net,{x_test},
-    {
-        y_test
-    });
+    evaluate(net,{x_test},{y_test});
 
 
 

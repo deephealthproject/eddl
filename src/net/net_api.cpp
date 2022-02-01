@@ -973,7 +973,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             for (j = 0; j < (batches_per_proc); j++) {
                 //batches = batches + n_procs;
 
-                //printf("Batch nr %d\n", j);
+                //printf("DEBUG: Batch nr %d/%d\n", j, batches_per_proc);
                 // Set random indices
                 //printf("Proc: %d sind:\n", id);
                 for (k = 0; k < batch_size; k++) {
@@ -981,16 +981,18 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                     //printf("%5d ",sind[k]);
                 }
                 //printf("\n");
-                
+               
                 // Train batch
                 tr_batches++;
 
                 train_batch(tin, tout, sind);
                  // gpu_layer_print (this, 3);
-                  
+                 
                 // synchronize
-                if (is_mpi_distributed()) 
+                if (is_mpi_distributed()) {
                     avg_weights_distributed(this, j+1, batches_per_proc);
+                    //printf("DEBUG: averaging weights \n");
+                }
                  
                 // In training mode, do not reduce
                 print_loss(j+1, batches_per_proc, false);
@@ -1407,20 +1409,18 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 
   if (eval) setmode(TSMODE);
   else setmode(TRMODE);
-
+ 
   // Check indices
   if (sind.size() == 0) msg("error void index","Net::train_batch");
   // Split data for each network
   for (int i = 0; i < comp; i++) {
     int start = i * thread_batch_size;
     int end = start + Xs[i][0]->shape[0];
-
     // Copy samples
     for (int j = 0; j < X.size(); j++) {
       Tensor::select(X[j], Xs[i][j], sind, start, end);
       Tensor::copy(Xs[i][j], snets[i]->lin[j]->input);
     }
-
     // Copy targets
     for (int j = 0; j < Y.size(); j++) {
       Tensor::select(Y[j], Ys[i][j], sind, start, end);

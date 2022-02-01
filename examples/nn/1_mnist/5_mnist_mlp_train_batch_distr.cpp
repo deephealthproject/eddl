@@ -16,6 +16,8 @@
 
 using namespace eddl;
 
+
+
 //////////////////////////////////
 // mnist_mlp_train_batch.cpp:
 // A very basic MLP for mnist
@@ -43,8 +45,8 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 2;
-    int global_batch_size = 100;
+    int epochs = 100;
+    int global_batch_size = 200;
     int batch_size;
     int num_classes = 10;
 
@@ -156,6 +158,9 @@ int main(int argc, char **argv) {
       // adjust batches_avg
       if (id==0)
           printf("\n");
+      //if (early_stopping_on_loss_var (net, 0, 0.001, 2, i)) break;
+      //if (early_stopping_on_metric_var (net, 0, 0.0001, 2, i)) break;
+      if (early_stopping_on_metric (net, 0, 0.9, 2, i)) break;
     }
     if (id==0) 
         printf("\n");   

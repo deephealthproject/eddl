@@ -86,6 +86,10 @@ int x_avg = 0;
 // 0: Local batch=batch; Global_batch=batch*n_procs
 int batches_avg = 0;
 double secs_prev = 1E10;
+
+float prev_losses=1e10;
+float prev_metrics=0;
+
 string lib;
 
 #ifdef cNCCL
@@ -99,8 +103,9 @@ cudaStream_t cuda_stream;
 int get_id_distributed() {
     int id = 0;
 #ifdef cMPI
-    //  Get the individual process ID.
-    MPI_Comm_rank(MPI_COMM_WORLD, &id);
+    if (is_mpi_distributed())
+        //  Get the individual process ID.
+        MPI_Comm_rank(MPI_COMM_WORLD, &id);
 #endif
     return id;
 }
@@ -108,11 +113,14 @@ int get_id_distributed() {
 int get_n_procs_distributed() {
     int n_procs = 1;
 #ifdef cMPI
-    //  Get the number of processes.
-    MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
+    if (is_mpi_distributed())
+        //  Get the number of processes.
+        MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
 #endif
     return n_procs;
 }
+
+
 
 void get_nodename_distributed(char* node_name) {
     int len;
@@ -626,3 +634,139 @@ void gpu_layer_print(Net* net, int ii) {
 #endif
 
 }
+
+bool early_stopping_on_loss_var(Net* net, int index, float delta, int patience, int epoch) {
+    int id = get_id_distributed();
+    float losses = net->get_losses()[index];
+    bool result;
+
+    if (id == 0)
+        if (epoch > patience) {
+                printf("[DISTR] prev_loss: %f, loss: %f\n", prev_losses, losses);
+            if (losses > (delta+prev_losses)) {
+                printf("[DISTR] Early Stopping! (prev_loss: %f, loss: %f)\n", prev_losses, losses);
+                result = true;
+            } else {
+                result = false;
+            }
+            if (losses < prev_losses) {
+                printf("[DISTR] Early Stopping! Epoch %d. Best loss (prev_loss: %f, loss: %f)\n", epoch, prev_losses, losses);
+               prev_losses = losses;            
+            }
+        } else 
+            result = false;
+    
+    if (is_mpi_distributed())
+        MPICHECK(MPI_Bcast(&result, 1, MPI_BYTE, 0, MPI_COMM_WORLD));
+    return result;
+}
+
+bool early_stopping_on_metric_var(Net* net, int index, float delta, int patience, int epoch) {
+    int id = get_id_distributed();
+    float metrics = net->get_metrics()[index];
+    bool result;
+
+    if (id == 0)
+        if (epoch > patience) {
+            if (metrics > prev_metrics) {// OK
+                if ((metrics - prev_metrics) < delta) {
+                    printf("[DISTR] Early Stopping! ((metric %f-prev_metric %f) < delta %f)\n", metrics, prev_metrics, delta);
+                    result = true;
+                } else {
+                    prev_metrics = metrics;
+                    result = false;
+                }
+            } else if ((prev_metrics - metrics) > delta) {
+                    printf("[DISTR] Early Stopping! ((prev_metric %f-metric %f) < delta %f)\n", prev_metrics, metrics, delta);
+                    result = true;
+                } else {
+                    result = false;
+                }
+        } else
+            result = false;
+
+    if (is_mpi_distributed())
+        MPICHECK(MPI_Bcast(&result, 1, MPI_BYTE, 0, MPI_COMM_WORLD));
+    return result;
+}
+
+bool early_stopping_on_metric(Net* net, int index, float goal, int patience, int epoch) {
+    int id=get_id_distributed();
+    float metrics = net->get_metrics()[index];
+    bool result;
+
+    if (id == 0)
+        if (epoch > patience) {
+            if (metrics > goal) {// OK
+                printf("[DISTR] Early Stopping! ((metric %f >goal %f)\n",metrics,goal);
+                result = true;
+            } else {
+                result = false;
+            }
+        } else {
+            result = false;
+        }
+    
+    if (is_mpi_distributed())
+        MPICHECK(MPI_Bcast(&result, 1, MPI_BYTE, 0, MPI_COMM_WORLD));
+    return result;
+}
+
+float quantize(float value, int nbits_int, int nbits_frac) {
+    float result = 0;
+    int i;
+    int bit;
+
+    // We convert the value to an integer, no frac part
+    int x = round(value * pow(2, nbits_frac));
+    int maxint = pow(2, (nbits_int + nbits_frac)) - 1;
+
+    if (x >= maxint) {
+        result = maxint;
+    } else
+        if (x <= -maxint) {
+        result = -maxint;
+    } else {
+        i = 0;
+        while (i < (nbits_int + nbits_frac)) {
+            bit = x % 2;
+            x = x / 2;
+            result = result + bit * pow(2, i);
+            //printf("Int ... %f", result);
+            i++;
+        }
+    }
+    result = result / pow(2, nbits_frac);
+
+    return (result);
+}
+
+void quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
+    float * myptr;
+    int count;
+    int n_procs;
+
+    for (int i = 0; i < net->layers.size(); i++) {
+        if (net->layers[i]->trainable) {
+            for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {  
+                //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
+                // copy from devices
+                for (int dev = 0; dev < net->snets.size(); dev++) {
+                    Tensor::copy(net->snets[dev]->layers[i]->params[j], net->layers[i]->params[j]);
+                }
+                myptr = net->layers[i]->params[j]->ptr;
+                count = net->layers[i]->params[j]->size;
+                for (int k = 0; k < count; k++) {
+                    //printf("quantize: %f %f \n", myptr[k], quantize(myptr[k], nbits_int, nbits_frac));
+                    myptr[k] = quantize(myptr[k], nbits_int, nbits_frac);
+                }
+                // copy-back to devices
+                for (int dev = 0; dev < net->snets.size(); dev++) {
+                    Tensor::copy(net->layers[i]->params[j], net->snets[dev]->layers[i]->params[j]);
+                }
+            }
+        }
+    }
+    
+}
+

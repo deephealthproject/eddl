@@ -100,7 +100,6 @@ int main(int argc, char **argv){
   Tensor* y_test = Tensor::load("cifar_tsY.bin");
   x_test->div_(255.0f);
 
-
   for(int i=0;i<epochs;i++) {
     // training, list of input and output tensors, batch, epochs
     fit(net,{x_train},{y_train},batch_size, 1);

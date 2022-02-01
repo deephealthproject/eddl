@@ -82,10 +82,11 @@ int get_id_distributed();
  */
 int get_n_procs_distributed();
 
+
 /**
  *  @brief Get name of node running the process
  *
- *  @return node name
+ *  @param node_name node name
  */
 void get_nodename_distributed(char* node_name);
 
@@ -196,3 +197,10 @@ void update_batch_avg_distributed(int epoch_id, double secs, int batches_per_pro
 // For Debugging purposes
 void gpu_layer_print (Net* net, int layer);
 
+bool early_stopping_on_loss_var(Net* net, int index, float delta, int patience, int epoch);
+
+bool early_stopping_on_metric_var(Net* net, int index, float delta, int patience, int epoch);
+
+bool early_stopping_on_metric(Net* net, int index, float goal, int patience, int epoch);
+
+void quantize_network_distributed(Net* net, int nbits_int, int nbits_frac);

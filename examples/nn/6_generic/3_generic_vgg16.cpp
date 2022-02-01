@@ -115,7 +115,8 @@ int main(int argc, char **argv) {
     l = MaxPool(Block1(Block3_2(l, 512), 512));
 
     l = Reshape(l,{-1});
-    l = Activation(Dense(l, 512), "relu");
+    l = Activation(Dense(l, 4096), "relu");
+    l = Activation(Dense(l, 4096), "relu");
 
     layer out = Softmax(Dense(l, num_classes));
 
