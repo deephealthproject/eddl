@@ -62,6 +62,7 @@
 //const float CPU_EPS_FLOAT = std::numeric_limits<float>::epsilon();  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
 //const float CPU_LOWEST_FLOAT = -CPU_MAX_FLOAT;  // For floating-point types: implementation-dependent; generally, the negative of max()
 
+extern int FixedPointQuant;
 
 using namespace std;
 
@@ -1652,6 +1653,32 @@ public:
     *   @param v The real value to substract.
     */
     static void sub(Tensor *A, Tensor *B, float v);
+
+    /**
+    *   @brief In-place element-wise quantization operation.
+    *   @param N Quantization factor.
+    *   @param alpha Quantization percentage.
+    */
+    void quantize_(int N, float alpha); // this = this .- A
+
+    /**
+    *   @brief Element-wise quantization operation.
+    *   @param N Quantization factor.
+    *   @param alpha Quantization percentage.
+    *   @return A tensor with the result.
+    */
+    Tensor* quantize(int N, float alpha); // this = this .- A
+
+    /**
+    *   @brief Element-wise quantization operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B A tensor with the result.
+    *   @param N Quantization factor.
+    *   @param alpha Quantization percentage.
+    */
+    static void quantize(Tensor *A, Tensor *B, int N, float alpha);
+
+    static void check_fixed_point(Tensor *A);
 
     /**
     *   @brief In-place element-wise tan operation.

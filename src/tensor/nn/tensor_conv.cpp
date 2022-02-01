@@ -48,7 +48,8 @@ void Conv2D(ConvolDescriptor *D) {
     if (D->I->isCPU()) {
         if (is_dilated)
             msg("Dilated convolutions are only supported using GPU with CUDNN." "Tensor::Conv2D");
-        cpu_conv2D(D);
+        if (FixedPointQuant) msg("Fixed point quantization not available in CPU." "Tensor::Conv2D");
+        else cpu_conv2D(D);
     }
 #ifdef cGPU
     else if (D->I->isGPU())

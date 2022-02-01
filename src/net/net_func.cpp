@@ -247,3 +247,12 @@ void distributeTensor(Layer *l,string tname, int p)
     }
 
 }
+
+void quantizeLayer(Layer *l)
+{
+    for (int j = 0; j < l->get_trainable_params_count(); j++) {
+        collectTensor(l,"param",j);
+        l->params[j]->quantize_(256,1); 
+        distributeTensor(l,"param",j);
+    }
+}

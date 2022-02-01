@@ -469,6 +469,15 @@ namespace eddl {
       *  @return     (void)
     */
     void set_mode(model net, int mode);
+
+    /**
+      *  @brief Set quantize mode.
+      *
+      *  @param quant Quantization mode 1, normal mode 0 
+      *  @return     (void)
+    */
+    void set_quantized_mode(int quant);
+
     /**
       *  @brief Resets model loss.
       *

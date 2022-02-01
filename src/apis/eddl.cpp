@@ -331,6 +331,10 @@ namespace eddl {
         net->setmode(mode);
     }
 
+    void set_quantized_mode(int quant){
+       FixedPointQuant = quant;
+    }
+    
     vlayer forward(model net,vector<Layer*> in){
         net->reset();
         net->forward(in);

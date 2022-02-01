@@ -117,6 +117,15 @@ public:
     Tensor *gpugK; // gradient kernels
     Tensor *gpuD; // Delta
 
+    //Quantization implementation
+    Tensor *Kquant=nullptr; // kernel tensor quantized
+    Tensor *gpuKquant=nullptr; // gpu kernel tensor quantized
+    Tensor *gpuIBquant=nullptr; // gpu input tensor quantized
+    Tensor *biasquant=nullptr; // bias tensor quantized
+    Tensor *gpuIquant=nullptr; // gpu input tensor quantized
+    Tensor *Iquant=nullptr; // input tensor quantized
+
+
 #ifdef cCUDNN
     // Following cuDNN nomenclature
     cudnnConvolutionMode_t convolution_mode;

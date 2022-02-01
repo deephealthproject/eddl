@@ -883,6 +883,9 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     fflush(stdout);
   }
 
+  if(FixedPointQuant) 
+    for (int i = 0; i < layers.size(); i++) quantizeLayer(layers[i]); //Final quantization
+
 }
 
 
