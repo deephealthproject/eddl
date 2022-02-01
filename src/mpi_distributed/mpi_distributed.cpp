@@ -657,7 +657,9 @@ bool early_stopping_on_loss_var(Net* net, int index, float delta, int patience, 
             result = false;
     
     if (is_mpi_distributed())
+#ifdef cMPI       
         MPICHECK(MPI_Bcast(&result, 1, MPI_BYTE, 0, MPI_COMM_WORLD));
+#endif    
     return result;
 }
 
@@ -686,7 +688,9 @@ bool early_stopping_on_metric_var(Net* net, int index, float delta, int patience
             result = false;
 
     if (is_mpi_distributed())
+#ifdef cMPI
         MPICHECK(MPI_Bcast(&result, 1, MPI_BYTE, 0, MPI_COMM_WORLD));
+#endif    
     return result;
 }
 
@@ -708,7 +712,9 @@ bool early_stopping_on_metric(Net* net, int index, float goal, int patience, int
         }
     
     if (is_mpi_distributed())
+#ifdef cMPI
         MPICHECK(MPI_Bcast(&result, 1, MPI_BYTE, 0, MPI_COMM_WORLD));
+#endif
     return result;
 }
 
