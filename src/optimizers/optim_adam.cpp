@@ -106,41 +106,12 @@ void Adam::applygrads(int batch) {
             vCap[p]->sqrt_();
 
             Tensor::el_div(mCap[p],vCap[p],mCap[p],0);
-            // GPU Print 
-            Tensor *aux0 = nullptr;
-            if (layers[i]->params[j]->isCPU()) {
-                aux0 = layers[i]->params[j];
-            }else{
-                aux0 = new Tensor(layers[i]->params[j]->shape, DEV_CPU);
-                Tensor::copy(layers[i]->params[j], aux0);
 
-            }
             Tensor::add(-lr, mCap[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
-
-            //round
-            layers[i]->params[j]->mult_(1000);
-            layers[i]->params[j]->round_();
-            layers[i]->params[j]->div_(1000);
-            
-            float *t = layers[i]->params[j]->ptr;
-            int ne = layers[i]->params[j]->size;
-           // for (int i = 0; i<ne; i++) {
-           //   t[i] = 0;
-           // }
 
             // Distributed training: Accumulation of gradients
             if (layers[i]->acc_gradients.size() > 0)
               Tensor::add(-lr, mCap[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
-            Tensor *aux = nullptr;
-            if (layers[i]->params[j]->isCPU()) {
-                aux = layers[i]->params[j];
-            }else{
-                aux = new Tensor(layers[i]->params[j]->shape, DEV_CPU);
-                Tensor::copy(layers[i]->params[j], aux);
-
-            }
-            printf("%f (%x)\n", aux->ptr[0], layers[1]->params[0]);
-
         }
     }
     else p+=layers[i]->get_trainable_params_count();
