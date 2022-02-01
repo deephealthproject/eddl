@@ -52,6 +52,7 @@ LDense::~LDense(){
 }
 
 void LDense::forward() {
+    if(FixedPointQuant) input->quantize_(256,1);
     Tensor::mult2D(input, 0, W, 0, output, 0);
     if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
 }

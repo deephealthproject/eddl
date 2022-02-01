@@ -60,6 +60,7 @@ void LMaxPool::resize(int batch){
 }
 
 void LMaxPool::forward() {
+    if(FixedPointQuant) this->pd->I->quantize_(256,1);
     tensorNN::MPool2D(this->pd);
 }
 

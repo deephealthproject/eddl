@@ -1895,6 +1895,62 @@ void Tensor::sub(Tensor *A, Tensor *B, float v){
     Tensor::add(A, B, -1.0f * v);
 }
 
+void Tensor::check_fixed_point(Tensor *A){
+
+    A->toCPU();
+    float *t = A->ptr;
+    int n = A->size;
+
+    int num_dif = 0;
+    for (int x = 0; x < n; x++) {
+      int v = std::round(t[x]*256);
+      float y = (float)v  / 256;
+      if (x<10 && t[x] != y) {num_dif++; printf("%18.12f != %18.12f\n", t[x], y);}
+    }
+    printf("differents: %d of %d\n", num_dif, n);
+    A->toGPU();
+    //Tensor *input = A->clone();
+    //Tensor::add(1.0f, reference, -1.0f, input, reference, 0);
+    //input = reference->equal(0.0);
+    //bool res = Tensor::all(input);
+    //if(!res) printf("[info] Result No en floating point!!!\n");
+    //input->deleteData();
+    //reference->deleteData();
+}
+
+void Tensor::quantize_(int N, float alpha){
+    Tensor::quantize(this, this, N,alpha);
+}
+
+Tensor* Tensor::quantize(int N, float alpha){
+    Tensor *t = this->clone();
+    t->quantize_(N, alpha);
+    return t;
+}
+
+
+void Tensor::quantize(Tensor *A, Tensor *B, int N, float alpha){
+    if (!Tensor::sameSize(A, B)) {
+        A->info();
+        B->info();
+        msg("Tensors with different size", "Tensor::quantize");
+    }
+
+    Tensor *input = A->clone();
+    //wref = round(w * N)/N;
+    Tensor::mult(input, B,N);
+    B->round_();
+    B->div_(N);
+
+    //wp = w-wref;
+    Tensor::add(1.0f, input, -1.0f, B, B, 0);
+
+    //output = w - (wp * alpha)
+    B->mult_(alpha);
+
+    Tensor::add(1.0f, input, -1.0f, B, B, 0);
+    input->deleteData();
+}
 
 void Tensor::tan_(){
     Tensor::tan(this, this);

@@ -19,7 +19,6 @@
 #include "eddl/apis/eddl.h"
 #include "eddl/utils.h"
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
-//#include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
 
@@ -330,6 +329,10 @@ namespace eddl {
     // Finest methods
     void set_mode(model net, int mode){
         net->setmode(mode);
+    }
+
+    void set_quantized_mode(int quant){
+       FixedPointQuant = quant;
     }
 
     vlayer forward(model net,vector<Layer*> in){
