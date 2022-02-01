@@ -166,7 +166,6 @@ void LActivation::resize(int batch){
 #endif
 
 void LActivation::forward(){
-if(FixedPointQuant) this->input->quantize_(256,1);
 #ifdef cCUDNN
 
 if(!this->input->isCPU())

@@ -208,6 +208,5 @@ public:
 
 void collectTensor(Layer *l,string tname="output",int p=0);
 void distributeTensor(Layer *l,string tname="output", int p=0);
-void quantizeLayer(Layer *l);
 
 #endif  //EDDL_NET_H

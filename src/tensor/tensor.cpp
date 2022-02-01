@@ -25,7 +25,6 @@ using namespace std;
 int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int initfpga[MAX_FPGAS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
-int FixedPointQuant=0;
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 
 void checkCompatibility(Tensor *A, Tensor *B, const string &title){
