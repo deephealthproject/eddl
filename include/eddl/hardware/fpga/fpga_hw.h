@@ -12,17 +12,27 @@
 #ifndef EDDL_FPGA_HW_H
 #define EDDL_FPGA_HW_H
 
+
+// S10MX included in common header file in stratix standalone development project
+#include <CL/opencl.h>
+#include <CL/cl_ext_intelfpga.h>
+#include "AOCLUtils/aocl_utils.h"
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS
+#include <CL/cl.h>
+// -- end of S10MX 
+
+
 // --------------------------------------------------------------------------------------------------------
 #include "fpga_profile.h"
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"
-#include <ap_fixed.h>                       // Aproximated precision fixed point support
-#include <ap_int.h>                         // Aproximated precision integer support
+//#include <ap_fixed.h>                       // Aproximated precision fixed point support
+//#include <ap_int.h>                         // Aproximated precision integer support
 
-#include "eddl/hardware/fpga/xcl2.hpp"
+//#include "eddl/hardware/fpga/xcl2.hpp"
 
-extern cl::CommandQueue *q;
+extern cl_command_queue q;
 
 //#define FPGA_DEBUG
 
@@ -56,12 +66,44 @@ extern cl::CommandQueue *q;
 
 #define MAX_KERNELS 16
 
+// An hlsinf_kernel consists of many opencl kernels
+enum SUBKERNELS {
+  K_DATA_IN_READER,
+  K_KERNEL_IN_READER,
+  K_BIAS_IN_READER,
+  K_INPUT_BUFFER,
+  K_PADDING,
+  K_CVT,
+  K_MULTIPLIER,
+  K_ADDER,
+  K_RELU,
+  K_POOL_CVT,
+  K_POOL_POOLING,
+  K_WRITER,
+  K_SUBKERNELS
+};
+static const char* subkernel_names[K_SUBKERNELS] =
+{
+  "data_in",
+  "kernel_in",
+  "bias_in",
+  "input_buffer",
+  "padding",
+  "cvt",
+  "mul",
+  "add",
+  "relu",
+  "pool_cvt",
+  "pool_pooling",
+  "data_out"
+};
+
 // Debug functions
 void _debug_fpga_funcs(const char *str);
 
 
 // conv kernels (3)
-extern cl::Kernel kernel_hlsinf[16];
+extern cl_kernel kernel_hlsinf[16][K_SUBKERNELS];
 
 // conv2d kernel related global variables
 
@@ -97,16 +139,16 @@ extern bool hlsinf_dense_support;
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
-void set_callback(cl::Event event, const char *queue_name);
+void set_callback(cl_event event, const char *queue_name);
 void event_cb(cl_event event1, cl_int cmd_status, void *data);
 
 void fpga_init(int kernel_version, int kernel_subversion);
 
-void fpga_destroy_memory(cl::Buffer *fpga_ptrI);
-cl::Buffer *fpga_create_memory(long int size);
-void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size);
-void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size, int src_format, int dst_format);
-void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size);
+void fpga_destroy_memory(cl_mem fpga_ptrI);
+cl_mem fpga_create_memory(long int size);
+void fpga_copy_memory_to_fpga(void *ptr_cpu, cl_mem ptr_fpga, long int size);
+void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl_mem ptr_fpga, long int size, int src_format, int dst_format);
+void fpga_copy_memory_from_fpga(cl_mem ptr_fpga, void *ptr_cpu, long int size);
 
 void fpga_copy_fpga(Tensor *A, Tensor *B);
 void fpga_copy_to_fpga_good(float *nptr, Tensor *A, int cvt=1);

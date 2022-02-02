@@ -82,6 +82,10 @@ file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/gpu/*" *.{cu}
 # FPGA
 file(GLOB_RECURSE FPGA_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/*" *.{h, hpp})
 file(GLOB_RECURSE FPGA_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/*" *.{cc, cpp})
+#file(GLOB_RECURSE FPGA_HEADERS "$ENV{IQ_BASE_DIR}/hld/examples_aoc/common/inc/AOCLUtils/*" *.{h, hpp})
+#file(GLOB_RECURSE FPGA_SOURCES "$ENV{IQ_BASE_DIR}/hld/examples_aoc/common/src/AOCLUtils/*" *.{cc, cpp})
+
+
 
 # Remove setup-dependent files (later we'll add the ones we need)
 SET(SPECIAL_FILES ${CUDA_HEADERS} ${CUDA_SOURCES} ${FPGA_HEADERS} ${FPGA_SOURCES})
@@ -311,14 +315,51 @@ SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 
 # FPGA ***************************************
 if(USE_FPGA)
+    message(NOTICE "   ")  
+    message(NOTICE "   ")  
+    message(NOTICE "FPGA")
     find_package(OpenCL)
     if (OpenCL_FOUND)
+        message(NOTICE "jomarm10 @${PROJECT_NAME} Forced changes to add paths and libraries and sources for Stratix support, check changes correctness")
 
-        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include>")
-	target_include_directories(${PROJECT_NAME} PUBLIC /opt/xilinx/xrt/include)
-        #target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:/opt/Xilinx/Vivado/2018.3/include)  # Is this cross-platform?
+        #target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include>")
+        #target_include_directories(${PROJECT_NAME} PUBLIC /opt/xilinx/xrt/include)
+        ##target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:/opt/Xilinx/Vivado/2018.3/include)  # Is this cross-platform?
 
+        #target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{IQ_BASE_DIR}/hld/examples_aoc/common/inc;$ENV{IQ_BASE_DIR}/hld/include>")
+        #target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/examples_aoc/common/inc)
+        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{IQ_BASE_DIR}/hld/examples_aoc/common/inc;$ENV{IQ_BASE_DIR}/hld/include>")
+        target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/examples_aoc/common/inc)
+ 
+        target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/include)
+        target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/host/include)
+
+        message(NOTICE "set cxx flags for aocl s10mx example compilation and push to parent scope")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fPIE -std=c++11 -O3 -fPIC")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
+
+        #include_directories  done
+
+#        target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCL_LIBRARY} $ENV{IQ_BASE_DIR}/hld/examples_aoc/common/inc $ENV{IQ_BASE_DIR}/hld/include)
         target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCL_LIBRARY})
+
+        execute_process(COMMAND aocl ldflags OUTPUT_VARIABLE AOCL_LINK_FLAGS)
+        execute_process(COMMAND aocl ldlibs OUTPUT_VARIABLE AOCL_LINK_LIBS)
+        # remove trail carriage return from strings
+        string(REGEX REPLACE "\n$" "" AOCL_LINK_FLAGS "${AOCL_LINK_FLAGS}")
+        string(REGEX REPLACE "\n$" "" AOCL_LINK_LIBS "${AOCL_LINK_LIBS}")
+
+        set(AOCL_LINK_CONFIG "${AOCL_LINK_FLAGS} -z noexecstack -Wl,-z,relro,-z,now -Wl,-Bsymbolic -pie  ${AOCL_LINK_LIBS}" )
+        message (STATUS "  AOCL_LINK_FLAGS  -> ${AOCL_LINK_FLAGS}")
+        message (STATUS "  AOCL_LINK_LIBS   -> ${AOCL_LINK_LIBS}")
+        message (STATUS "  AOCL_LINK_CONFIG -> ${AOCL_LINK_CONFIG}")
+
+        # following line triggers an error
+        #target_link_options(fpga_example1 PUBLIC ${AOCL_LINK_CONFIG} )   -->   Cannot specify link options for target "fpga_example1" which is not built by this project.
+        target_link_options(${PROJECT_NAME} PUBLIC ${AOCL_LINK_CONFIG} )
+
+#        add target_link_libraries ??
+
         if(APPLE)
             target_link_options(${PROJECT_NAME} PUBLIC -framework opencl -lpthread)
         endif()
@@ -336,6 +377,12 @@ if(USE_FPGA)
         SET(BUILD_TARGET "CPU") # Local's scope
         SET(USE_FPGA OFF) # Local's scope (disable)
     endif()
+
+    message(NOTICE "   ")  
+    message(NOTICE "FPGA end")  
+    message(NOTICE "   ")  
+    message(NOTICE "   ")  
+
 endif()
 SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
 

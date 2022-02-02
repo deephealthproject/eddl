@@ -15,12 +15,21 @@
 
 #include <sys/time.h>
 
+// S10MX included in common header file in stratix standalone development project
+#include <CL/opencl.h>
+#include <CL/cl_ext_intelfpga.h>
+#include "AOCLUtils/aocl_utils.h"
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS
+#include <CL/cl.h>
+// -- end of S10MX 
+
+
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/profiling.h"
 
-extern vector<cl::Event> kernel_events; // Kernel events (completion)
+extern vector<cl_event> kernel_events; // Kernel events (completion)
 
 PROFILING_ENABLE_EXTERN(fpga_hlsinf);
 
@@ -66,8 +75,8 @@ PROFILING_ENABLE_EXTERN(fpga_hlsinf);
 //   CPO: Kernel channels per output
 //   kernel_id: Kernel ID (which kernel to use in a multi-kernel setting)
 //
-void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, int WO, int rows, int PT, int PB, int PL, int PR, int SH, int SW, int Ichannels, int Ochannels,  
-                          int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor, int enable_batch_norm, cl::Buffer K, cl::Buffer B, cl::Buffer BN_values, cl::Buffer O, 
+void HLSinf_launch_kernel(cl_mem I, cl_mem I_add, int H, int W, int HO, int WO, int rows, int PT, int PB, int PL, int PR, int SH, int SW, int Ichannels, int Ochannels,  
+                          int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor, int enable_batch_norm, cl_mem K, cl_mem B, cl_mem BN_values, cl_mem O, 
                           int read_offset, int write_offset, int enable_maxp, int enable_avgp, int enable_clipping,
                           int enable_shift, int enable_add, int enable_upscale, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
 
@@ -88,6 +97,8 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
   printf("min_clip %d max_clip %d, shifts %d, direction %d enable_upscale %d\n", min_clip, max_clip, pos_shift, dir_shift, enable_upscale);
 #endif
 
+
+  /*
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I_add));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, H));
@@ -132,6 +143,26 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
 
   //set_callback(kernel_events[kernel_id], "ooo_queue");
   OCL_CHECK(err, err = kernel_events[kernel_id].wait());
+
+
+
+  */
+  printf("\n");
+  printf("\n");
+  printf("--------------------------------------------------------------------\n");
+  printf(" @src/hardware/fpga/nn/hlsinf.cpp -> HLSinf_launch_kernel           \n");
+  printf("\n");
+  printf(" UNDER DEVELOPMENT\n");
+  printf("   empty or dummy function\n");
+  printf("\n");
+  printf("   currently empty to speedup major changes implementation\n");
+  printf("   current Stratix kernel does not implement all these capabilities\n");
+  printf("\n");
+  printf("   to-be filled when stratix kernel is updated\n");
+  printf("-------------------------------------------------------------------\n");
+  printf("\n");
+  printf("\n");
+
 }
 
 // ---------------------------------------------------------------------
@@ -186,20 +217,20 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
   #endif
 
   // arguments
-  cl::Buffer I     = *(cl::Buffer*)input->fpga_ptr;     // input activations
-  cl::Buffer K     = *(cl::Buffer*)filter->fpga_ptr;    // kernel
-  cl::Buffer B     = *(cl::Buffer*)bias->fpga_ptr;      // bias
+  cl_mem I     = *(cl_mem *)input->fpga_ptr;     // input activations
+  cl_mem K     = *(cl_mem *)filter->fpga_ptr;    // kernel
+  cl_mem B     = *(cl_mem *)bias->fpga_ptr;      // bias
   int use_bias     = 1;                                 // whether use bias or not
-  cl::Buffer O     = *(cl::Buffer*)output->fpga_ptr;         // output activations
-  cl::Buffer I_add, BN_values; 
+  cl_mem O     = *(cl_mem *)output->fpga_ptr;         // output activations
+  cl_mem I_add, BN_values; 
   if (enable_add) {
-    I_add = *(cl::Buffer*)input_add->fpga_ptr; // input add data
+    I_add = *(cl_mem*)input_add->fpga_ptr; // input add data
   } else {
     I_add = I;
   }
 
   if (enable_batch_norm) {
-    BN_values = *(cl::Buffer*)batch_norm_values->fpga_ptr; // ERROR: no tiene fpga_ptr porque es puntero CPU
+    BN_values = *(cl_mem*)batch_norm_values->fpga_ptr; // ERROR: no tiene fpga_ptr porque es puntero CPU
   } else {
     BN_values = I;
   }
@@ -251,6 +282,8 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
 
 }
 
+// ---------------------------------------------------------------------
+// fpga_hlsinf
 void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, int Ochannels, int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, 
                  int enable_relu, float relu_factor, int enable_batch_norm, int enable_maxp, int enable_avgp, int enable_clipping, int min_clip, int max_clip, 
                  int enable_shift, int pos_shift, int dir_shift, int enable_add, int enable_stm, int enable_upscale, Tensor *filter, Tensor *bias, Tensor *batch_norm_values, Tensor *output) {

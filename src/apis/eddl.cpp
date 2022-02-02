@@ -1987,7 +1987,7 @@ namespace eddl {
     void download_hlsinf(int version, int subversion){
         char file[200];
 
-        sprintf(file, "hlsinf_v%0d.%0d.xclbin", version, subversion);
+        sprintf(file, "hlsinf_stratix_v%0d.%0d.aocx", version, subversion);
 
         cout << "Downloading " << file << endl;
 
@@ -2000,7 +2000,7 @@ namespace eddl {
             }
             else if (status > 0){
                 cout<<cmd<<endl;
-                msg("wget failed to download HLSinf accelerator (exit code: " + to_string(status) + ").", "eddl.download_hlsinf");
+                msg("wget failed to download HLSinfStratix accelerator (exit code: " + to_string(status) + ").", "eddl.download_hlsinf");
             }
         }
     }
