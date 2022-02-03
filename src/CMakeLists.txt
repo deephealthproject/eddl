@@ -378,6 +378,12 @@ if(USE_FPGA)
         SET(USE_FPGA OFF) # Local's scope (disable)
     endif()
 
+
+
+
+    add_definitions(-DFPGA_DEBUG)
+    add_definitions(-DDEBUG_VERBOSE)
+
     message(NOTICE "   ")  
     message(NOTICE "FPGA end")  
     message(NOTICE "   ")  

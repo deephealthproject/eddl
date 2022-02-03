@@ -24,7 +24,6 @@
 // -- end of S10MX 
 
 
-
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/profiling.h"
@@ -89,6 +88,8 @@ void HLSinf_launch_kernel(cl_mem I, cl_mem I_add, int H, int W, int HO, int WO, 
   // input iterations
   int I_ITER = (Ichannels + (CPI-1)) / CPI;
 
+  
+  /*
 #ifdef DEBUG_VERBOSE
   printf("I_ITER %d, first %d last %d enable_relu %d relu_factor %f enable_stm %d enable_maxp %d enable_avgp %d enable_clip %d min_clip %d max_clip %d enable_shift %d enable_add %d\n PT %d PB %d PL %d PR %d SH %d SW %d upscale %d batch_norm %d\n",
                   I_ITER, first_o_iter, last_o_iter, enable_relu, relu_factor, enable_stm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift,
@@ -97,8 +98,6 @@ void HLSinf_launch_kernel(cl_mem I, cl_mem I_add, int H, int W, int HO, int WO, 
   printf("min_clip %d max_clip %d, shifts %d, direction %d enable_upscale %d\n", min_clip, max_clip, pos_shift, dir_shift, enable_upscale);
 #endif
 
-
-  /*
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I_add));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, H));
@@ -153,15 +152,437 @@ void HLSinf_launch_kernel(cl_mem I, cl_mem I_add, int H, int W, int HO, int WO, 
   printf(" @src/hardware/fpga/nn/hlsinf.cpp -> HLSinf_launch_kernel           \n");
   printf("\n");
   printf(" UNDER DEVELOPMENT\n");
-  printf("   empty or dummy function\n");
   printf("\n");
-  printf("   currently empty to speedup major changes implementation\n");
-  printf("   current Stratix kernel does not implement all these capabilities\n");
   printf("\n");
-  printf("   to-be filled when stratix kernel is updated\n");
   printf("-------------------------------------------------------------------\n");
   printf("\n");
   printf("\n");
+
+  printf("This implementation only supports 1 kernel \n");
+  printf("kernel_id: %d\n", kernel_id);
+  #ifdef DEBUG_VERBOSE
+  printf("I_ITER %d, first %d last %d enable_relu %d relu_factor %f enable_stm %d enable_maxp %d enable_avgp %d enable_clip %d min_clip %d max_clip %d enable_shift %d enable_add %d\n PT %d PB %d PL %d PR %d SH %d SW %d upscale %d batch_norm %d\n",
+                  I_ITER, first_o_iter, last_o_iter, enable_relu, relu_factor, enable_stm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift,
+                  enable_add, PT, PB, PL, PR, SH, SW, enable_upscale, enable_batch_norm);
+  printf("H %d W %d rows %d Ich %d Och %d\n", H, W, rows, Ichannels, Ochannels);
+  printf("min_clip %d max_clip %d, shifts %d, direction %d enable_upscale %d\n", min_clip, max_clip, pos_shift, dir_shift, enable_upscale);
+  #endif
+  if (kernel_id == 0) {
+    cl_event  kernel_events[K_SUBKERNELS];
+
+    
+    // Legacy num_kernels interpretation
+    //uint num_kernels;
+    //uint o_iter_per_kernel;
+
+    //num_kernels = 1;
+    //o_iter_per_kernel = o_iter;
+
+    //uint k = 0; // (int k=0; k<num_kernels; k++)
+    //uint o_iter_first = o_iter_per_kernel * k;
+    //uint o_iter_last  = o_iter_first + o_iter_per_kernel - 1;
+    // --------------------------------
+    // renaming of pointers to cl mem objects in order to avoid eddl naming rules/dependencies
+
+
+    // cl_uint k_H    = (cl_uint)H;
+    // cl_uint k_W    = (cl_uint)W;
+    // cl_uint k_rows = (cl_uint)rows;
+    // cl_uint k_I    = (cl_uint)I_input;
+    // cl_uint k_O    = (cl_uint)O_output;
+    // cl_uint k_i_iter        = (cl_uint)i_iter;
+    // cl_uint k_o_iter_first  = (cl_uint)o_iter_first;
+    // cl_uint k_o_iter_last   = (cl_uint)o_iter_last;
+    // cl_uint k_enable_relu   = (cl_uint)enable_relu;
+    // cl_uint k_global_offset = (cl_uint)global_offset;
+    // cl_uint k_enable_upper_padding = (cl_uint)enable_upper_padding;
+    // cl_uint k_enable_lower_padding = (cl_uint)enable_lower_padding;
+    // cl_uint k_enable_maxpooling    = (cl_uint)enable_maxpooling;
+    // cl_uint k_enable_avgpooling    = (cl_uint)enable_avgpooling;
+    // cl_uint k_enable_clipping = (cl_uint)enable_clipping;
+    // cl_uint k_enable_shift    = (cl_uint)enable_shift;
+    // cl_uint k_min_clip  = (cl_uint)min_clip;
+    // cl_uint k_max_clip  = (cl_uint)max_clip;
+    // cl_uint k_dir_shift = (cl_uint)dir_shift;
+    // cl_uint k_pos_shift = (cl_uint)pos_shift;
+
+    cl_mem  k_mem_I        = I;
+    cl_mem  k_mem_I_add    = I_add;
+    cl_uint k_H    = (cl_uint)H;
+    cl_uint k_W    = (cl_uint)W;
+    // HO
+    // WO
+    cl_uint k_rows    = (cl_uint)rows;
+    // PT
+    // PB
+    // PL
+    // PR
+    // SH
+    // SW
+    cl_uint k_I    = (cl_uint)Ichannels;
+    cl_uint k_O    = (cl_uint)Ochannels;
+    
+    cl_uint k_i_iter          = (cl_uint)I_ITER;
+    cl_uint k_o_iter_first    = (cl_uint)first_o_iter;
+    cl_uint k_o_iter_last     = (cl_uint)last_o_iter;
+    cl_uint k_enable_relu     = (cl_uint)enable_relu;
+    // enable_stm
+    // relu_factor
+    // enable_batch_norm
+    cl_mem  k_mem_K    = K;
+    cl_mem  k_mem_B    = B;
+    cl_mem  k_mem_BN_values  = BN_values;
+    cl_mem  k_mem_O    = O;
+    // read_offset 
+    // write_offset
+    cl_uint k_global_offset = 0; //(cl_uint)global_offset;
+    cl_uint k_enable_upper_padding = 1;//(cl_uint)enable_upper_padding;
+    cl_uint k_enable_lower_padding = 1;//(cl_uint)enable_lower_padding;
+    
+    cl_uint k_enable_maxpooling    = (cl_uint)enable_maxp;
+    cl_uint k_enable_avgpooling    = (cl_uint)enable_avgp;
+    cl_uint k_enable_clipping = (cl_uint)enable_clipping;
+    cl_uint k_enable_shift    = (cl_uint)enable_shift;
+    // enable_add
+    // enable_upscale
+    cl_uint k_min_clip  = (cl_uint)min_clip;
+    cl_uint k_max_clip  = (cl_uint)max_clip;
+    cl_uint k_dir_shift = (cl_uint)dir_shift;
+    cl_uint k_pos_shift = (cl_uint)pos_shift;
+
+
+    cl_uint k_M = k_H * k_W * k_I;
+    cl_uint k_N = k_H * k_W * k_O;
+
+
+    cl_uint k_enable_pooling = (k_enable_maxpooling != 0) || (k_enable_avgpooling != 0);
+    //----------------------------------------------------------
+
+    //cl_uint k_offset_factor = ((I_input + CPI - 1) / CPI) * CPI * CPO * 9;
+    //cl_uint k_offset_factor = ((I_input + CPI - 1) / CPI) * CPI * CPO;  // since we are reading kernel_t data type on the other side, we do not multiply *9 (kH*kW)
+    cl_uint k_offset_factor = ((k_I + CPI - 1) / CPI) ;
+
+    cl_uint k_O_ITER        = k_o_iter_last - k_o_iter_first + 1;
+
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels for 2D convolution\n");
+    printf("k_conv2D H %d   W %d   rows %d   I %d   O %d   I_ITER %d   o_iter_first %d   o_iter_last %d   enable_relu %d   "  \
+        "   upper_padding %d   lower_padding %d, maxpooling %d   avgpooling %d   enable clip %d   enable shift %d \n",
+        k_H, k_W, k_rows, k_I, k_O, k_i_iter, k_o_iter_first, k_o_iter_last, k_enable_relu, 
+        k_enable_upper_padding, k_enable_lower_padding, k_enable_maxpooling, k_enable_avgpooling, k_enable_clipping, k_enable_shift 
+        );
+#endif
+
+    //size_t window_size 
+
+    // buffers already allocated and transferred
+
+    cl_uint arg_ind = 0;
+    //--------------------------------
+    // let's set the kernels arguments
+    // DATA IN
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_DATA_IN_READER");
+#endif
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_DATA_IN_READER], arg_ind++, sizeof(cl_mem),  (void*)&k_mem_I)); //(void*)&buffer_i));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_DATA_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_M));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_DATA_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_H));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_DATA_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_W));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_DATA_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_rows));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_DATA_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_DATA_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_global_offset));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_DATA_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_enable_lower_padding));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_DATA_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_enable_upper_padding));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_DATA_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_i_iter));
+
+    // KERNEL_IN
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_KERNEL_IN_READER");
+#endif
+    arg_ind = 0;
+    //kernel void kernel_in(global kernel_t * kernel, uint offset_factor, uint I_ITER, uint o_iter_first, uint O_ITER){...}
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_KERNEL_IN_READER], arg_ind++, sizeof(cl_mem),  (void*)&k_mem_K)); //(void*)& buffer_k));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_KERNEL_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_offset_factor));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_KERNEL_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_i_iter));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_KERNEL_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_o_iter_first));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_KERNEL_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+
+    // BIAS_IN
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_BIAS_IN_READER");
+#endif
+    arg_ind = 0;
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_BIAS_IN_READER], arg_ind++, sizeof(cl_mem),  (void*)&k_mem_B)); //(void*)&buffer_bias));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_BIAS_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_o_iter_first));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_BIAS_IN_READER], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+
+    // WRITE
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_WRITER");
+#endif
+    arg_ind = 0;
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_WRITER], arg_ind++, sizeof(cl_mem),  (void*)&k_mem_O)); //(void*)&buffer_o));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_WRITER], arg_ind++, sizeof(cl_uint), (void*)&k_H));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_WRITER], arg_ind++, sizeof(cl_uint), (void*)&k_W));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_WRITER], arg_ind++, sizeof(cl_uint), (void*)&k_rows));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_WRITER], arg_ind++, sizeof(cl_uint), (void*)&k_o_iter_first));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_WRITER], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_WRITER], arg_ind++, sizeof(cl_uint), (void*)&k_enable_pooling));
+
+    // IB - (INPUT BUFFER)
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_INPUT_BUFFER");
+#endif
+    arg_ind = 0;
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_INPUT_BUFFER], arg_ind++, sizeof(cl_uint), (void*)&k_H));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_INPUT_BUFFER], arg_ind++, sizeof(cl_uint), (void*)&k_W));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_INPUT_BUFFER], arg_ind++, sizeof(cl_uint), (void*)&k_rows));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_INPUT_BUFFER], arg_ind++, sizeof(cl_uint), (void*)&k_i_iter));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_INPUT_BUFFER], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_INPUT_BUFFER], arg_ind++, sizeof(cl_uint), (void*)&k_enable_lower_padding));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_INPUT_BUFFER], arg_ind++, sizeof(cl_uint), (void*)&k_enable_upper_padding));
+
+    // PAD - PADDING
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_PADDING");
+#endif
+    arg_ind = 0;
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_PADDING], arg_ind++, sizeof(cl_uint), (void*)&k_H));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_PADDING], arg_ind++, sizeof(cl_uint), (void*)&k_W));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_PADDING], arg_ind++, sizeof(cl_uint), (void*)&k_i_iter));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_PADDING], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_PADDING], arg_ind++, sizeof(cl_uint), (void*)&k_enable_lower_padding));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_PADDING], arg_ind++, sizeof(cl_uint), (void*)&k_enable_upper_padding));
+
+    // CVT
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_CVT");
+#endif
+    arg_ind = 0;
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_CVT], arg_ind++, sizeof(cl_uint), (void*)&k_rows));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_CVT], arg_ind++, sizeof(cl_uint), (void*)&k_W));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_CVT], arg_ind++, sizeof(cl_uint), (void*)&k_i_iter));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_CVT], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+
+    // MUL - MULTIPLIER
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_MULTIPLIER");
+#endif
+    arg_ind = 0;
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_MULTIPLIER], arg_ind++, sizeof(cl_uint), (void*)&k_rows));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_MULTIPLIER], arg_ind++, sizeof(cl_uint), (void*)&k_W));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_MULTIPLIER], arg_ind++, sizeof(cl_uint), (void*)&k_i_iter));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_MULTIPLIER], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+
+    // ADD - ADDER
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_ADDER");
+#endif
+    arg_ind = 0;
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_ADDER], arg_ind++, sizeof(cl_uint), (void*)&k_rows));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_ADDER], arg_ind++, sizeof(cl_uint), (void*)&k_W));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_ADDER], arg_ind++, sizeof(cl_uint), (void*)&k_i_iter));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_ADDER], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+
+    // RELU
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_RELU");
+#endif
+    arg_ind = 0;
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_RELU], arg_ind++, sizeof(cl_uint), (void*)&k_H));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_RELU], arg_ind++, sizeof(cl_uint), (void*)&k_W));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_RELU], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_RELU], arg_ind++, sizeof(cl_uint), (void*)&k_enable_relu));
+
+    // POOL CVT
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_POOL_CVT");
+#endif
+    arg_ind = 0;
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_POOL_CVT], arg_ind++, sizeof(cl_uint), (void*)&k_H));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_POOL_CVT], arg_ind++, sizeof(cl_uint), (void*)&k_W));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_POOL_CVT], arg_ind++, sizeof(cl_uint), (void*)&k_enable_maxpooling));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_POOL_CVT], arg_ind++, sizeof(cl_uint), (void*)&k_enable_avgpooling));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_POOL_CVT], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+
+    // POOL POOLING
+#ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: set kernel %s arguments\n", "K_POOL_POOLING");
+#endif
+    arg_ind = 0;
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_POOL_POOLING], arg_ind++, sizeof(cl_uint), (void*)&k_H));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_POOL_POOLING], arg_ind++, sizeof(cl_uint), (void*)&k_W));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_POOL_POOLING], arg_ind++, sizeof(cl_uint), (void*)&k_enable_maxpooling));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_POOL_POOLING], arg_ind++, sizeof(cl_uint), (void*)&k_enable_avgpooling));
+    OCL_CHECK(err, err = clSetKernelArg(kernel_hlsinf[kernel_id][K_POOL_POOLING], arg_ind++, sizeof(cl_uint), (void*)&k_O_ITER));
+
+    //
+
+    cl_uint num_pixels_in  = H * W;
+    cl_uint num_pixels_out = rows * W;
+    // cl_uint num_kernels_in = 1; seguro que es uno ?
+    // cl_uint num_bias_in    = ; a este que valor le toca ?
+
+
+    //size_t sample_data_in_size   = num_pixels_in;
+    //size_t sample_data_in_size   = num_pixels_in * k_O_ITER;
+    size_t sample_data_out_size  = num_pixels_out;
+    //  size_t sample_kernel_in_size = num_kernels_in;
+    //  size_t sample_bias_in_size   = num_bias_in;
+
+    // clEnqueueNDRangeKernel(q, kernel_conv2D[k], 1, NULL, &ws, &ls, 0, NULL, &kernel_events[k]);
+    // cl_int clEnqueueNDRangeKernel(
+    //        cl_command_queue command_queue,
+    //        cl_kernel kernel,
+    //        cl_uint work_dim,
+    //        const size_t* global_work_offset,
+    //        const size_t* global_work_size,
+    //        const size_t* local_work_size,
+    //        cl_uint num_events_in_wait_list,
+    //        const cl_event* event_wait_list,
+    //        cl_event* event
+    //       );
+    // clEnqueueNDRangeKernel( command_queue,           kernel, work_dim, global_work_offset, global_work_size, local_work_size, num_events_in_wait_list, event_wait_list, event);
+    //clEnqueueNDRangeKernel(              q, kernel_conv2D[k],         1,              NULL,              &ws,             &ls,                       0, NULL, &kernel_events[k]);
+    //   queues[K_DATA_IN_READER], kernels[K_DATA_IN_READER], 1, NULL, &sample_data_in_size, NULL, 0, NULL, NULL             );         
+    //--------------------------------
+    size_t ws = 1;
+    size_t ls = 1;
+    // Let's trigger kernels execution
+    //double time = getCurrentTimestamp();
+
+    #ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: Start kernels\n");
+    #endif
+    // read data_in
+    //OCL_CHECK(err, err = clEnqueueNDRangeKernel(q, kernel_hlsinf[kernel_id][K_DATA_IN_READER], 1, NULL, &sample_data_in_size, NULL, 0, NULL, NULL));
+    #ifdef DEBUG_VERBOSE 
+    printf("                 %s\n", subkernel_names[K_DATA_IN_READER]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueNDRangeKernel(q, kernel_hlsinf[kernel_id][K_DATA_IN_READER], 1, NULL, &ws, &ls, 0, NULL, &kernel_events[K_DATA_IN_READER]));//NULL));
+    // read kernel_in
+    //OCL_CHECK(err, err = clEnqueueNDRangeKernel(q, kernel_hlsinf[kernel_id][K_KERNEL_IN_READER], 1, NULL, &sample_kernel_in_size, NULL, 0, NULL, NULL));
+    #ifdef DEBUG_VERBOSE
+    printf("                 %s\n", subkernel_names[K_KERNEL_IN_READER]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueNDRangeKernel(q, kernel_hlsinf[kernel_id][K_KERNEL_IN_READER], 1, NULL, &ws, &ls, 0, NULL, &kernel_events[K_KERNEL_IN_READER]));// NULL));
+    // read bias_in
+    //OCL_CHECK(err, err = clEnqueueNDRangeKernel(q], kernel_hlsinf[kernel_id][K_KERNEL_IN_READER], 1, NULL, &sample_bias_in_size, NULL, 0, NULL, NULL));
+    #ifdef DEBUG_VERBOSE
+    printf("                 %s\n", subkernel_names[K_BIAS_IN_READER]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueNDRangeKernel(q, kernel_hlsinf[kernel_id][K_BIAS_IN_READER], 1, NULL, &ws, &ls, 0, NULL, &kernel_events[K_BIAS_IN_READER]));// NULL));
+
+    // ib - input buffer
+    #ifdef DEBUG_VERBOSE
+    printf("                 %s\n", subkernel_names[K_INPUT_BUFFER]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueTask(q, kernel_hlsinf[kernel_id][K_INPUT_BUFFER], 0, NULL, &kernel_events[K_INPUT_BUFFER]));// NULL));
+
+    // padding
+    #ifdef DEBUG_VERBOSE
+    printf("                 %s\n", subkernel_names[K_PADDING]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueTask(q, kernel_hlsinf[kernel_id][K_PADDING], 0, NULL, &kernel_events[K_PADDING]));// NULL));
+
+    // cvt
+    #ifdef DEBUG_VERBOSE
+    printf("                 %s\n", subkernel_names[K_CVT]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueTask(q, kernel_hlsinf[kernel_id][K_CVT], 0, NULL, &kernel_events[K_CVT]));// NULL));
+
+    // mul
+    #ifdef DEBUG_HOSkernel_eventsT_KERNELS
+    printf("                 %s\n", subkernel_names[K_MULTIPLIER]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueTask(q, kernel_hlsinf[kernel_id][K_MULTIPLIER], 0, NULL, &kernel_events[K_MULTIPLIER]));// NULL));
+
+    //add
+    #ifdef DEBUG_VERBOSE
+    printf("                 %s\n", subkernel_names[K_ADDER]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueTask(q, kernel_hlsinf[kernel_id][K_ADDER], 0, NULL, &kernel_events[K_ADDER]));// NULL));
+
+    // relu
+    #ifdef DEBUG_VERBOSE
+    printf("                 %s\n", subkernel_names[K_RELU]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueTask(q, kernel_hlsinf[kernel_id][K_RELU], 0, NULL, &kernel_events[K_RELU]));// NULL));
+
+    // pool_cvt
+    #ifdef DEBUG_VERBOSE
+    printf("                 %s\n", subkernel_names[K_POOL_CVT]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueTask(q, kernel_hlsinf[kernel_id][K_POOL_CVT], 0, NULL, &kernel_events[K_POOL_CVT]));// NULL));
+
+    // pool_pooling 
+    #ifdef DEBUG_VERBOSE
+    printf("                 %s\n", subkernel_names[K_POOL_POOLING]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueTask(q, kernel_hlsinf[kernel_id][K_POOL_POOLING], 0, NULL, &kernel_events[K_POOL_POOLING]));// NULL));
+
+    // write
+    //OCL_CHECK(err, err = clEnqueueNDRangeKernel(q, kernel_hlsinf[kernel_id][K_WRITER], 1, NULL,  &sample_data_out_size, NULL, 0, NULL, NULL));
+    #ifdef DEBUG_VERBOSE
+    printf("                 %s\n", subkernel_names[K_WRITER]);
+    #endif
+    OCL_CHECK(err, err = clEnqueueNDRangeKernel(q, kernel_hlsinf[kernel_id][K_WRITER], 1, NULL,  &ws, &ls, 0, NULL, &kernel_events[K_WRITER]));// NULL));
+
+    #ifdef DEBUG_VERBOSE
+    printf("run_aoc_kernels: all kernels launched\n");
+    #endif
+    printf("run_aoc_kernels: waiting for kernels completion\n");
+
+    // Wait for command queue to complete pending events
+    //for(int i=0; i<K_SUBKERNELS; ++i) {
+    OCL_CHECK(err, err = clFinish(q));
+    //}
+
+    // getCurrentTimestamp is a helper function (common) that returns time in seconds
+    // Record execution time
+    //time = getCurrentTimestamp() - time;
+
+    //kernels_execution_time = time * 1E6; // value in us
+
+    //int num_pixels = H*W;
+    //double gpixels_per_sec = ((double)(num_pixels / time) * 1E-9);
+    //printf("\tThroughput = %.4f Gpx / sec\n", gpixels_per_sec);
+
+    //printf("\tProcessing time = %.4f ms\n", (float)(time * 1E3));
+
+    // OpenCL kernel time
+    //printf("JM10 kernel profiler timings summary\n");
+    #ifdef DEBUG_VERBOSE
+    cl_ulong ts_first;
+    cl_ulong te_last;
+    cl_ulong ts_writer;
+    cl_ulong te_writer;
+    cl_ulong diff_writer;
+    cl_ulong diff_kernels;
+    OCL_CHECK(err, err = clGetEventProfilingInfo(kernel_events[0], CL_PROFILING_COMMAND_START, sizeof(ts_first), &ts_first, NULL));
+    OCL_CHECK(err, err = clGetEventProfilingInfo(kernel_events[K_SUBKERNELS-1], CL_PROFILING_COMMAND_END, sizeof(te_last), &te_last, NULL));
+    OCL_CHECK(err, err = clGetEventProfilingInfo(kernel_events[K_WRITER], CL_PROFILING_COMMAND_START, sizeof(ts_writer), &ts_writer, NULL));
+    OCL_CHECK(err, err = clGetEventProfilingInfo(kernel_events[K_WRITER], CL_PROFILING_COMMAND_END, sizeof(te_writer), &te_writer, NULL));
+
+    // profiling info is returned in ns
+    diff_writer  = te_writer - ts_writer;
+    diff_kernels = te_last   - ts_first;
+
+    printf("PROFILE EVENT - TIME      WRITER KERNEL = %lu ns  (%lf ms)\n",  diff_writer,((double)diff_writer/(double)1000000.0));
+    printf("PROFILE EVENT - TIME LAST -FIRST KERNEL = %lu ns  (%lf ms)\n",  diff_kernels,((double)diff_kernels/(double)1000000.0));
+
+    // update kernels execution time
+    double kernels_execution_time;
+    kernels_execution_time = diff_kernels / 1000.0; // value from ns to us
+    //printf("test_kernels: update kernels execution time with event profiling time, %lf ns to %lu ns \n",  kernels_execution_time, diff_kernels);
+    printf("\tProcessing time = %.4f ms\n", (float)(kernels_execution_time/1000.0));
+    #endif
+
+
+    //--------------------------------
+    //
+
+  }
 
 }
 
@@ -217,20 +638,20 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
   #endif
 
   // arguments
-  cl_mem I     = *(cl_mem *)input->fpga_ptr;     // input activations
-  cl_mem K     = *(cl_mem *)filter->fpga_ptr;    // kernel
-  cl_mem B     = *(cl_mem *)bias->fpga_ptr;      // bias
+  cl_mem I     = (cl_mem)(input->fpga_ptr);     // input activations
+  cl_mem K     = (cl_mem)(filter->fpga_ptr);    // kernel
+  cl_mem B     = (cl_mem)(bias->fpga_ptr);      // bias
   int use_bias     = 1;                                 // whether use bias or not
-  cl_mem O     = *(cl_mem *)output->fpga_ptr;         // output activations
+  cl_mem O     = (cl_mem)(output->fpga_ptr);         // output activations
   cl_mem I_add, BN_values; 
   if (enable_add) {
-    I_add = *(cl_mem*)input_add->fpga_ptr; // input add data
+    I_add = (cl_mem)(input_add->fpga_ptr); // input add data
   } else {
     I_add = I;
   }
 
   if (enable_batch_norm) {
-    BN_values = *(cl_mem*)batch_norm_values->fpga_ptr; // ERROR: no tiene fpga_ptr porque es puntero CPU
+    BN_values = (cl_mem)(batch_norm_values->fpga_ptr); // ERROR: no tiene fpga_ptr porque es puntero CPU
   } else {
     BN_values = I;
   }

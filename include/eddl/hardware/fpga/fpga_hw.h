@@ -19,6 +19,9 @@
 #include "AOCLUtils/aocl_utils.h"
 #define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 #include <CL/cl.h>
+// intel opencl support functions 
+#include "eddl/hardware/fpga/AOCLUtils/opencl.h"
+#include "eddl/hardware/fpga/icl_aux.h" 
 // -- end of S10MX 
 
 
@@ -145,7 +148,7 @@ void event_cb(cl_event event1, cl_int cmd_status, void *data);
 void fpga_init(int kernel_version, int kernel_subversion);
 
 void fpga_destroy_memory(cl_mem fpga_ptrI);
-cl_mem fpga_create_memory(long int size);
+cl_mem fpga_create_memory(cl_mem_flags, long int size);
 void fpga_copy_memory_to_fpga(void *ptr_cpu, cl_mem ptr_fpga, long int size);
 void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl_mem ptr_fpga, long int size, int src_format, int dst_format);
 void fpga_copy_memory_from_fpga(cl_mem ptr_fpga, void *ptr_cpu, long int size);

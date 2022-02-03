@@ -177,8 +177,8 @@ void event_cb(cl_event event1, cl_int cmd_status, void *data) {
   //OCL_CHECK(err, err = event.getInfo(CL_EVENT_COMMAND_TYPE, &command));
   //OCL_CHECK(err, err = event.getInfo(CL_EVENT_COMMAND_EXECUTION_STATUS, &status));
   
-  OCL_CHECK(err, err = clGetEventInfo(CL_EVENT_COMMAND_TYPE, sizeof(command), &command), NULL);
-  OCL_CHECK(err, err = clGetEventInfo(CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+  OCL_CHECK(err, err = clGetEventInfo(event1, CL_EVENT_COMMAND_TYPE, sizeof(command), &command, NULL));
+  OCL_CHECK(err, err = clGetEventInfo(event1, CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL));
 
 
   const char *command_str;
@@ -235,7 +235,7 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
   //if (T->fpga_ptr == NULL) T->fpga_ptr = fpga_create_memory(size);
 
   float *buf = (float *)malloc(size);
-  fpga_copy_memory_from_fpga((cl_mem)T->fpga_ptr, buf, size);
+  fpga_copy_memory_from_fpga((cl_mem)(T->fpga_ptr), buf, size);
 
   // Now we calculate statistics (min, max, avg) from the tensor
   float min = FLT_MAX;
@@ -254,7 +254,7 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
 
   // Now, we print the information (related tensor information and statistics of the tensor)
   printf("%s: - Tensor (fpga) ", str);
-  printf(" size %10d ", T->size);
+  printf(" size %10lu ", T->size);
   printf(" dims: ");
   printf(" %6d ", T->shape[0]);
   if (T->ndim>=2) printf(" x %6d ", T->shape[1]); else printf("          ");
@@ -524,9 +524,9 @@ void fpga_copy_to_fpga_good(float *nptr, Tensor *A, int cvt) {
     // regular copy from CPU to FPGA with no precision conversion
     cl_int err;
     cl_event event;
-    cl_mem buf= (cl_mem) A->fpga_ptr;
+    cl_mem buf= (cl_mem) (A->fpga_ptr);
     PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err = clEnqueueWriteBuffer(q, *buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, 0, NULL, &event));
+    OCL_CHECK(err, err = clEnqueueWriteBuffer(q, buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, 0, NULL, &event));
     OCL_CHECK(err, err = clFinish(q));
     //OCL_CHECK(err, err = clEnqueueWriteBuffer(q, *buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, 0, NULL, NULL));
     PROFILING_FOOTER(FPGA_WRITE);
@@ -554,7 +554,7 @@ void fpga_copy_to_fpga_good(float *nptr, Tensor *A, int cvt) {
   // #else
   cl_int err;
   cl_event event;
-  cl_mem buf= (cl_mem) A->fpga_ptr;
+  cl_mem buf= (cl_mem) (A->fpga_ptr);
   PROFILING_HEADER(FPGA_WRITE);
   // clEnqueueWriteBuffer( command_queue, buffer, blocking_write, offset, size, ptr, num_events_in_wait_list, event_wait_list, event);
   OCL_CHECK(err, err = clEnqueueWriteBuffer(q, buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, 0, NULL, &event));
@@ -638,7 +638,57 @@ void fpga_destroy_memory(cl_mem fpga_ptrI) {
 // cl::buffer inherits from memroy and launches a clCreateBuffer
 //     so my question is how to get the cl_mem object later on...
 //cl_mem fpga_create_memory(long int size, cl_int flags)
-cl_mem fpga_create_memory(long int size) {
+
+//cl_mem *fpga_create_memory(long int size) {
+//  // cl_mem already is a pointer, so we can directly return a "cl_mem" type
+//  cl_mem *buffer = new cl_mem;
+//  cl_int err;
+//  #ifdef FPGA_DEBUG_VERBOSE
+//  printf("    (creating memory in fpga size %d)\n", size);
+//  #endif
+//
+//  printf("\n");
+//  printf("\n");
+//  printf("UNVDER DEVEL\n");
+//  printf("JM10 Critical Warning @ fpga_create_memory\n");
+//  printf("  all mems created with READ_WRITE flag on host side, but it is different at device side\n");
+//  printf("  left as is for the sake of speedup the integration of stratix fpga on the host side \n");
+//  printf(" TO BE FIXED\n");
+//  printf("\n");
+//  printf("\n");
+//  // add to function call : cl_int mb_flags;  CL_MEM_READ_WRITE or CL_MEM_READ_ONLY or CL_MEM_WRITE_ONLY
+//  OCL_CHECK(err, *buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, size, nullptr, &err));
+//  
+//  return buffer;
+//}
+//
+//
+//
+//cl_mem fpga_create_memory(long int size) {
+//  // cl_mem already is a pointer, so we can directly return a "cl_mem" type
+//  cl_mem buffer;
+//  cl_int err;
+//  #ifdef FPGA_DEBUG_VERBOSE
+//  printf("    (creating memory in fpga size %d)\n", size);
+//  #endif
+//
+//  printf("\n");
+//  printf("\n");
+//  printf("UNVDER DEVEL\n");
+//  printf("JM10 Critical Warning @ fpga_create_memory\n");
+//  printf("  all mems created with READ_WRITE flag on host side, but it is different at device side\n");
+//  printf("  left as is for the sake of speedup the integration of stratix fpga on the host side \n");
+//  printf(" TO BE FIXED\n");
+//  printf("\n");
+//  printf("\n");
+//  // add to function call : cl_int mb_flags;  CL_MEM_READ_WRITE or CL_MEM_READ_ONLY or CL_MEM_WRITE_ONLY
+//  return clCreateBuffer(context, CL_MEM_READ_WRITE, size, nullptr, &err);
+//  
+//  //return buffer;
+//}
+//
+
+cl_mem fpga_create_memory(cl_mem_flags flags, long int size) {
   // cl_mem already is a pointer, so we can directly return a "cl_mem" type
   cl_mem buffer;
   cl_int err;
@@ -656,8 +706,8 @@ cl_mem fpga_create_memory(long int size) {
   printf("\n");
   printf("\n");
   // add to function call : cl_int mb_flags;  CL_MEM_READ_WRITE or CL_MEM_READ_ONLY or CL_MEM_WRITE_ONLY
-  buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, size, nullptr, &err);
-  //OCL_CHECK(err, );
+  OCL_CHECK(err, buffer = clCreateBuffer(context, flags, size, nullptr, &err));
+  
   return buffer;
 }
 
@@ -763,8 +813,8 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
 
     // copy to FPGA, source is in CPU and is in FP32, depending on the output format of HLSinf we convert if needed
     if (hlsinf_input_format == HLSINF_FP32) {
-      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(B->ptr, (cl_mem)B->fpga_ptr, size_out);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(CL_MEM_READ_ONLY, size_out);
+      fpga_copy_memory_to_fpga(B->ptr, (cl_mem)(B->fpga_ptr), size_out);
     } else {
       printf("Transform: input format not supported\n");
       exit(1);
@@ -805,8 +855,8 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
 
     // copy to FPGA, source is in CPU and is in FP32, depending on the output format of HLSinf we convert if needed
     if (hlsinf_input_format == HLSINF_FP32) {
-      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(B->ptr, (cl_mem)B->fpga_ptr, size_out);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(CL_MEM_READ_ONLY, size_out);
+      fpga_copy_memory_to_fpga(B->ptr, (cl_mem)(B->fpga_ptr), size_out);
     } else {
       printf("Transform: input format not supported\n");
       exit(1);
@@ -817,7 +867,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     int num_elements = B->size;
 
     if (hlsinf_output_format == HLSINF_FP32) {
-      fpga_copy_memory_from_fpga((cl_mem)A->fpga_ptr, A->ptr, num_elements * sizeof(float));
+      fpga_copy_memory_from_fpga((cl_mem)(A->fpga_ptr), A->ptr, num_elements * sizeof(float));
       memcpy(B->ptr, A->ptr, num_elements * sizeof(float));
     } else {
       printf("Transform: output format not supported\n");
@@ -849,7 +899,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     //printf("ptr_fpga %p ptr_dst %p size %d\n", A->fpga_ptr, B->ptr, size_dst);
 
     if (hlsinf_output_format == HLSINF_FP32) {
-      fpga_copy_memory_from_fpga((cl_mem)A->fpga_ptr, A->ptr, num_elements * sizeof(float));
+      fpga_copy_memory_from_fpga((cl_mem)(A->fpga_ptr), A->ptr, num_elements * sizeof(float));
     } else {
       printf("Transform: output format not supported\n");
       exit(1);
