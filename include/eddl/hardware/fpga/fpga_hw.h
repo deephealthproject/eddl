@@ -147,11 +147,11 @@ void event_cb(cl_event event1, cl_int cmd_status, void *data);
 
 void fpga_init(int kernel_version, int kernel_subversion);
 
-void fpga_destroy_memory(cl_mem fpga_ptrI);
-cl_mem fpga_create_memory(cl_mem_flags, long int size);
-void fpga_copy_memory_to_fpga(void *ptr_cpu, cl_mem ptr_fpga, long int size);
-void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl_mem ptr_fpga, long int size, int src_format, int dst_format);
-void fpga_copy_memory_from_fpga(cl_mem ptr_fpga, void *ptr_cpu, long int size);
+void fpga_destroy_memory(void * fpga_ptrI);
+void *fpga_create_memory(cl_mem_flags flags, long int size);
+void fpga_copy_memory_to_fpga(void *ptr_cpu, void * ptr_fpga, long int size);
+void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int size, int src_format, int dst_format);
+void fpga_copy_memory_from_fpga(void * ptr_fpga, void *ptr_cpu, long int size);
 
 void fpga_copy_fpga(Tensor *A, Tensor *B);
 void fpga_copy_to_fpga_good(float *nptr, Tensor *A, int cvt=1);

@@ -116,7 +116,6 @@ public:
     // fpga-related information
     // jomarm10 asks: should this attribute be protected with "#ifdef cFPGA"?
     void *fpga_ptr;               // open-cl buffer pointer to data
-    //cl_mem fpga_ptr;               // open-cl buffer pointer to data
 
 
     // Constructors

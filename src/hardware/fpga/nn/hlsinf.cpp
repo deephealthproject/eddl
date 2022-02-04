@@ -74,8 +74,8 @@ PROFILING_ENABLE_EXTERN(fpga_hlsinf);
 //   CPO: Kernel channels per output
 //   kernel_id: Kernel ID (which kernel to use in a multi-kernel setting)
 //
-void HLSinf_launch_kernel(cl_mem I, cl_mem I_add, int H, int W, int HO, int WO, int rows, int PT, int PB, int PL, int PR, int SH, int SW, int Ichannels, int Ochannels,  
-                          int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor, int enable_batch_norm, cl_mem K, cl_mem B, cl_mem BN_values, cl_mem O, 
+void HLSinf_launch_kernel(void *I, void *I_add, int H, int W, int HO, int WO, int rows, int PT, int PB, int PL, int PR, int SH, int SW, int Ichannels, int Ochannels,  
+                          int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor, int enable_batch_norm, void *K, void *B, void *BN_values, void *O, 
                           int read_offset, int write_offset, int enable_maxp, int enable_avgp, int enable_clipping,
                           int enable_shift, int enable_add, int enable_upscale, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
 
@@ -88,66 +88,7 @@ void HLSinf_launch_kernel(cl_mem I, cl_mem I_add, int H, int W, int HO, int WO, 
   // input iterations
   int I_ITER = (Ichannels + (CPI-1)) / CPI;
 
-  
-  /*
-#ifdef DEBUG_VERBOSE
-  printf("I_ITER %d, first %d last %d enable_relu %d relu_factor %f enable_stm %d enable_maxp %d enable_avgp %d enable_clip %d min_clip %d max_clip %d enable_shift %d enable_add %d\n PT %d PB %d PL %d PR %d SH %d SW %d upscale %d batch_norm %d\n",
-                  I_ITER, first_o_iter, last_o_iter, enable_relu, relu_factor, enable_stm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift,
-                  enable_add, PT, PB, PL, PR, SH, SW, enable_upscale, enable_batch_norm);
-  printf("H %d W %d rows %d Ich %d Och %d\n", H, W, rows, Ichannels, Ochannels);
-  printf("min_clip %d max_clip %d, shifts %d, direction %d enable_upscale %d\n", min_clip, max_clip, pos_shift, dir_shift, enable_upscale);
-#endif
-
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I_add));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, H));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, W));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, HO));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, WO));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, rows));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, PT));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, PB));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, PL));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, PR));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, SH));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, SW));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, Ichannels));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, Ochannels));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I_ITER));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, first_o_iter));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, last_o_iter));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_relu));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_stm));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, relu_factor));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_batch_norm));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, K));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, B));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, BN_values));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, O));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, read_offset));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, write_offset));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_maxp));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_avgp));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_clipping));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_shift));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_add));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, min_clip));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, max_clip));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, dir_shift));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, pos_shift));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_upscale));  // upsize
-
-  // Launch the Kernel
-  OCL_CHECK(err, err = (*q).enqueueNDRangeKernel(kernel_hlsinf[kernel_id], 0, 1, 1, NULL, &kernel_events[kernel_id]));
-
-  //set_callback(kernel_events[kernel_id], "ooo_queue");
-  OCL_CHECK(err, err = kernel_events[kernel_id].wait());
-
-
-
-  */
-
-  printf("This implementation only supports 1 kernel \n");
+    printf("This implementation only supports 1 kernel \n");
   printf("kernel_id: %d\n", kernel_id);
   #ifdef DEBUG_VERBOSE
   printf("I_ITER %d, first %d last %d enable_relu %d relu_factor %f enable_stm %d enable_maxp %d enable_avgp %d enable_clip %d min_clip %d max_clip %d enable_shift %d enable_add %d\n PT %d PB %d PL %d PR %d SH %d SW %d upscale %d batch_norm %d\n",
@@ -198,8 +139,8 @@ void HLSinf_launch_kernel(cl_mem I, cl_mem I_add, int H, int W, int HO, int WO, 
     // cl_uint k_dir_shift = (cl_uint)dir_shift;
     // cl_uint k_pos_shift = (cl_uint)pos_shift;
 
-    cl_mem  k_mem_I        = I;
-    cl_mem  k_mem_I_add    = I_add;
+    cl_mem  k_mem_I        = (cl_mem)I;
+    cl_mem  k_mem_I_add    = (cl_mem)I_add;
     cl_uint k_H    = (cl_uint)H;
     cl_uint k_W    = (cl_uint)W;
     // HO
@@ -221,10 +162,10 @@ void HLSinf_launch_kernel(cl_mem I, cl_mem I_add, int H, int W, int HO, int WO, 
     // enable_stm
     // relu_factor
     // enable_batch_norm
-    cl_mem  k_mem_K    = K;
-    cl_mem  k_mem_B    = B;
-    cl_mem  k_mem_BN_values  = BN_values;
-    cl_mem  k_mem_O    = O;
+    cl_mem  k_mem_K    = (cl_mem)K;
+    cl_mem  k_mem_B    = (cl_mem)B;
+    cl_mem  k_mem_BN_values  = (cl_mem)BN_values;
+    cl_mem  k_mem_O    = (cl_mem)O;
     // read_offset 
     // write_offset
     cl_uint k_global_offset = 0; //(cl_uint)global_offset;
@@ -630,20 +571,20 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
   #endif
 
   // arguments
-  cl_mem I     = (cl_mem)(input->fpga_ptr);     // input activations
-  cl_mem K     = (cl_mem)(filter->fpga_ptr);    // kernel
-  cl_mem B     = (cl_mem)(bias->fpga_ptr);      // bias
+  void * I     = input->fpga_ptr;     // input activations
+  void * K     = filter->fpga_ptr;    // kernel
+  void * B     = bias->fpga_ptr;      // bias
   int use_bias     = 1;                                 // whether use bias or not
-  cl_mem O     = (cl_mem)(output->fpga_ptr);         // output activations
-  cl_mem I_add, BN_values; 
+  void * O     = output->fpga_ptr;         // output activations
+  void * I_add; void *BN_values; 
   if (enable_add) {
-    I_add = (cl_mem)(input_add->fpga_ptr); // input add data
+    I_add = input_add->fpga_ptr; // input add data
   } else {
     I_add = I;
   }
 
   if (enable_batch_norm) {
-    BN_values = (cl_mem)(batch_norm_values->fpga_ptr); // ERROR: no tiene fpga_ptr porque es puntero CPU
+    BN_values = batch_norm_values->fpga_ptr; // ERROR: no tiene fpga_ptr porque es puntero CPU
   } else {
     BN_values = I;
   }
