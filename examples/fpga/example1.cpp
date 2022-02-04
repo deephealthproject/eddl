@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   model net, net_fpga;
   Tensor *x;
 
-  download_hlsinf(2, 0);
+  download_hlsinf(2, 1);
 
   // Network
   in = Input({64, 256, 256});
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   build(net);
 
   // model for fpga
-  net_fpga = toFPGA(net, 2, 0);
+  net_fpga = toFPGA(net, 2, 1);
 
   // Input data
   x = new Tensor({1, 64, 256, 256});

@@ -382,7 +382,8 @@ void fpga_init(int kernel_version, int kernel_subversion) {
   //   |   1.4   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 8   |     2    |   128  |  1024  |    128   | Alveo U200          | hlsinf_v1.2.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |       |
   //   |   1.5   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 8   |     2    |   128  |  1024  |    128   | Alveo U200          | hlsinf_v1.2.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |   X   |
   //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //   |   2.0   |  FP32  |   FP32      | FP32  |  FP32      |   FP32  |   4 x 4   |     1    |   256  |   256  |    256   | Stratix10 MX  | hlsinf_stratix_v2.0.aocx |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |    |     |        |       |
+  //   |   2.0   |  FP32  |   FP32      | FP32  |  ----      |   FP32  |   4 x 4   |     1    |   256  |   256  |    256   | Stratix10 MX  | hlsinf_stratix_v2.0.aocx |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |    |     |        |       |
+  //   |   2.1   |  FP32  |   FP32      | FP32  |  ----      |   FP32  |   8 x 8   |     1    |   256  |   256  |    256   | Stratix10 MX  | hlsinf_stratix_v2.1.aocx |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |    |     |        |       |
   //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   if ((kernel_version == 2) && (kernel_subversion == 0)) {
@@ -390,12 +391,13 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
     hlsinf_ho_max = 256; hlsinf_wo_max = 256; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_stratix_v2.0.aocx";
-    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = false;
-    hlsinf_add_support = true;  hlsinf_upsize_support = false;
-    hlsinf_dense_support = false;
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = false;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = true;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v2.0: \n");
-    printf("  Kernel configuration : FP32, CPIxCPO: 4x4, 1 kernel (hlsinf_stratix_v2.0.aocx)\n");
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
     printf("  Platform             : Intel Stratix10 MX board\n");
     printf("  Supported layers     : CONV, CLIP, ReLU, MaxPool, AvgPool\n");
     printf("  Dense layer support  : No\n");
@@ -405,12 +407,13 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 1;
     hlsinf_ho_max = 256; hlsinf_wo_max = 256; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_stratix_v2.1.aocx";
-    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = false;
-    hlsinf_add_support = true;  hlsinf_upsize_support = false;
-    hlsinf_dense_support = false;
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = false;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = false;
+    hlsinf_upsize_support = false;  hlsinf_dense_support = false;
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v2.1: \n");
-    printf("  Kernel configuration : FP32, CPIxCPO: 8x8, 1 kernel (hlsinf_stratix_v2.1.aocx)\n");
+    printf("  Kernel configuration : FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
     printf("  Platform             : Instel Stratix10 MX board\n");
     printf("  Supported layers     : CONV, CLIP, ReLU, MaxPool, AvgPool\n");
     printf("  Dense layer support  : No\n");
@@ -696,15 +699,6 @@ cl_mem fpga_create_memory(cl_mem_flags flags, long int size) {
   printf("    (creating memory in fpga size %d)\n", size);
   #endif
 
-  printf("\n");
-  printf("\n");
-  printf("UNVDER DEVEL\n");
-  printf("JM10 Critical Warning @ fpga_create_memory\n");
-  printf("  all mems created with READ_WRITE flag on host side, but it is different at device side\n");
-  printf("  left as is for the sake of speedup the integration of stratix fpga on the host side \n");
-  printf(" TO BE FIXED\n");
-  printf("\n");
-  printf("\n");
   // add to function call : cl_int mb_flags;  CL_MEM_READ_WRITE or CL_MEM_READ_ONLY or CL_MEM_WRITE_ONLY
   OCL_CHECK(err, buffer = clCreateBuffer(context, flags, size, nullptr, &err));
   

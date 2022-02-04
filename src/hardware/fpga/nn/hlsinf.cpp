@@ -146,17 +146,6 @@ void HLSinf_launch_kernel(cl_mem I, cl_mem I_add, int H, int W, int HO, int WO, 
 
 
   */
-  printf("\n");
-  printf("\n");
-  printf("--------------------------------------------------------------------\n");
-  printf(" @src/hardware/fpga/nn/hlsinf.cpp -> HLSinf_launch_kernel           \n");
-  printf("\n");
-  printf(" UNDER DEVELOPMENT\n");
-  printf("\n");
-  printf("\n");
-  printf("-------------------------------------------------------------------\n");
-  printf("\n");
-  printf("\n");
 
   printf("This implementation only supports 1 kernel \n");
   printf("kernel_id: %d\n", kernel_id);
@@ -167,6 +156,9 @@ void HLSinf_launch_kernel(cl_mem I, cl_mem I_add, int H, int W, int HO, int WO, 
   printf("H %d W %d rows %d Ich %d Och %d\n", H, W, rows, Ichannels, Ochannels);
   printf("min_clip %d max_clip %d, shifts %d, direction %d enable_upscale %d\n", min_clip, max_clip, pos_shift, dir_shift, enable_upscale);
   #endif
+
+  OCL_CHECK(err, err = (kernel_id != 0));
+  
   if (kernel_id == 0) {
     cl_event  kernel_events[K_SUBKERNELS];
 
