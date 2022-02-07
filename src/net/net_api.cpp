@@ -38,9 +38,6 @@ extern void _show_profile_fpga();
 
 #define VERBOSE 0
 
-#define mpi_id0(...)   \
-    if (id==0) \
-        __VA_ARGS__; 
 
 int verboserec=1;
 

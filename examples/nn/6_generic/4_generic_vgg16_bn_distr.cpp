@@ -190,8 +190,8 @@ int main(int argc, char **argv) {
         
         /* Split dataset into processes */
         if (use_distr_dataset) {
-            sprintf(tr_images, "%s/train-images_0_%d.bi8", path, id);
-            sprintf(tr_labels, "%s/train-labels_0_%d.bi8", path, id);
+            sprintf(tr_images, "%s/%03d/train-images.bi8", path, id);
+            sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, id);
         }
 
         printf("%s\n", tr_images);
@@ -217,8 +217,8 @@ int main(int argc, char **argv) {
                 int selected = chunk;
                 printf("Chunk %d\n", chunk);
                 if (use_distr_dataset) {
-                    sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
-                    sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
+                    sprintf(tr_images, "%s/%03d/train-images.bi8", path, id);
+                    sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, id);
                 } else {
                     sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
                     sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
@@ -231,10 +231,7 @@ int main(int argc, char **argv) {
                 if (id == 0)
                     printf("Epoch: %d; chunk: %d\n", i, selected);
                 // training, list of input and output tensors, batch, epochs
-                fit(net,{x_train},
-                {
-                    y_train
-                }, batch_size, 1);
+                fit(net,{x_train},{y_train}, batch_size, 1);
                 printf("Free\n");
 
                 delete x_train;

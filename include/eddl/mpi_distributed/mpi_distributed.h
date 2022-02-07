@@ -58,6 +58,12 @@
   }                                                 \
 } while(0)
 
+#define mpi_id0(...)   \
+    if (id==0) {\
+        __VA_ARGS__; \
+    }
+
+
 #define AVG_DEFAULT 16
 
 #define FIXED 0
