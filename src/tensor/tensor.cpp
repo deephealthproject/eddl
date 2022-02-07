@@ -160,25 +160,9 @@ void Tensor::deleteData(){
 }
 
 
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
 void Tensor::updateData(float *fptr, void *fptr2, bool setshared){
     // TODO: What if the new_pointer is the same?
     // Solved with setshared for reshape_
-
-
-  // jose maria, quita también los defines de los colorines molones para los printf
-  printf("\n");
-  printf(KYEL "@tensor.cpp -> updateData jm10 tensor update data  isCPU = %d   isGPU = %d  isFPGA = %d   setshared = %d   ptr %p   ptr2 %p\n" KNRM, 
-      this->isCPU(), this->isGPU(), this->isFPGA(), 
-      (int)setshared, this->ptr, this->ptr2);
-
 
     bool was_shared = isshared;
     isshared=false;
@@ -202,10 +186,6 @@ void Tensor::updateData(float *fptr, void *fptr2, bool setshared){
             this->ptr2 = new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
 
         }
-
-        // jose maria, quita también los defines de los colorines molones para los printf
-        printf(KCYN "@tensor.cpp -> updateData    iscpu ndim = %d   ptr %p   ptr2 %p\n" KNRM, this->ndim,  this->ptr, this->ptr2);
-        printf("\n");
     }
 #ifdef cGPU
     else if (this->isGPU())

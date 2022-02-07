@@ -78,15 +78,6 @@ void set_text_default(){
   printf("\033[0m");
 }
 
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
-
 void * eddl_malloc(size_t size, const string & str_info){
     constexpr size_t alignment_block_size = 64;
 
@@ -144,11 +135,6 @@ void * eddl_malloc(size_t size, const string & str_info){
                                 + " allocating " + string(bytes2human(size, 0)) + " bytes at "
                                 + string(__FILE__) + "(" + std::to_string(__LINE__) + ") " + str_info);
     }
-
-    
-    // jose maria, quita también los defines de los colorines molones para los printf
-    printf(KGRN "@utils.cpp->eddl_malloc ptr = %p\n" KNRM, ptr);
-
     return ptr;
 }
 

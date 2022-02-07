@@ -120,18 +120,6 @@ unsigned long long acc_time_fpga[_NUM_FPGA_FUNCS];  // accumulated ime of a kern
 // profiling of FPGA resources being used
 float mb_memory_needed_fpga;                        // Megabytes of memory needed for tensors in the FPGA
 
-
-
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
-
-
 // OpenCL-related support functions ----------------------------------------------------------------------------------------------------------
 //
 
@@ -242,8 +230,6 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
   //if (T->fpga_ptr == NULL) T->fpga_ptr = fpga_create_memory(size);
 
   
-   printf(KRED "JM10 warning!!\n" KNRM);
-   printf(KYEL "@fpga_core->_profile_fpga_tensor replaced code to allocate aligned memory\n" KNRM);
   //float *buf = (float *)malloc(size);
    std::string tmp_name = std::string(str) + "_profile";
    float *buf = (float *)eddl_malloc(size, tmp_name.c_str());
@@ -839,32 +825,17 @@ void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size) {
 // ----------------------------------------------------------------------------------------------------------------------------------------
 // Support functions
 
-
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
 // -----------------------------------------------------------------
 // transform_nn
 //
 void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform) {
  _profile_fpga(_FPGA_TRANSFORM, 0);
  _debug_fpga_funcs("Transform");
- #ifdef FPGA_DEBUG
- printf(KMAG "@fpga_core -> fpga_transform_nn copy_cpu_to_fpga %d, copy_fpga_to_cpu %d, transform %d\n" KNRM, copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
-#endif
 
   int CPI = hlsinf_cpi;
 
   if (!transform && copy_cpu_to_fpga) {
     
-    printf(KMAG "dbug jm10 NOT transform and copy cpu to fpga\n" KNRM);
-
-
     #ifdef FPGA_DEBUG
     printf("  input   "); _profile_cpu_tensor(A);
     #endif
@@ -927,8 +898,6 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     printf("  input   "); _profile_cpu_tensor(A);
     #endif
 
-
-    printf(KMAG "dbug jm10 transform and copy cpu to fpga\n" KNRM);
 
     // transformation from CHW to GHWC (cpu to FPGA)
     // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
@@ -995,9 +964,6 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       exit(1);
     }
   } else if (!transform && copy_fpga_to_cpu) {
-   
-    printf(KMAG "dbug jm10 NOT transform and copy fpga to CPU\n" KNRM);
-
     float *ptr_dst = B->ptr;
     int num_elements = B->size;
 
