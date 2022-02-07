@@ -121,6 +121,17 @@ unsigned long long acc_time_fpga[_NUM_FPGA_FUNCS];  // accumulated ime of a kern
 float mb_memory_needed_fpga;                        // Megabytes of memory needed for tensors in the FPGA
 
 
+
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+
+
 // OpenCL-related support functions ----------------------------------------------------------------------------------------------------------
 //
 
@@ -230,7 +241,14 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
 
   //if (T->fpga_ptr == NULL) T->fpga_ptr = fpga_create_memory(size);
 
-  float *buf = (float *)malloc(size);
+  
+   printf(KRED "JM10 warning!!\n" KNRM);
+   printf(KYEL "@fpga_core->_profile_fpga_tensor replaced code to allocate aligned memory\n" KNRM);
+  //float *buf = (float *)malloc(size);
+   std::string tmp_name = std::string(str) + "_profile";
+   float *buf = (float *)eddl_malloc(size, tmp_name.c_str());
+
+
   fpga_copy_memory_from_fpga(T->fpga_ptr, buf, size);
 
   // Now we calculate statistics (min, max, avg) from the tensor
@@ -386,6 +404,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
   //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //   |   2.0   |  FP32  |   FP32      | FP32  |  ----      |   FP32  |   4 x 4   |     1    |   256  |   256  |    256   | Stratix10 MX  | hlsinf_stratix_v2.0.aocx |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |    |     |        |       |
   //   |   2.1   |  FP32  |   FP32      | FP32  |  ----      |   FP32  |   8 x 8   |     1    |   256  |   256  |    256   | Stratix10 MX  | hlsinf_stratix_v2.1.aocx |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |    |     |        |       |
+  //   |   2.2   |  FP32  |   FP32      | FP32  |  ----      |   FP32  |   8 x 8   |     1    |   256  |   512  |    256   | Stratix10 MX  | hlsinf_stratix_v2.2.aocx |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |    |     |        |       |
   //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   if ((kernel_version == 1) && (kernel_subversion == 0)) {
@@ -491,6 +510,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("HLSinf accelerator v2.0: \n");
     printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
     printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  kernel freq          : 375.00 MHz\n");
     printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
@@ -506,7 +526,25 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v2.1: \n");
     printf("  Kernel configuration : FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
-    printf("  Platform             : Instel Stratix10 MX board\n");
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  kernel freq          : 268.75 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 2) && (kernel_subversion == 2)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.2.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = false;
+    hlsinf_upsize_support = false;  hlsinf_dense_support = false;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v2.2: \n");
+    printf("  Kernel configuration : FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  kernel freq          : 268.75 MHz\n");
     printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
@@ -602,7 +640,8 @@ void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {fpga_copy_to_fpga_good(
 
 void fpga_copy_to_fpga_good(float *nptr, Tensor *A, int cvt) {
   #ifdef FPGA_DEBUG_VERBOSE
-  printf("FPGA_DEBUG: Copy CPU->FPGA. Addr: %p->%p. tensor_id %4d. Size %4d\n", nptr, A->fpga_ptr, A->fpga_tensor_id, A->size);
+  printf("\n");
+  printf("FPGA_DEBUG: Copy CPU->FPGA. Addr: %p->%p. Size %4ld\n", nptr, A->fpga_ptr, A->size);
   #endif
 
   #ifdef PRECISION_CONVERSION
@@ -667,7 +706,8 @@ void fpga_copy_from_fpga_good(Tensor *A,float *nptr, int cvt) {fpga_copy_from_fp
 
 void fpga_copy_from_fpga(Tensor *A,float *nptr, int cvt) {
   #ifdef FPGA_DEBUG_VERBOSE
-  printf("FPGA_DEBUG: Copy FPGA->CPU. Addr: %p->%p. tensor_id %4d. Size %4d\n", A->fpga_ptr, nptr, A->fpga_tensor_id, A->size);
+  printf("\n");
+  printf("FPGA_DEBUG: Copy FPGA->CPU. Addr: %p->%p. Size %4ld\n", A->fpga_ptr, nptr, A->size);
   #endif
 
   #ifdef PRECISION_CONVERSION
@@ -723,7 +763,7 @@ void *fpga_create_memory(cl_mem_flags flags, long int size) {
   cl_mem buffer;
   cl_int err;
   #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (creating memory in fpga size %d)\n", size);
+  printf("    (creating memory in fpga size %zu)\n", size);
   #endif
 
   // add to function call : cl_int mb_flags;  CL_MEM_READ_WRITE or CL_MEM_READ_ONLY or CL_MEM_WRITE_ONLY
@@ -735,7 +775,7 @@ void *fpga_create_memory(cl_mem_flags flags, long int size) {
 
 void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size) {
   #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (copy memory to fpga: size %d, ptr_cpu %p)\n", size, ptr_cpu);
+  printf("    (copy memory to fpga: size %ld, ptr_cpu %p)\n", size, ptr_cpu);
   #endif
   cl_int err;
   cl_event blocking_event;
@@ -784,7 +824,7 @@ void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int
 
 void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size) {
   #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (copy memory from fpga: size %d, ptr_cpu %p)\n", size, ptr_cpu);
+  printf("    (copy memory from fpga: size %ld, ptr_cpu %p)\n", size, ptr_cpu);
   #endif
   cl_int err;
   cl_event event;
@@ -800,6 +840,14 @@ void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size) {
 // Support functions
 
 
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
 // -----------------------------------------------------------------
 // transform_nn
 //
@@ -807,13 +855,15 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
  _profile_fpga(_FPGA_TRANSFORM, 0);
  _debug_fpga_funcs("Transform");
  #ifdef FPGA_DEBUG
- printf("Transform\n");
- printf("  params: copy_cpu_to_fpga %d, copy_fpga_to_cpu %d, transform %d\n", copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
+ printf(KMAG "@fpga_core -> fpga_transform_nn copy_cpu_to_fpga %d, copy_fpga_to_cpu %d, transform %d\n" KNRM, copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
 #endif
 
   int CPI = hlsinf_cpi;
 
   if (!transform && copy_cpu_to_fpga) {
+    
+    printf(KMAG "dbug jm10 NOT transform and copy cpu to fpga\n" KNRM);
+
 
     #ifdef FPGA_DEBUG
     printf("  input   "); _profile_cpu_tensor(A);
@@ -876,6 +926,9 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     #ifdef FPGA_DEBUG
     printf("  input   "); _profile_cpu_tensor(A);
     #endif
+
+
+    printf(KMAG "dbug jm10 transform and copy cpu to fpga\n" KNRM);
 
     // transformation from CHW to GHWC (cpu to FPGA)
     // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
@@ -942,7 +995,9 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       exit(1);
     }
   } else if (!transform && copy_fpga_to_cpu) {
-    
+   
+    printf(KMAG "dbug jm10 NOT transform and copy fpga to CPU\n" KNRM);
+
     float *ptr_dst = B->ptr;
     int num_elements = B->size;
 

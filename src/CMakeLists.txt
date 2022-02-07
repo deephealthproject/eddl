@@ -381,8 +381,9 @@ if(USE_FPGA)
 
 
 
-    add_definitions(-DFPGA_DEBUG)
-    add_definitions(-DDEBUG_VERBOSE)
+#    add_definitions(-DFPGA_DEBUG)
+#    add_definitions(-DFPGA_DEBUG_VERBOSE)
+#    add_definitions(-DDEBUG_VERBOSE)
 
     message(NOTICE "   ")  
     message(NOTICE "FPGA end")  

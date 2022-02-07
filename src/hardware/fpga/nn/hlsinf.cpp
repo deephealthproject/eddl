@@ -636,6 +636,15 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
 
 }
 
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+
 // ---------------------------------------------------------------------
 // fpga_hlsinf
 void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, int Ochannels, int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, 
@@ -655,6 +664,10 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   printf("  params: %0dx%0dx%0dx%0d (KHxKW: %0dx%0d, PAD: %0d-%0d-%0d-%0d, SHxSW: %0dx%0d). ReLU %d, ReLU factor %f, Maxp %d, AvgP %d, Clip %d, min_clip %d, max_clip %d, Shift %d, bit shifts %d, dir_shift %d, Add %d, STM %d BN %d UPSCALE %d\n", 
                    Ochannels, Ichannels, H, W, KH, KW, PT, PB, PL, PR, SH, SW, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_batch_norm, enable_upscale);
   #endif
+  
+  printf(KCYN "@hlsinf.cpp -> fpga_hlsinf: profiling tensors start\n" KNRM);
+  fflush(stdout);
+
   _profile_fpga_tensor("  input   ", input, hlsinf_input_format);
   if(enable_add)   _profile_fpga_tensor("  input add: ", input_add, hlsinf_input_format);
   _profile_fpga_tensor("  filter  ", filter, hlsinf_filter_format);
@@ -662,6 +675,8 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   if(enable_batch_norm)  {
     _profile_fpga_tensor("  bn_v    ", batch_norm_values, hlsinf_output_format);
   }
+  printf(KCYN "@hlsinf.cpp -> fpga_hlsinf: profiling tensors end\n" KNRM);
+  fflush(stdout);
 
   // output geometry
   int HO;
