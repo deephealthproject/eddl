@@ -27,7 +27,6 @@ extern cl::CommandQueue *q;
 //#define FPGA_DEBUG
 //#define WRITE_TENSORS_TO_FILE
 
-#include "eddl/hardware/fpga/fpga_enables.h"
 
 #define MAX_KERNELS 16
 
