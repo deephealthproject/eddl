@@ -12,22 +12,24 @@
 #ifndef EDDL_FPGA_HW_H
 #define EDDL_FPGA_HW_H
 
+// openCL headers, vendor specific 
+#ifdef cFPGA_VENDOR_XILINX
+  #include "eddl/hardware/fpga/xilinx/fpga_xilinx_hw.h"
+#endif
+
+#ifdef cFPGA_VENDOR_INTEL
+ #include "eddl/hardware/fpga/intel/fpga_intel_hw.h"
+#endif
+
 // --------------------------------------------------------------------------------------------------------
 #include "fpga_profile.h"
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"
-#include <ap_fixed.h>                       // Aproximated precision fixed point support
-#include <ap_int.h>                         // Aproximated precision integer support
-
-#include "eddl/hardware/fpga/xcl2.hpp"
-
-extern cl::CommandQueue *q;
 
 //#define FPGA_DEBUG
 //#define WRITE_TENSORS_TO_FILE
 
-#include "eddl/hardware/fpga/fpga_enables.h"
 
 #define MAX_KERNELS 16
 
@@ -35,8 +37,6 @@ extern cl::CommandQueue *q;
 void _debug_fpga_funcs(const char *str);
 
 
-// conv kernels (3)
-extern cl::Kernel kernel_hlsinf[16];
 
 // conv2d kernel related global variables
 
@@ -72,17 +72,27 @@ extern bool hlsinf_dense_support;
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
-void set_callback(cl::Event event, const char *queue_name);
+// Following values match their analogues defined for Intel fpga in /opt/.../include/CL/cl.h, 
+#define FPGA_CLMEM_READ_WRITE                           (1 << 0)  // CL_MEM_READ_WRITE
+#define FPGA_CLMEM_WRITE_ONLY                           (1 << 1)  // CL_MEM_WRITE_ONLY
+#define FPGA_CLMEM_READ_ONLY                            (1 << 2)  // CL_MEM_READ_ONLY
+#define FPGA_CLMEM_USE_HOST_PTR                         (1 << 3)  // CL_MEM_USE_HOST_PTR
+#define FPGA_CLMEM_ALLOC_HOST_PTR                       (1 << 4)  // CL_MEM_ALLOC_HOST_PTR
+#define FPGA_CLMEM_COPY_HOST_PTR                        (1 << 5)  // CL_MEM_COPY_HOST_PTR
+/* reserved                                         (1 << 6)    */
+
+// vendor-specific void set_callback(cl::Event event, const char *queue_name);
 void event_cb(cl_event event1, cl_int cmd_status, void *data);
 
 void fpga_init(int kernel_version, int kernel_subversion);
 
-cl::Buffer *fpga_create_memory(long int size);
-void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size);
-void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size, int src_format, int dst_format);
-void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size);
+//void *fpga_create_memory(unsigned long flags, long int size);
+//void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size);
+//void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int size, int src_format, int dst_format);
+//void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size);
+//
+//void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
 
-void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
 void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B);
 void dense_to_conv(float *ptr_src, int N, int M, float *ptr_dst, int I, int O, int KH, int KW);
 void tensor_padded(Tensor *A, Tensor *B);

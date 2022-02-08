@@ -5,22 +5,34 @@
 * Date: December 2021
 * Author: GAP Research Group (UPV), contact: jflich@disca.upv.es
 * All rights reserved
+*
+*
+* version 1.1 add stratix support
+*  major changes since Intel board uses C version of OpenCL 
 */
 
 #ifdef cFPGA
 
 // Headers -------------------------------------------------------------------------------------------------------------------------------
-#include "eddl/hardware/fpga/xcl2.hpp"      // OpenCL header
 #include <vector>                           // Vectors
 #include <math.h>                           // Math functions
 #include <float.h>                          // Float operations
+
+// openCL headers, vendor specific 
+#ifdef cFPGA_VENDOR_XILINX
+  #include "eddl/hardware/fpga/xilinx/fpga_xilinx_hw.h"
+#endif
+
+#ifdef cFPGA_VENDOR_INTEL
+ #include "eddl/hardware/fpga/intel/fpga_intel_hw.h"
+#endif
+
+
 #include "eddl/tensor/tensor.h"             // EDDL Tensors
 #include "eddl/descriptors/descriptors.h"   // EDDL Descriptors
-#include "eddl/hardware/fpga/fpga_hw.h"     // FPGA enables of kernels
+#include "eddl/hardware/fpga/fpga_hw.h"     // FPGA enables of kernels, includes OpenCL headers and data types
 #include <sys/time.h>                       // Time (for stats)
 #include "eddl/hardware/cpu/cpu_tensor.h"   // CPU related function headers (cpu_transpose, cpu_copy, ...)
-#include <ap_fixed.h>                       // Aproximated precision fixed point support
-#include <ap_int.h>                         // Aproximated precision integer support
 #include "eddl/profiling.h"                 // Profiling
 
 // Macros ---------------------------------------------------------------------------------------------------------------------------------
@@ -28,16 +40,7 @@ PROFILING_ENABLE_EXTERN(Precision_Conversion);
 PROFILING_ENABLE_EXTERN(FPGA_READ);
 PROFILING_ENABLE_EXTERN(FPGA_WRITE);
 
-cl::Context               *context;                   // OpenCL context
-std::vector<cl:: Device>   devices;                   // List of OpenCL devices
-cl::Device                 device;                    // FPGA device
-cl::CommandQueue          *q;                         // Command queue
-cl::CommandQueue           com;                       // Command queue
-cl::Program               *program;                   // Program
 
-vector<cl::Event> kernel_events(MAX_KERNELS);         // Kernel events (completion)
-
-cl::Kernel kernel_hlsinf[16];
 
 // -------------------------------------------------------------------------------------------------------------------------------------------
 // HLSinf related global variables
@@ -71,7 +74,7 @@ bool hlsinf_dense_support;
 //
 int num_instances_fpga[_NUM_FPGA_FUNCS];            // number of instances a kernel (function) has been called
 struct timeval time_ini_fpga[_NUM_FPGA_FUNCS];      // initial time of an instance for a kernel (function). Temporary variable
-unsigned long long acc_time_fpga[_NUM_FPGA_FUNCS];  // accumulated ime of a kernel (function)
+unsigned long long acc_time_fpga[_NUM_FPGA_FUNCS];  // accumulated time of a kernel (function)
 
 // profiling of FPGA resources being used
 float mb_memory_needed_fpga;                        // Megabytes of memory needed for tensors in the FPGA
@@ -80,45 +83,10 @@ float mb_memory_needed_fpga;                        // Megabytes of memory neede
 // OpenCL-related support functions ----------------------------------------------------------------------------------------------------------
 //
 
-// set_callback(). Sets the callback for a particular event in OpenCL
-void set_callback(cl::Event event, const char *queue_name) {cl_int err; OCL_CHECK(err, err = event.setCallback(CL_COMPLETE, event_cb, (void *)queue_name));}
-
-// event_cb(). An event callback function that prints the operations performed by the OpenCL runtime
-void event_cb(cl_event event1, cl_int cmd_status, void *data) {
-  #ifdef FPGA_DEBUG
-  cl_int err;
-  cl_command_type command;
-  cl::Event event(event1, true);
-  OCL_CHECK(err, err = event.getInfo(CL_EVENT_COMMAND_TYPE, &command));
-  cl_int status;
-  OCL_CHECK(err, err = event.getInfo(CL_EVENT_COMMAND_EXECUTION_STATUS, &status));
-
-  const char *command_str;
-  const char *status_str;
-  switch (command) {
-    case CL_COMMAND_READ_BUFFER:          command_str = "buffer read";    break;
-    case CL_COMMAND_WRITE_BUFFER:         command_str = "buffer write";   break;
-    case CL_COMMAND_NDRANGE_KERNEL:       command_str = "kernel";         break;
-    case CL_COMMAND_MAP_BUFFER:           command_str = "kernel";         break;
-    case CL_COMMAND_COPY_BUFFER:          command_str = "kernel";         break;
-    case CL_COMMAND_MIGRATE_MEM_OBJECTS:  command_str = "buffer migrate"; break;
-    default:                              command_str = "unknown";
-  }
-  switch (status) {
-    case CL_QUEUED:    status_str = "Queued";    break;
-    case CL_SUBMITTED: status_str = "Submitted"; break;
-    case CL_RUNNING:   status_str = "Executing"; break;
-    case CL_COMPLETE:  status_str = "Completed"; break;
-  }
-  printf("[%s]: %s %s\n", reinterpret_cast<char *>(data), status_str, command_str);
-  fflush(stdout);
-  #endif
-}
-
 // _profile_fpga_funcname(). profiling function
 void _profile_fpga_funcname(int i, char *name) {
   switch(i) {
-      case _FPGA_HLSINF                 : strcpy(name, "HLSinf"); break;
+      case _FPGA_HLSINF                : strcpy(name, "HLSinf"); break;
       default                          : strcpy(name, "?????"); break;
   }
 }
@@ -141,13 +109,17 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
   // We read the tensor from FPGA first
   int size;
   if (format_tensor == HLSINF_FP32) size = T->size * sizeof(float);
+  #ifdef cFPGA_VENDOR_XILINX
   else if (format_tensor == HLSINF_API32) size = T->size * sizeof(ap_int<32>);
   else if (format_tensor == HLSINF_API8) size = T->size * sizeof(ap_int<8>);
   else if (format_tensor == HLSINF_APUI8) size = T->size * sizeof(ap_uint<8>);
+  #endif
   else {printf("format not supported in profile\n"); exit(1);}
 
-  float *buf = (float *)eddl_malloc(size);
-  fpga_copy_memory_from_fpga((cl::Buffer *)T->fpga_ptr, buf, size);
+   std::string tmp_name = std::string(str) + "_profile";
+
+  float *buf = (float *)eddl_malloc(size, tmp_name.c_str());
+  fpga_copy_memory_from_fpga(T->fpga_ptr, buf, size);
 
   // Now we calculate statistics (min, max, avg) from the tensor
   float min = FLT_MAX;
@@ -157,9 +129,12 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
   for (int i=0; i<T->size; i++) {
     float v;
     if (format_tensor == HLSINF_FP32) {float *p = buf; v = p[i];
-    } else if (format_tensor == HLSINF_API32) {ap_int<32> *p = (ap_int<32> *)buf; v = float(p[i]);}
+    }
+    #ifdef cFPGA_VENDOR_XILINX
+    else if (format_tensor == HLSINF_API32) {ap_int<32> *p = (ap_int<32> *)buf; v = float(p[i]);}
     else if (format_tensor == HLSINF_API8) {ap_int<8> *p = (ap_int<8> *)buf; v = float(p[i]);}
     else if (format_tensor == HLSINF_APUI8) {ap_uint<8> *p = (ap_uint<8> *)buf; v = p[i];}
+    #endif
     else {printf("format not supported in profile\n"); exit(1);}
     if (v > max) max = v;
     if (v < min) min = v;
@@ -169,7 +144,7 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
 
   // Now, we print the information (related tensor information and statistics of the tensor)
   printf("%s: - Tensor (fpga) ", str);
-  printf(" size %10d ", T->size);
+  printf(" size %10lu ", T->size);
   printf(" dims: ");
   printf(" %6d ", T->shape[0]);
   if (T->ndim>=2) printf(" x %6d ", T->shape[1]); else printf("          ");
@@ -241,13 +216,6 @@ void _show_profile_fpga() {
 
 // -----------------------------------------------------------------------------------------------------------------------------------
 // FPGA initialization and finalization functions
-
-void close_fpga() {
-  delete q;
-  delete program;
-  delete context;
-}
-
 // fpga_init()
 // Initialices the device, sets up the kernels, prepares everything related to the FPGA device and support infrastructure
 // This function must be called only once and at the begining of operations with the FPGA
@@ -284,7 +252,9 @@ void fpga_init(int kernel_version, int kernel_subversion) {
   //   |   1.6   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 16  |     2    |   128  |   256  |    128   | Alveo U200          | hlsinf_v1.5.xclbin |   Direct  |   X  |   X   |   X  |  X   |     |  X   |   X  |    |     |   X    |       |
   //   |   1.7   |  FP32  |   FP32      | FP32  |  FP32      |   FP32  |   8 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.3.xclbin |   Direct  |   X  |       |      |  X   |     |  X   |      |    |     |   X    |       |
   //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //       2.0   
+  //   |   2.0   |  FP32  |   FP32      | FP32  |  ----      |   FP32  |   4 x 4   |     1    |   256  |   256  |    256   | Stratix10 MX  | hlsinf_stratix_v2.0.aocx |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |    |     |        |       |
+  //   |   2.1   |  FP32  |   FP32      | FP32  |  ----      |   FP32  |   8 x 8   |     1    |   256  |   256  |    256   | Stratix10 MX  | hlsinf_stratix_v2.1.aocx |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |    |     |        |       |
+  //   |   2.2   |  FP32  |   FP32      | FP32  |  ----      |   FP32  |   8 x 8   |     1    |   256  |   512  |    256   | Stratix10 MX  | hlsinf_stratix_v2.2.aocx |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |    |     |        |       |
   //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   if ((kernel_version == 1) && (kernel_subversion == 0)) {
@@ -377,7 +347,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
     printf("  Dense layer support  : Yes\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
- } else if ((kernel_version == 1) && (kernel_subversion == 6)) {
+  } else if ((kernel_version == 1) && (kernel_subversion == 6)) {
     hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
     hlsinf_cpi = 16; hlsinf_cpo = 16; hlsinf_num_kernels = 1;
     hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
@@ -407,43 +377,65 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Supported layers     : CONV, ReLU, MaxPool, Upsize\n");
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
-  } else {
-    printf("Error, kernel version not supported\n"); exit(1);
+  } else if ((kernel_version == 2) && (kernel_subversion == 0)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 256; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.0.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = true;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v2.0: \n");
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  kernel freq          : 375.00 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 2) && (kernel_subversion == 1)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 256; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.1.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = false;
+    hlsinf_upsize_support = false;  hlsinf_dense_support = false;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v2.1: \n");
+    printf("  Kernel configuration : FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  kernel freq          : 268.75 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 2) && (kernel_subversion == 2)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.2.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = false;
+    hlsinf_upsize_support = false;  hlsinf_dense_support = false;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v2.2: \n");
+    printf("  Kernel configuration : FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  kernel freq          : 268.75 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } 
+  else {
+    printf("Error, kernel version %d.%d not supported\n", kernel_version, kernel_subversion);
+    exit(1);
   }
-  unsigned    fileBufSize;
 
-  #ifdef FPGA_DEBUG
-  std::cout << "Creating Context..." << std::endl;
-  #endif
-  
-  devices = xcl::get_xil_devices();
-  device = devices[0];
-
-  OCL_CHECK(err, context = new cl::Context(device, NULL, NULL, NULL, &err));
-  OCL_CHECK(err, q = new cl::CommandQueue(*context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
-    
-  std::string device_name = device.getInfo<CL_DEVICE_NAME>();
-  auto fileBuf = xcl::read_binary_file(hlsinf_xclbin);
-  cl::Program::Binaries bins;
-
-  bins = cl::Program::Binaries{{fileBuf.data(), fileBuf.size()}};
-  devices.resize(1);
-
-  OCL_CHECK(err, program = new cl::Program(*context, devices, bins, NULL, &err));
-
-  #ifdef FPGA_DEBUG
-  std::cout << "Device " << device_name.c_str() << ": program successful!" << std::endl;
-  #endif
-
-  // Now, we instatiate every possible kernel (enabled by the proper define)
-
-  for (int k=0; k<hlsinf_num_kernels; k++) {
-    char dummy[50];
-    sprintf(dummy, "k_conv2D:{k_conv2D_%d}", k+1);
-    OCL_CHECK(err, kernel_hlsinf[k] = cl::Kernel(*program, dummy, &err));
-    std::cout << "Kernel sucessfully created" << std::endl ;
-  }
-
+  fpga_device_init();
+ 
   #ifdef FPGA_DEBUG
   printf("end of fpga_init\n");
   #endif
@@ -453,82 +445,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
 // ------------------------------------------------------------------------------------------------------------------------
 // Copy operations
 //
-
-
-cl::Buffer *fpga_create_memory(long int size) {
-  cl::Buffer *buffer;
-  cl_int err;
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (creating memory in fpga size %d)\n", size);
-  #endif
-
-  //cl_mem_ext_ptr_t data_ddr;
-  //data_ddr.flags  =  0 | XCL_MEM_TOPOLOGY;
-  //data_ddr.obj = NULL;
-  //data_ddr.param = 0;
-
-  OCL_CHECK(err, buffer = new cl::Buffer(*context, CL_MEM_READ_WRITE /*| CL_MEM_EXT_PTR_XILINX*/, size, NULL /*&data_ddr*/, &err));
-  return buffer;
-}
-
-void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (copy memory to fpga: size %d, ptr_cpu %p)\n", size, ptr_cpu);
-  #endif
-  cl_int err;
-  cl::Event blocking_event;
-  PROFILING_HEADER(FPGA_WRITE);
-  OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &blocking_event));
-  (*q).finish();
-  PROFILING_FOOTER(FPGA_WRITE);
-}
-
-void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size, int src_format, int dst_format) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (copy memory to fpga and format: size %d, ptr_cpu %p)\n", size, ptr_cpu);
-  #endif
-  cl_int err;
-  cl::Event blocking_event;
-
-  if ((src_format == HLSINF_FP32) && (dst_format == HLSINF_API8)) {
-    PROFILING_HEADER(Precision_Conversion);
-    float *src = (float*)ptr_cpu;
-    ap_int<8> *cpu_buff = (ap_int<8> *)eddl_malloc(size * sizeof(ap_int<8>));
-    for (int x = 0; x < size; x++) cpu_buff[x] = ap_int<8>(src[x]);
-    PROFILING_FOOTER(Precision_Conversion);
-    PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_int<8>), cpu_buff, nullptr, &blocking_event));
-    (*q).finish();
-    PROFILING_FOOTER(FPGA_WRITE);
-    free(cpu_buff);
-  } else if ((src_format == HLSINF_FP32) && (dst_format == HLSINF_API32)) {
-    PROFILING_HEADER(Precision_Conversion);
-    float *src = (float*)ptr_cpu;
-    ap_int<32> *cpu_buff = (ap_int<32> *)eddl_malloc(size * sizeof(ap_int<32>));
-    for (int x = 0; x < size; x++) {cpu_buff[x] = ap_int<32>(src[x]); /*printf("%f -> %f\n", src[x], float(cpu_buff[x]));*/}
-    PROFILING_FOOTER(Precision_Conversion);
-    PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_int<32>), cpu_buff, nullptr, &blocking_event));
-    (*q).finish();
-    PROFILING_FOOTER(FPGA_WRITE);
-    free(cpu_buff);
-  } else {
-    printf("copy with format not supported\n");
-    exit(1);
-  }
-}
-
-void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size) {
-  cl_int err;
-  cl::Event event;
-  PROFILING_HEADER(FPGA_READ);
-  OCL_CHECK(err, err = (*q).enqueueReadBuffer(*ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &event));
-  OCL_CHECK(err, err = event.wait());
-  //(*q).finish();
-  PROFILING_FOOTER(FPGA_READ);
-}
-
-
+// specific for each vendor, implemented in src/hardware/fpga/<vendor>/fpga_<vendor>_core.cpp
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
 // Support functions
@@ -537,264 +454,6 @@ void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int si
 // -----------------------------------------------------------------
 // transform_nn
 //
-void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform) {
- _profile_fpga(_FPGA_TRANSFORM, 0);
- _debug_fpga_funcs("Transform");
- #ifdef FPGA_DEBUG
- printf("Transform\n");
- printf("  params: copy_cpu_to_fpga %d, copy_fpga_to_cpu %d, transform %d\n", copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
-#endif
-
-  int CPI = hlsinf_cpi;
-
-  if (!transform && copy_cpu_to_fpga) {
-
-    #ifdef FPGA_DEBUG
-    printf("  input   "); _profile_cpu_tensor(A);
-    #endif
-
-    // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
-    int B_in = A->shape[0]; int C_in = A->shape[1]; int H_in = A->shape[2]; int W_in = A->shape[3]; int C_out = B->shape[1];
-    float *ptr_src = A->ptr; float *ptr_dst = B->ptr;
-
-    int size_in = A->size * sizeof(float);
-    int size_out = B->size * sizeof(float);
-    memset(ptr_dst, 0, size_out);
-    memcpy(ptr_dst, ptr_src, size_in);
-
-    #ifdef FPGA_DEBUG
-    printf("  output  "); _profile_cpu_tensor(B);
-    #endif
-
-    // copy to FPGA, source is in CPU and is in FP32, depending on the output format of HLSinf we convert if needed
-    if (hlsinf_input_format == HLSINF_FP32) {
-      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(B->ptr, (cl::Buffer *)B->fpga_ptr, size_out);
-    } else if (hlsinf_input_format == HLSINF_API8) {
-      PROFILING_HEADER(Precision_Conversion);
-      // We allocate a buffer to convert from floats to ap_int<8>
-      ap_int<8> *cpu_buff = (ap_int<8>*)malloc(B->size*sizeof(ap_int<8>));
-      for (int x=0; x<B->size; x++) {
-        ap_int<8> value = B->ptr[x];
-        cpu_buff[x] = value;
-      }
-      PROFILING_FOOTER(Precision_Conversion);
-      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size * sizeof(ap_int<8>));
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size * sizeof(ap_int<8>));
-      free(cpu_buff);
-    } else if (hlsinf_input_format == HLSINF_APUI8) {
-      PROFILING_HEADER(Precision_Conversion);
-      // We allocate a buffer to convert from floats to ap_uint<8>
-      unsigned char *cpu_buff = (unsigned char *)eddl_malloc(B->size*sizeof(unsigned char));
-      for (int x=0; x<B->size; x++) {
-        unsigned char value = B->ptr[x];
-        cpu_buff[x] = value;
-      }
-      PROFILING_FOOTER(Precision_Conversion);
-      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size*sizeof(ap_uint<8>));
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size*sizeof(ap_uint<8>));
-      free(cpu_buff);
-    } else {
-      printf("Transform: input format not supported\n");
-      exit(1);
-    }
-
-
-  } else if (transform && copy_cpu_to_fpga) {
-
-    #ifdef FPGA_DEBUG
-    printf("  input   "); _profile_cpu_tensor(A);
-    #endif
-
-    // transformation from CHW to GHWC (cpu to FPGA)
-    // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
-    int B_in = A->shape[0]; int C_in = A->shape[1]; int H_in = A->shape[2]; int W_in = A->shape[3]; int C_out = B->shape[1];
-    float *ptr_src = A->ptr; float *ptr_dst = B->ptr;
-
-    int size_out = C_out * H_in * W_in * B_in * sizeof(float);
-    memset(ptr_dst, 0, size_out);
-
-    for (int b=0; b<B_in; b++) {
-      for (int c=0; c<C_in; c++) {
-        for (int h=0; h<H_in; h++) {
-          for (int w=0; w<W_in; w++) {
-            int addr_src = (b * C_in * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
-            int g = c / CPI;
-            int cpi = c % CPI; 
-            int addr_dst = (b * C_out * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
-            ptr_dst[addr_dst] = ptr_src[addr_src];
-          }
-        }
-      }
-    }
-
-    #ifdef FPGA_DEBUG
-    printf("  output  "); _profile_cpu_tensor(B);
-    #endif
-
-    // copy to FPGA, source is in CPU and is in FP32, depending on the output format of HLSinf we convert if needed
-    if (hlsinf_input_format == HLSINF_FP32) {
-      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(B->ptr, (cl::Buffer *)B->fpga_ptr, size_out);
-    } else if (hlsinf_input_format == HLSINF_API8) {
-      PROFILING_HEADER(Precision_Conversion);
-      // We allocate a buffer to convert from floats to ap_int<8>
-      ap_int<8> *cpu_buff = (ap_int<8>*)eddl_malloc(B->size*sizeof(ap_int<8>));
-      for (int x=0; x<B->size; x++) {
-        float value = B->ptr[x];
-        cpu_buff[x] = ap_int<8>(value);
-      }
-      PROFILING_FOOTER(Precision_Conversion);
-      size_out = C_out * H_in * W_in * B_in * sizeof(ap_int<8>);
-      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
-      free(cpu_buff);
-    } else if (hlsinf_input_format == HLSINF_APUI8) {
-      PROFILING_HEADER(Precision_Conversion);
-      // We allocate a buffer to convert from floats to ap_uint<8>
-      ap_uint<8> *cpu_buff = (ap_uint<8>*)eddl_malloc(B->size*sizeof(ap_uint<8>));
-      for (int x=0; x<B->size; x++) {
-        float value = B->ptr[x];
-        cpu_buff[x] = ap_uint<8>(value);
-      }
-      PROFILING_FOOTER(Precision_Conversion);
-      size_out = C_out * H_in * W_in * B_in * sizeof(ap_uint<8>);
-      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
-      free(cpu_buff);
-    } else {
-      printf("Transform: input format not supported\n");
-      exit(1);
-    }
-  } else if (!transform && copy_fpga_to_cpu) {
-    
-    float *ptr_dst = B->ptr;
-    int num_elements = B->size;
-
-    if (hlsinf_output_format == HLSINF_FP32) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(float));
-      memcpy(B->ptr, A->ptr, num_elements * sizeof(float));
-    } else if (hlsinf_output_format == HLSINF_API8) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_int<8>));
-      PROFILING_HEADER(Precision_Conversion);
-      for (int x=0; x < num_elements; x++) {ap_int<8> *ptr = (ap_int<8> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
-      PROFILING_FOOTER(Precision_Conversion);
-    } else if (hlsinf_output_format == HLSINF_APUI8) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_uint<8>));
-      PROFILING_HEADER(Precision_Conversion);
-      for (int x=0; x < num_elements; x++) {ap_uint<8> *ptr = (ap_uint<8> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
-      PROFILING_FOOTER(Precision_Conversion);
-    } else {
-      printf("Transform: output format not supported\n");
-      exit(1);
-    }
-
-    #ifdef FPGA_DEBUG
-    printf("  input   "); _profile_cpu_tensor(A);
-    printf("  output  "); _profile_cpu_tensor(B);
-    #endif
-
-  } else if (transform && copy_fpga_to_cpu) {
-
-    // transformation from GHWC to CHW (FPGA to CPU)
-
-    int B_in = A->shape[0];
-    int C_in = A->shape[1];
-    int H_in = A->shape[2];
-    int W_in = A->shape[3];
-    int C_out = B->shape[1];
-
-    // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
-
-    //void *ptr_src = A->ptr;
-    float *ptr_dst = B->ptr;
-    int num_elements = C_out * H_in * W_in * B_in;
-    int size_dst = C_out * H_in * W_in * B_in * sizeof(float);
-
-    //printf("ptr_fpga %p ptr_dst %p size %d\n", A->fpga_ptr, B->ptr, size_dst);
-
-    if (hlsinf_output_format == HLSINF_FP32) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(float));
-    } else if (hlsinf_output_format == HLSINF_API8) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_int<8>));
-    } else if (hlsinf_output_format == HLSINF_APUI8) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_uint<8>));
-    } else {
-      printf("Transform: output format not supported\n");
-      exit(1);
-    }
-
-    #ifdef FPGA_DEBUG
-    if (hlsinf_output_format == HLSINF_FP32) printf("  input   "); _profile_cpu_tensor(A);
-    // in a different format we would need to move data to FP32
-    #endif
-
-    memset(ptr_dst, 0, size_dst);
-
-    if (hlsinf_output_format == HLSINF_FP32) {
-      for (int b=0; b<B_in; b++) {
-        for (int c=0; c<C_in; c++) {
-          for (int h=0; h<H_in; h++) {
-            for (int w=0; w<W_in; w++) {
-              int g = c / CPI;
-              int cpi = c % CPI; 
-              int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
-              int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
-              float *ptr_src = A->ptr;
-              ptr_dst[addr_dst] = ptr_src[addr_src];
-            }
-          }
-        }
-      }
-    } else if (hlsinf_output_format == HLSINF_API8) {  
-      PROFILING_HEADER(Precision_Conversion);
-      for (int b=0; b<B_in; b++) {
-        for (int c=0; c<C_in; c++) {
-          for (int h=0; h<H_in; h++) {
-            for (int w=0; w<W_in; w++) {
-              int g = c / CPI;
-              int cpi = c % CPI; 
-              int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
-              int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
-              ap_int<8> *ptr_src = (ap_int<8> *)A->ptr;
-              float value = float(ptr_src[addr_src]);
-              ptr_dst[addr_dst] = value;
-            }
-          }
-        }
-      }
-    } else if (hlsinf_output_format == HLSINF_APUI8) {  
-      PROFILING_HEADER(Precision_Conversion);
-      for (int b=0; b<B_in; b++) {
-        for (int c=0; c<C_in; c++) {
-          for (int h=0; h<H_in; h++) {
-            for (int w=0; w<W_in; w++) {
-              int g = c / CPI;
-              int cpi = c % CPI; 
-              int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
-              int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
-              ap_uint<8> *ptr_src = (ap_uint<8> *)A->ptr;
-              float value = float(ptr_src[addr_src]);
-              ptr_dst[addr_dst] = value;
-            }
-          }
-        }
-      }
-
-
-      PROFILING_FOOTER(Precision_Conversion);
-    } else {
-      printf("Transform: output format not supported\n");
-      exit(1);
-    } 
-    #ifdef FPGA_DEBUG
-    printf("  output  "); _profile_cpu_tensor(B);
-    #endif
-  }
-
-  _profile_fpga(_FPGA_TRANSFORM, 1);
-}
-
 
 void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B) {
 
@@ -913,7 +572,7 @@ void fpga_write_buffer(char *file_name, void *ptr, int size, int data_format) {
   printf("data_format %d data_size %d\n", data_format, data_size);
   
   void *buff = eddl_malloc(size * data_size);
-  fpga_copy_memory_from_fpga((cl::Buffer *)ptr, buff, size*data_size);
+  fpga_copy_memory_from_fpga(ptr, buff, size*data_size);
   float *buff1 = (float *)buff;
   fwrite(buff, data_size, size, fd);
   fclose(fd);
