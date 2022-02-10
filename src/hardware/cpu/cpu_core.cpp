@@ -334,12 +334,13 @@ void cpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
 
 void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool mask_zeros){
     _profile(_CPU_SELECT2, 0);
-    int s = A->size / A->shape[0];
-
+    unsigned long int s = A->size / A->shape[0];
+ 
 #pragma omp parallel for
     for (int i = ini; i < end; i++) {
-        int p  = sind[i] * s;
-        int pb = (i - ini) * s;
+        unsigned long int p  = sind[i] * s;
+        unsigned long int pb = (i - ini) * s;
+ 
         for (int j = 0; j < s; j++, p++, pb++)
             if ((mask_zeros)&&(sind[i]==0)) B->ptr[p]=0;
             else B->ptr[pb] = A->ptr[p];
@@ -349,12 +350,12 @@ void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool 
 
 void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,int inc,bool mask_zeros){
     _profile(_CPU_DESELECT, 0);
-    int s = A->size / A->shape[0];
+    unsigned long int s = A->size / A->shape[0];
 
 #pragma omp parallel for
     for (int i = ini; i < end; i++) {
-        int p  = sind[i] * s;
-        int pb = (i - ini) * s;
+        unsigned long int p  = sind[i] * s;
+        unsigned long int pb = (i - ini) * s;
         for (int j = 0; j < s; j++, p++, pb++)
             if ((mask_zeros)&&(sind[i]==0)) B->ptr[p]=0;
             else {

@@ -55,6 +55,7 @@ void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epoc
     int width=s[2];
     int height = s[3];
     int num_classes = y_train->getShape()[1];
+    printf("Num classes %d\n", num_classes);
     
     int num_batches;
     int local_batch;
@@ -82,7 +83,7 @@ void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epoc
     }
        
   
-    Tensor* xbatch = new Tensor({local_batch, channels,width,height});
+    Tensor* xbatch = new Tensor({local_batch, channels*width*height});
     Tensor* ybatch = new Tensor({local_batch, num_classes});
  
     
@@ -95,7 +96,7 @@ void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epoc
         
         train_batch(net, {xbatch}, {ybatch});
         //sync_batch
-        avg_weights_distributed(net, j, nbpp);  
+        //avg_weights_distributed(net, j, nbpp);  
         print_loss(net,j, false);
         mpi_id0(printf("\r"););
       }
@@ -136,7 +137,7 @@ int main(int argc, char **argv) {
     int use_bi8 = 0;
     int use_distr_dataset = 0;
     
-    init_distributed();
+    //init_distributed();
 
     sprintf(pdf_name, "%s.pdf", model_name);
     sprintf(onnx_name, "%s.onnx", model_name);
@@ -149,7 +150,7 @@ int main(int argc, char **argv) {
    
     
     // Init distribuited training
-    id = get_id_distributed();
+    //id = get_id_distributed();
                
     // Sync every batch, change every 2 epochs
     //set_method_distributed(AUTO_TIME,1,2);
@@ -189,8 +190,8 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
 //            adam(0.0001), // Optimizer
-            //adam(lr), // Optimizer
-            sgd(lr), // Optimizer
+            adam(lr), // Optimizer
+            //sgd(lr), // Optimizer
     {"softmax_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     cs);
@@ -299,7 +300,7 @@ int main(int argc, char **argv) {
     delete y_test;
     delete net;
 
-    end_distributed();
+    //end_distributed();
 
     return EXIT_SUCCESS;
 }

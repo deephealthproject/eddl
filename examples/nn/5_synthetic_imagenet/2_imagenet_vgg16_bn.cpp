@@ -51,11 +51,11 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = testing ? 2 : 5;
-  int batch_size = testing ? 2 : 32;
+  int batch_size = testing ? 2 : 16;
   int num_classes = 1000;
 //This factor indicates the number of batches of batch_size for the execution
   //If the NODE/GPU runs out of memory, just decrease the factor valur
-  int factor = testing ? 1 : 3;
+  int factor = testing ? 1 : 20000;
 
 
   // network
