@@ -10,17 +10,17 @@
 #ifdef cFPGA
 
 // Headers -------------------------------------------------------------------------------------------------------------------------------
-#include "eddl/hardware/fpga/xcl2.hpp"      // OpenCL header
+//#include "eddl/hardware/fpga/xilinx/xcl2.hpp"      // OpenCL header   already included in fpga_hw
 #include <vector>                           // Vectors
 #include <math.h>                           // Math functions
 #include <float.h>                          // Float operations
 #include "eddl/tensor/tensor.h"             // EDDL Tensors
 #include "eddl/descriptors/descriptors.h"   // EDDL Descriptors
-#include "eddl/hardware/fpga/fpga_hw.h"     // FPGA enables of kernels
+#include "eddl/hardware/fpga/fpga_hw.h"     // FPGA enables of kernels, includes OpenCL headers and data types
 #include <sys/time.h>                       // Time (for stats)
 #include "eddl/hardware/cpu/cpu_tensor.h"   // CPU related function headers (cpu_transpose, cpu_copy, ...)
-#include <ap_fixed.h>                       // Aproximated precision fixed point support
-#include <ap_int.h>                         // Aproximated precision integer support
+//#include <ap_fixed.h>                       // Aproximated precision fixed point support
+//#include <ap_int.h>                         // Aproximated precision integer support
 #include "eddl/profiling.h"                 // Profiling
 
 // Macros ---------------------------------------------------------------------------------------------------------------------------------

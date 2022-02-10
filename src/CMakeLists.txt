@@ -4,17 +4,18 @@
 
 # USER OPTIONS *******************************
 #CUDNN option is CUDA+CUDNN
-set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA}")
+set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA_INTEL, FPGA_XILINX}")
 #option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
-set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA)
+set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA_INTEL FPGA_XILINX)
 
 # Initializations (Local's scope)
 SET(USE_OPENMP OFF)
 SET(USE_CUDA OFF)
 SET(USE_CUDNN OFF)
-SET(USE_FPGA OFF)
+SET(USE_FPGA_INTEL OFF)
+SET(USE_FPGA_XILINX OFF)
 SET(USE_PROTOBUF OFF)
 
 # Device specific setup
@@ -25,8 +26,10 @@ elseif(${BUILD_TARGET} STREQUAL "GPU" OR ${BUILD_TARGET} STREQUAL "CUDA")
 elseif(${BUILD_TARGET} STREQUAL "CUDNN")
     SET(USE_CUDA ON) # Local's scope
     SET(USE_CUDNN ON) # Local's scope
-elseif(${BUILD_TARGET} STREQUAL "FPGA")
-    SET(USE_FPGA ON) # Local's scope
+elseif(${BUILD_TARGET} STREQUAL "FPGA_INTEL")
+    SET(USE_FPGA_INTEL ON) # Local's scope
+elseif(${BUILD_TARGET} STREQUAL "FPGA_XILINX")
+    SET(USE_FPGA_XILINX ON) # Local's scope
 else()
     message(FATAL_ERROR "Build target '${BUILD_TARGET}' not implemented, CMake will exit." )
 endif()
@@ -79,12 +82,58 @@ set(ONNX_FILES ${PROJECT_SOURCE_DIR}/include/eddl/serialization/onnx/onnx.pb.h
 file(GLOB_RECURSE CUDA_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/gpu/*" *.{h, hpp})
 file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/gpu/*" *.{cu})
 
-# FPGA
-file(GLOB_RECURSE FPGA_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/*" *.{h, hpp})
-file(GLOB_RECURSE FPGA_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/*" *.{cc, cpp})
+
+file(GLOB_RECURSE FPGA_COMMON_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/*" *.{h, hpp})
+file(GLOB_RECURSE FPGA_COMMON_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/*" *.{cc, cpp})
+
+
+## FPGA INTEL
+file(GLOB_RECURSE FPGA_INTEL_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/*" *.{h, hpp})
+file(GLOB_RECURSE FPGA_INTEL_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/intel/*" *.{cc, cpp})
+
+# FPGA XILINX
+file(GLOB_RECURSE FPGA_XILINX_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/*" *.{h, hpp})
+file(GLOB_RECURSE FPGA_XILINX_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/xilinx/*" *.{cc, cpp})
+
+#list(FILTER FPGA_COMMON_HEADERS EXCLUDE REGEX
+list(FILTER FPGA_COMMON_SOURCES EXCLUDE REGEX "${FPGA_INTEL_SOURCES}")
+list(FILTER FPGA_COMMON_HEADERS EXCLUDE REGEX "${FPGA_INTEL_HEADERS}")
+list(FILTER FPGA_COMMON_SOURCES EXCLUDE REGEX "${FPGA_XILINX_SOURCES}")
+list(FILTER FPGA_COMMON_HEADERS EXCLUDE REGEX "${FPGA_XILINX_HEADERS}")
+
+message (STATUS "FPGA_COMMON_SOURCES  " )
+FOREACH(item ${FPGA_COMMON_SOURCES})
+    message (STATUS "  FILE -> " ${item})
+ENDFOREACH(item)
+
+message (STATUS "FPGA_COMMON_HEADERS  " )
+FOREACH(item ${FPGA_COMMON_HEADERS})
+    message (STATUS "  FILE -> " ${item})
+ENDFOREACH(item)
+
+message (STATUS "FPGA_INTEL_SOURCES   " )
+FOREACH(item ${FPGA_INTEL_SOURCES})
+    message (STATUS "  FILE -> " ${item})
+ENDFOREACH(item)
+message (STATUS "FPGA_INTEL_HEADERS   " )
+FOREACH(item ${FPGA_INTEL_HEADERS})
+    message (STATUS "  FILE -> " ${item})
+ENDFOREACH(item)
+
+message (STATUS "FPGA_XILINX_SOURCES  " )
+FOREACH(item ${FPGA_XILINX_SOURCES})
+    message (STATUS "  FILE -> " ${item})
+ENDFOREACH(item)
+message (STATUS "FPGA_XILINX_HEADERS  " )
+FOREACH(item ${FPGA_XILINX_HEADERS})
+    message (STATUS "  FILE -> " ${item})
+ENDFOREACH(item)
+
+message (STATUS "all listed, done" )
+
 
 # Remove setup-dependent files (later we'll add the ones we need)
-SET(SPECIAL_FILES ${CUDA_HEADERS} ${CUDA_SOURCES} ${FPGA_HEADERS} ${FPGA_SOURCES})
+SET(SPECIAL_FILES ${CUDA_HEADERS} ${CUDA_SOURCES} ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_INTEL_SOURCES} ${FPGA_XILINX_SOURCES})
 FOREACH(item ${SPECIAL_FILES})
     LIST(REMOVE_ITEM ALL_FILES ${item})
 ENDFOREACH(item)
@@ -308,14 +357,25 @@ endif()
 SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 
+# FPGA INTEL ****************************************
+if(USE_FPGA_INTEL)
+message (WARNING " intel fpga to be done")
+endif()
+SET(USE_FPGA_INTEL ${USE_FPGA_INTEL} PARENT_SCOPE)  # Parent's scope
 
-# FPGA ***************************************
-if(USE_FPGA)
+
+
+# FPGA XILINX ***************************************
+if(USE_FPGA_XILINX)
+
+  message(WARNING " ")
+  message(WARNING "this is jm10 compiling xilinx fpga")
+  message(WARNING " ")
     find_package(OpenCL)
     if (OpenCL_FOUND)
 
         target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include>")
-	target_include_directories(${PROJECT_NAME} PUBLIC /opt/xilinx/xrt/include)
+        target_include_directories(${PROJECT_NAME} PUBLIC /opt/xilinx/xrt/include)
         #target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:/opt/Xilinx/Vivado/2018.3/include)  # Is this cross-platform?
 
         target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCL_LIBRARY})
@@ -328,16 +388,17 @@ if(USE_FPGA)
         #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS})
 
         # Add extra files
-        target_sources(${PROJECT_NAME} PRIVATE ${FPGA_HEADERS} ${FPGA_SOURCES})
+        #target_sources(${PROJECT_NAME} PRIVATE ${FPGA_XILINX_HEADERS} ${FPGA_XILINX_SOURCES})
+        target_sources(${PROJECT_NAME} PRIVATE ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_XILINX_HEADERS} ${FPGA_XILINX_SOURCES})
 
     else()
         message(WARNING "OpenCL not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=CPU')
         Hint: Set the OpenCL path using '-D OPENCL_ROOT=path' or creating a symbolic link.")
         SET(BUILD_TARGET "CPU") # Local's scope
-        SET(USE_FPGA OFF) # Local's scope (disable)
+        SET(USE_FPGA_XILINX OFF) # Local's scope (disable)
     endif()
 endif()
-SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
+SET(USE_FPGA_XILINX ${USE_FPGA_XILINX} PARENT_SCOPE)  # Parent's scope
 
 if(BUILD_DIST)
     # ZLIB  ***************************************
@@ -419,7 +480,10 @@ endif()
 if(USE_CUDNN)
     add_definitions(-DcCUDNN)
 endif()
-if(USE_FPGA)
+if(USE_INTEL_FPGA)
+    add_definitions(-DcFPGA)
+endif()
+if(USE_XILINX_FPGA)
     add_definitions(-DcFPGA)
 endif()
 
@@ -493,8 +557,15 @@ if(USE_CUDNN)
     message(STATUS "CuDNN libraries: ${CUDNN_LIBRARY}")
 endif()
 message(STATUS "-------------------------------------------" )
-message(STATUS "FPGA enabled: " ${USE_FPGA} )
-if(USE_FPGA)
+message(STATUS "FPGA INTEL enabled: " ${USE_FPGA_INTEL} )
+if(USE_FPGA_INTEL)
+    message(STATUS "OpenCL version: " ${OpenCL_VERSION_MAJOR} )
+    message(STATUS "OpenCL include: " ${OpenCL_INCLUDE_DIRS} )
+    message(STATUS "OpenCL libraries: " ${OpenCL_LIBRARIES} )
+endif()
+message(STATUS "-------------------------------------------" )
+message(STATUS "FPGA XILINX enabled: " ${USE_FPGA_XILINX} )
+if(USE_FPGA_XILINX)
     message(STATUS "OpenCL version: " ${OpenCL_VERSION_MAJOR} )
     message(STATUS "OpenCL include: " ${OpenCL_INCLUDE_DIRS} )
     message(STATUS "OpenCL libraries: " ${OpenCL_LIBRARIES} )

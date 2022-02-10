@@ -33,7 +33,7 @@ THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **********/
 
-#include "eddl/hardware/fpga/xcl2.hpp"
+#include "eddl/hardware/fpga/xilinx/xcl2.hpp"
 #include <climits>
 #include <sys/stat.h>
 #if defined(_WINDOWS)

@@ -12,17 +12,21 @@
 #ifndef EDDL_FPGA_HW_H
 #define EDDL_FPGA_HW_H
 
+// openCL headers, vendor specific 
+#ifdef FPGA_VENDOR_XILINX
+  #include "eddl/hardware/fpga/xilinx/fpga_xilinx_hw.h"
+#endif
+
+#ifdef FPGA_VENDOR_INTEL
+// #include "eddl/hardware/fpga/intel/fpga_intel_hw
+#endif
+
 // --------------------------------------------------------------------------------------------------------
 #include "fpga_profile.h"
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"
-#include <ap_fixed.h>                       // Aproximated precision fixed point support
-#include <ap_int.h>                         // Aproximated precision integer support
-
-#include "eddl/hardware/fpga/xcl2.hpp"
-
-extern cl::CommandQueue *q;
+                       // Aproximated precision integer support
 
 //#define FPGA_DEBUG
 //#define WRITE_TENSORS_TO_FILE
@@ -34,8 +38,9 @@ extern cl::CommandQueue *q;
 void _debug_fpga_funcs(const char *str);
 
 
-// conv kernels (3)
-extern cl::Kernel kernel_hlsinf[16];
+// vendor-specific extern cl::CommandQueue *q;
+
+// vendor-specific extern cl::Kernel kernel_hlsinf[16];
 
 // conv2d kernel related global variables
 
@@ -71,12 +76,13 @@ extern bool hlsinf_dense_support;
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
-void set_callback(cl::Event event, const char *queue_name);
+// vendor-specific void set_callback(cl::Event event, const char *queue_name);
+
 void event_cb(cl_event event1, cl_int cmd_status, void *data);
 
 void fpga_init(int kernel_version, int kernel_subversion);
 
-cl::Buffer *fpga_create_memory(long int size);
+// vendor-specific  void *fpga_create_memory(long int size);
 void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size);
 void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size, int src_format, int dst_format);
 void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size);
