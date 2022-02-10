@@ -107,11 +107,11 @@ void LHLSinf::forward() {
       if (hlsinf_filter_format == HLSINF_FP32) {
         // We simply create the buffer and copy the tensor into the buffer (no data type conversion needed)
         filter->fpga_ptr = fpga_create_memory(filter->size*sizeof(float));  
-        fpga_copy_memory_to_fpga(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size*sizeof(float));
+        fpga_copy_memory_to_fpga(filter->ptr, filter->fpga_ptr, filter->size*sizeof(float));
       } else if (hlsinf_filter_format == HLSINF_API8) {
         // Data conversion needed (FP32->API8)
         filter->fpga_ptr = fpga_create_memory(filter->size);  
-        fpga_copy_memory_to_fpga_and_format(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size, HLSINF_FP32, HLSINF_API8);
+        fpga_copy_memory_to_fpga_and_format(filter->ptr, filter->fpga_ptr, filter->size, HLSINF_FP32, HLSINF_API8);
       } else {
         printf("Error (HLSinf forward), filter format not supported\n");
         exit(1);
@@ -122,11 +122,11 @@ void LHLSinf::forward() {
       if (hlsinf_bias_format == HLSINF_FP32) {
         // No need for data conversion (FP32->FP32), we allocate the buffer and copy the bias tensor there
         bias->fpga_ptr = fpga_create_memory(bias->size*sizeof(float));  
-        fpga_copy_memory_to_fpga(bias->ptr, (cl::Buffer *)bias->fpga_ptr, bias->size*sizeof(float));
+        fpga_copy_memory_to_fpga(bias->ptr, bias->fpga_ptr, bias->size*sizeof(float));
       } else if (hlsinf_bias_format == HLSINF_API32) {
         // Data conversion needed to API32 (FP32->API32)
         bias->fpga_ptr = fpga_create_memory(bias->size*4);  
-        fpga_copy_memory_to_fpga_and_format(bias->ptr, (cl::Buffer *)bias->fpga_ptr, bias->size, HLSINF_FP32, HLSINF_API32);
+        fpga_copy_memory_to_fpga_and_format(bias->ptr, bias->fpga_ptr, bias->size, HLSINF_FP32, HLSINF_API32);
       } else {
         printf("Error (HLSinf forward), bias format not supported\n");
         exit(1);
@@ -136,7 +136,7 @@ void LHLSinf::forward() {
     if (enable_batch_norm && (batch_norm_values->fpga_ptr == NULL)) {
       // BatchNorm values assumed to be always in FP32 (might not be the case!)
       batch_norm_values->fpga_ptr = fpga_create_memory(batch_norm_values->size*sizeof(float));  
-      fpga_copy_memory_to_fpga(batch_norm_values->ptr, (cl::Buffer *)batch_norm_values->fpga_ptr, batch_norm_values->size*sizeof(float));
+      fpga_copy_memory_to_fpga(batch_norm_values->ptr, batch_norm_values->fpga_ptr, batch_norm_values->size*sizeof(float));
     }
     // Output buffer, the buffer size depends on the data type
     if (output->fpga_ptr == NULL) {

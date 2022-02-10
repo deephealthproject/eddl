@@ -28,9 +28,6 @@ extern cl::Kernel kernel_hlsinf[16];
 
 void set_callback(cl::Event event, const char *queue_name);
 
-cl::Buffer *fpga_create_memory(long int size);
-
-
 #endif //EDDL_FPGA_XILINX_HW_H
 
 #endif

@@ -18,7 +18,7 @@
 #endif
 
 #ifdef FPGA_VENDOR_INTEL
-// #include "eddl/hardware/fpga/intel/fpga_intel_hw
+ #include "eddl/hardware/fpga/intel/fpga_intel_hw.h"
 #endif
 
 // --------------------------------------------------------------------------------------------------------
@@ -82,10 +82,10 @@ void event_cb(cl_event event1, cl_int cmd_status, void *data);
 
 void fpga_init(int kernel_version, int kernel_subversion);
 
-// vendor-specific  void *fpga_create_memory(long int size);
-void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size);
-void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size, int src_format, int dst_format);
-void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size);
+void *fpga_create_memory(long int size);
+void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size);
+void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int size, int src_format, int dst_format);
+void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size);
 
 void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
 void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B);

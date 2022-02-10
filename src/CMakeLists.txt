@@ -359,7 +359,11 @@ SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 
 # FPGA INTEL ****************************************
 if(USE_FPGA_INTEL)
-message (WARNING " intel fpga to be done")
+  message(WARNING " intel fpga to be done")
+  message(WARNING " ")
+  message(WARNING "this is jm10 compiling xilinx fpga")
+  message(WARNING " ")
+
 endif()
 SET(USE_FPGA_INTEL ${USE_FPGA_INTEL} PARENT_SCOPE)  # Parent's scope
 
