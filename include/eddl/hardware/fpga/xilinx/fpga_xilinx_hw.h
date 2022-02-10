@@ -13,7 +13,7 @@
 #define EDDL_FPGA_XILINX_HW_H
 
 // --------------------------------------------------------------------------------------------------------
-#include "fpga_profile.h"
+//#include "eddl/hardware/fpga/fpga_profile.h"
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"

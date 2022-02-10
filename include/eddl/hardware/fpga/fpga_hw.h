@@ -13,11 +13,11 @@
 #define EDDL_FPGA_HW_H
 
 // openCL headers, vendor specific 
-#ifdef FPGA_VENDOR_XILINX
+#ifdef cFPGA_VENDOR_XILINX
   #include "eddl/hardware/fpga/xilinx/fpga_xilinx_hw.h"
 #endif
 
-#ifdef FPGA_VENDOR_INTEL
+#ifdef cFPGA_VENDOR_INTEL
  #include "eddl/hardware/fpga/intel/fpga_intel_hw.h"
 #endif
 
