@@ -14,6 +14,7 @@ set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA_INTEL FPGA_X
 SET(USE_OPENMP OFF)
 SET(USE_CUDA OFF)
 SET(USE_CUDNN OFF)
+#SET(USE_FPGA OFF)
 SET(USE_FPGA_INTEL OFF)
 SET(USE_FPGA_XILINX OFF)
 SET(USE_PROTOBUF OFF)
@@ -28,8 +29,10 @@ elseif(${BUILD_TARGET} STREQUAL "CUDNN")
     SET(USE_CUDNN ON) # Local's scope
 elseif(${BUILD_TARGET} STREQUAL "FPGA_INTEL")
     SET(USE_FPGA_INTEL ON) # Local's scope
+#    SET(USE_FPGA ON) # Local's scope
 elseif(${BUILD_TARGET} STREQUAL "FPGA_XILINX")
     SET(USE_FPGA_XILINX ON) # Local's scope
+#    SET(USE_FPGA ON)
 else()
     message(FATAL_ERROR "Build target '${BUILD_TARGET}' not implemented, CMake will exit." )
 endif()
@@ -82,25 +85,15 @@ set(ONNX_FILES ${PROJECT_SOURCE_DIR}/include/eddl/serialization/onnx/onnx.pb.h
 file(GLOB_RECURSE CUDA_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/gpu/*" *.{h, hpp})
 file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/gpu/*" *.{cu})
 
-
+#FPGA
 file(GLOB_RECURSE FPGA_COMMON_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/*" *.{h, hpp})
 file(GLOB_RECURSE FPGA_COMMON_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/*" *.{cc, cpp})
-
-
 ## FPGA INTEL
 file(GLOB_RECURSE FPGA_INTEL_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/intel/*" *.{h, hpp})
 file(GLOB_RECURSE FPGA_INTEL_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/intel/*" *.{cc, cpp})
-
 # FPGA XILINX
 file(GLOB_RECURSE FPGA_XILINX_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/xilinx/*" *.{h, hpp})
 file(GLOB_RECURSE FPGA_XILINX_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/xilinx/*" *.{cc, cpp})
-
-#list(FILTER FPGA_COMMON_HEADERS EXCLUDE REGEX
-#list(FILTER FPGA_COMMON_SOURCES EXCLUDE REGEX "${FPGA_INTEL_SOURCES}")
-#list(FILTER FPGA_COMMON_HEADERS EXCLUDE REGEX "${FPGA_INTEL_HEADERS}")
-#list(FILTER FPGA_COMMON_SOURCES EXCLUDE REGEX "${FPGA_XILINX_SOURCES}")
-#list(FILTER FPGA_COMMON_HEADERS EXCLUDE REGEX "${FPGA_XILINX_HEADERS}")
-
 
 SET(SPECIAL_FILES ${FPGA_INTEL_SOURCES} ${FPGA_XILINX_SOURCES} )
 FOREACH(item ${SPECIAL_FILES})
@@ -111,7 +104,6 @@ SET(SPECIAL_FILES ${FPGA_INTEL_HEADERS} ${FPGA_XILINX_HEADERS} )
 FOREACH(item ${SPECIAL_FILES})
     LIST(REMOVE_ITEM FPGA_COMMON_HEADERS ${item})
 ENDFOREACH(item)
-
 
 message (STATUS "FPGA_COMMON_SOURCES  " )
 FOREACH(item ${FPGA_COMMON_SOURCES})
@@ -140,7 +132,6 @@ message (STATUS "FPGA_XILINX_HEADERS  " )
 FOREACH(item ${FPGA_XILINX_HEADERS})
     message (STATUS "  FILE -> " ${item})
 ENDFOREACH(item)
-
 message (STATUS "all listed, done" )
 
 
@@ -371,23 +362,65 @@ SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 
 # FPGA INTEL ****************************************
 if(USE_FPGA_INTEL)
-  message(WARNING " intel fpga to be done")
-  message(WARNING " ")
-  message(WARNING "this is jm10 compiling xilinx fpga")
-  message(WARNING " ")
+    message(STATUS "USE INTEL FPGA")
+
+    find_package(OpenCL)
+    if (OpenCL_FOUND)
+    
+        message(NOTICE "jomarm10 @${PROJECT_NAME} Forced changes to add paths and libraries and sources for Stratix support, check changes correctness")
+
+        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{IQ_BASE_DIR}/hld/examples_aoc/common/inc;$ENV{IQ_BASE_DIR}/hld/include;$ENV{IQ_BASE_DIR}/hld/include>")
+        target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/examples_aoc/common/inc)
+ 
+        target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/include)
+        target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/host/include)
+
+        message(NOTICE "set cxx flags for aocl s10mx example compilation and push to parent scope")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fPIE -std=c++11 -O3 -fPIC")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
+
+        #include_directories  done
+
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCL_LIBRARY})
+
+        execute_process(COMMAND aocl ldflags OUTPUT_VARIABLE AOCL_LINK_FLAGS)
+        execute_process(COMMAND aocl ldlibs OUTPUT_VARIABLE AOCL_LINK_LIBS)
+        # remove trail carriage return from strings
+        string(REGEX REPLACE "\n$" "" AOCL_LINK_FLAGS "${AOCL_LINK_FLAGS}")
+        string(REGEX REPLACE "\n$" "" AOCL_LINK_LIBS "${AOCL_LINK_LIBS}")
+
+        set(AOCL_LINK_CONFIG "${AOCL_LINK_FLAGS} -z noexecstack -Wl,-z,relro,-z,now -Wl,-Bsymbolic -pie  ${AOCL_LINK_LIBS}" )
+        message (STATUS "  AOCL_LINK_FLAGS  -> ${AOCL_LINK_FLAGS}")
+        message (STATUS "  AOCL_LINK_LIBS   -> ${AOCL_LINK_LIBS}")
+        message (STATUS "  AOCL_LINK_CONFIG -> ${AOCL_LINK_CONFIG}")
+
+        # following line triggers an error
+        target_link_options(${PROJECT_NAME} PUBLIC ${AOCL_LINK_CONFIG} )
 
 
+        if(APPLE)
+            target_link_options(${PROJECT_NAME} PUBLIC -framework opencl -lpthread)
+        endif()
+
+        # Add extra files
+        target_sources(${PROJECT_NAME} PRIVATE ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_INTEL_HEADERS} ${FPGA_INTEL_SOURCES})
+
+    else()
+        message(WARNING "OpenCL not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=CPU')
+        Hint: Set the OpenCL path using '-D OPENCL_ROOT=path' or creating a symbolic link.")
+        SET(BUILD_TARGET "CPU") # Local's scope
+#        SET(USE_FPGA OFF)
+        SET(USE_FPGA_INTEL OFF) # Local's scope (disable)
+    endif()
 endif()
+#SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)
 SET(USE_FPGA_INTEL ${USE_FPGA_INTEL} PARENT_SCOPE)  # Parent's scope
-
-
 
 # FPGA XILINX ***************************************
 if(USE_FPGA_XILINX)
 
-  message(WARNING " ")
-  message(WARNING "this is jm10 compiling xilinx fpga")
-  message(WARNING " ")
+    message(STATUS "USE XILINX FPGA")
+
     find_package(OpenCL)
     if (OpenCL_FOUND)
 
@@ -413,10 +446,14 @@ if(USE_FPGA_XILINX)
         message(WARNING "OpenCL not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=CPU')
         Hint: Set the OpenCL path using '-D OPENCL_ROOT=path' or creating a symbolic link.")
         SET(BUILD_TARGET "CPU") # Local's scope
+#        SET(USE_FPGA OFF)
         SET(USE_FPGA_XILINX OFF) # Local's scope (disable)
     endif()
 endif()
+
+#SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)
 SET(USE_FPGA_XILINX ${USE_FPGA_XILINX} PARENT_SCOPE)  # Parent's scope
+
 
 if(BUILD_DIST)
     # ZLIB  ***************************************
@@ -501,11 +538,14 @@ endif()
 if(USE_FPGA_INTEL)
     add_definitions(-DcFPGA)
     add_definitions(-DcFPGA_VENDOR_INTEL)
+#    SET(BUILD_TARGET "FPGA" PARENT_SCOPE)
 endif()
 if(USE_FPGA_XILINX)
     add_definitions(-DcFPGA)
     add_definitions(-DcFPGA_VENDOR_XILINX)
+#    SET(BUILD_TARGET "FPGA" PARENT_SCOPE)
 endif()
+
 
 ##########################################################################
 ############################ INSTALLATION ################################

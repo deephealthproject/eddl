@@ -28,6 +28,7 @@ extern cl::Kernel kernel_hlsinf[16];
 
 void set_callback(cl::Event event, const char *queue_name);
 
+
 #endif //EDDL_FPGA_XILINX_HW_H
 
 #endif

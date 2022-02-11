@@ -26,7 +26,6 @@
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"
-                       // Aproximated precision integer support
 
 //#define FPGA_DEBUG
 //#define WRITE_TENSORS_TO_FILE
@@ -76,13 +75,22 @@ extern bool hlsinf_dense_support;
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
+// Following values match their analogues defined for Intel fpga in /opt/.../include/CL/cl.h, 
+#define FPGA_CLMEM_READ_WRITE                           (1 << 0)  // CL_MEM_READ_WRITE
+#define FPGA_CLMEM_WRITE_ONLY                           (1 << 1)  // CL_MEM_WRITE_ONLY
+#define FPGA_CLMEM_READ_ONLY                            (1 << 2)  // CL_MEM_READ_ONLY
+#define FPGA_CLMEM_USE_HOST_PTR                         (1 << 3)  // CL_MEM_USE_HOST_PTR
+#define FPGA_CLMEM_ALLOC_HOST_PTR                       (1 << 4)  // CL_MEM_ALLOC_HOST_PTR
+#define FPGA_CLMEM_COPY_HOST_PTR                        (1 << 5)  // CL_MEM_COPY_HOST_PTR
+/* reserved                                         (1 << 6)    */
+
 // vendor-specific void set_callback(cl::Event event, const char *queue_name);
 
 void event_cb(cl_event event1, cl_int cmd_status, void *data);
 
 void fpga_init(int kernel_version, int kernel_subversion);
 
-void *fpga_create_memory(long int size);
+void *fpga_create_memory(unsigned long flags, long int size);
 void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size);
 void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int size, int src_format, int dst_format);
 void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size);
