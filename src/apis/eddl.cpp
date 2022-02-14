@@ -2005,7 +2005,7 @@ namespace eddl {
         }
     }
 #endif
-//#ifdef cFPGA_VENDOR_INTEL
+#ifdef cFPGA_VENDOR_INTEL
     void download_hlsinf(int version, int subversion){
         char file[200];
 
@@ -2026,7 +2026,7 @@ namespace eddl {
             }
         }
     }
-//#endif
+#endif
 
 
     // Auxiliar functions
