@@ -4,20 +4,23 @@
 
 # USER OPTIONS *******************************
 #CUDNN option is CUDA+CUDNN
-set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA_INTEL, FPGA_XILINX}")
+set(BUILD_TARGET "CUDNN" CACHE STRING "Compile library for {CPU, GPU, CUDNN, FPGA}")
+set(FPGA_VENDOR "unset" CACHE STRING "Compile library for FPGA device Vendor {INTEL, XILINX}")
 #option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA_INTEL FPGA_XILINX)
-
+set_property(CACHE FPGA_VENDOR PROPERTY STRINGS INTEL XILINX)
 # Initializations (Local's scope)
+
 SET(USE_OPENMP OFF)
 SET(USE_CUDA OFF)
 SET(USE_CUDNN OFF)
-#SET(USE_FPGA OFF)
+SET(USE_FPGA OFF)
+SET(USE_PROTOBUF OFF)
+
 SET(USE_FPGA_INTEL OFF)
 SET(USE_FPGA_XILINX OFF)
-SET(USE_PROTOBUF OFF)
 
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
@@ -27,12 +30,18 @@ elseif(${BUILD_TARGET} STREQUAL "GPU" OR ${BUILD_TARGET} STREQUAL "CUDA")
 elseif(${BUILD_TARGET} STREQUAL "CUDNN")
     SET(USE_CUDA ON) # Local's scope
     SET(USE_CUDNN ON) # Local's scope
-elseif(${BUILD_TARGET} STREQUAL "FPGA_INTEL")
-    SET(USE_FPGA_INTEL ON) # Local's scope
-#    SET(USE_FPGA ON) # Local's scope
-elseif(${BUILD_TARGET} STREQUAL "FPGA_XILINX")
-    SET(USE_FPGA_XILINX ON) # Local's scope
-#    SET(USE_FPGA ON)
+elseif(${BUILD_TARGET} STREQUAL "FPGA")
+    SET(USE_FPGA ON) # Local's scope
+    if(${FPGA_VENDOR} STREQUAL "INTEL")
+        SET(USE_FPGA_INTEL ON) # Local's scope
+    elseif(${FPGA_VENDOR} STREQUAL "XILINX")
+        SET(USE_FPGA_XILINX ON)# Local's scope
+    else()
+        SET(USE_FPGA_INTEL OFF) # Local's scope
+        SET(USE_FPGA_XILINX OFF)# Local's scope
+        SET(USE_FPGA OFF) # Local's scope
+        message(FATAL_ERROR "Build target '${BUILD_TARGET}' for unsupported vendor '${FPGA_VENDOR}', set one of the supported vendors -DFPGA_VENDOR={INTEL, XILINX}, CMake will exit." )
+    endif()
 else()
     message(FATAL_ERROR "Build target '${BUILD_TARGET}' not implemented, CMake will exit." )
 endif()
@@ -105,34 +114,35 @@ FOREACH(item ${SPECIAL_FILES})
     LIST(REMOVE_ITEM FPGA_COMMON_HEADERS ${item})
 ENDFOREACH(item)
 
-message (STATUS "FPGA_COMMON_SOURCES  " )
-FOREACH(item ${FPGA_COMMON_SOURCES})
-    message (STATUS "  FILE -> " ${item})
-ENDFOREACH(item)
 
-message (STATUS "FPGA_COMMON_HEADERS  " )
-FOREACH(item ${FPGA_COMMON_HEADERS})
-    message (STATUS "  FILE -> " ${item})
-ENDFOREACH(item)
-
-message (STATUS "FPGA_INTEL_SOURCES   " )
-FOREACH(item ${FPGA_INTEL_SOURCES})
-    message (STATUS "  FILE -> " ${item})
-ENDFOREACH(item)
-message (STATUS "FPGA_INTEL_HEADERS   " )
-FOREACH(item ${FPGA_INTEL_HEADERS})
-    message (STATUS "  FILE -> " ${item})
-ENDFOREACH(item)
-
-message (STATUS "FPGA_XILINX_SOURCES  " )
-FOREACH(item ${FPGA_XILINX_SOURCES})
-    message (STATUS "  FILE -> " ${item})
-ENDFOREACH(item)
-message (STATUS "FPGA_XILINX_HEADERS  " )
-FOREACH(item ${FPGA_XILINX_HEADERS})
-    message (STATUS "  FILE -> " ${item})
-ENDFOREACH(item)
-message (STATUS "all listed, done" )
+#message (STATUS "FPGA_COMMON_SOURCES  " )
+#FOREACH(item ${FPGA_COMMON_SOURCES})
+#    message (STATUS "  FILE -> " ${item})
+#ENDFOREACH(item)
+#
+#message (STATUS "FPGA_COMMON_HEADERS  " )
+#FOREACH(item ${FPGA_COMMON_HEADERS})
+#    message (STATUS "  FILE -> " ${item})
+#ENDFOREACH(item)
+#
+#message (STATUS "FPGA_INTEL_SOURCES   " )
+#FOREACH(item ${FPGA_INTEL_SOURCES})
+#    message (STATUS "  FILE -> " ${item})
+#ENDFOREACH(item)
+#message (STATUS "FPGA_INTEL_HEADERS   " )
+#FOREACH(item ${FPGA_INTEL_HEADERS})
+#    message (STATUS "  FILE -> " ${item})
+#ENDFOREACH(item)
+#
+#message (STATUS "FPGA_XILINX_SOURCES  " )
+#FOREACH(item ${FPGA_XILINX_SOURCES})
+#    message (STATUS "  FILE -> " ${item})
+#ENDFOREACH(item)
+#message (STATUS "FPGA_XILINX_HEADERS  " )
+#FOREACH(item ${FPGA_XILINX_HEADERS})
+#    message (STATUS "  FILE -> " ${item})
+#ENDFOREACH(item)
+#message (STATUS "all listed, done" )
 
 
 # Remove setup-dependent files (later we'll add the ones we need)
@@ -365,44 +375,48 @@ if(USE_FPGA_INTEL)
     message(STATUS "USE INTEL FPGA")
     find_package(OpenCL)
     if (OpenCL_FOUND)
-        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{IQ_BASE_DIR}/hld/include;$ENV{IQ_BASE_DIR}/hld/host/include>")
-        target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/include)
-        target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/host/include)
-
-        message(NOTICE "set cxx flags for aocl s10mx example compilation and push to parent scope")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fPIE -std=c++11 -O3 -fPIC")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
-
-        #include_directories  done
-
-        target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCL_LIBRARY})
-
-        execute_process(COMMAND aocl ldflags OUTPUT_VARIABLE AOCL_LINK_FLAGS)
-        execute_process(COMMAND aocl ldlibs OUTPUT_VARIABLE AOCL_LINK_LIBS)
-        # remove trail carriage return from strings
-        string(REGEX REPLACE "\n$" "" AOCL_LINK_FLAGS "${AOCL_LINK_FLAGS}")
-        string(REGEX REPLACE "\n$" "" AOCL_LINK_LIBS "${AOCL_LINK_LIBS}")
-
-        set(AOCL_LINK_CONFIG "${AOCL_LINK_FLAGS} -z noexecstack -Wl,-z,relro,-z,now -Wl,-Bsymbolic -pie  ${AOCL_LINK_LIBS}" )
-        message (STATUS "  AOCL_LINK_FLAGS  -> ${AOCL_LINK_FLAGS}")
-        message (STATUS "  AOCL_LINK_LIBS   -> ${AOCL_LINK_LIBS}")
-        message (STATUS "  AOCL_LINK_CONFIG -> ${AOCL_LINK_CONFIG}")
-
-        # following line triggers an error
-        target_link_options(${PROJECT_NAME} PUBLIC ${AOCL_LINK_CONFIG} )
-
-        if(APPLE)
-            target_link_options(${PROJECT_NAME} PUBLIC -framework opencl -lpthread)
+        if (DEFINED ENV{IQ_BASE_DIR})
+            target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{IQ_BASE_DIR}/hld/include;$ENV{IQ_BASE_DIR}/hld/host/include>")
+            target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/include)
+            target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/host/include)
+    
+            message(NOTICE "set cxx flags for aocl s10mx example compilation and push to parent scope")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fPIE -std=c++11 -O3 -fPIC")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
+    
+            #include_directories  done
+    
+            target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCL_LIBRARY})
+    
+            execute_process(COMMAND aocl ldflags OUTPUT_VARIABLE AOCL_LINK_FLAGS)
+            execute_process(COMMAND aocl ldlibs OUTPUT_VARIABLE AOCL_LINK_LIBS)
+            # remove trail carriage return from strings
+            string(REGEX REPLACE "\n$" "" AOCL_LINK_FLAGS "${AOCL_LINK_FLAGS}")
+            string(REGEX REPLACE "\n$" "" AOCL_LINK_LIBS "${AOCL_LINK_LIBS}")
+    
+            set(AOCL_LINK_CONFIG "${AOCL_LINK_FLAGS} -z noexecstack -Wl,-z,relro,-z,now -Wl,-Bsymbolic -pie  ${AOCL_LINK_LIBS}" )
+            message (STATUS "  AOCL_LINK_FLAGS  -> ${AOCL_LINK_FLAGS}")
+            message (STATUS "  AOCL_LINK_LIBS   -> ${AOCL_LINK_LIBS}")
+            message (STATUS "  AOCL_LINK_CONFIG -> ${AOCL_LINK_CONFIG}")
+    
+            # following line triggers an error
+            target_link_options(${PROJECT_NAME} PUBLIC ${AOCL_LINK_CONFIG} )
+    
+            if(APPLE)
+                target_link_options(${PROJECT_NAME} PUBLIC -framework opencl -lpthread)
+            endif()
+    
+            # Add extra files
+            target_sources(${PROJECT_NAME} PRIVATE ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_INTEL_HEADERS} ${FPGA_INTEL_SOURCES})
+        else()
+            message(FATAL_ERROR "INTEL environment variables not set. Load aocl environment variables before running cmake. cmake will exit")
         endif()
-
-        # Add extra files
-        target_sources(${PROJECT_NAME} PRIVATE ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_INTEL_HEADERS} ${FPGA_INTEL_SOURCES})
-
     else()
-        message(WARNING "OpenCL not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=CPU')
+        message(FATAL_ERROR "OpenCL not found but requested during compilation.
+        Hint: AOCL environment may not be properly set.
         Hint: Set the OpenCL path using '-D OPENCL_ROOT=path' or creating a symbolic link.")
-        SET(BUILD_TARGET "CPU") # Local's scope
-#        SET(USE_FPGA OFF)
+        SET(BUILD_TARGET "NONE") # Local's scope
+        SET(USE_FPGA OFF)
         SET(USE_FPGA_INTEL OFF) # Local's scope (disable)
     endif()
 endif()
@@ -435,7 +449,7 @@ if(USE_FPGA_XILINX)
         message(WARNING "OpenCL not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=CPU')
         Hint: Set the OpenCL path using '-D OPENCL_ROOT=path' or creating a symbolic link.")
         SET(BUILD_TARGET "CPU") # Local's scope
-#        SET(USE_FPGA OFF)
+        SET(USE_FPGA OFF)
         SET(USE_FPGA_XILINX OFF) # Local's scope (disable)
     endif()
 endif()
@@ -566,6 +580,9 @@ message(STATUS "Prefix path: " ${CMAKE_PREFIX_PATH} )
 message(STATUS "Install prefix: " ${CMAKE_INSTALL_PREFIX} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "Build target: " ${BUILD_TARGET} )
+if(USE_FPGA)
+  message(STATUS "FPGA Vendor: " ${FPGA_VENDOR} )
+endif()
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
 message(STATUS "Build shared libs: " ${BUILD_SHARED_LIBS} )
 message(STATUS "Build coverage: " ${BUILD_COVERAGE} )
