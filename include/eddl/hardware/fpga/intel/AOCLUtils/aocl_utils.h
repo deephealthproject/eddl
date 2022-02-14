@@ -24,9 +24,10 @@
 #ifndef AOCL_UTILS_H
 #define AOCL_UTILS_H
 
-#include "AOCLUtils/opencl.h"
-#include "AOCLUtils/scoped_ptrs.h"
-#include "AOCLUtils/options.h"
+#include "eddl/hardware/fpga/intel/AOCLUtils/opencl.h"
+#include "eddl/hardware/fpga/intel/AOCLUtils/scoped_ptrs.h"
+#include "eddl/hardware/fpga/intel/AOCLUtils/options.h"
+#include "eddl/hardware/fpga/intel/AOCLUtils/icl_aux.h"
 
 #endif
 

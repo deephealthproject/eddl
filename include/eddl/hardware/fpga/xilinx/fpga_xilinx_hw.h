@@ -8,6 +8,7 @@
 */
 
 #ifdef cFPGA
+#ifdef cFPGA_VENDOR_XILINX
 
 #ifndef EDDL_FPGA_XILINX_HW_H
 #define EDDL_FPGA_XILINX_HW_H
@@ -31,4 +32,5 @@ void set_callback(cl::Event event, const char *queue_name);
 
 #endif //EDDL_FPGA_XILINX_HW_H
 
-#endif
+#endif // vendor_xilinx
+#endif // cfpga

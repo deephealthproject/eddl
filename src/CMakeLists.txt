@@ -363,15 +363,9 @@ SET(USE_CUDNN ${USE_CUDNN} PARENT_SCOPE)  # Parent's scope
 # FPGA INTEL ****************************************
 if(USE_FPGA_INTEL)
     message(STATUS "USE INTEL FPGA")
-
     find_package(OpenCL)
     if (OpenCL_FOUND)
-    
-        message(NOTICE "jomarm10 @${PROJECT_NAME} Forced changes to add paths and libraries and sources for Stratix support, check changes correctness")
-
-        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{IQ_BASE_DIR}/hld/examples_aoc/common/inc;$ENV{IQ_BASE_DIR}/hld/include;$ENV{IQ_BASE_DIR}/hld/include>")
-        target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/examples_aoc/common/inc)
- 
+        target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{IQ_BASE_DIR}/hld/include;$ENV{IQ_BASE_DIR}/hld/host/include>")
         target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/include)
         target_include_directories(${PROJECT_NAME} PUBLIC $ENV{IQ_BASE_DIR}/hld/host/include)
 
@@ -397,7 +391,6 @@ if(USE_FPGA_INTEL)
         # following line triggers an error
         target_link_options(${PROJECT_NAME} PUBLIC ${AOCL_LINK_CONFIG} )
 
-
         if(APPLE)
             target_link_options(${PROJECT_NAME} PUBLIC -framework opencl -lpthread)
         endif()
@@ -418,12 +411,9 @@ SET(USE_FPGA_INTEL ${USE_FPGA_INTEL} PARENT_SCOPE)  # Parent's scope
 
 # FPGA XILINX ***************************************
 if(USE_FPGA_XILINX)
-
     message(STATUS "USE XILINX FPGA")
-
     find_package(OpenCL)
     if (OpenCL_FOUND)
-
         target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include>")
         target_include_directories(${PROJECT_NAME} PUBLIC /opt/xilinx/xrt/include)
         #target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:/opt/Xilinx/Vivado/2018.3/include)  # Is this cross-platform?
@@ -440,7 +430,6 @@ if(USE_FPGA_XILINX)
         # Add extra files
         #target_sources(${PROJECT_NAME} PRIVATE ${FPGA_XILINX_HEADERS} ${FPGA_XILINX_SOURCES})
         target_sources(${PROJECT_NAME} PRIVATE ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_XILINX_HEADERS} ${FPGA_XILINX_SOURCES})
-
 
     else()
         message(WARNING "OpenCL not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=CPU')

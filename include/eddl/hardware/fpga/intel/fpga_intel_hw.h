@@ -8,6 +8,7 @@
 */
 
 #ifdef cFPGA
+#ifdef cFPGA_VENDOR_INTEL
 
 #ifndef EDDL_FPGA_INTEL_HW_H
 #define EDDL_FPGA_INTEL_HW_H
@@ -17,12 +18,10 @@
 //OpenCL support for Intel S10MX 
 #include <CL/opencl.h>
 #include <CL/cl_ext_intelfpga.h>
-#include "AOCLUtils/aocl_utils.h"
 #define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 #include <CL/cl.h>
 // intel opencl support functions 
-#include "eddl/hardware/fpga/intel/AOCLUtils/opencl.h"
-#include "eddl/hardware/fpga/intel/icl_aux.h" 
+#include "eddl/hardware/fpga/intel/AOCLUtils/aocl_utils.h"
 // -- end of S10MX 
 
 
@@ -67,4 +66,5 @@ void set_callback(cl_event event, const char *queue_name);
 
 #endif //EDDL_FPGA_INTEL_HW_H
 
+#endif // vendor_intel
 #endif

@@ -19,7 +19,7 @@
 // This agreement shall be governed in all respects by the laws of the State of California and
 // by the laws of the United States of America.
 
-#include "AOCLUtils/aocl_utils.h"
+#include "eddl/hardware/fpga/intel/AOCLUtils/aocl_utils.h"
 #include <algorithm>
 #include <stdarg.h>
 

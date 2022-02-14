@@ -18,10 +18,10 @@
 // S10MX included in common header file in stratix standalone development project
 #include <CL/opencl.h>
 #include <CL/cl_ext_intelfpga.h>
-#include "AOCLUtils/aocl_utils.h"
 #define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 #include <CL/cl.h>
 // -- end of S10MX 
+#include "eddl/hardware/fpga/intel/AOCLUtils/aocl_utils.h"
 
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
