@@ -162,7 +162,6 @@ void fpga_device_init() {
   printf("end of fpga_init\n");
   #endif
   
-  return err;
 }
 
 
@@ -186,6 +185,11 @@ void *fpga_create_memory(long int size) {
   OCL_CHECK(err, buffer = new cl::Buffer(*context, CL_MEM_READ_WRITE /*| CL_MEM_EXT_PTR_XILINX*/, size, NULL /*&data_ddr*/, &err));
   return (void *)buffer;
 }
+void *fpga_create_memory(unsigned long flags, long int size) {
+  return fpga_create_memory(size);
+}
+
+
 
 void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size) {
   #ifdef FPGA_DEBUG_VERBOSE
