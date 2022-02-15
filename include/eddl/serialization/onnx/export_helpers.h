@@ -1,6 +1,9 @@
 #if defined(cPROTO)
 #ifndef EDDL_EXPORT_HELPERS_H
 #define EDDL_EXPORT_HELPERS_H
+
+#include <tuple>
+
 #include "eddl/serialization/onnx/onnx.pb.h"
 #include "eddl/net/net.h"
 #include "eddl/layers/core/layer_core.h"
@@ -13,8 +16,7 @@ onnx::ModelProto build_onnx_model(Net *net, bool gradients, int seq_len = 0);
 void set_graph(onnx::ModelProto *model, Net *net, bool gradients, int seq_len = 0);
 
 // Check if the inputs of a model are for a recurrent encoder, decoder or normal net (without time steps)
-// Returns a map: key=input_layer_name, value=INPUT_TYPE
-map<string, INPUT_TYPE> check_inputs_for_enc_or_dec(Net *net);
+vector<tuple<string, INPUT_TYPE>> check_inputs_for_enc_or_dec(Net *net);
 
 // Returns the layer type depending on if it is the input of a recurrent encoder, decoder or normal net
 INPUT_TYPE get_input_type(LInput *l);

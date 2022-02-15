@@ -30,13 +30,13 @@ void set_graph(onnx::ModelProto *model, Net *net, bool gradients, int seq_len)
   opset->set_version(11);
 
   // key: input layer name, val: INPUT_TYPE
-  map<string, INPUT_TYPE> inputs_types = check_inputs_for_enc_or_dec(net);
+  vector<tuple<string, INPUT_TYPE>> inputs_types = check_inputs_for_enc_or_dec(net);
   bool is_recurrent = false;
 
   // Set the inputs shapes of the graph
-  for (auto const& item : inputs_types)
+  for (tuple<string, INPUT_TYPE> item : inputs_types)
   {
-    Layer *input = net->getLayer(item.first);
+    Layer *input = net->getLayer(get<0>(item));
     onnx::ValueInfoProto *input_info = graph->add_input();
     input_info->set_name(input->name);
     onnx::TypeProto *input_type = input_info->mutable_type();
@@ -46,7 +46,7 @@ void set_graph(onnx::ModelProto *model, Net *net, bool gradients, int seq_len)
     onnx::TensorShapeProto::Dimension *input_type_tensor_dim;
     vector<int> input_shape = input->input->getShape();
 
-    if (item.second == INPUT_TYPE::SEQUENCE_ENCODER || item.second == INPUT_TYPE::SEQUENCE_DECODER)
+    if (get<1>(item) == INPUT_TYPE::SEQUENCE_ENCODER || get<1>(item) == INPUT_TYPE::SEQUENCE_DECODER)
     {
       // Set variable batch size
       input_type_tensor_dim = input_type_tensor_shape->add_dim();
@@ -169,7 +169,7 @@ INPUT_TYPE get_input_type(LInput *l) {
     return INPUT_TYPE::NORMAL; // Case 3
 }
 
-map<string, INPUT_TYPE> check_inputs_for_enc_or_dec(Net *net) {
+vector<tuple<string, INPUT_TYPE>> check_inputs_for_enc_or_dec(Net *net) {
   /*
    * We get all the input layers from the layers vector of the model
    * instead of taking them from net->lin. Because for the case of
@@ -178,10 +178,10 @@ map<string, INPUT_TYPE> check_inputs_for_enc_or_dec(Net *net) {
    * With this way we ensure that we are taking all the input layers
    * of the model.
    */
-  map<string, INPUT_TYPE> inputs_types;
+  vector<tuple<string, INPUT_TYPE>> inputs_types;
   for (Layer *aux_layer : net->layers)
     if (LInput *in_layer = dynamic_cast<LInput *>(aux_layer))
-        inputs_types[in_layer->name] = get_input_type(in_layer);
+      inputs_types.push_back({in_layer->name, get_input_type(in_layer)});
 
   return inputs_types;
 }
