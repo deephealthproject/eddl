@@ -24,6 +24,10 @@
 #include "eddl/hardware/fpga/intel/AOCLUtils/aocl_utils.h"
 // -- end of S10MX 
 
+//#include "eddl/hardware/fpga/fpga_profile.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/tensor/tensor_reduction.h"
+#include "eddl/descriptors/descriptors.h"
 
 #define fpga_data_type float
 
@@ -60,9 +64,21 @@ static const char* subkernel_names[K_SUBKERNELS] =
 
 extern cl_command_queue q;
 
+extern cl_context context;
+
+
 extern cl_kernel kernel_hlsinf[16][K_SUBKERNELS];
 
 void set_callback(cl_event event, const char *queue_name);
+
+void fpga_device_init();
+
+void *fpga_create_memory(unsigned long flags, long int size);
+void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size);
+void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int size, int src_format, int dst_format);
+void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size);
+
+void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
 
 #endif //EDDL_FPGA_INTEL_HW_H
 

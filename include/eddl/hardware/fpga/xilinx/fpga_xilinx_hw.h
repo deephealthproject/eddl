@@ -25,10 +25,19 @@
 
 extern cl::CommandQueue *q;
 
+extern cl::Context context;
 extern cl::Kernel kernel_hlsinf[16];
 
 void set_callback(cl::Event event, const char *queue_name);
 
+void fpga_device_init();
+
+void *fpga_create_memory(unsigned long flags, long int size);
+void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size);
+void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int size, int src_format, int dst_format);
+void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size);
+
+void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
 
 #endif //EDDL_FPGA_XILINX_HW_H
 

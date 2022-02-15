@@ -90,12 +90,13 @@ void event_cb(cl_event event1, cl_int cmd_status, void *data);
 
 void fpga_init(int kernel_version, int kernel_subversion);
 
-void *fpga_create_memory(unsigned long flags, long int size);
-void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size);
-void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int size, int src_format, int dst_format);
-void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size);
+//void *fpga_create_memory(unsigned long flags, long int size);
+//void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size);
+//void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int size, int src_format, int dst_format);
+//void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size);
+//
+//void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
 
-void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
 void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B);
 void dense_to_conv(float *ptr_src, int N, int M, float *ptr_dst, int I, int O, int KH, int KW);
 void tensor_padded(Tensor *A, Tensor *B);
