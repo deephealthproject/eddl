@@ -115,36 +115,6 @@ FOREACH(item ${SPECIAL_FILES})
 ENDFOREACH(item)
 
 
-#message (STATUS "FPGA_COMMON_SOURCES  " )
-#FOREACH(item ${FPGA_COMMON_SOURCES})
-#    message (STATUS "  FILE -> " ${item})
-#ENDFOREACH(item)
-#
-#message (STATUS "FPGA_COMMON_HEADERS  " )
-#FOREACH(item ${FPGA_COMMON_HEADERS})
-#    message (STATUS "  FILE -> " ${item})
-#ENDFOREACH(item)
-#
-#message (STATUS "FPGA_INTEL_SOURCES   " )
-#FOREACH(item ${FPGA_INTEL_SOURCES})
-#    message (STATUS "  FILE -> " ${item})
-#ENDFOREACH(item)
-#message (STATUS "FPGA_INTEL_HEADERS   " )
-#FOREACH(item ${FPGA_INTEL_HEADERS})
-#    message (STATUS "  FILE -> " ${item})
-#ENDFOREACH(item)
-#
-#message (STATUS "FPGA_XILINX_SOURCES  " )
-#FOREACH(item ${FPGA_XILINX_SOURCES})
-#    message (STATUS "  FILE -> " ${item})
-#ENDFOREACH(item)
-#message (STATUS "FPGA_XILINX_HEADERS  " )
-#FOREACH(item ${FPGA_XILINX_HEADERS})
-#    message (STATUS "  FILE -> " ${item})
-#ENDFOREACH(item)
-#message (STATUS "all listed, done" )
-
-
 # Remove setup-dependent files (later we'll add the ones we need)
 SET(SPECIAL_FILES ${CUDA_HEADERS} ${CUDA_SOURCES} ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_INTEL_SOURCES} ${FPGA_INTEL_HEADERS} ${FPGA_XILINX_SOURCES} ${FPGA_XILINX_HEADERS})
 FOREACH(item ${SPECIAL_FILES})
