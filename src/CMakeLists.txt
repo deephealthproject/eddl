@@ -390,7 +390,7 @@ if(USE_FPGA_INTEL)
         SET(USE_FPGA_INTEL OFF) # Local's scope (disable)
     endif()
 endif()
-#SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)
+SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)
 SET(USE_FPGA_INTEL ${USE_FPGA_INTEL} PARENT_SCOPE)  # Parent's scope
 
 # FPGA XILINX ***************************************
@@ -424,7 +424,7 @@ if(USE_FPGA_XILINX)
     endif()
 endif()
 
-#SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)
+SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)
 SET(USE_FPGA_XILINX ${USE_FPGA_XILINX} PARENT_SCOPE)  # Parent's scope
 
 
