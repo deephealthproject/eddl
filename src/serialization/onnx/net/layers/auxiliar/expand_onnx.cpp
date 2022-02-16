@@ -16,6 +16,11 @@ Layer* build_expand_layer(onnx::NodeProto *node,
   vector<float> shape_values = map_init_values[shape_name];
 
   int size = -1; // New target value to expand the axes
+  int offset = parent_shape.size() - shape_values.size();
+
+  if (offset < 0)
+    msg("Error: In node " + node->name() + ", the number of dimensions in the target shape is higher than the original shape"
+        , "[ONNX::ImportNet]");
 
   // Look for an axis with dim=1 to expand and the new dim for it
   for (int i = 1; i < parent_shape.size(); ++i)
@@ -23,8 +28,8 @@ Layer* build_expand_layer(onnx::NodeProto *node,
     if (parent_shape[i] == 1)
     {
       if (size == -1)
-        size = static_cast<int>(shape_values[i]);
-      else if (size != shape_values[i])
+        size = static_cast<int>(shape_values[i - offset]);
+      else if (size != shape_values[i - offset])
         msg("Error: In node " + node->name() + ", detected more than one axis with dim 1 to expand but with different "
             "target sizes to expand them. All the dim=1 axes must be expanded to the same size.", "[ONNX::ImportNet]");
     }
