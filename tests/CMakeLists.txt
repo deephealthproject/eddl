@@ -145,7 +145,7 @@ endif()
 if(USE_FPGA_XILINX)
     add_definitions(-DcFPGA)
     add_definitions(-DcFPGA_VENDOR_XILINX)
-endif
+endif()
 
 ##########################################################################
 ############################# EXECUTABLES ################################
