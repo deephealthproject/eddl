@@ -1983,13 +1983,26 @@ namespace eddl {
     ///////////////////////////////////////
     //  HLSinf accelerators
     ///////////////////////////////////////
-#ifdef cFPGA_VENDOR_XILINX
     void download_hlsinf(int version, int subversion){
         char file[200];
+        string vendor;
+        string krnl_modifier = "";
+        string krnl_extension = "none";
 
-        sprintf(file, "hlsinf_v%0d.%0d.xclbin", version, subversion);
+        vendor = "unknown";
+#ifdef cFPGA_VENDOR_XILINX
+        vendor = "Xilinx";
+        krnl_extension = "xclbin";
+#endif
+#ifdef cFPGA_VENDOR_INTEL
+        vendor = "Intel";
+        krnl_modifier = "_stratix";
+        krnl_extension = "aocx";
+#endif
 
-        cout << "Downloading xilinx kernel file ->" << file << endl;
+        sprintf(file, "hlsinf%s_v%0d.%0d.%s", krnl_modifier.c_str(), version, subversion, krnl_extension.c_str());
+
+        cout << "Downloading " << vendor.c_str() << " kernel file ->" << file << endl;
 
         if (!exist(file)) {
             char cmd[200];
@@ -2004,29 +2017,27 @@ namespace eddl {
             }
         }
     }
-#endif
-#ifdef cFPGA_VENDOR_INTEL
-    void download_hlsinf(int version, int subversion){
-        char file[200];
 
-        sprintf(file, "hlsinf_stratix_v%0d.%0d.aocx", version, subversion);
-
-        cout << "Downloading intel kernel file ->" << file << endl;
-
-        if (!exist(file)) {
-            char cmd[200];
-            sprintf(cmd, "wget -q --show-progress https://www.dropbox.com/s/%s", file);
-            int status = system(cmd);
-            if (status < 0){
-                msg("Error executing wget.  Is it installed?", "eddl.download_hlsinf");
-            }
-            else if (status > 0){
-                cout<<cmd<<endl;
-                msg("wget failed to download HLSinfStratix accelerator (exit code: " + to_string(status) + ").", "eddl.download_hlsinf");
-            }
-        }
-    }
-#endif
+//    void download_hlsinf(int version, int subversion){
+//        char file[200];
+//
+//        sprintf(file, "hlsinf_stratix_v%0d.%0d.aocx", version, subversion);
+//
+//        cout << "Downloading intel kernel file ->" << file << endl;
+//
+//        if (!exist(file)) {
+//            char cmd[200];
+//            sprintf(cmd, "wget -q --show-progress https://www.dropbox.com/s/%s", file);
+//            int status = system(cmd);
+//            if (status < 0){
+//                msg("Error executing wget.  Is it installed?", "eddl.download_hlsinf");
+//            }
+//            else if (status > 0){
+//                cout<<cmd<<endl;
+//                msg("wget failed to download HLSinfStratix accelerator (exit code: " + to_string(status) + ").", "eddl.download_hlsinf");
+//            }
+//        }
+//    }
 
 
     // Auxiliar functions
