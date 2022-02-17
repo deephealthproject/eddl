@@ -88,7 +88,7 @@ void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epoc
     
     for(i=0;i<epochs;i++) {
       reset_loss(net);
-      mpi_id0(printf("custom_fit. Epoch %d/%d. Batch size: (param %d, global %d, local %d). Num Batches: %d Per proc: %d\n", i + 1, epochs, batch, global_batch, local_batch, num_batches, nbpp));
+      mpi_id0(printf("custom_fit. Epoch %d/%d. Batch (param %d, global %d, local %d). Num Batches: %d (of size %d) Per proc: %d (of size %d)\n", i + 1, epochs, batch, global_batch, local_batch, num_batches, global_batch, nbpp, local_batch));
       for(j=0;j<nbpp;j++)  {
           
         next_batch({x_train,y_train},{xbatch,ybatch});
@@ -228,8 +228,13 @@ int main(int argc, char **argv) {
                     printf("Val: %s, %s\n", ts_images, ts_labels);
                 }
             } else {
-                sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
-                sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
+                 if (chunks == 1) {
+                    sprintf(tr_images, "%s/train-images.bi8", path);
+                    sprintf(tr_labels, "%s/train-labels.bi8", path);
+                } else {
+                    sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
+                    sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
+                }
                 if (id == 0) {
                     printf("Train: %s, %s\n ", tr_images, tr_labels);
                     printf("Val: %s, %s\n", ts_images, ts_labels);
