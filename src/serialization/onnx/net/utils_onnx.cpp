@@ -45,9 +45,19 @@ vector<float> parseTensorValues(onnx::TensorProto t)
     }
     break;
   case onnx::TensorProto::INT8:
-    for (int i = 0; i < t.int32_data_size(); i++)
+    if (t.has_raw_data())
     {
-      values.push_back(t.int32_data(i));
+      vector<int8_t> aux_values; // Vector to read the int8 values
+      TryConvertingTensorRawValues(t, aux_values);
+      for (float i : aux_values) // Cast to float
+        values.push_back((float)i);
+    }
+    else
+    {
+      for (int i = 0; i < t.int32_data_size(); i++)
+      {
+        values.push_back(t.int32_data(i));
+      }
     }
     break;
   case onnx::TensorProto::UINT16:
@@ -63,9 +73,19 @@ vector<float> parseTensorValues(onnx::TensorProto t)
     }
     break;
   case onnx::TensorProto::INT32:
-    for (int i = 0; i < t.int32_data_size(); i++)
+    if (t.has_raw_data()) 
     {
-      values.push_back(t.int32_data(i));
+      vector<int32_t> aux_values; // Vector to read the int32 values
+      TryConvertingTensorRawValues(t, aux_values);
+      for (float i : aux_values) // Cast to float
+        values.push_back((float)i);
+    }
+    else
+    {
+      for (int i = 0; i < t.int32_data_size(); i++)
+      {
+        values.push_back(t.int32_data(i));
+      }
     }
     break;
   case onnx::TensorProto::INT64:

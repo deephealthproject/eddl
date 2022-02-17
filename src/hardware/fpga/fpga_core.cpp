@@ -281,7 +281,10 @@ void fpga_init(int kernel_version, int kernel_subversion) {
   //   |   1.3   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |   8 x 8   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.1.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |   X   |
   //   |   1.4   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 8   |     2    |   128  |  1024  |    128   | Alveo U200          | hlsinf_v1.2.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |       |
   //   |   1.5   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 8   |     2    |   128  |  1024  |    128   | Alveo U200          | hlsinf_v1.2.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |   X   |
-  //   |   1.6   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 16  |     2    |   128  |   256  |    128   | Alveo U200          | hlsinf_v1.5.xclbin |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |  X |  X  |   X    |       |
+  //   |   1.6   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 16  |     2    |   128  |   256  |    128   | Alveo U200          | hlsinf_v1.5.xclbin |   Direct  |   X  |   X   |   X  |  X   |     |  X   |   X  |    |     |   X    |       |
+  //   |   1.7   |  FP32  |   FP32      | FP32  |  FP32      |   FP32  |   8 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.3.xclbin |   Direct  |   X  |       |      |  X   |     |  X   |      |    |     |   X    |       |
+  //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //       2.0   
   //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   if ((kernel_version == 1) && (kernel_subversion == 0)) {
@@ -376,17 +379,32 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
  } else if ((kernel_version == 1) && (kernel_subversion == 6)) {
     hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
-    hlsinf_cpi = 16; hlsinf_cpo = 16; hlsinf_num_kernels = 2;
-    hlsinf_ho_max = 256; hlsinf_wo_max = 256; hlsinf_max_rows = 256;
+    hlsinf_cpi = 16; hlsinf_cpo = 16; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.5.xclbin";
-    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
-    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = false;
+    hlsinf_add_support = false;  hlsinf_upsize_support = true;
     hlsinf_dense_support = false;
     printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v1.6: \n");
     printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 16x16, 2 kernels (hlsinf_v1.5.xclbin)\n");
     printf("  Platform             : Alveo U200 board\n");
-    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Upsize\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 7)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_cpi = 6; hlsinf_cpo = 6; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.3.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = false; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = false; hlsinf_bn_support = false;
+    hlsinf_add_support = false;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = false;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.7: \n");
+    printf("  Kernel configuration : FP32, CPIxCPO: 8x4, 2 kernels (hlsinf_v1.3.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, ReLU, MaxPool, Upsize\n");
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else {

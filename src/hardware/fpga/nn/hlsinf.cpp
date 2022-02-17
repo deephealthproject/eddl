@@ -93,7 +93,7 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
 #endif
 
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I_add));
+  if (hlsinf_add_support) OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, I_add));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, H));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, W));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, HO));
@@ -113,10 +113,10 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_relu));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_stm));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, relu_factor));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_batch_norm));
+  if (hlsinf_bn_support) OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_batch_norm));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, K));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, B));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, BN_values));
+  if (hlsinf_bn_support) OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, BN_values));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, O));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, read_offset));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, write_offset));
@@ -124,7 +124,7 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_avgp));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_clipping));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_shift));
-  OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_add));
+  if (hlsinf_add_support) OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_add));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, min_clip));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, max_clip));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, dir_shift));

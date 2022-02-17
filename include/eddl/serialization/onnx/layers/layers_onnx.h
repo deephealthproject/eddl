@@ -72,7 +72,9 @@ enum ONNX_LAYERS {
   TOPK,             // OPSET: ????
   CONSTANT,         // OPSET: 13, 12, 11, 9, 1
   REPEAT,           // OPSET: 13, 6
-  LRN               // Skiped with LBypass
+  LRN,              // Skiped with LBypass
+  CONV_INTEGER,     // OPSET: ??
+  MATMUL_INTEGER    // OPSET: ??
 };
 
 map<string, ONNX_LAYERS> create_enum_map();

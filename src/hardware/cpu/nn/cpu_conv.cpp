@@ -14,7 +14,7 @@
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
-#define WRITE_TENSORS_TO_FILE
+//#define WRITE_TENSORS_TO_FILE
 
 #ifdef WRITE_TENSORS_TO_FILE
 int id_write_output = 0;

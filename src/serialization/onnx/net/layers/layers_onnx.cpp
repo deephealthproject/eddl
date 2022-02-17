@@ -56,6 +56,8 @@
 #include "eddl/serialization/onnx/layers/auxiliar/multithreshold_onnx.h"
 #include "eddl/serialization/onnx/layers/auxiliar/topk_onnx.h"
 #include "eddl/serialization/onnx/layers/auxiliar/constoftensor_onnx.h"
+#include "eddl/serialization/onnx/layers/conv/conv_integer_onnx.h"
+#include "eddl/serialization/onnx/layers/core/matmul_integer_onnx.h"
 
 /*
  * ONNX IMPORT
@@ -131,6 +133,9 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["Constant"] = ONNX_LAYERS::CONSTANT;
   map_layers["Tile"] = ONNX_LAYERS::REPEAT;
   map_layers["LRN"] = ONNX_LAYERS::LRN;
+  // others
+  map_layers["ConvInteger"] = ONNX_LAYERS::CONV_INTEGER;
+  map_layers["MatMulInteger"] = ONNX_LAYERS::MATMUL_INTEGER;
 
   return map_layers;
 }
@@ -349,6 +354,12 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       break;
     case ONNX_LAYERS::LRN:
       new_layer = build_lrn_layer(node, output_node_map, log_level, dev, mem);
+      break;
+    case ONNX_LAYERS::CONV_INTEGER:
+      new_layer = build_conv_integer_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
+      break;
+    case ONNX_LAYERS::MATMUL_INTEGER:
+      new_layer = build_matmul_integer_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
       break;
     default: {
         std::cerr << "==================================================================" << std::endl;

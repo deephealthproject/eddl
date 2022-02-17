@@ -53,38 +53,18 @@ void cpu_ceil(Tensor *A, Tensor *B){
 }
 
 void cpu_clamp(Tensor *A, Tensor *B, float min, float max){
+#ifdef CPU_DEBUG
+    printf("clamp (min %f, max %f)\n", min, max);
+    _profile_cpu_tensor(A);
+#endif
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         if (A->ptr[i] < min){ B->ptr[i] = min; }
         else if(A->ptr[i] > max){ B->ptr[i] = max; }
         else { B->ptr[i] = A->ptr[i]; }
     }
-    #ifdef CPU_DEBUG
-
+#ifdef CPU_DEBUG
     _profile_cpu_tensor(B);
-    //B->print();
-    /*int CPI = 8;
-    unsigned char *buff = (unsigned char *) malloc(B->size);
-    int C_in = B->shape[1]; int H_in = B->shape[2]; int W_in = B->shape[3];
-    
-    for (int c=0; c<C_in; c++) {
-      for (int h=0; h<H_in; h++) {
-        for (int w=0; w<W_in; w++) {
-          int addr_src = (c * H_in * W_in) + (h * W_in) + w;
-          int g = c / CPI;
-          int cpi = c % CPI; 
-          int addr_dst = (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
-          unsigned char v = B->ptr[addr_src];
-          buff[addr_dst] = v;
-        }
-      }
-    }
-
-  FILE *fd = fopen("output_cpu.bin", "w");
-  if (fd == NULL) {printf("Error, not able to open file for write\n"); exit(1);}
-  fwrite(buff, B->size, sizeof(unsigned char), fd);
-  fclose(fd);
-  exit(1);*/
 #endif
 }
 
