@@ -331,8 +331,17 @@ namespace eddl {
         net->setmode(mode);
     }
 
-    void set_quantized_mode(int quant){
-       FixedPointQuant = quant;
+    void set_quantized_mode(model net, int mode, int bits, float alpha){
+        enable_quantization = mode;
+        quantization_bits =  bits;
+        quantization_alpha = alpha;
+        net->set_quantization_mode(mode);
+    }
+
+    void end_quantization(model net){
+        net->end_quantization_net();
+        enable_quantization = 0;
+        net->set_quantization_mode(0);
     }
     
     vlayer forward(model net,vector<Layer*> in){
@@ -402,7 +411,9 @@ namespace eddl {
     void print_loss(model m, int batch){
         m->print_loss(batch);
     }
-
+    void print_loss(model m, int batch, int mb){
+        m->print_loss(batch,mb);
+    }
     vector<float> get_losses(model m){
         return m->get_losses();
     }
@@ -1663,7 +1674,7 @@ namespace eddl {
 
         if (!exist(name)) {
             cout<<name<<" x\n";
-            cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link+"/"+name;
+            cmd = "wget -q  https://www.dropbox.com/s/"+link+"/"+name;
             int status = system(cmd.c_str());
             if (status < 0){
                 msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
@@ -1942,7 +1953,7 @@ namespace eddl {
         for(int i=0;i<link.size();i++) {
             if (!exist(file[i])) {
                 cout<<file[i]<<" x\n";
-                cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
+                cmd = "wget -q  https://www.dropbox.com/s/"+link[i]+"/"+file[i];
                 int status = system(cmd.c_str());
                 if (status < 0){
                     msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
@@ -1996,7 +2007,7 @@ namespace eddl {
 
         if (!exist(file)) {
             char cmd[200];
-            sprintf(cmd, "wget -q --show-progress https://www.dropbox.com/s/%s", file);
+            sprintf(cmd, "wget -q https://www.dropbox.com/s/%s", file);
             int status = system(cmd);
             if (status < 0){
                 msg("Error executing wget.  Is it installed?", "eddl.download_hlsinf");

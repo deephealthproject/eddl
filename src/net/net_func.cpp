@@ -252,7 +252,7 @@ void quantizeLayer(Layer *l)
 {
     for (int j = 0; j < l->get_trainable_params_count(); j++) {
         collectTensor(l,"param",j);
-        l->params[j]->quantize_(256,1); 
+        l->params[j]->quantize_(quantization_bits,1);
         distributeTensor(l,"param",j);
     }
 }

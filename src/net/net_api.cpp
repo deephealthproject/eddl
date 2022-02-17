@@ -182,6 +182,14 @@ void Net::setmode(int m) {
   }
 }
 
+void Net::set_quantization_mode(int m) {
+  quantization_training=m;
+  for (int i = 0; i < snets.size(); i++){
+    snets[i]->quantization_training=m;
+  }
+}
+
+
 void Net::clamp(float min,float max)
 {
   for (int i = 0; i < snets.size(); i++)
@@ -883,11 +891,13 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     fflush(stdout);
   }
 
-  if(FixedPointQuant) 
-    for (int i = 0; i < layers.size(); i++) quantizeLayer(layers[i]); //Final quantization
+  //if(quantization_training) end_quantization_net(); //Final quantization
 
 }
 
+void Net::end_quantization_net() {
+   if(quantization_training) for (int i = 0; i < layers.size(); i++) quantizeLayer(layers[i]); //Final quantization
+}
 
 void Net::prepare_recurrent_dec(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt, vtensor &xtd,vtensor &yt,vtensor &tinr,vtensor &toutr, Tensor *Z)
 {

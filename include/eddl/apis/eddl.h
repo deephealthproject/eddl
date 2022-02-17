@@ -474,10 +474,13 @@ namespace eddl {
       *  @brief Set quantize mode.
       *
       *  @param quant Quantization mode 1, normal mode 0 
+      *  @param alpha Quantization alpha 
       *  @return     (void)
     */
-    void set_quantized_mode(int quant);
+    void set_quantized_mode(model net, int quant, int bits, float alpha);
 
+    void end_quantization(model net);
+    
     /**
       *  @brief Resets model loss.
       *
@@ -562,7 +565,7 @@ namespace eddl {
       *  @return     (void)
     */
     void print_loss(model m, int batch);
-
+    void print_loss(model m, int batch, int nb);
     /**
       *  @brief Get model losses
       *

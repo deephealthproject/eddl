@@ -63,6 +63,7 @@ public:
     bool isresized;
     bool decoder_teacher_training;
     int decsize;
+    int quantization_training;
 
     vector<int> devsel;
     CompServ *cs;
@@ -137,6 +138,7 @@ public:
     void plot(const string& fname="model.pdf", const string& rankdir="LR");
 
     void setmode(int m);
+    void set_quantization_mode(int m);
 
 
     void save(const string& filename, const string& format="");
@@ -199,6 +201,8 @@ public:
     void evaluate_recurrent(vtensor tin, vtensor tout, int bs);
     vtensor predict_recurrent(vtensor tin);
     vtensor predict(vtensor tin);
+
+    void end_quantization_net();
 
     // Debug
     static bool compare_outputs(Net* net1, Net* net2, bool verbose=false, float atol=1e-05f, float rtol=0.0f, bool equal_nan=false);

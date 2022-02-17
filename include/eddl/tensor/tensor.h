@@ -62,7 +62,9 @@
 //const float CPU_EPS_FLOAT = std::numeric_limits<float>::epsilon();  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
 //const float CPU_LOWEST_FLOAT = -CPU_MAX_FLOAT;  // For floating-point types: implementation-dependent; generally, the negative of max()
 
-extern int FixedPointQuant;
+extern int enable_quantization;
+extern int quantization_bits;
+extern float quantization_alpha;
 
 using namespace std;
 

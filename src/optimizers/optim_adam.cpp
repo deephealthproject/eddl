@@ -112,12 +112,8 @@ void Adam::applygrads(int batch) {
             // Distributed training: Accumulation of gradients
             if (layers[i]->acc_gradients.size() > 0)
               Tensor::add(-lr, mCap[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
+            if(enable_quantization) layers[i]->params[j]->quantize_(quantization_bits,quantization_alpha);
 
-            /***** Convert to fixed point *****/
-            float scale = 0;
-            int N = 256;
-
-            if(FixedPointQuant)layers[i]->params[j]->quantize_(N,scale);
         }
     }
     else p+=layers[i]->get_trainable_params_count();

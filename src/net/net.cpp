@@ -72,6 +72,7 @@ Net::Net() {
     decsize=1;
     do_compserv_delete = true;
     do_optimizer_delete = true;
+    quantization_training=0;
 }
 
 Net::Net(vlayer in, vlayer out):Net() {

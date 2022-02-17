@@ -161,27 +161,27 @@ void gpu_conv2D(ConvolDescriptor *D) {
   int device=D->I->gpu_device;
   cudaSetDevice(device);
 
-if (FixedPointQuant) {
+if (enable_quantization) {
     if (D->Kquant==nullptr) D->Kquant = new Tensor(D->K->getShape(), D->K->device);
     if (D->gpuIBquant==nullptr) D->gpuIBquant = new Tensor(D->gpuIB->getShape(), D->gpuIB->device);
     if (D->biasquant==nullptr) D->biasquant = new Tensor(D->bias->getShape(), D->bias->device);
     if (D->Iquant==nullptr) D->Iquant = new Tensor(D->I->getShape(), D->I->device);
     
     Tensor::copy(D->I, D->Iquant);
-    D->I->quantize_(256, 1);
+    D->I->quantize_(quantization_bits,1);
 
     Tensor::copy(D->K, D->Kquant);
-    D->K->quantize_(256, 1);
+    D->K->quantize_(quantization_bits,1);
 
     if (D->use_bias) {
       Tensor::copy(D->bias, D->biasquant);
-      D->bias->quantize_(256, 1);
+      D->bias->quantize_(quantization_bits,1);
     }
 
 #ifndef cCUDNN
     if(D->mem_level<=1){
       Tensor::copy(D->gpuIB,D->gpuIBquant);
-      D->gpuIB->quantize_(256, 1);
+      D->gpuIB->quantize_(quantization_bits,1);
     }
 #endif
   }
@@ -257,7 +257,7 @@ if (FixedPointQuant) {
 #endif
   }
 
-  if (FixedPointQuant) {
+  if (enable_quantization) {
     //Tensor::check_fixed_point(D->O);
     Tensor::copy(D->Iquant, D->I);
     Tensor::copy(D->Kquant, D->K);
