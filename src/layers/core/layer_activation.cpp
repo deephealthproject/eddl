@@ -166,7 +166,7 @@ void LActivation::resize(int batch){
 #endif
 
 void LActivation::forward(){
-    if(enable_quantization) this->input->quantize_(quantization_bits,1);
+    if(enable_quantization) this->input->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
 
 #ifdef cCUDNN
 

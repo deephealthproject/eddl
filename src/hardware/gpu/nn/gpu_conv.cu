@@ -168,20 +168,20 @@ if (enable_quantization) {
     if (D->Iquant==nullptr) D->Iquant = new Tensor(D->I->getShape(), D->I->device);
     
     Tensor::copy(D->I, D->Iquant);
-    D->I->quantize_(quantization_bits,1);
+    D->I->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
 
     Tensor::copy(D->K, D->Kquant);
-    D->K->quantize_(quantization_bits,1);
+    D->K->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
 
     if (D->use_bias) {
       Tensor::copy(D->bias, D->biasquant);
-      D->bias->quantize_(quantization_bits,1);
+      D->bias->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
     }
 
 #ifndef cCUDNN
     if(D->mem_level<=1){
       Tensor::copy(D->gpuIB,D->gpuIBquant);
-      D->gpuIB->quantize_(quantization_bits,1);
+      D->gpuIB->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
     }
 #endif
   }

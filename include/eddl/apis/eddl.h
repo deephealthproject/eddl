@@ -473,11 +473,12 @@ namespace eddl {
     /**
       *  @brief Set quantize mode.
       *
-      *  @param quant Quantization mode 1, normal mode 0 
-      *  @param alpha Quantization alpha 
+      *  @param clip_bits clipping bits for quantization.
+      *  @param round_bits rounding bits for quantization.
+      *  @param alpha Quantization percentage.
       *  @return     (void)
     */
-    void set_quantized_mode(model net, int quant, int bits, float alpha);
+    void set_quantized_mode(model net, int quant, int clip_bits, int round_bits, float alpha);
 
     void end_quantization(model net);
     

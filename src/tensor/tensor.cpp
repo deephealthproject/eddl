@@ -27,7 +27,8 @@ int initfpga[MAX_FPGAS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
 int enable_quantization=0;
 float quantization_alpha=0;
-int quantization_bits=0;
+int quantization_clipping_bits;
+int quantization_rounding_bits=0;
 
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 

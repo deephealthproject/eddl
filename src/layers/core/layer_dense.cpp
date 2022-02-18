@@ -52,7 +52,7 @@ LDense::~LDense(){
 }
 
 void LDense::forward() {
-    if(enable_quantization) input->quantize_(quantization_bits,1);
+    if(enable_quantization) input->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
     Tensor::mult2D(input, 0, W, 0, output, 0);
     if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
 }

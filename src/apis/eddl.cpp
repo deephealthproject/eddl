@@ -331,10 +331,12 @@ namespace eddl {
         net->setmode(mode);
     }
 
-    void set_quantized_mode(model net, int mode, int bits, float alpha){
+    void set_quantized_mode(model net, int mode, int clip_bits, int round_bits, float alpha){
         enable_quantization = mode;
-        quantization_bits =  bits;
+        quantization_clipping_bits =  clip_bits;
+        quantization_rounding_bits = round_bits;
         quantization_alpha = alpha;
+        //printf("[EDDL info] clipping_bits %d rounding_bits %d alpha %f\n", quantization_clipping_bits, quantization_rounding_bits, alpha);
         net->set_quantization_mode(mode);
     }
 

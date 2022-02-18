@@ -63,7 +63,8 @@
 //const float CPU_LOWEST_FLOAT = -CPU_MAX_FLOAT;  // For floating-point types: implementation-dependent; generally, the negative of max()
 
 extern int enable_quantization;
-extern int quantization_bits;
+extern int quantization_clipping_bits;
+extern int quantization_rounding_bits;
 extern float quantization_alpha;
 
 using namespace std;
@@ -1657,30 +1658,55 @@ public:
     static void sub(Tensor *A, Tensor *B, float v);
 
     /**
+    *   @brief In-place element-wise clipping operation.
+    *   @param max maximum value.
+    *   @param min minimum value.
+    */
+    void clipping_(int max, int min); // this = this .- A
+
+    /**
+    *   @brief Element-wise clipping operation.
+    *   @param max maximum value.
+    *   @param min minimum value.
+    *   @return A tensor with the result.
+    */
+    Tensor* clipping(int max, int min); // this = this .- A
+
+    /**
+    *   @brief Element-wise clipping operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B A tensor with the result.
+    *   @param max maximum value.
+    *   @param min minimum value.
+    */
+    static void clipping(Tensor *A, Tensor *B, int max, int min);
+
+    /**
     *   @brief In-place element-wise quantization operation.
-    *   @param N Quantization factor.
+    *   @param clipping_bits clipping bits for quantization.
+    *   @param rounding_bits rounding bits for quantization.
     *   @param alpha Quantization percentage.
     */
-    void quantize_(int N, float alpha); // this = this .- A
+    void quantize_(int clipping_bits, int rounding_bits, float alpha); // this = this .- A
 
     /**
     *   @brief Element-wise quantization operation.
-    *   @param N Quantization factor.
+    *   @param clipping_bits clipping bits for quantization.
+    *   @param rounding_bits rounding bits for quantization.
     *   @param alpha Quantization percentage.
     *   @return A tensor with the result.
     */
-    Tensor* quantize(int N, float alpha); // this = this .- A
+    Tensor* quantize(int clipping_bits, int rounding_bits, float alpha); // this = this .- A
 
     /**
     *   @brief Element-wise quantization operation.
     *   @param A The tensor where the operation is applied.
     *   @param B A tensor with the result.
-    *   @param N Quantization factor.
+    *   @param clipping_bits clipping bits for quantization.
+    *   @param rounding_bits rounding bits for quantization.
     *   @param alpha Quantization percentage.
     */
-    static void quantize(Tensor *A, Tensor *B, int N, float alpha);
-
-    static void check_fixed_point(Tensor *A);
+    static void quantize(Tensor *A, Tensor *B,int clipping_bits, int rounding_bits, float alpha);
 
     /**
     *   @brief In-place element-wise tan operation.
