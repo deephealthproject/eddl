@@ -183,7 +183,7 @@ void collectTensor(Layer *l,string tname, int p){
         }else if (tname=="gradient"){
             Tensor::copy(sl->gradients[p],l->gradients[p]);
         }else if (tname=="state"){
-            Tensor::copy(sl->states[p],l->states[p]);
+            Tensor::deselect(sl->states[p], l->states[p], sind, start, end);
         }else {
             msg("Unknown name (" + tname + ")","Net::collectTensor");
         }
