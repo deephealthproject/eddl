@@ -807,6 +807,7 @@ namespace eddl {
       *  @param name  Name of the layer
       *  @return     Output of Linear activation
     */
+    
     layer Linear(layer parent, float alpha=1.0, string name="");
 
     /**

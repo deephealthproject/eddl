@@ -45,6 +45,7 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
         }
     }
 
+
     if (c == 1) {
 
         if (t > tin) {
