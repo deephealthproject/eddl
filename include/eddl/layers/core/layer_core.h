@@ -133,6 +133,10 @@ public:
 	Tensor *gbias;
 	Tensor *acc_gbias;
 
+    //Quant
+    Tensor *qW=nullptr;
+	Tensor *qbias=nullptr;
+
     LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int mem);
 
     ~LDense() override;

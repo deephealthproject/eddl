@@ -1936,8 +1936,8 @@ void Tensor::quantize(Tensor *A, Tensor *B, int clipping_bits, int rounding_bits
     B->round_();
     B->div_(Nround);
 
-    //clipping TODO CHECK OK
-    int max = std::pow(2,clipping_bits);
+    //clipping
+    int max = std::pow(2,clipping_bits) - 1;
     int min = std::pow(2,clipping_bits) * (-1);
     B->clipping_(max, min);
 

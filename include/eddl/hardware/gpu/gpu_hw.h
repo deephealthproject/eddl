@@ -22,6 +22,9 @@
 
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
+extern int clipping_bits;
+extern int rounding_bits;
+extern int quantization;
 
 // CPU: Core (static)
 //void gpu_transpose(Tensor *A, Tensor *B);
@@ -133,6 +136,8 @@ void gpu_maximum(Tensor* A, Tensor* B, float v);
 void gpu_maximum(Tensor* A, Tensor* B, Tensor* C);
 void gpu_minimum(Tensor* A, Tensor* B, float v);
 void gpu_minimum(Tensor* A, Tensor* B, Tensor* C);
+void gpu_transpose(Tensor* A, Tensor* B);
+void gpu_mat_mul(Tensor *A, int tA, Tensor *B, int tB, Tensor *C);
 
 // GPU: Should be reductions
 float gpu_max(Tensor *A);
@@ -255,5 +260,7 @@ void gpu_total_sum(Tensor *A, float *tot);
 int* get_block_dim(int N, int blockSize);
 void copy_cpu2gpu(float* cpu_addresses, float* gpu_addresses, int size, bool delete_cpu);
 void gpu_initialize_rd(ReduceDescriptor2 *rd, Tensor *A, Tensor *B, bool reverse=false);
+
+void gpu_set_quant(int enable, int clipping, int rounding);
 
 #endif //EDDL_GPU_HW_H

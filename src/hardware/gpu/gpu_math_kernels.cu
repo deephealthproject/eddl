@@ -16,6 +16,9 @@
 
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
+int clipping_bits;
+int rounding_bits;
+int quantization;
 
  __global__ void gpu_abs(float *A, float *B, long int size){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
@@ -392,3 +395,56 @@ __global__ void gpu_minimum(float* A, float* B, float* C, long int size){
         C[thread_id_x] = min(A[thread_id_x], B[thread_id_x]);
     }
  }
+
+ 
+__global__ void gpu_transpose(float *A, float *B, int m, int n) {
+
+    long int thread_id_x = threadIdx.x + blockDim.x * blockIdx.x;
+
+    if (thread_id_x < m * n) {
+        int rowB = thread_id_x / m;
+        int colB = thread_id_x % m;
+        B[thread_id_x] = A[colB * n + rowB];
+    } 
+}
+
+ __global__ void gpu_mat_mul(float* A, float* B, float* C, long int m, long int n, long int k, int enable, int clip, int round) {
+    long int thread_id_x = threadIdx.x + blockDim.x * blockIdx.x;
+    float sum = 0;
+    if(thread_id_x < m * k) {
+        int fil = thread_id_x / k; 
+        int col = thread_id_x % k; 
+        sum = 0;
+        for(int i = 0; i < n; i++)
+        {
+            float mul = A[fil * n + i] * B[i * k + col];
+            if(enable) {
+                float Nround = powf(2,round);
+                mul =  mul * Nround;
+                mul = roundf(mul);
+                mul = mul / Nround;
+
+                //clipping 
+                float max = powf(2,clip) - 1;
+                float min = powf(2,clip) * (-1);
+                if (mul < min){ mul = min; }
+                else if(mul > max){ mul = max; }
+            }
+            sum += mul;
+            if(enable) {
+                float Nround = powf(2,round);
+                sum =  sum * Nround;
+                sum = roundf(sum);
+                sum = sum / Nround;
+
+                //clipping 
+                float max = powf(2,clip) - 1;
+                float min = powf(2,clip) * (-1);
+                if (sum < min){ sum = min; }
+                else if(sum > max){ sum = max; }
+            }
+        }
+        C[thread_id_x] = sum;
+    }
+       
+}

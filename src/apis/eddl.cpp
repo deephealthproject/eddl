@@ -19,8 +19,9 @@
 #include "eddl/apis/eddl.h"
 #include "eddl/utils.h"
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
-//#include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
+
+#include "eddl/hardware/gpu/gpu_hw.h"
 
 
 using namespace std;
@@ -336,7 +337,8 @@ namespace eddl {
         quantization_clipping_bits =  clip_bits;
         quantization_rounding_bits = round_bits;
         quantization_alpha = alpha;
-        //printf("[EDDL info] clipping_bits %d rounding_bits %d alpha %f\n", quantization_clipping_bits, quantization_rounding_bits, alpha);
+        cout <<"[EDDL info] clipping_bits " << quantization_clipping_bits << " (" << std::pow(2,quantization_clipping_bits)<< ")" << "rounding_bits " << quantization_rounding_bits<<" ("<< std::pow(2,quantization_rounding_bits) << ")" << "alpha " << alpha<<"\n";
+        gpu_set_quant(mode, clip_bits, round_bits);
         net->set_quantization_mode(mode);
     }
 

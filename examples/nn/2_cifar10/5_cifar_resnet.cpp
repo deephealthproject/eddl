@@ -12,7 +12,9 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-
+#include "eddl/serialization/onnx/eddl_onnx.h"
+#include "eddl/serialization/onnx/utils_onnx.h"
+#include "eddl/serialization/onnx/export_helpers.h"
 
 using namespace eddl;
 
@@ -41,18 +43,83 @@ layer ResBlock(layer l, int filters,int nconv,int half) {
 }
 
 int main(int argc, char **argv){
-  bool testing = false;
-  bool use_cpu = false;
-  for (int i = 1; i < argc; ++i) {
-      if (strcmp(argv[i], "--testing") == 0) testing = true;
-      else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+
+  int epochs = -1;
+  //args
+  int use_cpu=0;
+  int use_quant=0;
+  int testing=0;
+  int testingquant=0;
+  int savecheckpoint=0;
+  int loadcheckpoint=0;
+  float alpha = 0;
+  int roundbits=0;
+  int clipbits=0;
+  int just_evaluate=0;
+  string checkpoint = "";
+  for (int i = 1; i < argc; i++) {
+      if (!strcmp(argv[i], "--cpu")) {
+          use_cpu=1;
+      }
+      else if (!strcmp(argv[i], "--test")) {
+          epochs=1;
+          testing=1;
+          use_quant=0;
+      }
+      else if (!strcmp(argv[i], "--epoch")) {
+          epochs = atoi(argv[++i]);
+      }
+      else if (!strcmp(argv[i], "--testquantization")) {
+          epochs=0;
+          testing=1;
+          use_quant=1;
+          testingquant=1;
+      }
+      else if (!strcmp(argv[i], "--quantization")) {
+          use_quant=1;
+      }
+      else if (!strcmp(argv[i], "--savecheckpoint")) {
+          savecheckpoint = 1;
+          loadcheckpoint = 0;
+          use_quant=0;
+          testing=0;
+          testingquant=0;
+      }
+      else if (!strcmp(argv[i], "--loadcheckpoint")) {
+          savecheckpoint = 0;
+          loadcheckpoint = 1;
+          checkpoint = argv[++i];
+      }
+      else if (!strcmp(argv[i], "--alpha")) {
+          alpha = atof(argv[++i]);
+      }
+      else if (!strcmp(argv[i], "--bits")) {
+          clipbits = atoi(argv[++i]); 
+          roundbits = atoi(argv[++i]);
+      }
+      else if(!strcmp(argv[i], "--evaluate")){
+          just_evaluate = 1;
+          use_quant=0;
+          testing=0;
+          testingquant=0;
+          savecheckpoint=0;
+          loadcheckpoint=1;
+          alpha = 0;
+      }
   }
 
+  if(testing)printf("Testing ON\n");
+  if(testingquant)printf("Testing ON\n");
+  if(use_quant) {
+    printf("Quantization ON with %d %d bits %f alpha\n",clipbits, roundbits, alpha);
+  }
+  if(savecheckpoint)printf("Save model ON\n");
+  if(loadcheckpoint)printf("Load model from checkpoint ON\n");
   // download CIFAR data
   download_cifar10();
 
   // Settings
-  int epochs = testing ? 2 : 5;
+  if (epochs==-1) epochs = testing ? 2 : 15;
   int batch_size = 100;
   int num_classes = 10;
 
@@ -95,12 +162,23 @@ int main(int argc, char **argv){
       // cs = CS_FPGA({1});
   }
 
-  // Build model
-  build(net,
-    sgd(0.001, 0.9), // Optimizer
-    {"softmax_cross_entropy"}, // Losses
-    {"categorical_accuracy"}, // Metrics
-    cs);
+  // Build model   
+    build(net,
+      adam(0.001), // Optimizer
+      //sgd(0.001, 0.9), // Optimizer
+      {"softmax_cross_entropy"}, // Losses
+      {"categorical_accuracy"}, // Metrics
+      cs);
+
+  if (loadcheckpoint) {
+      cout << " Loading new from checkpoint ... " << checkpoint <<std::endl;
+
+      if(!checkpoint.empty()) load(net, checkpoint, "bin");
+      else {
+          printf("[ERROR] Empty checkpoint\n");
+          exit(0);
+      }
+  }
 
   // plot the model
   plot(net,"model.pdf");
@@ -136,13 +214,50 @@ int main(int argc, char **argv){
       y_test  = y_mini_test;
   }
 
-  for(int i=0;i<epochs;i++) {
+//set_quantized_mode(net, 0, (2^bits), alpha);
+
+int i;
+if(!testingquant && !loadcheckpoint && !just_evaluate){
+  std::cout << "Floating point training with "<< epochs << std::endl;
+  for(i=0;i<epochs;i++) {
     // training, list of input and output tensors, batch, epochs
     fit(net,{x_train},{y_train},batch_size, 1);
     // Evaluate train
     std::cout << "Evaluate test:" << std::endl;
     evaluate(net,{x_test},{y_test});
   }
+}
+
+if(savecheckpoint) {
+    cout << "Saving weights..." << endl;
+    save(net, "cifar_resnet_checkpoint_epoch_" + to_string(i) + ".bin", "bin");
+}
+
+if(use_quant || testingquant) {
+    int quantepochs = 10;
+    if(testingquant) quantepochs = 1;
+
+    std::cout << "Quantization training with "<< quantepochs << " epochs: " << clipbits << "_" << roundbits <<  " bits and " << alpha << " alpha" <<std::endl;
+    set_quantized_mode(net, 1, clipbits, roundbits, alpha);
+    //set_quantized_mode(net, 1, pow(2,bits), alpha);
+    for(int i=0;i<quantepochs;i++) {
+      // training, list of input and output tensors, batch, epochs
+      fit(net,{x_train},{y_train},batch_size, 1);
+      // Evaluate train
+      std::cout << "QEvaluate test:" << std::endl;
+      evaluate(net,{x_test},{y_test});
+    }
+
+    end_quantization(net);
+    save_net_to_onnx_file(net,"cifar_resnet_" + to_string(clipbits) +"_" + to_string(roundbits) + "bits_"+to_string(alpha)+"alpha"+".onnx");
+}
+
+//just evalutate
+if(just_evaluate) {
+    printf("Evaluate net\n");
+    evaluate(net,{x_test},{y_test});
+}
+printf("end\n");
 
     delete x_train;
     delete y_train;

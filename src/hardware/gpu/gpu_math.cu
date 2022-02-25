@@ -580,6 +580,55 @@ void gpu_minimum(Tensor* A, Tensor* B, Tensor* C){
     check_cuda(cudaDeviceSynchronize(), "minimum");
 }
 
+void gpu_transpose(Tensor* A, Tensor* B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_transpose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1]);
+    check_cuda(cudaDeviceSynchronize(), "transpose");
+}
+
+
+void gpu_mat_mul(Tensor *A, int tA, Tensor *B, int tB, Tensor *C){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(C);
+
+    if (tA && tB) {
+        printf("gpu_mat_mult with trans A and trans B not supported \n");
+        exit(0);
+    }
+    if (tA)
+    {
+        Tensor *cloneT = Tensor::zeros({A->shape[1],A->shape[0]},A->device);
+        gpu_transpose(A, cloneT);
+        int m=cloneT->shape[0];
+        int n=cloneT->shape[1];
+        int k=B->shape[1];
+        gpu_mat_mul<<<dimGrid,dimBlock>>>(A->ptr, cloneT->ptr, C->ptr, m, n, k, quantization, clipping_bits, rounding_bits); 
+        cloneT->deleteData();
+
+    } else if (tB) {         
+        Tensor *cloneT = Tensor::zeros({B->shape[1],B->shape[0]},B->device);
+        gpu_transpose(B, cloneT);
+        int m=A->shape[0];
+        int n=A->shape[1];
+        int k=B->shape[0];
+        gpu_mat_mul<<<dimGrid,dimBlock>>>(A->ptr, cloneT->ptr, C->ptr, m, n, k, quantization, clipping_bits, rounding_bits); 
+        cloneT->deleteData();
+    } else {
+    int m=A->shape[0];
+    int n=A->shape[1];
+    int k=B->shape[1];
+    gpu_mat_mul<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, m, n, k, quantization, clipping_bits, rounding_bits); 
+    }
+    check_cuda(cudaDeviceSynchronize(), "gpu_mat_mul");
+
+}
+
 
 // GPU: Should be reductions ***************************
 float gpu_max(Tensor *A){
@@ -936,4 +985,11 @@ void gpu_initialize_rd(ReduceDescriptor2 *rd, Tensor *A, Tensor *B, bool reverse
             rd->cpu_addresses = nullptr;
         }
     }
+}
+
+void gpu_set_quant(int enable, int clipping, int rounding) {
+    printf("gpu enable quantization %d %d %d \n", enable, clipping, rounding);
+    clipping_bits = clipping;
+    rounding_bits = rounding;
+    quantization = enable;
 }

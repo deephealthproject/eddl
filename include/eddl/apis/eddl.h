@@ -473,12 +473,13 @@ namespace eddl {
     /**
       *  @brief Set quantize mode.
       *
+      *  @param mode Quantization enabled 1, Quantization disabled 0
       *  @param clip_bits clipping bits for quantization.
       *  @param round_bits rounding bits for quantization.
       *  @param alpha Quantization percentage.
       *  @return     (void)
     */
-    void set_quantized_mode(model net, int quant, int clip_bits, int round_bits, float alpha);
+    void set_quantized_mode(model net, int mode, int clip_bits, int round_bits, float alpha);
 
     void end_quantization(model net);
     
@@ -2649,7 +2650,6 @@ namespace eddl {
       *  @return     (void) The binary files of HLSinf accelerator
     */
     void download_hlsinf(int version, int subversion);
-
 
     // Auxiliary function
     layer _expand3d_to_4d(layer parent, string name);

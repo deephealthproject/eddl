@@ -58,8 +58,8 @@ void Conv2D(ConvolDescriptor *D) {
         if (is_dilated)
             msg("Dilated convolutions are only supported using GPU with CUDNN." "Tensor::Conv2D");
 #endif
-         //gpu_conv2D_old(D);
-         gpu_conv2D(D);
+        if(enable_quantization) gpu_conv2D_quantized(D);
+        else gpu_conv2D(D);
       }
 #endif
 

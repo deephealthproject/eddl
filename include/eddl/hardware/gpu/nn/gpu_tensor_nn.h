@@ -82,6 +82,7 @@ void gpu_bin_accuracy(Tensor *A,Tensor *B,int *acc);
 
 // Conv2D
 void gpu_conv2D(ConvolDescriptor *D);
+void gpu_conv2D_quantized(ConvolDescriptor *D);
 void gpu_conv2D_grad(ConvolDescriptor *D);
 void gpu_conv2D_back(ConvolDescriptor *D);
 

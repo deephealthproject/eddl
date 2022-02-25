@@ -59,8 +59,10 @@ string LAdd::plot(int c) {
 
 void LAdd::forward() {
     output->fill_(0.0);
-    for (int i = 0; i < parent.size(); ++i)
+    for (int i = 0; i < parent.size(); ++i) {
         Tensor::inc(parent[i]->output, output);
+        if (enable_quantization) output->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+    }
 }
 
 void LAdd::backward() {

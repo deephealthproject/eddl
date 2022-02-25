@@ -155,36 +155,10 @@ void gpu_im2col_low(ConvolDescriptor *D, int col2im,int b){
 
 
 
-
 void gpu_conv2D(ConvolDescriptor *D) {
 
   int device=D->I->gpu_device;
   cudaSetDevice(device);
-
-if (enable_quantization) {
-    if (D->Kquant==nullptr) D->Kquant = new Tensor(D->K->getShape(), D->K->device);
-    if (D->gpuIBquant==nullptr) D->gpuIBquant = new Tensor(D->gpuIB->getShape(), D->gpuIB->device);
-    if (D->biasquant==nullptr) D->biasquant = new Tensor(D->bias->getShape(), D->bias->device);
-    if (D->Iquant==nullptr) D->Iquant = new Tensor(D->I->getShape(), D->I->device);
-    
-    Tensor::copy(D->I, D->Iquant);
-    D->I->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
-
-    Tensor::copy(D->K, D->Kquant);
-    D->K->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
-
-    if (D->use_bias) {
-      Tensor::copy(D->bias, D->biasquant);
-      D->bias->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
-    }
-
-#ifndef cCUDNN
-    if(D->mem_level<=1){
-      Tensor::copy(D->gpuIB,D->gpuIBquant);
-      D->gpuIB->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
-    }
-#endif
-  }
 
 #ifndef cCUDNN
   int osize=D->z*D->r*D->c;
@@ -257,16 +231,128 @@ if (enable_quantization) {
 #endif
   }
 
-  if (enable_quantization) {
-    //Tensor::check_fixed_point(D->O);
-    Tensor::copy(D->Iquant, D->I);
-    Tensor::copy(D->Kquant, D->K);
-    Tensor::copy(D->biasquant, D->bias);
-#ifndef cCUDNN    
-    D->gpuK->ptr=D->K->ptr;
-    if (D->mem_level < 2) D->gpuI->ptr=D->gpuIB->ptr;
+
+}
+
+void gpu_conv2D_quantized(ConvolDescriptor *D) {
+
+  int device=D->I->gpu_device;
+  cudaSetDevice(device);
+
+  if (D->Kquant==nullptr) D->Kquant = new Tensor(D->K->getShape(), D->K->device);
+  if (D->gpuIBquant==nullptr) D->gpuIBquant = new Tensor(D->gpuIB->getShape(), D->gpuIB->device);
+  if (D->biasquant==nullptr) D->biasquant = new Tensor(D->bias->getShape(), D->bias->device);
+  if (D->Iquant==nullptr) D->Iquant = new Tensor(D->I->getShape(), D->I->device);
+  
+  Tensor::copy(D->I, D->Iquant);
+  D->I->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+
+  Tensor::copy(D->K, D->Kquant);
+  D->K->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+
+  if (D->use_bias) {
+    Tensor::copy(D->bias, D->biasquant);
+    D->bias->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+  }
+
+#ifndef cCUDNN
+  if(D->mem_level<=1){
+    Tensor::copy(D->gpuIB,D->gpuIBquant);
+    D->gpuIB->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+  }
+#endif
+
+#ifndef cCUDNN
+  int osize=D->z*D->r*D->c;
+ //cout << "mem level " << D->mem_level<< "\n";
+  // int isize=D->kz*D->kr*D->kc*D->r*D->c;
+  D->gpuK->ptr=D->K->ptr;
+  D->gpuO->ptr=D->O->ptr;
+  if (D->mem_level < 2) D->gpuI->ptr=D->gpuIB->ptr;
+
+
+  if (D->mem_level>1) {
+    cout << "[ERROR] mem_level>1";
+    exit(0);
+    int threads = D->nk * D->r * D->c;
+    int nb = threads / low_mem_block_size;
+    if (threads % low_mem_block_size) nb++;
+    dim3 grid(nb, D->I->shape[0]);
+    gpu_low_mem_conv3D<<<grid, low_mem_block_size>>>(D->I->shape[0],
+        D->iz, 1, D->ir, D->ic, D->I->ptr,
+        D->nk, 1, D->kr, D->kc, D->K->ptr,
+        1, D->r, D->c, D->O->ptr,
+        0, D->padrt, D->padcl,
+        1, D->sr, D->sc);
+    check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv2D");
+  } else if (D->mem_level == 1) {
+    cout << "[ERROR] mem_level==1";
+    exit(0);
+    for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize) {
+      gpu_im2col_low(D,0,b);
+      gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
+    }
+  }
+  else {
+
+    gpu_im2col(D,0); 
+    printf("Z");
+    // if (D->mem_level==0) {
+    gpu_mult2D(D->gpuK,0,D->gpuIB,1,D->gpuOB,0); // mult K * I.
+     //gpu_mat_mul(D->gpuK,0, D->gpuIB, 1,D->gpuOB); // mult K * I.
+
+      D->gpuOB->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+      setDims(D->O);
+      gpu_traspose_batch_depth<<<dimGrid,dimBlock>>>(D->gpuOB->ptr, D->O->ptr, D->O->shape[0], D->z, D->r, D->c);
+      check_cuda(cudaDeviceSynchronize(),"gpu_batch_depth");
+    /* }
+    else {
+      gpu_im2col(D,0);
+      int isize=D->kz*D->kr*D->kc*D->r*D->c;
+      for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize,D->gpuI->ptr+=isize)
+        gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
+    } */
+
+  }
+#else
+  // FWD environment
+    cout << "[ERROR] CUDNN==1";
+    exit(0);
+  float alpha = 1.0f;
+  float beta = 0.0f;
+  if (D->cudnn_env_init < 0){
+      D->cudnn_env_init = 1;
+      cuDNN_environment_initialization<ConvolDescriptor>(D,0);
+  }
+  check_cudnn(cudnnConvolutionForward( hdnn[device], &alpha, D->xDesc, D->I->ptr,
+                                       D->wDesc, D->K->ptr,
+                                       D->convolution_descriptor, D->fwd_algorithm,
+                                       shared_workspace[device], workspace_size[device],
+                                       &beta, D->yDesc, D->O->ptr),"cudnnConvolutionForward",__FILE__, __LINE__);
+#endif
+  if (D->use_bias) {
+#ifndef cCUDNN
+    int size=D->bias->shape[0];
+    for(int i=0;i<size;i+=1024) {
+      int s=min(1024,size-i);
+      gpu_addbias_k<<<D->O->shape[0],s>>>(D->O->ptr, D->O->shape[0], D->r,D->c,D->nk,D->bias->ptr,i);
+      D->O->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+      check_cuda(cudaDeviceSynchronize(),"gpu_addbias");
+    }
+#else
+    check_cudnn(cudnnAddTensor(hdnn[device], &alpha, D->bDesc, D->bias->ptr,
+                               &alpha, D->yDesc, D->O->ptr),"cudnnAddTensor",__FILE__, __LINE__);
 #endif
   }
+
+  
+  Tensor::copy(D->Iquant, D->I);
+  Tensor::copy(D->Kquant, D->K);
+  Tensor::copy(D->biasquant, D->bias);
+#ifndef cCUDNN    
+  D->gpuK->ptr=D->K->ptr;
+  if (D->mem_level < 2) D->gpuI->ptr=D->gpuIB->ptr;
+#endif
 
 }
 

@@ -52,9 +52,31 @@ LDense::~LDense(){
 }
 
 void LDense::forward() {
-    if(enable_quantization) input->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
+    if (enable_quantization) {
+        if (qW==nullptr) qW = new Tensor(W->getShape(), W->device);
+        if (qbias==nullptr) qbias = new Tensor(bias->getShape(), bias->device);
+        input->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
+
+        Tensor::copy(W, qW);
+        W->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+
+        Tensor::copy(bias, qbias);
+        bias->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+    }
+
     Tensor::mult2D(input, 0, W, 0, output, 0);
+
+    if(enable_quantization) output->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
+
     if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
+
+    if(enable_quantization) {
+        output->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
+        Tensor::copy(qW, W);
+        Tensor::copy(qbias, bias);
+    }
+    //    printf("end dense\n");
+
 }
 
 void LDense::backward() {

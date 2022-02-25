@@ -137,6 +137,8 @@ __global__ void gpu_maximum(float *A, float *B, float v, long int size);
 __global__ void gpu_maximum(float *A, float *B, float *C, long int size);
 __global__ void gpu_minimum(float *A, float *B, float v, long int size);
 __global__ void gpu_minimum(float *A, float *B, float *C, long int size);
+__global__ void gpu_transpose(float *A, float *B, int m, int n) ;
+__global__ void gpu_mat_mul(float* A, float* B, float* C, long int m, long int n, long int k, int enable, int clip, int round);
 
 // GPU: Should be reductions
 
