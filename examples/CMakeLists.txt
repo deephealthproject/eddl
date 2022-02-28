@@ -22,8 +22,8 @@ add_executable(generic_vgg16_bn_distr "nn/6_generic/4_generic_vgg16_bn_distr.cpp
 target_link_libraries(generic_vgg16_bn_distr eddl)
 add_executable(generic_vgg16_bn_train_batch "nn/6_generic/4_generic_vgg16_bn_train_batch.cpp" "nn/6_generic/utils.cpp")
 target_link_libraries(generic_vgg16_bn_train_batch eddl)
-add_executable(generic_vgg16_bn_split "nn/6_generic/4_generic_vgg16_bn_split.cpp" "nn/6_generic/utils.cpp")
-target_link_libraries(generic_vgg16_bn_split eddl)
+add_executable(generic_vgg16_bn_split_distr "nn/6_generic/4_generic_vgg16_bn_split_distr.cpp" "nn/6_generic/utils.cpp")
+target_link_libraries(generic_vgg16_bn_split_distr eddl)
 
 add_executable(generic_resnet "nn/6_generic/5_generic_resnet.cpp" "nn/6_generic/utils.cpp")
 target_link_libraries(generic_resnet eddl)

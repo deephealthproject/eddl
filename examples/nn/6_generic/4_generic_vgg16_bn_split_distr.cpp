@@ -43,7 +43,7 @@ layer Block3_2(layer l,int filters) {
   return l;
 }
 
-void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epochs, bool divide_batch, bool split_dataset=false) {
+void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epochs, bool divide_batch, bool distr_dataset=false) {
    
     int i,j;
     int id=get_id_distributed();
@@ -61,8 +61,10 @@ void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epoc
     int global_batch;
     int nbpp;
     
-     if (split_dataset){
-        mpi_id0(printf("custom_fit. Split dataset\n"));
+    
+    /*
+    if (distr_dataset){
+        mpi_id0(printf("custom_fit. dataset_size %d  Distributed dataset\n", dataset_size));
         dataset_size=dataset_size*n_procs;
     } else {
        // nbpp=num_batches/n_procs;
@@ -80,7 +82,10 @@ void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epoc
         nbpp=num_batches/n_procs;
         mpi_id0(printf("custom_fit. Mul batch: global: %d, local: %d\n", local_batch*n_procs, local_batch));
     }
-       
+    */
+    
+    set_batch_distributed(&global_batch, &local_batch, batch, divide_batch);
+    nbpp=set_NBPP_distributed(dataset_size,local_batch, distr_dataset);
   
     Tensor* xbatch = new Tensor({local_batch, channels,width,height});
     Tensor* ybatch = new Tensor({local_batch, num_classes});
@@ -88,7 +93,7 @@ void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epoc
     
     for(i=0;i<epochs;i++) {
       reset_loss(net);
-      mpi_id0(printf("custom_fit. Epoch %d/%d. Batch (param %d, global %d, local %d). Num Batches: %d (of size %d) Per proc: %d (of size %d)\n", i + 1, epochs, batch, global_batch, local_batch, num_batches, global_batch, nbpp, local_batch));
+      mpi_id0(printf("custom_fit. Epoch %d/%d\n", i + 1, epochs));
       for(j=0;j<nbpp;j++)  {
           
         next_batch({x_train,y_train},{xbatch,ybatch});
@@ -220,7 +225,7 @@ int main(int argc, char **argv) {
         mpi_id0(printf("== Epoch %d/%d ===\n", i + 1, epochs));
         for (int chunk = 0; chunk < chunks; chunk++) {
             mpi_id0(printf("-- Chunk %d/%d ---\n", chunk + 1, chunks));
-            if (use_distr_dataset) { /* Split dataset into processes */
+            if (use_distr_dataset) { /* Distribute dataset into processes */
                 sprintf(tr_images, "%s/%03d/train-images.bi8", path, id);
                 sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, id);
                 if (id == 0) {
@@ -251,7 +256,7 @@ int main(int argc, char **argv) {
             //mpi_id0(printf("CUSTOM FIT Mul :\n"));        
             //custom_fit(net,{x_train},{y_train},batch_size, epochs, false, use_distr_dataset);
             mpi_id0(printf("CUSTOM FIT Div:\n"));
-            custom_fit(net,{x_train},{y_train}, batch_size, 1, true, use_distr_dataset);
+            custom_fit(net,{x_train},{y_train}, batch_size, 1, DIV_BATCH, use_distr_dataset);
 
             delete x_train;
             delete y_train;

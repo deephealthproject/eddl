@@ -72,6 +72,12 @@
 #define NEG_SAWTOOTH 3
 #define AUTO_TIME 4
 
+#define DIV_BATCH 0
+#define MUL_BATCH 1
+
+#define NO_DISTR 0
+#define DISTR 1
+
 
 
 /**
@@ -110,8 +116,24 @@ vector<int> get_gpu_vec_distributed();
  *  @param comm  NCCL MPI
  *  @return id MPI rank of process
  */
-int init_distributed(string comm);
+int init_distributed2(int *argc, char ***argv, string comm);
 
+
+/**
+ *  @brief Initializes distributed training
+ *  NCCL is used
+ *  @return id MPI rank of process
+ */
+int init_distributed2(int *argc, char ***argv);
+
+
+/**
+ *  @brief Initializes distributed training
+ *
+ *  @param comm  NCCL MPI
+ *  @return id MPI rank of process
+ */
+int init_distributed(string comm);
 
 /**
  *  @brief Initializes distributed training
@@ -173,6 +195,10 @@ int get_current_batch_avg_distributed ();
  *  @return nr of GPUs
  */
 int get_available_GPUs_distributed();
+
+void set_batch_distributed (int* global_batch, int* local_batch, int batch, int method);
+
+int set_NBPP_distributed (int ds_size, int local_batch, int method);
 
 /**
  *  @brief Broadcast net parameters
