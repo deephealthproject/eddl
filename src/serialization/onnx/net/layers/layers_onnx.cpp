@@ -385,7 +385,7 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
   else if (LConvT3D *l = dynamic_cast<LConvT3D *>(layer))
     build_convT3D_node(l, graph, gradients);
   else if (LDense *l = dynamic_cast<LDense *>(layer))
-    if (is_recurrent)
+    if (is_recurrent || l->input->ndim != 2)
       build_dense_with_matmul_node(l, graph, gradients);
     else
       build_gemm_node(l, graph, gradients);
