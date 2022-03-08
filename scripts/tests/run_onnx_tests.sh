@@ -120,6 +120,8 @@ scripts_to_run+=("EDDL_to_EDDL_RNN_mnist;test_onnx_rnn_mnist;test_onnx_rnn_mnist
 scripts_to_run+=("EDDL_to_EDDL_LSTM_enc_dec;test_onnx_lstm_enc_dec;test_onnx_lstm_enc_dec")
 scripts_to_run+=("EDDL_to_EDDL_GRU_enc_dec;test_onnx_gru_enc_dec;test_onnx_gru_enc_dec")
 scripts_to_run+=("EDDL_to_EDDL_auxiliar;test_onnx_auxiliar;test_onnx_auxiliar")
+scripts_to_run+=("EDDL_to_EDDL_text_generation_CONCAT;test_onnx_text_generation_concat;test_onnx_text_generation")
+scripts_to_run+=("EDDL_to_EDDL_text_generation_ADD;test_onnx_text_generation_add;test_onnx_text_generation,--add")
 # From EDDL CPU to EDDL CPU
 scripts_to_run+=("EDDL_to_EDDL_conv1D_CPU;test_onnx_conv1D_cpu;test_onnx_conv1D,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_conv2D_CPU;test_onnx_conv2D_cpu;test_onnx_conv2D,--cpu")
@@ -140,6 +142,8 @@ scripts_to_run+=("EDDL_to_EDDL_RNN_mnist_CPU;test_onnx_rnn_mnist_cpu;test_onnx_r
 scripts_to_run+=("EDDL_to_EDDL_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;test_onnx_lstm_enc_dec,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;test_onnx_gru_enc_dec,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_auxiliar_CPU;test_onnx_auxiliar_cpu;test_onnx_auxiliar,--cpu")
+scripts_to_run+=("EDDL_to_EDDL_text_generation_CONCAT_CPU;test_onnx_text_generation_concat_cpu;test_onnx_text_generation,--cpu")
+scripts_to_run+=("EDDL_to_EDDL_text_generation_ADD_CPU;test_onnx_text_generation_add_cpu;test_onnx_text_generation,--add,--cpu")
 
 # Prepare output files
 print_header "ONNX TESTS RESULTS" > $tests_results_path
@@ -252,6 +256,8 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec;test_onnx_lstm_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec;test_onnx_gru_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_auxiliar;test_onnx_auxiliar;onnxruntime_mnist.py,--input-1D,--no-channel,--batch-size,100")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_text_generation_CONCAT;test_onnx_text_generation_concat;onnxruntime_check.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_text_generation_ADD;test_onnx_text_generation_add;onnxruntime_check.py")
     # From EDDL CPU to ONNX RT
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv1D_CPU;test_onnx_conv1D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv2D_CPU;test_onnx_conv2D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
@@ -269,6 +275,8 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_auxiliar_CPU;test_onnx_auxiliar_cpu;onnxruntime_mnist.py,--input-1D,--no-channel,--batch-size,100")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_text_generation_CONCAT_CPU;test_onnx_text_generation_concat_cpu;onnxruntime_check.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_text_generation_ADD_CPU;test_onnx_text_generation_add_cpu;onnxruntime_check.py")
 
     # Run "EDDL export -> ONNX Runtime import" tests and store results
     print_header "EDDL export -> ONNX Runtime import" >> $tests_results_path

@@ -308,6 +308,9 @@ if(BUILD_PROTOBUF)
 
 	add_executable(test_onnx_gradients "test_internals/onnx/test_onnx_gradients.cpp")
 	target_link_libraries(test_onnx_gradients eddl)
+
+	add_executable(test_onnx_text_generation "test_internals/onnx/test_onnx_text_generation.cpp")
+	target_link_libraries(test_onnx_text_generation eddl)
 endif()
 
 # TEST INTERNALS 2 ****************************************************
