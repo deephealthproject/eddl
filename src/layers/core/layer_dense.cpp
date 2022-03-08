@@ -19,27 +19,22 @@ using namespace std;
 int LDense::total_layers = 0;
 
 LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+    if (parent->output->ndim != 2) msg("LDense only works over 2D tensors", "LDense");
 
-   
     if(name.empty()) this->name = "dense" + to_string(++total_layers);
     this->ndim = ndim;
     this->use_bias = use_bias;
 
     input = parent->output;
+    output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
 
-    inshape = input->shape;
-    for(int i=0;i<inshape.size()-1;i++)
-        outshape.push_back(inshape[i]);
-    outshape.push_back(ndim);
 
-    output = new Tensor(outshape, dev);
-
-    W = new Tensor(vector<int>{inshape.back(), ndim}, dev);
+    W = new Tensor(vector<int>{input->shape[1], ndim}, dev);
     if (use_bias) bias = new Tensor(vector<int>{ndim}, dev);
     params.push_back(W);
     if (use_bias) params.push_back(bias);
 
-    gW = new Tensor(vector<int>{inshape.back(), ndim}, dev);
+    gW = new Tensor(vector<int>{input->shape[1], ndim}, dev);
     if (use_bias) gbias = new Tensor(vector<int>{ndim}, dev);
     gradients.push_back(gW);
     if (use_bias) gradients.push_back(gbias);
@@ -51,38 +46,17 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
     parent->addchild(this);
     addparent(parent);
 }
+
 LDense::~LDense(){
     // input, output, delta, params[], and gradients[], acc_gradients[] => deleted in ~Layer()
 }
 
-
-void LDense::resize(int batch){
-    if (output!=nullptr) {
-        output->resize(batch);
-        inshape[0]=batch;
-        outshape[0]=batch;
-    }
-}
-
 void LDense::forward() {
-    input->reshape_({input->size/input->shape.back(),input->shape.back()});
-    output->reshape_({output->size/output->shape.back(),output->shape.back()});
-
     Tensor::mult2D(input, 0, W, 0, output, 0);
     if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
-
-    input->reshape_(inshape);
-    output->reshape_(outshape);
-
 }
 
 void LDense::backward() {
-    input->reshape_({input->size/input->shape.back(),input->shape.back()});
-    parent[0]->delta->reshape_({input->size/input->shape.back(),input->shape.back()});
-
-    output->reshape_({output->size/output->shape.back(),output->shape.back()});
-    delta->reshape_({output->size/output->shape.back(),output->shape.back()});
-
     //get gradients with provided delta
     if (trainable) {
         Tensor::mult2D(input, 1, delta, 0, gW, 1);
@@ -94,11 +68,6 @@ void LDense::backward() {
 
     // Regularizer
     if (trainable) if(reg != nullptr) {reg->apply(this->W);}
-
-    input->reshape_(inshape);
-    parent[0]->delta->reshape_(inshape);
-    output->reshape_(outshape);
-    delta->reshape_(outshape);
 }
 
 void LDense::update_weights(vector<Tensor*> weights) {

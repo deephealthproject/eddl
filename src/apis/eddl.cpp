@@ -647,7 +647,7 @@ namespace eddl {
     layer Dense(layer parent, int ndim, bool use_bias, string name){
         return new LDense(parent, ndim, use_bias, name, DEV_CPU, 0);
     }
-    
+
     layer Dropout(layer parent, float rate, bool iw, string name){
         return new LDropout(parent, rate, iw, name, DEV_CPU, 0);
     }
