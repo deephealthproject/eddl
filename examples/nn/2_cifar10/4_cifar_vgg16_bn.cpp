@@ -82,9 +82,9 @@ int main(int argc, char **argv){
   if (use_cpu) {
       cs = CS_CPU();
   } else {
-      //cs = CS_GPU({1}); // one GPU
+      cs = CS_GPU({1}); // one GPU
       // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-       cs = CS_CPU();
+//       cs = CS_CPU();
       // cs = CS_FPGA({1});
   }
 
