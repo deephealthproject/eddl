@@ -5,7 +5,7 @@ Save and load ONNX models
 Exporting to onnx
 ---------------------
 
-.. doxygenfunction:: save_net_to_onnx_file(Net* net, string path)
+.. doxygenfunction:: save_net_to_onnx_file(Net *net, string path, int seq_len = 0)
 
 Example:
 

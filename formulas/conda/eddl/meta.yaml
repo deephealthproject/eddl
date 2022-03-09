@@ -1,6 +1,6 @@
-{% set name = "eddl-cudnn" %}  # If this is a package for GPU, use: "eddl-gpu"
-{% set version = "1.0.2a" %}
-{% set sha256 = "70d6067d44cb547e218236e5bb72faf45f602a7b8214f869626ca47f241481a0" %}
+{% set name = "eddl-cpu" %}  # eddl-cpu, eddl-gpu, eddl-cudnn
+{% set version = "1.1b" %}
+{% set sha256 = "534ca4bd5e83236c164a26a058e08df971d28c0ae5b32674bec364ae0370843a" %}
 
 package:
   name: {{ name|lower }}
@@ -19,23 +19,23 @@ requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - cmake>=3.17.2
-    - eigen==3.3.7
+    - cmake=3.19
+    - eigen=3.3|3.4
     - protobuf==3.11.4
-    - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
+    - libprotobuf==3.11.4
     - zlib==1.2.11
     - openssl==1.1.1i
-    - graphviz  # Build & Run  (versions can be problematic)
-    - wget
+    - wget=1.20|1.16
+    - graphviz
   run:
-    - cmake>=3.17.2
-    - eigen==3.3.7
+    - cmake=3.19
+    - eigen=3.3|3.4
     - protobuf==3.11.4
-    - libprotobuf==3.11.4  # We need to avoid problems with paths (idk why)
+    - libprotobuf==3.11.4
     - zlib==1.2.11
     - openssl==1.1.1i
-    - graphviz  # Build & Run  (versions can be problematic)
-    - wget
+    - wget=1.20|1.16
+    - graphviz
 
 test:
   commands:

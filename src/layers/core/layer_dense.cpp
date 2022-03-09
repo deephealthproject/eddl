@@ -63,8 +63,8 @@ void LDense::resize(int batch) {
 }
 
 void LDense::forward() {
-    input->reshape_({input->size / input->shape.back(), input->shape.back()});
-    output->reshape_({output->size / output->shape.back(), output->shape.back()});
+    input->reshape_({static_cast<int>(input->size / input->shape.back()), input->shape.back()});
+    output->reshape_({static_cast<int>(output->size / output->shape.back()), output->shape.back()});
     Tensor::mult2D(input, 0, W, 0, output, 0);
     if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
 
@@ -73,11 +73,11 @@ void LDense::forward() {
 }
 
 void LDense::backward() {
-    input->reshape_({input->size / input->shape.back(), input->shape.back()});
-    parent[0]->delta->reshape_({input->size / input->shape.back(), input->shape.back()});
+    input->reshape_({static_cast<int>(input->size / input->shape.back()), input->shape.back()});
+    parent[0]->delta->reshape_({static_cast<int>(input->size / input->shape.back()), input->shape.back()});
 
-    output->reshape_({output->size / output->shape.back(), output->shape.back()});
-    delta->reshape_({output->size / output->shape.back(), output->shape.back()});
+    output->reshape_({static_cast<int>(output->size / output->shape.back()), output->shape.back()});
+    delta->reshape_({static_cast<int>(output->size / output->shape.back()), output->shape.back()});
 
     //get gradients with provided delta
     if (trainable) {
