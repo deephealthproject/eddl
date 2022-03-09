@@ -14,6 +14,12 @@
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
+#define WRITE_TENSORS_TO_FILE
+
+#ifdef WRITE_TENSORS_TO_FILE
+int id_write_output = 0;
+#endif
+
 #define VERBOSE 0
 
 float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize) {
@@ -312,6 +318,7 @@ void cpu_conv2D(ConvolDescriptor *D)
 
 #ifdef CPU_DEBUG
         printf("conv2D:\n");
+        printf("KHxKW: %dx%d, PAD: %dx%d, SHxSW: %dx%d\n", D->kr, D->kc, D->padrt, D->padcl, D->sr, D->sc);
         printf(" input   : "); _profile_cpu_tensor(D->I);
         printf(" filters : "); _profile_cpu_tensor(D->K);
 	if (D->use_bias) {printf(" bias    : "); _profile_cpu_tensor(D->bias);}
@@ -340,6 +347,66 @@ void cpu_conv2D(ConvolDescriptor *D)
 
 #ifdef CPU_DEBUG
   printf(" output  : "); _profile_cpu_tensor(D->O);
+
+  #ifdef WRITE_TENSORS_TO_FILE
+
+  // output
+  float *p = D->O->ptr;
+  int size = D->O->size;
+  float *buf2 = (float *)malloc(size*sizeof(float));
+  int height = D->O->shape[2];
+  int width = D->O->shape[3];
+  int CPO = 4;
+  for (int o=0; o < D->O->shape[1]; o++) {
+    for (int h=0; h < D->O->shape[2]; h++) {
+      for (int w=0; w < D->O->shape[3]; w++) {
+    	  int go = o / CPO;
+	      int oo = o % CPO;
+        int addr_in = (o * height * width) + (h * width) + w;
+	      int addr_out = (go * height * width * CPO) + (h * width * CPO) + (w * CPO) + oo;
+        buf2[addr_out] = p[addr_in];
+      }
+    }
+  }
+  char filename[200];
+  sprintf(filename, "conv2d_output_%03d.bin", id_write_output);
+  FILE *fd = fopen(filename, "w");
+  if (fd == NULL) {printf("Error, not able to open file for write\n"); exit(1);}
+  fwrite(buf2, sizeof(float), size, fd);
+  fclose(fd);
+  free(buf2);
+
+  // input
+  float *pi = D->I->ptr;
+  int I = D->I->shape[1];
+  int H = D->I->shape[2];
+  int W = D->I->shape[3];
+  int CPI = 4;
+  int I_final = I;
+  if ((I % CPI) != 0) I_final = ((I + CPI - 1) / CPI) * CPI;
+  int size_buf = I_final * H * W;
+  float *buf = (float *)malloc(size_buf * sizeof(float));
+  memset(buf, 0, size_buf * sizeof(float));
+  for (int i=0; i < I; i++) {
+    for (int h=0; h < H; h++) {
+      for (int w=0; w < W; w++) {
+        int addr_in = (i * H * W) + (h * W) + w;
+        int gi = i / CPI;
+        int oi = i % CPI;
+        int addr_out = (gi * H * W * CPI) + (h * W * CPI) + (w * CPI) + oi;
+        buf[addr_out] = pi[addr_in];
+      }
+    }
+  }
+  char filename_in[200];
+  sprintf(filename_in, "conv2d_input_%03d.bin", id_write_output);
+  FILE *fd_in = fopen(filename_in, "w");
+  if (fd_in == NULL) {printf("Error, not able to open file for write\n"); exit(1);}
+  fwrite(buf, sizeof(float), size_buf, fd);
+  fclose(fd_in);
+  free(buf);
+  id_write_output++;
+  #endif
 #endif
 }
 

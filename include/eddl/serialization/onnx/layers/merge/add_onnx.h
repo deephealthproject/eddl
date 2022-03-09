@@ -22,7 +22,7 @@ Layer* build_add_layer(onnx::NodeProto *node,
  */
 
 // OPSET: 13, 7
-void build_add_node(LAdd *layer, onnx::GraphProto *graph);
+void build_add_node(LAdd *layer, onnx::GraphProto *graph, int seq_len);
 
 /*
  * DISTRIBUTED TRAINING

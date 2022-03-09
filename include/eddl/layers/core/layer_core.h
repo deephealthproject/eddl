@@ -124,6 +124,7 @@ public:
     static int total_layers;
     int ndim;
     bool use_bias;  // TODO: Implement
+    vector<int> inshape, outshape;
 
 	// Params
 	Tensor *W;
@@ -145,6 +146,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void resize(int batch) override;
 
 	// Sets the weights to the values of the parameter w
 	void update_weights(vector<Tensor*> weights) override;

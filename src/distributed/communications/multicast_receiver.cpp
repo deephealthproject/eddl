@@ -233,7 +233,7 @@ void MulticastReceiver::receiver()
                         }
                         if (packet->get_type() == eddl_message_types::MSG_CHKSUM) {
                             //print_log_msg(".....................................................message checksum received");
-                            if (!message->was_checksum_already_set()) {
+                            if (! message->was_checksum_already_set()) {
                                 message->set_checksum((unsigned char *)packet->get_data());
                             }
                             //  this->send_ack(packet->create_acknowledgement(distributed_environment.get_my_s_addr()));

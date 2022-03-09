@@ -146,8 +146,6 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
   else if (format_tensor == HLSINF_APUI8) size = T->size * sizeof(ap_uint<8>);
   else {printf("format not supported in profile\n"); exit(1);}
 
-  //if (T->fpga_ptr == NULL) T->fpga_ptr = fpga_create_memory(size);
-
   float *buf = (float *)malloc(size);
   fpga_copy_memory_from_fpga((cl::Buffer *)T->fpga_ptr, buf, size);
 
@@ -181,7 +179,6 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
   printf(" Min %8.4f Max %8.4f Avg %8.4f\n", min, max, avg);
   #endif
 }
-
 
 // _profile_fpga_tensor_print(). Prints some values of the tensor
 void _profile_fpga_tensor_print(Tensor *T) {
@@ -284,6 +281,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
   //   |   1.3   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |   8 x 8   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.1.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |   X   |
   //   |   1.4   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 8   |     2    |   128  |  1024  |    128   | Alveo U200          | hlsinf_v1.2.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |       |
   //   |   1.5   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 8   |     2    |   128  |  1024  |    128   | Alveo U200          | hlsinf_v1.2.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |   X   |
+  //   |   1.6   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 16  |     2    |   128  |   256  |    128   | Alveo U200          | hlsinf_v1.5.xclbin |   Direct  |   X  |   X   |   X  |  X   |     |  X   |  X   |  X |  X  |   X    |       |
   //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   if ((kernel_version == 1) && (kernel_subversion == 0)) {
@@ -376,6 +374,21 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
     printf("  Dense layer support  : Yes\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
+ } else if ((kernel_version == 1) && (kernel_subversion == 6)) {
+    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
+    hlsinf_cpi = 16; hlsinf_cpo = 16; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 256; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.5.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = false;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.6: \n");
+    printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 16x16, 2 kernels (hlsinf_v1.5.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else {
     printf("Error, kernel version not supported\n"); exit(1);
   }
@@ -422,105 +435,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
 // ------------------------------------------------------------------------------------------------------------------------
 // Copy operations
 //
-void fpga_copy_to_fpga(float *nptr, Tensor *A, int cvt) {fpga_copy_to_fpga_good(nptr, A, cvt);}
 
-void fpga_copy_to_fpga_good(float *nptr, Tensor *A, int cvt) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("FPGA_DEBUG: Copy CPU->FPGA. Addr: %p->%p. tensor_id %4d. Size %4d\n", nptr, A->fpga_ptr, A->fpga_tensor_id, A->size);
-  #endif
-
-  #ifdef PRECISION_CONVERSION
-  if (cvt) {
-    _debug_fpga_funcs("Conversion (CPU->FPGA)");
-    PROFILING_HEADER(Precision_Conversion);
-    // We allocate a buffer to convert from floats to fpga_data_type
-    fpga_data_type *cpu_buff = (fpga_data_type*)malloc(A->size*sizeof(fpga_data_type));
-    for (int x=0; x<A->size; x++) {
-      float value = nptr[x];
-      if (nptr[x] < MIN_FLOAT_PRECISION_CONVERSION) value = MIN_FLOAT_PRECISION_CONVERSION;
-      if (nptr[x] > MAX_FLOAT_PRECISION_CONVERSION) value = MAX_FLOAT_PRECISION_CONVERSION;
-      cpu_buff[x] = fpga_data_type(value);
-    }
-    PROFILING_FOOTER(Precision_Conversion);
-    // now we copy into the FPGA
-    cl_int err;
-    cl::Event blocking_event;
-    cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
-    PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), cpu_buff, nullptr, &blocking_event));
-    (*q).finish();
-    PROFILING_FOOTER(FPGA_WRITE);
-    free(cpu_buff);
-  } else {
-    // regular copy from CPU to FPGA with no precision conversion
-    cl_int err;
-    cl::Event blocking_event;
-    cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
-    PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &blocking_event));
-    (*q).finish();
-    PROFILING_FOOTER(FPGA_WRITE);
-  }
-  #else
-  // regular copy from CPU to FPGA with no precision conversion
-  cl_int err;
-  cl::Event blocking_event;
-  cl::Buffer *buf = (cl::Buffer*)A->fpga_ptr;
-  PROFILING_HEADER(FPGA_WRITE);
-  OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*buf, CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &blocking_event));
-  (*q).finish();
-  PROFILING_FOOTER(FPGA_WRITE);
-  #endif
-}
-
-void fpga_copy_from_fpga_good(Tensor *A,float *nptr, int cvt) {fpga_copy_from_fpga(A, nptr, cvt);}
-
-void fpga_copy_from_fpga(Tensor *A,float *nptr, int cvt) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("FPGA_DEBUG: Copy FPGA->CPU. Addr: %p->%p. tensor_id %4d. Size %4d\n", A->fpga_ptr, nptr, A->fpga_tensor_id, A->size);
-  #endif
-
-  #ifdef PRECISION_CONVERSION
-  // We read from the FPGA to a temporal buffer and then convert the precision
-  if (cvt) {
-    _debug_fpga_funcs("Conversion (FPGA->CPU)");
-    fpga_data_type *cpu_buff = (fpga_data_type*)malloc(A->size * sizeof(fpga_data_type));
-    cl_int err;
-    cl::Event event;
-    PROFILING_HEADER(FPGA_READ);
-    OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(fpga_data_type), cpu_buff, nullptr, &event));
-    (*q).finish();
-    PROFILING_FOOTER(FPGA_READ);
-    PROFILING_HEADER(Precision_Conversion);
-    // now we perform the precision conversion
-    for (int x=0; x<A->size; x++) nptr[x] = float(cpu_buff[x]);
-    free(cpu_buff);
-    PROFILING_FOOTER(Precision_Conversion);
-  } else {
-    // regular copy from FPGA to CPU with no precision conversion
-    cl_int err;
-    cl::Event event;
-    PROFILING_HEADER(FPGA_READ);
-    OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &event));
-    (*q).finish();
-    PROFILING_FOOTER(FPGA_READ);
-  }
-  #else
-  // regular copy from FPGA to CPU with no precision conversion
-  cl_int err;
-  cl::Event event;
-  PROFILING_HEADER(FPGA_READ);
-  OCL_CHECK(err, err= (*q).enqueueReadBuffer(*((cl::Buffer*)A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(fpga_data_type), nptr, nullptr, &event));
-  (*q).finish();
-  PROFILING_FOOTER(FPGA_READ);
-  #endif
-}
-
-void fpga_destroy_memory(cl::Buffer *fpga_ptrI) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("   destroy_memory buffer in FPGA\n");
-  #endif
-}
 
 cl::Buffer *fpga_create_memory(long int size) {
   cl::Buffer *buffer;
@@ -529,7 +444,12 @@ cl::Buffer *fpga_create_memory(long int size) {
   printf("    (creating memory in fpga size %d)\n", size);
   #endif
 
-  OCL_CHECK(err,buffer = new cl::Buffer(*context, CL_MEM_READ_WRITE, size, NULL, &err));
+  cl_mem_ext_ptr_t data_ddr;
+  data_ddr.flags  =  0 | XCL_MEM_TOPOLOGY;
+  data_ddr.obj = NULL;
+  data_ddr.param = 0;
+
+  OCL_CHECK(err, buffer = new cl::Buffer(*context, CL_MEM_READ_WRITE | CL_MEM_EXT_PTR_XILINX, size, &data_ddr, &err));
   return buffer;
 }
 
@@ -961,13 +881,27 @@ void dense_to_conv(float *ptr_src, int N, int M, float *ptr_dst, int I, int O, i
 //  printf("fin\n");
 }
 
-void fpga_write_buffer(char *file_name, void *ptr, int size, int data_size) {
+
+#ifdef WRITE_TENSORS_TO_FILE
+
+void fpga_write_buffer(char *file_name, void *ptr, int size, int data_format) {
   FILE *fd = fopen(file_name, "w");
   if (fd == NULL) {printf("Error, not able to open file for write\n"); exit(1);}
+
+  int data_size;
+  if (data_format == HLSINF_API32) data_size = 4; else
+  if (data_format == HLSINF_FP32) data_size = 4; else
+  if (data_format == HLSINF_APUI8) data_size = 1; else
+  if (data_format == HLSINF_API8) data_size = 1; else
+  {printf("Error, no data format recognized\n"); exit(1);}
+  printf("data_format %d data_size %d\n", data_format, data_size);
+  
   void *buff = malloc(size * data_size);
   fpga_copy_memory_from_fpga((cl::Buffer *)ptr, buff, size*data_size);
+  float *buff1 = (float *)buff;
   fwrite(buff, data_size, size, fd);
   fclose(fd);
 }
+#endif
 
 #endif

@@ -225,7 +225,7 @@ void build_dense_with_matmul_node(LDense *layer, onnx::GraphProto *graph, bool g
     // Add an empty node to the graph
     onnx::NodeProto *node_bias = graph->add_node();
     node_bias->set_op_type("Add");
-    node_bias->set_name(layer->name);
+    node_bias->set_name(layer->name + "_bias");
     // Take the input from the previous MatMul
     node_bias->add_input(layer->name + "_MatMul");
     // Set the input param name of the Bias matrix

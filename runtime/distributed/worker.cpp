@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     distributed_environment.set_my_ip_addr("158.42.215.16");  //ebids.etsinf
     distributed_environment.set_master_ip_addr("158.42.184.139"); // platon.dsic
 
-    for (int i=0; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
         if (! strcmp(argv[i], "--my-ip-addr")) {
             distributed_environment.set_my_ip_addr(argv[++i]);
         } else if (! strcmp(argv[i], "--server")) {
@@ -94,29 +94,58 @@ int main(int argc, char *argv[])
                       << std::dec << message->get_message_data_size()
                       << " bytes" << std::endl;
 
-            if (message->get_type() == eddl::eddl_message_types::COMMAND) {
-                switch (message->get_command()) {
-                    case eddl::eddl_command_types::START:
-                        if (worker_status == eddl::eddl_worker_status::WORKER_WAITING) {
-                            worker_status = eddl::eddl_worker_status::WORKER_RUNNING;
-                            seconds_to_wait_while_waiting = 1;
-                            iterations_waiting = 0;
-                        }
-                        break;
-                    case eddl::eddl_command_types::STOP:
-                        switch (worker_status) {
-                            case eddl::eddl_worker_status::WORKER_WAITING:
-                            case eddl::eddl_worker_status::WORKER_RUNNING:
-                                worker_status = eddl::eddl_worker_status::WORKER_STOPPING;
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    case eddl::eddl_command_types::SHUTDOWN:
-                        worker_status = eddl::eddl_worker_status::WORKER_TO_SHUTDOWN;
-                        break;
-                }
+            switch (message->get_type()) {
+                case eddl::eddl_message_types::COMMAND:
+                    switch (message->get_command()) {
+                        case eddl::eddl_command_types::START:
+                            if (worker_status == eddl::eddl_worker_status::WORKER_WAITING) {
+                                worker_status = eddl::eddl_worker_status::WORKER_RUNNING;
+                                seconds_to_wait_while_waiting = 1;
+                                iterations_waiting = 0;
+                            }
+                            break;
+                        case eddl::eddl_command_types::STOP:
+                            switch (worker_status) {
+                                case eddl::eddl_worker_status::WORKER_WAITING:
+                                case eddl::eddl_worker_status::WORKER_RUNNING:
+                                    worker_status = eddl::eddl_worker_status::WORKER_STOPPING;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case eddl::eddl_command_types::SHUTDOWN:
+                            worker_status = eddl::eddl_worker_status::WORKER_TO_SHUTDOWN;
+                            break;
+                    }
+                    break;
+
+                case eddl::eddl_message_types::MASTER_A_WORKER:
+                    output_queue.push(new eddl::eddl_message(distributed_environment.is_master_ip_addr_set()
+                                                                ? eddl::eddl_message_types::REJECT_TO_BE_MASTERED
+                                                                : eddl::eddl_message_types::ACCEPT_TO_BE_MASTERED,
+                                                             0, // source addr will be set by the sender thread
+                                                             message->get_source_addr(),
+                                                             0,
+                                                             eddl::eddl_packet_data_size,
+                                                             nullptr));
+
+                    if (! distributed_environment.is_master_ip_addr_set()) {
+                        distributed_environment.set_master_s_addr(message->get_source_addr());
+                    }
+                    break;
+
+                case eddl::eddl_message_types::FREE_A_WORKER:
+                    distributed_environment.clear_master_ip_addr();
+                    switch (worker_status) {
+                        case eddl::eddl_worker_status::WORKER_WAITING:
+                        case eddl::eddl_worker_status::WORKER_RUNNING:
+                            worker_status = eddl::eddl_worker_status::WORKER_STOPPING;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
             }
             delete message;
         }

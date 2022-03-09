@@ -2,8 +2,9 @@
 #include "eddl/serialization/onnx/export_helpers.h"
 #include "eddl/serialization/onnx/layers/layers_onnx.h"
 #include "eddl/layers/core/layer_core.h"
+#include <queue>
 
-onnx::ModelProto build_onnx_model(Net *net, bool gradients)
+onnx::ModelProto build_onnx_model(Net *net, bool gradients, int seq_len)
 {
   string producer_name("EDDL");
   string producer_version("1.0");
@@ -14,13 +15,13 @@ onnx::ModelProto build_onnx_model(Net *net, bool gradients)
   model.set_producer_version(producer_version);
 
   // Builds all the graph of the model
-  set_graph(&model, net, gradients);
+  set_graph(&model, net, gradients, seq_len);
 
   // Return the finished model
   return model;
 }
 
-void set_graph(onnx::ModelProto *model, Net *net, bool gradients)
+void set_graph(onnx::ModelProto *model, Net *net, bool gradients, int seq_len)
 {
   // Add a new empty graph to the model
   onnx::GraphProto *graph = model->mutable_graph();
@@ -28,37 +29,14 @@ void set_graph(onnx::ModelProto *model, Net *net, bool gradients)
   onnx::OperatorSetIdProto *opset = model->add_opset_import();
   opset->set_version(11);
 
-  // Check whether the model is encoder, decoder or both.
-  bool is_encoder = false;
-  bool is_decoder = false;
-  for (int i = 0; i < net->vfts.size(); i++)
-  {
-    if (net->vfts[i]->isdecoder)
-    {
-      is_decoder = true;
-      break;
-    }
-    else if (net->vfts[i]->isrecurrent)
-      is_encoder = true;
-  }
-  bool is_recurrent = is_encoder || is_decoder;
-
-  /*
-   * We get all the input layers from the layers vector of the model
-   * instead of taking them from net->lin. Beacause for the case of
-   * a recurrent net with decoder the input layer that is connected
-   * to the decoder is not added in the lin vector of the model.
-   * With this way we ensure that we are taking all the input layers
-   * of the model.
-   */
-  vector<Layer *> model_inputs = {};
-  for (Layer *aux_layer : net->layers)
-    if (LInput *t = dynamic_cast<LInput *>(aux_layer))
-      model_inputs.push_back(aux_layer);
+  // key: input layer name, val: INPUT_TYPE
+  vector<tuple<string, INPUT_TYPE>> inputs_types = check_inputs_for_enc_or_dec(net);
+  bool is_recurrent = false;
 
   // Set the inputs shapes of the graph
-  for (Layer *input : model_inputs)
+  for (tuple<string, INPUT_TYPE> item : inputs_types)
   {
+    Layer *input = net->getLayer(get<0>(item));
     onnx::ValueInfoProto *input_info = graph->add_input();
     input_info->set_name(input->name);
     onnx::TypeProto *input_type = input_info->mutable_type();
@@ -68,14 +46,17 @@ void set_graph(onnx::ModelProto *model, Net *net, bool gradients)
     onnx::TensorShapeProto::Dimension *input_type_tensor_dim;
     vector<int> input_shape = input->input->getShape();
 
-    if (is_encoder)
+    if (get<1>(item) == INPUT_TYPE::SEQUENCE_ENCODER || get<1>(item) == INPUT_TYPE::SEQUENCE_DECODER)
     {
       // Set variable batch size
       input_type_tensor_dim = input_type_tensor_shape->add_dim();
       input_type_tensor_dim->set_dim_param("batch");
       // Set variable sequence lenght
       input_type_tensor_dim = input_type_tensor_shape->add_dim();
-      input_type_tensor_dim->set_dim_param("sequence");
+      if (seq_len > 0)
+        input_type_tensor_dim->set_dim_value(seq_len);
+      else
+        input_type_tensor_dim->set_dim_param("sequence");
       for (int i = 1 /*skip batch*/; i < input_shape.size(); ++i)
       {
         input_type_tensor_dim = input_type_tensor_shape->add_dim();
@@ -86,8 +67,10 @@ void set_graph(onnx::ModelProto *model, Net *net, bool gradients)
       input_shape.insert(it + 1, 1); // Insert seq_len=1 afer batch_size
       prepare_recurrent_input(input->name + "orig", input->name, input_shape, graph);
       input_info->set_name(input->name + "orig");
+
+      is_recurrent = true;
     }
-    else
+    else  // INPUT_TYPE::NORMAL
     {
       // Set the first dimension to a variable named "batch", to avoid setting a fixed batch size
       input_type_tensor_dim = input_type_tensor_shape->add_dim();
@@ -99,6 +82,13 @@ void set_graph(onnx::ModelProto *model, Net *net, bool gradients)
         input_type_tensor_dim->set_dim_value(input_shape[i]);
       }
     }
+  }
+
+  // Computational graph
+  for (Layer *aux_layer : net->layers)
+  {
+    // Builds a node of the graph from the layer in EDDL
+    build_node_from_layer(aux_layer, graph, gradients, is_recurrent, seq_len);
   }
 
   // Set the outputs shapes of the graph
@@ -117,7 +107,7 @@ void set_graph(onnx::ModelProto *model, Net *net, bool gradients)
     // Set the first dimension to a variable named "batch", to avoid setting a fixed batch size
     output_type_tensor_dim = output_type_tensor_shape->add_dim();
     output_type_tensor_dim->set_dim_param("batch");
-    if (is_decoder)
+    if (aux_output->isdecoder)
     {
       output_type_tensor_dim = output_type_tensor_shape->add_dim();
       output_type_tensor_dim->set_dim_param("sequence");
@@ -136,13 +126,64 @@ void set_graph(onnx::ModelProto *model, Net *net, bool gradients)
       output_type_tensor_dim->set_dim_value(output_shape[i]);
     }
   }
+}
 
-  // Computational graph
+INPUT_TYPE get_input_type(LInput *l) {
+    // If it is a decoder input it should be marked as decoder
+    if (l->isdecoder)
+        return INPUT_TYPE::SEQUENCE_DECODER;
+
+    // Now check if it is INPUT_TYPE::ENCODER or INPUT_TYPE::NORMAL
+    //
+    // Use BFS to find one of this cases:
+    //   1. recurrent but not decoder layer: Set the input type as ENCODER
+    //
+    //   2. decoder layer: Set the input type as NORMAL
+    //
+    //   3. No recurrent or decoder layer: Set the input type as Normal
+    map<string, bool> visited;
+    queue<Layer*> queue;
+    for (Layer *child : l->child)
+        queue.push(child);
+
+    while (!queue.empty()) {
+        // Get the next layer in the queue
+        Layer *current = queue.front(); queue.pop();
+
+        // Check if we already visited this layer
+        if (visited.find(current->name) != visited.end())
+            continue;
+        visited[current->name] = true; // Mark as visited
+
+        if (current->isrecurrent && !current->isdecoder)
+            return INPUT_TYPE::SEQUENCE_ENCODER; // Case 1
+
+        if (current->isdecoder)
+            return INPUT_TYPE::NORMAL; // Case 2
+
+        // Push the current layer childs to the queue
+        for (Layer *child : current->child)
+            queue.push(child);
+    }
+
+    return INPUT_TYPE::NORMAL; // Case 3
+}
+
+vector<tuple<string, INPUT_TYPE>> check_inputs_for_enc_or_dec(Net *net) {
+  /*
+   * We get all the input layers from the layers vector of the model
+   * instead of taking them from net->lin. Because for the case of
+   * a recurrent net with decoder the input layer that is connected
+   * to the decoder is not added in the lin vector of the model.
+   * With this way we ensure that we are taking all the input layers
+   * of the model.
+   */
+  vector<tuple<string, INPUT_TYPE>> inputs_types;
   for (Layer *aux_layer : net->layers)
-  {
-    // Builds a node of the graph from the layer in EDDL
-    build_node_from_layer(aux_layer, graph, gradients, is_recurrent);
-  }
+    if (LInput *in_layer = dynamic_cast<LInput *>(aux_layer))
+      inputs_types.push_back({in_layer->name, get_input_type(in_layer)});
+
+  return inputs_types;
 }
 
 void prepare_recurrent_input(string input_name, string output_name, vector<int> input_shape, onnx::GraphProto *graph)

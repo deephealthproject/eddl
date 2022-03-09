@@ -11,6 +11,7 @@
 // OPSET: 13, 12, 11, 1
 Layer* build_rargmax_layer(onnx::NodeProto *node,
                            map<string, Layer *> &output_node_map,
+                           bool is_recurrent,
                            int dev,
                            int mem);
 

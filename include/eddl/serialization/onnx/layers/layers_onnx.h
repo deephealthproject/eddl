@@ -86,7 +86,6 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
                              map<string, vector<onnx::NodeProto *>> &input_node_map,
                              map<string, Layer *> &output_node_map,
                              map<string, onnx::NodeProto *> &constant_node_map,
-                             vector<string> &inputs2remove,
                              bool recurrent_net,
                              LOG_LEVEL log_level,
                              int dev,
@@ -96,7 +95,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
  * ONNX EXPORT
  */
 
-void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients, bool is_recurrent);
+void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients, bool is_recurrent, int seq_len = 0);
 
 /*
  * DISTRIBUTED TRAINING

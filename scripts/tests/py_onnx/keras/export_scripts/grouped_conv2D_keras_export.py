@@ -4,14 +4,14 @@ import os
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Input, Dense, Conv2D, Flatten, BatchNormalization
-from tensorflow.keras.layers import AveragePooling2D, MaxPooling2D, GlobalAveragePooling2D 
+from tensorflow.keras.layers import AveragePooling2D, MaxPooling2D, GlobalAveragePooling2D
 from tensorflow.keras.datasets import mnist
 from keras.utils.np_utils import to_categorical
 import onnx
 import tf2onnx
 
 # Training settings
-parser = argparse.ArgumentParser(description='Keras Conv2D MNIST Example')
+parser = argparse.ArgumentParser(description='Keras grouped Conv2D MNIST Example')
 parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                     help='input batch size for training (default: 64)')
 parser.add_argument('--epochs', type=int, default=5, metavar='N',
@@ -22,7 +22,7 @@ parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
 parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
-parser.add_argument('--output-path', type=str, default="onnx_models/conv2D_mnist.onnx",
+parser.add_argument('--output-path', type=str, default="onnx_models/grouped_conv2D_mnist.onnx",
                     help='Output path to store the onnx file')
 parser.add_argument('--output-metric', type=str, default="",
                     help='Output file path to store the metric value obtained in test set')
@@ -50,14 +50,11 @@ print("Test labels shape:", y_test.shape)
 
 model = Sequential()
 model.add(Input(shape=(28, 28, 1), name="linput"))
-model.add(Conv2D(16, 5, activation="relu"))
-model.add(BatchNormalization(scale=True, center=True))
+model.add(Conv2D(16, 3, activation="relu"))
 model.add(MaxPooling2D(2, 2))
-model.add(Conv2D(16, 4, activation="relu"))
-model.add(BatchNormalization(scale=True, center=True))
+model.add(Conv2D(32, 3, activation='relu', groups=16))
 model.add(AveragePooling2D(2, 2))
-model.add(Conv2D(16, 3, activation="relu", padding="same"))
-model.add(BatchNormalization(scale=True, center=True))
+model.add(Conv2D(32, 3, strides=(2, 2), activation='relu', padding="same", groups=8))
 model.add(GlobalAveragePooling2D())
 model.add(Flatten())
 model.add(Dense(10, activation = 'softmax'))

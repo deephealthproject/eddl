@@ -1,9 +1,12 @@
 #ifndef EDDL_UTILS_ONNX_H
 #define EDDL_UTILS_ONNX_H
 #include "eddl/net/net.h"
+#include <tuple>
 
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/onnx.pb.h"
+
+enum INPUT_TYPE { NORMAL, SEQUENCE_ENCODER, SEQUENCE_DECODER };
 
 // Parses the values of the onnx tensor to a c++ vector of that type
 vector<float> parseTensorValues(onnx::TensorProto t);
@@ -26,6 +29,21 @@ bool TryConvertingTensorRawValues(const onnx::TensorProto &onnx_tensor, vector<T
   memcpy(target_ptr, src_ptr, raw_size);
   return true;
 }
+
+// Checks if any of the inputs of the MLayer is recurrent and if it is needed to repeat the other non-recurrent input
+// to be able to compute the merge operation. In the EDDL this case don't cause any error but to export the model to
+// ONNX the dimensions of the MLayer inputs must be compatible taking into account the sequence dimension.
+//
+// In case that some of the parents were recurrent, the function creates Unsqueeze and Tile operators to fix the problem
+// converting de non-recurrent inputs to a sequence.
+//
+// The "seq_len" argument is used to set a fixed sequence length in the repeat operation to create a secuence from the
+// non-secuence input of the MLayer.
+//
+// Returns a tuple:
+//   - If one or more parent layers of the mlayer are sequences
+//   - The list of the parent names to use as inputs when exporting the MLayer to ONNX
+tuple<bool, vector<string>> mlayer_check_and_fix_recurrent_input(MLayer *layer, onnx::GraphProto *graph, int seq_len = 0);
 
 #endif // defined(cPROTO)
 
