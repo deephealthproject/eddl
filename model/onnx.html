@@ -128,6 +128,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/misc.html">Misc</a></li>
 </ul>
 
         </div>
@@ -158,23 +159,15 @@
 <h1>Save and load ONNX models<a class="headerlink" href="#save-and-load-onnx-models" title="Permalink to this headline"></a></h1>
 <div class="section" id="exporting-to-onnx">
 <h2>Exporting to onnx<a class="headerlink" href="#exporting-to-onnx" title="Permalink to this headline"></a></h2>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv421save_net_to_onnx_fileP3Net6string">
-<span id="_CPPv321save_net_to_onnx_fileP3Net6string"></span><span id="_CPPv221save_net_to_onnx_fileP3Net6string"></span><span id="save_net_to_onnx_file__NetP.string"></span><span class="target" id="eddl__onnx_8h_1a8f247d66e3528791b986284eb208e449"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">save_net_to_onnx_file</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Net</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">net</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421save_net_to_onnx_fileP3Net6string" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Saves a model with the onnx format in the file path provided. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>net</strong> – Net to be saved </p></li>
-<li><p><strong>path</strong> – Path to the file where the net in ONNX format will be saved</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(void) </p>
-</dd>
-</dl>
-</dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve function “save_net_to_onnx_file” with arguments (Net*, string) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">save_net_to_onnx_file</span><span class="p">(</span><span class="n">Net</span> <span class="o">*</span><span class="n">net</span><span class="p">,</span> <span class="n">string</span> <span class="n">path</span><span class="p">,</span> <span class="nb">int</span> <span class="n">seq_len</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">save_net_to_onnx_file</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;my_model.onnx&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coarse training &mdash; EDDL  documentation</title>
+  <title>Misc &mdash; EDDL  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
@@ -18,8 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Fine-grained training" href="fine_grained.html" />
-    <link rel="prev" title="Save and load ONNX models" href="../model/onnx.html" /> 
+    <link rel="prev" title="Mathematical functions" href="math.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -80,12 +79,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../model/onnx.html">Save and load ONNX models</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Training</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Coarse training</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#fit">Fit</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="fine_grained.html">Fine-grained training</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Test &amp; Score</span></p>
 <ul>
@@ -117,16 +113,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tensor</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/image.html">Image operations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing &amp; Sorting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tensor/misc.html">Misc</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="create.html">Creation Routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulation.html">Manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image.html">Image operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing &amp; Sorting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input_output.html">Input/Output Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="linear_algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logic_functions.html">Logic functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Misc</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hardware-supported">hardware_supported</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#is-hardware-supported">is_hardware_supported</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getdeviceid">getDeviceID</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -143,9 +144,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Coarse training</li>
+      <li>Misc</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/training/coarse.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/tensor/misc.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -153,38 +154,58 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="coarse-training">
-<h1>Coarse training<a class="headerlink" href="#coarse-training" title="Permalink to this headline"></a></h1>
-<div class="section" id="fit">
-<h2>Fit<a class="headerlink" href="#fit" title="Permalink to this headline"></a></h2>
+  <div class="section" id="misc">
+<h1>Misc<a class="headerlink" href="#misc" title="Permalink to this headline"></a></h1>
+<div class="section" id="hardware-supported">
+<h2>hardware_supported<a class="headerlink" href="#hardware-supported" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4eddl3fitE5modelRK6vectorIP6TensorERK6vectorIP6TensorEii">
-<span id="_CPPv3N4eddl3fitE5modelRK6vectorIP6TensorERK6vectorIP6TensorEii"></span><span id="_CPPv2N4eddl3fitE5modelRK6vectorIP6TensorERK6vectorIP6TensorEii"></span><span id="eddl::fit__model.vector:TensorP:CR.vector:TensorP:CR.i.i"></span><span class="target" id="namespaceeddl_1a148139badb9b87364018316de0db8b48"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">eddl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">fit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">model</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">in</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">out</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">batch</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epochs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3fitE5modelRK6vectorIP6TensorERK6vectorIP6TensorEii" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Trains the model for a fixed number of epochs (iterations on a dataset). </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor18hardware_supportedEv">
+<span id="_CPPv3N6Tensor18hardware_supportedEv"></span><span id="_CPPv2N6Tensor18hardware_supportedEv"></span><span id="Tensor::hardware_supported"></span><span class="target" id="class_tensor_1a6e750142bfc553e0e0f264c4b236ead2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">hardware_supported</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor18hardware_supportedEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Returns a list with hardware accelerators for which this library has been compiled. </p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>m</strong> – Model to train </p></li>
-<li><p><strong>in</strong> – Input data (features) </p></li>
-<li><p><strong>out</strong> – Output data (labels) </p></li>
-<li><p><strong>batch</strong> – Number of samples per gradient update </p></li>
-<li><p><strong>epochs</strong> – Number of epochs to train the model. An epoch is an iteration over the entire data provided </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(void) Trains the model </p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>vector of strings with the supported accelerator </p>
 </dd>
 </dl>
 </dd></dl>
 
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">out</span><span class="p">});</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">hardware_supported</span><span class="p">();</span><span class="w"></span>
+<span class="c1">// {&quot;cpu&quot;, &quot;cuda&quot;, &quot;cuda&quot;, &quot;fpga&quot;}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="is-hardware-supported">
+<h2>is_hardware_supported<a class="headerlink" href="#is-hardware-supported" title="Permalink to this headline"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor21is_hardware_supportedE6string">
+<span id="_CPPv3N6Tensor21is_hardware_supportedE6string"></span><span id="_CPPv2N6Tensor21is_hardware_supportedE6string"></span><span id="Tensor::is_hardware_supported__string"></span><span class="target" id="class_tensor_1a107f6e118cf3d18685ce59e8f5334b27"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">is_hardware_supported</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hardware</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor21is_hardware_supportedE6string" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Check if a specific hardware is supported. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>bool </p>
+</dd>
+</dl>
+</dd></dl>
 
-<span class="c1">// Build model</span>
-<span class="p">...</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">supported</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">is_hardware_supported</span><span class="p">(</span><span class="s">&quot;cudnn&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// true</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getdeviceid">
+<h2>getDeviceID<a class="headerlink" href="#getdeviceid" title="Permalink to this headline"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Tensor11getDeviceIDERK6string">
+<span id="_CPPv3N6Tensor11getDeviceIDERK6string"></span><span id="_CPPv2N6Tensor11getDeviceIDERK6string"></span><span id="Tensor::getDeviceID__stringCR"></span><span class="target" id="class_tensor_1a484b28df160243b3ffe9e1c59a28f73d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">getDeviceID</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dev</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11getDeviceIDERK6string" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Returns the device ID given a device name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>int </p>
+</dd>
+</dl>
+</dd></dl>
 
-<span class="c1">// Train model</span>
-<span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">x_train</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">y_train</span><span class="p">},</span><span class="w"> </span><span class="n">batch_size</span><span class="p">,</span><span class="w"> </span><span class="n">epochs</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">new_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">getDeviceID</span><span class="p">(</span><span class="s">&quot;cuda:0&quot;</span><span class="p">));</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -194,8 +215,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../model/onnx.html" class="btn btn-neutral float-left" title="Save and load ONNX models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="fine_grained.html" class="btn btn-neutral float-right" title="Fine-grained training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="math.html" class="btn btn-neutral float-left" title="Mathematical functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
