@@ -303,8 +303,8 @@ TEST(AvgPoolTestSuite, avgpool_cpu_gpu){
                 bool asymmetricPads = isPaddingAsymmetric(pd_cpu->pad);
                 cout << "\t=> Asymmetric padding: " << asymmetricPads << endl;
 
-                // Check if padding is asymmetric and if we're using cuDNN
-                if(asymmetricPads==0 || (asymmetricPads==1 && Tensor::max_accelerator_supported() != "cudnn")) {
+                // Check if padding is asymmetric and if we're using CPU or CUDA
+                if(asymmetricPads==0 || (asymmetricPads==1 && !Tensor::is_hardware_supported("cudnn"))) {
                     // GPU Operation
                     auto *pd_gpu = new PoolDescriptor({k, k}, {s, s}, p);
                     pd_gpu->build(t_gpu);

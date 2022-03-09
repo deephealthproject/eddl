@@ -37,6 +37,10 @@ public:
         init_message_type_names();
     }
 
+    bool is_master_ip_addr_set()
+    {
+        return this->master_s_addr != 0;
+    }
     std::string get_master_ip_addr()
     {
         if (this->master_s_addr == 0)
@@ -68,6 +72,24 @@ public:
         } else {
             throw std::runtime_error(err_msg("invalid ip addr provided: " + s));
         }
+    }
+    void set_master_s_addr(in_addr_t s_addr)
+    {
+        if (this->master_s_addr != 0) {
+            throw std::runtime_error(err_msg("master_ip_addr is set, clear it before setting a new one!"));
+        }
+
+        struct in_addr addr;
+        addr.s_addr = s_addr;
+        char * s = inet_ntoa(addr);
+
+        this->master_ip_addr = s;
+        this->master_s_addr = s_addr;
+    }
+    void clear_master_ip_addr()
+    {
+        this->master_ip_addr = "";
+        this->master_s_addr = 0;
     }
     void set_my_ip_addr(std::string s)
     {

@@ -1,5 +1,7 @@
 #if defined(cPROTO)
 #include "eddl/serialization/onnx/utils_onnx.h"
+#include "eddl/serialization/onnx/layers/core/unsqueeze_onnx.h"
+#include "eddl/serialization/onnx/layers/core/repeat_onnx.h"
 #include "eddl/layers/auxiliar/layer_auxiliar.h"
 
 void log_string(string log, LOG_LEVEL actual_log_level, LOG_LEVEL string_log_level){
@@ -168,6 +170,60 @@ vector<Layer *> expand_broadcast(vector<Layer *> layers)
   }
 
   return layers;
+}
+
+tuple<bool, vector<string>> mlayer_check_and_fix_recurrent_input(MLayer *layer, onnx::GraphProto *graph, int seq_len) {
+  const int n_parents = layer->parent.size();
+  // Count the number of recurrent parents
+  const int n_recurrent = std::count_if(layer->parent.begin(), layer->parent.end(),
+                                  [](Layer *l) { return l->isrecurrent || l->isdecoder; });
+
+  if (!n_recurrent || n_recurrent == n_parents)
+  {
+    // In this case we don't need to fix anything
+    vector<string> all_parents;
+    for (Layer *parentl : layer->parent)
+      all_parents.push_back(parentl->name);
+    return {n_recurrent > 0, all_parents};
+  }
+  else // case: n_recurrent < n_parents
+  {
+    // For each parent layer that is not recurrent we have to repeat the parent to
+    // create a sequence. To do it in ONNX we use an Unsqueeze operator to add the sequence
+    // dimension and a Tile operator to repeat the data along the sequence dimension
+    vector<string> parents;
+    for (Layer *parentl : layer->parent)
+    {
+      if (!parentl->isrecurrent && !parentl->isdecoder)
+      {
+        const string unsq_node_name = parentl->name + "_EDDL-unsqueeze";
+        unsqueeze_node_builder(unsq_node_name, // Node name
+                               parentl->name,  // Input name
+                               unsq_node_name, // Output name
+                               {0},            // Axes, add the sequence dimension before the batch
+                               graph);
+
+        if (seq_len < 1)
+          msg("Error exporting the merge layer " + layer->name + ". To export this model you need to provide the 'seq_len' argument "
+              "with a value higher than 0 in the export function.", "ONNX::ExportNet");
+
+        const string tile_node_name = parentl->name + "_EDDL-tile";
+        // Create the tiles vector with the repetitions for each dimension
+        // We only have to repeat the first dimension ({secuence, batch, dim0, dim1, ..., dimN})
+        vector<int> tiles (parentl->output->getShape().size() + 1, 1);
+        tiles[0] = seq_len;
+        tile_node_builder(tile_node_name,
+                          unsq_node_name,
+                          tile_node_name,
+                          tiles,
+                          graph);
+        parents.push_back(tile_node_name);
+      }
+      else
+        parents.push_back(parentl->name);
+    }
+    return {true, parents};
+  }
 }
 
 #endif // defined(cPROTO)

@@ -362,7 +362,7 @@ bool MulticastSender::send_message(eddl_message * message)
                     //double resent_ratio = 100.0 * counter_resent_packets / (counter + 1);
                     if (resent_ratio > 50) { // greater than 50%
                         sent_bytes_threshold = std::max(sent_bytes_threshold >> 1, (size_t)(1024 *   32 * 1)); // lower bound 32 KB
-                    } else if (resent_ratio < 1) { // lower than 1%
+                    } else if (resent_ratio < 5) { // lower than 5%
                         sent_bytes_threshold = std::min(sent_bytes_threshold << 1, (size_t)(1024 * 1024 * 1)); // upper bounnd 1 MB
                     }
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));

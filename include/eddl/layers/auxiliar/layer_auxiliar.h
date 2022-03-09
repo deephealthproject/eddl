@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -153,6 +153,57 @@ public:
     void backward() override;
 
     string plot(int c) override;
+};
+
+/// MultiThreshold Layer
+class LMultiThreshold : public LinLayer {
+public:
+
+      static int total_layers;
+      int size;
+
+      Tensor *thresholds;
+      float out_bias;
+      float out_scale;
+
+      LMultiThreshold(Layer *parent, vector<int> thresholds_shape, string name, int dev, int mem, float out_bias, float out_scale);
+
+      Layer *share(int c, int bs, vector<Layer *> p) override;
+
+      Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+      void resize(int batch) override;
+
+      void forward() override;
+
+      void backward() override;
+
+      string plot(int c) override;
+};
+
+/// TopK Layer
+class LTopK : public LinLayer {
+public:
+
+	static int total_layers;
+	int axis;
+	int largest;
+	int sorted;
+	int K;
+
+	LTopK(Layer *parent, vector<int> K_shape, string name, int dev, int mem, int axis, int largest, int sorted, int K);
+
+      Layer *share(int c, int bs, vector<Layer *> p) override;
+
+      Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+      void resize(int batch) override;
+
+      void forward() override;
+
+      void backward() override;
+
+      string plot(int c) override;
 };
 
 #endif //EDDL_LAYER_AUXILIAR_H

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -414,6 +414,11 @@ void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, f
     // A=10x10; B=10x10; new_size=5x5 => Zoom-out centered
     // A=5x5; B=5x5; new_size=10x10 => Zoom in window
 
+#ifdef CPU_DEBUG
+    printf("cpu_scale:\n");
+    printf(" tensor A: "); _profile_cpu_tensor(A);
+#endif
+
     _profile(_CPU_SCALE, 0);
     // Center crop (if the the crop is smaller than B)
     int offsets[2] = {0, 0};
@@ -425,6 +430,9 @@ void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int wrapping_mode, f
         cpu_single_scale(b, offsets, A, B, new_shape, wrapping_mode, constant, coordinate_transformation_mode);
     }
     _profile(_CPU_SCALE, 1);
+#ifdef CPU_DEBUG
+    printf(" tensor B: "); _profile_cpu_tensor(B);
+#endif
 }
 
 

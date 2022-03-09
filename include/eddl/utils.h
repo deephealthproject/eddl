@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -44,6 +44,8 @@ float *get_fmem(unsigned long int size, const string &str);
 string bytes2human(unsigned long long int bytes, int decimals=2);
 
 unsigned long get_free_mem();
+
+vector<string> split_string(const string& str, const char& delimiter);
 
 string get_extension(string filename);
 
@@ -122,6 +124,7 @@ TransformationMode getTransformationMode(string mode);
 string getTransformationModeName(TransformationMode mode);
 
 void __show_profile();
+void __reset_profile();
 
 void show_deprecated_warning(const string& deprecated_name, const string& new_name="", const string& type="function", const string& version="future");
 

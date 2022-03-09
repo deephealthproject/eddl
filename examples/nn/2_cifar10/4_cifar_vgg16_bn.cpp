@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -82,9 +82,9 @@ int main(int argc, char **argv){
   if (use_cpu) {
       cs = CS_CPU();
   } else {
-      cs = CS_GPU({1}); // one GPU
+      //cs = CS_GPU({1}); // one GPU
       // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-      // cs = CS_CPU();
+       cs = CS_CPU();
       // cs = CS_FPGA({1});
   }
 

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -19,6 +19,8 @@
 #include "eddl/apis/eddl.h"
 #include "eddl/utils.h"
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
+//#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 
 using namespace std;
@@ -155,7 +157,6 @@ namespace eddl {
         net->toCPU(th);
     }
 
-
     compserv CS_CPU(int th, const string& mem){
         if (mem=="low_mem") return new CompServ(th, {}, {}, 0, 2);
         else if (mem=="mid_mem") return new CompServ(th, {}, {}, 0, 1);
@@ -195,7 +196,7 @@ namespace eddl {
       }*/
 
     compserv CS_FPGA(const vector<int> &f,int lsb){
-        return new CompServ(0, {}, f,lsb);
+        return new CompServ(0, {}, f, lsb);
     }
 
     compserv CS_COMPSS(const string& filename){
@@ -288,8 +289,11 @@ namespace eddl {
     }
 
     void show_profile() {
-        printf("profile:\n");
         __show_profile();
+    }
+
+    void reset_profile() {
+        __reset_profile();
     }
 
     void next_batch(vector<Tensor *> in,vector<Tensor *> out){
@@ -967,6 +971,9 @@ namespace eddl {
         return new LNormMinMax(parent, epsilon, name, DEV_CPU, 0);
     }
 
+  layer Transform(layer parent, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform, int mode, string name) {
+      return new LTransform(parent, copy_cpu_to_fpga, copy_fpga_to_cpu, transform, name, DEV_CPU, 0);
+  }
 
     //  Operator Layers
     layer Abs(layer l){
@@ -1642,16 +1649,6 @@ namespace eddl {
     }
 
     ///////////////////////////////////////
-    //  FUSED LAYERS
-    ///////////////////////////////////////
-
-    layer Conv2dActivation(layer parent, string act, int filters, const vector<int> &kernel_size,
-                           const vector<int> &strides, string padding, bool use_bias,
-                           int groups, const vector<int> &dilation_rate, string name){
-        return new LConv2dActivation(parent, act, filters, kernel_size, strides, padding, {}, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
-    }
-
-    ///////////////////////////////////////
     //  Pretrained Models
     ///////////////////////////////////////
 
@@ -1983,6 +1980,31 @@ namespace eddl {
         download_dataset("drive","bin",{"tf3uzrsjtv4jiey","xakcuhby30ylpes"});
     }
 
+    ///////////////////////////////////////
+    //  HLSinf accelerators
+    ///////////////////////////////////////
+    void download_hlsinf(int version, int subversion){
+        char file[200];
+
+        sprintf(file, "hlsinf_v%0d.%0d.xclbin", version, subversion);
+
+        cout << "Downloading " << file << endl;
+
+        if (!exist(file)) {
+            char cmd[200];
+            sprintf(cmd, "wget -q --show-progress https://www.dropbox.com/s/%s", file);
+            int status = system(cmd);
+            if (status < 0){
+                msg("Error executing wget.  Is it installed?", "eddl.download_hlsinf");
+            }
+            else if (status > 0){
+                cout<<cmd<<endl;
+                msg("wget failed to download HLSinf accelerator (exit code: " + to_string(status) + ").", "eddl.download_hlsinf");
+            }
+        }
+    }
+
+
     // Auxiliar functions
     layer _expand3d_to_4d(layer parent, string name){
         layer p = parent;
@@ -2026,4 +2048,4 @@ namespace eddl {
         return result;
     }
 
-}//namespace
+}

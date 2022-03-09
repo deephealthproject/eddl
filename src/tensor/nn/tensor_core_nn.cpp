@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -21,9 +21,6 @@
 
 #ifdef cFPGA
 #include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
-
-extern int next_fpga_tensor_id;
 #endif
 
 PROFILING_ENABLE_EXTERN(repeat_nn);
@@ -32,6 +29,7 @@ PROFILING_ENABLE_EXTERN(select);
 PROFILING_ENABLE_EXTERN(select_back);
 PROFILING_ENABLE_EXTERN(set_select);
 PROFILING_ENABLE_EXTERN(set_select_back);
+PROFILING_ENABLE_EXTERN(transform);
 
 namespace tensorNN {
 
@@ -58,12 +56,6 @@ namespace tensorNN {
             gpu_repeat_nn(A, B, size);
         }
 #endif
-#ifdef cFPGA
-        else {
-            printf("repeat_nn not supported yet on FPGA\n");
-            exit(1);
-        }
-#endif
         PROFILING_FOOTER(repeat_nn);
     }
 
@@ -78,12 +70,6 @@ namespace tensorNN {
 #ifdef cGPU
         else if (D->isGPU() && A->isGPU()) {
             gpu_d_repeat_nn(D, A, size);
-        }
-#endif
-#ifdef cFPGA
-        else {
-            printf("d_repeat_nn not implemented in FPGA yet\n");
-            exit(1);
         }
 #endif
         PROFILING_FOOTER(d_repeat_nn);
@@ -103,12 +89,6 @@ namespace tensorNN {
             gpu_select_nn(A, B, sd);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-            fpga_select_nn(A, B, sd);
-        }
-#endif
         PROFILING_FOOTER(select);
     }
 
@@ -125,12 +105,6 @@ namespace tensorNN {
            gpu_select_back_nn(A, B, sd);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-           fpga_select_back_nn(A, B, sd);
-        }
-#endif
         PROFILING_FOOTER(select_back);
     }
 
@@ -145,12 +119,6 @@ namespace tensorNN {
         else if (A->isGPU() && B->isGPU())
         {
             gpu_set_select_nn(A, B, sd);
-        }
-#endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-            fpga_set_select_nn(A, B, sd);
         }
 #endif
         PROFILING_FOOTER(set_select);
@@ -170,15 +138,27 @@ namespace tensorNN {
             gpu_set_select_back_nn(A, B, sd);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-            fpga_set_select_back_nn(A, B, sd);
-        }
-#endif
         PROFILING_FOOTER(set_select_back);
     }
 
+    void transform(Tensor *A, Tensor* B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform) {
+
+        PROFILING_HEADER(transform);
+
+        if (A->isCPU() && B->isCPU()) {
+#ifdef cFPGA
+            fpga_transform_nn(A, B, copy_cpu_to_fpga, copy_fpga_to_cpu, transform);
+#endif
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            printf("Error, transform_nn not implemented in GPU\n");
+            exit(1);
+        }
+#endif
+        PROFILING_FOOTER(transform);
+    }
 
 
     void expand(Tensor *A, Tensor* B, ExpandDescriptor *sd){
@@ -191,12 +171,6 @@ namespace tensorNN {
         else if (A->isGPU() && B->isGPU())
         {
             gpu_expand_nn(A, B, sd);
-        }
-#endif
-#ifdef cFPGA
-            else if (A->isFPGA() && B->isFPGA())
-        {
-//            fpga_expand_nn(A, B, sd);
         }
 #endif
     }
@@ -213,12 +187,6 @@ namespace tensorNN {
             gpu_expand_back_nn(A, B, sd);
         }
 #endif
-#ifdef cFPGA
-            else if (A->isFPGA() && B->isFPGA())
-        {
-//           fpga_expand_back_nn(A, B, sd);
-        }
-#endif
     }
 
     void repeat_batch(Tensor *A, Tensor* B){
@@ -233,10 +201,32 @@ namespace tensorNN {
             gpu_repeat_batch(A, B);
         }
 #endif
-#ifdef cFPGA
-        else if (A->isFPGA() && B->isFPGA())
-        {
-        }
+    }
+
+    void multithreshold(Tensor *A, Tensor *B, Tensor *thresholds, float out_bias, float out_scale) {
+
+
+	    if (A->isCPU() && B->isCPU() && thresholds->isCPU()) {
+	      cpu_multithreshold(A, B, thresholds, out_bias, out_scale);
+	    }
+#ifdef cGPU
+	    else if (A->isGPU() && B->isGPU() && thresholds->isGPU()) {
+	      printf("multithreshold not supported for GPU\n");
+	      exit(1);
+	    }
+#endif
+    }
+
+    void topK(Tensor *A, Tensor *B, int axis, int largest, int sorted, int K) {
+
+            if (A->isCPU() && B->isCPU()) {
+              cpu_topK(A, B, axis, largest, sorted, K);
+            }
+#ifdef cGPU
+            else if (A->isGPU() && B->isGPU()) {
+              printf("topK not supported for GPU\n");
+              exit(1);
+            }
 #endif
     }
 

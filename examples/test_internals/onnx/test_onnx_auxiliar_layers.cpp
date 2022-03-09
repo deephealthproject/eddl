@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -69,9 +69,11 @@ int main(int argc, char **argv) {
         layer l = in;  // Aux var
 
         l = Reshape(l, {1, 28, 28});
-        l = Repeat(l, 3, 0);
-        l = Repeat(l, 2, 1);
-        l = Repeat(l, 2, 2);
+        l = ReLu(Dense(l, 30));  // Dense n-dim
+        l = ReLu(Dense(l, 28));  // Dense n-dim
+        // l = Repeat(l, 3, 0);
+        // l = Repeat(l, 2, 1);
+        // l = Repeat(l, 2, 2);
         l = Pad(l, {1, 1, 1, 1}, 0.0);
         l = MaxPool2D(ReLu(Conv2D(l, 30, {3, 3}, {1, 1}, "valid")), {3, 3}, {1, 1}, "same");
 
@@ -95,6 +97,8 @@ int main(int argc, char **argv) {
 
         l = Concat({l1, l2, l3, l4});
         l = MaxPool2D(ReLu(Conv2D(l, 64, {1, 1}, {1, 1})), {2, 2}, {2, 2}, "same");
+        l = ReLu(Dense(l, 3));  // Dense n-dim
+        l = ReLu(Dense(l, 2));  // Dense n-dim
 
         l = Reshape(l, {-1});
 

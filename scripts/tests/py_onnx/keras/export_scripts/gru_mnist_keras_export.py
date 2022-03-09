@@ -1,10 +1,12 @@
 import argparse
 
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Input, LeakyReLU, GRU
 from tensorflow.keras.datasets import mnist
 from keras.utils.np_utils import to_categorical
-import keras2onnx
+import onnx
+import tf2onnx
 
 # Training settings
 parser = argparse.ArgumentParser(description='Keras Conv2D MNIST Example')
@@ -53,7 +55,7 @@ model.add(Dense(32))
 model.add(LeakyReLU())
 model.add(Dense(10, activation='softmax'))
 
-model.build(input_shape=(28, 28))  # For keras2onnx
+model.build(input_shape=(28, 28))
 
 model.compile(loss='categorical_crossentropy',
               optimizer="adam",
@@ -74,6 +76,7 @@ if args.output_metric != "":
         ofile.write(str(res[1]))
 
 # Convert to ONNX
-onnx_model = keras2onnx.convert_keras(model, "gru_mnist", debug_mode=1)
+input_spec = (tf.TensorSpec((args.batch_size, 28, 28), dtype=tf.float32),)
+onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature=input_spec)
 # Save ONNX to file
-keras2onnx.save_model(onnx_model, args.output_path)
+onnx.save(onnx_model, args.output_path)

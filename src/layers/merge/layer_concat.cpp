@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -13,7 +13,10 @@
 #include <iostream>
 
 #include "eddl/layers/merge/layer_merge.h"
-
+#include "eddl/layers/operators/layer_operators.h"
+#include "eddl/tensor/nn/tensor_nn.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/profiling.h"
 
 using namespace std;
 

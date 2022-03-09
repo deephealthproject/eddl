@@ -96,16 +96,21 @@ CompServ *import_compserv_from_onnx_string(string *cs_string);
  *
  * @param net Net to be saved
  * @param path Path to the file where the net in ONNX format will be saved
+ * @param seq_len In the case of exporting a recurrent model, set the sequence length of the
+ *                model input to the provided value. By default is 0, which means that the sequence
+ *                length will be generic. But in some cases, the export function will need a fixed
+ *                value to export the model. We recommend using this argument only when the function
+ *                asks for it
  *
  * @return (void)
  */
-void save_net_to_onnx_file(Net *net, string path);
+void save_net_to_onnx_file(Net *net, string path, int seq_len = 0);
 
 // Returns a pointer to the serialized model in Onnx
-size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gradients = false);
+size_t serialize_net_to_onnx_pointer(Net *net, void *&serialized_model, bool gradients = false, int seq_len = 0);
 
 // Returns a string containing the serialized model in Onnx
-string *serialize_net_to_onnx_string(Net *net, bool gradients = false);
+string *serialize_net_to_onnx_string(Net *net, bool gradients = false, int seq_len = 0);
 
 
 // Optimizer exporters

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -13,11 +13,6 @@
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#endif
-
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
 
 using namespace std;
@@ -119,12 +114,6 @@ bool Tensor::all(Tensor *A){
         res = gpu_all(A);
     }
 #endif
-#ifdef cFPGA
-    else {
-        res = fpga_all(A);
-    }
-#endif
-
     PROFILING_FOOTER(all);
 
     return res;
@@ -143,11 +132,6 @@ bool Tensor::any(Tensor *A){
     else if (A->isGPU())
     {
         res = gpu_any(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-        res = fpga_any(A);
     }
 #endif
 
@@ -171,11 +155,6 @@ void Tensor::isfinite(Tensor *A, Tensor* B){
           gpu_isfinite(A, B);
           }
 #endif
-#ifdef cFPGA
-    else {
-         fpga_isfinite(A, B);
-        }
-#endif
     PROFILING_FOOTER(isfinite);
 }
 
@@ -193,11 +172,6 @@ void Tensor::isinf(Tensor *A, Tensor* B){
           gpu_isinf(A, B);
           }
 #endif
-#ifdef cFPGA
-    else {
-          fpga_isinf(A, B);
-        }
-#endif
     PROFILING_FOOTER(isinf);
 }
 
@@ -214,11 +188,6 @@ void Tensor::isnan(Tensor *A, Tensor* B){
           {
           gpu_isnan(A, B);
           }
-#endif
-#ifdef cFPGA
-    else {
-          fpga_isnan(A, B);
-        }
 #endif
     PROFILING_FOOTER(isnan);
 }
@@ -244,11 +213,6 @@ void Tensor::isneginf(Tensor *A, Tensor* B){
           gpu_isneginf(A, B);
           }
 #endif
-#ifdef cFPGA
-    else {
-         fpga_isneginf(A, B);
-        }
-#endif
     PROFILING_FOOTER(isneginf);
 }
 
@@ -265,11 +229,6 @@ void Tensor::isposinf(Tensor *A, Tensor* B){
           {
           gpu_isposinf(A, B);
           }
-#endif
-#ifdef cFPGA
-    else {
-         fpga_isposinf(A, B);
-        }
 #endif
     PROFILING_FOOTER(isposinf);
 }
@@ -291,11 +250,6 @@ void Tensor::logical_and(Tensor *A, Tensor *B, Tensor *C){
             gpu_logical_and(A, B, C);
           }
 #endif
-#ifdef cFPGA
-    else {
-          fpga_logical_and(A, B, C);
-        }
-#endif
     PROFILING_FOOTER(logical_and);
 }
 
@@ -312,11 +266,6 @@ void Tensor::logical_or(Tensor *A, Tensor *B, Tensor *C){
           {
             gpu_logical_or(A, B, C);
           }
-#endif
-#ifdef cFPGA
-    else {
-          fpga_logical_or(A, B, C);
-        }
 #endif
     PROFILING_FOOTER(logical_or);
 }
@@ -335,11 +284,6 @@ void Tensor::logical_not(Tensor *A, Tensor *B){
             gpu_logical_not(A, B);
           }
 #endif
-#ifdef cFPGA
-    else {
-          fpga_logical_not(A, B);
-        }
-#endif
     PROFILING_FOOTER(logical_not);
 }
 
@@ -356,11 +300,6 @@ void Tensor::logical_xor(Tensor *A, Tensor *B, Tensor *C){
           {
             gpu_logical_xor(A, B, C);
           }
-#endif
-#ifdef cFPGA
-    else {
-          fpga_logical_xor(A, B, C);
-        }
 #endif
     PROFILING_FOOTER(logical_xor);
 }
@@ -381,11 +320,6 @@ bool Tensor::allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_n
             return gpu_allclose(A, B, rtol, atol, equal_nan);
           }
 #endif
-#ifdef cFPGA
-    else {
-          return fpga_allclose(A, B, rtol, atol, equal_nan);
-        }
-#endif
     PROFILING_FOOTER(allclose);
 
     return 0;
@@ -405,11 +339,6 @@ void Tensor::isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bo
           {
             gpu_isclose(A, B, C, rtol, atol, equal_nan);
           }
-#endif
-#ifdef cFPGA
-    else {
-          fpga_isclose(A, B, C, rtol, atol, equal_nan);
-        }
 #endif
     PROFILING_FOOTER(isclose);
 }
@@ -438,13 +367,6 @@ void Tensor::greater(Tensor *A, Tensor *B, float v){
             gpu_greater(A, B, v);
           }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-          {
-            fpga_greater(A, B, v);
-          }
-#endif
-
     PROFILING_FOOTER(greater);
 }
 
@@ -468,12 +390,6 @@ void Tensor::greater(Tensor *A, Tensor *B, Tensor *C){
             gpu_greater(A, B, C);
           }
 #endif
-#ifdef cFPGA
-    else {
-            fpga_greater(A, B, C);
-        }
-#endif
-
     PROFILING_FOOTER(greater);
 }
 
@@ -502,12 +418,6 @@ void Tensor::greater_equal(Tensor *A, Tensor *B, float v){
             gpu_greater_equal(A, B, v);
           }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-          {
-            fpga_greater_equal(A, B, v);
-          }
-#endif
     PROFILING_FOOTER(greater_equal);
 }
 
@@ -531,13 +441,6 @@ void Tensor::greater_equal(Tensor *A, Tensor *B, Tensor *C){
            gpu_greater_equal(A, B, C);
           }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-        {
-        fpga_greater_equal(A, B, C);
-        }
-#endif
-
     PROFILING_FOOTER(greater_equal);
 }
 
@@ -566,12 +469,6 @@ void Tensor::less(Tensor *A, Tensor *B, float v){
             gpu_less(A, B, v);
           }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-         {
-             fpga_less(A, B, v);
-        }
-#endif
     PROFILING_FOOTER(less);
 }
 
@@ -595,12 +492,6 @@ void Tensor::less(Tensor *A, Tensor *B, Tensor *C){
             gpu_less(A, B, C);
           }
 #endif
-#ifdef cFPGA
-    else {
-         fpga_less(A, B, C);
-        }
-#endif
-
     PROFILING_FOOTER(less);
 }
 
@@ -629,13 +520,6 @@ void Tensor::less_equal(Tensor *A, Tensor *B, float v){
             gpu_less_equal(A, B, v);
           }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-          {
-            fpga_less_equal(A, B, v);
-          }
-#endif
-
     PROFILING_FOOTER(less_equal);
 }
 
@@ -659,11 +543,6 @@ void Tensor::less_equal(Tensor *A, Tensor *B, Tensor *C){
           {
             gpu_less_equal(A, B, C);
           }
-#endif
-#ifdef cFPGA
-    else {
-          fpga_less_equal(A, B, C);
-        }
 #endif
     PROFILING_FOOTER(less_equal);
 }
@@ -693,13 +572,6 @@ void Tensor::equal(Tensor *A, Tensor *B, float v){
             gpu_equal(A, B, v);
           }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-          {
-            fpga_equal(A, B, v);
-          }
-#endif
-
     PROFILING_FOOTER(equal);
 }
 
@@ -723,12 +595,6 @@ void Tensor::equal(Tensor *A, Tensor *B, Tensor *C){
             gpu_equal(A, B, C);
           }
 #endif
-#ifdef cFPGA
-    else {
-         fpga_equal(A, B, C);
-        }
-#endif
-
     PROFILING_FOOTER(equal);
 }
 
@@ -756,13 +622,6 @@ void Tensor::not_equal(Tensor *A, Tensor *B, float v){
             gpu_not_equal(A, B, v);
           }
 #endif
-#ifdef cFPGA
-    else if (A->isFPGA())
-          {
-            fpga_not_equal(A, B, v);
-          }
-#endif
-
     PROFILING_FOOTER(not_equal);
 }
 
@@ -786,12 +645,6 @@ void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
             gpu_not_equal(A, B, C);
           }
 #endif
-#ifdef cFPGA
-    else {
-           fpga_not_equal(A, B, C);
-        }
-#endif
-
     PROFILING_FOOTER(not_equal);
 }
 
@@ -842,13 +695,6 @@ int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_
               return gpu_allclose(A, B, rtol, atol, equal_nan);
           }
 #endif
-#ifdef cFPGA
-    else {
-	  printf("Error, please check (FPGA), epsilon does not exist\n");
-//          return fpga_equal2(A, B, epsilon);
-        }
-#endif
-
     PROFILING_FOOTER(equivalent);
 
     return 1;

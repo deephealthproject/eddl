@@ -169,7 +169,7 @@ int main(int argc, char **argv) {
     ifile >> target_metric;
     ifile.close();
     float metrics_diff = abs(target_metric - net2_loss);
-    if (metrics_diff > 0.001) {
+    if (metrics_diff > 0.01) {
       cout << "Test failed: Metric difference too high target=" << target_metric
            << ", pred=" << net2_loss << endl;
       ok_test = false;

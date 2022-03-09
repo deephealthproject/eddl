@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -18,6 +18,7 @@
 #include "eddl/utils.h"
 #include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
+#include "eddl/profiling.h"
 
 
 using namespace std;
@@ -46,9 +47,10 @@ void Net::do_reset_grads() {
 }
 
 void Net::do_forward() {
-
+    PROFILING_HEADER_EXTERN(forward);
     for (int i = 0; i < vfts.size(); i++)
         vfts[i]->forward();
+    PROFILING_FOOTER(forward);
 
 }
 
@@ -181,7 +183,7 @@ void collectTensor(Layer *l,string tname, int p){
         }else if (tname=="gradient"){
             Tensor::copy(sl->gradients[p],l->gradients[p]);
         }else if (tname=="state"){
-            Tensor::copy(sl->states[p],l->states[p]);
+            Tensor::deselect(sl->states[p], l->states[p], sind, start, end);
         }else {
             msg("Unknown name (" + tname + ")","Net::collectTensor");
         }
@@ -236,7 +238,7 @@ void distributeTensor(Layer *l,string tname, int p)
             Tensor::select(l->delta, sl->delta, sind, start, end);
         }
         else if (tname=="param") {
-            cout<<"Distribute param "<<p<<" to device "<<i<<endl;
+            //cout<<"Distribute param "<<p<<" to device "<<i<<endl;
             Tensor::copy(l->params[p],sl->params[p]);
         }
         else if (tname=="gradient") {

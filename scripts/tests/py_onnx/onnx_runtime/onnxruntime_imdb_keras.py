@@ -5,7 +5,6 @@ import argparse
 import os
 import numpy as np
 import onnx
-import keras2onnx
 import onnxruntime
 from tensorflow.keras.preprocessing import sequence
 from tensorflow.keras.datasets import imdb

@@ -1,11 +1,13 @@
 import argparse
 
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Input, ReLU, Conv2D, Conv2DTranspose, MaxPooling2D
 from tensorflow.keras.datasets import mnist
 from keras.utils.np_utils import to_categorical
-import keras2onnx
+import onnx
+import tf2onnx
 
 # Training settings
 parser = argparse.ArgumentParser(description='Keras ConvT2D encoder decoder MNIST Example')
@@ -79,6 +81,7 @@ if args.output_metric != "":
         ofile.write(str(eval_loss))
 
 # Convert to ONNX
-onnx_model = keras2onnx.convert_keras(model, "convT2D_mnist", debug_mode=1)
+input_spec = (tf.TensorSpec((args.batch_size, 28, 28, 1), dtype=tf.float32),)
+onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature=input_spec)
 # Save ONNX to file
-keras2onnx.save_model(onnx_model, args.output_path)
+onnx.save(onnx_model, args.output_path)

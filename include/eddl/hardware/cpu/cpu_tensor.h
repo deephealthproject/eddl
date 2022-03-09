@@ -1,14 +1,16 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 #ifndef EDDL_CPU_TENSOR_H
 #define EDDL_CPU_TENSOR_H
+
+//#define CPU_DEBUG
 
 #include "cpu_profile.h"
 
@@ -19,6 +21,8 @@
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
+
+void _profile_cpu_tensor(Tensor *T);
 
 // CPU: Core (static)
 void cpu_transpose(Tensor *A, Tensor *B);

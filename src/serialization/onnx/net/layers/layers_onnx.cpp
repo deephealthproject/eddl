@@ -53,6 +53,8 @@
 #include "eddl/serialization/onnx/layers/da/pad_onnx.h"
 #include "eddl/serialization/onnx/layers/onnx_nodes/onnx_node_conversion.h"
 #include "eddl/serialization/onnx/layers/auxiliar/expand_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/multithreshold_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/topk_onnx.h"
 #include "eddl/serialization/onnx/layers/auxiliar/constoftensor_onnx.h"
 
 /*
@@ -124,6 +126,8 @@ map<string, ONNX_LAYERS> create_enum_map()
   map_layers["Slice"] = ONNX_LAYERS::SLICE;
   map_layers["Split"] = ONNX_LAYERS::SPLIT;
   map_layers["Expand"] = ONNX_LAYERS::EXPAND;
+  map_layers["MultiThreshold"] = ONNX_LAYERS::MULTITHRESHOLD;
+  map_layers["TopK"] = ONNX_LAYERS::TOPK;
   map_layers["Constant"] = ONNX_LAYERS::CONSTANT;
   map_layers["Tile"] = ONNX_LAYERS::REPEAT;
   map_layers["LRN"] = ONNX_LAYERS::LRN;
@@ -146,7 +150,6 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
                              map<string, vector<onnx::NodeProto *>> &input_node_map,
                              map<string, Layer *> &output_node_map,
                              map<string, onnx::NodeProto *> &constant_node_map,
-                             vector<string> &inputs2remove,
                              bool recurrent_net,
                              LOG_LEVEL log_level,
                              int dev,
@@ -236,7 +239,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_softmax_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::CONCAT:
-      new_layer = build_concat_layer(node, output_node_map, dev, mem);
+      new_layer = build_concat_layer(node, output_node_map, recurrent_net, dev, mem);
       break;
     case ONNX_LAYERS::ADD:
       new_layer = build_add_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
@@ -284,19 +287,19 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = build_rsum_layer(node, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::ARGMAX:
-      new_layer = build_rargmax_layer(node, output_node_map, dev, mem);
+      new_layer = build_rargmax_layer(node, output_node_map, recurrent_net, dev, mem);
       break;
     case ONNX_LAYERS::MAT_MUL:
       new_layer = build_matmul_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
     case ONNX_LAYERS::LSTM:
-      new_layer = build_lstm_layer(node, map_init_values, map_init_dims, input_node_map, output_node_map, inputs2remove, log_level, dev, mem);
+      new_layer = build_lstm_layer(node, map_init_values, map_init_dims, input_node_map, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::GRU:
-      new_layer = build_gru_layer(node, map_init_values, map_init_dims, input_node_map, output_node_map, inputs2remove, log_level, dev, mem);
+      new_layer = build_gru_layer(node, map_init_values, map_init_dims, input_node_map, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::RNN:
-      new_layer = build_rnn_layer(node, map_init_values, map_init_dims, input_node_map, output_node_map, inputs2remove, log_level, dev, mem);
+      new_layer = build_rnn_layer(node, map_init_values, map_init_dims, input_node_map, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::IDENTITY:
       new_layer = handle_identity_node(node, output_node_map, log_level, dev, mem);
@@ -331,6 +334,12 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
     case ONNX_LAYERS::EXPAND:
       new_layer = build_expand_layer(node, map_init_values, output_node_map, dev, mem);
       break;
+    case ONNX_LAYERS::MULTITHRESHOLD:
+      new_layer = build_multithreshold_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::TOPK:
+      new_layer = build_topk_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
     case ONNX_LAYERS::CONSTANT:
       new_layer = build_constoftensor_layer(node, map_init_values, output_node_map, dev, mem);
       break;
@@ -359,7 +368,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
  */
 
 // Builds a node in the onnx graph from the layer of eddl
-void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients, bool is_recurrent)
+void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients, bool is_recurrent, int seq_len)
 {
   // Check the class of the layer to call the corresponding function to
   // build the node
@@ -376,7 +385,7 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
   else if (LConvT3D *l = dynamic_cast<LConvT3D *>(layer))
     build_convT3D_node(l, graph, gradients);
   else if (LDense *l = dynamic_cast<LDense *>(layer))
-    if (is_recurrent)
+    if (is_recurrent || l->input->ndim != 2)
       build_dense_with_matmul_node(l, graph, gradients);
     else
       build_gemm_node(l, graph, gradients);
@@ -438,13 +447,13 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
       return;
     }
   else if (LConcat *l = dynamic_cast<LConcat *>(layer))
-    build_concat_node(l, graph);
+    build_concat_node(l, graph, seq_len);
   else if (LAbs *l = dynamic_cast<LAbs *>(layer))
     build_abs_node(l, graph);
   else if (LSum *l = dynamic_cast<LSum *>(layer))
     build_sum_node(l, graph);
   else if (LAdd *l = dynamic_cast<LAdd *>(layer))
-    build_add_node(l, graph);
+    build_add_node(l, graph, seq_len);
   else if (LDiv *l = dynamic_cast<LDiv *>(layer))
     build_div_node(l, graph);
   else if (LExp *l = dynamic_cast<LExp *>(layer))
@@ -575,8 +584,12 @@ map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto
       {
         // The Add operator can be used to simulate a Dense layer bias, in that case we take the weights
         vector<Tensor *> add_tensors = get_add_tensors(node, map_init_values, map_init_dims);
-        if (add_tensors.size() && tensors.count(name))
-          tensors[name].push_back(add_tensors[0]);
+        // In the case of the Add operator that implements the bias of a dense layer, the name of
+        // the layer can be found in the output name of the node
+        // Note: The node name is not valid because is something like "{dense_lname}_bias"
+        const string dense_lname = node.output(0);
+        if (add_tensors.size() && tensors.count(dense_lname))
+          tensors[dense_lname].push_back(add_tensors[0]);
         break;
       }
       default:

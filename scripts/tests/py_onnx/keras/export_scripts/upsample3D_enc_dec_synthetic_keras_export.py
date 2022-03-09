@@ -1,9 +1,11 @@
 import argparse
 
+import tensorflow as tf
 import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Input, Conv3D, UpSampling3D, MaxPooling3D
-import keras2onnx
+import onnx
+import tf2onnx
 
 # Training settings
 parser = argparse.ArgumentParser(description='Keras Conv3D+Upsampling encoder decoder with synthetic data Example')
@@ -67,6 +69,7 @@ if args.output_metric != "":
         ofile.write(str(eval_loss))
 
 # Convert to ONNX
-onnx_model = keras2onnx.convert_keras(model, "upsample3D_synthetic", debug_mode=1)
+input_spec = (tf.TensorSpec((args.batch_size, 16, 16, 16, 3), dtype=tf.float32),)
+onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature=input_spec)
 # Save ONNX to file
-keras2onnx.save_model(onnx_model, args.output_path)
+onnx.save(onnx_model, args.output_path)

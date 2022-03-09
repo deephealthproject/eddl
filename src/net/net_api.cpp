@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -21,10 +21,6 @@
 #include "eddl/system_info.h"
 #include "eddl/utils.h"
 
-
-#ifdef cFPGA
-extern void _show_profile_fpga();
-#endif
 
 #define VERBOSE 0
 
@@ -1302,10 +1298,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
   }
 
   compute_loss();
-
-#ifdef cFPGA
-  _show_profile_fpga();
-#endif
 }
 }
 

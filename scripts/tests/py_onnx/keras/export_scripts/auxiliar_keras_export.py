@@ -6,7 +6,8 @@ from tensorflow.keras.layers import AveragePooling2D, MaxPooling2D, GlobalAverag
 from tensorflow.keras.layers import ZeroPadding2D, Concatenate
 from tensorflow.keras.datasets import mnist
 from keras.utils.np_utils import to_categorical
-import keras2onnx
+import onnx
+import tf2onnx
 
 # Training settings
 parser = argparse.ArgumentParser(description='Keras Conv2D MNIST Example with some auxiliar layers')
@@ -96,6 +97,7 @@ if args.output_metric != "":
         ofile.write(str(res[1]))
 
 # Convert to ONNX
-onnx_model = keras2onnx.convert_keras(model, "auxiliar_mnist", debug_mode=1)
+input_spec = (tf.TensorSpec((args.batch_size, 28, 28, 1), dtype=tf.float32),)
+onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature=input_spec)
 # Save ONNX to file
-keras2onnx.save_model(onnx_model, args.output_path)
+onnx.save(onnx_model, args.output_path)

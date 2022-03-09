@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -12,11 +12,6 @@
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#endif
-
-#ifdef cFPGA
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/fpga/nn/fpga_nn.h"
 #endif
 
 using namespace std;
@@ -31,11 +26,6 @@ Tensor* raw_range(float start, float step, int size, int dev){
       {
         gpu_range(t, start, step);
       }
-#endif
-#ifdef cFPGA
-    else {
-        fpga_range(t, start, step);
-    }
 #endif
     return t;
 }
@@ -131,11 +121,6 @@ Tensor* Tensor::eye(int rows, int offset, int dev){
         gpu_eye(t, offset);
       }
 #endif
-#ifdef cFPGA
-    else {
-        fpga_eye(t, offset);
-    }
-#endif
     return t;
 
 }
@@ -182,12 +167,6 @@ void Tensor::diag(Tensor* A, Tensor* B, int k){
     else if (A->isGPU() && B->isGPU())
     {
         gpu_diag(A, B, k);
-    }
-#endif
-#ifdef cFPGA
-    else if (A->isFPGA() && B->isFPGA())
-    {
-        fpga_diag(A, B, k);
     }
 #endif
 }

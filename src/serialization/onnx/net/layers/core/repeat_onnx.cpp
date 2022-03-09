@@ -40,6 +40,12 @@ Layer* build_repeat_layer(onnx::NodeProto *node,
   {
     int r = repeats[axis];
     if (r == 1) continue;
+    else if (axis == 0)
+    {
+      log_string("The Tile node " + name + " is trying to repeat the dimension 0. "
+                 "We are going to skip it", log_level, LOG_LEVEL::DEBUG);
+      return parent; // Skip the layer
+    }
     else if (r > 1)
     {
       aux_layer = new LRepeat(parent, r, axis, name, dev, mem);
@@ -66,16 +72,34 @@ void build_tile_node(LRepeat *layer, onnx::GraphProto *graph)
 {
   // Chech that all the repeats have the same value.
   // Note: The Tile operator only accepts one repeat value per axis
-  unsigned int first_repeat = layer->rd->vrepeats[0];
+  unsigned int repeat_value = layer->rd->vrepeats[0];
   for (auto v : layer->rd->vrepeats)
-      if (v != first_repeat)
+      if (v != repeat_value)
           msg("Error exporting the Repeat layer " + layer->name +
               ". Repeat layers with different repeats per axis can't be exported to ONNX",
               "ONNX::ExportNet");
 
+  vector<int> repeats;
+  repeats.push_back(1); // Batch dimension
+  for (int i = 1; i < layer->input->getShape().size(); ++i)
+    if (layer->rd->axis == i)
+      // Add the repeat value only for the target axis
+      repeats.push_back(repeat_value);
+    else
+      repeats.push_back(1);
+
+  tile_node_builder(layer->name,
+                    layer->parent[0]->name,
+                    layer->name,
+                    repeats,
+                    graph);
+}
+
+void tile_node_builder(string node_name, string input, string output, vector<int> repeats, onnx::GraphProto *graph)
+{
   // Constant node input to the Tile node: repeats
   onnx::NodeProto *repeats_const_node = graph->add_node();
-  repeats_const_node->add_output(layer->name + "_repeats");
+  repeats_const_node->add_output(node_name + "_repeats");
   repeats_const_node->set_op_type("Constant");
   onnx::AttributeProto *repeats_attr = repeats_const_node->add_attribute();
   repeats_attr->set_name("value");
@@ -83,29 +107,20 @@ void build_tile_node(LRepeat *layer, onnx::GraphProto *graph)
   onnx::TensorProto *repeats_tensor = repeats_attr->mutable_t();
   repeats_tensor->set_name("const_tensor");
   repeats_tensor->set_data_type(onnx::TensorProto::INT64);
-  int n_axis = layer->input->getShape().size();
-  repeats_tensor->add_dims(n_axis);
-  // Set the repeats values. 1 for every axis except the layer->axis
-  repeats_tensor->add_int64_data(1); // For batch_size
-  for (int i = 1; i < n_axis; ++i)
-    if (layer->rd->axis == i)
-      repeats_tensor->add_int64_data(first_repeat);
-    else
-      repeats_tensor->add_int64_data(1);
+  repeats_tensor->add_dims(repeats.size());
+  for (const int r : repeats)
+    repeats_tensor->add_int64_data(r);
 
   // Add an empty node to the graph
   onnx::NodeProto *node = graph->add_node();
   node->set_op_type("Tile");
-  node->set_name(layer->name);
-  // Set the inputs names of the node from the parents of the layer
-  for (Layer *parentl : layer->parent)
-  {
-    node->add_input(parentl->name);
-  }
+  node->set_name(node_name);
+  // Set the name of the input operator
+  node->add_input(input);
   // Set the input with the repeats of the layer
-  node->add_input(layer->name + "_repeats");
+  node->add_input(node_name + "_repeats");
   // Set the name of the output of the node to link with other nodes
-  node->add_output(layer->name);
+  node->add_output(output);
 }
 
 #endif // defined(cPROTO)

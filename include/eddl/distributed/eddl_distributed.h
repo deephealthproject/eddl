@@ -29,28 +29,43 @@ enum eddl_worker_status {   WORKER_WAITING,
         + from STOPPING to WAITING after completing and/or aborting pending tasks
         + from STOPPING to TO_SHUTDOWN by means of a command from the master
 
+    - a worker can be mastered by a master if configure in modes FEDERATED_ML or ANY_MASTER
+        + the master sends the command MASTER_A_WORKER to a worker to master it
+        + a worker accepts if it was free, or rejects the command
+        + the master sends the command FREE_A_WORKER to a worker to free it, then the worker will complete any pending task
+        + a worker becomes free if no data nor commands from master are received during a time lapse to be adjusted
+
     - when a worker ends its execution, a new worker process can be launched
       automatically if the system is configured to do it, otherwise it must be
       launched manually.
 */
 
-enum eddl_message_types {DATA_WEIGHTS=     0x00501,
-                         DATA_GRADIENTS=   0x00502,
-                         DATA_SAMPLES=     0x00504,
-                         PARAMETER=        0x00a01,
-                         COMMAND=          0x00a02,
-                         PKG_ACK=          0x00a04,
-                         MSG_CHKSUM=       0x00a08,
-//                         PKG_CHKSUM=    0x00a10,
-                         MSG_ACK_WEIGHTS=  0x00a21,
-                         MSG_ACK_GRADIENTS=0x00a22,
-                         MSG_ACK_SAMPLES=  0x00a24};
+enum eddl_message_types {DATA_WEIGHTS          = 0x00501,
+                         DATA_GRADIENTS        = 0x00502,
+                         DATA_SAMPLES          = 0x00504,
 
-enum eddl_command_types {START=0x041, STOP=0x042, SHUTDOWN=0x044};
+                         PARAMETER             = 0x00a01,
+                         COMMAND               = 0x00a02,
+                         PKG_ACK               = 0x00a04,
+                         MSG_CHKSUM            = 0x00a08,
+//                         PKG_CHKSUM          = 0x00a10,
+                         MSG_ACK_WEIGHTS       = 0x00a21,
+                         MSG_ACK_GRADIENTS     = 0x00a22,
+                         MSG_ACK_SAMPLES       = 0x00a24,
 
-enum eddl_worker_modes {FEDERATED_ML=0x011, // no data is accepted from the master
-                        ONE_MASTER=0x022, // only obey to one master that must be specified
-                        ANY_MASTER=0x044  // worker servers to any master if not busy
+                         MASTER_A_WORKER       = 0x00011,
+                         FREE_A_WORKER         = 0x00012,
+                         ACCEPT_TO_BE_MASTERED = 0x00014,
+                         REJECT_TO_BE_MASTERED = 0x00018
+                         };
+
+enum eddl_command_types {START    = 0x041,
+                         STOP     = 0x042,
+                         SHUTDOWN = 0x044};
+
+enum eddl_worker_modes {FEDERATED_ML = 0x011, // no data is accepted from the master
+                        ONE_MASTER =   0x022, // only obey to one master that must be specified
+                        ANY_MASTER =   0x044  // worker servers to any master if not busy
                         };
 
 static constexpr int base_tcp_port      = 3017; ///< port master node will accept connections from worker nodes: 3x17, where x={0..9}
