@@ -10,7 +10,7 @@
 # SPLIT
 
 echo "===== SPLIT ====="
-mpirun -np 2 -hostfile cluster.altec -map-by node ../../build/bin/generic_vgg16_bn_split_distr -m ~/convert_EDDL/bOCT64_split -w 64 -h 64 -z 1 -c 4 -l 0.001 -a 1 -b 100  -e 2 -8 -s 4 
+mpirun -np 2 -hostfile cluster.altec -map-by node -mca pls_rsh_agent "ssh -X -n" xterm -hold -e ../../build/bin/generic_vgg16_bn_split_distr -m ~/convert_EDDL/bOCT64_split -w 64 -h 64 -z 1 -c 4 -l 0.001 -a 1 -b 100  -e 2 -8 -s 4 
 
 # DISTRIBUTED
 

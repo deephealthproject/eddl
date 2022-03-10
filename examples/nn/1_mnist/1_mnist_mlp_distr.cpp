@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
          else if (strcmp(argv[i], "--mpi") == 0) use_mpi= true;
     }
     if (use_mpi)
-    init_distributed("MPI");
+      init_distributed("MPI");
     else 
       init_distributed("NCCL");  
 

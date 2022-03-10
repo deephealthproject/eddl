@@ -200,6 +200,16 @@ void set_batch_distributed (int* global_batch, int* local_batch, int batch, int 
 
 int set_NBPP_distributed (int ds_size, int local_batch, int method);
 
+
+/**
+ *  @brief Broadcast net parameters
+ *
+ *  @param[in] net: Ptr to net
+ */
+void avg_loss_distributed(Net* net);
+
+void avg_float_distributed(float * pvar);
+
 /**
  *  @brief Broadcast net parameters
  *

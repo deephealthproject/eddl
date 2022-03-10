@@ -17,6 +17,7 @@
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 #include "utils.h"
+#include "mpi.h"
 
 using namespace eddl;
 
@@ -100,8 +101,8 @@ void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epoc
         
         train_batch(net, {xbatch}, {ybatch});
         //sync_batch
-        avg_weights_distributed(net, j, nbpp);  
-        print_loss(net,j, false);
+        avg_weights_distributed(net, j+1, nbpp);  
+        print_loss(net,j+1, false);
         mpi_id0(printf("\r"););
       }
       mpi_id0(printf("\n"));
@@ -110,11 +111,66 @@ void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epoc
       //if (early_stopping_on_metric (net, 0, 0.97, 2, i)) break;
     }
     mpi_id0(printf("\n"));   
+     mpi_id0(fflush(stdout));
     
     delete xbatch;
     delete ybatch;
 
 }
+
+void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool divide_batch, bool distr_dataset=false) {
+    int i,j,k;
+    int id=get_id_distributed();
+    int n_procs=get_n_procs_distributed();
+
+    tshape s = x_test->getShape();
+    int dataset_size=s[0];
+    int channels =s[1];
+    int width=s[2];
+    int height = s[3];
+    int num_classes = y_test->getShape()[1];
+    
+    int num_batches;
+    int local_batch;
+    int global_batch;
+    int nbpp;
+
+    set_batch_distributed(&global_batch, &local_batch, batch, divide_batch);
+    nbpp = set_NBPP_distributed(dataset_size, local_batch, distr_dataset);
+
+ 
+    
+    vind sind;
+    for (k = 0; k < local_batch; k++)
+        sind.push_back(0);
+
+    reset_loss(net);
+    mpi_id0(printf("custom_evaluate\n"));
+    for (j = 0; j < nbpp; j++) {
+        for (k = 0; k < local_batch; k++) {
+            if (distr_dataset)
+                sind [k] = (j * local_batch) + k;
+            else 
+                sind [k] = (((id * nbpp) + j) * local_batch) + k;
+            //printf("id=%d  %5d",id, sind[k]);
+        }
+        eval_batch(net, {x_test}, {y_test}, sind);
+        //         print_loss(batches, num_batches);
+        print_loss(net, j + 1, false);
+        mpi_id0(fprintf(stdout, "\r"));
+        mpi_id0(fflush(stdout));
+    }
+    // sync processes and print final results
+    avg_loss_distributed(net);
+    print_loss(net, nbpp, false);
+    mpi_id0(printf("\n"));
+    mpi_id0(fflush(stdout));
+    
+    // if (early_stopping_on_loss_var (net, 0, 10, 0.1, i)) break;
+    //if (early_stopping_on_metric_var (net, 0, 0.0001, 2, i)) break;
+    //if (early_stopping_on_metric (net, 0, 0.97, 2, i)) break;
+}
+
 
 int main(int argc, char **argv) {
     int id;
@@ -296,9 +352,15 @@ int main(int argc, char **argv) {
     }*/
     //std::cout << "Evaluate test:" << std::endl;
     // Evaluate
-    //evaluate(net,{x_test},{y_test});
+    MPI_Barrier(MPI_COMM_WORLD);
+    printf("EVALUATE:\n");
+    evaluate(net,{x_test},{y_test});
+    MPI_Barrier(MPI_COMM_WORLD);
+    printf("DISTR EVALUATE:\n");
     evaluate_distr(net,{x_test},{y_test});
-    
+    MPI_Barrier(MPI_COMM_WORLD);
+    printf("CUSTOM EVALUATE:\n");
+    custom_evaluate(net,{x_test},{y_test}, batch_size, DIV_BATCH, use_distr_dataset);
     
     if (id==0)
         save_net_to_onnx_file (net,"vgg16.onnx");   

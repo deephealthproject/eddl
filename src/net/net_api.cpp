@@ -596,11 +596,12 @@ void Net::print_loss(int b, int nb, bool reduce) {
     int lbar = 50;
     int p = 0;
     int id, n_procs;
-    float loss;
-    float metric;
     char symbol[10];
 
-    loss = 0;
+    
+    if (reduce)
+        msg("use of reduce in print_loss is deprecated","print_loss");
+    
     if (isrecurrent) {
         if (rnet != nullptr) rnet->print_loss(b, nb, reduce);
     } else {
@@ -650,47 +651,45 @@ void Net::print_loss(int b, int nb, bool reduce) {
                 if (is_mpi_distributed() && reduce) {
 #ifdef cMPI
                     //MPICHECK(MPI_Reduce(&total_loss[k], &total_loss[k], 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));                        
-                    MPICHECK(MPI_Reduce(&total_loss[k], &loss, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
-                    loss = loss / n_procs;
+                    //MPICHECK(MPI_Reduce(&total_loss[k], &loss, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
+                    MPICHECK(MPI_Allreduce(MPI_IN_PLACE, &total_loss[k], 1, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD));
+                    total_loss[k] = total_loss[k]/n_procs;
+                    //loss = loss / n_procs;
 #endif
-                } else
-                    loss = total_loss[k];
+                } 
 
                 //fprintf(stdout, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / (length*inferenced_samples));
-                //mpi_id0(fprintf(stdout, "loss=%1.3f ", total_loss[k] / (length * inferenced_samples)));                
-                mpi_id0(fprintf(stdout, "loss=%1.3f ", loss / (length * inferenced_samples)));
+                mpi_id0(fprintf(stdout, "loss=%1.3f ", total_loss[k] / (length * inferenced_samples)));                
+                //mpi_id0(fprintf(stdout, "loss=%1.3f ", loss / (length * inferenced_samples)));
+
 
             }
             if (this->metrics.size() >= (k + 1)) {
                 if (is_mpi_distributed() && reduce) {
 #ifdef cMPI                                     
                     //MPICHECK(MPI_Reduce(&total_metric[k], &total_metric[k], 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
-                    MPICHECK(MPI_Reduce(&total_metric[k], &metric, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
-                    metric = metric / n_procs;
+                    //MPICHECK(MPI_Reduce(&total_metric[k], &metric, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD));
+                    MPICHECK(MPI_Allreduce(MPI_IN_PLACE, &total_metric[k], 1, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD));
+                    total_metric[k] = total_metric[k] / n_procs;
 #endif                    
-                } else {
-                    metric = total_metric[k];
-                }
+                } 
                 //fprintf(stdout, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / (length*inferenced_samples));
-                //mpi_id0(fprintf(stdout, "metric=%1.3f", total_metric[k] / (length * inferenced_samples)));
-                mpi_id0(fprintf(stdout, "metric=%1.3f", metric / (length * inferenced_samples)));
+                mpi_id0(fprintf(stdout, "metric=%1.3f", total_metric[k] / (length * inferenced_samples)));
             }
 
             mpi_id0(fprintf(stdout, "] "));
 
-
+            
             // Log files. Only process 0
             if (id == 0) {
                 if ((flog_tr != nullptr)&&(trmode)) {
                     fprintf(flog_tr, "%s ", name.c_str());
                     if (losses.size() >= (k + 1)) {
-                        //fprintf(flog_tr, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
-                        fprintf(flog_tr, "loss[%s]=%1.4f ", losses[k]->name.c_str(), loss / inferenced_samples);
+                        fprintf(flog_tr, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
                     }
                     if (this->metrics.size() >= (k + 1)) {
                         if (this->metrics[k]->name != "none")
-                            //fprintf(flog_tr, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
-                            fprintf(flog_tr, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), metric / inferenced_samples);
+                            fprintf(flog_tr, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
                     }
 
                     fprintf(flog_tr, " -- ");
@@ -700,13 +699,11 @@ void Net::print_loss(int b, int nb, bool reduce) {
                 if ((flog_ts != nullptr)&&(!trmode)) {
                     fprintf(flog_ts, "%s ", name.c_str());
                     if (losses.size() >= (k + 1)) {
-                        //fprintf(flog_ts, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
-                        fprintf(flog_ts, "loss[%s]=%1.4f ", losses[k]->name.c_str(), loss / inferenced_samples);
+                        fprintf(flog_ts, "loss[%s]=%1.4f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
                     }
                     if (this->metrics.size() >= (k + 1)) {
                         if (this->metrics[k]->name != "none")
-                            //fprintf(flog_ts, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
-                            fprintf(flog_ts, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), metric / inferenced_samples);
+                            fprintf(flog_ts, "metric[%s]=%1.4f ", this->metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
                     }
 
                     fprintf(flog_ts, " -- ");
@@ -1002,6 +999,12 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                     fflush(stdout);
                 }
             }
+            // sync processes and print final results
+            avg_loss_distributed(this);
+            print_loss(batches_per_proc, batches_per_proc, false);
+            mpi_id0(fprintf(stdout, "\n"));
+            mpi_id0(fflush(stdout));
+
             high_resolution_clock::time_point e2 = high_resolution_clock::now();
             duration<double> epoch_time_span = e2 - e1;
             secs_epoch = epoch_time_span.count();
@@ -1608,16 +1611,21 @@ void Net::evaluate_distr(vtensor tin, vtensor tout, int bs) {
             for (k = 0; k < batch_size; k++) {
                 //sind [k] = (j * batch_size) + k;
                 sind [k] = (((id * batches_per_proc) + j) * batch_size) + k;
-                //printf("%5d ",sind[k]);
+                //printf("id=%d, %5d \n",j,k,sind[k]);
             }
             train_batch(tin, tout, sind, 1);
             //         print_loss(batches, num_batches);
-            print_loss(j + 1, batches_per_proc, true);
+            print_loss(j + 1, batches_per_proc, false);
             //print_loss(j + 1, n / batch_size);
+            //mpi_id0(fprintf(stdout, "\n"));
             mpi_id0(fprintf(stdout, "\r"));
             mpi_id0(fflush(stdout));
         }
+         // sync processes and print final results
+        avg_loss_distributed(this);
+        print_loss(batches_per_proc, batches_per_proc, false);
         mpi_id0(fprintf(stdout, "\n"));
+        mpi_id0(fflush(stdout));
     }
 }
 

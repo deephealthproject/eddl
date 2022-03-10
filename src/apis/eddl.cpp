@@ -405,7 +405,7 @@ namespace eddl {
         m->reset_loss();
     }
     void print_loss(model m, int batch, bool reduce){
-        m->print_loss(batch, reduce);
+        m->print_loss(batch, -1, reduce);
     }
 
     vector<float> get_losses(model m){
