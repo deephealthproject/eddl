@@ -15,7 +15,7 @@ pipeline {
                             steps {
                                 timeout(60) {
                                     echo 'Building..'
-                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=CPU -DBUILD_SUPERBUILD=ON -DBUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
+                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=CPU -DBUILD_SUPERBUILD=ON -DBUILD_TESTS=ON -DBUILD_HPC=OFF -DBUILD_DIST=OFF -DBUILD_RUNTIME=OFF', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
                                         [args: '--parallel 4', withCmake: true]
                                     ]
                                 }
@@ -45,7 +45,7 @@ pipeline {
                             steps {
                                 timeout(60) {
                                     echo 'Building..'
-                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=CPU -DBUILD_SHARED_LIBS=OFF -DBUILD_SUPERBUILD=ON -DBUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
+                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=CPU -DBUILD_SHARED_LIBS=OFF -DBUILD_SUPERBUILD=ON -DBUILD_TESTS=ON -DBUILD_HPC=OFF -DBUILD_DIST=OFF -DBUILD_RUNTIME=OFF',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
                                         [args: '--config Release --parallel 4', withCmake: true]
                                     ]
                                 }
@@ -79,7 +79,7 @@ pipeline {
                             steps {
                                 timeout(60) {
                                     echo 'Building..'
-                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=GPU -DBUILD_TESTS=ON -DBUILD_SUPERBUILD=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
+                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=GPU -DBUILD_TESTS=ON -DBUILD_SUPERBUILD=ON -DBUILD_HPC=OFF -DBUILD_DIST=OFF -DBUILD_RUNTIME=OFF', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
                                         [args: '--parallel 4', withCmake: true]
                                     ]
                                 }
@@ -109,7 +109,7 @@ pipeline {
                             steps {
                                 timeout(60) {
                                     echo 'Building..'
-                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=GPU -DBUILD_TESTS=ON -DBUILD_SUPERBUILD=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
+                                    cmakeBuild buildDir: 'build', buildType: 'Release', cmakeArgs: '-DBUILD_TARGET=GPU -DBUILD_TESTS=ON -DBUILD_SUPERBUILD=ON -DBUILD_HPC=OFF -DBUILD_DIST=OFF -DBUILD_RUNTIME=OFF', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [
                                         [args: '--config Release --parallel 4', withCmake: true]
                                     ]
                                 }
