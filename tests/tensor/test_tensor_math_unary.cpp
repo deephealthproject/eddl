@@ -142,7 +142,7 @@ TEST(TensorTestSuite, tensor_math_unary_addT){
 TEST(TensorTestSuite, tensor_math_unary_asin){
     // Test #1
     vector<int> t1_shape_ref = {4};
-    vector<float> d_t1_ref = {-0.6387, std::numeric_limits<double>::quiet_NaN(), -0.4552,  std::numeric_limits<double>::quiet_NaN()};
+    vector<float> d_t1_ref = {-0.6387, std::numeric_limits<float>::quiet_NaN(), -0.4552,  std::numeric_limits<float>::quiet_NaN()};
     Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
 
     vector<int> t1_shape = {4};
@@ -559,7 +559,7 @@ TEST(TensorTestSuite, tensor_math_unary_inv){
 TEST(TensorTestSuite, tensor_math_unary_log){
     // Test #1
     vector<int> t1_shape_ref = {5};
-    vector<float> d_t1_ref = { std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN(), -0.1128,  0.3666, -2.1286};
+    vector<float> d_t1_ref = { std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN(), -0.1128,  0.3666, -2.1286};
     Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
 
     vector<int> t1_shape = {5};
@@ -1039,7 +1039,7 @@ TEST(TensorTestSuite, tensor_math_unary_round){
 TEST(TensorTestSuite, tensor_math_unary_rsqrt){
     // Test #1
     vector<int> t1_shape_ref = {4};
-    vector<float> d_t1_ref = {std::numeric_limits<double>::quiet_NaN(),  1.8351,  0.8053, std::numeric_limits<double>::quiet_NaN()};
+    vector<float> d_t1_ref = {std::numeric_limits<float>::quiet_NaN(),  1.8351,  0.8053, std::numeric_limits<float>::quiet_NaN()};
     Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
 
     vector<int> t1_shape = {4};
@@ -1233,7 +1233,7 @@ TEST(TensorTestSuite, tensor_math_unary_sqr){
 TEST(TensorTestSuite, tensor_math_unary_sqrt){
     // Test #1
     vector<int> t1_shape_ref = {4};
-    vector<float> d_t1_ref = {std::numeric_limits<double>::quiet_NaN(),  1.0112,  0.2883,  0.6933};
+    vector<float> d_t1_ref = {std::numeric_limits<float>::quiet_NaN(),  1.0112,  0.2883,  0.6933};
     Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
 
     vector<int> t1_shape = {4};
