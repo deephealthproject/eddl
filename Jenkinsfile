@@ -7,7 +7,7 @@ pipeline {
                     agent {
                         docker { 
                             label 'docker'
-                            image 'pritt/base'
+                            image 'aimagelab/base'
                         }
                     }
                     stages {
@@ -70,7 +70,7 @@ pipeline {
                     agent {
                         docker { 
                             label 'docker && gpu'
-                            image 'pritt/base-cuda'
+                            image 'aimagelab/base-cuda'
                             args '--gpus 1'
                         }
                     }
