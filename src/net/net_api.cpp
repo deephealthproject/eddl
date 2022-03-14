@@ -1000,7 +1000,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                 }
             }
             // sync processes and print final results
-            avg_loss_distributed(this);
+            avg_metrics_distributed(this);
             print_loss(batches_per_proc, batches_per_proc, false);
             mpi_id0(fprintf(stdout, "\n"));
             mpi_id0(fflush(stdout));
@@ -1622,7 +1622,7 @@ void Net::evaluate_distr(vtensor tin, vtensor tout, int bs) {
             mpi_id0(fflush(stdout));
         }
          // sync processes and print final results
-        avg_loss_distributed(this);
+        avg_metrics_distributed(this);
         print_loss(batches_per_proc, batches_per_proc, false);
         mpi_id0(fprintf(stdout, "\n"));
         mpi_id0(fflush(stdout));

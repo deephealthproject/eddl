@@ -177,7 +177,6 @@ int init_MPI(int *argc, char ***argv) {
     // Initalize a different seed per proc
     srand((id+1) * time(NULL));
 #endif
-
     return id;
 }
 
@@ -265,7 +264,6 @@ void end_distributed() {
     msg("MPI library is not linked", "end_distributed");
 #endif    
 
-
     if (use_mpi) {
 #ifdef cMPI 
         MPI_Barrier(MPI_COMM_WORLD);
@@ -324,8 +322,6 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg) {
             fprintf(stderr, "[DISTR] method %s, batch_avg %d changing every %d epochs\n", "AUTO TIME", mpi_avg, x_avg);
         } else {
             msg("Error avg_method", "set_method_distributed"); // Exits
-            //fprintf(stderr, "[DISTR] Error avg method %d not implemented\n", avg_method);
-            //exit(EXIT_FAILURE);
         }
 }
 
@@ -411,7 +407,7 @@ void set_batch_distributed (int* global_batch, int* local_batch, int batch, int 
     return;
 }
 
-int set_NBPP_distributed(int ds_size, int local_batch, int method) {
+int set_NBPP_distributed(int ds_size, int local_batch, bool method) {
    // int id;
    // int n_procs;
     int num_batches;
@@ -420,19 +416,17 @@ int set_NBPP_distributed(int ds_size, int local_batch, int method) {
     if (!is_mpi_distributed()) {
         printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
     }
-    
     //id = get_id_distributed();
-    //n_procs = get_n_procs_distributed();
-    
+    //n_procs = get_n_procs_distributed();  
     num_batches = ds_size / local_batch;
-    if (method == NO_DISTR) {
+    if (method == NO_DISTR_DS) {
         nbpp = num_batches / n_procs;
-    } else if (method == DISTR) {
+    } else if (method == DISTR_DS) {
         nbpp = num_batches;
     } else {
         msg("Error num_batches_per_proc method", "set_NBPP_distributed"); // Exits
     }
-    printf("[DISTR] Proc: %d. Distr dataset: %s. Dataset size: %d. Local batch: %d. Num batches per proc: %d\n", id, (method==NO_DISTR?"no":"yes"), ds_size, local_batch, nbpp);
+    printf("[DISTR] Proc: %d. Distr dataset: %s. Dataset size: %d. Local batch: %d. Num batches per proc: %d\n", id, (method==NO_DISTR_DS?"no":"yes"), ds_size, local_batch, nbpp);
     return nbpp;
 }
 
@@ -586,11 +580,7 @@ void avg_GPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
     int count;
    // int n_procs;
    // int id;
-
-
     int batches_avg;
-    
-
    // id = get_id_distributed();
    // n_procs = get_n_procs_distributed();
     batches_avg = get_current_batch_avg_distributed();
@@ -621,11 +611,7 @@ void avg_CPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
     float * myptr;
     int count;
    // int n_procs;
-
-
     int batches_avg;
-
-  
     //n_procs = get_n_procs_distributed();
     batches_avg = get_current_batch_avg_distributed();
 
@@ -651,9 +637,8 @@ void avg_CPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
     }
 }
 
-void avg_loss_distributed(Net* net) {
+void avg_metrics_distributed(Net* net) {
     //int n_procs;
-
     //n_procs = get_n_procs_distributed();
     if (!is_mpi_distributed())
         return;
@@ -675,7 +660,6 @@ void avg_loss_distributed(Net* net) {
 
 void avg_float_distributed(float * pvar) {
     //int n_procs;
-
     //n_procs = get_n_procs_distributed();
     if (!is_mpi_distributed())
         return;
@@ -683,8 +667,18 @@ void avg_float_distributed(float * pvar) {
             MPICHECK(MPI_Allreduce(MPI_IN_PLACE, pvar, 1, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD));
             *pvar = *pvar / n_procs;
 #endif
-
 }
+
+void barrier_distributed() {
+    //int n_procs;
+    //n_procs = get_n_procs_distributed();
+    if (!is_mpi_distributed())
+        return;
+#ifdef cMPI       
+    MPICHECK(MPI_Barrier(MPI_COMM_WORLD));
+#endif
+}
+
 
 void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
     if (!is_mpi_distributed()) {

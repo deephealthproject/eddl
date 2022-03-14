@@ -75,8 +75,8 @@
 #define DIV_BATCH 0
 #define MUL_BATCH 1
 
-#define NO_DISTR 0
-#define DISTR 1
+#define NO_DISTR_DS 0
+#define DISTR_DS 1
 
 
 
@@ -145,7 +145,6 @@ int init_distributed();
 //int init_MPI();
 //void init_NCCL(int nr_gpus);
 
-
 /**
  *  @brief Sets distributed training paramas
  *
@@ -196,19 +195,49 @@ int get_current_batch_avg_distributed ();
  */
 int get_available_GPUs_distributed();
 
+
+/**
+ *  @brief Set per-process batch size
+ *
+ *  @param[in/out] global_batch: global batch size
+ *  @param[in/out] local_batch: per-process batch size
+ *  @param[in] batch: programmer batch size
+ *  @param[in] method: DIV_BATCH (local_batch=batch/n) or MUL_BATCH (local_batch=batch)
+ */
 void set_batch_distributed (int* global_batch, int* local_batch, int batch, int method);
 
-int set_NBPP_distributed (int ds_size, int local_batch, int method);
+/**
+ *  @brief Set number of batches per proc 
+ *
+ *  @param[in] ds_size: datset size
+ *  @param[in] local_batch: per-process batch size
+ *  @param[in] method: DISTR_DS or NO_DISTR_DS
+ *  @return nr of batches per process
+ */
+int set_NBPP_distributed (int ds_size, int local_batch, bool method);
 
 
 /**
- *  @brief Broadcast net parameters
+ *  @brief All reduce loss & accuracy of last layer 
  *
  *  @param[in] net: Ptr to net
  */
-void avg_loss_distributed(Net* net);
+void avg_metrics_distributed(Net* net);
 
+
+/**
+ *  @brief All reduce float variable
+ *
+ *  @param[in] pvar: Ptr to variable
+ */
 void avg_float_distributed(float * pvar);
+
+
+/**
+ *  @brief Call to MPI_Barrier
+ *  
+ */
+void barrier_distributed();
 
 /**
  *  @brief Broadcast net parameters

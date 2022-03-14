@@ -17,7 +17,6 @@
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 #include "utils.h"
-#include "mpi.h"
 
 using namespace eddl;
 
@@ -161,7 +160,7 @@ void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool 
         mpi_id0(fflush(stdout));
     }
     // sync processes and print final results
-    avg_loss_distributed(net);
+    avg_metrics_distributed(net);
     print_loss(net, nbpp, false);
     mpi_id0(printf("\n"));
     mpi_id0(fflush(stdout));
@@ -352,13 +351,13 @@ int main(int argc, char **argv) {
     }*/
     //std::cout << "Evaluate test:" << std::endl;
     // Evaluate
-    MPI_Barrier(MPI_COMM_WORLD);
+    barrier_distributed();
     printf("EVALUATE:\n");
     evaluate(net,{x_test},{y_test});
-    MPI_Barrier(MPI_COMM_WORLD);
+    barrier_distributed();
     printf("DISTR EVALUATE:\n");
     evaluate_distr(net,{x_test},{y_test});
-    MPI_Barrier(MPI_COMM_WORLD);
+    barrier_distributed();
     printf("CUSTOM EVALUATE:\n");
     custom_evaluate(net,{x_test},{y_test}, batch_size, DIV_BATCH, use_distr_dataset);
     
