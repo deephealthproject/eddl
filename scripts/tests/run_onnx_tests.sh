@@ -13,7 +13,7 @@
 #
 #   - To run the python tests you need to have some python dependecies
 #     installed: tensorflow, keras, torch (pytorch), torchvision, torchtext,
-#     onnx, onnxruntime, onnx2keras, keras2onnx, onnx-simplifier, tqdm.
+#     onnx, onnxruntime, onnx2keras, tf2onnx, onnx-simplifier, tqdm.
 #
 #   - In case of using a python environment to manage the dependecies
 #     remember to activate it before running the script.
@@ -107,6 +107,7 @@ scripts_to_run+=("EDDL_to_EDDL_conv3D;test_onnx_conv3D;test_onnx_conv3D")
 scripts_to_run+=("EDDL_to_EDDL_dilated_conv1D;test_onnx_dilated_conv1D;test_onnx_dilated_conv1D")
 scripts_to_run+=("EDDL_to_EDDL_dilated_conv2D;test_onnx_dilated_conv2D;test_onnx_dilated_conv2D")
 scripts_to_run+=("EDDL_to_EDDL_dilated_conv3D;test_onnx_dilated_conv3D;test_onnx_dilated_conv3D")
+scripts_to_run+=("EDDL_to_EDDL_grouped_conv2D;test_onnx_grouped_conv2D;test_onnx_grouped_conv2D")
 scripts_to_run+=("EDDL_to_EDDL_convT2D;test_onnx_convT2D;test_onnx_convT2D")
 scripts_to_run+=("EDDL_to_EDDL_convT3D;test_onnx_convT3D;test_onnx_convT3D")
 scripts_to_run+=("EDDL_to_EDDL_upsample2D;test_onnx_upsample2D;test_onnx_upsample2D")
@@ -119,6 +120,8 @@ scripts_to_run+=("EDDL_to_EDDL_RNN_mnist;test_onnx_rnn_mnist;test_onnx_rnn_mnist
 scripts_to_run+=("EDDL_to_EDDL_LSTM_enc_dec;test_onnx_lstm_enc_dec;test_onnx_lstm_enc_dec")
 scripts_to_run+=("EDDL_to_EDDL_GRU_enc_dec;test_onnx_gru_enc_dec;test_onnx_gru_enc_dec")
 scripts_to_run+=("EDDL_to_EDDL_auxiliar;test_onnx_auxiliar;test_onnx_auxiliar")
+scripts_to_run+=("EDDL_to_EDDL_text_generation_CONCAT;test_onnx_text_generation_concat;test_onnx_text_generation")
+scripts_to_run+=("EDDL_to_EDDL_text_generation_ADD;test_onnx_text_generation_add;test_onnx_text_generation,--add")
 # From EDDL CPU to EDDL CPU
 scripts_to_run+=("EDDL_to_EDDL_conv1D_CPU;test_onnx_conv1D_cpu;test_onnx_conv1D,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_conv2D_CPU;test_onnx_conv2D_cpu;test_onnx_conv2D,--cpu")
@@ -126,6 +129,7 @@ scripts_to_run+=("EDDL_to_EDDL_conv3D_CPU;test_onnx_conv3D_cpu;test_onnx_conv3D,
 #scripts_to_run+=("EDDL_to_EDDL_dilated_conv1D_CPU;test_onnx_dilated_conv1D_cpu;test_onnx_dilated_conv1D,--cpu") Dilated conv only available with CUDNN
 #scripts_to_run+=("EDDL_to_EDDL_dilated_conv2D_CPU;test_onnx_dilated_conv2D_cpu;test_onnx_dilated_conv2D,--cpu") Dilated conv only available with CUDNN
 #scripts_to_run+=("EDDL_to_EDDL_dilated_conv3D_CPU;test_onnx_dilated_conv3D_cpu;test_onnx_dilated_conv3D,--cpu") Dilated conv only available with CUDNN
+#scripts_to_run+=("EDDL_to_EDDL_grouped_conv2D_CPU;test_onnx_grouped_conv2D_cpu;test_onnx_grouped_conv2D,--cpu") Grouped conv only available with CUDNN
 #scripts_to_run+=("EDDL_to_EDDL_convT2D_CPU;test_onnx_convT2D_cpu;test_onnx_convT2D,--cpu") ConvT2D not available in CPU
 #scripts_to_run+=("EDDL_to_EDDL_convT3D_CPU;test_onnx_convT3D_cpu;test_onnx_convT3D,--cpu") ConvT3D not available in CPU
 scripts_to_run+=("EDDL_to_EDDL_upsample2D_CPU;test_onnx_upsample2D_cpu;test_onnx_upsample2D,--cpu")
@@ -138,6 +142,8 @@ scripts_to_run+=("EDDL_to_EDDL_RNN_mnist_CPU;test_onnx_rnn_mnist_cpu;test_onnx_r
 scripts_to_run+=("EDDL_to_EDDL_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;test_onnx_lstm_enc_dec,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;test_onnx_gru_enc_dec,--cpu")
 scripts_to_run+=("EDDL_to_EDDL_auxiliar_CPU;test_onnx_auxiliar_cpu;test_onnx_auxiliar,--cpu")
+scripts_to_run+=("EDDL_to_EDDL_text_generation_CONCAT_CPU;test_onnx_text_generation_concat_cpu;test_onnx_text_generation,--cpu")
+scripts_to_run+=("EDDL_to_EDDL_text_generation_ADD_CPU;test_onnx_text_generation_add_cpu;test_onnx_text_generation,--add,--cpu")
 
 # Prepare output files
 print_header "ONNX TESTS RESULTS" > $tests_results_path
@@ -176,6 +182,39 @@ do
     echo ""
 done
 
+# Store each test as a tuple separated by ";" -> "[TEST_NAME_TO_SHOW];[BIN_FILE_NAME],[POSSIBLE_FLAGS,]"
+#   Note: The second element can be a list separated by "," to add possible script arguments
+scripts_to_run=()
+scripts_to_run+=("EDDL_gradients_conv_GPU2GPU;test_onnx_gradients")
+scripts_to_run+=("EDDL_gradients_recurrent_GPU2GPU;test_onnx_gradients,--recurrent")
+scripts_to_run+=("EDDL_gradients_conv_GPU2CPU;test_onnx_gradients,--import-cpu")
+scripts_to_run+=("EDDL_gradients_recurrent_GPU2CPU;test_onnx_gradients,--recurrent,--import-cpu")
+scripts_to_run+=("EDDL_gradients_conv_CPU2GPU;test_onnx_gradients,--export-cpu")
+scripts_to_run+=("EDDL_gradients_recurrent_CPU2GPU;test_onnx_gradients,--recurrent,--export-cpu")
+scripts_to_run+=("EDDL_gradients_conv_CPU2CPU;test_onnx_gradients,--export-cpu,--import-cpu")
+scripts_to_run+=("EDDL_gradients_recurrent_CPU2CPU;test_onnx_gradients,--recurrent,--export-cpu,--import-cpu")
+
+# Run export gradients tests and store results
+print_header "EDDL export/import gradients (distributed functionalities)" >> $tests_results_path
+for test_data in "${scripts_to_run[@]}"
+do
+    # Split the test data to get each element
+    IFS=';'; read -r -a test_data_arr <<< "${test_data}"  # Split string by ";"
+
+    test_name="${test_data_arr[0]}"   # Get test name to show
+
+    script_args="${test_data_arr[1]}" # Get comma separated list or script args
+
+    # Get script file path and args to execute the test
+    IFS=','; read -r -a script_argv <<< "${script_args}"  # Split string by ","
+
+    echo "Running $test_name"
+    print_header "${script_argv[@]}" >> ${scripts_output_path}
+    ./${script_argv[@]} &>> ${scripts_output_path}
+    handle_exit_status "$test_name" ${tests_results_path}
+    echo ""
+done
+
 popd > /dev/null  # Go back to build dir
 
 if [[ $only_eddl -eq 0 ]]
@@ -207,6 +246,7 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_dilated_conv1D;test_onnx_dilated_conv1D;onnxruntime_mnist.py,--input-1D,--no-channel")
     eddl2onnxrt+=("EDDL_to_ONNXRT_dilated_conv2D;test_onnx_dilated_conv2D;onnxruntime_mnist.py,--input-1D,--no-channel")
     eddl2onnxrt+=("EDDL_to_ONNXRT_dilated_conv3D;test_onnx_dilated_conv3D;onnxruntime_conv3d_synthetic.py,--data-size,64")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_grouped_conv2D;test_onnx_grouped_conv2D;onnxruntime_mnist.py,--input-1D,--no-channel")
     eddl2onnxrt+=("EDDL_to_ONNXRT_convT2D;test_onnx_convT2D;onnxruntime_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_convT3D;test_onnx_convT3D;onnxruntime_enc_dec_synthetic3D.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_upsample2D;test_onnx_upsample2D;onnxruntime_enc_dec_mnist.py")
@@ -216,6 +256,8 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec;test_onnx_lstm_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec;test_onnx_gru_enc_dec;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_auxiliar;test_onnx_auxiliar;onnxruntime_mnist.py,--input-1D,--no-channel,--batch-size,100")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_text_generation_CONCAT;test_onnx_text_generation_concat;onnxruntime_check.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_text_generation_ADD;test_onnx_text_generation_add;onnxruntime_check.py")
     # From EDDL CPU to ONNX RT
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv1D_CPU;test_onnx_conv1D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
     eddl2onnxrt+=("EDDL_to_ONNXRT_conv2D_CPU;test_onnx_conv2D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel")
@@ -223,6 +265,7 @@ then
     #eddl2onnxrt+=("EDDL_to_ONNXRT_dilated_conv1D_CPU;test_onnx_dilated_conv1D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel") Dilated conv only available with CUDNN
     #eddl2onnxrt+=("EDDL_to_ONNXRT_dilated_conv2D_CPU;test_onnx_dilated_conv2D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel") Dilated conv only available with CUDNN
     #eddl2onnxrt+=("EDDL_to_ONNXRT_dilated_conv3D_CPU;test_onnx_dilated_conv3D_cpu;onnxruntime_conv3d_synthetic.py,--data-size,64") Dilated conv only available with CUDNN
+    #eddl2onnxrt+=("EDDL_to_ONNXRT_grouped_conv2D_CPU;test_onnx_grouped_conv2D_cpu;onnxruntime_mnist.py,--input-1D,--no-channel") Grouped conv only available with CUDNN
     #eddl2onnxrt+=("EDDL_to_ONNXRT_convT2D_CPU;test_onnx_convT2D_cpu;onnxruntime_enc_dec_mnist.py") ConvT2D not available in CPU
     #eddl2onnxrt+=("EDDL_to_ONNXRT_convT3D_CPU;test_onnx_convT3D_cpu;onnxruntime_enc_dec_synthetic3D.py") ConvT3D not available in CPU
     eddl2onnxrt+=("EDDL_to_ONNXRT_upsample2D_CPU;test_onnx_upsample2D_cpu;onnxruntime_enc_dec_mnist.py")
@@ -232,6 +275,8 @@ then
     eddl2onnxrt+=("EDDL_to_ONNXRT_LSTM_enc_dec_CPU;test_onnx_lstm_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_GRU_enc_dec_CPU;test_onnx_gru_enc_dec_cpu;onnxruntime_recurrent_enc_dec_mnist.py")
     eddl2onnxrt+=("EDDL_to_ONNXRT_auxiliar_CPU;test_onnx_auxiliar_cpu;onnxruntime_mnist.py,--input-1D,--no-channel,--batch-size,100")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_text_generation_CONCAT_CPU;test_onnx_text_generation_concat_cpu;onnxruntime_check.py")
+    eddl2onnxrt+=("EDDL_to_ONNXRT_text_generation_ADD_CPU;test_onnx_text_generation_add_cpu;onnxruntime_check.py")
 
     # Run "EDDL export -> ONNX Runtime import" tests and store results
     print_header "EDDL export -> ONNX Runtime import" >> $tests_results_path
@@ -346,6 +391,7 @@ then
     pytorch2eddl+=("Pytorch_to_EDDL_dilated_conv1D;test_onnx_pytorch_dilated_conv1D;export_scripts/dilated_conv1D_pytorch_export.py;test_onnx_dilated_conv1D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_dilated_conv2D;test_onnx_pytorch_dilated_conv2D;export_scripts/dilated_conv2D_pytorch_export.py;test_onnx_dilated_conv2D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_dilated_conv3D;test_onnx_pytorch_dilated_conv3D;export_scripts/dilated_conv3D_pytorch_export.py;test_onnx_dilated_conv3D,--import")
+    pytorch2eddl+=("Pytorch_to_EDDL_grouped_conv2D;test_onnx_pytorch_grouped_conv2D;export_scripts/grouped_conv2D_pytorch_export.py;test_onnx_grouped_conv2D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_convT2D;test_onnx_pytorch_convT2D;export_scripts/convT2D_enc_dec_mnist_pytorch_export.py;test_onnx_convT2D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_convT3D;test_onnx_pytorch_convT3D;export_scripts/convT3D_enc_dec_synthetic_pytorch_export.py;test_onnx_convT3D,--import")
     pytorch2eddl+=("Pytorch_to_EDDL_upsample2D;test_onnx_pytorch_upsample2D;export_scripts/upsample2D_enc_dec_mnist_pytorch_export.py;test_onnx_upsample2D,--import")
@@ -366,6 +412,7 @@ then
     #pytorch2eddl+=("Pytorch_to_EDDL_dilated_conv1D_CPU;test_onnx_pytorch_dilated_conv1D;none;test_onnx_dilated_conv1D,--import,--cpu") Dilated conv only available with CUDNN
     #pytorch2eddl+=("Pytorch_to_EDDL_dilated_conv2D_CPU;test_onnx_pytorch_dilated_conv2D;none;test_onnx_dilated_conv2D,--import,--cpu") Dilated conv only available with CUDNN
     #pytorch2eddl+=("Pytorch_to_EDDL_dilated_conv3D_CPU;test_onnx_pytorch_dilated_conv3D;none;test_onnx_dilated_conv3D,--import,--cpu") Dilated conv only available with CUDNN
+    #pytorch2eddl+=("Pytorch_to_EDDL_grouped_conv2D_CPU;test_onnx_pytorch_grouped_conv2D;none;test_onnx_grouped_conv2D,--import,--cpu") Grouped conv only available with CUDNN
     #pytorch2eddl+=("Pytorch_to_EDDL_convT2D_CPU;test_onnx_pytorch_convT2D;none;test_onnx_convT2D,--import,--cpu") ConvT2D not available in CPU
     #pytorch2eddl+=("Pytorch_to_EDDL_convT3D_CPU;test_onnx_pytorch_convT3D;none;test_onnx_convT3D,--import,--cpu") ConvT3D not available in CPU
     pytorch2eddl+=("Pytorch_to_EDDL_upsample2D_CPU;test_onnx_pytorch_upsample2D;none;test_onnx_upsample2D,--import,--cpu")
@@ -496,6 +543,7 @@ then
         # Get paths of onnx file and target metric for their creation
         model_name="${test_arr[1]}"
         model_path="${eddl_bin}/model_${model_name}.onnx"
+        simp_model_path="${eddl_bin}/model_${model_name}_simplified.onnx"  # Model processed with ONNX Simplifier
         model_metric="${eddl_bin}/metric_${model_name}.txt"
 
         # Get Keras export script path and arguments to execute it
@@ -508,6 +556,8 @@ then
             # Execute Keras export
             print_header "$script_call" >> ${scripts_output_path}
             python ${script_argv[0]} ${script_argv[@]:1} --output-path ${model_path} --output-metric ${model_metric} &>> ${scripts_output_path}
+            echo "Going to simplify the ONNX model..." &>> ${scripts_output_path}
+            python -m onnxsim ${model_path} ${simp_model_path} &>> ${scripts_output_path}  # Simplify model before EDDL import
         else
             echo "  - The export script is set to \"none\". Going to perform the import directly."
         fi
@@ -515,12 +565,12 @@ then
         # Get EDDl import script path and arguments to execute it
         script_args="${test_arr[3]}"
         IFS=','; read -r -a script_argv <<< "${script_args}"  # Split string by ","
-        script_call="${script_argv[@]} --onnx-file ${model_path} --target-metric ${model_metric}"
+        script_call="${script_argv[@]} --onnx-file ${simp_model_path} --target-metric ${model_metric}"
 
         # Execute EDDL import
         print_header "$script_call" >> ${scripts_output_path}
         pushd ${eddl_bin} > /dev/null  # Go to EDDL binaries folder to execute the import
-        ./${script_argv[@]} --onnx-file ${model_path} --target-metric ${model_metric} &>> ${scripts_output_path}
+        ./${script_argv[@]} --onnx-file ${simp_model_path} --target-metric ${model_metric} &>> ${scripts_output_path}
         handle_exit_status "$test_name" ${tests_results_path}
         popd > /dev/null # Go back to keras folder
         echo ""

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -183,7 +183,7 @@ void collectTensor(Layer *l,string tname, int p){
         }else if (tname=="gradient"){
             Tensor::copy(sl->gradients[p],l->gradients[p]);
         }else if (tname=="state"){
-            Tensor::copy(sl->states[p],l->states[p]);
+            Tensor::deselect(sl->states[p], l->states[p], sind, start, end);
         }else {
             msg("Unknown name (" + tname + ")","Net::collectTensor");
         }

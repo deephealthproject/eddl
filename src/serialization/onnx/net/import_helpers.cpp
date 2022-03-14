@@ -461,6 +461,33 @@ void queue_constant_nodes(vector<onnx::NodeProto> &nodes,
           if (child->op_type() == "Reshape" ||
               child->op_type() == "Tile")
             skip_node = true; // The constant data will be accessed directly from the child layer constructor
+
+        // Check if the constant data tensor is empty
+        bool is_const_node_empty = false;
+        for (int j = 0; j < node->attribute_size(); j++)
+        {
+          onnx::AttributeProto attribute = node->attribute(j);
+          string attr_name = attribute.name();
+          if (attr_name == "value")
+          {
+            const onnx::TensorProto& data_tensor = attribute.t();
+            for (int i = 0; i < data_tensor.dims_size(); ++i)
+              if (data_tensor.dims(i) == 0)
+              {
+                is_const_node_empty = true; // Is empty, we have to skip it
+                for (int k = 0; k < node->output_size(); k++)
+                  constant_node_map[node->output(k)] = node;
+              }
+          }
+        }
+        if (is_const_node_empty)
+        {
+          log_string("The constant node \"" + node->name() + "\" is empty, going to skip the node in the queue. ",
+                     log_level,
+                     LOG_LEVEL::DEBUG);
+          continue; // Don't add the node to the nodeQueue
+        }
+
         if (skip_node)
         {
           log_string("The constant node \"" + node->name() + "\" is a parameter, going to skip the node in the queue.",

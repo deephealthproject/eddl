@@ -385,7 +385,7 @@ void build_node_from_layer(Layer *layer, onnx::GraphProto *graph, bool gradients
   else if (LConvT3D *l = dynamic_cast<LConvT3D *>(layer))
     build_convT3D_node(l, graph, gradients);
   else if (LDense *l = dynamic_cast<LDense *>(layer))
-    if (is_recurrent)
+    if (is_recurrent || l->input->ndim != 2)
       build_dense_with_matmul_node(l, graph, gradients);
     else
       build_gemm_node(l, graph, gradients);
@@ -584,8 +584,12 @@ map<string, vector<Tensor *>> get_tensors_from_onnx_nodes(vector<onnx::NodeProto
       {
         // The Add operator can be used to simulate a Dense layer bias, in that case we take the weights
         vector<Tensor *> add_tensors = get_add_tensors(node, map_init_values, map_init_dims);
-        if (add_tensors.size() && tensors.count(name))
-          tensors[name].push_back(add_tensors[0]);
+        // In the case of the Add operator that implements the bias of a dense layer, the name of
+        // the layer can be found in the output name of the node
+        // Note: The node name is not valid because is something like "{dense_lname}_bias"
+        const string dense_lname = node.output(0);
+        if (add_tensors.size() && tensors.count(dense_lname))
+          tensors[dense_lname].push_back(add_tensors[0]);
         break;
       }
       default:

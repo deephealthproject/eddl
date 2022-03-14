@@ -2,9 +2,11 @@ import argparse
 
 import numpy as np
 
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv3D, Flatten, MaxPooling3D, Input, GlobalAveragePooling3D
-import keras2onnx
+import onnx
+import tf2onnx
 
 # Training settings
 parser = argparse.ArgumentParser(
@@ -47,7 +49,7 @@ model.add(GlobalAveragePooling3D())
 model.add(Flatten())
 model.add(Dense(num_classes))
 
-model.build(input_shape=(d, h, w, ch))  # For keras2onnx
+model.build(input_shape=(d, h, w, ch))
 
 model.compile(loss='mse',
               optimizer="adam")
@@ -67,6 +69,7 @@ if args.output_metric != "":
         ofile.write(str(mse))
 
 # Convert to ONNX
-onnx_model = keras2onnx.convert_keras(model, "dilated_conv3D_mnist", debug_mode=1)
+input_spec = (tf.TensorSpec((args.batch_size, d, h, w, ch), dtype=tf.float32),)
+onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature=input_spec)
 # Save ONNX to file
-keras2onnx.save_model(onnx_model, args.output_path)
+onnx.save(onnx_model, args.output_path)

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -52,7 +52,7 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = testing ? 2 : 100;
+  int epochs = testing ? 2 : 5;
   int batch_size = 100;
   int num_classes = 10;
 
@@ -82,9 +82,9 @@ int main(int argc, char **argv){
   if (use_cpu) {
       cs = CS_CPU();
   } else {
-      //cs = CS_GPU({1}); // one GPU
+      cs = CS_GPU({1}); // one GPU
       // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
-       cs = CS_GPU();
+//       cs = CS_CPU();
       // cs = CS_FPGA({1});
   }
 
@@ -133,7 +133,7 @@ int main(int argc, char **argv){
     // training, list of input and output tensors, batch, epochs
     fit(net,{x_train},{y_train},batch_size, 1);
     // Evaluate test
-    //std::cout << "Evaluate test:" << std::endl;
+    std::cout << "Evaluate test:" << std::endl;
     evaluate(net,{x_test},{y_test});
     if (early_stopping_on_loss_var (net, 0, 0.1, 10, i)) break;
     if (early_stopping_on_metric (net, 0, 0.85, 2, i)) break;

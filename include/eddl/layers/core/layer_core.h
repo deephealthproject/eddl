@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.0
-* copyright (c) 2021, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: November 2021
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -124,6 +124,7 @@ public:
     static int total_layers;
     int ndim;
     bool use_bias;  // TODO: Implement
+    vector<int> inshape, outshape;
 
 	// Params
 	Tensor *W;
@@ -145,6 +146,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void resize(int batch) override;
 
 	// Sets the weights to the values of the parameter w
 	void update_weights(vector<Tensor*> weights) override;
