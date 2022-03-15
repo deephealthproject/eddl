@@ -19,16 +19,17 @@ using namespace std;
 
 int LDequantizeLinear::total_layers = 0;
 
-LDequantizeLinear::LDequantizeLinear(Layer *parent, string name, int dev, int mem, float x_scale, int x_zero_point) : LinLayer(name, dev, mem) {
+LDequantizeLinear::LDequantizeLinear(Layer *parent, string name, int dev, int mem, Tensor *x_scale, Tensor *x_zero_point, int axis) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "dequantizelinear" + to_string(++total_layers);
     
     this->size = size;
+    this->axis = axis;
     this->x_scale = x_scale;
     this->x_zero_point = x_zero_point;
     input = parent->output;
     
     printf("desquantize antes Linear\n");
-    input->print();
+    //input->print();
     output = new Tensor(input->shape, dev);
     printf("desquantize despues Linear\n");
 
@@ -44,7 +45,7 @@ void LDequantizeLinear::resize(int batch){
 
 
 void LDequantizeLinear::forward() {
-    tensorNN::dequantize_linear(this->input, this->output, this->x_scale, this->x_zero_point);
+    tensorNN::dequantize_linear(this->input, this->output, this->x_scale, this->x_zero_point, this->axis);
 }
 
 void LDequantizeLinear::backward() {
@@ -53,14 +54,14 @@ void LDequantizeLinear::backward() {
 
 
 Layer *LDequantizeLinear::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LDequantizeLinear(p[0], "LDequantizeLinear_"+to_string(c)+this->name, this->dev, this->mem_level, this->x_scale, this->x_zero_point);
+    auto *n = new LDequantizeLinear(p[0], "LDequantizeLinear_"+to_string(c)+this->name, this->dev, this->mem_level, this->x_scale, this->x_zero_point, this->axis);
     n->orig = this;
 
     return n;
 }
 
 Layer *LDequantizeLinear::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LDequantizeLinear(p[0], "LDequantizeLinear_" +to_string(c)+this->name, this->dev, this->mem_level, this->x_scale, this->x_zero_point);
+    auto *n = new LDequantizeLinear(p[0], "LDequantizeLinear_" +to_string(c)+this->name, this->dev, this->mem_level, this->x_scale, this->x_zero_point, this->axis);
     n->orig = this;
 
     return n;

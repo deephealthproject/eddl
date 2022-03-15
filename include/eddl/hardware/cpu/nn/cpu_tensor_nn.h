@@ -149,8 +149,8 @@ void cpu_batchnorm_backward(int b, int z, int rc,
 // multithreshold
 void cpu_multithreshold(Tensor *A, Tensor *B, Tensor *thresholds, float out_bias, float out_scale);
 void cpu_topK(Tensor *A, Tensor *B, int axis, int largest, int sorted, int K);
-void cpu_quantize_linear(Tensor *A, Tensor *B, float y_scale, int y_zero_point);
-void cpu_dequantize_linear(Tensor *A, Tensor *B, float x_scale, int x_zero_point);
+void cpu_quantize_linear(Tensor *A, Tensor *B, Tensor *y_scale, Tensor *y_zero_point, int axis);
+void cpu_dequantize_linear(Tensor *A, Tensor *B, Tensor *x_scale, Tensor *x_zero_point, int axis);
 //void cpu_quantize_linear(Tensor *A, Tensor *B, float y_scale, uint8_t y_zero_point);
 
 #endif //EDDL_CPU_TENSOR_NN_H

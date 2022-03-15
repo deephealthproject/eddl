@@ -127,28 +127,61 @@ __global__ void gpu_expand_nn(float* A, float* B, long int size, int* indices, i
 }
 
 
-__global__ void gpu_quantize_linear(float *A, float *B, float y_scale, int y_zero_point, int size){
+__global__ void gpu_quantize_linear(float *A, float *B, float *y_scale, float *y_zero_point, int size, int size_scale, int axis, int stride){
     
     int num;
-    for (int i = 0; i < size; ++i) {
-      num = round(A[i]/y_scale) + y_zero_point;
-      if(num> 127){
-        B[i] = 127;
-      }else if(num < -128){
-        B[i] = -128;
-      }else{
-        B[i] = num;
-      }
+    if(axis >= 0){
+        int cont = 0;
+        for (int i = 0; i < size; ++i) {
+        
+            if((i%stride == 0) && (i != 0)){
+                cont++;
+                if(cont >= size_scale){
+                    cont = 0;
+                }
+            }
+            num = round(A[i]/y_scale[cont]) + y_zero_point[cont];
+            if(num> 127){
+                B[i] = 127;
+            }else if(num < -128){
+                B[i] = -128;
+            }else{
+                B[i] = num;
+            }   
+        }
+    }else{
+        for (int i = 0; i < size; ++i) {
+            num = round(A[i]/y_scale[0]) + y_zero_point[0];
+            if(num> 127){
+                B[i] = 127;
+            }else if(num < -128){
+                B[i] = -128;
+            }else{
+                B[i] = num;
+            }
+        }
     }
-
 }
 
-__global__ void gpu_dequantize_linear(float *A, float *B, float x_scale, int x_zero_point, int size){
+__global__ void gpu_dequantize_linear(float *A, float *B, float *x_scale, float *x_zero_point, int size, int size_scale, int axis, int stride){
     
-    int num;
+  if(axis >= 0){
+    int cont = 0;
     for (int i = 0; i < size; ++i) {
-      B[i] = (A[i] - x_zero_point) * x_scale;
+      
+      if((i%stride == 0) && (i != 0)){
+        cont++;
+        if(cont >= size_scale){
+          cont = 0;
+        }
+      }
+      B[i] = (A[i]-x_zero_point[cont]) * x_scale[cont];      
     }
+  }else{
+    for (int i = 0; i < size; ++i) {
+      B[i] = (A[i]-x_zero_point[0]) * x_scale[0];
+    }
+  }
 
 }
 

@@ -85,13 +85,16 @@ Layer* build_conv_layer(onnx::NodeProto *node,
   }
 
   string name = node->name(); // Layer name
+   cout << "[DEBUG] Going to import CONV layer \"" << name << "\"" << endl;
   string parent_name = node->input(0); // Get parent
   Layer *parent = output_node_map[parent_name];
   vector<int> parent_shape = parent->output->shape;
 
   string weights_name = node->input(1); // Get weights and dims
+  
   vector<float> *weights = &(map_init_values[weights_name]);
   vector<int> dims = map_init_dims[weights_name];
+  cout << "layer weights: " << weights_name << " dims weight: " << dims.size() << " wights size " << weights->size() << endl;
   filters = dims[0];
 
   // Deduce conv dimension from layer input

@@ -19,10 +19,11 @@ using namespace std;
 
 int LQuantizeLinear::total_layers = 0;
 
-LQuantizeLinear::LQuantizeLinear(Layer *parent, string name, int dev, int mem, float y_scale, int y_zero_point) : LinLayer(name, dev, mem) {
+LQuantizeLinear::LQuantizeLinear(Layer *parent, string name, int dev, int mem, Tensor *y_scale, Tensor *y_zero_point, int axis) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "quantizelinear" + to_string(++total_layers);
 
     this->size = size;
+    this->axis = axis;
     this->y_scale = y_scale;
     this->y_zero_point = y_zero_point;
 
@@ -42,7 +43,7 @@ void LQuantizeLinear::resize(int batch){
 
 
 void LQuantizeLinear::forward() {
-    tensorNN::quantize_linear(this->input, this->output, this->y_scale, this->y_zero_point);
+    tensorNN::quantize_linear(this->input, this->output, this->y_scale, this->y_zero_point, this->axis);
 }
 
 void LQuantizeLinear::backward() {
@@ -51,14 +52,14 @@ void LQuantizeLinear::backward() {
 
 
 Layer *LQuantizeLinear::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LQuantizeLinear(p[0], "LQuantizeLinear_"+to_string(c)+this->name, this->dev, this->mem_level, this->y_scale, this->y_zero_point);
+    auto *n = new LQuantizeLinear(p[0], "LQuantizeLinear_"+to_string(c)+this->name, this->dev, this->mem_level, this->y_scale, this->y_zero_point, this->axis);
     n->orig = this;
 
     return n;
 }
 
 Layer *LQuantizeLinear::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LQuantizeLinear(p[0], "LQuantizeLinear_" +to_string(c)+this->name, this->dev, this->mem_level, this->y_scale, this->y_zero_point);
+    auto *n = new LQuantizeLinear(p[0], "LQuantizeLinear_" +to_string(c)+this->name, this->dev, this->mem_level, this->y_scale, this->y_zero_point, this->axis);
     n->orig = this;
 
     return n;

@@ -162,21 +162,42 @@ void cpu_multithreshold(Tensor *A, Tensor *B, Tensor *thresholds, float out_bias
 #endif
 }
 
-void cpu_quantize_linear(Tensor *A, Tensor *B, float y_scale, int y_zero_point){
+void cpu_quantize_linear(Tensor *A, Tensor *B, Tensor *y_scale, Tensor *y_zero_point, int axis){
 #ifdef CPU_DEBUG
 	printf("quantizelinear:\n");
 	printf(" input    : "); _profile_cpu_tensor(A);
 #endif
 
     int num;
-    for (int i = 0; i < A->size; ++i) {
-      num = round(A->ptr[i]/y_scale) + y_zero_point;
-      if(num> 127){
-        B->ptr[i] = 127;
-      }else if(num < -128){
-        B->ptr[i] = -128;
-      }else{
-        B->ptr[i] = num;
+    if(axis>=0){
+      int cont = 0;
+      for (int i = 0; i < A->size; ++i) {
+        
+        if((i%A->stride[axis] == 0) && (i != 0)){
+          cont++;
+          if(cont >= y_scale->size){
+            cont = 0;
+          }
+        }
+        num = round(A->ptr[i]/y_scale->ptr[cont]) + y_zero_point->ptr[cont];
+        if(num> 127){
+          B->ptr[i] = 127;
+        }else if(num < -128){
+          B->ptr[i] = -128;
+        }else{
+          B->ptr[i] = num;
+        }      
+      }
+    }else{
+      for (int i = 0; i < A->size; ++i) {
+        num = round(A->ptr[i]/y_scale->ptr[0]) + y_zero_point->ptr[0];
+        if(num> 127){
+          B->ptr[i] = 127;
+        }else if(num < -128){
+          B->ptr[i] = -128;
+        }else{
+          B->ptr[i] = num;
+        }
       }
     }
 
@@ -208,16 +229,28 @@ void cpu_quantize_linear(Tensor *A, Tensor *B, float y_scale, int y_zero_point){
 // #endif
 // }
 
-void cpu_dequantize_linear(Tensor *A, Tensor *B, float x_scale, int x_zero_point){
+void cpu_dequantize_linear(Tensor *A, Tensor *B, Tensor *x_scale, Tensor *x_zero_point, int axis){
 #ifdef CPU_DEBUG
-	printf("quantizelinear:\n");
+	printf("dequantizelinear:\n");
 	printf(" input    : "); _profile_cpu_tensor(A);
 #endif
-
+  if(axis >= 0){
+    int cont = 0;
     for (int i = 0; i < A->size; ++i) {
-      B->ptr[i] = (A->ptr[i]-x_zero_point) * x_scale;
+      
+      if((i%A->stride[axis] == 0) && (i != 0)){
+        cont++;
+        if(cont >= x_scale->size){
+          cont = 0;
+        }
+      }
+      B->ptr[i] = (A->ptr[i]-x_zero_point->ptr[cont]) * x_scale->ptr[cont];      
     }
-
+  }else{
+    for (int i = 0; i < A->size; ++i) {
+      B->ptr[i] = (A->ptr[i]-x_zero_point->ptr[0]) * x_scale->ptr[0];
+    }
+  }
 #ifdef CPU_DEBUG
 	printf(" output   : "); _profile_cpu_tensor(B);
 #endif

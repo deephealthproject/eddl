@@ -22,6 +22,7 @@ std::vector<int> vf2vi(const std::vector<float> &vf)
 vector<float> parseTensorValues(onnx::TensorProto t)
 {
   int data_type = t.data_type(); // Only works for non raw data for now
+  //cout << t.name() << endl;
   vector<float> values;
   switch (data_type)
   {
@@ -34,20 +35,38 @@ vector<float> parseTensorValues(onnx::TensorProto t)
     {
       for (int i = 0; i < t.float_data_size(); i++)
       {
+        
         values.push_back(t.float_data(i));
       }
     }
     break;
   case onnx::TensorProto::UINT8:
-    for (int i = 0; i < t.int32_data_size(); i++)
+    if (t.has_raw_data())
     {
-      values.push_back(t.int32_data(i));
+      vector<uint8_t> aux_values; // Vector to read the int64 values
+      TryConvertingTensorRawValues(t, aux_values);
+      for (float i : aux_values) // Cast to float
+        values.push_back(i);
+    }else{
+      for (int i = 0; i < t.int32_data_size(); i++)
+      {
+        values.push_back(t.int32_data(i));
+      }
     }
     break;
   case onnx::TensorProto::INT8:
-    for (int i = 0; i < t.int32_data_size(); i++)
+
+    if (t.has_raw_data())
     {
-      values.push_back(t.int32_data(i));
+      vector<int8_t> aux_values; // Vector to read the int64 values
+      TryConvertingTensorRawValues(t, aux_values);
+      for (float i : aux_values) // Cast to float
+        values.push_back(i);
+    }else{
+      for (int i = 0; i < t.int32_data_size(); i++)
+      {
+        values.push_back(t.int32_data(i));
+      }
     }
     break;
   case onnx::TensorProto::UINT16:

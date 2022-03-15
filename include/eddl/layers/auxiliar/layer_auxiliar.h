@@ -188,13 +188,12 @@ public:
       static int total_layers;
       int size;
 
-      Tensor *x;
-      Tensor *y;
-      float y_scale;
-      int y_zero_point;
+      Tensor *y_scale;
+      Tensor *y_zero_point;
       uint8_t y_zero_point_uint;
+      int axis;
 
-      LQuantizeLinear(Layer *parent, string name, int dev, int mem, float y_scale, int y_zero_point);
+      LQuantizeLinear(Layer *parent, string name, int dev, int mem, Tensor *y_scale, Tensor *y_zero_point, int axis);
 
       Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -215,13 +214,11 @@ public:
 
       static int total_layers;
       int size;
+      int axis;
+      Tensor *x_scale;
+      Tensor *x_zero_point;
 
-      Tensor *x;
-      Tensor *y;
-      float x_scale;
-      int x_zero_point;
-
-      LDequantizeLinear(Layer *parent, string name, int dev, int mem, float x_scale, int x_zero_point);
+      LDequantizeLinear(Layer *parent, string name, int dev, int mem, Tensor *x_scale, Tensor *x_zero_point, int axis);
 
       Layer *share(int c, int bs, vector<Layer *> p) override;
 

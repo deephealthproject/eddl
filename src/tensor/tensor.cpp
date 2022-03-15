@@ -65,12 +65,9 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2){
     //}
    
     fpga_ptr = nullptr;   // valgrind complaints here
-    printf("create device shape size %d\n", shape.size());
     // Update values
     updateDevice(dev);
-    printf("create shape\n");
     updateShape(shape);
-    printf("create size\n");
     updateSize();
     updateStrides();
     updateData(fptr, fptr2);
@@ -109,14 +106,9 @@ void Tensor::updateDevice(int dev){
 
 void Tensor::updateShape(const vector<int> &new_shape){
     // this->shape = vector<int>(new_shape);
-    
-    printf("update tensoooooooor1111 %d, %d\n", new_shape.size(), this->shape.size());
     this->shape.clear();
-    printf("update tensoooooooor22222\n");
     for (int _ : new_shape) this->shape.push_back(_);
-    printf("update tensoooooooor33333\n");
     this->ndim = this->shape.size();
-    printf("update tensoooooooor44444\n");
 }
 
 void Tensor::updateSize() {

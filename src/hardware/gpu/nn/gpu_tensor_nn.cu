@@ -160,23 +160,24 @@ void gpu_expand_nn(Tensor *A, Tensor *B, ExpandDescriptor *sd){
     check_cuda(cudaDeviceSynchronize(), "gpu_expand_nn");
 }
 
-void gpu_quantize_linear(Tensor *A, Tensor *B, float y_scale, int y_zero_point){
+void gpu_quantize_linear(Tensor *A, Tensor *B, Tensor *y_scale, Tensor *y_zero_point, int axis){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    gpu_quantize_linear<<<dimGrid,dimBlock>>>(A->ptr,B->ptr, y_scale, y_zero_point, (int)A->size);
+    gpu_quantize_linear<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, y_scale->ptr, y_zero_point->ptr, (int)A->size, (int)y_scale->size, axis, A->stride[axis]);
     check_cuda(cudaDeviceSynchronize(),"gpu_quantize_linear");
 }
 
-void gpu_dequantize_linear(Tensor *A, Tensor *B, float x_scale, int x_zero_point){
+void gpu_dequantize_linear(Tensor *A, Tensor *B, Tensor *x_scale, Tensor *x_zero_point, int axis){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    gpu_dequantize_linear<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, x_scale, x_zero_point, (int)A->size);
+   
+    gpu_dequantize_linear<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, x_scale->ptr, x_zero_point->ptr, (int)A->size, (int)x_scale->size, axis, A->stride[axis]);
     check_cuda(cudaDeviceSynchronize(),"gpu_dequantize_linear");
 }
 

@@ -218,28 +218,28 @@ namespace tensorNN {
     }
 
 
-    void quantize_linear(Tensor *A, Tensor *B, float y_scale, int y_zero_point) {
+    void quantize_linear(Tensor *A, Tensor *B, Tensor *y_scale, Tensor *y_zero_point, int axis) {
 
 
 	    if (A->isCPU() && B->isCPU()) {
-	      cpu_quantize_linear(A, B, y_scale, y_zero_point);
+	      cpu_quantize_linear(A, B, y_scale, y_zero_point, axis);
 	    }
 #ifdef cGPU
 	    else if (A->isGPU() && B->isGPU()) {
-          gpu_quantize_linear(A, B, y_scale, y_zero_point);
+          gpu_quantize_linear(A, B, y_scale, y_zero_point, axis);
 	    }
 #endif
     }
 
-    void dequantize_linear(Tensor *A, Tensor *B, float x_scale, int x_zero_point) {
+    void dequantize_linear(Tensor *A, Tensor *B, Tensor *x_scale, Tensor *x_zero_point, int axis) {
 
 
 	    if (A->isCPU() && B->isCPU()) {
-	      cpu_dequantize_linear(A, B, x_scale, x_zero_point);
+	      cpu_dequantize_linear(A, B, x_scale, x_zero_point, axis);
 	    }
 #ifdef cGPU
 	    else if (A->isGPU() && B->isGPU()) {
-          gpu_dequantize_linear(A, B, x_scale, x_zero_point);
+          gpu_dequantize_linear(A, B, x_scale, x_zero_point, axis);
 	    }
 #endif
     }

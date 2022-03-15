@@ -95,6 +95,11 @@ void get_initializers_maps(vector<onnx::TensorProto> tensors,
 {
   for (onnx::TensorProto tensor : tensors)
   {
+    
+
+   cout << tensor.name() << endl;
+      
+    
     vector<int> dims;
     for (int i = 0; i < tensor.dims_size(); i++)
     {
@@ -152,6 +157,9 @@ vector<Layer *> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, vector<in
     {
       tensor = infoProto.type().tensor_type();
       string name = infoProto.name();
+      if(name.compare("YoloV3/MobilenetV2/Conv/Conv2D_dequant") == 0){
+        printf("HOLAAAAAAAAAAAAAAAAAAAAAA");
+      }
       io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor, recurrent_net)), name, dev, mem));
     }
   }
@@ -209,7 +217,7 @@ vector<onnx::NodeProto> get_graph_nodes(onnx::GraphProto graph)
 {
   vector<onnx::NodeProto> nodes;
   for (int i = 0; i < graph.node_size(); i++)
-    nodes.push_back(graph.node(i));
+      nodes.push_back(graph.node(i));
 
   return nodes;
 }
@@ -495,6 +503,14 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
 
   vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); // Get input nodes data
   vector<onnx::NodeProto> nodes = get_graph_nodes(graph); // Get the nodes (layers) of the model
+  for (int i = 0; i < nodes.size(); i++){
+    if(nodes[i].name().compare("YoloV3/MobilenetV2/Conv/Conv2D1_prequant") == 0){
+        printf(" BUILD NET, encontrado %d INPUTS\n", nodes[i].input_size());
+        for(int j = 0; j < nodes[i].input_size(); j++){
+          cout << "Input" << j << " name " << nodes[i].input(j) << endl;
+        }
+    }
+  }
   bool recurrent_net = check_recurrent_nodes(nodes);
   if (recurrent_net)
     log_string("The net is recurrent", log_level, LOG_LEVEL::DEBUG);
