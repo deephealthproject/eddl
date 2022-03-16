@@ -39,6 +39,7 @@ if(MSVC)
 else()
     find_package(Threads REQUIRED)
     target_link_libraries(${PROJECT_TESTS_NAME} PUBLIC eddl ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
 
 
