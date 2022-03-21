@@ -281,12 +281,8 @@ int main(int argc, char **argv) {
         for (int chunk = 0; chunk < chunks; chunk++) {
             mpi_id0(printf("-- Chunk %d/%d ---\n", chunk + 1, chunks));
             if (use_distr_dataset) { /* Distribute dataset into processes */
-                sprintf(tr_images, "%s/%03d/train-images.bi8", path, id);
-                sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, id);
-                if (id == 0) {
-                    printf("Train: %s, %s\n ", tr_images, tr_labels);
-                    printf("Val: %s, %s\n", ts_images, ts_labels);
-                }
+                sprintf(tr_images, "%s/%03d/train-images.bi8", path, id*chunks+chunk);
+                sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, id*chunks+chunk);
             } else {
                  if (chunks == 1) {
                     sprintf(tr_images, "%s/train-images.bi8", path);
@@ -295,10 +291,10 @@ int main(int argc, char **argv) {
                     sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
                     sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
                 }
-                if (id == 0) {
-                    printf("Train: %s, %s\n ", tr_images, tr_labels);
-                    printf("Val: %s, %s\n", ts_images, ts_labels);
-                }
+            }
+            if (id == 0) {
+                printf("Train: %s, %s\n ", tr_images, tr_labels);
+                printf("Val: %s, %s\n", ts_images, ts_labels);
             }
             /* Load dataset */
             x_train = Tensor::load(tr_images);

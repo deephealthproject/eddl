@@ -163,9 +163,11 @@ int init_MPI(int *argc, char ***argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
     MPI_Comm_rank(MPI_COMM_WORLD, &id);
 
+    /*
     if (n_procs < 2) {
         msg("Error: Nr of MPI processes must be >1 ", "init_MPI");
     }
+    */
 
     get_nodename_distributed(node_name);
     fprintf(stderr, "[DISTR] MPI init. Node %d (%s). %d GPUS available per node\n", id, node_name, get_available_GPUs_distributed());
@@ -546,7 +548,6 @@ void fn_Bcast_GPU_weights(Net* net) {
     int count;
     int i, j;
 
-
     for (int i = 0; i < net->layers.size(); i++) {
         if (net->layers[i]->trainable) {
             for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
@@ -562,10 +563,8 @@ void fn_Bcast_GPU_weights(Net* net) {
 }
 
 void bcast_weights_distributed(Net * net) {
-    if (!is_mpi_distributed()) {
-        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
+    if (!is_mpi_distributed())
         return;
-    }
     
     if (net->cs->hw == "gpu")
         fn_Bcast_GPU_weights(net);

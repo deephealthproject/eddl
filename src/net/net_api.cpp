@@ -1000,7 +1000,9 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                 }
             }
             // sync processes and print final results
-            avg_metrics_distributed(this);
+            if (is_mpi_distributed()) {
+                avg_metrics_distributed(this);
+            }
             print_loss(batches_per_proc, batches_per_proc, false);
             mpi_id0(fprintf(stdout, "\n"));
             mpi_id0(fflush(stdout));
@@ -1014,19 +1016,10 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                 fprintf(stdout, "\n%1.4f secs/epoch\n", epoch_time_span.count());
                 fflush(stdout);
             }
-            /*
-            if (((i+1) % 2)==1) {
-                    loss1 =  get_losses()[lout.size()-1];
-                    printf("measuring loss1 %f\n", loss1);
-                }
-            if (((i+1) % 2)==0) {
-                    loss2 =  get_losses()[lout.size()-1];
-                    printf("measuring loss2 %f\n", loss2);
-                 }
-            printf("loss1 %f\n", loss1);
-            printf("loss2 %f\n", loss2);
-             */
-            update_batch_avg_distributed (i, secs_epoch, batches_per_proc);           
+    
+            if (is_mpi_distributed()) {
+                update_batch_avg_distributed (i, secs_epoch, batches_per_proc);           
+            }
         }
         fflush(stdout);
     }

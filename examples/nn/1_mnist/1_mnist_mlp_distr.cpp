@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     id=get_id_distributed();
     
     // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2);
+    set_method_distributed(AUTO_TIME,8,1);
     
     // Download mnist
     download_mnist();
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
       // Define computing service
     compserv cs = nullptr;
     if (use_cpu) {
-        cs = CS_CPU();
+        cs = CS_CPU(2);
     } else {
         cs = CS_GPU();
     }

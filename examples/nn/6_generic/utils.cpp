@@ -124,13 +124,17 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
         if (*use_bi8) {
             sprintf(tr_images, "%s/%s", path, "train-images.bi8");
             sprintf(tr_labels, "%s/%s", path, "train-labels.bi8");
-            sprintf(ts_images, "%s/%s", path, "test-images.bi8");
-            sprintf(ts_labels, "%s/%s", path, "test-labels.bi8");
+            sprintf(ts_images, "%s/%s", path, "val-images.bi8");
+            sprintf(ts_labels, "%s/%s", path, "val-labels.bi8");
+            //sprintf(ts_images, "%s/%s", path, "test-images.bi8");
+            //sprintf(ts_labels, "%s/%s", path, "test-labels.bi8");
         } else {
             sprintf(tr_images, "%s/%s", path, "train-images.bin");
             sprintf(tr_labels, "%s/%s", path, "train-labels.bin");
-            sprintf(ts_images, "%s/%s", path, "test-images.bin");
-            sprintf(ts_labels, "%s/%s", path, "test-labels.bin");
+            sprintf(ts_images, "%s/%s", path, "val-images.bin");
+            sprintf(ts_labels, "%s/%s", path, "val-labels.bin");
+            //sprintf(ts_images, "%s/%s", path, "test-images.bin");
+            //sprintf(ts_labels, "%s/%s", path, "test-labels.bin");
         }
         argn++;
     }
