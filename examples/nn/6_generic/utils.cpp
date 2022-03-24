@@ -19,30 +19,30 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
         int* epochs, int* batch_size, int* num_classes,
         int* channels, int* width, int* height,
         float* lr, int* initial_mpi_avg, int* chunks, int* use_bi8,
-        int* use_distr_dataset) {
+        int* use_distr_dataset, int* ptmodel, char* test_file) {
 
     int argn;
     char *uso =
             "\nError:\n"
-            "%s -m path-to-model -w width -h height -z channels -c nr-of-classes -b batch-size \n"
+            "%s -p path-to-dataset -w width -h height -z channels -c nr-of-classes -b batch-size \n"
             "\t -e nr-of-epochs -a batch-average -l learning-rate -s nr-of-parts \n"
             "\t -d (distr dataset) -8 (8-bit dataset bin format)\n"
+            "\t -n pre-trained-model -t model-file-to-test \n"
             "";
 
     argn = 1;
 
     while (argn < argc) {
-        if (!strncmp(argv[argn], "-m", 2)) {
+        if (!strncmp(argv[argn], "-p", 2)) {
             argn++;
             if (argn == argc)
                 error_fatal(uso, argv[0]);
-
             sprintf(path, "%s", argv[argn]);
-            printf("model path:'%s'\n", path);
+            printf("dataset path:'%s'\n", path);
 
             std::ifstream ifile(path);
             if (!ifile) {
-                fprintf(stderr, "%s: Model not found\n", argv[0], path);
+                fprintf(stderr, "Error: %s. dataset not found\n", path);
                 error_fatal(uso, argv[0]);
             } /* endif */
         } else if (!strncmp(argv[argn], "-w", 2)) {
@@ -96,19 +96,18 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
             argn++;
             if (argn == argc)
                 error_fatal(uso, argv[0]);
-
             *lr = atof(argv[argn]);
             printf("learning-rate:'%f'\n", *lr);
-        } else if (!strncmp(argv[argn], "-l", 2)) {
+        } else if (!strncmp(argv[argn], "-n", 2)) {
             argn++;
             if (argn == argc)
                 error_fatal(uso, argv[0]);
-            *chunks = atoi(argv[argn]);
+            *ptmodel = atoi(argv[argn]);
+            printf("pre-trained model:'%d'\n", *ptmodel);
         } else if (!strncmp(argv[argn], "-s", 2)) {
             argn++;
             if (argn == argc)
                 error_fatal(uso, argv[0]);
-
             *chunks = atoi(argv[argn]);
             printf("nr of chunks:'%d'\n", *chunks);
         } else if (!strncmp(argv[argn], "-d", 2)) {
@@ -117,8 +116,20 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
         } else if (!strncmp(argv[argn], "-8", 2)) {
             *use_bi8 = 1;
             printf("use 8-bit bin format:'%s'\n", "yes");
+        } else if (!strncmp(argv[argn], "-t", 2)) {
+            argn++;
+            if (argn == argc)
+                error_fatal(uso, argv[0]);
+            sprintf(test_file, "%s", argv[argn]);
+            printf("file to test:'%s'\n", test_file);
+
+            std::ifstream ifile(test_file);
+            if (!ifile) {
+                fprintf(stderr, "Error: %s. file not found\n", test_file);
+                error_fatal(uso, argv[0]);
+            } /* endif */
         } else {
-            fprintf(stderr, "%s: Model not found\n", argv[0], path);
+            fprintf(stderr, "Error: %s. invalid argument\n", argv[argn]);
             error_fatal(uso, argv[0]);
         }
         if (*use_bi8) {

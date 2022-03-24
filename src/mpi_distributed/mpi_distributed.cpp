@@ -170,7 +170,7 @@ int init_MPI(int *argc, char ***argv) {
     */
 
     get_nodename_distributed(node_name);
-    fprintf(stderr, "[DISTR] MPI init. Node %d (%s). %d GPUS available per node\n", id, node_name, get_available_GPUs_distributed());
+    fprintf(stderr, "[DISTR] init_MPI. Node %d (%s). %d GPUS available per node\n", id, node_name, get_available_GPUs_distributed());
 
 
     fprintf(stderr, "[DISTR] setting default batch avg method\n");
@@ -313,17 +313,17 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg) {
 
     if (id == 0)
         if (avg_method == FIXED) {
-            fprintf(stderr, "[DISTR] method %s, batch_avg %d \n", "FIXED", mpi_avg);
+            fprintf(stderr, "[DISTR] set_method. %s, batch_avg %d \n", "FIXED", mpi_avg);
         } else if (avg_method == AVG_INC) {
-            fprintf(stderr, "[DISTR] method %s, batch_avg %d changing every %d epochs\n", "AVG_INC", mpi_avg, x_avg);
+            fprintf(stderr, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "AVG_INC", mpi_avg, x_avg);
         } else if (avg_method == SAWTOOTH) {
-            fprintf(stderr, "[DISTR] method %s, batch_avg %d changing every %d epochs\n", "SAWTOOTH", mpi_avg, x_avg);
+            fprintf(stderr, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "SAWTOOTH", mpi_avg, x_avg);
         } else if (avg_method == NEG_SAWTOOTH) {
-            fprintf(stderr, "[DISTR] method %s, batch_avg %d changing every %d epochs\n", "NEG SAWTOOTH", mpi_avg, x_avg);
+            fprintf(stderr, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "NEG SAWTOOTH", mpi_avg, x_avg);
         } else if (avg_method == AUTO_TIME) {
-            fprintf(stderr, "[DISTR] method %s, batch_avg %d changing every %d epochs\n", "AUTO TIME", mpi_avg, x_avg);
+            fprintf(stderr, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "AUTO TIME", mpi_avg, x_avg);
         } else {
-            msg("Error avg_method", "set_method_distributed"); // Exits
+            msg("Error unknown avg_method", "set_method_distributed"); // Exits
         }
 }
 
@@ -355,7 +355,7 @@ vector<int> get_gpu_vec_distributed() {
 
     if (is_mpi_distributed()) {
         get_nodename_distributed(node_name);
-        fprintf(stderr, "[DISTR] Node: %s. Process %d. CS: GPU mask: %s\n", node_name, id, gpu_str.c_str());
+        fprintf(stderr, "[DISTR] get_gpu_vec. Node: %s. Process %d. CS: GPU mask: %s\n", node_name, id, gpu_str.c_str());
     } else {
         fprintf(stderr, "[CS_GPU()] CS: GPU mask: %s\n", gpu_str.c_str());
     }
@@ -428,7 +428,8 @@ int set_NBPP_distributed(int ds_size, int local_batch, bool method) {
     } else {
         msg("Error num_batches_per_proc method", "set_NBPP_distributed"); // Exits
     }
-    printf("[DISTR] Proc: %d. Distr dataset: %s. Dataset size: %d. Local batch: %d. Num batches per proc: %d\n", id, (method==NO_DISTR_DS?"no":"yes"), ds_size, local_batch, nbpp);
+    if (id==0)
+        printf("[DISTR] set_NBPP. Proc: %d. Distr dataset: %s. Dataset size: %d. Local batch: %d. Num batches per proc: %d\n", id, (method==NO_DISTR_DS?"no":"yes"), ds_size, local_batch, nbpp);
     return nbpp;
 }
 
@@ -564,6 +565,7 @@ void fn_Bcast_GPU_weights(Net* net) {
 
 void bcast_weights_distributed(Net * net) {
     if (!is_mpi_distributed())
+        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
         return;
     
     if (net->cs->hw == "gpu")
@@ -640,6 +642,7 @@ void avg_metrics_distributed(Net* net) {
     //int n_procs;
     //n_procs = get_n_procs_distributed();
     if (!is_mpi_distributed())
+        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
         return;
     for (int k = 0; k < net->lout.size(); k += net->decsize) {
         if (net->losses.size() >= (k + 1)) {
@@ -661,6 +664,7 @@ void avg_float_distributed(float * pvar) {
     //int n_procs;
     //n_procs = get_n_procs_distributed();
     if (!is_mpi_distributed())
+        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
         return;
 #ifdef cMPI       
             MPICHECK(MPI_Allreduce(MPI_IN_PLACE, pvar, 1, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD));
@@ -672,6 +676,7 @@ void barrier_distributed() {
     //int n_procs;
     //n_procs = get_n_procs_distributed();
     if (!is_mpi_distributed())
+        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
         return;
 #ifdef cMPI       
     MPICHECK(MPI_Barrier(MPI_COMM_WORLD));
@@ -694,59 +699,64 @@ void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
 
 void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch_avg) {
     float SPEED_UP = 1.05;
-    
+
     if (!is_mpi_distributed()) {
         printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
         return;
-        }
-#ifdef cMPI     
-            MPICHECK(MPI_Barrier(MPI_COMM_WORLD));
-#endif        
-    switch (avg_method) {
-        case AVG_INC:
-            if (((epoch_id + 1) % (x_avg)) == 0) {
-                if (batches_avg < max_batch_avg)
-                    batches_avg = batches_avg * 2; {
-                    mpi_id0(printf("[DISTR] method AVG_INC, new batches_avg= %d \n",  batches_avg));
-                }
-            }
-            break;
-
-        case SAWTOOTH:
-            if (((epoch_id + 1) % (x_avg)) == 0) {
-                batches_avg = batches_avg * 2;
-
-                if (batches_avg >= max_batch_avg)
-                    batches_avg = mpi_avg;
-                mpi_id0(printf("[DISTR] method SAWTOOTH, new batches_avg= %d \n",  batches_avg));
-            }
-            break;
-
-        case NEG_SAWTOOTH:
-            if (((epoch_id + 1) % (x_avg)) == 0) {
-                batches_avg = batches_avg / 2;
-
-                if (batches_avg < 1)
-                    batches_avg = mpi_avg;
-                mpi_id0(printf("[DISTR] method NEG_SAWTOOTH, new batches_avg= %d \n", batches_avg));
-            }
-            break;
-
-
-        case AUTO_TIME:
-            if (((epoch_id + 1) % (x_avg)) == 0) {
-                float speed_up = secs_prev / secs_epoch;
-                if (speed_up > SPEED_UP) {
-                    secs_prev = secs_epoch;
-
-                    if (batches_avg < max_batch_avg) {
+    }
+     
+    if (id == 0) {
+        switch (avg_method) {
+            case AVG_INC:
+                if (((epoch_id + 1) % (x_avg)) == 0) {
+                    if (batches_avg < max_batch_avg)
                         batches_avg = batches_avg * 2;
-                        mpi_id0(printf("[DISTR] method AUTO_TIME, new batches_avg= %d \n",  batches_avg));
+                    {
+                        mpi_id0(printf("[DISTR] method AVG_INC, new batches_avg= %d \n", batches_avg));
                     }
                 }
-            }
-            break;
+                break;
+
+            case SAWTOOTH:
+                if (((epoch_id + 1) % (x_avg)) == 0) {
+                    batches_avg = batches_avg * 2;
+
+                    if (batches_avg >= max_batch_avg)
+                        batches_avg = mpi_avg;
+                    mpi_id0(printf("[DISTR] method SAWTOOTH, new batches_avg= %d \n", batches_avg));
+                }
+                break;
+
+            case NEG_SAWTOOTH:
+                if (((epoch_id + 1) % (x_avg)) == 0) {
+                    batches_avg = batches_avg / 2;
+
+                    if (batches_avg < 1)
+                        batches_avg = mpi_avg;
+                    mpi_id0(printf("[DISTR] method NEG_SAWTOOTH, new batches_avg= %d \n", batches_avg));
+                }
+                break;
+
+
+            case AUTO_TIME:
+                if (((epoch_id + 1) % (x_avg)) == 0) {
+                    float speed_up = secs_prev / secs_epoch;
+                    if (speed_up > SPEED_UP) {
+                        secs_prev = secs_epoch;
+
+                        if (batches_avg < max_batch_avg) {
+                            batches_avg = batches_avg * 2;
+                            mpi_id0(printf("[DISTR] method AUTO_TIME, new batches_avg= %d \n", batches_avg));
+                        }
+                    }
+                }
+                break;
+        }
     }
+#ifdef cMPI
+    MPICHECK(MPI_Bcast(&batches_avg, 1, MPI_INT, 0, MPI_COMM_WORLD));
+#endif  
+    
     
 }
 

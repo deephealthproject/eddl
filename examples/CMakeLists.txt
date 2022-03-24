@@ -9,11 +9,6 @@ target_link_libraries(generic_mlp eddl)
 add_executable(generic_mlp_distr "nn/6_generic/1_generic_mlp_distr.cpp" "nn/6_generic/utils.cpp")
 target_link_libraries(generic_mlp_distr eddl)
 
-add_executable(generic_vgg16 "nn/6_generic/3_generic_vgg16.cpp" "nn/6_generic/utils.cpp")
-target_link_libraries(generic_vgg16 eddl)
-#distributed
-add_executable(generic_vgg16_distr "nn/6_generic/3_generic_vgg16_distr.cpp" "nn/6_generic/utils.cpp")
-target_link_libraries(generic_vgg16_distr eddl)
 
 add_executable(generic_vgg16_bn "nn/6_generic/4_generic_vgg16_bn.cpp" "nn/6_generic/utils.cpp")
 target_link_libraries(generic_vgg16_bn eddl)
@@ -25,20 +20,11 @@ target_link_libraries(generic_vgg16_bn_train_batch eddl)
 add_executable(generic_vgg16_bn_split_distr "nn/6_generic/4_generic_vgg16_bn_split_distr.cpp" "nn/6_generic/utils.cpp")
 target_link_libraries(generic_vgg16_bn_split_distr eddl)
 
-add_executable(generic_resnet "nn/6_generic/5_generic_resnet.cpp" "nn/6_generic/utils.cpp")
-target_link_libraries(generic_resnet eddl)
-#distributed
-add_executable(generic_resnet_distr "nn/6_generic/5_generic_resnet_distr.cpp" "nn/6_generic/utils.cpp")
-target_link_libraries(generic_resnet_distr eddl)
-
-add_executable(generic_resnet50_da_bn "nn/6_generic/7_generic_resnet50_da_bn.cpp" "nn/6_generic/utils.cpp")
-target_link_libraries(generic_resnet50_da_bn eddl)
-#distributed
-add_executable(generic_resnet50_da_bn_distr "nn/6_generic/7_generic_resnet50_da_bn_distr.cpp" "nn/6_generic/utils.cpp")
-target_link_libraries(generic_resnet50_da_bn_distr eddl)
-
 add_executable(generic "nn/6_generic/9_generic.cpp" "nn/6_generic/utils.cpp")
 target_link_libraries(generic eddl)
+#distributed
+add_executable(generic_distr "nn/6_generic/9_generic_distr.cpp" "nn/6_generic/utils.cpp")
+target_link_libraries(generic_distr eddl)
 
 
 # EXAMPLES: MNIST ****************************************************

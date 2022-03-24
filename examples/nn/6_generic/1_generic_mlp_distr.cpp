@@ -32,6 +32,7 @@ int main(int argc, char **argv) {
     char model_name[64] = "mlp";
     char pdf_name[128];
     char onnx_name[128];
+    char test_file[128];
     
     char path[256] = "covid1";
     char tr_images[256];
@@ -50,6 +51,7 @@ int main(int argc, char **argv) {
     int chunks = 0;
     int use_bi8 = 0;
     int use_distr_dataset = 0;
+     int ptmodel=1;
     
       // if executed without mpirun wrapper, error
   if (getenv("OMPI_COMM_WORLD_RANK") == NULL) {
@@ -66,8 +68,8 @@ int main(int argc, char **argv) {
             path, tr_images, tr_labels, ts_images, ts_labels,
             &epochs, &batch_size, &num_classes, &channels, &width, &height, &lr, 
             &initial_mpi_avg,
-            &chunks, &use_bi8, &use_distr_dataset);
-
+            &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file);
+   
     
     
     

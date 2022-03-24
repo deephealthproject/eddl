@@ -1559,8 +1559,6 @@ void Net::evaluate_distr(vtensor tin, vtensor tout, int bs) {
         n_procs = get_n_procs_distributed();
         id = get_id_distributed();
         // local batch_size is already set
-        mpi_id0(fprintf(stderr, "[DISTR] evaluate\n"));
-
         // Check list shape
         if (tin.size() != lin.size())
             msg("input tensor list does not match with defined input layers", "Net.evaluate");
@@ -1582,7 +1580,7 @@ void Net::evaluate_distr(vtensor tin, vtensor tout, int bs) {
         else if (!isresized) resize(10); // to avoid some issues when no previous fit is performed, TODO
 
 
-        mpi_id0(printf("Evaluate with batch size %d\n", batch_size));
+        mpi_id0(printf("[DISTR] Evaluate with batch size %d\n", batch_size));
 
         // Create internal variables
         vind sind;
