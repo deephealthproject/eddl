@@ -293,7 +293,7 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
             avg_weights_distributed(net, j + 1, nbpp);
             print_loss(net, j + 1, false);
             mpi_id0(printf("\r"););
-            printf("Proc %d, j=%d\n", id, j);
+            //printf("Proc %d, j=%d\n", id, j);
         }
         mpi_id0(printf("\n"));
         // if (early_stopping_on_loss_var (net, 0, 10, 0.1, i)) break;
@@ -568,17 +568,13 @@ int main(int argc, char **argv) {
                 delete x_train;
                 delete y_train;
             }
-            printf("Proc %d. A\n", id);
             update_batch_avg_distributed(epoch, secs_epoch, 1000);
-            printf("Proc %d. B\n", id);
             barrier_distributed();
-            printf("Proc %d. C\n", id);
 
             TIMED_EXEC("DISTR EVALUATE", evaluate_distr(net,{x_test},
             {
                 y_test
             }), secs);
-            printf("Proc %d. D\n", id);
 
             barrier_distributed();
             if (id == 0) {
