@@ -1,0 +1,218 @@
+Version MPI 
+
+1. CAMBIOS respecto de la versión secuencial.
+
+-Añadir variables
+
+int id
+
+-Poner llamada a función de inicialización al principio
+
+id=init_distributed();
+
+Opciones:
+init_distributed("MPI");
+init_distributed("NCCL");  
+init_distributed();  (NCCL)
+ 
+[OPCIONAL] 
+-Poner método y parámetros de entrenamiento distribuido
+
+ Cada 4 batches, sincroniza:
+set_method_distributed(FIXED,4,0);
+
+Empieza sincronizando cada 1 batch. Cada 2 epocas se aumenta, si contribuye a reducir sgnificativamente la sobrecarga:
+
+set_method_distributed(AUTO_TIME,1,2); 
+
+[OPCIONAL] 
+-Con varias GPUs, para lanzar un proceso MPI por GPU. Automaticamente se asignan procesos a GPUs dentro del mismo nodo
+cs = CS_GPU(); 
+
+
+-Filtrar las salidas por pantalla, para que solo se hagan una vez
+
+if (id == 0) {
+       plot(net, "model.pdf");
+}
+
+-Método fit:
+
+El batch que se le pasa (batch_global) se descompone en tantos batch_locales como procesos.
+Cada proceso entrena su batch_local
+Los procesos se sincronizan (allreduce y avg) cuando corresponda
+Las estadísticas mostradas corresponden solo a lo que hace el proceso 0
+
+-Método evaluate:
+
+Solo lo hace el proceso 0.
+El batch que se le pasa es el que se utiliza, sin cambios.
+
+-Método evaluate_distr
+
+-El batch que se le pasa (batch_global) se descompone en tantos batch_locales como procesos.
+-Cada proceso evalua su batch_local
+-Se hace una sincronización (reduce) de las estadísticas
+
+
+-Terminar con la función de terminación:
+
+ end_distributed();
+
+
+2. COMO EJECUTAR
+
+mpirun -np 4 -hostfile ../cluster.altec -map-by node ./bin/mnist_mlp_distr 
+
+donde cluster.altec es un archivo con la lista de nodos:
+
+altec2
+altec3
+altec4
+...
+
+3. Ejecución
+
+mnist_mlp vs mnist_mlp_distr
+
+./mnist_mlp
+mpirun -np 4 -hostfile ../cluster.altec -map-by node ./bin/mnist_mlp_distr
+
+La versión distribuida:
+
++Reparte el trabajo entre los nodos
+-Cada nodo trabaja con un bs menor (la GPU trabaja peor y aumenta el tiempo de ejecución)
+-Hay una sobrecarga de sincronización
+
+--> no siempre se gana. 
+
+Hay que emplear tamaños de batch grandes.
+Tamaños de batch grandes pueden no caber en 1 GPU, pero sí en varias.
+
+cifar_vgg16_bn vs cifar_vgg16_bn_distr
+
+./cifar_vgg16_bn
+mpirun -np 4 -hostfile ../cluster.altec -map-by node ./bin/cifar_vgg16_bn_distr
+
+./bin/generic_mlp -m ~/convert_EDDL/covid19 -w 512 -h 512 -z 1 -c 3 -b 10 -e 10 -l 0.0001 -8
+
+covid19 kaggle
+
+./bin/generic_vgg16_bn -m ~/convert_EDDL/COVID-19_Radiography_Dataset -w 256 -h 256 -z 1 -c 4 -b 50 -e 10 -l 0.0001 -8
+
+mpirun -np 4 -hostfile ../cluster.altec -map-by node ./bin/generic_vgg16_bn_distr -m ~/convert_EDDL/COVID-19_Radiography_Dataset -w 256 -h 256 -z 1 -c 4 -b 50 -e 10 -l 0.0001 -8
+
+
+covid19 UPV
+
+./bin/generic_vgg16_bn -m ~/convert_EDDL/covid19 -w 512 -h 512 -z 1 -c 3 -b 12 -e 10 -l 0.0001 -8
+
+mpirun -np 4 -hostfile ../cluster.altec -map-by node ./bin/generic_vgg16_bn_distr -m ~/convert_EDDL/covid19 -w 512 -h 512 -z 1 -c 3 -b 12 -e 10 -l 0.0001 -8
+
+
+4. FINE-GRAIN training
+
+int main(int argc, char **argv) {
+    
+    int id;
+    int n_procs;
+    
+    id= init_distributed();
+    n_procs = get_n_procs_distributed();
+
+     
+    // Download mnist
+    // Settings 
+    // Define network
+    // Define computing service
+    // Build model
+    // Load dataset
+
+    tshape s = x_train->getShape();
+
+Ajustar batch_size
+Calcular batches_per_proc
+    if (split_dataset){
+        dataset_size=dataset_size*n_procs;
+    } 
+    
+    num_batches=dataset_size/batch;
+
+    // El batch que nos pasan los repartimos entre los nodos
+    if (divide_batch) {
+        global_batch=batch;
+        local_batch=global_batch/n_procs;
+        nbpp=num_batches;      
+    // El batch que nos pasan es el que utilizará cada nodo
+    } else {
+        global_batch=batch*n_procs;
+        local_batch=global_batch/n_procs;
+        nbpp=num_batches/n_procs;
+    }      
+
+    // Train model
+    // Difusion de parámetros    
+    bcast_weights_distributed(net);
+    
+    for(i=0;i<epochs;i++) {
+      reset_loss(net);
+      if (id == 0) {
+            fprintf(stdout, "Epoch %d/%d (%d batches, %d batches per proc)\n", i + 1, epochs, num_batches_training, nbpp_training);
+        }
+    // Bucle de 0 a batches_per_proc
+//      for(j=0;j<num_batches;j++)  {
+      for(j=0;j<nbpp_training;j++)  {
+
+        next_batch({x_train,y_train},{xbatch,ybatch});
+        train_batch(net, {xbatch}, {ybatch});
+        
+        // Average weights        
+        //sync_batch
+        avg_weights_distributed(net, j, nbpp_training);  
+        
+            print_loss(net,j);
+            if (id==0)
+                printf("\r");
+      }
+
+Ajustar batches_avg, si procede
+      // adjust batches_avg
+      //update_batch_avg_distributed(i,  secs,  batches_per_proc)
+
+      if (id==0)
+          printf("\n");
+      //if (early_stopping_on_loss_var (net, 0, 0.001, 2, i)) break;
+      //if (early_stopping_on_metric_var (net, 0, 0.0001, 2, i)) break;
+      //if (early_stopping_on_metric (net, 0, 0.9, 2, i)) break;
+    }
+    if (id==0) 
+        printf("\n");   
+
+    // Evaluate model
+    reset_loss(net); // Important
+    if (id == 0) {
+        for (j = 0; j < num_batches_val; j++) {
+            vector<int> indices(batch_size);
+            for (int i = 0; i < indices.size(); i++)
+                indices[i] = (j * batch_size) + i;
+
+            eval_batch(net,{x_test},
+            {
+                y_test
+            }, indices);
+            print_loss(net, j);
+
+            printf("\r");
+
+        }
+        printf("\n");
+    }
+    
+    // Print loss and metrics
+    
+    // Finalize distributed training
+    end_distributed();
+
+    
+    return EXIT_SUCCESS;
+}
