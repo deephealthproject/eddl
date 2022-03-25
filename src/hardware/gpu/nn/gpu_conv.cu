@@ -202,6 +202,26 @@ void gpu_conv2D(ConvolDescriptor *D) {
         gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
     } */
 
+    float max_h = Tensor::max(D->gpuK);
+    if (max_h > max_quant) max_quant = max_h;
+    float min_h = Tensor::min(D->gpuK);
+    if (min_h < min_quant) min_quant = min_h;
+
+     max_h = Tensor::max(D->gpuIB);
+    if (max_h > max_quant) max_quant = max_h;
+     min_h = Tensor::min(D->gpuIB);
+    if (min_h < min_quant) min_quant = min_h;
+
+     max_h = Tensor::max(D->gpuOB);
+    if (max_h > max_quant) max_quant = max_h;
+     min_h = Tensor::min(D->gpuOB);
+    if (min_h < min_quant) min_quant = min_h;
+
+     max_h = Tensor::max(D->O);
+    if (max_h > max_quant) max_quant = max_h;
+     min_h = Tensor::min(D->O);
+    if (min_h < min_quant) min_quant = min_h;
+
   }
 #else
   // FWD environment
@@ -231,6 +251,10 @@ void gpu_conv2D(ConvolDescriptor *D) {
 #endif
   }
 
+    float max_h = Tensor::max(D->bias);
+    if (max_h > max_quant) max_quant = max_h;
+    float min_h = Tensor::min(D->bias);
+    if (min_h < min_quant) min_quant = min_h;
 
 }
 
@@ -240,12 +264,12 @@ void gpu_conv2D_quantized(ConvolDescriptor *D) {
   cudaSetDevice(device);
 
   if (D->Kquant==nullptr) D->Kquant = new Tensor(D->K->getShape(), D->K->device);
-  if (D->gpuIBquant==nullptr) D->gpuIBquant = new Tensor(D->gpuIB->getShape(), D->gpuIB->device);
   if (D->biasquant==nullptr) D->biasquant = new Tensor(D->bias->getShape(), D->bias->device);
-  if (D->Iquant==nullptr) D->Iquant = new Tensor(D->I->getShape(), D->I->device);
+  if(quantization_mode<3) if(D->gpuIBquant==nullptr) D->gpuIBquant = new Tensor(D->gpuIB->getShape(), D->gpuIB->device);
+  if(quantization_mode<3) if(D->Iquant==nullptr) D->Iquant = new Tensor(D->I->getShape(), D->I->device);
   
   Tensor::copy(D->I, D->Iquant);
-  D->I->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+  if(quantization_mode<3)D->I->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
 
   Tensor::copy(D->K, D->Kquant);
   D->K->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
@@ -258,7 +282,7 @@ void gpu_conv2D_quantized(ConvolDescriptor *D) {
 #ifndef cCUDNN
   if(D->mem_level<=1){
     Tensor::copy(D->gpuIB,D->gpuIBquant);
-    D->gpuIB->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+    if(quantization_mode<3)D->gpuIB->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
   }
 #endif
 
@@ -296,23 +320,13 @@ void gpu_conv2D_quantized(ConvolDescriptor *D) {
   else {
 
     gpu_im2col(D,0); 
-    printf("Z");
-    // if (D->mem_level==0) {
-    gpu_mult2D(D->gpuK,0,D->gpuIB,1,D->gpuOB,0); // mult K * I.
-     //gpu_mat_mul(D->gpuK,0, D->gpuIB, 1,D->gpuOB); // mult K * I.
-
-      D->gpuOB->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
-      setDims(D->O);
-      gpu_traspose_batch_depth<<<dimGrid,dimBlock>>>(D->gpuOB->ptr, D->O->ptr, D->O->shape[0], D->z, D->r, D->c);
-      check_cuda(cudaDeviceSynchronize(),"gpu_batch_depth");
-    /* }
-    else {
-      gpu_im2col(D,0);
-      int isize=D->kz*D->kr*D->kc*D->r*D->c;
-      for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize,D->gpuI->ptr+=isize)
-        gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
-    } */
-
+    if(quantization_mode==1 || quantization_mode ==3)gpu_mult2D(D->gpuK,0,D->gpuIB,1,D->gpuOB,0); 
+    else gpu_mat_mul(D->gpuK,0, D->gpuIB, 1,D->gpuOB);
+    if(quantization_mode<3)D->gpuOB->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+    else D->gpuOB->clipping_(std::pow(2,quantization_clipping_bits)/2-1,(std::pow(2,quantization_clipping_bits)/2-1)*-1 );
+    setDims(D->O);
+    gpu_traspose_batch_depth<<<dimGrid,dimBlock>>>(D->gpuOB->ptr, D->O->ptr, D->O->shape[0], D->z, D->r, D->c);
+    check_cuda(cudaDeviceSynchronize(),"gpu_batch_depth");
   }
 #else
   // FWD environment
@@ -335,8 +349,9 @@ void gpu_conv2D_quantized(ConvolDescriptor *D) {
     int size=D->bias->shape[0];
     for(int i=0;i<size;i+=1024) {
       int s=min(1024,size-i);
-      gpu_addbias_k<<<D->O->shape[0],s>>>(D->O->ptr, D->O->shape[0], D->r,D->c,D->nk,D->bias->ptr,i);
-      D->O->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+      gpu_addbias_k<<<D->O->shape[0],s>>>(D->O->ptr, D->O->shape[0], D->r,D->c,D->nk,D->bias->ptr,i);    
+      if(quantization_mode<3)D->O->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+      else D->O->clipping_(std::pow(2,quantization_clipping_bits)/2-1,(std::pow(2,quantization_clipping_bits)/2-1)*-1 );
       check_cuda(cudaDeviceSynchronize(),"gpu_addbias");
     }
 #else

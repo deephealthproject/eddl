@@ -211,7 +211,8 @@ __global__ void gpu_d_clamp(float *D, float *I, float *PD, long int size, float 
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < size){
-        B[thread_id_x] = roundf(A[thread_id_x]);
+       // B[thread_id_x] = roundf(A[thread_id_x]); //fixed point
+        B[thread_id_x] = (float) lroundf(A[thread_id_x]); //integer
     }
 }
 
@@ -418,31 +419,30 @@ __global__ void gpu_transpose(float *A, float *B, int m, int n) {
         for(int i = 0; i < n; i++)
         {
             float mul = A[fil * n + i] * B[i * k + col];
-            if(enable) {
+            //if(enable) {
                 float Nround = powf(2,round);
                 mul =  mul * Nround;
                 mul = roundf(mul);
                 mul = mul / Nround;
 
                 //clipping 
-                float max = powf(2,clip) - 1;
-                float min = powf(2,clip) * (-1);
+                float max = powf(2,clip)/2 - 1;
+                float min = powf(2,clip)/2 * (-1) -1;
                 if (mul < min){ mul = min; }
                 else if(mul > max){ mul = max; }
-            }
+            //}
             sum += mul;
-            if(enable) {
-                float Nround = powf(2,round);
+            //if(enable) {
                 sum =  sum * Nround;
                 sum = roundf(sum);
                 sum = sum / Nround;
 
                 //clipping 
-                float max = powf(2,clip) - 1;
-                float min = powf(2,clip) * (-1);
+                max = powf(2,clip)/2 - 1;
+                min = powf(2,clip)/2 * (-1) - 1;
                 if (sum < min){ sum = min; }
                 else if(sum > max){ sum = max; }
-            }
+            //}
         }
         C[thread_id_x] = sum;
     }

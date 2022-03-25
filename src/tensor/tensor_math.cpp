@@ -1642,7 +1642,6 @@ Tensor* Tensor::round(){
 void Tensor::round(Tensor *A, Tensor *B){
 
     PROFILING_HEADER_EXTERN(round);
-
     if (A->isCPU() && B->isCPU()) {
         cpu_round(A, B);
     }
@@ -1930,15 +1929,30 @@ void Tensor::quantize(Tensor *A, Tensor *B, int clipping_bits, int rounding_bits
     }
     Tensor *input = A->clone();
 
-    //wref = round(w * N)/N;
-    int Nround = std::pow(2,rounding_bits);
-    Tensor::mult(input, B, Nround);
-    B->round_();
-    B->div_(Nround);
+    if(quantization_mode < 3) {
+        //wref = round(w * N)/N;
+        int Nround = std::pow(2,rounding_bits);
+        Tensor::mult(input, B, Nround);
+        B->round_();
+        B->div_(Nround);
 
-    //clipping
-    int max = std::pow(2,clipping_bits) - 1;
-    int min = std::pow(2,clipping_bits) * (-1);
+    } else {
+        //cout << scaling_factor << "\n";
+        //wref = round(w / scaling ) - zero;
+        Tensor::div(input, B, scaling_factor);
+        B->round_();
+        //Tensor::add(B,B,zero_point);
+        if(zero_point!=0) {
+            printf("zero point != 0 (%d)\n", zero_point);
+            exit(0);
+        }
+        //B->print();
+        //exit(0);
+    }
+    //clipping 
+    int values = std::pow(2,clipping_bits);
+    int max = values/2 - 1;
+    int min = values/2 * (-1) -1;
     B->clipping_(max, min);
 
     //wp = w-wref;
@@ -1948,6 +1962,49 @@ void Tensor::quantize(Tensor *A, Tensor *B, int clipping_bits, int rounding_bits
     B->mult_(alpha);
 
     Tensor::add(1.0f, input, -1.0f, B, B, 0);
+    input->deleteData();
+    //cout << scaling_factor<<"\n";
+    //B->print(4);
+    //exit(0);
+}
+
+void Tensor::dequantize_(float alpha){
+    Tensor::dequantize(this, this, alpha);
+}
+
+Tensor* Tensor::dequantize(float alpha){
+    Tensor *t = this->clone();
+    t->dequantize_(alpha);
+    return t;
+}
+
+
+void Tensor::dequantize(Tensor *A, Tensor *B, float alpha){
+    if (!Tensor::sameSize(A, B)) {
+        A->info();
+        B->info();
+        msg("Tensors with different size", "Tensor::quantize");
+    }
+    Tensor *input = A->clone();
+    //wfloat = (xint - zero_point) * scaling
+    Tensor::mult(input, B, scaling_factor);
+    if(zero_point!=0) {
+        printf("zero point != 0 \n");
+        exit(0);
+    }
+
+    //wp = w-wref;
+    Tensor::add(1.0f, input, -1.0f, B, B, 0);
+
+    //output = w - (wp * alpha)
+    B->mult_(alpha);
+
+    Tensor::add(1.0f, input, -1.0f, B, B, 0);
+    //printf("\n\n");
+    //input->print();
+    //printf("\n\n");
+    //B->print();
+    //exit(0);
     input->deleteData();
 }
 

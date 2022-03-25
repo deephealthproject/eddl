@@ -62,10 +62,15 @@
 //const float CPU_EPS_FLOAT = std::numeric_limits<float>::epsilon();  // Machine epsilon (the difference between 1 and the least value greater than 1 that is representable).
 //const float CPU_LOWEST_FLOAT = -CPU_MAX_FLOAT;  // For floating-point types: implementation-dependent; generally, the negative of max()
 
-extern int enable_quantization;
+extern int quantization_mode;
 extern int quantization_clipping_bits;
 extern int quantization_rounding_bits;
 extern float quantization_alpha;
+extern float min_quant;
+extern float max_quant;
+extern float scaling_factor;
+extern int zero_point;
+
 
 using namespace std;
 
@@ -1707,6 +1712,11 @@ public:
     *   @param alpha Quantization percentage.
     */
     static void quantize(Tensor *A, Tensor *B,int clipping_bits, int rounding_bits, float alpha);
+
+    void dequantize_(float alpha); // this = this .- A
+    Tensor* dequantize( float alpha); // this = this .- A
+    static void dequantize(Tensor *A, Tensor *B, float alpha);
+
 
     /**
     *   @brief In-place element-wise tan operation.

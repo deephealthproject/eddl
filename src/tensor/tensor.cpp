@@ -25,10 +25,14 @@ using namespace std;
 int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int initfpga[MAX_FPGAS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
-int enable_quantization=0;
+int quantization_mode=0;
 float quantization_alpha=0;
 int quantization_clipping_bits;
 int quantization_rounding_bits=0;
+float min_quant=100000;
+float max_quant=-100000;
+float scaling_factor=0;
+int zero_point=0;
 
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 

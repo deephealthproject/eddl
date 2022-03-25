@@ -166,7 +166,10 @@ void LActivation::resize(int batch){
 #endif
 
 void LActivation::forward(){
-    if(enable_quantization) this->input->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+    if(quantization_mode > 0 && quantization_mode < 3)this->input->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+    if(act == "softmax" && quantization_mode==3) {
+        this->input->dequantize_(1);
+    }
 
 #ifdef cCUDNN
 
@@ -246,6 +249,23 @@ else
         tensorNN::Linear(this->input, this->output, alpha);
     }
   }
+/*// cout << name << "\n";
+ if(name=="clone_0relu1") {
+     cout << "relu18\n";
+    this->output->print();
+           exit(0);
+}
+
+    float max_h = Tensor::max(this->input);
+    if (max_h > max_quant) max_quant = max_h;
+    float min_h = Tensor::min(this->input);
+    if (min_h < min_quant) min_quant = min_h;
+
+     max_h = Tensor::max(this->output);
+    if (max_h > max_quant) max_quant = max_h;
+     min_h = Tensor::min(this->output);
+    if (min_h < min_quant) min_quant = min_h;
+    */
 }
 
 

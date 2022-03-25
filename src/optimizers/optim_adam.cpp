@@ -112,7 +112,8 @@ void Adam::applygrads(int batch) {
             // Distributed training: Accumulation of gradients
             if (layers[i]->acc_gradients.size() > 0)
               Tensor::add(-lr, mCap[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
-            if(enable_quantization) layers[i]->params[j]->quantize_(quantization_clipping_bits, quantization_rounding_bits, quantization_alpha);
+            
+            if(quantization_mode > 0 && quantization_mode < 3) layers[i]->params[j]->quantize_(quantization_clipping_bits, quantization_rounding_bits, quantization_alpha);
 
         }
     }

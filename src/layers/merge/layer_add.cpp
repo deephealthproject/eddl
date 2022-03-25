@@ -59,9 +59,18 @@ string LAdd::plot(int c) {
 
 void LAdd::forward() {
     output->fill_(0.0);
+    //NEW
     for (int i = 0; i < parent.size(); ++i) {
         Tensor::inc(parent[i]->output, output);
-        if (enable_quantization) output->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+        if(quantization_mode>0){
+            if(quantization_mode<3)output->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+            else  output->clipping_(std::pow(2,quantization_clipping_bits)/2-1,(std::pow(2,quantization_clipping_bits)/2-1)*-1 );
+        }
+
+        float max_h = Tensor::max(parent[i]->output);
+        if (max_h > max_quant) max_quant = max_h;
+        float min_h = Tensor::min(parent[i]->output);
+        if (min_h < min_quant) min_quant = min_h;
     }
 }
 

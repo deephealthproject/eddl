@@ -473,7 +473,7 @@ namespace eddl {
     /**
       *  @brief Set quantize mode.
       *
-      *  @param mode Quantization enabled 1, Quantization disabled 0
+      *  @param mode Quantization disabled 0, simulated quantization 1, fixed-point only quantization 2, 3 variable
       *  @param clip_bits clipping bits for quantization.
       *  @param round_bits rounding bits for quantization.
       *  @param alpha Quantization percentage.
@@ -481,6 +481,12 @@ namespace eddl {
     */
     void set_quantized_mode(model net, int mode, int clip_bits, int round_bits, float alpha);
 
+    void set_quantized_mode(model net, int mode, int clip_bits, float scaling, int zero_p, float alpha);
+
+    float get_min();
+
+    float get_max();
+    
     void end_quantization(model net);
     
     /**

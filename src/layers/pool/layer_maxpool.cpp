@@ -60,8 +60,13 @@ void LMaxPool::resize(int batch){
 }
 
 void LMaxPool::forward() {
-    if(enable_quantization) this->pd->I->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
+    if(quantization_mode > 0 && quantization_mode < 3) this->pd->I->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
     tensorNN::MPool2D(this->pd);
+    //NEW
+    float max_h = Tensor::max(this->pd->O);
+    if (max_h > max_quant) max_quant = max_h;
+    float min_h = Tensor::min(this->pd->O);
+    if (min_h < min_quant) min_quant = min_h;
 }
 
 void LMaxPool::backward() {

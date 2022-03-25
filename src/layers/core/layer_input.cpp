@@ -57,7 +57,7 @@ void LInput::forward() {
   if (parent.size()) {
     Tensor::copy(parent[0]->output,output);
   }
-
+  if(quantization_mode>=3)output->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
 }
 
 

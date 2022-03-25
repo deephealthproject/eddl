@@ -333,18 +333,42 @@ namespace eddl {
     }
 
     void set_quantized_mode(model net, int mode, int clip_bits, int round_bits, float alpha){
-        enable_quantization = mode;
+        quantization_mode = mode;
         quantization_clipping_bits =  clip_bits;
         quantization_rounding_bits = round_bits;
         quantization_alpha = alpha;
-        cout <<"[EDDL info] clipping_bits " << quantization_clipping_bits << " (" << std::pow(2,quantization_clipping_bits)<< ")" << "rounding_bits " << quantization_rounding_bits<<" ("<< std::pow(2,quantization_rounding_bits) << ")" << "alpha " << alpha<<"\n";
+        cout <<"[EDDL info] Quantization mode (0 (no quant) 1 (simultated) 2 (fixed-point only) 3(integer)) " << quantization_mode << " clipping_bits" << quantization_clipping_bits << " (" << std::pow(2,quantization_clipping_bits)<< ")" << "rounding_bits " << quantization_rounding_bits<<" ("<< std::pow(2,quantization_rounding_bits) << ")" << "alpha " << alpha<<"\n";
+        //cout << "Min " << min_quant << "max " << max_quant;
         gpu_set_quant(mode, clip_bits, round_bits);
         net->set_quantization_mode(mode);
     }
 
+    float get_min(){
+        return min_quant;
+    }
+
+    float get_max(){
+        return max_quant;
+    }
+
+    void set_quantized_mode(model net, int mode, int clip_bits, float scaling, int zero_p, float alpha){
+        quantization_mode = mode;
+        quantization_clipping_bits =  clip_bits;
+        scaling_factor = scaling;
+        zero_point = zero_p;
+        quantization_alpha = alpha;
+        cout <<"[EDDL info] Quantization mode (1 sim 2 fixed-point 3 variable) " << quantization_mode;
+        cout << " clipping_bits" << quantization_clipping_bits << " (" << std::pow(2,quantization_clipping_bits)<< ")";
+        cout << " scaling factor " << scaling_factor << " zero point " << zero_point <<"alpha " << alpha<<"\n";
+        cout << "Min " << min_quant << "max " << max_quant;
+        gpu_set_quant(mode, clip_bits, clip_bits); //cambiar
+        net->set_quantization_mode(mode);
+        if(mode>=3) exit(0);
+    }
+
     void end_quantization(model net){
         net->end_quantization_net();
-        enable_quantization = 0;
+        quantization_mode = 0;
         net->set_quantization_mode(0);
     }
     

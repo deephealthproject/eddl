@@ -52,31 +52,54 @@ LDense::~LDense(){
 }
 
 void LDense::forward() {
-    if (enable_quantization) {
+    if (quantization_mode > 0) {
         if (qW==nullptr) qW = new Tensor(W->getShape(), W->device);
         if (qbias==nullptr) qbias = new Tensor(bias->getShape(), bias->device);
-        input->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
 
         Tensor::copy(W, qW);
         W->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
 
         Tensor::copy(bias, qbias);
         bias->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+
+        if(quantization_mode < 3) input->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
+
     }
 
     Tensor::mult2D(input, 0, W, 0, output, 0);
-
-    if(enable_quantization) output->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
+    if(quantization_mode >0) {
+        if(quantization_mode<3)output->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+        else  output->clipping_(std::pow(2,quantization_clipping_bits)/2-1,(std::pow(2,quantization_clipping_bits)/2-1)*-1 );
+    }
 
     if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
 
-    if(enable_quantization) {
-        output->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
+    if(quantization_mode > 0) {
+        if(quantization_mode<3)output->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+        else  output->clipping_(std::pow(2,quantization_clipping_bits)/2-1,(std::pow(2,quantization_clipping_bits)/2-1)*-1 );
         Tensor::copy(qW, W);
         Tensor::copy(qbias, bias);
     }
-    //    printf("end dense\n");
+    
+    float max_h = Tensor::max(output);
+    if (max_h > max_quant) max_quant = max_h;
+    float min_h = Tensor::min(output);
+    if (min_h < min_quant) min_quant = min_h;
 
+     max_h = Tensor::max(input);
+    if (max_h > max_quant) max_quant = max_h;
+     min_h = Tensor::min(input);
+    if (min_h < min_quant) min_quant = min_h;
+
+     max_h = Tensor::max( W);
+    if (max_h > max_quant) max_quant = max_h;
+     min_h = Tensor::min( W);
+    if (min_h < min_quant) min_quant = min_h;
+
+     max_h = Tensor::max(bias);
+    if (max_h > max_quant) max_quant = max_h;
+     min_h = Tensor::min(bias);
+    if (min_h < min_quant) min_quant = min_h;
 }
 
 void LDense::backward() {
