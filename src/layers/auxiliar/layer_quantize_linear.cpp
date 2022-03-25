@@ -43,6 +43,7 @@ void LQuantizeLinear::resize(int batch){
 
 
 void LQuantizeLinear::forward() {
+    printf("FORWARD QUANTIZE CALL FROM LAYER\n");
     tensorNN::quantize_linear(this->input, this->output, this->y_scale, this->y_zero_point, this->axis);
 }
 

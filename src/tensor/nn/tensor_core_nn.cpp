@@ -220,7 +220,7 @@ namespace tensorNN {
 
     void quantize_linear(Tensor *A, Tensor *B, Tensor *y_scale, Tensor *y_zero_point, int axis) {
 
-
+         printf("FORWARD QUANTIZE CALL FROM TENSOR CORE NN\n");
 	    if (A->isCPU() && B->isCPU()) {
 	      cpu_quantize_linear(A, B, y_scale, y_zero_point, axis);
 	    }
@@ -233,7 +233,7 @@ namespace tensorNN {
 
     void dequantize_linear(Tensor *A, Tensor *B, Tensor *x_scale, Tensor *x_zero_point, int axis) {
 
-
+         printf("FORWARD DEQUANTIZE CALL FROM TENSOR CORE NN\n");
 	    if (A->isCPU() && B->isCPU()) {
 	      cpu_dequantize_linear(A, B, x_scale, x_zero_point, axis);
 	    }

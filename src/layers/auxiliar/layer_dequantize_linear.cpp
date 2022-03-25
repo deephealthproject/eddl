@@ -27,7 +27,7 @@ LDequantizeLinear::LDequantizeLinear(Layer *parent, string name, int dev, int me
     this->x_scale = x_scale;
     this->x_zero_point = x_zero_point;
     input = parent->output;
-    cout << this->name << endl;
+    cout << this->name << " parent " << parent->name << endl;
     printf("desquantize antes Linear\n");
     if(this->name.compare("input_input_data_int8_dequant")==0){
       printf("PRINT INPUT\n");
@@ -49,6 +49,7 @@ void LDequantizeLinear::resize(int batch){
 
 
 void LDequantizeLinear::forward() {
+    printf("FORWARD DEQUANTIZE  CALL FROM LAYER\n");
     tensorNN::dequantize_linear(this->input, this->output, this->x_scale, this->x_zero_point, this->axis);
     if(this->name.compare("input_input_data_int8_dequant")==0){
       printf("PRINT OUTPUT input_input_data_int8_dequant\n");
