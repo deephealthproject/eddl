@@ -178,6 +178,7 @@ void gpu_dequantize_linear(Tensor *A, Tensor *B, Tensor *x_scale, Tensor *x_zero
 
    
     gpu_dequantize_linear<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, x_scale->ptr, x_zero_point->ptr, (int)A->size, (int)x_scale->size, axis, A->stride[axis]);
+    B->print();
     check_cuda(cudaDeviceSynchronize(),"gpu_dequantize_linear");
 }
 

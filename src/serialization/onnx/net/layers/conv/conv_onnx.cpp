@@ -89,13 +89,15 @@ Layer* build_conv_layer(onnx::NodeProto *node,
   string parent_name = node->input(0); // Get parent
   Layer *parent = output_node_map[parent_name];
   vector<int> parent_shape = parent->output->shape;
-
+  
   string weights_name = node->input(1); // Get weights and dims
+  //si vienen de una capa estan en output node map
   
   vector<float> *weights = &(map_init_values[weights_name]);
   vector<int> dims = map_init_dims[weights_name];
   cout << "layer weights: " << weights_name << " dims weight: " << dims.size() << " wights size " << weights->size() << endl;
   filters = dims[0];
+
 
   // Deduce conv dimension from layer input
   if (parent_shape.size() == 3)
@@ -174,21 +176,24 @@ Layer* build_conv_layer(onnx::NodeProto *node,
           actual_layer = new LConv(actual_layer, cd, name, dev, mem);
       }
     }
-
-
     if (use_bias)
     {
       string bias_name = node->input(2);
       bias = &(map_init_values[bias_name]);
       Tensor *bias_tensor = new Tensor({(int)bias->size()}, nullptr, dev);
       COPY_FROM_VECTOR_PTR_TO_TENSOR(bias, bias_tensor);
-      Tensor::copy(bias_tensor, cd->bias);
+      Tensor::copy(bias_tensor, cd->bias); 
       delete bias_tensor;
     }
     Tensor *weights_tensor = new Tensor(dims, nullptr, dev);
     COPY_FROM_VECTOR_PTR_TO_TENSOR(weights, weights_tensor);
     Tensor::copy(weights_tensor, cd->K);
     delete weights_tensor;
+  //  if(name.compare("YoloV3/MobilenetV2/Conv/Conv2D1_prequant")){
+  //    cout << "YoloV3/MobilenetV2/Conv/Conv2D1_prequant " << endl;
+  //    cd->bias->print();
+  //    cd->K->print();
+  //  }
   }
   else // Conv3D
   {

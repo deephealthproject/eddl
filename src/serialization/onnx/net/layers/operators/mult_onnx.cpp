@@ -36,12 +36,21 @@ Layer* build_mul_layer(onnx::NodeProto *node,
     else // Is a multiplication of a tensor by a scalar
     {
       vector<float> scalars = map_init_values[second_operator_name];
+      vector<float> first = map_init_values[first_operator_name];
       if (scalars.size() == 1)
       {
         return new LMult(first_operator, scalars[0], node->name(), dev, mem);
       }
       else
       {
+        cout << first_operator_name << endl;
+        //first_operator->input->print();
+        first_operator->output->info();
+
+        cout << second_operator_name << endl;
+        for(int i = 0; i < scalars.size(); i++){
+          cout << scalars[i] << endl;
+        }
         msg("Error: The second input factor of the Mult layer " + node->name() + " is not valid", "ONNX::ImportNet");
         return nullptr;
       }

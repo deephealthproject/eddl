@@ -34,6 +34,10 @@ Layer* build_pad_layer(onnx::NodeProto *node,
 
   const string& parent_name = node->input(0);
   Layer *parent = output_node_map[parent_name];
+  if(parent_name.compare("YoloV3/MobilenetV2/Conv/Pad_prequant")){
+     cout << " INPUT PAD YoloV3/MobilenetV2/Conv/Pad_prequant of parent " << parent_name << endl;
+     parent->output->print();
+   }
   vector<int> eddl_pads;
 
   if (op_version_11) // We have to take the pad values from a node input
@@ -44,7 +48,7 @@ Layer* build_pad_layer(onnx::NodeProto *node,
       int n_pad_values = (&(map_init_values[pads_name]))->size();
       float *pads_values = new float [n_pad_values];
       COPY_FROM_VECTOR_PTR_TO_FLOAT_PTR(&(map_init_values[pads_name]), pads_values);
-
+      
       if (n_pad_values != 8)
         msg("Error importing layer " + node->name() + ". The expected number of padding values is 8, got " +
             to_string(n_pad_values) + ".", "ONNX::ImportNet");

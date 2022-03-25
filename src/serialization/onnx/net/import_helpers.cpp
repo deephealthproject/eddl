@@ -504,7 +504,7 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
   vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); // Get input nodes data
   vector<onnx::NodeProto> nodes = get_graph_nodes(graph); // Get the nodes (layers) of the model
   for (int i = 0; i < nodes.size(); i++){
-    if(nodes[i].name().compare("YoloV3/MobilenetV2/Conv/Conv2D1_prequant") == 0){
+    if(nodes[i].name().compare("YoloV3/MobilenetV2/expanded_conv_5/project/Conv2D_dequant") == 0){
         printf(" BUILD NET, encontrado %d INPUTS\n", nodes[i].input_size());
         for(int j = 0; j < nodes[i].input_size(); j++){
           cout << "Input" << j << " name " << nodes[i].input(j) << endl;

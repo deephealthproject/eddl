@@ -3,7 +3,7 @@
 
 // ONNX import
 Layer* build_dequantizelinear_layer(onnx::NodeProto *node,
-                          map<string, vector<float>> &map_init_values,
+                          map<string, vector<float>> &map_init_values, //keys de los initializers
 			                    map<string, vector<int>> &map_init_dims,
                           map<string, Layer *> &output_node_map,
                           int dev,
@@ -18,10 +18,10 @@ Layer* build_dequantizelinear_layer(onnx::NodeProto *node,
 
   string shape_name = node->input(1);
   vector<float> shape_values = map_init_values[shape_name];
-  
+  bool notParent = false;
   Tensor *x_scale;
   Tensor *x_zero_point; // 0 is the default value in the ONNX standard
-
+ 
   // inputs
   for (int i = 0; i < 3; i++) {
     string input = node->input(i);
@@ -31,7 +31,8 @@ Layer* build_dequantizelinear_layer(onnx::NodeProto *node,
       cout << "[DEBUG] Parent " << input << " found!" << endl;
       parent = output_node_map[input];
       parent_shape = parent->output->getShape();
-    }else if (map_init_values.count(input) && i == 0) {
+    }else if (map_init_values.count(input) && i == 0) {//si esta en los initializers y no hay una capa anterior
+      //parent does not exists, it is an initializer
       cout << "[DEBUG] Parent " << input << " not found! " << map_init_values.count(input) << endl;
       vector<float> *input0 = &(map_init_values[input]);
       vector<int> dims0;
@@ -42,10 +43,11 @@ Layer* build_dequantizelinear_layer(onnx::NodeProto *node,
       }  
       Tensor *input0_tensor = new Tensor(dims0, nullptr, dev);
       COPY_FROM_VECTOR_PTR_TO_TENSOR(input0, input0_tensor);
-      printf("dims0: %d, size input %d\n", dims0.size(), input0_tensor->size);
+      printf("dims0: %d, size input %d\n", dims0.size(), input0->size());
       parent = new LConstOfTensor(input0_tensor, node->name(), dev, mem);
       parent->output = input0_tensor;
       parent_shape = parent->output->getShape();
+      notParent = true;
     }else if(i==1){
       // param
       vector<float> *input1 = &(map_init_values[input]);
@@ -57,6 +59,7 @@ Layer* build_dequantizelinear_layer(onnx::NodeProto *node,
       } 
       x_scale = new Tensor(dims1, nullptr, dev);
       COPY_FROM_VECTOR_PTR_TO_TENSOR(input1, x_scale);
+      //x_scale->print();
     }else if(i==2 && node->input_size() > 2){ // x_zero_point is an optional input
       // param
       vector<float> *input2 = &(map_init_values[input]);
@@ -67,7 +70,8 @@ Layer* build_dequantizelinear_layer(onnx::NodeProto *node,
         dims2 = map_init_dims[input];
       }
       x_zero_point = new Tensor(dims2, nullptr, dev);
-       COPY_FROM_VECTOR_PTR_TO_TENSOR(input2, x_zero_point);
+      COPY_FROM_VECTOR_PTR_TO_TENSOR(input2, x_zero_point);
+      //x_zero_point->print();
     }
   }
 
@@ -92,10 +96,31 @@ Layer* build_dequantizelinear_layer(onnx::NodeProto *node,
   }
 
 
+  // if(name.compare("input/input_data_int8_dequant")==0){
+  //   parent->output->info();
+  //   parent->output->print();
+  // }
 
   LDequantizeLinear *dequantize_linear = new LDequantizeLinear(parent, name, dev, mem, x_scale, x_zero_point, axis);
   cout << "[DEBUG] Dequantize layer \"" << name << "\" imported!" << endl;
   cout << "##################################################################" << endl;
+  
+
+
+  //si es un initializer, coger el tensor, procesarlo i meterlo en el map con la key de la salida
+  //una vez cuantizado meterno de nuevo en el map_init_values, una entrada en el map, con la key o nombre de la salida para que la siguiente capa lo lea
+  if(notParent){
+    vector<float> output;
+    tensorNN::dequantize_linear(dequantize_linear->input, dequantize_linear->output, x_scale, x_zero_point, axis);
+    
+    output.assign(dequantize_linear->output->ptr, (dequantize_linear->output->ptr)+(dequantize_linear->output->size));
+    // if(name.compare("YoloV3/MobilenetV2/expanded_conv_5/project/Conv2D_dequant")==0){
+    //   dequantize_linear->input->print();
+    //   dequantize_linear->output->print(); //falla, devuelve solo 1 valor 0, deberia devolver 32 valores
+    // }
+    map_init_values.emplace(name, output);
+    map_init_dims.emplace(name, dequantize_linear->output->shape);
+  }
 
   return dequantize_linear;
 

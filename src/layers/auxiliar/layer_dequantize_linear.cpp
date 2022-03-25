@@ -27,9 +27,13 @@ LDequantizeLinear::LDequantizeLinear(Layer *parent, string name, int dev, int me
     this->x_scale = x_scale;
     this->x_zero_point = x_zero_point;
     input = parent->output;
-    
+    cout << this->name << endl;
     printf("desquantize antes Linear\n");
-    //input->print();
+    if(this->name.compare("input_input_data_int8_dequant")==0){
+      printf("PRINT INPUT\n");
+      cout << this->x_scale->ptr[0] << " " << this->x_zero_point->ptr[0] << endl;
+      this->input->print(); //falla, devuelve solo 1 valor 0, deberia devolver 32 valores
+    }
     output = new Tensor(input->shape, dev);
     printf("desquantize despues Linear\n");
 
@@ -46,6 +50,10 @@ void LDequantizeLinear::resize(int batch){
 
 void LDequantizeLinear::forward() {
     tensorNN::dequantize_linear(this->input, this->output, this->x_scale, this->x_zero_point, this->axis);
+    if(this->name.compare("input_input_data_int8_dequant")==0){
+      printf("PRINT OUTPUT input_input_data_int8_dequant\n");
+      this->output->print(); //falla, devuelve solo 1 valor 0, deberia devolver 32 valores
+    }
 }
 
 void LDequantizeLinear::backward() {

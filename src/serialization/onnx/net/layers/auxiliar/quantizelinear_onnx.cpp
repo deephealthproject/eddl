@@ -90,8 +90,13 @@ Layer* build_quantizelinear_layer(onnx::NodeProto *node,
     axis = -1;
   }
 
-  //pasar axis a positivo
-  
+  //falta analizar el PAD, de ahi vienen todos los 0s
+  if(name.compare("YoloV3/MobilenetV2/Conv/Pad_quantize")==0){
+    parent->output->info();
+    parent->output->print();
+  }
+
+
   LQuantizeLinear *quantize_linear = new LQuantizeLinear(parent, name, dev, mem, y_scale, y_zero_point, axis);
   cout << "[DEBUG] Quantize layer \"" << name << "\" imported!" << endl;
   cout << "##################################################################" << endl;

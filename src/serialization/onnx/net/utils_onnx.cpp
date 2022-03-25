@@ -22,7 +22,10 @@ std::vector<int> vf2vi(const std::vector<float> &vf)
 vector<float> parseTensorValues(onnx::TensorProto t)
 {
   int data_type = t.data_type(); // Only works for non raw data for now
-  //cout << t.name() << endl;
+  // if(t.name().compare("YoloV3/MobilenetV2/expanded_conv_5/project/Conv2D")){
+  //   cout << "data type YoloV3/MobilenetV2/expanded_conv_5/project/Conv2D " << data_type << endl;
+  // }
+  
   vector<float> values;
   switch (data_type)
   {
@@ -82,9 +85,17 @@ vector<float> parseTensorValues(onnx::TensorProto t)
     }
     break;
   case onnx::TensorProto::INT32:
-    for (int i = 0; i < t.int32_data_size(); i++)
+      if (t.has_raw_data())
     {
-      values.push_back(t.int32_data(i));
+      vector<int32_t> aux_values; // Vector to read the int32 values
+      TryConvertingTensorRawValues(t, aux_values);
+      for (float i : aux_values) // Cast to float
+        values.push_back(i);
+    }else{
+      for (int i = 0; i < t.int32_data_size(); i++)
+      {
+        values.push_back(t.int32_data(i));
+      }
     }
     break;
   case onnx::TensorProto::INT64:
