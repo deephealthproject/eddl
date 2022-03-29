@@ -336,7 +336,7 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
         high_resolution_clock::time_point e2 = high_resolution_clock::now();
         duration<double> epoch_time_span = e2 - e1;
         if (id == 0) {
-            fprintf(stdout, "\n%1.4f secs/epoch: train: %1.4f secs; comms: %1.4\nf", epoch_time_span.count(),tbsecs,awsecs);
+            fprintf(stdout, "\n%1.4f secs/epoch: train: %1.4f secs; comms: %1.4f\n", epoch_time_span.count(),tbsecs,awsecs);
             fflush(stdout);
         }
         set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.05);
