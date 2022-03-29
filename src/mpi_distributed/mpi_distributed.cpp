@@ -92,6 +92,15 @@ double secs_prev = 1E10;
 float prev_losses=1e10;
 float prev_metrics=0;
 
+#define SILENT 0
+
+#define check_MPI(action) \
+    if ((SILENT==0) & (n_procs==1)) { \
+        fprintf(stderr,"[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__); \
+        action; \
+    } 
+
+
 string lib;
 
 #ifdef cNCCL
@@ -106,9 +115,10 @@ int get_id_distributed() {
     /**
     int id = 0;
 #ifdef cMPI
-    if (is_mpi_distributed())
+    if (is_mpi_distributed()) {
         //  Get the individual process ID.
         MPI_Comm_rank(MPI_COMM_WORLD, &id);
+    }
 #endif
      */
     return id;
@@ -118,9 +128,10 @@ int get_n_procs_distributed() {
     /*
     int n_procs = 1;
 #ifdef cMPI
-    if (is_mpi_distributed())
+    if (is_mpi_distributed()) {
         //  Get the number of processes.
         MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
+     }
 #endif
      */
     return n_procs;
@@ -134,11 +145,6 @@ void get_nodename_distributed(char* node_name) {
 }
 
 int init_MPI(int *argc, char ***argv) {
-
-    /*
-    int id;
-    int n_procs;
-    */
     char node_name[256] = "unknown";
     int len;
     int provided=1;
@@ -155,7 +161,7 @@ int init_MPI(int *argc, char ***argv) {
     MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &provided);
     if (provided==0) 
         msg("Error multiple threads not supported in MPI library", "init_MPI"); // Exits
-    //fprintf(stderr, "[DISTR] MPI init. %d multiple threads\n", id);
+    //fprintf(stdout, "[DISTR] MPI init. %d multiple threads\n", id);
 
 
     use_mpi = 1;
@@ -163,6 +169,7 @@ int init_MPI(int *argc, char ***argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
     MPI_Comm_rank(MPI_COMM_WORLD, &id);
 
+    check_MPI();
     /*
     if (n_procs < 2) {
         msg("Error: Nr of MPI processes must be >1 ", "init_MPI");
@@ -170,10 +177,10 @@ int init_MPI(int *argc, char ***argv) {
     */
 
     get_nodename_distributed(node_name);
-    fprintf(stderr, "[DISTR] init_MPI. Node %d (%s). %d GPUS available per node\n", id, node_name, get_available_GPUs_distributed());
+    fprintf(stdout, "[DISTR] init_MPI. Node %d (%s). %d GPUS available per node\n", id, node_name, get_available_GPUs_distributed());
 
 
-    fprintf(stderr, "[DISTR] setting default batch avg method\n");
+    fprintf(stdout, "[DISTR] setting default batch avg method\n");
     set_method_distributed(FIXED, AVG_DEFAULT, 0);
 
     // Initalize a different seed per proc
@@ -183,13 +190,7 @@ int init_MPI(int *argc, char ***argv) {
 }
 
 void init_NCCL(int nr_gpus) {
-  /*
-    int id;
-    int n_procs;
 
-    n_procs = get_n_procs_distributed();
-    id = get_id_distributed();
-   */
 #ifdef cNCCL
     //NCCL
     //get NCCL unique ID at rank 0 and broadcast it to all others
@@ -204,7 +205,7 @@ void init_NCCL(int nr_gpus) {
     //initializing NCCL
     NCCLCHECK(ncclCommInitRank(&nccl_comm, n_procs, nccl_id, id));
     if (id == 0)
-        fprintf(stderr, "[DISTR] GPU: NCCL initialized %d procs\n", n_procs);
+        fprintf(stdout, "[DISTR] GPU: NCCL initialized %d procs\n", n_procs);
 #endif
 }
 
@@ -231,7 +232,7 @@ int init_distributed(string comm) {
     } else {
         msg("Error unsupported communication library", "init_distributed"); // Exits
     }
-    //fprintf(stderr, "[DISTR] using %s\n", lib.c_str());
+    //fprintf(stdout, "[DISTR] using %s\n", lib.c_str());
     return id;
 }
 
@@ -256,38 +257,39 @@ int init_distributed2(int *argc, char ***argv, string comm) {
     } else {
         msg("Error unsupported communication library", "init_distributed"); // Exits
     }
-    //fprintf(stderr, "[DISTR] using %s\n", lib.c_str());
+    //fprintf(stdout, "[DISTR] using %s\n", lib.c_str());
     return id;
 }
 
 void end_distributed() {
-   //int id;
+    //int id;
 #ifndef cMPI
     msg("MPI library is not linked", "end_distributed");
 #endif    
-
-    if (use_mpi) {
+    if (!use_mpi) {
+        return;
+    }
 #ifdef cMPI 
-        MPI_Barrier(MPI_COMM_WORLD);
-        //  Get the individual process ID.
-        //MPI_Comm_rank(MPI_COMM_WORLD, &id);
+    MPI_Barrier(MPI_COMM_WORLD);
+    //  Get the individual process ID.
+    //MPI_Comm_rank(MPI_COMM_WORLD, &id);
 #endif
 
 #ifdef cNCCL
-        if (lib == "NCCL") {
-            //finalizing NCCL
-            ncclCommDestroy(nccl_comm);
-            if (id == 0)
-                fprintf(stdout, "[DISTR] GPU: NCCL End\n");
-        }
+    if (lib == "NCCL") {
+        //finalizing NCCL
+        ncclCommDestroy(nccl_comm);
+        if (id == 0)
+            fprintf(stdout, "[DISTR] GPU: NCCL End\n");
+    }
 #endif
 
 #ifdef cMPI
-        if (id == 0)
-            fprintf(stdout, "[DISTR] End\n");
-        MPI_Finalize();
+    if (id == 0)
+        fprintf(stdout, "[DISTR] End\n");
+    MPI_Finalize();
 #endif
-    }
+
 }
 
 int is_mpi_distributed() {
@@ -302,7 +304,8 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg) {
 #ifndef cMPI
     msg("MPI library is not linked", "set_method_distributed");
 #endif  
-
+    check_MPI();
+    
     avg_method = method;
     mpi_avg = batch_avg;
     batches_avg = mpi_avg;
@@ -313,15 +316,15 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg) {
 
     if (id == 0)
         if (avg_method == FIXED) {
-            fprintf(stderr, "[DISTR] set_method. %s, batch_avg %d \n", "FIXED", mpi_avg);
+            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d \n", "FIXED", mpi_avg);
         } else if (avg_method == AVG_INC) {
-            fprintf(stderr, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "AVG_INC", mpi_avg, x_avg);
+            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "AVG_INC", mpi_avg, x_avg);
         } else if (avg_method == SAWTOOTH) {
-            fprintf(stderr, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "SAWTOOTH", mpi_avg, x_avg);
+            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "SAWTOOTH", mpi_avg, x_avg);
         } else if (avg_method == NEG_SAWTOOTH) {
-            fprintf(stderr, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "NEG SAWTOOTH", mpi_avg, x_avg);
+            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "NEG SAWTOOTH", mpi_avg, x_avg);
         } else if (avg_method == AUTO_TIME) {
-            fprintf(stderr, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "AUTO TIME", mpi_avg, x_avg);
+            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "AUTO TIME", mpi_avg, x_avg);
         } else {
             msg("Error unknown avg_method", "set_method_distributed"); // Exits
         }
@@ -333,6 +336,9 @@ vector<int> get_gpu_vec_distributed() {
     string gpu_str;
     char node_name[256] = "unknown";
 
+    check_MPI();
+
+    
     int nr_gpus = get_available_GPUs_distributed();
 
     if (is_mpi_distributed()) {
@@ -355,9 +361,9 @@ vector<int> get_gpu_vec_distributed() {
 
     if (is_mpi_distributed()) {
         get_nodename_distributed(node_name);
-        fprintf(stderr, "[DISTR] get_gpu_vec. Node: %s. Process %d. CS: GPU mask: %s\n", node_name, id, gpu_str.c_str());
+        fprintf(stdout, "[DISTR] get_gpu_vec. Node: %s. Process %d. CS: GPU mask: %s\n", node_name, id, gpu_str.c_str());
     } else {
-        fprintf(stderr, "[CS_GPU()] CS: GPU mask: %s\n", gpu_str.c_str());
+        fprintf(stdout, "[CS_GPU()] CS: GPU mask: %s\n", gpu_str.c_str());
     }
 
 
@@ -365,6 +371,9 @@ vector<int> get_gpu_vec_distributed() {
 }
 
 int get_params_distributed(int* method, int* avg, int* avg_chg) {
+    
+    check_MPI();
+
 
     *avg = mpi_avg;
     *method = avg_method;
@@ -389,9 +398,8 @@ void set_batch_distributed (int* global_batch, int* local_batch, int batch, int 
    //int id;
    // int n_procs;
     
-    if (!is_mpi_distributed()) {
-        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
-    }
+    check_MPI();
+
 
     //id = get_id_distributed();
     //n_procs = get_n_procs_distributed();  
@@ -415,9 +423,8 @@ int set_NBPP_distributed(int ds_size, int local_batch, bool method) {
     int num_batches;
     int nbpp;
 
-    if (!is_mpi_distributed()) {
-        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
-    }
+     check_MPI();
+
     //id = get_id_distributed();
     //n_procs = get_n_procs_distributed();  
     num_batches = ds_size / local_batch;
@@ -564,9 +571,8 @@ void fn_Bcast_GPU_weights(Net* net) {
 }
 
 void bcast_weights_distributed(Net * net) {
-    if (!is_mpi_distributed())
-        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
-        return;
+    check_MPI(return);
+
     
     if (net->cs->hw == "gpu")
         fn_Bcast_GPU_weights(net);
@@ -595,7 +601,7 @@ void avg_GPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
                     //    for (int jj = 0; jj < net->snets[0]->layers[ii]->params.size(); jj++) {                
                     myptr = net->snets[0]->layers[i]->params[j]->ptr;
                     count = net->snets[0]->layers[i]->params[j]->size;
-                    //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
+                    //printf("\n===== Proc %d Batch %d Bucle i=%d j=%d size=%d\n", id, curr_batch, i,j,count );
                     if (count != 0) {
                         // AllReduce params
                         fn_GPU_AllReduce(myptr, count);
@@ -641,9 +647,8 @@ void avg_CPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
 void avg_metrics_distributed(Net* net) {
     //int n_procs;
     //n_procs = get_n_procs_distributed();
-    if (!is_mpi_distributed())
-        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
-        return;
+    check_MPI(return);
+
     for (int k = 0; k < net->lout.size(); k += net->decsize) {
         if (net->losses.size() >= (k + 1)) {
 #ifdef cMPI       
@@ -660,24 +665,23 @@ void avg_metrics_distributed(Net* net) {
     }
 }
 
-void avg_float_distributed(float * pvar) {
+void avg_float_distributed(float* pvar) {
     //int n_procs;
     //n_procs = get_n_procs_distributed();
-    if (!is_mpi_distributed())
-        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
-        return;
+    //printf ("== Funcion %s\n", __func__);
+    check_MPI(return)
+
 #ifdef cMPI       
-            MPICHECK(MPI_Allreduce(MPI_IN_PLACE, pvar, 1, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD));
-            *pvar = *pvar / n_procs;
+        MPICHECK(MPI_Allreduce(MPI_IN_PLACE, pvar, 1, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD));
+        *pvar = *pvar / n_procs;  
 #endif
 }
 
 void barrier_distributed() {
     //int n_procs;
     //n_procs = get_n_procs_distributed();
-    if (!is_mpi_distributed())
-        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
-        return;
+    check_MPI(return);
+
 #ifdef cMPI       
     MPICHECK(MPI_Barrier(MPI_COMM_WORLD));
 #endif
@@ -685,10 +689,7 @@ void barrier_distributed() {
 
 
 void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
-    if (!is_mpi_distributed()) {
-        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
-        return;
-    }
+    check_MPI(return);
     if (net->cs->hw == "gpu")
         avg_GPU_weights_distributed(net, curr_batch, batches_per_proc);
     else if (net->cs->hw == "cpu")
@@ -700,10 +701,7 @@ void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
 void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch_avg) {
     float SPEED_UP = 1.05;
 
-    if (!is_mpi_distributed()) {
-        printf("[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__);
-        return;
-    }
+    check_MPI(return);
      
     if (id == 0) {
         switch (avg_method) {
@@ -752,6 +750,24 @@ void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch
                 }
                 break;
         }
+    }
+#ifdef cMPI
+    MPICHECK(MPI_Bcast(&batches_avg, 1, MPI_INT, 0, MPI_COMM_WORLD));
+#endif  
+    
+    
+}
+
+void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, float overhead) {
+    check_MPI(return);
+    double comm1;
+    double ba;
+    
+    if (id == 0) {
+        comm1=secs_comm*batches_avg;
+        ba=((1-overhead)*comm1)/(overhead*secs_train);  
+        batches_avg=round(ba);
+        printf("[DISTR] method LIMIT OVERHEAD, new batches_avg= %d \n", batches_avg);
     }
 #ifdef cMPI
     MPICHECK(MPI_Bcast(&batches_avg, 1, MPI_INT, 0, MPI_COMM_WORLD));
@@ -811,10 +827,11 @@ bool early_stopping_on_loss_var(Net* net, int index, float delta, int patience, 
         } else 
             result = false;
     
-    if (is_mpi_distributed())
+    if (is_mpi_distributed()) {
 #ifdef cMPI       
         MPICHECK(MPI_Bcast(&result, 1, MPI_BYTE, 0, MPI_COMM_WORLD));
 #endif    
+    }
     return result;
 }
 
@@ -842,10 +859,11 @@ bool early_stopping_on_metric_var(Net* net, int index, float delta, int patience
         } else
             result = false;
 
-    if (is_mpi_distributed())
+    if (is_mpi_distributed()) {
 #ifdef cMPI
         MPICHECK(MPI_Bcast(&result, 1, MPI_BYTE, 0, MPI_COMM_WORLD));
 #endif    
+    }
     return result;
 }
 
@@ -866,10 +884,11 @@ bool early_stopping_on_metric(Net* net, int index, float goal, int patience, int
             result = false;
         }
     
-    if (is_mpi_distributed())
+    if (is_mpi_distributed()) {
 #ifdef cMPI
         MPICHECK(MPI_Bcast(&result, 1, MPI_BYTE, 0, MPI_COMM_WORLD));
 #endif
+    }
     return result;
 }
 

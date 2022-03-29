@@ -25,14 +25,42 @@ using namespace std::chrono;
 
 
 layer DataAugmentation (layer l) {
-     // Data augmentation
+     // Data augmentation/
+//    l = RandomCropScale(l, {0.8f, 1.0f});
+//l = RandomFlip(l,1);
+//    l = RandomRotation(l, {-40,40});
+//   l = RandomShift(l, {-0.2,0.2},{-0.2, 0.2});
     l = RandomCropScale(l, {0.8f, 1.0f});
     l = RandomFlip(l,1);
-    l = RandomRotation(l, {-40,40});
-    l = RandomShift(l, {-0.2,0.2},{-0.2, 0.2});
+    l = RandomShift(l, {-0.1,0.1},{-0.1, 0.1});
+    l = RandomRotation(l, {-10,10});
     return l;
 }
 
+
+//////////////////////////////////
+// mlp
+//////////////////////////////////
+ model mlp (vector<int> in_shape, int num_classes, int size1, int size2)  {  
+    layer in = Input(in_shape, "da");
+    //layer in = Input({3, 224, 224});
+    layer l = in;
+
+
+    // Data augmentation
+    //l= DataAugmentation(l);
+    //l=Bypass(l,"bypass");layer in = Input({channels, height, width});
+    
+    l = Flatten(l);
+    l = LeakyReLu(Dense(l, size1));
+    l = LeakyReLu(Dense(l, size1));
+    l = LeakyReLu(Dense(l, size2));
+
+    layer out = Softmax(Dense(l, num_classes),-1, "output");
+    // net define input and output layers list
+    model net = Model({in},{out});
+    return net;
+ }
 //////////////////////////////////
 // vgg16 with BatchNorm
 //////////////////////////////////
@@ -276,12 +304,15 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
     Tensor* xbatch = new Tensor({local_batch, channels, width, height});
     Tensor* ybatch = new Tensor({local_batch, num_classes});
    
-
+    
     for (i = 0; i < epochs; i++) {
         high_resolution_clock::time_point e1 = high_resolution_clock::now();
         reset_loss(net);
         mpi_id0(printf("custom_fit. Epoch %d/%d\n", i + 1, epochs));
+        double tbsecs=0;
+        double awsecs=0;
         for (j = 0; j < nbpp; j++) {
+            TIME_POINT1(train);
             next_batch({x_train, y_train},{xbatch, ybatch});
             // DA
             forward(danet, vector<Tensor *>{xbatch});
@@ -290,7 +321,10 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
             Tensor* xbatch_da = getOutput(output_da);
             train_batch(net,{xbatch_da},{ybatch});
             //sync_batch
+            TIME_POINT2(train,tbsecs);
+            TIME_POINT1(avg_w);
             avg_weights_distributed(net, j + 1, nbpp);
+            TIME_POINT2(avg_w,awsecs);
             print_loss(net, j + 1, false);
             mpi_id0(printf("\r"););
             //printf("Proc %d, j=%d\n", id, j);
@@ -302,9 +336,10 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
         high_resolution_clock::time_point e2 = high_resolution_clock::now();
         duration<double> epoch_time_span = e2 - e1;
         if (id == 0) {
-            fprintf(stdout, "\n%1.4f secs/epoch", epoch_time_span.count());
+            fprintf(stdout, "\n%1.4f secs/epoch: train: %1.4f secs; comms: %1.4\nf", epoch_time_span.count(),tbsecs,awsecs);
             fflush(stdout);
         }
+        set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.05);
     }
     mpi_id0(printf("\n"));
     mpi_id0(fflush(stdout));
@@ -428,7 +463,8 @@ int main(int argc, char **argv) {
 
     // Sync every batch, change every 2 epochs
     //set_method_distributed(FIXED,initial_mpi_avg,1);
-    set_method_distributed(AUTO_TIME, 1, 1);
+    //set_method_distributed(AUTO_TIME, 1, 1);
+    set_method_distributed(FIXED, 1, 1);
 
 
     // network
@@ -467,18 +503,21 @@ int main(int argc, char **argv) {
     build(danet);
     
     // NN
-    int dense_size = 4096;
+    int dense_size1 = 512;
+    int dense_size2 = 512;
     model net;
     if (ptmodel == 100) {// load ONNX file
         printf("ONNX file %s\n", test_file);
         net = import_net_from_onnx_file(test_file);
         test_only=1;
     } else if (ptmodel == 10)
-        net = vgg16bn(in_shape, num_classes, dense_size, dense_size);
+        net = vgg16bn(in_shape, num_classes, dense_size1, dense_size2);
     else if (ptmodel == 11) // resnet50
-        net = resnet50(in_shape, num_classes, dense_size, dense_size);
+        net = resnet50(in_shape, num_classes, dense_size1, dense_size2);
+    else if (ptmodel == 12) // mlp
+        net = mlp(in_shape, num_classes, dense_size1, dense_size2);
     else // onnx models
-        net = select_model(ptmodel, in_shape, num_classes, dense_size, dense_size);
+        net = select_model(ptmodel, in_shape, num_classes, dense_size1, dense_size2);
 
     compserv cs = nullptr;
     if (use_cpu) {

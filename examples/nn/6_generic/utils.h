@@ -31,6 +31,14 @@
     } \
 }
 
+#define TIME_POINT1(var)  \
+    high_resolution_clock::time_point var##1 = high_resolution_clock::now(); 
+
+#define TIME_POINT2(var,acc) \
+    high_resolution_clock::time_point var##2 = high_resolution_clock::now(); \
+    duration<double> var##_span = var##2 - var##1; \
+    acc += var##_span.count(); 
+
 void process_arguments(int argc, char** argv, char* path, char* tr_images,
         char* tr_labels, char* ts_images, char* ts_labels, 
         int* epochs, int* batch_size, int* num_classes, 

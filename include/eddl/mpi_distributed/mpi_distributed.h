@@ -230,7 +230,7 @@ void avg_metrics_distributed(Net* net);
  *
  *  @param[in] pvar: Ptr to variable
  */
-void avg_float_distributed(float * pvar);
+void avg_float_distributed(float* pvar);
 
 
 /**
@@ -264,6 +264,16 @@ void avg_weights_distributed (Net* net, int curr_batch_id, int batches_per_proc)
  *  @return    (void)
  */
 void update_batch_avg_distributed(int epoch_id, double secs, int batches_per_proc) ;
+
+/**
+ *  @brief Update batches_avg according to max comm overhead
+ *
+ *  @param secs_train:  time in secs to train (only computation)
+ *  @param secs_comm:   time in secs to communicate
+ *  @param overhead:    max comm overhead (0 to 1)
+ *  @return    (void)
+ */
+void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, float overhead);
 
 // For Debugging purposes
 void gpu_layer_print (Net* net, int layer);
