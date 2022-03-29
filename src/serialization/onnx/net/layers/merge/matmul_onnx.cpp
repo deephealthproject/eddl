@@ -45,7 +45,58 @@ Layer* build_matmul_layer(onnx::NodeProto *node,
     delete weights_tensor;
     return dense;
   }
+  cout << "#################################################################" << endl;
+  cout << "[DEBUG] Mult layer " << node->name() << " parents:" << endl;
+  // Auxiliary function to print a vector
+  auto print_shape = [](vector<int> shape){
+    cout << "  - {";
+    for (int i : shape)
+      cout << i << ", ";
+    cout << "}" << endl;
+  };
+  // Print the shape of each parent to check if they are compatible
+  for (auto& p : parents) {
+      cout << "  - " << p->name << endl;
+      print_shape(p->getShape());
+  }
 
+  // Go through the list of parent to check if the shapes are compatible
+  for (int p = 0; 0 < parents.size() - 1; ++p)
+  {
+    // Compare by adjacent pairs of parents (parent p and p + 1)
+    if (!Tensor::sameShape(parents[p]->output, parents[p + 1]->output))
+    {
+      cout << "[DEBUG] Different shape detected in node " << node->name() << endl;
+      cout << "[DEBUG] Going to create the broadcast layer" << endl;
+      LBroadcast *l_broadcast = new LBroadcast(parents[p], parents[p + 1], node->name() + "_broadcast", dev, mem);
+      print_shape(l_broadcast->output->getShape()); // DEBUG
+      cout << "[DEBUG] Broadcast layer created!" << endl;
+      // Note: The broadcast layer can apply the broadcast operation to the first or second layer
+      //       passed as argument depending on the shape. It detects which layer need the broadcast operation
+      //
+      // Check if the parent that has the broadcast layer applied is p + 1
+      if (l_broadcast->shapes_swapped)
+      {
+        cout << "[DEBUG] Going to change parent b" << endl;
+        parents[p + 1] = l_broadcast; // The new parent is the output of the broadcast
+        cout << "[DEBUG] Parent b changed!" << endl;
+      }
+      else // The parent p is the one that need the broadcast operation
+      {
+        cout << "[DEBUG] Going to change parent a" << endl;
+        parents[p] = l_broadcast; // The new parent is the output of the broadcast
+        cout << "[DEBUG] Parent a changed!" << endl;
+      }
+    }
+  }
+
+  // Print the shape of the parents after broadcast
+  cout << "[DEBUG] New parent shapes:" << endl;
+  for (auto& p : parents) {
+      cout << "  - " << p->name << endl;
+      print_shape(p->getShape());
+  }
+  cout << "#################################################################" << endl;
   return new LMatMul(parents, node->name(), dev, mem);
 }
 
