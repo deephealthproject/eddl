@@ -206,13 +206,21 @@ void init_NCCL(int nr_gpus) {
     NCCLCHECK(ncclCommInitRank(&nccl_comm, n_procs, nccl_id, id));
     if (id == 0)
         fprintf(stdout, "[DISTR] GPU: NCCL initialized %d procs\n", n_procs);
+#else
+    msg("invalid call. NCCL library is not linked", __func__);
 #endif
 }
 
 int init_distributed() {
     int id;
 
+    
+#ifdef cNCCL
     id= init_distributed("NCCL");
+#else  
+    id= init_distributed("MPI");
+    fprintf(stdout, "[DISTR] %s. NCCL not available. Using MPI\n", "AVG_INC", __func__);
+#endif
     return id;
 }
 
@@ -221,7 +229,7 @@ int init_distributed(string comm) {
     int n_procs;
     int *argc;
     char ***argv;
-    
+
 
     id = init_MPI(argc,argv);
     if (comm == "NCCL") {
@@ -230,12 +238,13 @@ int init_distributed(string comm) {
     } else if (comm == "MPI") {
         lib = "MPI";
     } else {
-        msg("Error unsupported communication library", "init_distributed"); // Exits
+        msg("Error unsupported communication library", __func__); // Exits
     }
     //fprintf(stdout, "[DISTR] using %s\n", lib.c_str());
     return id;
 }
 
+/*
 int init_distributed2(int *argc, char ***argv) {
     //int id;
 
@@ -244,10 +253,7 @@ int init_distributed2(int *argc, char ***argv) {
 }
 
 int init_distributed2(int *argc, char ***argv, string comm) {
-   /*
-    int id;
-    int n_procs;
-*/
+ 
     id = init_MPI(argc,argv);
     if (comm == "NCCL") {
         lib = "NCCL";
@@ -260,11 +266,12 @@ int init_distributed2(int *argc, char ***argv, string comm) {
     //fprintf(stdout, "[DISTR] using %s\n", lib.c_str());
     return id;
 }
+*/
 
 void end_distributed() {
     //int id;
 #ifndef cMPI
-    msg("MPI library is not linked", "end_distributed");
+    msg("MPI library is not linked", __func__);
 #endif    
     if (!use_mpi) {
         return;
@@ -302,7 +309,7 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg) {
     //int id;
 
 #ifndef cMPI
-    msg("MPI library is not linked", "set_method_distributed");
+    msg("MPI library is not linked", __func__);
 #endif  
     check_MPI();
     
@@ -326,7 +333,7 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg) {
         } else if (avg_method == AUTO_TIME) {
             fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "AUTO TIME", mpi_avg, x_avg);
         } else {
-            msg("Error unknown avg_method", "set_method_distributed"); // Exits
+            msg("Error unknown avg_method",  __func__); // Exits
         }
 }
 
@@ -410,7 +417,7 @@ void set_batch_distributed (int* global_batch, int* local_batch, int batch, int 
         *global_batch=batch*n_procs;
         *local_batch=batch;
     } else {
-         msg("Error batch distributed method", "set_batch_distributed"); // Exits
+         msg("Error batch distributed method", __func__); // Exits
     }   
     if (id==0)
         printf("[DISTR] set_batch. Method: %s. Batch size: %d. Global batch size: %d. Local batch size:  %d\n",  (method==DIV_BATCH?"DIV":"MUL"), batch, *global_batch, *local_batch);
@@ -433,7 +440,7 @@ int set_NBPP_distributed(int ds_size, int local_batch, bool method) {
     } else if (method == DISTR_DS) {
         nbpp = num_batches;
     } else {
-        msg("Error num_batches_per_proc method", "set_NBPP_distributed"); // Exits
+        msg("Error num_batches_per_proc method",  __func__); // Exits
     }
     if (id==0)
         printf("[DISTR] set_NBPP. Proc: %d. Distr dataset: %s. Dataset size: %d. Local batch: %d. Num batches per proc: %d\n", id, (method==NO_DISTR_DS?"no":"yes"), ds_size, local_batch, nbpp);
@@ -446,7 +453,7 @@ void fn_mpi_AllReduce(float* myptr, int count) {
         MPICHECK(MPI_Allreduce(MPI_IN_PLACE, myptr, count, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD));
     }
 #else
-    msg("invalid call. MPI library is not linked", "fn_mpi_AllReduce");
+    msg("invalid call. MPI library is not linked",  __func__);
 #endif
 }
 
@@ -457,7 +464,7 @@ void fn_mpi_Bcast(float* myptr, int count) {
         printf("======fn_mpi_Bcast\n");
     }
 #else
-    msg("invalid call. MPI library is not linked", "fn_mpi_Broadcast");
+    msg("invalid call. MPI library is not linked",  __func__);
 #endif
 }
 
@@ -469,7 +476,7 @@ void fn_nccl_AllReduce(float* myptr, int count) {
         CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #else
-    msg("invalid call. NCCL library is not linked", "fn_nccl_Allreduce");
+    msg("invalid call. NCCL library is not linked",  __func__);
 #endif
 }
 
@@ -485,7 +492,7 @@ void fn_nccl_AllReduce_streams(float* myptr, int count, int layer) {
         CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #else
-    msg("invalid call. NCCL library is not linked", "fn_nccl_AllReduce_streams");
+    msg("invalid call. NCCL library is not linked",  __func__);
 #endif
 }
 
@@ -497,7 +504,7 @@ void fn_nccl_Bcast(float* myptr, int count) {
         CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #else
-    msg("invalid call. NCCL library is not linked", "fn_nccl_Broadcast");
+    msg("invalid call. NCCL library is not linked",  __func__);
 #endif
 }
 
@@ -513,7 +520,7 @@ void fn_nccl_Bcast_streams(float* myptr, int count, int layer) {
         CUDACHECK(cudaStreamSynchronize(cuda_stream));
     }
 #else
-    msg("invalid call. NCCL library is not linked", "fn_nccl_Broadcast_streams");
+    msg("invalid call. NCCL library is not linked",  __func__);
 #endif
 }
 
@@ -579,7 +586,7 @@ void bcast_weights_distributed(Net * net) {
     else if (net->cs->hw == "cpu")
         fn_Bcast_CPU_weights(net);
     else
-        msg("Error unsupported device", "bcast_params_distributed"); // Exits
+        msg("Error unsupported device",  __func__); // Exits
 }
 
 void avg_GPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
@@ -695,7 +702,7 @@ void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
     else if (net->cs->hw == "cpu")
         avg_CPU_weights_distributed(net, curr_batch, batches_per_proc);
     else
-        msg("Error unsupported device", "avg_weights_distributed"); // Exits
+        msg("Error unsupported device", __func__); // Exits
 }
 
 void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch_avg) {
@@ -776,7 +783,7 @@ void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, flo
         new_ba=round(ba);
         if (new_ba<max_ba)
             batches_avg=new_ba;
-        printf("[DISTR] method LIMIT OVERHEAD, batches_avg %d -->  %d \n", prev_ba, batches_avg);
+        printf("[DISTR] method LIMIT OVERHEAD %2.1f%%, batches_avg %d -->  %d \n", overhead*100.0, prev_ba, batches_avg);
     }
 #ifdef cMPI
     MPICHECK(MPI_Bcast(&batches_avg, 1, MPI_INT, 0, MPI_COMM_WORLD));

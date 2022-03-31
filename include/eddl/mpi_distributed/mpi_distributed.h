@@ -121,23 +121,6 @@ vector<int> get_gpu_vec_distributed();
  *  @param comm  NCCL MPI
  *  @return id MPI rank of process
  */
-int init_distributed2(int *argc, char ***argv, string comm);
-
-
-/**
- *  @brief Initializes distributed training
- *  NCCL is used
- *  @return id MPI rank of process
- */
-int init_distributed2(int *argc, char ***argv);
-
-
-/**
- *  @brief Initializes distributed training
- *
- *  @param comm  NCCL MPI
- *  @return id MPI rank of process
- */
 int init_distributed(string comm);
 
 /**
