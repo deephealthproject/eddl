@@ -699,7 +699,9 @@ void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
 }
 
 void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch_avg) {
-    float SPEED_UP = 1.05;
+    float TH_UP = 1.10;
+    float TH_DN = 0.97;
+    int prev_ba=batches_avg;
 
     check_MPI(return);
      
@@ -707,47 +709,50 @@ void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch
         switch (avg_method) {
             case AVG_INC:
                 if (((epoch_id + 1) % (x_avg)) == 0) {
-                    if (batches_avg < max_batch_avg)
-                        batches_avg = batches_avg * 2;
-                    {
-                        mpi_id0(printf("[DISTR] method AVG_INC, new batches_avg= %d \n", batches_avg));
-                    }
+                    batches_avg = std::min(batches_avg * 2, max_batch_avg);
+                    printf("[DISTR] method AVG_INC,batches_avg %d -->  %d \n", prev_ba, batches_avg);
                 }
                 break;
 
             case SAWTOOTH:
                 if (((epoch_id + 1) % (x_avg)) == 0) {
-                    batches_avg = batches_avg * 2;
-
-                    if (batches_avg >= max_batch_avg)
-                        batches_avg = mpi_avg;
-                    mpi_id0(printf("[DISTR] method SAWTOOTH, new batches_avg= %d \n", batches_avg));
+                    batches_avg = std::min(batches_avg * 2, max_batch_avg);
+                    printf("[DISTR] method SAWTOOTH, batches_avg %d -->  %d \n", prev_ba, batches_avg);
                 }
                 break;
 
             case NEG_SAWTOOTH:
                 if (((epoch_id + 1) % (x_avg)) == 0) {
-                    batches_avg = batches_avg / 2;
+                    batches_avg = std::max(batches_avg / 2, mpi_avg);
+                    printf("[DISTR] method NEG_SAWTOOTH, batches_avg %d -->  %d \n", prev_ba, batches_avg);
 
-                    if (batches_avg < 1)
-                        batches_avg = mpi_avg;
-                    mpi_id0(printf("[DISTR] method NEG_SAWTOOTH, new batches_avg= %d \n", batches_avg));
                 }
                 break;
-
 
             case AUTO_TIME:
                 if (((epoch_id + 1) % (x_avg)) == 0) {
                     float speed_up = secs_prev / secs_epoch;
-                    if (speed_up > SPEED_UP) {
-                        secs_prev = secs_epoch;
-
-                        if (batches_avg < max_batch_avg) {
-                            batches_avg = batches_avg * 2;
-                            mpi_id0(printf("[DISTR] method AUTO_TIME, new batches_avg= %d \n", batches_avg));
-                        }
+                   
+                    if (speed_up > TH_UP) { // OK, let's reduce comm
+                        printf("Mayor %f %f\n", secs_prev, speed_up);
+                        if (secs_epoch<secs_prev)
+                            secs_prev = secs_epoch;
+                        batches_avg = std::min(batches_avg * 2, max_batch_avg);
+                    } else if (speed_up < TH_DN) { // OOPs, train time increased
+                        printf("Menor %f %f\n", secs_prev,speed_up);
+                        secs_prev = secs_epoch; // Reset reference
+                        batches_avg = std::min(batches_avg * 2, max_batch_avg);
+                    } else { // Don't do anything
+                        printf("Medio %f %f\n", secs_prev,speed_up);
+                        if (secs_epoch<secs_prev)
+                            secs_prev = secs_epoch;
+                        batches_avg = std::max(batches_avg - (batches_avg / 4), mpi_avg);
                     }
+                    printf("[DISTR] method AUTO_TIME, batches_avg %d -->  %d \n", prev_ba, batches_avg);
                 }
+                break;
+            default:
+                //mpi_id0(printf("[DISTR] %s: batches_avg unchanged\n",__func__));
                 break;
         }
     }
@@ -758,16 +763,20 @@ void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch
     
 }
 
-void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, float overhead) {
+void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, float overhead, int max_ba) {
     check_MPI(return);
     double comm1;
     double ba;
+    int prev_ba=batches_avg;
+    int new_ba;
     
     if (id == 0) {
         comm1=secs_comm*batches_avg;
         ba=((1-overhead)*comm1)/(overhead*secs_train);  
-        batches_avg=round(ba);
-        printf("[DISTR] method LIMIT OVERHEAD, new batches_avg= %d \n", batches_avg);
+        new_ba=round(ba);
+        if (new_ba<max_ba)
+            batches_avg=new_ba;
+        printf("[DISTR] method LIMIT OVERHEAD, batches_avg %d -->  %d \n", prev_ba, batches_avg);
     }
 #ifdef cMPI
     MPICHECK(MPI_Bcast(&batches_avg, 1, MPI_INT, 0, MPI_COMM_WORLD));

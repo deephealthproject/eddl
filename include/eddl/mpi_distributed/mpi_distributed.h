@@ -22,6 +22,10 @@
 #include "eddl/net/net.h"
 #include "eddl/layers/core/layer_core.h"
 
+#ifdef cGPU
+#include <cuda_runtime_api.h>
+#include <cuda.h>
+#endif
 
 #ifdef cMPI
 #include <mpi.h>
@@ -71,6 +75,7 @@
 #define SAWTOOTH 2
 #define NEG_SAWTOOTH 3
 #define AUTO_TIME 4
+
 
 #define DIV_BATCH 0
 #define MUL_BATCH 1
@@ -273,7 +278,7 @@ void update_batch_avg_distributed(int epoch_id, double secs, int batches_per_pro
  *  @param overhead:    max comm overhead (0 to 1)
  *  @return    (void)
  */
-void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, float overhead);
+void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, float overhead, int max_ba);
 
 // For Debugging purposes
 void gpu_layer_print (Net* net, int layer);

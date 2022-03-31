@@ -27,12 +27,8 @@ using namespace std::chrono;
 layer DataAugmentation (layer l) {
      // Data augmentation/
 //    l = RandomCropScale(l, {0.8f, 1.0f});
-//l = RandomFlip(l,1);
-//    l = RandomRotation(l, {-40,40});
-//   l = RandomShift(l, {-0.2,0.2},{-0.2, 0.2});
-    l = RandomCropScale(l, {0.8f, 1.0f});
-    l = RandomFlip(l,1);
-    l = RandomShift(l, {-0.1,0.1},{-0.1, 0.1});
+//    l = RandomFlip(l,1);
+//    l = RandomShift(l, {-0.1,0.1},{-0.1, 0.1});
     l = RandomRotation(l, {-10,10});
     return l;
 }
@@ -173,8 +169,8 @@ model resnet50 (vector<int> in_shape, int num_classes, int size1, int size2)  {
     l = MaxPool(l,{4, 4}); // should be avgpool
 
     l = Reshape(l,{-1});
-    //l = Activation(Dense(l, size1), "relu");
-    //l = Activation(Dense(l, size2), "relu");
+    l = Activation(Dense(l, size1), "relu");
+    l = Activation(Dense(l, size2), "relu");
 
     layer out = Softmax(Dense(l, num_classes),-1, "output");
     // net define input and output layers list
@@ -339,7 +335,7 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
             fprintf(stdout, "\n%1.4f secs/epoch: train: %1.4f secs; comms: %1.4f\n", epoch_time_span.count(),tbsecs,awsecs);
             fflush(stdout);
         }
-        set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.05);
+        set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.05, nbpp);
     }
     mpi_id0(printf("\n"));
     mpi_id0(fflush(stdout));
@@ -463,8 +459,7 @@ int main(int argc, char **argv) {
 
     // Sync every batch, change every 2 epochs
     //set_method_distributed(FIXED,initial_mpi_avg,1);
-    //set_method_distributed(AUTO_TIME, 1, 1);
-    set_method_distributed(FIXED, 1, 1);
+    //set_method_distributed(AUTO_TIME, initial_mpi_avg, 1);
 
 
     // network
