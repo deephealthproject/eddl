@@ -111,6 +111,28 @@ ncclComm_t nccl_comm;
 cudaStream_t cuda_stream;
 #endif
 
+void check_MPI_Cuda_Aware() {
+    printf("[DISTR] Compile-time MPI CUDA Aware check:\n");
+#if defined(MPIX_CUDA_AWARE_SUPPORT) && MPIX_CUDA_AWARE_SUPPORT
+    printf("[DISTR] This MPI library has CUDA-aware support.\n", MPIX_CUDA_AWARE_SUPPORT);
+#elif defined(MPIX_CUDA_AWARE_SUPPORT) && !MPIX_CUDA_AWARE_SUPPORT
+    printf("[DISTR] This MPI library does not have CUDA-aware support.\n");
+#else
+    printf("[DISTR] This MPI library cannot determine if there is CUDA-aware support.\n");
+#endif /* MPIX_CUDA_AWARE_SUPPORT */
+ 
+    printf("[DISTR] Runtime MPI CUDA Aware check:\n");
+#if defined(MPIX_CUDA_AWARE_SUPPORT)
+    if (1 == MPIX_Query_cuda_support()) {
+        printf("[DISTR] This MPI library has CUDA-aware support.\n");
+    } else {
+        printf("[DISTR] This MPI library does not have CUDA-aware support.\n");
+    }
+#else /* !defined(MPIX_CUDA_AWARE_SUPPORT) */
+    printf("[DISTR] This MPI library cannot determine if there is CUDA-aware support.\n");
+#endif /* MPIX_CUDA_AWARE_SUPPORT */
+}
+
 int get_id_distributed() {
     /**
     int id = 0;
@@ -218,8 +240,8 @@ int init_distributed() {
 #ifdef cNCCL
     id= init_distributed("NCCL");
 #else  
-    id= init_distributed("MPI");
-    fprintf(stdout, "[DISTR] %s. NCCL not available. Using MPI\n", "AVG_INC", __func__);
+    fprintf(stdout, "[DISTR] %s. NCCL not available. Using MPI\n", __func__);
+    id= init_distributed("MPI");  
 #endif
     return id;
 }
@@ -230,7 +252,8 @@ int init_distributed(string comm) {
     int *argc;
     char ***argv;
 
-
+    check_MPI_Cuda_Aware();
+    
     id = init_MPI(argc,argv);
     if (comm == "NCCL") {
         lib = "NCCL";
@@ -240,6 +263,8 @@ int init_distributed(string comm) {
     } else {
         msg("Error unsupported communication library", __func__); // Exits
     }
+    fprintf(stdout, "[DISTR] %s. lib=%s\n", __func__, lib.c_str());
+
     //fprintf(stdout, "[DISTR] using %s\n", lib.c_str());
     return id;
 }
@@ -287,7 +312,7 @@ void end_distributed() {
         //finalizing NCCL
         ncclCommDestroy(nccl_comm);
         if (id == 0)
-            fprintf(stdout, "[DISTR] GPU: NCCL End\n");
+            fprintf(stdout, "[DISTR] %s: NCCL End\n", __func__);
     }
 #endif
 
@@ -562,7 +587,7 @@ void fn_Bcast_GPU_weights(Net* net) {
     float * myptr;
     int count;
     int i, j;
-
+    return;
     for (int i = 0; i < net->layers.size(); i++) {
         if (net->layers[i]->trainable) {
             for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
@@ -937,7 +962,21 @@ float quantize(float value, int nbits_int, int nbits_frac) {
     return (result);
 }
 
-void quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
+void quantize(Tensor *B, int nbits_int, int nbits_frac){
+// Debug!
+    int rounding_bits=nbits_int+nbits_frac;
+            //wref = round(w * N)/N;
+        int Nround = std::pow(2,rounding_bits);
+        int Nfrac = std::pow(2,nbits_frac);
+        B->mult_(Nround);
+        B->round_();
+        B->div_(Nround);
+        B->div_(Nfrac);
+
+    return;
+}
+
+void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
     float * myptr;
     int count;
    // int n_procs;
@@ -950,6 +989,7 @@ void quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
                 for (int dev = 0; dev < net->snets.size(); dev++) {
                     Tensor::copy(net->snets[dev]->layers[i]->params[j], net->layers[i]->params[j]);
                 }
+                
                 myptr = net->layers[i]->params[j]->ptr;
                 count = net->layers[i]->params[j]->size;
                 for (int k = 0; k < count; k++) {
@@ -965,4 +1005,20 @@ void quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
     }
     
 }
+
+void GPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
+   // int n_procs;
+
+    for (int i = 0; i < net->layers.size(); i++) {
+        if (net->layers[i]->trainable) {
+            for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {  
+                //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
+                quantize(net->snets[0]->layers[i]->params[j], nbits_int, nbits_frac);
+
+                }
+            }
+        }
+    }
+    
+
 

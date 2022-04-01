@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
 
     
     // Quantization
-     quantize_network_distributed(net, 1, 5);
+    CPU_quantize_network_distributed(net, 1, 5);
 
       // Evaluate model
     printf("Evaluate w/quantization:\n");
@@ -265,7 +265,7 @@ int main(int argc, char **argv) {
 
     
     // Quantization
-     quantize_network_distributed(net, 1, 7);
+    CPU_quantize_network_distributed(net, 1, 7);
 
       // Evaluate model
     printf("Evaluate w/quantization:\n");

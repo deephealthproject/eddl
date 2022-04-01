@@ -29,6 +29,7 @@
 
 #ifdef cMPI
 #include <mpi.h>
+#include <mpi-ext.h> /* Needed for CUDA-aware check */
 #endif
 
 #ifdef cNCCL
@@ -272,4 +273,6 @@ bool early_stopping_on_metric_var(Net* net, int index, float delta, int patience
 
 bool early_stopping_on_metric(Net* net, int index, float goal, int patience, int epoch);
 
-void quantize_network_distributed(Net* net, int nbits_int, int nbits_frac);
+void GPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac);
+
+void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac);

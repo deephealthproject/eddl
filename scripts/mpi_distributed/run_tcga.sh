@@ -4,10 +4,11 @@ BIN=$BUILD/bin
 SCRIPTS=$EDDL/scripts/mpi_distributed
 DATASETS=~/convert_EDDL
 BS=80
-EPOCHS=2
+EPOCHS=10
 LR=0.0001
 AVG=1
-MODEL=1
+#MODEL=1
+MODEL=10
 
 PARAMS="-w 224 -h 224 -z 3 -c 2"
 DS="tcga4"

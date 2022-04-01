@@ -4,10 +4,10 @@ BIN=$BUILD/bin
 SCRIPTS=$EDDL/scripts/mpi_distributed
 DATASETS=~/convert_EDDL
 BS=80
-EPOCHS=2
+EPOCHS=20
 LR=0.0001
 AVG=16
-MODEL=10
+MODEL=12
 
 PARAMS="-w 64 -h 64 -z 1 -c 6"
 DS="medical-mnist"
