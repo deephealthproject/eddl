@@ -52,7 +52,7 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = testing ? 2 : 5;
+  int epochs = testing ? 2 : 10;
   int batch_size = 100;
   int num_classes = 10;
 
@@ -130,24 +130,35 @@ int main(int argc, char **argv){
   }
 
   for(int i=0;i<epochs;i++) {
+    printf("== Epoch: %d\n",i);
     // training, list of input and output tensors, batch, epochs
     fit(net,{x_train},{y_train},batch_size, 1);
     // Evaluate test
     std::cout << "Evaluate test:" << std::endl;
     evaluate(net,{x_test},{y_test});
-    if (early_stopping_on_loss_var (net, 0, 0.1, 10, i)) break;
-    if (early_stopping_on_metric (net, 0, 0.5, 2, i)) break;
-  }
-
-  // Quantization
-   GPU_quantize_network_distributed(net, 1, 3);
-   std::cout << "Evaluate test w/quantization, GPU:" << std::endl;
-   evaluate(net,{x_test},{y_test});
    
-  // Quantization
-   CPU_quantize_network_distributed(net, 1, 7);
-   std::cout << "Evaluate test w/quantization:" << std::endl;
-   evaluate(net,{x_test},{y_test});
+    if (early_stopping_on_loss_var (net, 0, 0.2, 1, i)) break;
+    if (early_stopping_on_metric (net, 0, 0.9, 1, i)) break;
+  }
+  
+   save(net, "weights.model");
+   // Quantization
+   //CPU_quantize_network_distributed(net, 1, 6);
+   //std::cout << "Evaluate test w/quantization:" << std::endl;
+   //evaluate(net,{x_test},{y_test});
+
+    for (int bits = 10; bits > 2; bits--) {
+        load(net, "weights.model");
+
+        // Quantization
+        GPU_quantize_network_distributed(net, 1, bits);
+        std::cout << "Evaluate test w/quantization, GPU:" << std::endl;
+        evaluate(net,{x_test},
+        {
+            y_test
+        });
+    }
+    
   
     delete x_train;
     delete y_train;

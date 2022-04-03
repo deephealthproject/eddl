@@ -807,7 +807,7 @@ void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, flo
         ba=((1-overhead)*comm1)/(overhead*secs_train);  
         new_ba=round(ba);
         if (new_ba<max_ba)
-            batches_avg=new_ba;
+            batches_avg=std::max(1,new_ba);
         printf("[DISTR] method LIMIT OVERHEAD %2.1f%%, batches_avg %d -->  %d \n", overhead*100.0, prev_ba, batches_avg);
     }
 #ifdef cMPI
@@ -855,15 +855,16 @@ bool early_stopping_on_loss_var(Net* net, int index, float delta, int patience, 
     if (id == 0)
         if (epoch > patience) {
                 printf("[DISTR] prev_loss: %f, loss: %f\n", prev_losses, losses);
-            if (losses > (delta+prev_losses)) {
-                printf("[DISTR] Early Stopping! (prev_loss: %f, loss: %f)\n", prev_losses, losses);
+            if (losses > (delta+prev_losses)) { // More losses than before
+                printf("[DISTR] Early Stopping! (loss %f  > delta %f + prev_losses %f)\n", losses, delta, prev_losses);
                 result = true;
-            } else {
+            } else {  // OK
                 result = false;
             }
-            if (losses < prev_losses) {
-                printf("[DISTR] Early Stopping! Epoch %d. Best loss (prev_loss: %f, loss: %f)\n", epoch, prev_losses, losses);
-               prev_losses = losses;            
+            if (losses < prev_losses) {  // new optmimal value
+                printf("[DISTR] new Best loss (prev_loss: %f, loss: %f)\n", prev_losses, losses);
+                prev_losses = losses;            
+                result = false;
             }
         } else 
             result = false;
@@ -887,12 +888,12 @@ bool early_stopping_on_metric_var(Net* net, int index, float delta, int patience
                 if ((metrics - prev_metrics) < delta) {
                     printf("[DISTR] Early Stopping! ((metric %f-prev_metric %f) < delta %f)\n", metrics, prev_metrics, delta);
                     result = true;
-                } else {
+                } else { // New optimal value
                     prev_metrics = metrics;
                     result = false;
                 }
-            } else if ((prev_metrics - metrics) > delta) {
-                    printf("[DISTR] Early Stopping! ((prev_metric %f-metric %f) < delta %f)\n", prev_metrics, metrics, delta);
+            } else if ((prev_metrics - metrics) > delta) {  // Worse results
+                    printf("[DISTR] Early Stopping! ((prev_metric %f-metric %f) > delta %f)\n", prev_metrics, metrics, delta);
                     result = true;
                 } else {
                     result = false;
@@ -962,16 +963,16 @@ float quantize(float value, int nbits_int, int nbits_frac) {
     return (result);
 }
 
-void quantize(Tensor *B, int nbits_int, int nbits_frac){
+void quantize(Tensor *B, int n_int, int n_frac){
 // Debug!
-    int rounding_bits=nbits_int+nbits_frac;
-            //wref = round(w * N)/N;
-        int Nround = std::pow(2,rounding_bits);
-        int Nfrac = std::pow(2,nbits_frac);
-        B->mult_(Nround);
+    int n=n_int+n_frac;
+    int max_int = std::pow(2,n);
+    int scaling = std::pow(2,n_frac);
+    float max_val=std::pow(2,n_int)-std::pow(2,-n_frac);
+        B->clamp_(-max_val,max_val);
+        B->mult_(scaling);
         B->round_();
-        B->div_(Nround);
-        B->div_(Nfrac);
+        B->div_(scaling);
 
     return;
 }
@@ -980,7 +981,7 @@ void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
     float * myptr;
     int count;
    // int n_procs;
-
+    printf("[DISTR] %s bits int %d, bits_frac %d\n",__func__,nbits_int, nbits_frac);
     for (int i = 0; i < net->layers.size(); i++) {
         if (net->layers[i]->trainable) {
             for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {  
@@ -1008,7 +1009,7 @@ void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
 
 void GPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
    // int n_procs;
-
+    printf("[DISTR] %s bits int %d, bits_frac %d\n",__func__, nbits_int, nbits_frac);
     for (int i = 0; i < net->layers.size(); i++) {
         if (net->layers[i]->trainable) {
             for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {  

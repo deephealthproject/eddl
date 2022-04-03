@@ -142,17 +142,17 @@ int main(int argc, char **argv){
     // Evaluate test
     std::cout << "Evaluate test:" << std::endl;
     evaluate(net,{x_test},{y_test});
-    if (early_stopping_on_loss_var (net, 0, 0.1, 2, i)) break;
+    if (early_stopping_on_loss_var (net, 0, 0.5, 2, i)) break;
   }
   
   // Quantization
-   GPU_quantize_network_distributed(net, 1, 1);
+   GPU_quantize_network_distributed(net, 1, 15);
    std::cout << "Evaluate test w/quantization:" << std::endl;
    evaluate(net,{x_test},{y_test});
    
    
    // Quantization
-   CPU_quantize_network_distributed(net, 1, 1);
+   CPU_quantize_network_distributed(net, 1, 15);
    std::cout << "Evaluate test w/quantization:" << std::endl;
    evaluate(net,{x_test},{y_test});
 
