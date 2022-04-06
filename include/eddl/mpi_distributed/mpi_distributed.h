@@ -238,7 +238,7 @@ void bcast_weights_distributed(Net * net);
 /**
  *  @brief Averages weights and bias of mpi processes
  *
- *  @param curr_batch_id    Batch nr (from 0)
+ *  @param curr_batch_id    Batch nr (from 1)
  *  @param batches_per_proc #batches per mpi process
  *  @return    (void)
  */

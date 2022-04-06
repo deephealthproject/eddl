@@ -457,6 +457,8 @@ int main(int argc, char **argv) {
     //sprintf(onnx_name, "%s%d.onnx", model_name, ptmodel);
 
 
+    
+    
     // Sync every batch, change every 2 epochs
     //set_method_distributed(FIXED,initial_mpi_avg,1);
     //set_method_distributed(AUTO_TIME, initial_mpi_avg, 1);
@@ -642,7 +644,7 @@ int main(int argc, char **argv) {
                         std::cout << "New best model by loss and acc: \"" << onnx_fname << "\"\n\n";
                     }
                     //save(net, weights_fname);
-                    save_net_to_onnx_file(net, onnx_fname);
+                    //save_net_to_onnx_file(net, onnx_fname);
                 }
             }
             barrier_distributed();

@@ -48,6 +48,12 @@ int main(int argc, char **argv){
       else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
   }
 
+    vector<string> hws = Tensor::hardware_supported();
+    for (auto i: hws)
+    std::cout << i << ' ';
+      
+      printf ("DeviceID %d) \n", Tensor::getDeviceID("cuda"));
+      
   // download CIFAR data
   download_cifar10();
 

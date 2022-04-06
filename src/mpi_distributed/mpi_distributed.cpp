@@ -92,7 +92,7 @@ double secs_prev = 1E10;
 float prev_losses=1e10;
 float prev_metrics=0;
 
-#define SILENT 0
+#define SILENT 1
 
 #define check_MPI(action) \
     if ((SILENT==0) & (n_procs==1)) { \
@@ -394,6 +394,7 @@ vector<int> get_gpu_vec_distributed() {
     if (is_mpi_distributed()) {
         get_nodename_distributed(node_name);
         fprintf(stdout, "[DISTR] get_gpu_vec. Node: %s. Process %d. CS: GPU mask: %s\n", node_name, id, gpu_str.c_str());
+        fprintf(stdout, "[DISTR] EDDL DeviceID %d) \n", Tensor::getDeviceID("cuda"));
     } else {
         fprintf(stdout, "[CS_GPU()] CS: GPU mask: %s\n", gpu_str.c_str());
     }
