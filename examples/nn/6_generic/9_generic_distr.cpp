@@ -335,7 +335,7 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
             fprintf(stdout, "\n%1.4f secs/epoch: train: %1.4f secs; comms: %1.4f\n", epoch_time_span.count(),tbsecs,awsecs);
             fflush(stdout);
         }
-        set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.05, nbpp);
+        set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.1, nbpp);
     }
     mpi_id0(printf("\n"));
     mpi_id0(fflush(stdout));
