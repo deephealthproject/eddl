@@ -21,6 +21,7 @@
 #include "eddl/apis/eddl.h"
 #include "eddl/net/net.h"
 #include "eddl/layers/core/layer_core.h"
+#include "omp.h"
 
 #ifdef cGPU
 #include <cuda_runtime_api.h>
@@ -184,6 +185,15 @@ int get_current_batch_avg_distributed ();
  */
 int get_available_GPUs_distributed();
 
+
+/**
+ *  @brief Get nr of CPUs per node
+ *
+ *  @return nr of CPUs
+ */
+int get_available_CPUs_distributed();
+
+void set_OMP_threads_to_procs_distributed();
 
 /**
  *  @brief Set per-process batch size

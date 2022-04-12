@@ -869,6 +869,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
    // int batches = 0;
     int batches_per_proc = 0;
    // int batches_avg = 0;
+    int global_batch;
     int local_batch;
     double secs_epoch = 1e10;
     double secs_epoch_prev = 0;
@@ -892,7 +893,8 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             get_params_distributed(&avg_method, &mpi_avg, &x_avg);
 
             // Set local batch size
-            local_batch = batch / n_procs;           
+            set_batch_distributed (&global_batch, &local_batch, batch, DIV_BATCH);
+            //local_batch = batch / n_procs;           
             //mpi_id0(fprintf(stderr, "[DISTR] fit\n"));
         } else {
             n_procs=1;
@@ -942,13 +944,17 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
         setmode(TRMODE);
 
         // Set some parameters
-        int num_batches = n / batch_size;
-        batches_per_proc = num_batches / n_procs;
+        //int num_batches = n / batch_size;
+        //batches_per_proc = num_batches / n_procs;
+        int batches_per_proc=set_NBPP_distributed(n, batch_size, NO_DISTR_DS);
 
         // Train network
         if (id == 0) {
-            fprintf(stdout, "%d epochs of (global: %d batches of size %d),(local: %d batches of size %d) \n", epochs, num_batches/n_procs, n_procs * batch_size, num_batches, batch_size);
-            if (is_mpi_distributed()) fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, mpi_avg);
+            //fprintf(stdout, "%d epochs of (global: %d batches of size %d),(local: %d batches of size %d) \n", epochs, num_batches/n_procs, n_procs * batch_size, num_batches, batch_size);
+            if (is_mpi_distributed()){
+                //int batches_avg=get_current_batch_avg_distributed();
+                //fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, batches_avg);
+            }
         }
 
         //batches_avg = mpi_avg;
@@ -957,7 +963,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             if (id == 0) {
                 fprintf(stdout, "Epoch %d\n", i + 1);
                 if (is_mpi_distributed()) {
-                    fprintf(stdout, "[DISTR] batches_avg: %d\n", get_current_batch_avg_distributed ());
+                    // fprintf(stdout, "[DISTR] batches_avg: %d\n", get_current_batch_avg_distributed ());
                 } 
             }
             reset_loss();

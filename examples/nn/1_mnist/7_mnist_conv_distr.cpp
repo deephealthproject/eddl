@@ -32,22 +32,24 @@ int main(int argc, char **argv) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
     }
-    
-  
-    init_distributed();
-    
+
+    if (use_cpu)
+        init_distributed("MPI");
+    else
+        init_distributed();
+                
     // Init distribuited training
     id = get_id_distributed();
     
     // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2);
+    set_method_distributed(AUTO_TIME,1,1);
 
     // Download mnist
     download_mnist();
 
     // Settings
     int epochs = (testing) ? 2 : 10;
-    int batch_size = 100;
+    int batch_size = 128;
     int num_classes = 10;
 
     // Define network
@@ -74,10 +76,10 @@ int main(int argc, char **argv) {
 
       // Define computing service
     compserv cs = nullptr;
-    if (use_cpu) {
-        cs = CS_CPU();
-    } else { 
-	cs=CS_GPU();
+   if (use_cpu) {
+        cs = CS_CPU(get_available_CPUs_distributed());
+    } else {
+        cs = CS_GPU();
     }
 
     // Build model

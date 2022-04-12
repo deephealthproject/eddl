@@ -13,7 +13,6 @@
 
 #include "eddl/apis/eddl.h"
 
-
                 
 using namespace eddl;
 
@@ -29,6 +28,8 @@ int main(int argc, char **argv) {
     bool use_mpi = true;
     int id;
     char command[100];
+    int batch_size = 800;
+    int epochs = 10;
     
 //    system("export");
 //    sprintf(command, "ldd %s",argv[0]); 
@@ -38,13 +39,20 @@ int main(int argc, char **argv) {
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
-         else if (strcmp(argv[i], "--mpi") == 0) use_mpi= true;
+        else if (strcmp(argv[i], "--mpi") == 0) use_mpi= true;
+        else if (strcmp(argv[i], "--batch-size") == 0) {
+            batch_size = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--epochs") == 0) {
+            epochs = atoi(argv[++i]);
+        }
     }
     if (use_mpi)
       init_distributed("MPI");
     else 
       init_distributed("NCCL");  
 
+    //set_OMP_threads_to_procs_distributed();
+    
     // Get MPI process id
     id=get_id_distributed();
     
@@ -55,9 +63,8 @@ int main(int argc, char **argv) {
     download_mnist();
 
 
-    // Settings
-    int epochs = (testing) ? 2 : 10;
-    int batch_size = 100; 
+// Settings
+    epochs = (testing) ? 2 : epochs;   
     int num_classes = 10;
     // medical
     //int num_classes = 6;
@@ -87,11 +94,13 @@ int main(int argc, char **argv) {
     if (id == 0) {
        plot(net, "model.pdf");
     }
+    
+    printf("Available CPUs: %d\n",get_available_CPUs_distributed());
   
       // Define computing service
     compserv cs = nullptr;
     if (use_cpu) {
-        cs = CS_CPU(2);
+        cs = CS_CPU(get_available_CPUs_distributed());
     } else {
         cs = CS_GPU();
     }

@@ -89,18 +89,27 @@ int suggest_batch_size (model net, Tensor* x_train, Tensor* y_train, Tensor* x_t
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
+    int batch_size = 800;
+    int epochs = 10;
+     
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+        else if (strcmp(argv[i], "--batch-size") == 0) {
+            batch_size = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--epochs") == 0) {
+            epochs = atoi(argv[++i]);
+        }
     }
+
 
     // Download mnist
     download_mnist();
 
 
     // Settings
-    int epochs = (testing) ? 2 : 10;
-    int batch_size = 100;
+    epochs = (testing) ? 2 : epochs;
+   
     int num_classes = 10;
 
     // Define network

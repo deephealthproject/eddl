@@ -1,32 +1,67 @@
 #!/bin/bash 
 
+if [ $# -le 1 ]; then
+echo "Error: faltan parametros"
+exit
+fi
+
+SLURM="no"
+FILENAME=$0
+
 EDDL=$HOME/git/eddl
 BUILD=$EDDL/build
 BIN=$BUILD/bin
 SCRIPTS=$EDDL/scripts/mpi_distributed
 DATASETS=~/convert_EDDL
-BS=400
-EPOCHS=100
+#BS=400
+EPOCHS=50
 LR=0.0001
-AVG=4
-#MODEL=100
+AVG=1
 MODEL=10
 
 PARAMS="-w 64 -h 64 -z 3 -c 200"
 DS="tiny-imagenet64"
 
-N=$1
-BS=$2
+# process arguments
 
-NAME=distr_${DS}_n${N}_bs${BS}
+while  [ $# -ge 2 ]
+do
+	case $1 in 
+        --slurm) SLURM="yes"  ;;
+		-n) PROCS=$2 ; shift ;;
+		-bs) BS=$2 ; shift ;;
+		*) break ;;
+	esac
+	shift
+done
+
+echo "SLURM" ${SLURM}
+
+NAME=distr_${DS}_n${PROCS}_bs${BS}
 OUTPUT=$NAME.out
 ERR=$NAME.err
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true --mca mpi_leave_pinned 1"
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true"
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca pml ucx "
-MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl ^openib"
+MPI_PARAM="--report-bindings --mca btl ^openib"
+
+if [[ "$HOSTNAME" =~ "altec" ]]; then
+MPI_PARAM="-map-by node:PE=28 ${MPI_PARAM}"
+fi
+
+
 # NO DISTR-DS
-#Sin slurm
-#mpirun -np 4 -hostfile $SCRIPTS/cluster.altec -map-by node $BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8 
-#Con slurm
-mpirun $MPI_PARAM $BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8 > $OUTPUT 2> $ERR
+
+if [[ "$SLURM" == "yes" ]]; then
+SBATCH="sbatch -n ${PROCS} -N ${PROCS} --out ${OUTPUT} --err ${ERR} -J ${FILENAME} --exclusive"
+COMMAND="mpirun $MPI_PARAM $BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8"
+echo "#!/bin/bash
+#
+$COMMAND" > $FILENAME.sbatch
+echo $SBATCH $FILENAME.sbatch
+$SBATCH $FILENAME.sbatch
+else 
+COMMAND="mpirun -np $PROCS -hostfile $SCRIPTS/cluster.altec $MPI_PARAM $BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8"
+$COMMAND
+fi
+

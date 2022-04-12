@@ -75,6 +75,8 @@
 
 
 #define NUM_STREAMS_COMM 1
+#define USE_NON_CUDA_AWARE_BCAST 1
+
 
 // Global variables
 int use_mpi = 0;
@@ -199,10 +201,10 @@ int init_MPI(int *argc, char ***argv) {
     */
 
     get_nodename_distributed(node_name);
-    fprintf(stdout, "[DISTR] init_MPI. Node %d (%s). %d GPUS available per node\n", id, node_name, get_available_GPUs_distributed());
+    fprintf(stdout, "[DISTR] init_MPI. Node %d/%d (%s). %d GPUS available per node\n", id, n_procs, node_name, get_available_GPUs_distributed());
 
-
-    fprintf(stdout, "[DISTR] setting default batch avg method\n");
+    if (id==0)
+        fprintf(stdout, "[DISTR] setting default batch avg method\n");
     set_method_distributed(FIXED, AVG_DEFAULT, 0);
 
     // Initalize a different seed per proc
@@ -252,9 +254,8 @@ int init_distributed(string comm) {
     int *argc;
     char ***argv;
 
-    check_MPI_Cuda_Aware();
-    
-    id = init_MPI(argc,argv);
+    id = init_MPI(argc, argv);
+
     if (comm == "NCCL") {
         lib = "NCCL";
         init_NCCL(get_available_GPUs_distributed());
@@ -263,8 +264,10 @@ int init_distributed(string comm) {
     } else {
         msg("Error unsupported communication library", __func__); // Exits
     }
-    fprintf(stdout, "[DISTR] %s. lib=%s\n", __func__, lib.c_str());
-
+    if (id == 0) {
+        fprintf(stdout, "[DISTR] %s. lib=%s\n", __func__, lib.c_str());
+        check_MPI_Cuda_Aware();
+    }
     //fprintf(stdout, "[DISTR] using %s\n", lib.c_str());
     return id;
 }
@@ -427,6 +430,15 @@ int get_available_GPUs_distributed() {
     return count;
 }
 
+int get_available_CPUs_distributed() {
+    return omp_get_num_procs();
+}
+
+void set_OMP_threads_to_procs_distributed() {
+    omp_set_num_threads(omp_get_num_procs());
+}
+
+
 void set_batch_distributed (int* global_batch, int* local_batch, int batch, int method) {
    //int id;
    // int n_procs;
@@ -487,12 +499,14 @@ void fn_mpi_Bcast(float* myptr, int count) {
 #ifdef cMPI
     if (count > 0) {
         MPICHECK(MPI_Bcast(myptr, count, MPI_FLOAT, 0, MPI_COMM_WORLD));
-        printf("======fn_mpi_Bcast\n");
+        //printf("======fn_mpi_Bcast\n");
     }
 #else
     msg("invalid call. MPI library is not linked",  __func__);
 #endif
 }
+
+             
 
 void fn_nccl_AllReduce(float* myptr, int count) {
 #ifdef cNCCL
@@ -588,7 +602,6 @@ void fn_Bcast_GPU_weights(Net* net) {
     float * myptr;
     int count;
     int i, j;
-    return;
     for (int i = 0; i < net->layers.size(); i++) {
         if (net->layers[i]->trainable) {
             for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
@@ -596,8 +609,18 @@ void fn_Bcast_GPU_weights(Net* net) {
                 count = net->snets[0]->layers[i]->params[j]->size;
                 if (lib == "NCCL")
                     fn_nccl_Bcast(myptr, count);
-                else
-                    fn_mpi_Bcast(myptr, count);
+                else { 
+#ifdef USE_NON_CUDA_AWARE_BCAST
+                    // Non CUDA-aware version
+                    // CUDA-aware Bcast cause segmentation fault
+                    //printf("############ BROADCAST ############\n");
+                    Tensor::copy(net->snets[0]->layers[i]->params[j], net->layers[i]->params[j]);
+                    fn_mpi_Bcast(net->layers[i]->params[j]->ptr, count);
+                    Tensor::copy(net->layers[i]->params[j], net->snets[0]->layers[i]->params[j]);
+#else
+                    fn_mpi_Bcast(myptr, count);                    
+#endif
+                }
             }
         }
     }
@@ -767,16 +790,16 @@ void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch
                     float speed_up = secs_prev / secs_epoch;
                    
                     if (speed_up > TH_UP) { // OK, let's reduce comm
-                        printf("Mayor %f %f\n", secs_prev, speed_up);
+                        //printf("Mayor %f %f\n", secs_prev, speed_up);
                         if (secs_epoch<secs_prev)
                             secs_prev = secs_epoch;
                         batches_avg = std::min(batches_avg * 2, max_batch_avg);
                     } else if (speed_up < TH_DN) { // OOPs, train time increased
-                        printf("Menor %f %f\n", secs_prev,speed_up);
+                        //printf("Menor %f %f\n", secs_prev,speed_up);
                         secs_prev = secs_epoch; // Reset reference
                         batches_avg = std::min(batches_avg * 2, max_batch_avg);
                     } else { // Don't do anything
-                        printf("Medio %f %f\n", secs_prev,speed_up);
+                        //printf("Medio %f %f\n", secs_prev,speed_up);
                         if (secs_epoch<secs_prev)
                             secs_prev = secs_epoch;
                         batches_avg = std::max(batches_avg - (batches_avg / 4), mpi_avg);

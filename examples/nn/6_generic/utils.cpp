@@ -19,7 +19,8 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
         int* epochs, int* batch_size, int* num_classes,
         int* channels, int* width, int* height,
         float* lr, int* initial_mpi_avg, int* chunks, int* use_bi8,
-        int* use_distr_dataset, int* ptmodel, char* test_file) {
+        int* use_distr_dataset, int* ptmodel, char* test_file,
+        bool* use_cpu, bool* use_mpi) {
 
     int argn;
     char *uso =
@@ -28,6 +29,7 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
             "\t -e nr-of-epochs -a batch-average -l learning-rate -s nr-of-parts \n"
             "\t -d (distr dataset) -8 (8-bit dataset bin format)\n"
             "\t -n pre-trained-model -t model-file-to-test \n"
+            "\t --cpu (use cpu instead of gpu) --mpi (use mpi instead f NCCL) \n"
             "";
 
     argn = 1;
@@ -128,6 +130,12 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
                 fprintf(stderr, "Error: %s. file not found\n", test_file);
                 error_fatal(uso, argv[0]);
             } /* endif */
+        } else if (!strncmp(argv[argn], "--cpu", 5)) {
+            *use_cpu = 1;
+            printf("use cpu:'%s'\n", "yes");
+        } else if (!strncmp(argv[argn], "--mpi", 5)) {
+            *use_mpi = 1;
+            printf("use mpi:'%s'\n", "yes");
         } else {
             fprintf(stderr, "Error: %s. invalid argument\n", argv[argn]);
             error_fatal(uso, argv[0]);

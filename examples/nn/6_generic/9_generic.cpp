@@ -231,6 +231,9 @@ void custom_fit(model net, Tensor* x_train, Tensor* y_train, int batch, int epoc
     int global_batch;
     int nbpp;
     
+    int use_cpu;
+    int use_mpi;
+    
     
     /*
     if (distr_dataset){
@@ -343,7 +346,6 @@ void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool 
 
 int main(int argc, char **argv) {
     int id;
-    bool use_cpu = false;
     char model_name[64] = "vgg16_bn";
     char pdf_name[128];
     char onnx_name[128];
@@ -367,6 +369,8 @@ int main(int argc, char **argv) {
     int use_bi8 = 0;
     int use_distr_dataset = 0;
     int ptmodel=1;
+    bool use_cpu=false;
+    bool use_mpi=false;
     
     double secs;
     
@@ -379,7 +383,8 @@ int main(int argc, char **argv) {
             path, tr_images, tr_labels, ts_images, ts_labels,
             &epochs, &batch_size, &num_classes, &channels, &width, &height, &lr, 
             &initial_mpi_avg,
-            &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file);
+            &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file,
+            &use_cpu, &use_mpi);
     
     // Init distribuited training
     //id = get_id_distributed();

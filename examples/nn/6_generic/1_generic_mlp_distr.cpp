@@ -21,14 +21,14 @@
 using namespace eddl;
 
 //////////////////////////////////
-// mnist_mlp.cpp:
-// A very basic MLP for mnist
-// Using fit for training
+// Generic example
+// Model is mlp
+// Dataset can be selected
+// Using EDDL coarse-grain training
 //////////////////////////////////
 
 int main(int argc, char **argv) {
     int id;
-    bool use_cpu = false;
     char model_name[64] = "mlp";
     char pdf_name[128];
     char onnx_name[128];
@@ -51,7 +51,9 @@ int main(int argc, char **argv) {
     int chunks = 0;
     int use_bi8 = 0;
     int use_distr_dataset = 0;
-     int ptmodel=1;
+    int ptmodel=1;
+    bool use_cpu=false;
+    bool use_mpi=false;
     
       // if executed without mpirun wrapper, error
   if (getenv("OMPI_COMM_WORLD_RANK") == NULL) {
@@ -59,7 +61,10 @@ int main(int argc, char **argv) {
       exit (1);
   }
 
-    init_distributed();
+	// DISTR
+    id=init_distributed();
+    set_method_distributed(FIXED,4,0);
+
     
     sprintf(pdf_name, "%s.pdf", model_name);
     sprintf(onnx_name, "%s.onnx", model_name);
@@ -68,11 +73,8 @@ int main(int argc, char **argv) {
             path, tr_images, tr_labels, ts_images, ts_labels,
             &epochs, &batch_size, &num_classes, &channels, &width, &height, &lr, 
             &initial_mpi_avg,
-            &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file);
-   
-    
-    
-    
+            &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file,
+            &use_cpu, &use_mpi);
    
     bool testing = false;
 
@@ -86,11 +88,8 @@ int main(int argc, char **argv) {
     
     
 
-    // Get MPI process id
-    id=get_id_distributed();
     
    
-    set_method_distributed(FIXED,4,0);
     
     // Download mnist
     //download_mnist();

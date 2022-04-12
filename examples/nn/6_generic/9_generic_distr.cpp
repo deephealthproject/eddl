@@ -399,7 +399,6 @@ void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool 
 
 int main(int argc, char **argv) {
     int id;
-    bool use_cpu = false;
     char model_name[128];
     char pdf_name[128];
     char import_onnx[128];
@@ -425,6 +424,8 @@ int main(int argc, char **argv) {
     int use_bi8 = 0;
     int use_distr_dataset = 0;
     int ptmodel=1;
+    bool use_cpu=false;
+    bool use_mpi=false;
      
     double secs;
     double secs_epoch;
@@ -442,16 +443,22 @@ int main(int argc, char **argv) {
     std::string best_model_byloss;
     std::string best_model_byacc;
 
-    // Init distribuited training
-    id = init_distributed();
 
 
     process_arguments(argc, argv,
             path, tr_images, tr_labels, ts_images, ts_labels,
             &epochs, &batch_size, &num_classes, &channels, &width, &height, &lr,
             &initial_mpi_avg,
-            &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file);
+            &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file,
+            &use_cpu, &use_mpi);
 
+        // Init distribuited training
+    if (use_mpi)
+        id = init_distributed("MPI");
+    else
+        id = init_distributed();
+
+    
     sprintf(model_name, "generic%d", ptmodel);
     sprintf(pdf_name, "%s.pdf", model_name);
     //sprintf(onnx_name, "%s%d.onnx", model_name, ptmodel);
