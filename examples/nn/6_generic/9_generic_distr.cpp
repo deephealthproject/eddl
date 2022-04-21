@@ -335,7 +335,7 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
             fprintf(stdout, "\n%1.4f secs/epoch: train: %1.4f secs; comms: %1.4f\n", epoch_time_span.count(),tbsecs,awsecs);
             fflush(stdout);
         }
-        set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.1, nbpp);
+        //set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.1, nbpp);
     }
     mpi_id0(printf("\n"));
     mpi_id0(fflush(stdout));
@@ -458,6 +458,7 @@ int main(int argc, char **argv) {
     else
         id = init_distributed();
 
+   
     
     sprintf(model_name, "generic%d", ptmodel);
     sprintf(pdf_name, "%s.pdf", model_name);
@@ -467,7 +468,7 @@ int main(int argc, char **argv) {
     
     
     // Sync every batch, change every 2 epochs
-    //set_method_distributed(FIXED,initial_mpi_avg,1);
+    set_method_distributed(FIXED,1,1);
     //set_method_distributed(AUTO_TIME, initial_mpi_avg, 1);
 
 

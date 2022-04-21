@@ -957,6 +957,9 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             }
         }
 
+        // Broadcast weights to ensure identical models
+            bcast_weights_distributed(this);
+        
         //batches_avg = mpi_avg;
         for (i = 0; i < epochs; i++) {
             high_resolution_clock::time_point e1 = high_resolution_clock::now();

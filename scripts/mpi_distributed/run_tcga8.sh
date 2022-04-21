@@ -1,3 +1,4 @@
+
 #!/bin/bash 
 
 if [ $# -le 1 ]; then
@@ -21,8 +22,8 @@ AVG=1
 MODEL=10
 
 # Dataset specific
-PARAMS="-w 224 -h 224 -z 1 -c 2"
-DS="chest_xray"
+PARAMS="-w 224 -h 224 -z 3 -c 2"
+DS="tcga8"
 
 
 # process arguments
@@ -43,7 +44,7 @@ done
 NAME=distr_${DS}_n${PROCS}_bs${BS}
 OUTPUT=$NAME.out
 ERR=$NAME.err
-EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8"
+EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8 -d"
 
 
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true --mca mpi_leave_pinned 1"

@@ -21,8 +21,8 @@ AVG=1
 MODEL=10
 
 # Dataset specific
-PARAMS="-w 224 -h 224 -z 1 -c 2"
-DS="chest_xray"
+PARAMS="-w 256 -h 256 -z 1 -c 4"
+DS="COVID-19_Radiography_Dataset"
 
 
 # process arguments
@@ -40,10 +40,10 @@ done
 #echo "SLURM" ${SLURM}
 
 # Filenames
-NAME=distr_${DS}_n${PROCS}_bs${BS}
+NAME=FIX1_mpi_${DS}_n${PROCS}_bs${BS}
 OUTPUT=$NAME.out
 ERR=$NAME.err
-EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8"
+EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8 --mpi"
 
 
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true --mca mpi_leave_pinned 1"

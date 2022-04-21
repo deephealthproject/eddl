@@ -97,8 +97,9 @@ float prev_metrics=0;
 #define SILENT 1
 
 #define check_MPI(action) \
-    if ((SILENT==0) & (n_procs==1)) { \
-        fprintf(stderr,"[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__); \
+    if (n_procs==1) { \
+        if (!SILENT) \
+            fprintf(stderr,"[DISTR] Warning. Distributed mode is off. Call to %s\n", __func__); \
         action; \
     } 
 
@@ -255,7 +256,8 @@ int init_distributed(string comm) {
     char ***argv;
 
     id = init_MPI(argc, argv);
-
+    barrier_distributed();
+   
     if (comm == "NCCL") {
         lib = "NCCL";
         init_NCCL(get_available_GPUs_distributed());
@@ -268,6 +270,7 @@ int init_distributed(string comm) {
         fprintf(stdout, "[DISTR] %s. lib=%s\n", __func__, lib.c_str());
         check_MPI_Cuda_Aware();
     }
+    barrier_distributed();
     //fprintf(stdout, "[DISTR] using %s\n", lib.c_str());
     return id;
 }
@@ -363,6 +366,7 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg) {
         } else {
             msg("Error unknown avg_method",  __func__); // Exits
         }
+    barrier_distributed();
 }
 
 vector<int> get_gpu_vec_distributed() {
@@ -397,12 +401,12 @@ vector<int> get_gpu_vec_distributed() {
     if (is_mpi_distributed()) {
         get_nodename_distributed(node_name);
         fprintf(stdout, "[DISTR] get_gpu_vec. Node: %s. Process %d. CS: GPU mask: %s\n", node_name, id, gpu_str.c_str());
-        fprintf(stdout, "[DISTR] EDDL DeviceID %d) \n", Tensor::getDeviceID("cuda"));
+        fprintf(stdout, "[DISTR] EDDL DeviceID %d \n", Tensor::getDeviceID("cuda"));
     } else {
         fprintf(stdout, "[CS_GPU()] CS: GPU mask: %s\n", gpu_str.c_str());
     }
 
-
+    barrier_distributed();
     return gpus;
 }
 
@@ -459,6 +463,8 @@ void set_batch_distributed (int* global_batch, int* local_batch, int batch, int 
     }   
     if (id==0)
         printf("[DISTR] set_batch. Method: %s. Batch size: %d. Global batch size: %d. Local batch size:  %d\n",  (method==DIV_BATCH?"DIV":"MUL"), batch, *global_batch, *local_batch);
+    barrier_distributed();
+    
     return;
 }
 
@@ -482,6 +488,9 @@ int set_NBPP_distributed(int ds_size, int local_batch, bool method) {
     }
     if (id==0)
         printf("[DISTR] set_NBPP. Proc: %d. Distr dataset: %s. Dataset size: %d. Local batch: %d. Num batches per proc: %d\n", id, (method==NO_DISTR_DS?"no":"yes"), ds_size, local_batch, nbpp);
+   
+    barrier_distributed();
+    
     return nbpp;
 }
 
@@ -629,7 +638,9 @@ void fn_Bcast_GPU_weights(Net* net) {
 void bcast_weights_distributed(Net * net) {
     check_MPI(return);
 
-    
+    if (id==0)
+        printf("[DISTR] %s.\n", __func__);
+   
     if (net->cs->hw == "gpu")
         fn_Bcast_GPU_weights(net);
     else if (net->cs->hw == "cpu")
@@ -738,9 +749,11 @@ void barrier_distributed() {
     //n_procs = get_n_procs_distributed();
     check_MPI(return);
 
+    if (is_mpi_distributed()) {
 #ifdef cMPI       
     MPICHECK(MPI_Barrier(MPI_COMM_WORLD));
 #endif
+    }
 }
 
 
