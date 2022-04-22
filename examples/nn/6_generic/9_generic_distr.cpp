@@ -322,6 +322,7 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
             avg_weights_distributed(net, j + 1, nbpp);
             TIME_POINT2(avg_w,awsecs);
             print_loss(net, j + 1, false);
+            mpi_id0(printf(" Avg elapsed time: train %1.4f secs; comms %1.4f\n", tbsecs/(j+1),awsecs/(j+1)));
             mpi_id0(printf("\r"););
             //printf("Proc %d, j=%d\n", id, j);
         }
