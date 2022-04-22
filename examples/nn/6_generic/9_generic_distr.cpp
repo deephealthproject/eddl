@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <chrono>
- 
+
 
 
 #include "eddl/apis/eddl.h"
@@ -23,13 +23,12 @@ using namespace eddl;
 using namespace std;
 using namespace std::chrono;
 
-
-layer DataAugmentation (layer l) {
-     // Data augmentation/
-//    l = RandomCropScale(l, {0.8f, 1.0f});
-//    l = RandomFlip(l,1);
-//    l = RandomShift(l, {-0.1,0.1},{-0.1, 0.1});
-    l = RandomRotation(l, {-10,10});
+layer DataAugmentation(layer l) {
+    // Data augmentation/
+    //    l = RandomCropScale(l, {0.8f, 1.0f});
+    //    l = RandomFlip(l,1);
+    //    l = RandomShift(l, {-0.1,0.1},{-0.1, 0.1});
+    l = RandomRotation(l,{-10, 10});
     return l;
 }
 
@@ -37,7 +36,8 @@ layer DataAugmentation (layer l) {
 //////////////////////////////////
 // mlp
 //////////////////////////////////
- model mlp (vector<int> in_shape, int num_classes, int size1, int size2)  {  
+
+model mlp(vector<int> in_shape, int num_classes, int size1, int size2) {
     layer in = Input(in_shape, "da");
     //layer in = Input({3, 224, 224});
     layer l = in;
@@ -46,38 +46,50 @@ layer DataAugmentation (layer l) {
     // Data augmentation
     //l= DataAugmentation(l);
     //l=Bypass(l,"bypass");layer in = Input({channels, height, width});
-    
+
     l = Flatten(l);
     l = LeakyReLu(Dense(l, size1));
     l = LeakyReLu(Dense(l, size1));
     l = LeakyReLu(Dense(l, size2));
 
-    layer out = Softmax(Dense(l, num_classes),-1, "output");
+    layer out = Softmax(Dense(l, num_classes), -1, "output");
     // net define input and output layers list
-    model net = Model({in},{out});
+    model net = Model({in},
+    {
+        out
+    });
     return net;
- }
+}
 //////////////////////////////////
 // vgg16 with BatchNorm
 //////////////////////////////////
 
-layer Normalization(layer l)
-{
-  return BatchNormalization(l);
-  //return LayerNormalization(l);
-  //return GroupNormalization(l,8);
+layer Normalization(layer l) {
+    return BatchNormalization(l);
+    //return LayerNormalization(l);
+    //return GroupNormalization(l,8);
 }
 
-layer Block1(layer l,int filters) {
-  return ReLu(Normalization(Conv(l,filters,{1,1},{1,1},"same",false)));
-}
-layer Block3_2(layer l,int filters) {
-  l=ReLu(Normalization(Conv(l,filters,{3,3},{1,1},"same",false)));
-  l=ReLu(Normalization(Conv(l,filters,{3,3},{1,1},"same",false)));
-  return l;
+layer Block1(layer l, int filters) {
+    return ReLu(Normalization(Conv(l, filters,{1, 1},
+    {
+        1, 1
+    }, "same", false)));
 }
 
-model vgg16bn (vector<int> in_shape, int num_classes, int size1, int size2)  {  
+layer Block3_2(layer l, int filters) {
+    l = ReLu(Normalization(Conv(l, filters,{3, 3},
+    {
+        1, 1
+    }, "same", false)));
+    l = ReLu(Normalization(Conv(l, filters,{3, 3},
+    {
+        1, 1
+    }, "same", false)));
+    return l;
+}
+
+model vgg16bn(vector<int> in_shape, int num_classes, int size1, int size2) {
     layer in = Input(in_shape, "da");
     //layer in = Input({3, 224, 224});
     layer l = in;
@@ -86,69 +98,93 @@ model vgg16bn (vector<int> in_shape, int num_classes, int size1, int size2)  {
     // Data augmentation
     //l= DataAugmentation(l);
     //l=Bypass(l,"bypass");
-    
-    l=MaxPool(Block3_2(l,64));
-    l=MaxPool(Block3_2(l,128));
-    l=MaxPool(Block1(Block3_2(l,256),256));
-    l=MaxPool(Block1(Block3_2(l,512),512));
-    l=MaxPool(Block1(Block3_2(l,512),512));
 
-    l=Reshape(l,{-1});
+    l = MaxPool(Block3_2(l, 64));
+    l = MaxPool(Block3_2(l, 128));
+    l = MaxPool(Block1(Block3_2(l, 256), 256));
+    l = MaxPool(Block1(Block3_2(l, 512), 512));
+    l = MaxPool(Block1(Block3_2(l, 512), 512));
+
+    l = Reshape(l,{-1});
     l = Activation(Dense(l, size1), "relu");
     l = Activation(Dense(l, size2), "relu");
 
-    layer out = Softmax(Dense(l, num_classes),-1, "output");
+    layer out = Softmax(Dense(l, num_classes), -1, "output");
     // net define input and output layers list
-    model net = Model({in},{out});
+    model net = Model({in},
+    {
+        out
+    });
     return net;
-}    
+}
 
 //////////////////////////////////
 // Resnet50 with
 // BatchNorm
 //////////////////////////////////
 
-layer BN(layer l)
-{
-  return BatchNormalization(l);
-  //return l;
+layer BN(layer l) {
+    return BatchNormalization(l);
+    //return l;
 }
 
 layer BG(layer l) {
-  //return GaussianNoise(BN(l),0.3);
-  return BN(l);
+    //return GaussianNoise(BN(l),0.3);
+    return BN(l);
 }
 
-layer ResBlock(layer l, int filters,int half, int expand=0) {
-  layer in=l;
+layer ResBlock(layer l, int filters, int half, int expand = 0) {
+    layer in = l;
 
-  l=ReLu(BG(Conv(l,filters,{1,1},{1,1},"same",false)));
+    l = ReLu(BG(Conv(l, filters,{1, 1},
+    {
+        1, 1
+    }, "same", false)));
 
-  if (half)
-    l=ReLu(BG(Conv(l,filters,{3,3},{2,2},"same",false)));
-  else
-    l=ReLu(BG(Conv(l,filters,{3,3},{1,1},"same",false)));
+    if (half)
+        l = ReLu(BG(Conv(l, filters,{3, 3},
+        {
+            2, 2
+        }, "same", false)));
+    else
+        l = ReLu(BG(Conv(l, filters,{3, 3},
+        {
+            1, 1
+        }, "same", false)));
 
-  l=BG(Conv(l,4*filters,{1,1},{1,1},"same",false));
+    l = BG(Conv(l, 4 * filters,{1, 1},
+    {
+        1, 1
+    }, "same", false));
 
-  if (half)
-    return ReLu(Add(BG(Conv(in,4*filters,{1,1},{2,2},"same",false)),l));
-  else
-    if (expand) return ReLu(Add(BG(Conv(in,4*filters,{1,1},{1,1},"same",false)),l));
-    else return ReLu(Add(in,l));
+    if (half)
+        return ReLu(Add(BG(Conv(in, 4 * filters,{1, 1},
+        {
+            2, 2
+        }, "same", false)), l));
+    else
+        if (expand) return ReLu(Add(BG(Conv(in, 4 * filters,{1, 1},
+        {
+            1, 1
+        }, "same", false)), l));
+    else return ReLu(Add(in, l));
 }
 
 // Resnet-50
-model resnet50 (vector<int> in_shape, int num_classes, int size1, int size2)  {
+
+model resnet50(vector<int> in_shape, int num_classes, int size1, int size2) {
 
     layer in = Input(in_shape, "da");
     layer l = in;
-    
-     // Data augmentation
+
+    // Data augmentation
     //l= DataAugmentation(l);
     //l=Bypass(l,"by");
-    
-    l = ReLu(BG(Conv(l, 64,{3, 3},{1, 1}, "same", false))); //{1,1}
+
+    l = ReLu(BG(Conv(l, 64,{3, 3},
+    {
+        1, 1
+    }, "same", false))); //{1,1}
     //l=MaxPool(l,{3,3},{1,1},"same");
 
     // Add explicit padding to avoid the asymmetric padding in the Conv layers
@@ -172,28 +208,30 @@ model resnet50 (vector<int> in_shape, int num_classes, int size1, int size2)  {
     l = Activation(Dense(l, size1), "relu");
     l = Activation(Dense(l, size2), "relu");
 
-    layer out = Softmax(Dense(l, num_classes),-1, "output");
+    layer out = Softmax(Dense(l, num_classes), -1, "output");
     // net define input and output layers list
-    model net = Model({in}, {out});
+    model net = Model({in},
+    {
+        out
+    });
     return net;
 }
 
-
-model select_model (int choice, vector<int> in_shape, int num_classes, int size1, int size2)  {
-    if (in_shape[0]!=3) {
+model select_model(int choice, vector<int> in_shape, int num_classes, int size1, int size2) {
+    if (in_shape[0] != 3) {
         printf("ERROR: Only 3 channels are supported\n");
         exit(1);
     }
-   /*
-    if (in_shape[1]!=224) {
-        printf("ERROR: Only height 224 is supported\n");
-        exit(1);
-    }
-    if (in_shape[2]!=224) {
-        printf("ERROR: Only width 224 is supported\n");
-        exit(1);
-    }
-    */
+    /*
+     if (in_shape[1]!=224) {
+         printf("ERROR: Only height 224 is supported\n");
+         exit(1);
+     }
+     if (in_shape[2]!=224) {
+         printf("ERROR: Only width 224 is supported\n");
+         exit(1);
+     }
+     */
     model pretrained_model;
     switch (choice) {
         case 0: pretrained_model = download_vgg16(true, in_shape);
@@ -232,7 +270,7 @@ model select_model (int choice, vector<int> in_shape, int num_classes, int size1
     // Get the input layer of the pretrained model
     layer in_ = getLayer(pretrained_model, "input");
     // Get the last layer of the pretrained model
-    
+
     layer top_layer = getLayer(pretrained_model, "top");
     // Create the new densely connected part
     // std::vector<std::string> layers2init{"dense1", "dense_out"};
@@ -246,32 +284,33 @@ model select_model (int choice, vector<int> in_shape, int num_classes, int size1
     // Output layer
     layer out_ = Softmax(Dense(l, num_classes, true, "dense_out"), -1, "output");
 
-    model net = Model({in_},{out_});
+    model net = Model({in_},
+    {
+        out_
+    });
     return net;
 }
 
+void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int batch, int epochs, bool divide_batch, bool distr_dataset = false) {
 
+    int i, j;
+    int id = get_id_distributed();
+    int n_procs = get_n_procs_distributed();
 
-void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int batch, int epochs, bool divide_batch, bool distr_dataset=false) {
-   
-    int i,j;
-    int id=get_id_distributed();
-    int n_procs=get_n_procs_distributed();
-    
     tshape s = x_train->getShape();
-    int dataset_size=s[0];
-    int channels =s[1];
-    int width=s[2];
+    int dataset_size = s[0];
+    int channels = s[1];
+    int width = s[2];
     int height = s[3];
     int num_classes = y_train->getShape()[1];
-    
+
     int num_batches;
     int local_batch;
     int global_batch;
     int nbpp;
-    
-   
-    
+
+
+
     /*
     if (distr_dataset){
         mpi_id0(printf("custom_fit. dataset_size %d  Distributed dataset\n", dataset_size));
@@ -292,37 +331,43 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
         nbpp=num_batches/n_procs;
         mpi_id0(printf("custom_fit. Mul batch: global: %d, local: %d\n", local_batch*n_procs, local_batch));
     }
-    */
+     */
 
     set_batch_distributed(&global_batch, &local_batch, batch, divide_batch);
     nbpp = set_NBPP_distributed(dataset_size, local_batch, distr_dataset);
 
     Tensor* xbatch = new Tensor({local_batch, channels, width, height});
     Tensor* ybatch = new Tensor({local_batch, num_classes});
-   
-    
+
+
     for (i = 0; i < epochs; i++) {
         high_resolution_clock::time_point e1 = high_resolution_clock::now();
         reset_loss(net);
         mpi_id0(printf("custom_fit. Epoch %d/%d\n", i + 1, epochs));
-        double tbsecs=0;
-        double awsecs=0;
+        double tbsecs = 0;
+        double awsecs = 0;
         for (j = 0; j < nbpp; j++) {
             TIME_POINT1(train);
-            next_batch({x_train, y_train},{xbatch, ybatch});
+            next_batch({x_train, y_train},
+            {
+                xbatch, ybatch
+            });
             // DA
             forward(danet, vector<Tensor *>{xbatch});
             // get COPIES of tensors from DA
             layer output_da = getLayer(danet, "bypass1");
             Tensor* xbatch_da = getOutput(output_da);
-            train_batch(net,{xbatch_da},{ybatch});
+            train_batch(net,{xbatch_da},
+            {
+                ybatch
+            });
             //sync_batch
-            TIME_POINT2(train,tbsecs);
+            TIME_POINT2(train, tbsecs);
             TIME_POINT1(avg_w);
             avg_weights_distributed(net, j + 1, nbpp);
-            TIME_POINT2(avg_w,awsecs);
+            TIME_POINT2(avg_w, awsecs);
             print_loss(net, j + 1, false);
-            mpi_id0(printf(" Avg elapsed time: train %1.4f secs; comms %1.4f\n", tbsecs/(j+1),awsecs/(j+1)));
+            mpi_id0(printf(" Avg elapsed time: train %1.4f secs; comms %1.4f\n", tbsecs / (j + 1), awsecs / (j + 1)));
             mpi_id0(printf("\r"););
             //printf("Proc %d, j=%d\n", id, j);
         }
@@ -333,7 +378,7 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
         high_resolution_clock::time_point e2 = high_resolution_clock::now();
         duration<double> epoch_time_span = e2 - e1;
         if (id == 0) {
-            fprintf(stdout, "\n%1.4f secs/epoch: train: %1.4f secs; comms: %1.4f\n", epoch_time_span.count(),tbsecs,awsecs);
+            fprintf(stdout, "\n%1.4f secs/epoch: train: %1.4f secs; comms: %1.4f\n", epoch_time_span.count(), tbsecs, awsecs);
             fflush(stdout);
         }
         //set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.1, nbpp);
@@ -346,18 +391,18 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
 
 }
 
-void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool divide_batch, bool distr_dataset=false) {
-    int i,j,k;
-    int id=get_id_distributed();
-    int n_procs=get_n_procs_distributed();
+void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool divide_batch, bool distr_dataset = false) {
+    int i, j, k;
+    int id = get_id_distributed();
+    int n_procs = get_n_procs_distributed();
 
     tshape s = x_test->getShape();
-    int dataset_size=s[0];
-    int channels =s[1];
-    int width=s[2];
+    int dataset_size = s[0];
+    int channels = s[1];
+    int width = s[2];
     int height = s[3];
     int num_classes = y_test->getShape()[1];
-    
+
     int num_batches;
     int local_batch;
     int global_batch;
@@ -365,7 +410,7 @@ void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool 
 
     set_batch_distributed(&global_batch, &local_batch, batch, divide_batch);
     nbpp = set_NBPP_distributed(dataset_size, local_batch, distr_dataset);
-    
+
     vind sind;
     for (k = 0; k < local_batch; k++)
         sind.push_back(0);
@@ -376,11 +421,14 @@ void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool 
         for (k = 0; k < local_batch; k++) {
             if (distr_dataset)
                 sind [k] = (j * local_batch) + k;
-            else 
+            else
                 sind [k] = (((id * nbpp) + j) * local_batch) + k;
             //printf("id=%d  %5d",id, sind[k]);
         }
-        eval_batch(net, {x_test}, {y_test}, sind);
+        eval_batch(net,{x_test},
+        {
+            y_test
+        }, sind);
         //         print_loss(batches, num_batches);
         print_loss(net, j + 1, false);
         mpi_id0(fprintf(stdout, "\r"));
@@ -391,12 +439,11 @@ void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool 
     print_loss(net, nbpp, false);
     mpi_id0(printf("\n"));
     mpi_id0(fflush(stdout));
-    
+
     // if (early_stopping_on_loss_var (net, 0, 10, 0.1, i)) break;
     //if (early_stopping_on_metric_var (net, 0, 0.0001, 2, i)) break;
     //if (early_stopping_on_metric (net, 0, 0.97, 2, i)) break;
 }
-
 
 int main(int argc, char **argv) {
     int id;
@@ -404,8 +451,8 @@ int main(int argc, char **argv) {
     char pdf_name[128];
     char import_onnx[128];
     char test_file[128];
-    
-    
+
+
     char path[256] = "";
     char tr_images[256];
     char tr_labels[256];
@@ -424,15 +471,15 @@ int main(int argc, char **argv) {
     int chunks = 1;
     int use_bi8 = 0;
     int use_distr_dataset = 0;
-    int ptmodel=1;
-    bool use_cpu=false;
-    bool use_mpi=false;
-     
+    int ptmodel = 1;
+    bool use_cpu = false;
+    bool use_mpi = false;
+
     double secs;
     double secs_epoch;
-    
-    int test_only=0;
-         
+
+    int test_only = 0;
+
     // Auxiliary variables to store the results
     vector<float> losses, accs, val_losses, val_accs;
     // To track the best models to store them in ONNX
@@ -453,23 +500,23 @@ int main(int argc, char **argv) {
             &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file,
             &use_cpu, &use_mpi);
 
-        // Init distribuited training
+    // Init distribuited training
     if (use_mpi)
         id = init_distributed("MPI");
     else
         id = init_distributed();
 
-   
-    
+
+
     sprintf(model_name, "generic%d", ptmodel);
     sprintf(pdf_name, "%s.pdf", model_name);
     //sprintf(onnx_name, "%s%d.onnx", model_name, ptmodel);
 
 
-    
-    
+
+
     // Sync every batch, change every 2 epochs
-    set_method_distributed(FIXED,1,1);
+    set_method_distributed(FIXED, 1, 1);
     //set_method_distributed(AUTO_TIME, initial_mpi_avg, 1);
 
 
@@ -505,9 +552,12 @@ int main(int argc, char **argv) {
     layer l = in;
     l = DataAugmentation(l);
     layer out = Bypass(l);
-    model danet = Model({in},{out});
+    model danet = Model({in},
+    {
+        out
+    });
     build(danet);
-    
+
     // NN
     int dense_size1 = 512;
     int dense_size2 = 512;
@@ -515,7 +565,7 @@ int main(int argc, char **argv) {
     if (ptmodel == 100) {// load ONNX file
         printf("ONNX file %s\n", test_file);
         net = import_net_from_onnx_file(test_file);
-        test_only=1;
+        test_only = 1;
     } else if (ptmodel == 10)
         net = vgg16bn(in_shape, num_classes, dense_size1, dense_size2);
     else if (ptmodel == 11) // resnet50
@@ -565,7 +615,7 @@ int main(int argc, char **argv) {
     //    load(net,test_file);
     //    test_only=1;
     //}
-    
+
     if (test_only == 0) {
         // Later, we fill the training dataset
         Tensor* x_train;
@@ -573,32 +623,35 @@ int main(int argc, char **argv) {
 
         bcast_weights_distributed(net);
 
-        for (int epoch = 0; epoch < epochs; epoch++) {
-            mpi_id0(printf("== Epoch %d/%d ===\n", epoch + 1, epochs));
-            for (int chunk = 0; chunk < chunks; chunk++) {
-                mpi_id0(printf("-- Chunk %d/%d ---\n", chunk + 1, chunks));
+        if (chunks == 1) {
+            /* Load dataset */
+            x_train = Tensor::load(tr_images);
+            y_train = Tensor::load(tr_labels);
+            x_train->div_(255.0f);
+
+            for (int epoch = 0; epoch < epochs; epoch++) {
+                mpi_id0(printf("== Epoch %d/%d ===\n", epoch + 1, epochs));
+                //for (int chunk = 0; chunk < chunks; chunk++) {
+                int chunk = 0;
+                //    mpi_id0(printf("-- Chunk %d/%d ---\n", chunk + 1, chunks));
                 if (use_distr_dataset) { /* Distribute dataset into processes */
                     sprintf(tr_images, "%s/%03d/train-images.bi8", path, id * chunks + chunk);
                     sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, id * chunks + chunk);
                 } else {
-                    if (chunks == 1) {
-                        sprintf(tr_images, "%s/train-images.bi8", path);
-                        sprintf(tr_labels, "%s/train-labels.bi8", path);
-                    } else {
-                        sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
-                        sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
-                    }
+                    //if (chunks == 1) {
+                    sprintf(tr_images, "%s/train-images.bi8", path);
+                    sprintf(tr_labels, "%s/train-labels.bi8", path);
+                    //} else { 
+                    sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
+                    sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
+                    //}
                 }
                 if (id == 0) {
                     //printf("Train: %s, %s\n ", tr_images, tr_labels);
                     //printf("Val: %s, %s\n", ts_images, ts_labels);
                 }
-                /* Load dataset */
-                x_train = Tensor::load(tr_images);
-                y_train = Tensor::load(tr_labels);
-                x_train->div_(255.0f);
-                
-                
+
+
                 // Train
                 // printf("FIT:\n");
                 //fit(net,{x_train},{y_train}, batch_size, epochs);
@@ -610,54 +663,143 @@ int main(int argc, char **argv) {
                     y_train
                 }, batch_size, 1, DIV_BATCH, use_distr_dataset), secs_epoch);
 
-                delete x_train;
-                delete y_train;
-            }
-            update_batch_avg_distributed(epoch, secs_epoch, 1000);
-            barrier_distributed();
 
-            TIMED_EXEC("DISTR EVALUATE", evaluate_distr(net,{x_test},
-            {
-                y_test
-            }), secs);
+                update_batch_avg_distributed(epoch, secs_epoch, 1000);
+                barrier_distributed();
 
-            barrier_distributed();
-            if (id == 0) {
-                // Get the current losses and metrics
-                curr_loss = get_losses(net)[0];
-                curr_acc = get_metrics(net)[0];
-                // Check if we have to save the current model as ONNX
-                if (curr_loss < best_loss || curr_acc > best_acc) {
-                    // Prepare the onnx file name
-                    char onnx_name[128];
-                    sprintf(onnx_name, "%s_epoch%d_loss-%1.2f_acc-%.3f", model_name, epoch, curr_loss, curr_acc);
+                TIMED_EXEC("DISTR EVALUATE", evaluate_distr(net,{x_test},
+                {
+                    y_test
+                }), secs);
 
-                    // Update the current best metrics and finish ONNX file name
-                    char onnx_fname[128];
-                    char weights_fname[128];
-                    if (curr_loss >= best_loss) { // Only improves acc
-                        best_acc = curr_acc;
-                        sprintf(weights_fname, "%s_by-acc.bin", onnx_name);
-                        sprintf(onnx_fname, "%s_by-acc.onnx", onnx_name);
-                        std::cout << "New best model by acc: \"" << onnx_fname << "\"\n\n";
-                    } else if (curr_acc <= best_acc) { // Only improves loss
-                        best_loss = curr_loss;
-                        sprintf(weights_fname, "%s_by-loss.bin", onnx_name);
-                        sprintf(onnx_fname, "%s_by-loss.onnx", onnx_name);
-                        std::cout << "New best model by loss: \"" << onnx_fname << "\"\n\n";
-                    } else { // Improves loss and acc
-                        best_acc = curr_acc;
-                        best_loss = curr_loss;
-                        sprintf(weights_fname, "%s_by-loss-and-acc.bin", onnx_name);
-                        sprintf(onnx_fname, "%s_by-loss-and-acc.onnx", onnx_name);
-                        std::cout << "New best model by loss and acc: \"" << onnx_fname << "\"\n\n";
+                barrier_distributed();
+                if (id == 0) {
+                    // Get the current losses and metrics
+                    curr_loss = get_losses(net)[0];
+                    curr_acc = get_metrics(net)[0];
+                    // Check if we have to save the current model as ONNX
+                    if (curr_loss < best_loss || curr_acc > best_acc) {
+                        // Prepare the onnx file name
+                        char onnx_name[128];
+                        sprintf(onnx_name, "%s_epoch%d_loss-%1.2f_acc-%.3f", model_name, epoch, curr_loss, curr_acc);
+
+                        // Update the current best metrics and finish ONNX file name
+                        char onnx_fname[128];
+                        char weights_fname[128];
+                        if (curr_loss >= best_loss) { // Only improves acc
+                            best_acc = curr_acc;
+                            sprintf(weights_fname, "%s_by-acc.bin", onnx_name);
+                            sprintf(onnx_fname, "%s_by-acc.onnx", onnx_name);
+                            std::cout << "New best model by acc: \"" << onnx_fname << "\"\n\n";
+                        } else if (curr_acc <= best_acc) { // Only improves loss
+                            best_loss = curr_loss;
+                            sprintf(weights_fname, "%s_by-loss.bin", onnx_name);
+                            sprintf(onnx_fname, "%s_by-loss.onnx", onnx_name);
+                            std::cout << "New best model by loss: \"" << onnx_fname << "\"\n\n";
+                        } else { // Improves loss and acc
+                            best_acc = curr_acc;
+                            best_loss = curr_loss;
+                            sprintf(weights_fname, "%s_by-loss-and-acc.bin", onnx_name);
+                            sprintf(onnx_fname, "%s_by-loss-and-acc.onnx", onnx_name);
+                            std::cout << "New best model by loss and acc: \"" << onnx_fname << "\"\n\n";
+                        }
+                        //save(net, weights_fname);
+                        //save_net_to_onnx_file(net, onnx_fname);
                     }
-                    //save(net, weights_fname);
-                    //save_net_to_onnx_file(net, onnx_fname);
                 }
+                barrier_distributed();
             }
-            barrier_distributed();
+
+            delete x_train;
+            delete y_train;
+        } else { // Chunks>1
+            for (int epoch = 0; epoch < epochs; epoch++) {
+                mpi_id0(printf("== Epoch %d/%d ===\n", epoch + 1, epochs));
+                for (int chunk = 0; chunk < chunks; chunk++) {
+                    mpi_id0(printf("-- Chunk %d/%d ---\n", chunk + 1, chunks));
+                    if (use_distr_dataset) { /* Distribute dataset into processes */
+                        sprintf(tr_images, "%s/%03d/train-images.bi8", path, id * chunks + chunk);
+                        sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, id * chunks + chunk);
+                    } else {
+                        if (chunks == 1) {
+                            sprintf(tr_images, "%s/train-images.bi8", path);
+                            sprintf(tr_labels, "%s/train-labels.bi8", path);
+                        } else {
+                            sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
+                            sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
+                        }
+                    }
+                    if (id == 0) {
+                        //printf("Train: %s, %s\n ", tr_images, tr_labels);
+                        //printf("Val: %s, %s\n", ts_images, ts_labels);
+                    }
+                    /* Load dataset */
+                    x_train = Tensor::load(tr_images);
+                    y_train = Tensor::load(tr_labels);
+                    x_train->div_(255.0f);
+
+
+                    // Train
+                    // printf("FIT:\n");
+                    //fit(net,{x_train},{y_train}, batch_size, epochs);
+
+                    //mpi_id0(printf("CUSTOM FIT Mul :\n"));        
+                    //custom_fit(net,{x_train},{y_train},batch_size, epochs, false, use_distr_dataset);
+                    TIMED_EXEC("CUSTOM FIT DIV_BATCH", custom_fit(danet, net,{x_train},
+                    {
+                        y_train
+                    }, batch_size, 1, DIV_BATCH, use_distr_dataset), secs_epoch);
+
+                    delete x_train;
+                    delete y_train;
+                }
+                update_batch_avg_distributed(epoch, secs_epoch, 1000);
+                barrier_distributed();
+
+                TIMED_EXEC("DISTR EVALUATE", evaluate_distr(net,{x_test},
+                {
+                    y_test
+                }), secs);
+
+                barrier_distributed();
+                if (id == 0) {
+                    // Get the current losses and metrics
+                    curr_loss = get_losses(net)[0];
+                    curr_acc = get_metrics(net)[0];
+                    // Check if we have to save the current model as ONNX
+                    if (curr_loss < best_loss || curr_acc > best_acc) {
+                        // Prepare the onnx file name
+                        char onnx_name[128];
+                        sprintf(onnx_name, "%s_epoch%d_loss-%1.2f_acc-%.3f", model_name, epoch, curr_loss, curr_acc);
+
+                        // Update the current best metrics and finish ONNX file name
+                        char onnx_fname[128];
+                        char weights_fname[128];
+                        if (curr_loss >= best_loss) { // Only improves acc
+                            best_acc = curr_acc;
+                            sprintf(weights_fname, "%s_by-acc.bin", onnx_name);
+                            sprintf(onnx_fname, "%s_by-acc.onnx", onnx_name);
+                            std::cout << "New best model by acc: \"" << onnx_fname << "\"\n\n";
+                        } else if (curr_acc <= best_acc) { // Only improves loss
+                            best_loss = curr_loss;
+                            sprintf(weights_fname, "%s_by-loss.bin", onnx_name);
+                            sprintf(onnx_fname, "%s_by-loss.onnx", onnx_name);
+                            std::cout << "New best model by loss: \"" << onnx_fname << "\"\n\n";
+                        } else { // Improves loss and acc
+                            best_acc = curr_acc;
+                            best_loss = curr_loss;
+                            sprintf(weights_fname, "%s_by-loss-and-acc.bin", onnx_name);
+                            sprintf(onnx_fname, "%s_by-loss-and-acc.onnx", onnx_name);
+                            std::cout << "New best model by loss and acc: \"" << onnx_fname << "\"\n\n";
+                        }
+                        //save(net, weights_fname);
+                        //save_net_to_onnx_file(net, onnx_fname);
+                    }
+                }
+                barrier_distributed();
+            }
         }
+
     } else {
 
         //std::cout << "Evaluate test:" << std::endl;
@@ -681,7 +823,7 @@ int main(int argc, char **argv) {
     //if (id==0)
     //    save_net_to_onnx_file (net,onnx_name);   
 
-   //delete x_train;
+    //delete x_train;
     //delete y_train;
     delete x_test;
     delete y_test;
