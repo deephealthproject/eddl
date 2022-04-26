@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
     int width = 256;
     int height = 256;
     float lr = 0.001;
+    int method=FIXED;
     int initial_mpi_avg = 1;
     int chunks = 0;
     int use_bi8 = 0;
@@ -63,18 +64,19 @@ int main(int argc, char **argv) {
 
 	// DISTR
     id=init_distributed();
-    set_method_distributed(FIXED,4,0);
+    set_method_distributed(method,initial_mpi_avg,2);
 
     
     sprintf(pdf_name, "%s.pdf", model_name);
     sprintf(onnx_name, "%s.onnx", model_name);
 
-    process_arguments(argc, argv, 
+    process_arguments(argc, argv,
             path, tr_images, tr_labels, ts_images, ts_labels,
-            &epochs, &batch_size, &num_classes, &channels, &width, &height, &lr, 
-            &initial_mpi_avg,
+            &epochs, &batch_size, &num_classes, &channels, &width, &height, &lr,
+            &method, &initial_mpi_avg,
             &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file,
             &use_cpu, &use_mpi);
+
    
     bool testing = false;
 

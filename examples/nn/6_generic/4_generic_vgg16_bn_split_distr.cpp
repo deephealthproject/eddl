@@ -208,6 +208,7 @@ int main(int argc, char **argv) {
     int width = 256;
     int height = 256;
     float lr = 0.001;
+    int method=FIXED;
     int initial_mpi_avg = 1;
     int chunks = 1;
     int use_bi8 = 0;
@@ -224,7 +225,7 @@ int main(int argc, char **argv) {
     process_arguments(argc, argv,
             path, tr_images, tr_labels, ts_images, ts_labels,
             &epochs, &batch_size, &num_classes, &channels, &width, &height, &lr,
-            &initial_mpi_avg,
+            &method, &initial_mpi_avg,
             &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file,
             &use_cpu, &use_mpi);
 
@@ -233,7 +234,7 @@ int main(int argc, char **argv) {
     id = get_id_distributed();
 
     // Sync every batch, change every 2 epochs
-    //set_method_distributed(AUTO_TIME,1,2);
+     set_method_distributed(method,initial_mpi_avg,2);
 
 
     // network

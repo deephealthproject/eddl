@@ -17,6 +17,7 @@ DATASETS=~/convert_EDDL
 #BS=80
 EPOCHS=10
 LR=0.0001
+METHOD=0
 AVG=1
 MODEL=10
 
@@ -30,6 +31,7 @@ while  [ $# -ge 2 ]
 do
 	case $1 in 
         --slurm) SLURM="yes"  ;;
+        --mpi) MPI="yes"  ;;
 		-n) PROCS=$2 ; shift ;;
 		-bs) BS=$2 ; shift ;;
 		*) break ;;
@@ -40,11 +42,23 @@ done
 #echo "SLURM" ${SLURM}
 
 # Filenames
-NAME=FIX1_nccl_${DS}_n${PROCS}_bs${BS}
+NAME_COMMON=${DS}_m${METHOD}_n${PROCS}_bs${BS}
+
+NAME=nccl_${NAME_COMMON}
+
+# Patches for mpi
+if [[ "$MPI" == "yes" ]]; then
+NAME=mpi_${NAME_COMMON}
+fi
+
 OUTPUT=$NAME.out
 ERR=$NAME.err
 EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8"
 
+# Patches for mpi
+if [[ "$MPI" == "yes" ]]; then
+EDDL_EXEC="$EDDL_EXEC --mpi"
+fi
 
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true --mca mpi_leave_pinned 1"
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true"
@@ -57,6 +71,7 @@ SBATCH="sbatch -n ${PROCS} -N ${PROCS} --out ${OUTPUT} --err ${ERR} -J ${FILENAM
 
 # node specific options
 if [[ "$HOSTNAME" =~ "altec" ]]; then
+#MPI_MACHINE="-map-by node:PE=28 --mca pml ucx -x UCX_TLS=rc,sm,cuda_copy,gdr_copy,cuda_ipc"
 MPI_MACHINE="-map-by node:PE=28 --mca btl ^openib"
 fi
 

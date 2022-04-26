@@ -77,6 +77,7 @@
 #define SAWTOOTH 2
 #define NEG_SAWTOOTH 3
 #define AUTO_TIME 4
+#define LIMIT_OVERHEAD 5
 
 
 #define DIV_BATCH 0

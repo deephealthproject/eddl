@@ -381,7 +381,7 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
             fprintf(stdout, "\n%1.4f secs/epoch: train: %1.4f secs; comms: %1.4f\n", epoch_time_span.count(), tbsecs, awsecs);
             fflush(stdout);
         }
-        //set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.1, nbpp);
+        set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.1, nbpp);
     }
     mpi_id0(printf("\n"));
     mpi_id0(fflush(stdout));
@@ -467,6 +467,7 @@ int main(int argc, char **argv) {
     int width = 256;
     int height = 256;
     float lr = 0.001;
+    int method=FIXED;
     int initial_mpi_avg = 1;
     int chunks = 1;
     int use_bi8 = 0;
@@ -496,7 +497,7 @@ int main(int argc, char **argv) {
     process_arguments(argc, argv,
             path, tr_images, tr_labels, ts_images, ts_labels,
             &epochs, &batch_size, &num_classes, &channels, &width, &height, &lr,
-            &initial_mpi_avg,
+            &method, &initial_mpi_avg,
             &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file,
             &use_cpu, &use_mpi);
 
@@ -515,9 +516,9 @@ int main(int argc, char **argv) {
 
 
 
-    // Sync every batch, change every 2 epochs
-    set_method_distributed(FIXED, 1, 1);
-    //set_method_distributed(AUTO_TIME, initial_mpi_avg, 1);
+    // Sync method
+    set_method_distributed(method, initial_mpi_avg, 1);
+    //set_method_distributed(FIXED, initial_mpi_avg, 1);
 
 
     // network

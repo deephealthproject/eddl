@@ -76,6 +76,7 @@
 
 #define NUM_STREAMS_COMM 1
 #define USE_NON_CUDA_AWARE_BCAST 1
+#define USE_NON_CUDA_AWARE_ALLREDUCE 1
 
 
 // Global variables
@@ -269,6 +270,12 @@ int init_distributed(string comm) {
     if (id == 0) {
         fprintf(stdout, "[DISTR] %s. lib=%s\n", __func__, lib.c_str());
         check_MPI_Cuda_Aware();
+        if (lib == "MPI") {
+            if (USE_NON_CUDA_AWARE_BCAST)
+                fprintf(stdout, "[DISTR] %s. DISABLED cuda aware Bcast\n", __func__);
+            if (USE_NON_CUDA_AWARE_ALLREDUCE)
+                fprintf(stdout, "[DISTR] %s. DISABLED cuda aware AllReduce\n", __func__);
+        }
     }
     barrier_distributed();
     //fprintf(stdout, "[DISTR] using %s\n", lib.c_str());
@@ -363,6 +370,8 @@ void set_method_distributed(int method, int batch_avg, int epoch_avg) {
             fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "NEG SAWTOOTH", mpi_avg, x_avg);
         } else if (avg_method == AUTO_TIME) {
             fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "AUTO TIME", mpi_avg, x_avg);
+        } else if (avg_method == LIMIT_OVERHEAD) {
+            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d \n", "LIMIT_OVERHEAD", mpi_avg);
         } else {
             msg("Error unknown avg_method",  __func__); // Exits
         }
@@ -671,7 +680,20 @@ void avg_GPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
                     //printf("\n===== Proc %d Batch %d Bucle i=%d j=%d size=%d\n", id, curr_batch, i,j,count );
                     if (count != 0) {
                         // AllReduce params
-                        fn_GPU_AllReduce(myptr, count);
+                        if (lib == "NCCL") {
+                            fn_nccl_AllReduce(myptr, count);
+                        } else {
+#ifdef USE_NON_CUDA_AWARE_ALLREDUCE
+                            // Non CUDA-aware version
+                            // CUDA-aware Bcast cause segmentation fault
+                            //printf("############ BROADCAST ############\n");
+                            Tensor::copy(net->snets[0]->layers[i]->params[j], net->layers[i]->params[j]);
+                            fn_mpi_AllReduce(net->layers[i]->params[j]->ptr, count);
+                            Tensor::copy(net->layers[i]->params[j], net->snets[0]->layers[i]->params[j]);
+#else
+                            fn_mpi_AllReduce(myptr, count);
+#endif
+                        }
                         // Average params
                         net->snets[0]->layers[i]->params[j]->div_(n_procs);
                     }
@@ -838,20 +860,21 @@ void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, flo
     double ba;
     int prev_ba=batches_avg;
     int new_ba;
-    
-    if (id == 0) {
-        comm1=secs_comm*batches_avg;
-        ba=((1-overhead)*comm1)/(overhead*secs_train);  
-        new_ba=round(ba);
-        if (new_ba<max_ba)
-            batches_avg=std::max(1,new_ba);
-        printf("[DISTR] method LIMIT OVERHEAD %2.1f%%, batches_avg %d -->  %d \n", overhead*100.0, prev_ba, batches_avg);
-    }
+
+    if (avg_method == LIMIT_OVERHEAD) {
+        if (id == 0) {
+            comm1 = secs_comm*batches_avg;
+            ba = ((1 - overhead) * comm1) / (overhead * secs_train);
+            new_ba = round(ba);
+            if (new_ba < max_ba)
+                batches_avg = std::max(1, new_ba);
+            printf("[DISTR] method LIMIT OVERHEAD %2.1f%%, batches_avg %d -->  %d \n", overhead * 100.0, prev_ba, batches_avg);
+        }
 #ifdef cMPI
-    MPICHECK(MPI_Bcast(&batches_avg, 1, MPI_INT, 0, MPI_COMM_WORLD));
+        MPICHECK(MPI_Bcast(&batches_avg, 1, MPI_INT, 0, MPI_COMM_WORLD));
 #endif  
-    
-    
+    } 
+   
 }
 
 void gpu_layer_print(Net* net, int ii) {

@@ -40,10 +40,10 @@
     acc += var##_span.count(); 
 
 void process_arguments(int argc, char** argv, char* path, char* tr_images,
-        char* tr_labels, char* ts_images, char* ts_labels, 
-        int* epochs, int* batch_size, int* num_classes, 
-        int* channels, int* width, int* height, 
-        float* lr, int* initial_mpi_avg, int* chunks, int* use_bi8,
+        char* tr_labels, char* ts_images, char* ts_labels,
+        int* epochs, int* batch_size, int* num_classes,
+        int* channels, int* width, int* height,
+        float* lr, int* method, int* initial_mpi_avg, int* chunks, int* use_bi8,
         int* use_distr_dataset, int* ptmodel, char* test_file,
         bool* use_cpu, bool* use_mpi);
 

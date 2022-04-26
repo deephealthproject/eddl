@@ -30,6 +30,8 @@ while  [ $# -ge 2 ]
 do
 	case $1 in 
         --slurm) SLURM="yes"  ;;
+        --mpi) MPI="yes"  ;;
+        --cpu) CPU="yes"  ;;
 		-n) PROCS=$2 ; shift ;;
 		-bs) BS=$2 ; shift ;;
 		*) break ;;
@@ -41,9 +43,31 @@ done
 
 # Filenames
 NAME=gpu_nccl_${DS}_n${PROCS}_bs${BS}
+
+# Patches for mpi
+if [[ "$MPI" == "yes" ]]; then
+NAME=gpu_mpi_${DS}_n${PROCS}_bs${BS}
+fi
+
+# Patches for mpi
+if [[ "$CPU" == "yes" ]]; then
+NAME=cpu_mpi_${DS}_n${PROCS}_bs${BS}
+fi
+
+
 OUTPUT=$NAME.out
 ERR=$NAME.err
 EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8"
+
+# Patches for mpi
+if [[ "$MPI" == "yes" ]]; then
+EDDL_EXEC="$EDDL_EXEC --mpi"
+fi
+
+# Patches for cpu
+if [[ "$CPU" == "yes" ]]; then
+EDDL_EXEC="$EDDL_EXEC --cpu"
+fi
 
 
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true --mca mpi_leave_pinned 1"

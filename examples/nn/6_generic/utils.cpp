@@ -18,7 +18,7 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
         char* tr_labels, char* ts_images, char* ts_labels,
         int* epochs, int* batch_size, int* num_classes,
         int* channels, int* width, int* height,
-        float* lr, int* initial_mpi_avg, int* chunks, int* use_bi8,
+        float* lr, int* method, int* initial_mpi_avg, int* chunks, int* use_bi8,
         int* use_distr_dataset, int* ptmodel, char* test_file,
         bool* use_cpu, bool* use_mpi) {
 
@@ -26,7 +26,7 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
     char *uso =
             "\nError:\n"
             "%s -p path-to-dataset -w width -h height -z channels -c nr-of-classes -b batch-size \n"
-            "\t -e nr-of-epochs -a batch-average -l learning-rate -s nr-of-parts \n"
+            "\t -e nr-of-epochs -m sync-method -a batch-average -l learning-rate -s nr-of-parts \n"
             "\t -d (distr dataset) -8 (8-bit dataset bin format)\n"
             "\t -n pre-trained-model -t model-file-to-test \n"
             "\t --cpu (use cpu instead of gpu) --mpi (use mpi instead f NCCL) \n"
@@ -87,6 +87,13 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
 
             *epochs = atoi(argv[argn]);
             printf("epochs:'%d'\n", *epochs);
+        } else if (!strncmp(argv[argn], "-m", 2)) {
+            argn++;
+            if (argn == argc)
+                error_fatal(uso, argv[0]);
+
+            *method = atoi(argv[argn]);
+            printf("sync method:'%d'\n", *method);
         } else if (!strncmp(argv[argn], "-a", 2)) {
             argn++;
             if (argn == argc)
