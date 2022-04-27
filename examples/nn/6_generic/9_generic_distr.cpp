@@ -474,7 +474,7 @@ int main(int argc, char **argv) {
     int use_distr_dataset = 0;
     int ptmodel = 1;
     bool use_cpu = false;
-    bool use_mpi = false;
+    int use_mpi = false;
 
     double secs;
     double secs_epoch;
@@ -502,8 +502,10 @@ int main(int argc, char **argv) {
             &use_cpu, &use_mpi);
 
     // Init distribuited training
-    if (use_mpi)
+    if (use_mpi==1)
         id = init_distributed("MPI");
+    else if (use_mpi==2)
+        id = init_distributed("MPI-NCA");        
     else
         id = init_distributed();
 

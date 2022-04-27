@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     int use_distr_dataset = 0;
     int ptmodel=1;
     bool use_cpu=false;
-    bool use_mpi=false;
+    int use_mpi=0;
     
       // if executed without mpirun wrapper, error
   if (getenv("OMPI_COMM_WORLD_RANK") == NULL) {

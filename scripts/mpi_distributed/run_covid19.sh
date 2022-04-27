@@ -72,7 +72,7 @@ SBATCH="sbatch -n ${PROCS} -N ${PROCS} --out ${OUTPUT} --err ${ERR} -J ${FILENAM
 
 # node specific options
 if [[ "$HOSTNAME" =~ "altec" ]]; then
-MPI_MACHINE="-map-by node:PE=28 --mca btl ^openib"
+MPI_MACHINE="-map-by node:PE=28 --mca pml ucx --mca coll ucx --mca btl ^openib"
 fi
 
 if [[ "$HOSTNAME" =~ "cmts" ]]; then

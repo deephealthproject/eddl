@@ -75,8 +75,6 @@
 
 
 #define NUM_STREAMS_COMM 1
-#define USE_NON_CUDA_AWARE_BCAST 1
-#define USE_NON_CUDA_AWARE_ALLREDUCE 1
 
 
 // Global variables
@@ -91,6 +89,8 @@ int x_avg = 0;
 // 0: Local batch=batch; Global_batch=batch*n_procs
 int batches_avg = 0;
 double secs_prev = 1E10;
+int cuda_aware_bcast=0; // Default: do not use Cuda aware Bcast
+int cuda_aware_allreduce=1; // Default: use Cuda aware AllReduce
 
 float prev_losses=1e10;
 float prev_metrics=0;
@@ -182,9 +182,9 @@ int init_MPI(int *argc, char ***argv) {
     id = 0;
 #ifdef cMPI
     //MPI_Init(argc, argv);
-    //MPI_Init_thread(argc, argv, MPI_THREAD_FUNNELED, &provided);
+    MPI_Init_thread(argc, argv, MPI_THREAD_FUNNELED, &provided);
     //MPI_Init_thread(argc, argv, MPI_THREAD_SERIALIZED, &provided);
-    MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &provided);
+    //MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &provided);
     if (provided==0) 
         msg("Error multiple threads not supported in MPI library", "init_MPI"); // Exits
     //fprintf(stdout, "[DISTR] MPI init. %d multiple threads\n", id);
@@ -264,18 +264,20 @@ int init_distributed(string comm) {
         init_NCCL(get_available_GPUs_distributed());
     } else if (comm == "MPI") {
         lib = "MPI";
+    } else if (comm == "MPI-NCA") {
+        lib = "MPI-Non CUDA aware";
+        cuda_aware_allreduce=0;    
     } else {
-        msg("Error unsupported communication library", __func__); // Exits
+       msg("Error unsupported communication library", __func__); // Exits
     }
+
     if (id == 0) {
         fprintf(stdout, "[DISTR] %s. lib=%s\n", __func__, lib.c_str());
         check_MPI_Cuda_Aware();
-        if (lib == "MPI") {
-            if (USE_NON_CUDA_AWARE_BCAST)
-                fprintf(stdout, "[DISTR] %s. DISABLED cuda aware Bcast\n", __func__);
-            if (USE_NON_CUDA_AWARE_ALLREDUCE)
-                fprintf(stdout, "[DISTR] %s. DISABLED cuda aware AllReduce\n", __func__);
-        }
+        if (cuda_aware_allreduce)
+            fprintf(stdout, "[DISTR] %s. ENABLED cuda aware AllReduce\n", __func__);
+        else
+            fprintf(stdout, "[DISTR] %s. DISBLED cuda aware AllReduce \n", __func__);
     }
     barrier_distributed();
     //fprintf(stdout, "[DISTR] using %s\n", lib.c_str());
@@ -627,17 +629,17 @@ void fn_Bcast_GPU_weights(Net* net) {
                 count = net->snets[0]->layers[i]->params[j]->size;
                 if (lib == "NCCL")
                     fn_nccl_Bcast(myptr, count);
-                else { 
-#ifdef USE_NON_CUDA_AWARE_BCAST
-                    // Non CUDA-aware version
-                    // CUDA-aware Bcast cause segmentation fault
-                    //printf("############ BROADCAST ############\n");
-                    Tensor::copy(net->snets[0]->layers[i]->params[j], net->layers[i]->params[j]);
-                    fn_mpi_Bcast(net->layers[i]->params[j]->ptr, count);
-                    Tensor::copy(net->layers[i]->params[j], net->snets[0]->layers[i]->params[j]);
-#else
-                    fn_mpi_Bcast(myptr, count);                    
-#endif
+                else {
+                    if (cuda_aware_bcast == 0) {
+                        // Non CUDA-aware version
+                        // CUDA-aware Bcast cause segmentation fault
+                        //printf("############ BROADCAST ############\n");
+                        Tensor::copy(net->snets[0]->layers[i]->params[j], net->layers[i]->params[j]);
+                        fn_mpi_Bcast(net->layers[i]->params[j]->ptr, count);
+                        Tensor::copy(net->layers[i]->params[j], net->snets[0]->layers[i]->params[j]);
+                    } else {
+                        fn_mpi_Bcast(myptr, count);
+                    }
                 }
             }
         }
@@ -683,16 +685,16 @@ void avg_GPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
                         if (lib == "NCCL") {
                             fn_nccl_AllReduce(myptr, count);
                         } else {
-#ifdef USE_NON_CUDA_AWARE_ALLREDUCE
-                            // Non CUDA-aware version
-                            // CUDA-aware Bcast cause segmentation fault
-                            //printf("############ BROADCAST ############\n");
-                            Tensor::copy(net->snets[0]->layers[i]->params[j], net->layers[i]->params[j]);
-                            fn_mpi_AllReduce(net->layers[i]->params[j]->ptr, count);
-                            Tensor::copy(net->layers[i]->params[j], net->snets[0]->layers[i]->params[j]);
-#else
-                            fn_mpi_AllReduce(myptr, count);
-#endif
+                            if (cuda_aware_allreduce == 0) {
+                                // Non CUDA-aware version
+                                // CUDA-aware Bcast cause segmentation fault
+                                //printf("############ BROADCAST ############\n");
+                                Tensor::copy(net->snets[0]->layers[i]->params[j], net->layers[i]->params[j]);
+                                fn_mpi_AllReduce(net->layers[i]->params[j]->ptr, count);
+                                Tensor::copy(net->layers[i]->params[j], net->snets[0]->layers[i]->params[j]);
+                            } else {
+                                fn_mpi_AllReduce(myptr, count);
+                            }
                         }
                         // Average params
                         net->snets[0]->layers[i]->params[j]->div_(n_procs);

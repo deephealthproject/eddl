@@ -31,7 +31,6 @@ while  [ $# -ge 2 ]
 do
 	case $1 in 
         --slurm) SLURM="yes"  ;;
-        --mpi) MPI="yes"  ;;
 		-n) PROCS=$2 ; shift ;;
 		-bs) BS=$2 ; shift ;;
 		*) break ;;
@@ -41,24 +40,61 @@ done
 
 #echo "SLURM" ${SLURM}
 
+
 # Filenames
 NAME_COMMON=${DS}_m${METHOD}_n${PROCS}_bs${BS}
 
-NAME=nccl_${NAME_COMMON}
+MPI_MACHINE1="-map-by node:PE=28 --mca btl ^openib"
+MPI_MACHINE2="-map-by node:PE=28 --mca pml ucx"
+MPI_MACHINE3="-map-by node:PE=28 --mca btl_tcp_if_include ib0"
+MPI_MACHINE4="-map-by node:PE=28"
+#MPI_MACHINE="-map-by node:PE=28 --mca pml ucx -x UCX_TLS=rc,sm,cuda_copy,gdr_copy,cuda_ipc"
+#MPI_MACHINE="-map-by node:PE=28 --mca pml ucx --mca coll basic,libnbc,inter,self,cuda,self"
+#MPI_MACHINE="-map-by node:PE=28 --mca pml ucx --mca btl ^openib"
 
-# Patches for mpi
-if [[ "$MPI" == "yes" ]]; then
-NAME=mpi_${NAME_COMMON}
+
+for i in 1 2 3 4
+do
+
+NAME_I=MPI${i}_${NAME_COMMON}
+
+if [[ $i == 1 ]]; then
+MPI_MCA=$MPI_MACHINE1
+elif [[ $i == 2 ]]; then
+MPI_MCA=$MPI_MACHINE2
+elif [[ $i == 3 ]]; then
+MPI_MCA=$MPI_MACHINE3
+elif [[ $i == 4 ]]; then
+MPI_MCA=$MPI_MACHINE4
+elif [[ $i == 5 ]]; then
+MPI_MCA=$MPI_MACHINE5
+elif [[ $i == 6 ]]; then
+MPI_MCA=$MPI_MACHINE6
+elif [[ $i == 7 ]]; then
+MPI_MCA=$MPI_MACHINE7
+elif [[ $i == 8 ]]; then
+MPI_MCA=$MPI_MACHINE8
+elif [[ $i == 9 ]]; then
+MPI_MCA=$MPI_MACHINE
+fi
+
+#for OPTION in "mpi" "nca" "nccl"
+for OPTION in "nccl"
+do
+
+if [[ "$OPTION" == "mpi" ]]; then
+NAME=mpi_$NAME_I
+EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8 --mpi"
+elif [[ "$OPTION" == "nca" ]]; then
+NAME=nca_$NAME_I
+EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8 --nca"
+else 
+NAME=nccl_$NAME_I
+EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8"
 fi
 
 OUTPUT=$NAME.out
 ERR=$NAME.err
-EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8"
-
-# Patches for mpi
-if [[ "$MPI" == "yes" ]]; then
-EDDL_EXEC="$EDDL_EXEC --mpi"
-fi
 
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true --mca mpi_leave_pinned 1"
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true"
@@ -69,28 +105,12 @@ MPI_COMMON="--report-bindings"
 
 SBATCH="sbatch -n ${PROCS} -N ${PROCS} --out ${OUTPUT} --err ${ERR} -J ${FILENAME} --exclusive"
 
-# node specific options
-if [[ "$HOSTNAME" =~ "altec" ]]; then
-#MPI_MACHINE="-map-by node:PE=28 --mca pml ucx -x UCX_TLS=rc,sm,cuda_copy,gdr_copy,cuda_ipc"
-#MPI_MACHINE="-map-by node:PE=28 --mca pml ucx --mca coll basic,libnbc,inter,self,cuda,self"
-#MPI_MACHINE="-map-by node:PE=28 --mca pml ucx"
-#MPI_MACHINE="-map-by node:PE=28 --mca pml ucx --mca btl ^openib"
-MPI_MACHINE="-map-by node:PE=28 --mca btl ^openib"
-fi
-
-if [[ "$HOSTNAME" =~ "cmts" ]]; then
-MPI_MACHINE="-map-by node:PE=32 --mca btl_tcp_if_include ib1"
-SBATCH="${SBATCH} --gres=gpu:1"
-fi
-
 # MPI command line parameters
-MPI_PARAM="$MPI_MACHINE $MPI_COMMON"
-
+MPI_PARAM="${MPI_MCA} $MPI_COMMON"
 
 ## Run if file does not exists
 if [ ! -f $OUTPUT ]
 then
-
 
 # Patches for slurm
 if [[ "$SLURM" == "yes" ]]; then
@@ -101,7 +121,6 @@ COMMAND="mpirun $MPI_PARAM ${EDDL_EXEC}"
 echo "#!/bin/bash
 #
 $COMMAND" > $FILENAME.sbatch
-############################
 
 echo $SBATCH $FILENAME.sbatch
 $SBATCH $FILENAME.sbatch
@@ -119,3 +138,7 @@ else
 echo "File $OUTPUT already exists. Bye"
 
 fi
+
+done
+
+done

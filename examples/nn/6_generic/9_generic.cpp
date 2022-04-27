@@ -371,7 +371,7 @@ int main(int argc, char **argv) {
     int use_distr_dataset = 0;
     int ptmodel=1;
     bool use_cpu=false;
-    bool use_mpi=false;
+    int use_mpi=0;
     
     double secs;
     
