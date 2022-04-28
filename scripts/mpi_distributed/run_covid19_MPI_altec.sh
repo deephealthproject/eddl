@@ -1,3 +1,4 @@
+
 #!/bin/bash 
 
 if [ $# -le 1 ]; then
@@ -15,7 +16,7 @@ BIN=$BUILD/bin
 SCRIPTS=$EDDL/scripts/mpi_distributed
 DATASETS=~/convert_EDDL
 #BS=80
-EPOCHS=10
+EPOCHS=5
 LR=0.0001
 METHOD=0
 AVG=1
@@ -44,10 +45,17 @@ done
 # Filenames
 NAME_COMMON=${DS}_m${METHOD}_n${PROCS}_bs${BS}
 
-MPI_MACHINE1="-map-by node:PE=28 --mca btl ^openib"
-MPI_MACHINE2="-map-by node:PE=28 --mca pml ucx"
-MPI_MACHINE3="-map-by node:PE=28 --mca btl_tcp_if_include ib0"
-MPI_MACHINE4="-map-by node:PE=28"
+MPI_COMMON="-map-by node:PE=28 --mca btl_openib_verbose 1 --mca pml_ucx_verbose 1"
+
+# Avoid message about IBA initialization
+MPI_MACHINE1="${MPI_COMMON} --mca btl ^openib"
+# Force UCX
+MPI_MACHINE2="${MPI_COMMON} --mca pml ucx --mca btl ^openib"
+# Force InfiniBand
+MPI_MACHINE3="${MPI_COMMON} --mca btl_tcp_if_include ib0"
+# Avoid InfiniBand
+MPI_MACHINE4="${MPI_COMMON} --mca btl_tcp_if_exclude ib0"
+
 #MPI_MACHINE="-map-by node:PE=28 --mca pml ucx -x UCX_TLS=rc,sm,cuda_copy,gdr_copy,cuda_ipc"
 #MPI_MACHINE="-map-by node:PE=28 --mca pml ucx --mca coll basic,libnbc,inter,self,cuda,self"
 #MPI_MACHINE="-map-by node:PE=28 --mca pml ucx --mca btl ^openib"
@@ -78,8 +86,8 @@ elif [[ $i == 9 ]]; then
 MPI_MCA=$MPI_MACHINE
 fi
 
-#for OPTION in "mpi" "nca" "nccl"
-for OPTION in "nccl"
+for OPTION in "mpi" "nca" "nccl"
+#for OPTION in "mpi"
 do
 
 if [[ "$OPTION" == "mpi" ]]; then
