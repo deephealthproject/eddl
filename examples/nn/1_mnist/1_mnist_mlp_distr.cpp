@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
     // Get MPI process id
     id=get_id_distributed();
     
-    // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,8,1);
+    // Sync every batch, change every 1 epochs
+    set_avg_method_distributed(AUTO_TIME,8,1);
     
     // Download mnist
     download_mnist();

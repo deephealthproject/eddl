@@ -23,14 +23,14 @@
 
 #include "eddl/mpi_distributed/mpi_distributed.h"
 
-#ifdef cMPI
-#include <mpi.h>
-#endif
+//#ifdef cMPI
+//#include <mpi.h>
+//#endif
 
 
-#ifdef cNCCL
-#include <nccl.h>
-#endif
+//#ifdef cNCCL
+//#include <nccl.h>
+//#endif
 
 #ifdef cFPGA
 extern void _show_profile_fpga();

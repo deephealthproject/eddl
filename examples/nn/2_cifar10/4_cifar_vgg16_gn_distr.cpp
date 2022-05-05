@@ -40,7 +40,7 @@ int main(int argc, char **argv){
   id = init_distributed();
     
   // Sync every batch, change every 2 epochs
-  set_method_distributed(AUTO_TIME,1,2);
+  set_avg_method_distributed(AUTO_TIME,1,2);
   
   for (int i = 1; i < argc; ++i) {
       if (strcmp(argv[i], "--testing") == 0) testing = true;

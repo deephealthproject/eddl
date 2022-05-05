@@ -207,7 +207,7 @@ int init_MPI(int *argc, char ***argv) {
 
     if (id==0)
         fprintf(stdout, "[DISTR] setting default batch avg method\n");
-    set_method_distributed(FIXED, AVG_DEFAULT, 0);
+    set_avg_method_distributed(FIXED, AVG_DEFAULT);
 
     // Initalize a different seed per proc
     srand((id+1) * time(NULL));
@@ -343,7 +343,7 @@ int is_mpi_distributed() {
     return use_mpi;
 }
 
-void set_method_distributed(int method, int batch_avg, int epoch_avg) {
+void set_avg_method_distributed(int method, int batch_avg, int epoch_avg) {
 
     //int n_procs;
     //int id;
@@ -870,12 +870,15 @@ void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, flo
             new_ba = round(ba);
             if (new_ba < max_ba)
                 batches_avg = std::max(1, new_ba);
+            else 
+                batches_avg = max_ba;
             printf("[DISTR] method LIMIT OVERHEAD %2.1f%%, batches_avg %d -->  %d \n", overhead * 100.0, prev_ba, batches_avg);
         }
 #ifdef cMPI
         MPICHECK(MPI_Bcast(&batches_avg, 1, MPI_INT, 0, MPI_COMM_WORLD));
 #endif  
-    } 
+    } else
+        printf("[DISTR] method LIMIT OVERHEAD is not selected. batches_avg unchanged\n");
    
 }
 

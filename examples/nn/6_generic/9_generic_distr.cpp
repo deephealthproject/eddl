@@ -291,7 +291,7 @@ model select_model(int choice, vector<int> in_shape, int num_classes, int size1,
     return net;
 }
 
-void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int batch, int epochs, bool divide_batch, bool distr_dataset = false) {
+void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int batch, int epochs, int divide_batch, bool distr_dataset = false) {
 
     int i, j;
     int id = get_id_distributed();
@@ -519,7 +519,7 @@ int main(int argc, char **argv) {
 
 
     // Sync method
-    set_method_distributed(method, initial_mpi_avg, 1);
+    set_avg_method_distributed(method, initial_mpi_avg);
     //set_method_distributed(FIXED, initial_mpi_avg, 1);
 
 
@@ -661,10 +661,18 @@ int main(int argc, char **argv) {
 
                 //mpi_id0(printf("CUSTOM FIT Mul :\n"));        
                 //custom_fit(net,{x_train},{y_train},batch_size, epochs, false, use_distr_dataset);
+                
                 TIMED_EXEC("CUSTOM FIT DIV_BATCH", custom_fit(danet, net,{x_train},
                 {
                     y_train
                 }, batch_size, 1, DIV_BATCH, use_distr_dataset), secs_epoch);
+                
+                /*
+                TIMED_EXEC("CUSTOM FIT MUL_BATCH", custom_fit(danet, net,{x_train},
+                {
+                    y_train
+                }, batch_size, 1, MUL_BATCH, use_distr_dataset), secs_epoch);
+                 */
 
 
                 update_batch_avg_distributed(epoch, secs_epoch, 1000);

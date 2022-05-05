@@ -154,13 +154,7 @@ int main(int argc, char **argv) {
             &use_cpu, &use_mpi);   
     
    
-    // Init distribuited training
-    //id = get_id_distributed();
-               
-    // Sync every batch, change every 2 epochs
-     set_method_distributed(method,initial_mpi_avg,2);
-
-
+    
     // network
     layer in = Input({channels, width, height});
     //layer in = Input({3, 224, 224});

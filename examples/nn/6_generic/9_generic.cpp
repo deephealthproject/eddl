@@ -387,13 +387,7 @@ int main(int argc, char **argv) {
             &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file,
             &use_cpu, &use_mpi);
     
-    // Init distribuited training
-    //id = get_id_distributed();
-               
-    // Sync every batch, change every 2 epochs
-        set_method_distributed(method,initial_mpi_avg,2);
-
-
+   
     // network
     auto in_shape = {channels, height, width};
     /*

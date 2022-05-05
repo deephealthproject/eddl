@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
 	// DISTR
     id=init_distributed();
-    set_method_distributed(method,initial_mpi_avg,2);
+    set_avg_method_distributed(method,initial_mpi_avg,2);
 
     
     sprintf(pdf_name, "%s.pdf", model_name);

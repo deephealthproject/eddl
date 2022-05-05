@@ -11,7 +11,7 @@
 
 #ifndef MPI_DISTRIBUTED_H
 #define MPI_DISTRIBUTED_H
-#endif /* MPI_DISTRIBUTED_H */
+
 
 
 #include <cstdio>
@@ -140,10 +140,10 @@ int init_distributed();
  *  @brief Sets distributed training paramas
  *
  *  @param method Method to sinchronize
- *  @param batch_avg Nr of batches between parameters synchronization
+ *  @param batch_avg Nr of batches between parameters sync & average
  *  @param epoch_avg Nr of epochs between changes in batch_avg
  */
-void set_method_distributed(int method, int batch_avg, int epoch_avg);
+void set_avg_method_distributed(int method, int batch_avg, int epoch_avg=1);
 
 /**
  *  @brief Finalizes distributed training
@@ -165,7 +165,6 @@ int is_mpi_distributed();
  *  @param[out] avg_method: Method to compute average of params
  *  @param[out] mpi_avg:    Elapsed nr of batches among averages
  *  @param[out] x_avg:      Elapsed nr of batches to change mpi_avg
- *  @param[out] batch_is_global: True if batch size is interpreted as global batch
  * 
  *  @return true if running in mpi_distributed mode
  */
@@ -194,6 +193,9 @@ int get_available_GPUs_distributed();
  */
 int get_available_CPUs_distributed();
 
+/**
+ *  @brief Sets OpenMP threads to the nr of detected CPUs
+ */
 void set_OMP_threads_to_procs_distributed();
 
 /**
@@ -287,3 +289,5 @@ bool early_stopping_on_metric(Net* net, int index, float goal, int patience, int
 void GPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac);
 
 void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac);
+
+#endif /* MPI_DISTRIBUTED_H */

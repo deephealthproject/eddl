@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     id = get_id_distributed();
     
     // Sync every batch, change every 2 epochs
-    set_method_distributed(AUTO_TIME,1,2);
+    set_avg_method_distributed(AUTO_TIME,1,2);
     
 
     // Download mnist

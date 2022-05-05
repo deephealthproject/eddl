@@ -76,7 +76,7 @@ MPI_MACHINE="-map-by node:PE=28 --mca pml ucx --mca btl ^openib --mca btl_openib
 fi
 
 if [[ "$HOSTNAME" =~ "cmts" ]]; then
-MPI_MACHINE="-map-by node:PE=32 --mca btl_tcp_if_include ib1--mca btl_openib_verbose 1 --mca pml_ucx_verbose 1 "
+MPI_MACHINE="-map-by node:PE=32 --mca btl_tcp_if_include ib1 --mca btl_openib_verbose 1 --mca pml_ucx_verbose 1 "
 SBATCH="${SBATCH} --gres=gpu:1"
 fi
 

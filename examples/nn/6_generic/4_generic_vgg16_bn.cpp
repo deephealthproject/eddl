@@ -85,15 +85,7 @@ int main(int argc, char **argv) {
    
    
     
-    // Init distribuited training
-    //id = get_id_distributed();
     
-            
-    
-    // Sync every batch, change every 2 epochs
-    set_method_distributed(method,initial_mpi_avg,2);
-
-
     // download CIFAR data
     //download_cifar10();
 
