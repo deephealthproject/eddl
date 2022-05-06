@@ -83,7 +83,8 @@ int id=0;
 int n_procs=1;
 int mpi_avg = 1;
 int avg_method = 0;
-int x_avg = 0;
+int x_avg = 1;
+float comm_overhead = 0.1;
 //int batch_is_global=1; 
 // 1: Global batch=batch; Local batch=batch/n_procs 
 // 0: Local batch=batch; Global_batch=batch*n_procs
@@ -343,7 +344,7 @@ int is_mpi_distributed() {
     return use_mpi;
 }
 
-void set_avg_method_distributed(int method, int batch_avg, int epoch_avg) {
+void set_avg_method_distributed(int method, int batch_avg, int epoch_avg, float overhead) {
 
     //int n_procs;
     //int id;
@@ -357,23 +358,24 @@ void set_avg_method_distributed(int method, int batch_avg, int epoch_avg) {
     mpi_avg = batch_avg;
     batches_avg = mpi_avg;
     x_avg = epoch_avg;
+    comm_overhead = overhead;
 
     //n_procs = get_n_procs_distributed();
     //id = get_id_distributed();
 
     if (id == 0)
         if (avg_method == FIXED) {
-            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d \n", "FIXED", mpi_avg);
+            fprintf(stdout, "[DISTR] %s %s, batch_avg %d \n", __func__, "FIXED", mpi_avg);
         } else if (avg_method == AVG_INC) {
-            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "AVG_INC", mpi_avg, x_avg);
+            fprintf(stdout, "[DISTR] %s %s, batch_avg %d changing every %d epochs\n", __func__, "AVG_INC", mpi_avg, x_avg);
         } else if (avg_method == SAWTOOTH) {
-            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "SAWTOOTH", mpi_avg, x_avg);
+            fprintf(stdout, "[DISTR] %s %s, batch_avg %d changing every %d epochs\n", __func__, "SAWTOOTH", mpi_avg, x_avg);
         } else if (avg_method == NEG_SAWTOOTH) {
-            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "NEG SAWTOOTH", mpi_avg, x_avg);
+            fprintf(stdout, "[DISTR] %s %s, batch_avg %d changing every %d epochs\n", __func__, "NEG SAWTOOTH", mpi_avg, x_avg);
         } else if (avg_method == AUTO_TIME) {
-            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d changing every %d epochs\n", "AUTO TIME", mpi_avg, x_avg);
+            fprintf(stdout, "[DISTR] %s %s, batch_avg %d changing every %d epochs\n", __func__, "AUTO TIME", mpi_avg, x_avg);
         } else if (avg_method == LIMIT_OVERHEAD) {
-            fprintf(stdout, "[DISTR] set_method. %s, batch_avg %d \n", "LIMIT_OVERHEAD", mpi_avg);
+            fprintf(stdout, "[DISTR] %s %s, batch_avg %d comm. overhead %2.1f\n", __func__, "LIMIT_OVERHEAD", mpi_avg, comm_overhead);
         } else {
             msg("Error unknown avg_method",  __func__); // Exits
         }
@@ -433,6 +435,10 @@ int get_params_distributed(int* method, int* avg, int* avg_chg) {
     return use_mpi;
 }
 
+int get_avg_method_distributed() {
+    return (avg_method);
+}
+
 int get_current_batch_avg_distributed() {
     return batches_avg;
 }
@@ -459,8 +465,6 @@ void set_batch_distributed (int* global_batch, int* local_batch, int batch, int 
    // int n_procs;
     
     check_MPI();
-
-
     //id = get_id_distributed();
     //n_procs = get_n_procs_distributed();  
     if (method == DIV_BATCH) {
@@ -485,8 +489,7 @@ int set_NBPP_distributed(int ds_size, int local_batch, bool method) {
     int num_batches;
     int nbpp;
 
-     check_MPI();
-
+    check_MPI();
     //id = get_id_distributed();
     //n_procs = get_n_procs_distributed();  
     num_batches = ds_size / local_batch;
@@ -525,8 +528,6 @@ void fn_mpi_Bcast(float* myptr, int count) {
     msg("invalid call. MPI library is not linked",  __func__);
 #endif
 }
-
-             
 
 void fn_nccl_AllReduce(float* myptr, int count) {
 #ifdef cNCCL
@@ -665,10 +666,10 @@ void avg_GPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
     int count;
    // int n_procs;
    // int id;
-    int batches_avg;
+    //int batches_avg;
    // id = get_id_distributed();
    // n_procs = get_n_procs_distributed();
-    batches_avg = get_current_batch_avg_distributed();
+    //batches_avg = get_current_batch_avg_distributed();
 
     if (((curr_batch % batches_avg) == 0) || (curr_batch == batches_per_proc)) {
         //printf("Proc %d Sincronizando batch nr %d bpp %d\n", id, curr_batch, batches_per_proc);
@@ -709,9 +710,9 @@ void avg_CPU_weights_distributed(Net* net, int curr_batch, int batches_per_proc)
     float * myptr;
     int count;
    // int n_procs;
-    int batches_avg;
+    //int batches_avg;
     //n_procs = get_n_procs_distributed();
-    batches_avg = get_current_batch_avg_distributed();
+    //batches_avg = get_current_batch_avg_distributed();
 
     if ((((curr_batch) % batches_avg) == 0) || ((curr_batch) == batches_per_proc)) {
        // printf("Proc %d Sincronizando \n", id);
@@ -780,7 +781,6 @@ void barrier_distributed() {
     }
 }
 
-
 void avg_weights_distributed(Net* net, int curr_batch, int batches_per_proc) {
     check_MPI(return);
     if (net->cs->hw == "gpu")
@@ -818,7 +818,6 @@ void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch
                 if (((epoch_id + 1) % (x_avg)) == 0) {
                     batches_avg = std::max(batches_avg / 2, mpi_avg);
                     printf("[DISTR] method NEG_SAWTOOTH, batches_avg %d -->  %d \n", prev_ba, batches_avg);
-
                 }
                 break;
 
@@ -852,11 +851,14 @@ void update_batch_avg_distributed(int epoch_id, double secs_epoch, int max_batch
 #ifdef cMPI
     MPICHECK(MPI_Bcast(&batches_avg, 1, MPI_INT, 0, MPI_COMM_WORLD));
 #endif  
-    
-    
 }
 
-void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, float overhead, int max_ba) {
+void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, int max_ba) {
+    set_batch_avg_overhead_distributed(secs_train, secs_comm, max_ba, comm_overhead);
+}
+
+
+void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, int max_ba, float overhead)  {
     check_MPI(return);
     double comm1;
     double ba;
@@ -878,8 +880,7 @@ void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, flo
         MPICHECK(MPI_Bcast(&batches_avg, 1, MPI_INT, 0, MPI_COMM_WORLD));
 #endif  
     } else
-        printf("[DISTR] method LIMIT OVERHEAD is not selected. batches_avg unchanged\n");
-   
+        printf("[DISTR] method LIMIT OVERHEAD is not selected. batches_avg unchanged\n"); 
 }
 
 void gpu_layer_print(Net* net, int ii) {
@@ -909,7 +910,6 @@ void gpu_layer_print(Net* net, int ii) {
 #else
     printf("Error: CUDA is not available\n");
 #endif
-
 }
 
 bool early_stopping_on_loss_var(Net* net, int index, float delta, int patience, int epoch) {
@@ -1045,17 +1045,17 @@ void quantize(Tensor *B, int n_int, int n_frac){
 void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
     float * myptr;
     int count;
-   // int n_procs;
-    printf("[DISTR] %s bits int %d, bits_frac %d\n",__func__,nbits_int, nbits_frac);
+    // int n_procs;
+    printf("[DISTR] %s bits int %d, bits_frac %d\n", __func__, nbits_int, nbits_frac);
     for (int i = 0; i < net->layers.size(); i++) {
         if (net->layers[i]->trainable) {
-            for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {  
+            for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
                 //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
                 // copy from devices
                 for (int dev = 0; dev < net->snets.size(); dev++) {
                     Tensor::copy(net->snets[dev]->layers[i]->params[j], net->layers[i]->params[j]);
                 }
-                
+
                 myptr = net->layers[i]->params[j]->ptr;
                 count = net->layers[i]->params[j]->size;
                 for (int k = 0; k < count; k++) {
@@ -1069,22 +1069,22 @@ void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
             }
         }
     }
-    
+
 }
 
 void GPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
-   // int n_procs;
-    printf("[DISTR] %s bits int %d, bits_frac %d\n",__func__, nbits_int, nbits_frac);
+    // int n_procs;
+    printf("[DISTR] %s bits int %d, bits_frac %d\n", __func__, nbits_int, nbits_frac);
     for (int i = 0; i < net->layers.size(); i++) {
         if (net->layers[i]->trainable) {
-            for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {  
+            for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
                 //printf("\n===== Proc %d Batch %d Bucle ii=%d jj=%d size=%d\n", id, j, ii,jj,count );
                 quantize(net->snets[0]->layers[i]->params[j], nbits_int, nbits_frac);
 
-                }
             }
         }
     }
+}
     
 
 

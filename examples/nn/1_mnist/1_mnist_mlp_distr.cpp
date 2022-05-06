@@ -57,7 +57,8 @@ int main(int argc, char **argv) {
     id=get_id_distributed();
     
     // Sync every batch, change every 1 epochs
-    set_avg_method_distributed(AUTO_TIME,8,1);
+    //set_avg_method_distributed(AUTO_TIME,8,1);
+    set_avg_method_distributed(LIMIT_OVERHEAD,8,0.1);
     
     // Download mnist
     download_mnist();
@@ -186,14 +187,9 @@ int main(int argc, char **argv) {
     // Broadcast params 
 //    bcast_weights_distributed(net); 
     
-    
-      
     // Train model
     fit(net,{x_train},{y_train}, batch_size, epochs);
     //printf("%f",net->get_accuracy());
-    
-
-  
     
     // Evaluate
     evaluate(net,{x_test}, {y_test});

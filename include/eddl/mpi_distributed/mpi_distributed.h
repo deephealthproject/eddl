@@ -37,6 +37,14 @@
 #include <nccl.h>
 #endif
 
+#define TIME_POINT1(var)  \
+    high_resolution_clock::time_point var##1 = high_resolution_clock::now(); 
+
+#define TIME_POINT2(var,acc) \
+    high_resolution_clock::time_point var##2 = high_resolution_clock::now(); \
+    duration<double> var##_span = var##2 - var##1; \
+    acc += var##_span.count(); 
+
 #define MPICHECK(cmd) do {                          \
   int e = cmd;                                      \
   if( e != MPI_SUCCESS ) {                          \
@@ -143,7 +151,7 @@ int init_distributed();
  *  @param batch_avg Nr of batches between parameters sync & average
  *  @param epoch_avg Nr of epochs between changes in batch_avg
  */
-void set_avg_method_distributed(int method, int batch_avg, int epoch_avg=1);
+void set_avg_method_distributed(int method, int batch_avg, int epoch_avg=1, float overhead=0.1);
 
 /**
  *  @brief Finalizes distributed training
@@ -169,6 +177,14 @@ int is_mpi_distributed();
  *  @return true if running in mpi_distributed mode
  */
 int get_params_distributed(int* method, int* avg, int* avg_chg);
+
+
+/**
+ *  @brief Get selected method for averaging parameters
+ *
+ *  @return avg_method
+ */
+int get_avg_method_distributed();
 
 /**
  *  @brief Get current batches_avg value
@@ -268,14 +284,25 @@ void avg_weights_distributed (Net* net, int curr_batch_id, int batches_per_proc)
 void update_batch_avg_distributed(int epoch_id, double secs, int batches_per_proc) ;
 
 /**
+ *  @brief Update batches_avg according to comm overhead already defined
+ *
+ *  @param secs_train:  time in secs to train (only computation)
+ *  @param secs_comm:   time in secs to communicate
+ *  @param max_ba:      max value of batches_avg
+ *  @return    (void)
+ */
+void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, int max_ba);
+
+/**
  *  @brief Update batches_avg according to max comm overhead
  *
  *  @param secs_train:  time in secs to train (only computation)
  *  @param secs_comm:   time in secs to communicate
+ *  @param max_ba:      max value of batches_avg
  *  @param overhead:    max comm overhead (0 to 1)
  *  @return    (void)
  */
-void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, float overhead, int max_ba);
+void set_batch_avg_overhead_distributed(double secs_train, double secs_comm, int max_ba, float overhead);
 
 // For Debugging purposes
 void gpu_layer_print (Net* net, int layer);

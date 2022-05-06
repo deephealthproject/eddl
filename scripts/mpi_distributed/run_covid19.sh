@@ -18,7 +18,7 @@ DATASETS=~/convert_EDDL
 EPOCHS=10
 LR=0.0001
 METHOD=5
-AVG=1
+AVG=8
 MODEL=10
 
 # Dataset specific

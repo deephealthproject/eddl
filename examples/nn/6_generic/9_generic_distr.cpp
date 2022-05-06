@@ -1,11 +1,18 @@
 /*
- * EDDL Library - European Distributed Deep Learning Library.
- * Version: 0.9
- * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
- * Date: November 2020
- * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* EDDL Library - European Distributed Deep Learning Library.
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+ * 
+ * MPI support for EDDL Library - European Distributed Deep Learning Library.
+ * Version: 
+ * copyright (c) 2022, Universidad Politécnica de Valencia (UPV), GAP research group
+ * Date: May 2022
+ * Author: GAP Research Group (UPV), contact: plopez@disca.upv.es
  * All rights reserved
  */
+
 
 #include <cstdio>
 #include <cstdlib>
@@ -381,7 +388,7 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
             fprintf(stdout, "\n%1.4f secs/epoch: train: %1.4f secs; comms: %1.4f\n", epoch_time_span.count(), tbsecs, awsecs);
             fflush(stdout);
         }
-        set_batch_avg_overhead_distributed(tbsecs, awsecs, 0.1, nbpp);
+        set_batch_avg_overhead_distributed(tbsecs, awsecs, nbpp, 0.1);
     }
     mpi_id0(printf("\n"));
     mpi_id0(fflush(stdout));

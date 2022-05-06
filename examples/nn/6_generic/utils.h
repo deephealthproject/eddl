@@ -1,15 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+* EDDL Library - European Distributed Deep Learning Library.
+* Version: 1.1
+* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+* Date: March 2022
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+ * 
+ * MPI support for EDDL Library - European Distributed Deep Learning Library.
+ * Version: 
+ * copyright (c) 2022, Universidad Politécnica de Valencia (UPV), GAP research group
+ * Date: May 2022
+ * Author: GAP Research Group (UPV), contact: plopez@disca.upv.es
+ * All rights reserved
  */
 
-/* 
- * File:   utils.h
- * Author: plopez
- *
- * Created on 8 de diciembre de 2021, 18:33
- */
 
 #ifndef UTILS_EXAMPLES_H
 #define UTILS_EXAMPLES_H

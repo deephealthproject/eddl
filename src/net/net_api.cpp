@@ -4,8 +4,14 @@
 * copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
 * Date: March 2022
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
-* All rights reserved
-*/
+ * 
+ * MPI support for EDDL Library - European Distributed Deep Learning Library.
+ * Version: 
+ * copyright (c) 2022, Universidad Politécnica de Valencia (UPV), GAP research group
+ * Date: May 2022
+ * Author: GAP Research Group (UPV), contact: plopez@disca.upv.es
+ * All rights reserved
+ */
 
 
 #include <cstdio>
@@ -23,15 +29,6 @@
 
 #include "eddl/mpi_distributed/mpi_distributed.h"
 
-//#ifdef cMPI
-//#include <mpi.h>
-//#endif
-
-
-//#ifdef cNCCL
-//#include <nccl.h>
-//#endif
-
 #ifdef cFPGA
 extern void _show_profile_fpga();
 #endif
@@ -46,12 +43,6 @@ using namespace std::chrono;
 
 float loss1, loss2;
 
-#ifdef cNCCL
-// NCCL
-extern ncclUniqueId nccl_id;
-extern ncclComm_t nccl_comm;
-extern cudaStream_t cuda_stream;
-#endif
 
 
 /////////////////////////////////////////
@@ -951,15 +942,15 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
         // Train network
         if (id == 0) {
             //fprintf(stdout, "%d epochs of (global: %d batches of size %d),(local: %d batches of size %d) \n", epochs, num_batches/n_procs, n_procs * batch_size, num_batches, batch_size);
-            if (is_mpi_distributed()){
+            if (is_mpi_distributed()) {
                 //int batches_avg=get_current_batch_avg_distributed();
                 //fprintf(stdout, "[DISTR] %d procs. %d batches per proc. sync every %d batches \n", n_procs, batches_per_proc, batches_avg);
             }
         }
 
         // Broadcast weights to ensure identical models
-            bcast_weights_distributed(this);
-        
+        bcast_weights_distributed(this);
+
         //batches_avg = mpi_avg;
         for (i = 0; i < epochs; i++) {
             high_resolution_clock::time_point e1 = high_resolution_clock::now();
@@ -967,15 +958,17 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                 fprintf(stdout, "Epoch %d\n", i + 1);
                 if (is_mpi_distributed()) {
                     // fprintf(stdout, "[DISTR] batches_avg: %d\n", get_current_batch_avg_distributed ());
-                } 
+                }
             }
             reset_loss();
 
             //batches = 0;
             // For each batch
+            double tbsecs = 0;
+            double awsecs = 0;
             for (j = 0; j < (batches_per_proc); j++) {
+                TIME_POINT1(train);
                 //batches = batches + n_procs;
-
                 //printf("DEBUG: Batch nr %d/%d\n", j, batches_per_proc);
                 // Set random indices
                 //printf("Proc: %d sind:\n", id);
@@ -984,23 +977,25 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                     //printf("%5d ",sind[k]);
                 }
                 //printf("\n");
-               
+
                 // Train batch
                 tr_batches++;
-
                 train_batch(tin, tout, sind);
-                 // gpu_layer_print (this, 3);
-                 
+                // gpu_layer_print (this, 3);
+
                 // synchronize
+                TIME_POINT2(train, tbsecs);
+                TIME_POINT1(avg_w);
                 if (is_mpi_distributed()) {
-                    avg_weights_distributed(this, j+1, batches_per_proc);
+                    avg_weights_distributed(this, j + 1, batches_per_proc);
                     //printf("DEBUG: averaging weights \n");
                 }
-                 
+                TIME_POINT2(avg_w, awsecs);
+
                 // In training mode, do not reduce
-                print_loss(j+1, batches_per_proc, false);
+                print_loss(j + 1, batches_per_proc, false);
                 //print_loss(j+1,num_batches);
-                
+
                 high_resolution_clock::time_point e2 = high_resolution_clock::now();
                 duration<double> epoch_time_span = e2 - e1;
                 if (id == 0) {
@@ -1027,7 +1022,10 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             }
     
             if (is_mpi_distributed()) {
-                update_batch_avg_distributed (i, secs_epoch, batches_per_proc);           
+                if (get_avg_method_distributed()==LIMIT_OVERHEAD)
+                    set_batch_avg_overhead_distributed(tbsecs, awsecs, batches_per_proc);
+                else 
+                    update_batch_avg_distributed (i, secs_epoch, batches_per_proc);    
             }
         }
         fflush(stdout);
