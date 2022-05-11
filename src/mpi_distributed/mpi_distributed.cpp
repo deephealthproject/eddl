@@ -222,13 +222,17 @@ void init_NCCL(int nr_gpus) {
     //NCCL
     //get NCCL unique ID at rank 0 and broadcast it to all others
     if (id == 0) ncclGetUniqueId(&nccl_id);
+#ifdef cMPI
     MPICHECK(MPI_Bcast(&nccl_id, sizeof (nccl_id), MPI_BYTE, 0, MPI_COMM_WORLD));
+#endif
     //picking a GPU based on localRank, allocate device buffers
+#ifdef cGPU
     CUDACHECK(cudaSetDevice(id % nr_gpus));
     //for (int i = 0; i < NUM_STREAMS_COMM; i++) {
     //    CUDACHECK(cudaStreamCreateWithFlags(&cuda_stream[i], cudaStreamNonBlocking));
     //}
     CUDACHECK(cudaStreamCreate(&cuda_stream));
+#endif
     //initializing NCCL
     NCCLCHECK(ncclCommInitRank(&nccl_comm, n_procs, nccl_id, id));
     if (id == 0)

@@ -614,7 +614,7 @@ void Net::print_loss(int b, int nb, bool reduce) {
 
                 set_text_green();
                 //                for (int k = 0; k < pc; k++) printf("█");
-                for (int k = 0; k < pc; k++) printf(symbol);
+                for (int k = 0; k < pc; k++) printf("%s",symbol);
                 //if (pc<lbar) {
                 //  if (b%4<2) printf(".");
                 //  else printf(".");
