@@ -11,6 +11,8 @@ SET(USE_DIST @USE_DIST@)  # Modified in a subdirectory
 SET(USE_CUDA @USE_CUDA@) # Modified in a subdirectory
 SET(USE_CUDNN @USE_CUDNN@) # Modified in a subdirectory
 SET(USE_FPGA @USE_FPGA@) # Modified in a subdirectory
+SET(USE_FPGA_INTEL @USE_FPGA_INTEL@) # Modified in a subdirectory
+SET(USE_FPGA_XILINX @USE_FPGA_XILINX@) # Modified in a subdirectory
 
 SET(USE_SYSTEM_EIGEN @USE_SYSTEM_EIGEN@) # Modified in a subdirectory
 SET(USE_SYSTEM_PROTOBUF @USE_SYSTEM_PROTOBUF@) # Modified in a subdirectory
@@ -37,7 +39,7 @@ if(USE_CUDA)
 endif()
 
 # FPGA
-if(USE_FPGA)
+if(USE_FPGA OR USE_FPGA_INTEL OR USE_FPGA_XILINX)
     find_dependency(OpenCL REQUIRED)
 endif()
 

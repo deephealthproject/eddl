@@ -803,7 +803,6 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
           }
         }
       }
-    //}
 
     // build up stage, we create a merged layer out of our findings
 
@@ -1325,16 +1324,16 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
         collectTensor(layer_src_dense, "param", 0);
         dense_to_conv(layer_src_dense->W->ptr, layer_src_dense->W->shape[0], layer_src_dense->W->shape[1], layer_dst->filter->ptr, layer_dst->Ichannels, layer_dst->Ochannels, layer_dst->KH, layer_dst->KW);
         if (hlsinf_filter_format == HLSINF_FP32) {
-          layer_dst->filter->fpga_ptr = fpga_create_memory(layer_dst->filter->size*sizeof(float));  
-          fpga_copy_memory_to_fpga(layer_dst->filter->ptr, (cl::Buffer *)layer_dst->filter->fpga_ptr, layer_dst->filter->size*sizeof(float));
+          layer_dst->filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, layer_dst->filter->size*sizeof(float));  
+          fpga_copy_memory_to_fpga(layer_dst->filter->ptr, layer_dst->filter->fpga_ptr, layer_dst->filter->size*sizeof(float));
         } else if (hlsinf_filter_format == HLSINF_API8) {
-          layer_dst->filter->fpga_ptr = fpga_create_memory(layer_dst->filter->size * sizeof(ap_int<8>));  
+          layer_dst->filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, layer_dst->filter->size * sizeof(ap_int<8>));  
           fpga_copy_memory_to_fpga_and_format(layer_dst->filter->ptr, (cl::Buffer *)layer_dst->filter->fpga_ptr, layer_dst->filter->size, HLSINF_FP32, HLSINF_API8);
         } else if (hlsinf_filter_format == HLSINF_APF_8_4) {
-          layer_dst->filter->fpga_ptr = fpga_create_memory(layer_dst->filter->size * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));  
+          layer_dst->filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, layer_dst->filter->size * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));  
           fpga_copy_memory_to_fpga_and_format(layer_dst->filter->ptr, (cl::Buffer *)layer_dst->filter->fpga_ptr, layer_dst->filter->size, HLSINF_FP32, HLSINF_APF_8_4);
         } else if (hlsinf_filter_format == HLSINF_APF_16_8) {
-          layer_dst->filter->fpga_ptr = fpga_create_memory(layer_dst->filter->size * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));  
+          layer_dst->filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, layer_dst->filter->size * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));  
           fpga_copy_memory_to_fpga_and_format(layer_dst->filter->ptr, (cl::Buffer *)layer_dst->filter->fpga_ptr, layer_dst->filter->size, HLSINF_FP32, HLSINF_APF_16_8);
         } else {
           printf("Error (HLSinf forward), filter format not supported\n");
@@ -1347,16 +1346,16 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
           collectTensor(layer_src_dense, "param", 1);
           tensor_padded(layer_src_dense->bias, layer_dst->bias);
           if (hlsinf_bias_format == HLSINF_FP32) {
-            layer_dst->bias->fpga_ptr = fpga_create_memory(layer_dst->bias->size*sizeof(float));  
-            fpga_copy_memory_to_fpga(layer_dst->bias->ptr, (cl::Buffer *)layer_dst->bias->fpga_ptr, layer_dst->bias->size*sizeof(float));
+            layer_dst->bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, layer_dst->bias->size*sizeof(float));  
+            fpga_copy_memory_to_fpga(layer_dst->bias->ptr, layer_dst->bias->fpga_ptr, layer_dst->bias->size*sizeof(float));
           } else if (hlsinf_bias_format == HLSINF_API32) {
-            layer_dst->bias->fpga_ptr = fpga_create_memory(layer_dst->bias->size*sizeof(ap_int<32>));  
+            layer_dst->bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, layer_dst->bias->size*sizeof(ap_int<32>));  
             fpga_copy_memory_to_fpga_and_format(layer_dst->bias->ptr, (cl::Buffer *)layer_dst->bias->fpga_ptr, layer_dst->bias->size, HLSINF_FP32, HLSINF_API32);
           } else if (hlsinf_bias_format == HLSINF_APF_8_4) {
-            layer_dst->bias->fpga_ptr = fpga_create_memory(layer_dst->bias->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));  
+            layer_dst->bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, layer_dst->bias->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));  
             fpga_copy_memory_to_fpga_and_format(layer_dst->bias->ptr, (cl::Buffer *)layer_dst->bias->fpga_ptr, layer_dst->bias->size, HLSINF_FP32, HLSINF_APF_8_4);
           } else if (hlsinf_bias_format == HLSINF_APF_16_8) {
-            layer_dst->bias->fpga_ptr = fpga_create_memory(layer_dst->bias->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));  
+            layer_dst->bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, layer_dst->bias->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));  
             fpga_copy_memory_to_fpga_and_format(layer_dst->bias->ptr, (cl::Buffer *)layer_dst->bias->fpga_ptr, layer_dst->bias->size, HLSINF_FP32, HLSINF_APF_16_8);
           } else {
             printf("Error (HLSinf forward), bias format not supported\n");
