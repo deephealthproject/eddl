@@ -45,6 +45,7 @@
     duration<double> var##_span = var##2 - var##1; \
     acc += var##_span.count(); 
 
+#ifdef cMPI
 #define MPICHECK(cmd) do {                          \
   int e = cmd;                                      \
   if( e != MPI_SUCCESS ) {                          \
@@ -53,7 +54,9 @@
     exit(EXIT_FAILURE);                             \
   }                                                 \
 } while(0)
+#endif
 
+#ifdef cGPU
 #define CUDACHECK(cmd) do {                         \
   cudaError_t e = cmd;                              \
   if( e != cudaSuccess ) {                          \
@@ -62,7 +65,9 @@
     exit(EXIT_FAILURE);                             \
   }                                                 \
 } while(0)
+#endif
 
+#ifdef cNCCL
 #define NCCLCHECK(cmd) do {                         \
   ncclResult_t r = cmd;                             \
   if (r!= ncclSuccess) {                            \
@@ -71,6 +76,7 @@
     exit(EXIT_FAILURE);                             \
   }                                                 \
 } while(0)
+#endif
 
 #define mpi_id0(...)   \
     if (id==0) {\
