@@ -29,7 +29,7 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
             "\t -e nr-of-epochs -m sync-method -a batch-average -l learning-rate -s nr-of-parts \n"
             "\t -d (distr dataset) -8 (8-bit dataset bin format)\n"
             "\t -n pre-trained-model -t model-file-to-test \n"
-            "\t --cpu (use cpu instead of gpu) --mpi (use mpi instead f NCCL) --nca (use mpi NON CUDA aware) \n"
+            "\t --cpu (use cpu instead of gpu) --mpi (use mpi instead of NCCL) --nca (use mpi NON CUDA aware) \n"
             "";
 
     argn = 1;

@@ -13,10 +13,12 @@ EDDL=$HOME/git/eddl
 BUILD=$EDDL/build
 BIN=$BUILD/bin
 SCRIPTS=$EDDL/scripts/mpi_distributed
-DATASETS=~/convert_EDDL
+DATASETS=/mnt/beegfs/users/datasets
+#DATASETS=~/convert_EDDL
 #BS=80
 EPOCHS=10
 LR=0.0001
+METHOD=5
 AVG=1
 MODEL=10
 
@@ -30,6 +32,7 @@ while  [ $# -ge 2 ]
 do
 	case $1 in 
         --slurm) SLURM="yes"  ;;
+        --mpi) MPI="yes"  ;;
 		-n) PROCS=$2 ; shift ;;
 		-bs) BS=$2 ; shift ;;
 		*) break ;;
@@ -40,11 +43,24 @@ done
 #echo "SLURM" ${SLURM}
 
 # Filenames
-NAME=distr_${DS}_n${PROCS}_bs${BS}
+NAME_COMMON=${DS}_m${METHOD}_n${PROCS}_bs${BS}
+
+NAME=nccl_${NAME_COMMON}
+
+# Patches for mpi
+if [[ "$MPI" == "yes" ]]; then
+NAME=mpi_${NAME_COMMON}
+fi
+
+
 OUTPUT=$NAME.out
 ERR=$NAME.err
-EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -a $AVG -b $BS -e $EPOCHS -8"
+EDDL_EXEC="$BIN/generic_distr -p $DATASETS/$DS -n $MODEL $PARAMS -l $LR -m $METHOD -a $AVG -b $BS -e $EPOCHS -8"
 
+# Patches for mpi
+if [[ "$MPI" == "yes" ]]; then
+EDDL_EXEC="$EDDL_EXEC --mpi"
+fi
 
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true --mca mpi_leave_pinned 1"
 #MPI_PARAM="--report-bindings -map-by node:PE=28 --mca btl openib,self,vader --mca btl_openib_allow_ib true"
@@ -57,13 +73,19 @@ SBATCH="sbatch -n ${PROCS} -N ${PROCS} --out ${OUTPUT} --err ${ERR} -J ${FILENAM
 
 # node specific options
 if [[ "$HOSTNAME" =~ "altec" ]]; then
-MPI_MACHINE="-map-by node:PE=28 --mca btl ^openib"
+MPI_MACHINE="-map-by node:PE=28 --mca pml ucx --mca btl ^openib --mca btl_openib_verbose 1 --mca pml_ucx_verbose 1"
 fi
 
 if [[ "$HOSTNAME" =~ "cmts" ]]; then
-MPI_MACHINE="-map-by node:PE=32 --mca btl_tcp_if_include ib1"
+MPI_MACHINE="-map-by node:PE=32 --mca btl_tcp_if_include ib1 --mca btl_openib_verbose 1 --mca pml_ucx_verbose 1 "
 SBATCH="${SBATCH} --gres=gpu:1"
 fi
+
+if [[ "$HOSTNAME" =~ "p9login" ]]; then
+MPI_MACHINE="--mca btl_openib_verbose 1 --mca pml_ucx_verbose 1"
+SBATCH="${SBATCH} --gres=gpu:1 --cpus-per-task=40"
+fi
+
 
 # MPI command line parameters
 MPI_PARAM="$MPI_MACHINE $MPI_COMMON"
