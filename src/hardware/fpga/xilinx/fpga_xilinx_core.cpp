@@ -205,12 +205,13 @@ void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size) {
   PROFILING_FOOTER(FPGA_WRITE);
 }
 
-void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size, int src_format, int dst_format) {
+void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int size, int src_format, int dst_format) {
   #ifdef FPGA_DEBUG_VERBOSE
   printf("    (copy memory to fpga and format: size %d, ptr_cpu %p)\n", size, ptr_cpu);
   #endif
   cl_int err;
   cl::Event blocking_event;
+  cl::Buffer *cast_ptr_fpga = (cl::Buffer *)ptr_fpga;
 
   if ((src_format == HLSINF_FP32) && (dst_format == HLSINF_API8)) {
     PROFILING_HEADER(Precision_Conversion);
@@ -219,7 +220,7 @@ void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, lo
     for (int x = 0; x < size; x++) cpu_buff[x] = ap_int<8>(src[x]);
     PROFILING_FOOTER(Precision_Conversion);
     PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_int<8>), cpu_buff, nullptr, &blocking_event));
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*cast_ptr_fpga, CL_TRUE, 0, size*sizeof(ap_int<8>), cpu_buff, nullptr, &blocking_event));
     (*q).finish();
     PROFILING_FOOTER(FPGA_WRITE);
     free(cpu_buff);
@@ -230,7 +231,7 @@ void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, lo
     for (int x = 0; x < size; x++) {cpu_buff[x] = ap_int<32>(src[x]); /*printf("%f -> %f\n", src[x], float(cpu_buff[x]));*/}
     PROFILING_FOOTER(Precision_Conversion);
     PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_int<32>), cpu_buff, nullptr, &blocking_event));
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*cast_ptr_fpga, CL_TRUE, 0, size*sizeof(ap_int<32>), cpu_buff, nullptr, &blocking_event));
     (*q).finish();
     PROFILING_FOOTER(FPGA_WRITE);
     free(cpu_buff);
@@ -241,7 +242,7 @@ void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, lo
     for (int x = 0; x < size; x++) {cpu_buff[x] = ap_fixed<8,4,AP_RND_ZERO,AP_SAT>(src[x]); /*if (size==64) printf("%f -> %f\n", src[x], float(cpu_buff[x]));*/}
     PROFILING_FOOTER(Precision_Conversion);
     PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>), cpu_buff, nullptr, &blocking_event));
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*cast_ptr_fpga, CL_TRUE, 0, size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>), cpu_buff, nullptr, &blocking_event));
     (*q).finish();
     PROFILING_FOOTER(FPGA_WRITE);
     free(cpu_buff);
@@ -252,7 +253,7 @@ void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, lo
     for (int x = 0; x < size; x++) {cpu_buff[x] = ap_fixed<16,8,AP_RND_ZERO,AP_SAT>(src[x]); /*if (size==64) printf("%f -> %f\n", src[x], float(cpu_buff[x]));*/}
     PROFILING_FOOTER(Precision_Conversion);
     PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>), cpu_buff, nullptr, &blocking_event));
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*cast_ptr_fpga, CL_TRUE, 0, size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>), cpu_buff, nullptr, &blocking_event));
     (*q).finish();
     PROFILING_FOOTER(FPGA_WRITE);
     free(cpu_buff);
@@ -263,7 +264,7 @@ void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, lo
     for (int x = 0; x < size; x++) {cpu_buff[x] = ap_fixed<32,16>(src[x]); /*if (size==64) printf("%f -> %f\n", src[x], float(cpu_buff[x]));*/}
     PROFILING_FOOTER(Precision_Conversion);
     PROFILING_HEADER(FPGA_WRITE);
-    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_fixed<32,16>), cpu_buff, nullptr, &blocking_event));
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*cast_ptr_fpga, CL_TRUE, 0, size*sizeof(ap_fixed<32,16>), cpu_buff, nullptr, &blocking_event));
     (*q).finish();
     PROFILING_FOOTER(FPGA_WRITE);
     free(cpu_buff);
