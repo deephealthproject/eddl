@@ -25,8 +25,12 @@ Layer* build_constoftensor_layer(onnx::NodeProto *node,
 
       // Get the tensor shape
       vector<int> shape;
-      for (int i = 0; i < data_tensor.dims_size(); ++i)
-        shape.push_back(data_tensor.dims(i));
+      for (int i = 0; i < data_tensor.dims_size(); ++i) {
+        int dim;
+        if (data_tensor.dims(i) == 0) dim = 1; else dim = data_tensor.dims(i);
+        shape.push_back(dim);
+        //shape.push_back(data_tensor.dims(i));
+      }
 
       // Create the tensor
       const_data = new Tensor(data, shape);

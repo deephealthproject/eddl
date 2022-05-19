@@ -206,4 +206,47 @@ public:
       string plot(int c) override;
 };
 
+/// QuantizeLinear Layer
+class LQuantizeLinear : public LinLayer {
+public:
+
+	static int total_layers;
+
+	LQuantizeLinear(Layer *parent, string name, int dev, int mem);
+
+      Layer *share(int c, int bs, vector<Layer *> p) override;
+
+      Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+      void resize(int batch) override;
+
+      void forward() override;
+
+      void backward() override;
+
+      string plot(int c) override;
+};
+
+/// DequantizeLinear Layer
+class LDequantizeLinear : public LinLayer {
+public:
+
+	static int total_layers;
+    vector<int> shape;
+
+	LDequantizeLinear(Layer *parent, vector<int> shape, string name, int dev, int mem);
+
+      Layer *share(int c, int bs, vector<Layer *> p) override;
+
+      Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+      void resize(int batch) override;
+
+      void forward() override;
+
+      void backward() override;
+
+      string plot(int c) override;
+};
+
 #endif //EDDL_LAYER_AUXILIAR_H

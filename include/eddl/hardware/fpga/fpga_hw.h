@@ -40,10 +40,13 @@ extern cl::Kernel kernel_hlsinf[16];
 
 // conv2d kernel related global variables
 
-#define HLSINF_FP32  0
-#define HLSINF_API8  1
-#define HLSINF_APUI8 2 
-#define HLSINF_API32 3
+#define HLSINF_FP32      0
+#define HLSINF_API8      1
+#define HLSINF_APUI8     2 
+#define HLSINF_API32     3
+#define HLSINF_APF_8_4   4
+#define HLSINF_APF_16_8  5
+#define HLSINF_APF_32_16 6
 
 extern int hlsinf_filter_format;
 extern int hlsinf_bias_format;
@@ -67,6 +70,8 @@ extern bool hlsinf_bn_support;
 extern bool hlsinf_add_support;
 extern bool hlsinf_upsize_support;
 extern bool hlsinf_dense_support;
+extern int  hlsinf_weight_buffer;
+extern int  hlsinf_data_buffer;
 
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()

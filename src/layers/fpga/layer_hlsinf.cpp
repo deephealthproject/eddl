@@ -22,16 +22,16 @@ int LHLSinf::total_layers = 0;
 // Constructor (one parent layer)
 LHLSinf::LHLSinf(Layer * parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
               int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
-              int enable_avgp, int enable_batch_norm, int enable_add, int enable_upscale, int dense_operation, string name, int dev, int mem) :
+              int enable_avgp, int enable_batch_norm, int enable_add, int enable_upscale, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem) :
               LHLSinf(vector<Layer*> {parent}, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr,
               enable_relu, relu_factor, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp, enable_batch_norm,
-              enable_add, enable_upscale, dense_operation, name, dev, mem) {  
+              enable_add, enable_upscale, dense_operation, use_weight_buffer, first_row_weight_buffer, name, dev, mem) {  
 };
 
 // Constructor (multiple parent layers)
 LHLSinf::LHLSinf(vector<Layer * > parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
               int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
-              int enable_avgp, int enable_batch_norm, int enable_add, int enable_upscale, int dense_operation, string name, int dev, int mem)  : MLayer(name, dev, mem) {
+              int enable_avgp, int enable_batch_norm, int enable_add, int enable_upscale, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem)  : MLayer(name, dev, mem) {
 
     if(name.empty()) this->name = "HLSinf" + to_string(++total_layers);
 
@@ -57,6 +57,9 @@ LHLSinf::LHLSinf(vector<Layer * > parent, int h, int w, int ichannels, int ochan
     this->enable_add        = enable_add;
     this->enable_upscale    = enable_upscale;
     this->dense_operation   = dense_operation;
+    this->use_weight_buffer = use_weight_buffer;
+    this->first_row_weight_buffer = first_row_weight_buffer;
+    this->weight_buffer_initialized = 0;
 
     // HLSinf supports KHxKW = 1x1 by playing with paddings and zeroing filters
     if ((kh == 1) && (kw == 1)) {
@@ -65,6 +68,15 @@ LHLSinf::LHLSinf(vector<Layer * > parent, int h, int w, int ichannels, int ochan
         if ((sh != 1) && (sw != 1)) printf("WARNING: 1x1 filter adjustment with strides different from 1\n");
       #endif
       this->PT = 0; this->PB = 2; this->PL = 0; this->PR = 2;
+    }
+
+    if ((kh == 2) && (kw == 2)) {
+      this->PB = this->PB + 1;
+      this->PR = this->PR + 1;
+#ifdef DEBUG_FPGA
+      printf("WARNING, adjusting padding to support 2x2 convolutions\n");
+      if ((sh != 1) && (sw != 1)) printf("WARNING: 2x2 filter adjustment with strides different from 1\n");
+#endif
     }
 
     // The first input is the previous layer (parent), the second one is the one used for add operation
@@ -110,8 +122,20 @@ void LHLSinf::forward() {
         fpga_copy_memory_to_fpga(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size*sizeof(float));
       } else if (hlsinf_filter_format == HLSINF_API8) {
         // Data conversion needed (FP32->API8)
-        filter->fpga_ptr = fpga_create_memory(filter->size);  
+        filter->fpga_ptr = fpga_create_memory(filter->size * sizeof(ap_int<8>));  
         fpga_copy_memory_to_fpga_and_format(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size, HLSINF_FP32, HLSINF_API8);
+      } else if (hlsinf_filter_format == HLSINF_APF_8_4) {
+        // Data conversion needed (FP32->APF<8,4,AP_RND_ZERO,AP_SAT>)
+        filter->fpga_ptr = fpga_create_memory(filter->size * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));  
+        fpga_copy_memory_to_fpga_and_format(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size, HLSINF_FP32, HLSINF_APF_8_4);
+      } else if (hlsinf_filter_format == HLSINF_APF_16_8) {
+        // Data conversion needed (FP32->APF<16,8,AP_RND_ZERO,AP_SAT>)
+        filter->fpga_ptr = fpga_create_memory(filter->size * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));  
+        fpga_copy_memory_to_fpga_and_format(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size, HLSINF_FP32, HLSINF_APF_16_8);
+      } else if (hlsinf_filter_format == HLSINF_APF_32_16) {
+        // Data conversion needed (FP32->APF<16,8,AP_RND_ZERO,AP_SAT>)
+        filter->fpga_ptr = fpga_create_memory(filter->size * sizeof(ap_fixed<32,16>));  
+        fpga_copy_memory_to_fpga_and_format(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size, HLSINF_FP32, HLSINF_APF_32_16);
       } else {
         printf("Error (HLSinf forward), filter format not supported\n");
         exit(1);
@@ -127,6 +151,18 @@ void LHLSinf::forward() {
         // Data conversion needed to API32 (FP32->API32)
         bias->fpga_ptr = fpga_create_memory(bias->size*4);  
         fpga_copy_memory_to_fpga_and_format(bias->ptr, (cl::Buffer *)bias->fpga_ptr, bias->size, HLSINF_FP32, HLSINF_API32);
+      } else if (hlsinf_bias_format == HLSINF_APF_8_4) {
+        // Data conversion needed to APF_8_4 (FP32->APF<8,4,AP_RND_ZERO,AP_SAT>)
+        bias->fpga_ptr = fpga_create_memory(bias->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));  
+        fpga_copy_memory_to_fpga_and_format(bias->ptr, (cl::Buffer *)bias->fpga_ptr, bias->size, HLSINF_FP32, HLSINF_APF_8_4);
+      } else if (hlsinf_bias_format == HLSINF_APF_16_8) {
+        // Data conversion needed to APF_8_4 (FP32->APF<16,8,AP_RND_ZERO,AP_SAT>)
+        bias->fpga_ptr = fpga_create_memory(bias->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));  
+        fpga_copy_memory_to_fpga_and_format(bias->ptr, (cl::Buffer *)bias->fpga_ptr, bias->size, HLSINF_FP32, HLSINF_APF_16_8);
+      } else if (hlsinf_bias_format == HLSINF_APF_32_16) {
+        // Data conversion needed to APF_8_4 (FP32->APF<16,8,AP_RND_ZERO,AP_SAT>)
+        bias->fpga_ptr = fpga_create_memory(bias->size*sizeof(ap_fixed<32,16>));  
+        fpga_copy_memory_to_fpga_and_format(bias->ptr, (cl::Buffer *)bias->fpga_ptr, bias->size, HLSINF_FP32, HLSINF_APF_32_16);
       } else {
         printf("Error (HLSinf forward), bias format not supported\n");
         exit(1);
@@ -141,9 +177,15 @@ void LHLSinf::forward() {
     // Output buffer, the buffer size depends on the data type
     if (output->fpga_ptr == NULL) {
       if (hlsinf_output_format == HLSINF_FP32) {
-        output->fpga_ptr = fpga_create_memory(output->size*sizeof(float));  
+        output->fpga_ptr = fpga_create_memory(output->size*sizeof(float));
       } else if (hlsinf_output_format == HLSINF_API8) {
         output->fpga_ptr = fpga_create_memory(output->size);  
+      } else if (hlsinf_output_format == HLSINF_APF_8_4) {
+        output->fpga_ptr = fpga_create_memory(output->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+      } else if (hlsinf_output_format == HLSINF_APF_16_8) {
+        output->fpga_ptr = fpga_create_memory(output->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+      } else if (hlsinf_output_format == HLSINF_APF_32_16) {
+        output->fpga_ptr = fpga_create_memory(output->size*sizeof(ap_fixed<32,16>));
       } else if (hlsinf_output_format == HLSINF_APUI8) {
         output->fpga_ptr = fpga_create_memory(output->size);  
       } else {
@@ -153,8 +195,10 @@ void LHLSinf::forward() {
     }
     // Now, we call the accelerator
     fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_batch_norm, enable_maxp, enable_avgp,
-		            enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_upscale, 
+		            enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_upscale, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized,
                 this->filter, this->bias, this->batch_norm_values, this->output);
+    // in case we initialized buffer we annotate it
+    if (use_weight_buffer && !weight_buffer_initialized) weight_buffer_initialized = 1;
 #else
     msg("LHLSinf layer only available for FPGA", "LHLSinf::forward()");
 #endif
@@ -166,7 +210,7 @@ void LHLSinf::backward() {msg("NotImplementedError", "LHLSinf::backward");}
 Layer *LHLSinf::share(int c, int bs, vector<Layer *> p) {
  auto *n = new LHLSinf(p, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor,
                       enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp,
-                      enable_batch_norm, enable_add, enable_upscale, dense_operation, "HLSinf_"+to_string(c)+this->name, this->dev, this->mem_level);
+                      enable_batch_norm, enable_add, enable_upscale, dense_operation, use_weight_buffer, first_row_weight_buffer, "HLSinf_"+to_string(c)+this->name, this->dev, this->mem_level);
 
  //share params and gradients
  for (int i = 0; i < n->params.size(); i++) delete n->params[i];
@@ -179,7 +223,7 @@ Layer *LHLSinf::share(int c, int bs, vector<Layer *> p) {
 Layer *LHLSinf::clone(int c, int bs, vector<Layer *> p, int todev) {
   auto *n = new LHLSinf(p, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor,
                     enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp,
-                    enable_batch_norm, enable_add, enable_upscale, dense_operation, name, todev, this->mem_level);
+                    enable_batch_norm, enable_add, enable_upscale, dense_operation, use_weight_buffer, first_row_weight_buffer, name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

@@ -64,6 +64,8 @@ bool hlsinf_bn_support;
 bool hlsinf_add_support;
 bool hlsinf_upsize_support;
 bool hlsinf_dense_support;
+int  hlsinf_weight_buffer;
+int  hlsinf_data_buffer;
 
 // -------------------------------------------------------------------------------------------------------------------------------------------
 // Global variables for profiling
@@ -144,6 +146,9 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
   else if (format_tensor == HLSINF_API32) size = T->size * sizeof(ap_int<32>);
   else if (format_tensor == HLSINF_API8) size = T->size * sizeof(ap_int<8>);
   else if (format_tensor == HLSINF_APUI8) size = T->size * sizeof(ap_uint<8>);
+  else if (format_tensor == HLSINF_APF_8_4) size = T->size * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>);
+  else if (format_tensor == HLSINF_APF_16_8) size = T->size * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>);
+  else if (format_tensor == HLSINF_APF_32_16) size = T->size * sizeof(ap_fixed<32,16>);
   else {printf("format not supported in profile\n"); exit(1);}
 
   float *buf = (float *)eddl_malloc(size);
@@ -160,6 +165,9 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor) {
     } else if (format_tensor == HLSINF_API32) {ap_int<32> *p = (ap_int<32> *)buf; v = float(p[i]);}
     else if (format_tensor == HLSINF_API8) {ap_int<8> *p = (ap_int<8> *)buf; v = float(p[i]);}
     else if (format_tensor == HLSINF_APUI8) {ap_uint<8> *p = (ap_uint<8> *)buf; v = p[i];}
+    else if (format_tensor == HLSINF_APF_8_4) {ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *p = (ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *)buf; v = p[i];}
+    else if (format_tensor == HLSINF_APF_16_8) {ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *p = (ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *)buf; v = p[i];}
+    else if (format_tensor == HLSINF_APF_32_16) {ap_fixed<32,16> *p = (ap_fixed<32,16> *)buf; v = p[i];}
     else {printf("format not supported in profile\n"); exit(1);}
     if (v > max) max = v;
     if (v < min) min = v;
@@ -270,20 +278,22 @@ void fpga_init(int kernel_version, int kernel_subversion) {
   // We need to instantiate the proper number of kernels, we also take the specifities of the kernels
   //
   // kernel versions:
-  //             -------------------------------------------------------
-  //             |                      Data format                    |
-  //             |-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //     version | input  | conv filter | bias  | batch norm | output  | CPI x CPO | #kernels | HO max | WO max | max rows |   board             | xclbin             | Conv Type | Conv | Shift | Clip | ReLU | STM | MAXP | AVGP | BN | ADD | UPSIZE | Dense |
-  //   ----------|-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //   |   1.0   |  FP32  |   FP32      | FP32  |  FP32      |   FP32  |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.0.xclbin |   Direct  |   X  |       |   X  |  X   |  X  |  X   |  X   |  X |  X  |   X    |       |
-  //   |   1.1   |  FP32  |   FP32      | FP32  |  FP32      |   FP32  |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.0.xclbin |   Direct  |   X  |       |   X  |  X   |  X  |  X   |  X   |  X |  X  |   X    |   X   |
-  //   |   1.2   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |   8 x 8   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.1.xclbin |   Direct  |   X  |   X   |   X  |  X   |  X  |  X   |  X   |  X |  X  |   X    |       |
-  //   |   1.3   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |   8 x 8   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.1.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |   X   |
-  //   |   1.4   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 8   |     2    |   128  |  1024  |    128   | Alveo U200          | hlsinf_v1.2.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |       |
-  //   |   1.5   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 8   |     2    |   128  |  1024  |    128   | Alveo U200          | hlsinf_v1.2.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |   X   |
-  //   |   1.6   |  APUI8 |   API8      | API32 |  APUI8     |   APUI8 |  16 x 16  |     2    |   128  |   256  |    128   | Alveo U200          | hlsinf_v1.5.xclbin |   Direct  |   X  |   X   |   X  |  X   |     |  X   |   X  |    |     |   X    |       |
-  //   |   1.7   |  FP32  |   FP32      | FP32  |  FP32      |   FP32  |   8 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.3.xclbin |   Direct  |   X  |       |      |  X   |     |  X   |      |    |     |   X    |       |
-  //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //             -------------------------------------------------------------------
+  //             |                      Data format                                |
+  //             |-----------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //     version | input      | conv filter | bias       | batch norm | output     | CPI x CPO | #kernels | HO max | WO max | max rows |   board             | xclbin             | Conv Type | Conv | Shift | Clip | ReLU | STM | MAXP | AVGP | BN | ADD | UPSIZE | Dense |
+  //   ----------|-----------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //   |   1.0   | FP32       |   FP32      | FP32       | FP32       | FP32       |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.0.xclbin |   Direct  |   X  |       |   X  |  X   |  X  |  X   |  X   |  X |  X  |   X    |       |
+  //   |   1.1   | FP32       |   FP32      | FP32       | FP32       | FP32       |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.0.xclbin |   Direct  |   X  |       |   X  |  X   |  X  |  X   |  X   |  X |  X  |   X    |   X   |
+  //   |   1.2   | APUI8      |   API8      | API32      | APUI8      | APUI8      |   8 x 8   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.1.xclbin |   Direct  |   X  |   X   |   X  |  X   |  X  |  X   |  X   |  X |  X  |   X    |       |
+  //   |   1.3   | APUI8      |   API8      | API32      | APUI8      | APUI8      |   8 x 8   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.1.xclbin |   Direct  | Conv + Shift + Clip + ReLU       + {MaxP|AvgP} + BN + Add + Upsize |   X   |
+  //   |   1.4   | APF<32,16> |   APF<16,8> | APF<32,16> | APF<32,16> | APF<32,16> |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.5.xclbin |   Direct  |   X  |       |      |  X   |     |  X   |      |    |  X  |   X    |       |
+  //   |   1.5   | APF<32,16> |   APF<8,4>  | APF<32,16> | APF<32,16> | APF<32,16> |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.6.xclbin |   Direct  |   X  |       |      |  X   |     |  X   |      |    |  X  |   X    |       |
+  //   |   1.6   | APF<16,8>  |   APF<16,8> | APF<16,8>  | APF<16,8>  | APF<16,8>  |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.7.xclbin |   Direct  |   X  |       |      |  X   |     |  X   |      |    |  X  |   X    |       |
+  //   |   1.7   | APF<8,4>   |   APF<8,4>  | APF<8,4>   | APF<8,4>   | APF<8,4>   |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.8.xclbin |   Direct  |   X  |       |      |  X   |     |  X   |      |    |  X  |   X    |       |
+  //   |   1.8   | APF<8,4>   |   APF<8,4>  | APF<16,8>  | APF<8,4>   | APF<8,4>   |   4 x 4   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.8.xclbin |   Direct  |   X  |       |   X  |  X   |     |  X   |      |    |  X  |   X    |       |
+  //   |   1.9   | APF<8,4>   |   APF<8,4>  | APF<16,8>  | APF<8,4>   | APF<8,4>   |   8 x 8   |     2    |   256  |  1024  |    256   | Alveo U200          | hlsinf_v1.8.xclbin |   Direct  |   X  |       |   X  |  X   |     |  X   |      |    |  X  |   X    |       |
+  //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //       2.0   
   //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -294,7 +304,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     hlsinf_xclbin = "hlsinf_v1.0.xclbin";
     hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
     hlsinf_add_support = true;  hlsinf_upsize_support = true;
-    hlsinf_dense_support = false;
+    hlsinf_dense_support = false; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v1.0: \n");
     printf("  Kernel configuration : FP32, CPIxCPO: 4x4, 2 kernels (hlsinf_v1.0.xclbin)\n");
@@ -309,7 +319,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     hlsinf_xclbin = "hlsinf_v1.0.xclbin";
     hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
     hlsinf_add_support = true;  hlsinf_upsize_support = true;
-    hlsinf_dense_support = true;
+    hlsinf_dense_support = true; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v1.1: \n");
     printf("  Kernel configuration : FP32, CPIxCPO: 4x4, 2 kernels (hlsinf_v1.0.xclbin)\n");
@@ -324,7 +334,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     hlsinf_xclbin = "hlsinf_v1.1.xclbin";
     hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
     hlsinf_add_support = true;  hlsinf_upsize_support = true;
-    hlsinf_dense_support = false;
+    hlsinf_dense_support = false; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
     printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v1.2: \n");
     printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 8x8, 2 kernels (hlsinf_v1.1.xclbin)\n");
@@ -339,7 +349,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     hlsinf_xclbin = "hlsinf_v1.1.xclbin";
     hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
     hlsinf_add_support = true;  hlsinf_upsize_support = true;
-    hlsinf_dense_support = true;
+    hlsinf_dense_support = true; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
     printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v1.3: \n");
     printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 8x8, 2 kernels (hlsinf_v1.1.xclbin)\n");
@@ -348,64 +358,141 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : Yes\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 4)) {
-    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
-    hlsinf_cpi = 16; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
-    hlsinf_ho_max = 128; hlsinf_wo_max = 1024; hlsinf_max_rows = 128;
-    hlsinf_xclbin = "hlsinf_v1.2.xclbin";
-    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
+    hlsinf_filter_format = HLSINF_APF_16_8; hlsinf_bias_format = HLSINF_APF_32_16; hlsinf_input_format = HLSINF_APF_32_16; hlsinf_output_format = HLSINF_APF_32_16;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.5.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = false; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = false; hlsinf_bn_support = false;
     hlsinf_add_support = true;  hlsinf_upsize_support = true;
-    hlsinf_dense_support = false;
+    hlsinf_dense_support = false; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
     printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v1.4: \n");
-    printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 16x8, 2 kernels (hlsinf_v1.2.xclbin)\n");
+    printf("  Kernel configuration : Mixed precission (weights apf<16,8>, bias apf<32,16>, input apf<32,16>, output apf<32,16>), CPIxCPO: 4x4, 2 kernels (hlsinf_v1.5.xclbin)\n");
     printf("  Platform             : Alveo U200 board\n");
-    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
+    printf("  Supported layers     : CONV, ReLU, MaxPool, Add Tensors, Upsize\n");
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 5)) {
-    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
-    hlsinf_cpi = 16; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
-    hlsinf_ho_max = 128; hlsinf_wo_max = 1024; hlsinf_max_rows = 128;
-    hlsinf_xclbin = "hlsinf_v1.2.xclbin";
-    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = true; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = true;
+    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_32_16; hlsinf_input_format = HLSINF_APF_32_16; hlsinf_output_format = HLSINF_APF_32_16;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.6.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = false; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = false; hlsinf_bn_support = false;
     hlsinf_add_support = true;  hlsinf_upsize_support = true;
-    hlsinf_dense_support = true;
+    hlsinf_dense_support = false; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
     printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
-    printf("HLSinf accelerator v1.4: \n");
-    printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 16x8, 2 kernels (hlsinf_v1.2.xclbin)\n");
+    printf("HLSinf accelerator v1.5: \n");
+    printf("  Kernel configuration : Mixed precission (weights apf<8,4>, bias apf<32,16>, input apf<32,16>, output apf<32,16>), CPIxCPO: 4x4, 2 kernels (hlsinf_v1.6.xclbin)\n");
     printf("  Platform             : Alveo U200 board\n");
-    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Batch Norm, Add Tensors, Upsize\n");
-    printf("  Dense layer support  : Yes\n");
+    printf("  Supported layers     : CONV, ReLU, MaxPool, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
  } else if ((kernel_version == 1) && (kernel_subversion == 6)) {
-    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
-    hlsinf_cpi = 16; hlsinf_cpo = 16; hlsinf_num_kernels = 1;
+    hlsinf_filter_format = HLSINF_APF_16_8; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_16_8; hlsinf_output_format = HLSINF_APF_16_8;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
-    hlsinf_xclbin = "hlsinf_v1.5.xclbin";
-    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = true; hlsinf_bn_support = false;
-    hlsinf_add_support = false;  hlsinf_upsize_support = true;
-    hlsinf_dense_support = false;
+    hlsinf_xclbin = "hlsinf_v1.7.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = false; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = false; hlsinf_bn_support = false;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = false; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
     printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v1.6: \n");
-    printf("  Kernel configuration : Mixed precission (weights apui<8>, bias<api32>, input apui<8>, output apui<8>), CPIxCPO: 16x16, 2 kernels (hlsinf_v1.5.xclbin)\n");
+    printf("  Kernel configuration : Fixed precission (APF<16,8>), CPIxCPO: 4x4, 2 kernels (hlsinf_v1.7.xclbin)\n");
     printf("  Platform             : Alveo U200 board\n");
-    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, Upsize\n");
+    printf("  Supported layers     : CONV, ReLU, MaxPool, Add Tensors, Upsize\n");
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 7)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
-    hlsinf_cpi = 6; hlsinf_cpo = 6; hlsinf_num_kernels = 2;
-    hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
-    hlsinf_xclbin = "hlsinf_v1.3.xclbin";
+    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_8_4; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.8.xclbin";
     hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = false; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = false; hlsinf_bn_support = false;
-    hlsinf_add_support = false;  hlsinf_upsize_support = true;
-    hlsinf_dense_support = false;
-    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = false; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
     printf("HLSinf accelerator v1.7: \n");
-    printf("  Kernel configuration : FP32, CPIxCPO: 8x4, 2 kernels (hlsinf_v1.3.xclbin)\n");
+    printf("  Kernel configuration : Fixed precission (APF<8,4>), CPIxCPO: 4x4, 2 kernels (hlsinf_v1.8.xclbin)\n");
     printf("  Platform             : Alveo U200 board\n");
-    printf("  Supported layers     : CONV, ReLU, MaxPool, Upsize\n");
+    printf("  Supported layers     : CONV, ReLU, MaxPool, Add Tensors, Upsize\n");
     printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 8)) {
+    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.9.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = false; hlsinf_bn_support = false;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = false; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.8: \n");
+    printf("  Kernel configuration : Fixed precission (APF<8,4>, bias APF<16,8>), CPIxCPO: 4x4, 2 kernels (hlsinf_v1.9.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, Clip, ReLU, MaxPool, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 9)) {
+    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4;
+    //hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.10.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = true; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = false; hlsinf_bn_support = false;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = false; hlsinf_weight_buffer = 5000; hlsinf_data_buffer = 8192;
+    //hlsinf_dense_support = false; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.9: \n");
+    printf("  Kernel configuration : Fixed precission (APF<8,4>, bias APF<16,8>), CPIxCPO: 8x8, 2 kernels (hlsinf_v1.10.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, Clip, ReLU, MaxPool, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 14)) {
+    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4;
+    hlsinf_cpi = 16; hlsinf_cpo = 16; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.14.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = true; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = false; hlsinf_bn_support = false;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = false; hlsinf_weight_buffer = 0; hlsinf_data_buffer = 0;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.14: \n");
+    printf("  Kernel configuration : Fixed precission (APF<8,4>, bias APF<16,8>), CPIxCPO: 16x16, 2 kernels (hlsinf_v1.10.xclbin)\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, Clip, ReLU, MaxPool, Add Tensors, Upsize\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 15)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.15.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = false; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = false; hlsinf_bn_support = false;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = true; hlsinf_weight_buffer = 5000; hlsinf_data_buffer = 8192;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.15  (hlsinf_v1.15.xclbin): \n");
+    printf("  Kernel configuration : FP32, CPIxCPO: 4x4, 5K-row weight buffer, 8K data buffer, 2 kernels\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, Clip, ReLU, MaxPool, Add Tensors, Upsize\n");
+    printf(" Dense layer support  : Yes\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  } else if ((kernel_version == 1) && (kernel_subversion == 16)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_v1.16.xclbin";
+    hlsinf_conv_support = true; hlsinf_shift_support = false; hlsinf_clip_support = false; hlsinf_relu_support = true; hlsinf_stm_support = false; hlsinf_maxp_support = true; hlsinf_avgp_support = false; hlsinf_bn_support = true;
+    hlsinf_add_support = true;  hlsinf_upsize_support = true;
+    hlsinf_dense_support = true; hlsinf_weight_buffer = 4096; hlsinf_data_buffer = 4096;
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v1.16  (hlsinf_v1.16.xclbin): \n");
+    printf("  Kernel configuration : FP32 (internally FP16/FP8), CPIxCPO: 8x8, 4K-row weight buffer, 4K data buffer, 2 kernels\n");
+    printf("  Platform             : Alveo U200 board\n");
+    printf("  Supported layers     : CONV, Clip, ReLU, MaxPool, Add Tensors, Upsize\n");
+    printf(" Dense layer support  : Yes\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else {
     printf("Error, kernel version not supported\n"); exit(1);
@@ -512,6 +599,39 @@ void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, cl::Buffer *ptr_fpga, lo
     (*q).finish();
     PROFILING_FOOTER(FPGA_WRITE);
     free(cpu_buff);
+  } else if ((src_format == HLSINF_FP32) && (dst_format == HLSINF_APF_8_4)) {
+    PROFILING_HEADER(Precision_Conversion);
+    float *src = (float*)ptr_cpu;
+    ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *cpu_buff = (ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *)eddl_malloc(size * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+    for (int x = 0; x < size; x++) {cpu_buff[x] = ap_fixed<8,4,AP_RND_ZERO,AP_SAT>(src[x]); /*if (size==64) printf("%f -> %f\n", src[x], float(cpu_buff[x]));*/}
+    PROFILING_FOOTER(Precision_Conversion);
+    PROFILING_HEADER(FPGA_WRITE);
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>), cpu_buff, nullptr, &blocking_event));
+    (*q).finish();
+    PROFILING_FOOTER(FPGA_WRITE);
+    free(cpu_buff);
+  } else if ((src_format == HLSINF_FP32) && (dst_format == HLSINF_APF_16_8)) {
+    PROFILING_HEADER(Precision_Conversion);
+    float *src = (float*)ptr_cpu;
+    ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *cpu_buff = (ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *)eddl_malloc(size * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+    for (int x = 0; x < size; x++) {cpu_buff[x] = ap_fixed<16,8,AP_RND_ZERO,AP_SAT>(src[x]); /*if (size==64) printf("%f -> %f\n", src[x], float(cpu_buff[x]));*/}
+    PROFILING_FOOTER(Precision_Conversion);
+    PROFILING_HEADER(FPGA_WRITE);
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>), cpu_buff, nullptr, &blocking_event));
+    (*q).finish();
+    PROFILING_FOOTER(FPGA_WRITE);
+    free(cpu_buff);
+  } else if ((src_format == HLSINF_FP32) && (dst_format == HLSINF_APF_32_16)) {
+    PROFILING_HEADER(Precision_Conversion);
+    float *src = (float*)ptr_cpu;
+    ap_fixed<32,16> *cpu_buff = (ap_fixed<32,16> *)eddl_malloc(size * sizeof(ap_fixed<32,16>));
+    for (int x = 0; x < size; x++) {cpu_buff[x] = ap_fixed<32,16>(src[x]); /*if (size==64) printf("%f -> %f\n", src[x], float(cpu_buff[x]));*/}
+    PROFILING_FOOTER(Precision_Conversion);
+    PROFILING_HEADER(FPGA_WRITE);
+    OCL_CHECK(err, err= (*q).enqueueWriteBuffer(*ptr_fpga, CL_TRUE, 0, size*sizeof(ap_fixed<32,16>), cpu_buff, nullptr, &blocking_event));
+    (*q).finish();
+    PROFILING_FOOTER(FPGA_WRITE);
+    free(cpu_buff);
   } else {
     printf("copy with format not supported\n");
     exit(1);
@@ -594,6 +714,42 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size*sizeof(ap_uint<8>));
       fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size*sizeof(ap_uint<8>));
       free(cpu_buff);
+    } else if (hlsinf_input_format == HLSINF_APF_8_4) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_fixed<8,4,AP_RND_ZERO,AP_SAT>
+      ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *cpu_buff = (ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *)eddl_malloc(B->size*sizeof(unsigned char));
+      for (int x=0; x<B->size; x++) {
+        ap_fixed<8,4,AP_RND_ZERO,AP_SAT> value = B->ptr[x];
+        cpu_buff[x] = value;
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+      free(cpu_buff);
+    } else if (hlsinf_input_format == HLSINF_APF_16_8) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_fixed<8,4,AP_RND_ZERO,AP_SAT>
+      ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *cpu_buff = (ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *)eddl_malloc(B->size*sizeof(ap_fixed<16, 8>));
+      for (int x=0; x<B->size; x++) {
+        ap_fixed<16,8,AP_RND_ZERO,AP_SAT> value = B->ptr[x];
+        cpu_buff[x] = value;
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+      free(cpu_buff);
+    } else if (hlsinf_input_format == HLSINF_APF_32_16) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_fixed<32,16>
+      ap_fixed<32,16> *cpu_buff = (ap_fixed<32,16> *)eddl_malloc(B->size*sizeof(ap_fixed<32,16>));
+      for (int x=0; x<B->size; x++) {
+        ap_fixed<32,16> value = B->ptr[x];
+        cpu_buff[x] = value;
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+      free(cpu_buff);
     } else {
       printf("Transform: input format not supported\n");
       exit(1);
@@ -662,6 +818,45 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
       fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
       free(cpu_buff);
+    } else if (hlsinf_input_format == HLSINF_APF_8_4) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_fixed<8,4,AP_RND_ZERO,AP_SAT>
+      ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *cpu_buff = (ap_fixed<8,4,AP_RND_ZERO,AP_SAT>*)eddl_malloc(B->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+      for (int x=0; x<B->size; x++) {
+        float value = B->ptr[x];
+        cpu_buff[x] = ap_fixed<8,4,AP_RND_ZERO,AP_SAT>(value);
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      size_out = C_out * H_in * W_in * B_in * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
+      free(cpu_buff);
+    } else if (hlsinf_input_format == HLSINF_APF_16_8) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_fixed<8,4,AP_RND_ZERO,AP_SAT>
+      ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *cpu_buff = (ap_fixed<16,8,AP_RND_ZERO,AP_SAT>*)eddl_malloc(B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+      for (int x=0; x<B->size; x++) {
+        float value = B->ptr[x];
+        cpu_buff[x] = ap_fixed<16,8,AP_RND_ZERO,AP_SAT>(value);
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      size_out = C_out * H_in * W_in * B_in * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
+      free(cpu_buff);
+    } else if (hlsinf_input_format == HLSINF_APF_32_16) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_fixed<8,4,AP_RND_ZERO,AP_SAT>
+      ap_fixed<32,16> *cpu_buff = (ap_fixed<32,16>*)eddl_malloc(B->size*sizeof(ap_fixed<32,16>));
+      for (int x=0; x<B->size; x++) {
+        float value = B->ptr[x];
+        cpu_buff[x] = ap_fixed<32,16>(value);
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      size_out = C_out * H_in * W_in * B_in * sizeof(ap_fixed<32,16>);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
+      free(cpu_buff);
     } else {
       printf("Transform: input format not supported\n");
       exit(1);
@@ -683,6 +878,21 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_uint<8>));
       PROFILING_HEADER(Precision_Conversion);
       for (int x=0; x < num_elements; x++) {ap_uint<8> *ptr = (ap_uint<8> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
+      PROFILING_FOOTER(Precision_Conversion);
+    } else if (hlsinf_output_format == HLSINF_APF_8_4) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<8, 2,AP_RND_ZERO,AP_SAT>));
+      PROFILING_HEADER(Precision_Conversion);
+      for (int x=0; x < num_elements; x++) {ap_fixed<8, 2,AP_RND_ZERO,AP_SAT> *ptr = (ap_fixed<8, 2,AP_RND_ZERO,AP_SAT> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
+      PROFILING_FOOTER(Precision_Conversion);
+    } else if (hlsinf_output_format == HLSINF_APF_16_8) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<16, 8,AP_RND_ZERO,AP_SAT>));
+      PROFILING_HEADER(Precision_Conversion);
+      for (int x=0; x < num_elements; x++) {ap_fixed<16, 8,AP_RND_ZERO,AP_SAT> *ptr = (ap_fixed<16, 8,AP_RND_ZERO,AP_SAT> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
+      PROFILING_FOOTER(Precision_Conversion);
+    } else if (hlsinf_output_format == HLSINF_APF_32_16) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<32,16>));
+      PROFILING_HEADER(Precision_Conversion);
+      for (int x=0; x < num_elements; x++) {ap_fixed<32, 16> *ptr = (ap_fixed<32, 16> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
       PROFILING_FOOTER(Precision_Conversion);
     } else {
       printf("Transform: output format not supported\n");
@@ -719,13 +929,19 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_int<8>));
     } else if (hlsinf_output_format == HLSINF_APUI8) {
       fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_uint<8>));
+    } else if (hlsinf_output_format == HLSINF_APF_8_4) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+    } else if (hlsinf_output_format == HLSINF_APF_16_8) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+    } else if (hlsinf_output_format == HLSINF_APF_32_16) {
+      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<32,16>));
     } else {
       printf("Transform: output format not supported\n");
       exit(1);
     }
 
     #ifdef FPGA_DEBUG
-    if (hlsinf_output_format == HLSINF_FP32) printf("  input   "); _profile_cpu_tensor(A);
+    if (hlsinf_output_format == HLSINF_FP32) {printf("  input   "); _profile_cpu_tensor(A);}
     // in a different format we would need to move data to FP32
     #endif
 
@@ -780,8 +996,59 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
           }
         }
       }
-
-
+    } else if (hlsinf_output_format == HLSINF_APF_8_4) {  
+      PROFILING_HEADER(Precision_Conversion);
+      for (int b=0; b<B_in; b++) {
+        for (int c=0; c<C_in; c++) {
+          for (int h=0; h<H_in; h++) {
+            for (int w=0; w<W_in; w++) {
+              int g = c / CPI;
+              int cpi = c % CPI; 
+              int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
+              int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
+              ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *ptr_src = (ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *)A->ptr;
+              float value = float(ptr_src[addr_src]);
+              ptr_dst[addr_dst] = value;
+            }
+          }
+        }
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+    } else if (hlsinf_output_format == HLSINF_APF_16_8) {  
+      PROFILING_HEADER(Precision_Conversion);
+      for (int b=0; b<B_in; b++) {
+        for (int c=0; c<C_in; c++) {
+          for (int h=0; h<H_in; h++) {
+            for (int w=0; w<W_in; w++) {
+              int g = c / CPI;
+              int cpi = c % CPI; 
+              int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
+              int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
+              ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *ptr_src = (ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *)A->ptr;
+              float value = float(ptr_src[addr_src]);
+              ptr_dst[addr_dst] = value;
+            }
+          }
+        }
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+    } else if (hlsinf_output_format == HLSINF_APF_32_16) {  
+      PROFILING_HEADER(Precision_Conversion);
+      for (int b=0; b<B_in; b++) {
+        for (int c=0; c<C_in; c++) {
+          for (int h=0; h<H_in; h++) {
+            for (int w=0; w<W_in; w++) {
+              int g = c / CPI;
+              int cpi = c % CPI; 
+              int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
+              int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
+              ap_fixed<32,16> *ptr_src = (ap_fixed<32,16> *)A->ptr;
+              float value = float(ptr_src[addr_src]);
+              ptr_dst[addr_dst] = value;
+            }
+          }
+        }
+      }
       PROFILING_FOOTER(Precision_Conversion);
     } else {
       printf("Transform: output format not supported\n");

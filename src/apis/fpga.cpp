@@ -24,6 +24,7 @@
 
 #define ENABLE_UPSIZE_SUPPORT
 #define ENABLE_CLAMP
+#define ENABLE_PAD_CONV
 
 ////////////////////////////////////////////////////////
 ///// EDDL is a wrapper class to ease and define the API
@@ -191,7 +192,7 @@ bool is_div         (model m_src, int layer, int num_layers) {if (layer >= num_l
 bool is_diff        (model m_src, int layer, int num_layers) {if (layer >= num_layers) return false; Layer *cl = m_src->layers[layer]; if (LDiff *dl = dynamic_cast<LDiff *>(cl)) return true; return false;}
 bool is_exp         (model m_src, int layer, int num_layers) {if (layer >= num_layers) return false; Layer *cl = m_src->layers[layer]; if (LExp *dl = dynamic_cast<LExp *>(cl)) return true; return false;}
 bool is_permute     (model m_src, int layer, int num_layers) {if (layer >= num_layers) return false; Layer *cl = m_src->layers[layer]; if (LPermute *dl = dynamic_cast<LPermute *>(cl)) return true; return false;}
-bool is_add         (model m_src, int layer, int num_layers) {if (layer >= num_layers) return false; Layer *cl = m_src->layers[layer]; if (LAdd *dl = dynamic_cast<LAdd *>(cl)) return true; return false;}
+bool is_add         (model m_src, int layer, int num_layers) {if (layer >= num_layers) return false; Layer *cl = m_src->layers[layer]; if (LAdd *dl = dynamic_cast<LAdd *>(cl)) return true; if (LSum *dl = dynamic_cast<LSum *>(cl)) return true; return false;}
 bool is_constoft    (model m_src, int layer, int num_layers) {if (layer >= num_layers) return false; Layer *cl = m_src->layers[layer]; if (LConstOfTensor *dl = dynamic_cast<LConstOfTensor *>(cl)) return true; return false;}
 bool is_clamp       (model m_src, int layer, int num_layers) {if (layer >= num_layers) return false; Layer *cl = m_src->layers[layer]; if (LClamp *dl = dynamic_cast<LClamp *>(cl)) return true; return false;}
 bool is_pad         (model m_src, int layer, int num_layers) {if (layer >= num_layers) return false; Layer *cl = m_src->layers[layer]; if (LPad *dl = dynamic_cast<LPad *>(cl)) return true; return false;}
@@ -310,6 +311,7 @@ bool found_conv                       (model m, int l, int nl) {return is_conv_f
                                                                                                  !found_conv_relu_bn(m, l, nl) && !found_conv_relu_maxp(m, l, nl) && !found_conv_relu(m, l, nl) && !found_conv_leakyrelu(m, l, nl) && !found_conv_maxp(m, l, nl) &&
                                                                                                  !found_conv_add(m, l, nl) && !found_conv_bn(m, l, nl) && !found_conv_relu_maxp_resize(m, l, nl) && !found_conv_relu_resize(m, l, nl) && !found_conv_relu_maxp_bn(m, l, nl);}
 
+#ifdef ENABLE_PAD_CONV
 bool found_pad_conv_sigmoid_tanh_maxp_add(model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_sigmoid(m, l+2, nl) && is_tanh(m, l+3, nl) && is_maxp(m, l+4, nl) && is_add(m, l+5, nl);}
 bool found_pad_conv_sigmoid_tanh_maxp(model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_sigmoid(m, l+2, nl) && is_tanh(m, l+3, nl) && is_maxp(m, l+4, nl) && !found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl);}
 bool found_pad_conv_relu_maxp (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_relu(m, l+2, nl) && is_maxp(m, l+3, nl);}
@@ -318,6 +320,16 @@ bool found_pad_conv_maxp      (model m, int l, int nl) {return is_pad(m, l, nl) 
 bool found_pad_conv_leakyrelu (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_leakyrelu(m, l+2, nl);}
 bool found_pad_conv_bn        (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && is_bn(m, l+2, nl);}
 bool found_pad_conv           (model m, int l, int nl) {return is_pad(m, l, nl) && is_conv_fpga(m, l+1, nl) && !found_pad_conv_bn(m, l, nl) && !found_pad_conv_maxp(m, l, nl) && !found_pad_conv_relu(m, l, nl) && !found_pad_conv_leakyrelu(m, l, nl) && !found_pad_conv_relu_maxp(m, l, nl) && !found_pad_conv_sigmoid_tanh_maxp(m, l, nl) && !found_pad_conv_sigmoid_tanh_maxp_add(m, l, nl);}
+#else
+bool found_pad_conv_sigmoid_tanh_maxp_add(model m, int l, int nl) {return false;}
+bool found_pad_conv_sigmoid_tanh_maxp(model m, int l, int nl) {return false;}
+bool found_pad_conv_relu_maxp (model m, int l, int nl) {return false;}
+bool found_pad_conv_relu      (model m, int l, int nl) {return false;}
+bool found_pad_conv_maxp      (model m, int l, int nl) {return false;}
+bool found_pad_conv_leakyrelu (model m, int l, int nl) {return false;}
+bool found_pad_conv_bn        (model m, int l, int nl) {return false;}
+bool found_pad_conv           (model m, int l, int nl) {return false;}
+#endif
 
 // non-fpga layer
 bool found_pad(model m, int l, int nl)             {return is_pad(m, l, nl) && !found_pad_conv(m, l, nl) && !found_pad_conv_bn(m, l, nl) && !found_pad_conv_leakyrelu(m, l, nl) && !found_pad_conv_maxp(m, l, nl) && !found_pad_conv_relu(m, l, nl) && !found_pad_conv_relu_maxp(m, l, nl) && 
@@ -503,7 +515,7 @@ int get_enable_relu(model m, int l, int nl) {
          found_conv_relu_bn(m, l, nl) || found_conv_relu_maxp(m, l, nl) || found_conv_relu(m, l, nl) || found_conv_leakyrelu(m, l, nl) || found_pad_conv_relu_maxp(m, l, nl) || found_pad_conv_relu(m, l, nl) || found_pad_conv_leakyrelu(m, l, nl) ||
          found_conv_relu_maxp_resize(m, l, nl) || found_conv_relu_resize(m, l, nl) || found_dense_relu(m, l, nl) || found_dense_div_clamp_relu(m, l, nl) || found_conv_relu_maxp_bn(m, l, nl);
 }
-int get_enable_maxp(model m, int l, int nl) {return found_conv_maxp(m, l, nl) || found_conv_relu_maxp(m, l, nl) || found_conv_mult_clamp_relu_maxp(m, l, nl) || found_conv_div_clamp_relu_maxp(m, l, nl) || found_conv_relu_maxp_resize(m, l, nl) || found_conv_relu_maxp_bn(m, l, nl);}
+int get_enable_maxp(model m, int l, int nl) {return found_conv_maxp(m, l, nl) || found_conv_relu_maxp(m, l, nl) || found_conv_mult_clamp_relu_maxp(m, l, nl) || found_conv_div_clamp_relu_maxp(m, l, nl) || found_conv_relu_maxp_resize(m, l, nl) || found_conv_relu_maxp_bn(m, l, nl) || found_pad_conv_relu_maxp(m, l, nl);}
 int get_enable_avgp(model m, int l, int nl) {return false;}
 int get_enable_clipping(model m, int l, int nl) {return found_conv_mult_clamp_relu_maxp(m, l, nl) || found_conv_mult_clamp_relu(m, l, nl) || found_conv_div_clamp_relu_maxp(m, l, nl) || found_conv_div_clamp_relu(m, l, nl) || found_dense_div_clamp(m, l, nl) || found_dense_div_clamp_relu(m, l, nl);}
 int get_min_clip(model m, int l, int nl) {
@@ -566,7 +578,8 @@ void get_name(model m, int l, int nl, char *str) { // TODO
   else if (found_conv_relu_bn(m, l, nl))                strcpy(str, "HLSinf (Conv + ReLu + BatchNorm)");
   else if (found_conv_relu_maxp(m, l, nl))              strcpy(str, "HLSinf (Conv + ReLu + MaxPool)");
   else if (found_pad_conv(m, l, nl))                    strcpy(str, "HLSinf (Padding + Conv)");
-  else if (found_pad_conv_relu(m, l, nl))               strcpy(str, "HLSinf (Conv + ReLu)");
+  else if (found_pad_conv_relu(m, l, nl))               strcpy(str, "HLSinf (Padding + Conv + ReLu)");
+  else if (found_pad_conv_relu_maxp(m, l, nl))          strcpy(str, "HLSinf (Padding + Conv + ReLu + MaxPool)");
   else if (found_pad_conv_leakyrelu(m, l, nl))          strcpy(str, "HLSinf (Padding + Conv + LeakyReLu)");
   else if (found_pad_conv_bn(m, l, nl))                 strcpy(str, "HLSinf (Padding + Conv + BatchNorm)");
   else if (found_conv_add(m, l, nl))                    strcpy(str, "HLSinf (Conv + Add)");
@@ -580,7 +593,7 @@ void get_name(model m, int l, int nl, char *str) { // TODO
   else if (found_conv_relu_maxp_bn(m, l, nl))           strcpy(str, "HLSinf (Conv + ReLu + MaxPool + BatchNorm)");
   else if (found_conv_relu_resize(m, l, nl))            strcpy(str, "HLSinf (Conv + ReLu + Resize)");
   else if (found_dense_hlsinf(m, l, nl))                strcpy(str, "HLSinf (Dense)");
-  else if (found_dense_relu(m, l, nl))                  strcpy(str, "HLSinf (Dense + ReLu");
+  else if (found_dense_relu(m, l, nl))                  strcpy(str, "HLSinf (Dense + ReLu)");
   else if (found_conv_softplus_tanh_mult(m, l, nl))     strcpy(str, "HLSinf (Conv + Softplus + Tanh + Mult)");
   else if (found_conv_softplus_tanh_mult_add(m, l, nl)) strcpy(str, "HLSinf (Conv + Softplus + Tanh + Mult + Add)");
   else if (found_conv_leakyrelu(m, l, nl))              strcpy(str, "HLSinf (Conv + LeakyReLu)");
@@ -647,6 +660,7 @@ int get_num_layers_fused(model m, int l, int nl) { // TODO
   if (found_conv_softplus_tanh_mult(m, l, nl)) return 4;
   if (found_conv_softplus_tanh_mult_add(m, l, nl)) return 5;
   if (found_conv_relu_bn_add_upsampling(m, l, nl)) return 5;
+  if (found_pad_conv_relu_maxp(m, l, nl)) return 4;
   printf("error, num layers does not recognize how many\n");
   exit(1);
   return 0;
@@ -661,6 +675,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
     vlayer first;       // first layer
     vlayer last;        // last layer
     layer prev_layer;  // for network building process (previous layer)
+    int first_row_weight_buffer_to_assign = 0;
 
     current_associated_layers = 0;
     for (int x = 0; x < MAX_ASSOCIATED_LAYERS; x++) {
@@ -669,6 +684,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
     }
 
     fpga_init(kernel_version, kernel_subversion);
+    int remaining_rows_weight_buffer = hlsinf_weight_buffer;
 
       // constants
       const int CPI = hlsinf_cpi;
@@ -848,8 +864,15 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
       // Parents
       Layer *first_layer = cl;
       parent.push_back(fn_get_associated_layer(first_layer->parent[0], 1, &dummy));
-      if (add_layer->parent[0] != prev_layer_to_add_layer) parent.push_back(fn_get_associated_layer(add_layer->parent[0], 1, &dummy1));
-      else parent.push_back(fn_get_associated_layer(add_layer->parent[1], 1, &dummy1));
+      printf("associated layer (first) %p\n", fn_get_associated_layer(first_layer->parent[0], 1, &dummy));
+      if (add_layer->parent[0] != prev_layer_to_add_layer) {
+        parent.push_back(fn_get_associated_layer(add_layer->parent[0], 1, &dummy1));
+        printf("associated layer (second) %p\n", fn_get_associated_layer(add_layer->parent[0], 1, &dummy1));
+      }
+      else {
+        parent.push_back(fn_get_associated_layer(add_layer->parent[1], 1, &dummy1));
+        printf("associated layer (second) %p\n", fn_get_associated_layer(add_layer->parent[1], 1, &dummy1));
+      }
     }
 
     Layer *fpga_parent;    // dst parent layer
@@ -864,18 +887,32 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
     int dense_operation;
     if (conv_layer != NULL) dense_operation = 0; else dense_operation = 1;
 
+    // weight buffer use
+    int use_weight_buffer;
+    int first_row_weight_buffer;
+    int rows_weight_buffer_needed = (ichannels / CPI) * (ochannels / CPO);
+    if ((remaining_rows_weight_buffer - rows_weight_buffer_needed) > 0) {
+      use_weight_buffer = 1;
+      first_row_weight_buffer = first_row_weight_buffer_to_assign;
+      first_row_weight_buffer_to_assign = first_row_weight_buffer_to_assign + rows_weight_buffer_needed;
+      remaining_rows_weight_buffer = remaining_rows_weight_buffer - rows_weight_buffer_needed;
+    } else {
+      use_weight_buffer = 0;
+      first_row_weight_buffer = 0;
+    }
+    printf("HLSinf layer, weight buffer: Layer needs %8d weight buffer rows -> use the buffer: %s, remaining rows: %7d\n", rows_weight_buffer_needed, use_weight_buffer?"yes":"no ", remaining_rows_weight_buffer);
+
     if (add_layer != NULL) {
       prev_layer = new LHLSinf(parent, 
                              h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
                              enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp,
-                             enable_batch_norm, enable_add, enable_upscale, dense_operation, str_name, DEV_CPU, mem_level);
+                             enable_batch_norm, enable_add, enable_upscale, dense_operation, use_weight_buffer, first_row_weight_buffer, str_name, DEV_CPU, mem_level);
 
     } else {
       prev_layer = new LHLSinf(fpga_parent, 
                              h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr, enable_relu, relu_factor,
                              enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp,
-                             enable_batch_norm, enable_add, enable_upscale, dense_operation, str_name, DEV_CPU, mem_level);
-
+                             enable_batch_norm, enable_add, enable_upscale, dense_operation, use_weight_buffer, first_row_weight_buffer, str_name, DEV_CPU, mem_level);
     }
 
     int format = 1;
@@ -1139,7 +1176,9 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
 
   // now we create the model
   net = Model({ first }, { last });
-  build(net); 
+  //build(net, nullptr, { "soft_cross_entropy" }, { "categorical_accuracy" }, CS_CPU({1}), false);
+
+  build(net, nullptr, { "soft_cross_entropy" }, { "categorical_accuracy" }, CS_CPU({1}), 0); 
   #ifdef FPGA_DEBUG
   summary(net);
   #endif
@@ -1289,8 +1328,14 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
           layer_dst->filter->fpga_ptr = fpga_create_memory(layer_dst->filter->size*sizeof(float));  
           fpga_copy_memory_to_fpga(layer_dst->filter->ptr, (cl::Buffer *)layer_dst->filter->fpga_ptr, layer_dst->filter->size*sizeof(float));
         } else if (hlsinf_filter_format == HLSINF_API8) {
-          layer_dst->filter->fpga_ptr = fpga_create_memory(layer_dst->filter->size);  
+          layer_dst->filter->fpga_ptr = fpga_create_memory(layer_dst->filter->size * sizeof(ap_int<8>));  
           fpga_copy_memory_to_fpga_and_format(layer_dst->filter->ptr, (cl::Buffer *)layer_dst->filter->fpga_ptr, layer_dst->filter->size, HLSINF_FP32, HLSINF_API8);
+        } else if (hlsinf_filter_format == HLSINF_APF_8_4) {
+          layer_dst->filter->fpga_ptr = fpga_create_memory(layer_dst->filter->size * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));  
+          fpga_copy_memory_to_fpga_and_format(layer_dst->filter->ptr, (cl::Buffer *)layer_dst->filter->fpga_ptr, layer_dst->filter->size, HLSINF_FP32, HLSINF_APF_8_4);
+        } else if (hlsinf_filter_format == HLSINF_APF_16_8) {
+          layer_dst->filter->fpga_ptr = fpga_create_memory(layer_dst->filter->size * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));  
+          fpga_copy_memory_to_fpga_and_format(layer_dst->filter->ptr, (cl::Buffer *)layer_dst->filter->fpga_ptr, layer_dst->filter->size, HLSINF_FP32, HLSINF_APF_16_8);
         } else {
           printf("Error (HLSinf forward), filter format not supported\n");
           exit(1);
@@ -1305,8 +1350,14 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
             layer_dst->bias->fpga_ptr = fpga_create_memory(layer_dst->bias->size*sizeof(float));  
             fpga_copy_memory_to_fpga(layer_dst->bias->ptr, (cl::Buffer *)layer_dst->bias->fpga_ptr, layer_dst->bias->size*sizeof(float));
           } else if (hlsinf_bias_format == HLSINF_API32) {
-            layer_dst->bias->fpga_ptr = fpga_create_memory(layer_dst->bias->size*4);  
+            layer_dst->bias->fpga_ptr = fpga_create_memory(layer_dst->bias->size*sizeof(ap_int<32>));  
             fpga_copy_memory_to_fpga_and_format(layer_dst->bias->ptr, (cl::Buffer *)layer_dst->bias->fpga_ptr, layer_dst->bias->size, HLSINF_FP32, HLSINF_API32);
+          } else if (hlsinf_bias_format == HLSINF_APF_8_4) {
+            layer_dst->bias->fpga_ptr = fpga_create_memory(layer_dst->bias->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));  
+            fpga_copy_memory_to_fpga_and_format(layer_dst->bias->ptr, (cl::Buffer *)layer_dst->bias->fpga_ptr, layer_dst->bias->size, HLSINF_FP32, HLSINF_APF_8_4);
+          } else if (hlsinf_bias_format == HLSINF_APF_16_8) {
+            layer_dst->bias->fpga_ptr = fpga_create_memory(layer_dst->bias->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));  
+            fpga_copy_memory_to_fpga_and_format(layer_dst->bias->ptr, (cl::Buffer *)layer_dst->bias->fpga_ptr, layer_dst->bias->size, HLSINF_FP32, HLSINF_APF_16_8);
           } else {
             printf("Error (HLSinf forward), bias format not supported\n");
             exit(1);

@@ -58,6 +58,8 @@
 #include "eddl/serialization/onnx/layers/auxiliar/constoftensor_onnx.h"
 #include "eddl/serialization/onnx/layers/conv/conv_integer_onnx.h"
 #include "eddl/serialization/onnx/layers/core/matmul_integer_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/quantize_linear_onnx.h"
+#include "eddl/serialization/onnx/layers/auxiliar/dequantize_linear_onnx.h"
 
 /*
  * ONNX IMPORT
@@ -136,6 +138,8 @@ map<string, ONNX_LAYERS> create_enum_map()
   // others
   map_layers["ConvInteger"] = ONNX_LAYERS::CONV_INTEGER;
   map_layers["MatMulInteger"] = ONNX_LAYERS::MATMUL_INTEGER;
+  map_layers["QuantizeLinear"] = ONNX_LAYERS::QUANTIZE_LINEAR;
+  map_layers["DequantizeLinear"] = ONNX_LAYERS::DEQUANTIZE_LINEAR;
 
   return map_layers;
 }
@@ -360,6 +364,12 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       break;
     case ONNX_LAYERS::MATMUL_INTEGER:
       new_layer = build_matmul_integer_layer(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
+      break;
+    case ONNX_LAYERS::QUANTIZE_LINEAR:
+      new_layer = build_quantize_linear_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
+      break;
+    case ONNX_LAYERS::DEQUANTIZE_LINEAR:
+      new_layer = build_dequantize_linear_layer(node, map_init_values, map_init_dims, output_node_map, dev, mem);
       break;
     default: {
         std::cerr << "==================================================================" << std::endl;

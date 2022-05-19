@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
   // forward on FPGA
   reset_profile();
-  forward(net_fpga, {x}); 
+  predict(net_fpga, {x}); 
 
   // output for fpga
   summary(net_fpga);
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
   // forward on CPU
   reset_profile();
-  forward(net, {x}); 
+  predict(net, {x}); 
 
   // output for cpu
   summary(net);
