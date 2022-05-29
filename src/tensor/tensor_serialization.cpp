@@ -42,7 +42,7 @@ using namespace std;
 using std::chrono::high_resolution_clock;
 using std::chrono::duration;
 
-  int DEBUG=0;
+  #define DEBUG 0
 
 // ********* LOAD FUNCTIONS *********
 Tensor* Tensor::load(const string& filename, string format){
