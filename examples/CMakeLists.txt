@@ -26,6 +26,11 @@ target_link_libraries(generic eddl)
 add_executable(generic_distr "nn/6_generic/9_generic_distr.cpp" "nn/6_generic/utils.cpp")
 target_link_libraries(generic_distr eddl)
 
+add_executable(generic_dg "nn/6_generic/10_generic_dg.cpp" "nn/6_generic/utils.cpp")
+target_link_libraries(generic_dg eddl)
+#distributed
+add_executable(generic_dg_distr "nn/6_generic/10_generic_dg_distr.cpp" "nn/6_generic/utils.cpp")
+target_link_libraries(generic_dg_distr eddl)
 
 # EXAMPLES: MNIST ****************************************************
 add_executable(mnist_mlp "nn/1_mnist/1_mnist_mlp.cpp")

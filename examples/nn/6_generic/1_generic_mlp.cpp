@@ -73,7 +73,8 @@ int main(int argc, char **argv) {
     int ptmodel=1;
     bool use_cpu=false;
     int use_mpi=0;
-
+    int dgt=0;
+    
     sprintf(pdf_name, "%s.pdf", model_name);
     sprintf(onnx_name, "%s.onnx", model_name);
 
@@ -82,7 +83,7 @@ int main(int argc, char **argv) {
             &epochs, &batch_size, &num_classes, &channels, &width, &height, &lr,
             &method, &initial_mpi_avg,
             &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file,
-            &use_cpu, &use_mpi);
+            &use_cpu, &use_mpi, &dgt);
     
     // download CIFAR data
     //download_cifar10();

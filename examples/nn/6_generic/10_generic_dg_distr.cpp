@@ -30,11 +30,15 @@ using namespace eddl;
 using namespace std;
 using namespace std::chrono;
 
+ char jpgfile[128];
+    char txtfile[128];
+
+
 layer DataAugmentation(layer l) {
     // Data augmentation/
-    //    l = RandomCropScale(l, {0.8f, 1.0f});
-    //    l = RandomFlip(l,1);
-    //    l = RandomShift(l, {-0.1,0.1},{-0.1, 0.1});
+    l = RandomCropScale(l, {0.9f, 1.0f});
+    l = RandomVerticalFlip(l);
+    //l = RandomShift(l, {-0.05,0.05},{-0.05, 0.05});    
     l = RandomRotation(l,{-10, 10});
     return l;
 }
@@ -105,6 +109,7 @@ model vgg16bn(vector<int> in_shape, int num_classes, int size1, int size2) {
     // Data augmentation
     //l= DataAugmentation(l);
     //l=Bypass(l,"bypass");
+    l = BatchNormalization(l);
 
     l = MaxPool(Block3_2(l, 64));
     l = MaxPool(Block3_2(l, 128));
@@ -298,10 +303,11 @@ model select_model(int choice, vector<int> in_shape, int num_classes, int size1,
     return net;
 }
 
-void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int batch, int epochs, int divide_batch, bool distr_dataset = false) {
+void train_epoch(model danet, model net, Tensor* x_train, Tensor* y_train,  Tensor* xbatch, Tensor* ybatch, int nbpp, int local_batch, bool data_generator, bool distr_dataset = false) {
 
     int i, j;
     int id = get_id_distributed();
+    /*
     int n_procs = get_n_procs_distributed();
 
     tshape s = x_train->getShape();
@@ -315,8 +321,8 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
     int local_batch;
     int global_batch;
     int nbpp;
-
-
+    */
+    int epochs=1;
 
     /*
     if (distr_dataset){
@@ -339,31 +345,60 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
         mpi_id0(printf("custom_fit. Mul batch: global: %d, local: %d\n", local_batch*n_procs, local_batch));
     }
      */
-
-    set_batch_distributed(&global_batch, &local_batch, batch, divide_batch);
-    nbpp = set_NBPP_distributed(dataset_size, local_batch, distr_dataset);
-
-    Tensor* xbatch = new Tensor({local_batch, channels, width, height});
-    Tensor* ybatch = new Tensor({local_batch, num_classes});
-
+ 
 
     for (i = 0; i < epochs; i++) {
         high_resolution_clock::time_point e1 = high_resolution_clock::now();
         reset_loss(net);
-        mpi_id0(printf("custom_fit. Epoch %d/%d\n", i + 1, epochs));
+        mpi_id0(printf("train_epoch. Epoch %d/%d\n", i + 1, epochs));
         double tbsecs = 0;
+        double tbgsecs = 0;
         double awsecs = 0;
         for (j = 0; j < nbpp; j++) {
-            TIME_POINT1(train);
-            next_batch({x_train, y_train},
-            {
-                xbatch, ybatch
-            });
+             TIME_POINT1(load);
+            
+            if (data_generator) {
+                get_batch(xbatch, ybatch);
+                xbatch->div_(255.0f);
+            } else {
+                next_batch({x_train, y_train},{xbatch, ybatch});
+            }
+             TIME_POINT2(load, tbgsecs);
+             TIME_POINT1(train);
+          
+             if ((1)&(j < 2)) {
+//            if ((1)) {
+                Tensor* xout = xbatch->select({"0",":"});
+                Tensor* yout = ybatch->select({"0"});
+                xout->mult_(255.0f);
+                
+                sprintf(jpgfile, "file%d.jpg", j);
+                sprintf(txtfile, "file%d.txt", j);
+                xout->save(jpgfile);
+                yout->save(txtfile);
+                delete xout;
+                delete yout;
+            }
+            
             // DA
             forward(danet, vector<Tensor *>{xbatch});
             // get COPIES of tensors from DA
             layer output_da = getLayer(danet, "bypass1");
             Tensor* xbatch_da = getOutput(output_da);
+            
+             if ((1)&(j < 2)) {
+//            if ((1)) {
+                Tensor* xout = xbatch_da->select({"0"});
+                Tensor* yout = ybatch->select({"0"});
+                xout->mult_(255.0f);
+                sprintf(jpgfile, "file_aug%d.jpg", j);
+                sprintf(txtfile, "file_aug%d.txt", j);
+                xout->save(jpgfile);
+                yout->save(txtfile);
+                delete xout;
+                delete yout;
+            }
+            
             train_batch(net,{xbatch_da},
             {
                 ybatch
@@ -374,8 +409,10 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
             avg_weights_distributed(net, j + 1, nbpp);
             TIME_POINT2(avg_w, awsecs);
             print_loss(net, j + 1, false);
-            mpi_id0(printf(" Avg elapsed time: train %1.4f secs; comms %1.4f\n", tbsecs / (j + 1), awsecs / (j + 1)));
+            int batches_processed = j+1;
+            mpi_id0(printf(" Avg elapsed time: load % 1.4f train %1.4f secs; comms %1.4f\n", tbgsecs / batches_processed, tbsecs / batches_processed, awsecs / batches_processed));
             mpi_id0(printf("\r"););
+            delete xbatch_da;
             //printf("Proc %d, j=%d\n", id, j);
         }
         mpi_id0(printf("\n"));
@@ -393,9 +430,56 @@ void custom_fit(model danet, model net, Tensor* x_train, Tensor* y_train, int ba
     mpi_id0(printf("\n"));
     mpi_id0(fflush(stdout));
 
-    delete xbatch;
-    delete ybatch;
+   
 
+}
+
+
+void eval_epoch (model net, Tensor* x_test, Tensor* y_test,  Tensor* xbatch, Tensor* ybatch, int nbpp, int local_batch, bool data_generator, bool distr_dataset = false) {
+
+    int i, j, k;
+    int id = get_id_distributed();
+   
+
+
+    vind sind;
+    if (data_generator==false) {
+    for (k = 0; k < local_batch; k++)
+        sind.push_back(0);
+    }
+
+    reset_loss(net);
+    mpi_id0(printf("eval_epoch\n"));
+    for (j = 0; j < nbpp; j++) {
+        if (data_generator) {
+            get_batch(xbatch, ybatch);
+            xbatch->div_(255.0f);
+            eval_batch(net,{xbatch},{ybatch});
+        } else {
+            for (k = 0; k < local_batch; k++) {
+                if (distr_dataset)
+                    sind [k] = (j * local_batch) + k;
+                else
+                    sind [k] = (((id * nbpp) + j) * local_batch) + k;
+                //printf("id=%d  %5d",id, sind[k]);
+            }
+            eval_batch(net,{x_test},{y_test}, sind);
+        }
+        
+        //         print_loss(batches, num_batches);
+        print_loss(net, j + 1, false);
+        mpi_id0(fprintf(stdout, "\r"));
+        mpi_id0(fflush(stdout));
+    }
+    // sync processes and print final results
+    avg_metrics_distributed(net);
+    print_loss(net, nbpp, false);
+    mpi_id0(printf("\n"));
+    mpi_id0(fflush(stdout));
+
+    // if (early_stopping_on_loss_var (net, 0, 10, 0.1, i)) break;
+    //if (early_stopping_on_metric_var (net, 0, 0.0001, 2, i)) break;
+    //if (early_stopping_on_metric (net, 0, 0.97, 2, i)) break;
 }
 
 void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool divide_batch, bool distr_dataset = false) {
@@ -425,6 +509,7 @@ void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool 
     reset_loss(net);
     mpi_id0(printf("custom_evaluate\n"));
     for (j = 0; j < nbpp; j++) {
+        
         for (k = 0; k < local_batch; k++) {
             if (distr_dataset)
                 sind [k] = (j * local_batch) + k;
@@ -458,7 +543,7 @@ int main(int argc, char **argv) {
     char pdf_name[128];
     char import_onnx[128];
     char test_file[128];
-
+    
 
     char path[256] = "";
     char tr_images[256];
@@ -483,6 +568,13 @@ int main(int argc, char **argv) {
     bool use_cpu = false;
     int use_mpi = false;
      int dgt=0;
+     bool use_dg;
+     
+    int dataset_size=0;
+    int num_batches;
+    int local_batch;
+    int global_batch;
+    int nbpp;
 
     double secs;
     double secs_epoch;
@@ -509,6 +601,9 @@ int main(int argc, char **argv) {
             &chunks, &use_bi8, &use_distr_dataset, &ptmodel, test_file,
             &use_cpu, &use_mpi, &dgt);
 
+    use_dg=dgt>0;
+   
+    
     // Init distribuited training
     if (use_mpi==1)
         id = init_distributed("MPI");
@@ -627,6 +722,7 @@ int main(int argc, char **argv) {
     //    test_only=1;
     //}
 
+    
     if (test_only == 0) {
         // Later, we fill the training dataset
         Tensor* x_train;
@@ -635,14 +731,30 @@ int main(int argc, char **argv) {
         bcast_weights_distributed(net);
 
         if (chunks == 1) {
-            /* Load dataset */
-            x_train = Tensor::load(tr_images);
-            y_train = Tensor::load(tr_labels);
-            x_train->div_(255.0f);
-
+            /* Load dataset */       
+            if (use_dg == 0) {
+                x_train = Tensor::load(tr_images);
+                y_train = Tensor::load(tr_labels);
+                x_train->div_(255.0f);
+                tshape s = x_train->getShape();
+                dataset_size = s[0];
+            }
+            set_batch_distributed(&global_batch, &local_batch, batch_size, DIV_BATCH);
+            Tensor* xbatch = new Tensor({local_batch, channels, height, width});
+            Tensor* ybatch = new Tensor({local_batch, num_classes});
+            if (use_dg){
+                int num_batches;
+                prepare_data_generator(tr_images, tr_labels, local_batch, &dataset_size, &num_batches, true, dgt, 8);
+            }
+            nbpp = set_NBPP_distributed(dataset_size, local_batch, use_distr_dataset);
+   
+           
             for (int epoch = 0; epoch < epochs; epoch++) {
                 mpi_id0(printf("== Epoch %d/%d ===\n", epoch + 1, epochs));
                 //for (int chunk = 0; chunk < chunks; chunk++) {
+                if (use_dg)
+                    start_data_generator();
+                
                 int chunk = 0;
                 //    mpi_id0(printf("-- Chunk %d/%d ---\n", chunk + 1, chunks));
                 if (use_distr_dataset) { /* Distribute dataset into processes */
@@ -670,10 +782,7 @@ int main(int argc, char **argv) {
                 //mpi_id0(printf("CUSTOM FIT Mul :\n"));        
                 //custom_fit(net,{x_train},{y_train},batch_size, epochs, false, use_distr_dataset);
                 
-                TIMED_EXEC("CUSTOM FIT DIV_BATCH", custom_fit(danet, net,{x_train},
-                {
-                    y_train
-                }, batch_size, 1, DIV_BATCH, use_distr_dataset), secs_epoch);
+                TIMED_EXEC("CUSTOM TRAIN_BATCH", train_epoch(danet, net,{x_train},{y_train},{xbatch},{ybatch}, nbpp, local_batch, use_dg, use_distr_dataset), secs_epoch);
                 
                 /*
                 TIMED_EXEC("CUSTOM FIT MUL_BATCH", custom_fit(danet, net,{x_train},
@@ -689,9 +798,10 @@ int main(int argc, char **argv) {
                 TIMED_EXEC("DISTR EVALUATE", evaluate_distr(net,{x_test},
                 {
                     y_test
-                }), secs);
-
+                }), secs);              
                 barrier_distributed();
+                 
+                               
                 if (id == 0) {
                     // Get the current losses and metrics
                     curr_loss = get_losses(net)[0];
@@ -727,96 +837,22 @@ int main(int argc, char **argv) {
                     }
                 }
                 barrier_distributed();
+                if (use_dg)
+                    stop_data_generator();
             }
 
-            delete x_train;
-            delete y_train;
+            delete xbatch;
+            delete ybatch;
+            if (use_dg) {
+                delete x_train;
+                delete y_train;
+            }
         } else { // Chunks>1
-            for (int epoch = 0; epoch < epochs; epoch++) {
-                mpi_id0(printf("== Epoch %d/%d ===\n", epoch + 1, epochs));
-                for (int chunk = 0; chunk < chunks; chunk++) {
-                    mpi_id0(printf("-- Chunk %d/%d ---\n", chunk + 1, chunks));
-                    if (use_distr_dataset) { /* Distribute dataset into processes */
-                        sprintf(tr_images, "%s/%03d/train-images.bi8", path, id * chunks + chunk);
-                        sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, id * chunks + chunk);
-                    } else {
-                        if (chunks == 1) {
-                            sprintf(tr_images, "%s/train-images.bi8", path);
-                            sprintf(tr_labels, "%s/train-labels.bi8", path);
-                        } else {
-                            sprintf(tr_images, "%s/%03d/train-images.bi8", path, chunk);
-                            sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
-                        }
-                    }
-                    if (id == 0) {
-                        //printf("Train: %s, %s\n ", tr_images, tr_labels);
-                        //printf("Val: %s, %s\n", ts_images, ts_labels);
-                    }
-                    /* Load dataset */
-                    x_train = Tensor::load(tr_images);
-                    y_train = Tensor::load(tr_labels);
-                    x_train->div_(255.0f);
-
-
-                    // Train
-                    // printf("FIT:\n");
-                    //fit(net,{x_train},{y_train}, batch_size, epochs);
-
-                    //mpi_id0(printf("CUSTOM FIT Mul :\n"));        
-                    //custom_fit(net,{x_train},{y_train},batch_size, epochs, false, use_distr_dataset);
-                    TIMED_EXEC("CUSTOM FIT DIV_BATCH", custom_fit(danet, net,{x_train},
-                    {
-                        y_train
-                    }, batch_size, 1, DIV_BATCH, use_distr_dataset), secs_epoch);
-
-                    delete x_train;
-                    delete y_train;
-                }
-                update_batch_avg_distributed(epoch, secs_epoch, 1000);
-                barrier_distributed();
-
-                TIMED_EXEC("DISTR EVALUATE", evaluate_distr(net,{x_test},
-                {
-                    y_test
-                }), secs);
-
-                barrier_distributed();
-                if (id == 0) {
-                    // Get the current losses and metrics
-                    curr_loss = get_losses(net)[0];
-                    curr_acc = get_metrics(net)[0];
-                    // Check if we have to save the current model as ONNX
-                    if (curr_loss < best_loss || curr_acc > best_acc) {
-                        // Prepare the onnx file name
-                        char onnx_name[128];
-                        sprintf(onnx_name, "%s_epoch%d_loss-%1.2f_acc-%.3f", model_name, epoch, curr_loss, curr_acc);
-
-                        // Update the current best metrics and finish ONNX file name
-                        char onnx_fname[128];
-                        char weights_fname[128];
-                        if (curr_loss >= best_loss) { // Only improves acc
-                            best_acc = curr_acc;
-                            sprintf(weights_fname, "%s_by-acc.bin", onnx_name);
-                            sprintf(onnx_fname, "%s_by-acc.onnx", onnx_name);
-                            std::cout << "New best model by acc: \"" << onnx_fname << "\"\n\n";
-                        } else if (curr_acc <= best_acc) { // Only improves loss
-                            best_loss = curr_loss;
-                            sprintf(weights_fname, "%s_by-loss.bin", onnx_name);
-                            sprintf(onnx_fname, "%s_by-loss.onnx", onnx_name);
-                            std::cout << "New best model by loss: \"" << onnx_fname << "\"\n\n";
-                        } else { // Improves loss and acc
-                            best_acc = curr_acc;
-                            best_loss = curr_loss;
-                            sprintf(weights_fname, "%s_by-loss-and-acc.bin", onnx_name);
-                            sprintf(onnx_fname, "%s_by-loss-and-acc.onnx", onnx_name);
-                            std::cout << "New best model by loss and acc: \"" << onnx_fname << "\"\n\n";
-                        }
-                        //save(net, weights_fname);
-                        //save_net_to_onnx_file(net, onnx_fname);
-                    }
-                }
-                barrier_distributed();
-            }
+            printf("Chunks not supported\n");
+            exit(1);
+                
+                  
+            
         }
 
     } else {
@@ -842,12 +878,14 @@ int main(int argc, char **argv) {
     //if (id==0)
     //    save_net_to_onnx_file (net,onnx_name);   
 
+  
     //delete x_train;
     //delete y_train;
     delete x_test;
     delete y_test;
     delete net;
 
+    end_data_generator;
     end_distributed();
 
     return EXIT_SUCCESS;

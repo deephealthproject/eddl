@@ -111,12 +111,18 @@ int main(int argc, char **argv) {
     Tensor* y_test = Tensor::load("val-labels.bi8");
 
     int num_batches;
-    if (use_dg)
-        prepare_data_generator("train-images.bi8", "train-labels.bi8", batch_size, &num_batches, use_dg_perfect, 2, 8);
+    int dataset_size;
+    
+    if (use_dg){
+      prepare_data_generator("train-images.bi8", "train-labels.bi8", batch_size, &dataset_size, &num_batches, use_dg_perfect, 2, 8);
+    }
 
-    Tensor* xbatch = new Tensor({batch_size, channels, height, width});
-    Tensor* ybatch = new Tensor({batch_size, num_classes});
-
+    Tensor* xbatch ;
+    Tensor* ybatch;
+   
+        xbatch = Tensor::empty({batch_size, channels, height, width});
+        ybatch = Tensor::empty({batch_size, num_classes});
+   
     if (testing) {
         std::string _range_ = "0:" + std::to_string(2 * batch_size);
         Tensor* x_mini_train = x_train->select({_range_, ":"});
@@ -161,10 +167,13 @@ int main(int argc, char **argv) {
 
             if (use_dg) {
                 get_batch(xbatch, ybatch);
+               
                 xbatch->div_(255.0f);
             }
 
-            if (j < 5) {
+            
+            if ((1)&(j < 5)) {
+//            if ((1)) {
                 Tensor* xout = xbatch->select({"0"});
                 Tensor* yout = ybatch->select({"0"});
                 xout->mult_(255.0f);
@@ -176,7 +185,7 @@ int main(int argc, char **argv) {
                 delete yout;
             }
             
-            //fprintf(stderr, "Buffer count %d\n", get_buffer_count());
+           // fprintf(stderr, "Buffer count %d\n", get_buffer_count());
             if (use_dg == 0) {
                 next_batch({x_train, y_train}, {xbatch, ybatch});
             }
@@ -186,6 +195,7 @@ int main(int argc, char **argv) {
             printf("\r");
 
         }
+      
         printf("\n");
         if (early_stopping_on_loss_var(net, 0, 10, 0.1, i)) break;
         //if (early_stopping_on_metric_var (net, 0, 0.0001, 2, i)) break;
@@ -408,10 +418,12 @@ int main(int argc, char **argv) {
     }
     cout << endl;
 
-    delete xbatch;
-    delete ybatch;
+    if (use_dg == 0) {
+        delete xbatch;
+        delete ybatch;
+    }
 
-    if (use_dg==0) {
+    if (use_dg == 0) {
         delete x_train;
         delete y_train;
     }

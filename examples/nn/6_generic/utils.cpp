@@ -20,7 +20,7 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
         int* channels, int* width, int* height,
         float* lr, int* method, int* initial_mpi_avg, int* chunks, int* use_bi8,
         int* use_distr_dataset, int* ptmodel, char* test_file,
-        bool* use_cpu, int* use_mpi) {
+        bool* use_cpu, int* use_mpi, int* dgt) {
 
     int argn;
     char *uso =
@@ -30,6 +30,7 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
             "\t -d (distr dataset) -8 (8-bit dataset bin format)\n"
             "\t -n pre-trained-model -t model-file-to-test \n"
             "\t --cpu (use cpu instead of gpu) --mpi (use mpi instead of NCCL) --nca (use mpi NON CUDA aware) \n"
+            "\t --dgt (data generator threads) \n"
             "";
 
     argn = 1;
@@ -145,6 +146,12 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
             printf("use mpi:'%s'\n", "yes");
         } else if (!strncmp(argv[argn], "--nca", 5)) {
             *use_mpi = 2;
+            printf("use mpi-non cuda aware:'%s'\n", "yes");
+        } else if (!strncmp(argv[argn], "--dgt", 5)) {
+            argn++;
+            if (argn == argc)
+                error_fatal(uso, argv[0]);
+            *dgt = atoi(argv[argn]);
             printf("use mpi-non cuda aware:'%s'\n", "yes");
         } else {
             fprintf(stderr, "Error: %s. invalid argument\n", argv[argn]);

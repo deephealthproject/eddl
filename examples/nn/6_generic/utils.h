@@ -48,7 +48,7 @@ void process_arguments(int argc, char** argv, char* path, char* tr_images,
         int* channels, int* width, int* height,
         float* lr, int* method, int* initial_mpi_avg, int* chunks, int* use_bi8,
         int* use_distr_dataset, int* ptmodel, char* test_file,
-        bool* use_cpu, int* use_mpi);
+        bool* use_cpu, int* use_mpi, int* dgt);
 
 
 #endif /* UTILS_EXAMPLES_H */

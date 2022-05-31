@@ -125,7 +125,8 @@ cudaStream_t cuda_stream;
 #define MAX_BUFFER 1024
 #define MAX_DG_THREADS 32
 int DEBUG=0;
-
+// undefine to avoid discarding items not multiple of bs
+#define TRUNC_DATASET
 
 FILE* fpX;
 FILE* fpY;
@@ -139,7 +140,7 @@ sem_t vaciar;
 sem_t imprimir;
 pthread_t t[MAX_DG_THREADS];
 
-int dataset_size;
+int dg_dataset_size;
 int ndimX;
 int ndimY;
 int shape_sizeX;
@@ -149,8 +150,8 @@ int dg_batch_size=0;
 int dg_num_batches;
 int dg_buffer_size=0;
 int dg_num_threads;
-float* bufferX;
-float* bufferY;
+Tensor* bufferX[MAX_BUFFER];
+Tensor* bufferY[MAX_BUFFER];
 int* list;
 bool dg_perfect=false;
 bool first_epoch=true;
@@ -158,7 +159,7 @@ char tmp_name[128]="/tmp/eddl_dg.txt";
  FILE* tmp_fp;
 // For debugging purposes
 //#define DEBUG_DONE 
-size_t n_sizeX;
+  size_t n_sizeX;
 size_t n_sizeY;
  unsigned char* bytesX;
  unsigned char* bytesY;
@@ -551,7 +552,11 @@ int set_NBPP_distributed(int ds_size, int local_batch, bool method) {
     check_MPI();
     //id = get_id_distributed();
     //n_procs = get_n_procs_distributed();  
-    num_batches = ds_size / local_batch;
+    #ifdef TRUNC_DATASET    
+    num_batches = ds_size/local_batch;
+#else
+    num_batches = ceil((float) ds_size/(float) local_batch);
+#endif
     if (method == NO_DISTR_DS) {
         nbpp = num_batches / n_procs;
     } else if (method == DISTR_DS) {
@@ -1189,71 +1194,6 @@ void gen_unique_random_list_LFSR(int* vektor, int n) {
 }
 
 
-void loadXY(int buffer_index, int ds_ptr) {
-      
-        unsigned char bytesX[n_sizeX];
-        unsigned char bytesY[n_sizeY];
-	int i,j,index;
-        int err;
-        long int pos;
-        off_t posX, posY;
-       
-        size_t n_read;
-        // Random batches of sequential items
-
-    //printf("%s ds_ptr=%ld", __func__, ds_ptr);
-   
-
-    pos = rand() % dg_num_batches;
-    //pos=list[0];
-    //pos=0;
-
-#ifdef DEBUG_DONE
-    done_batches[pos] += 1;
-#endif 
-    posX = (off_t) (ndimX + 1) * sizeof (int)+(off_t) pos * n_sizeX * sizeof (unsigned char);
-    //printf("%s ds_ptr=%d pos=%ld  \n", __func__, ds_ptr, list[ds_ptr]);
-    err = fseeko(fpX, posX, SEEK_SET);
-    if (err) {
-        msg("Error fseek ", __func__);
-    }
-    
-    n_read = fread(bytesX, sizeof (unsigned char), n_sizeX, fpX);
-    if (n_read != n_sizeX) {
-        msg("Error fread ", __func__);
-    }
-
-    //printf("%s count=%d buffer_index=%d ptr_out=%d pos=%ld\n",__func__,buffer_count,buffer_index,ptr_out,pos);
-    if (DEBUG) printf("LOAD:");
-    for (i = 0; i < dg_batch_size; i++) {
-        for (j = 0; j < shape_sizeX; j++) {
-            index = buffer_index * n_sizeX + i * shape_sizeX + j;
-            bufferX[index] = (float) bytesX[i * shape_sizeX + j];
-            if (DEBUG) printf("[%d %3.1f ] ", index, bufferX[index]);
-        }
-    }
-    if (DEBUG) printf("\n");
-    posY = (off_t) (ndimY + 1) * sizeof (int)+(off_t) pos * n_sizeY * sizeof (unsigned char);
-
-    //printf("%s pos=%ld \n", __func__, pos);
-    err = fseeko(fpY, posY, SEEK_SET);
-    if (err)
-        msg("Error fseek ", __func__);
-    n_read = fread(bytesY, sizeof (unsigned char), n_sizeY, fpY);
-    if (n_read != n_sizeY) {
-        msg("Error fread ", __func__);
-    }
-    if (DEBUG) printf("LOAD:");
-    for (i = 0; i < dg_batch_size; i++) {
-        for (j = 0; j < shape_sizeY; j++) {
-            index = buffer_index * n_sizeY + i * shape_sizeY + j;
-            bufferY[index] = (float) bytesY[i * shape_sizeY + j];
-            if (DEBUG) printf("[%d %3.1f ] ", index, bufferY[index]);
-        }
-    }
-    if (DEBUG) printf("\n");
-
-}
 
 void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
    
@@ -1271,13 +1211,13 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
     bytesX=(unsigned char*) malloc(n_sizeX);
     bytesY=(unsigned char*) malloc(n_sizeY);
     
-    //printf("%s ds_ptr=%ld", __func__, ds_ptr);
+  //  printf("%s ds_ptr=%ld", __func__, ds_ptr);
     if (perfect)
         pos = list[ds_ptr];
     else {
         pos = rand() % dg_num_batches;
     }
-    //fprintf(tmp_fp,"%s sizeof(size_t)=%d perfect=%d buffer_index=%d num_batches=%d sizes= %ld %ld pos=%d\n", __func__, sizeof(size_t), perfect, buffer_index, dg_num_batches, n_sizeX, n_sizeY,pos);
+   // fprintf(tmp_fp,"%s sizeof(size_t)=%d perfect=%d buffer_index=%d num_batches=%d sizes= %ld %ld pos=%d\n", __func__, sizeof(size_t), perfect, buffer_index, dg_num_batches, n_sizeX, n_sizeY,pos);
     //fflush(tmp_fp);
     //pos=0;
 
@@ -1294,20 +1234,26 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
 
     n_read = fread(bytesX, sizeof (unsigned char), n_sizeX, fpX);
     if (n_read != n_sizeX) {
+#ifdef TRUNC_DATASET 
         printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeX);
-              msg("Error freadX ", __func__);
+        msg("Error freadX ", __func__);
+#else
+        // Change size
+        bufferY[buffer_index]->shape[0] = n_read / shape_sizeX;
+#endif
+
     }
 
-     
+    
 
     //printf("%s count=%d buffer_index=%d ptr_out=%d pos=%ld\n",__func__,buffer_count,buffer_index,ptr_out,pos);
     if (DEBUG) 
         printf("LOAD:");
-    #pragma omp parallel for private(j,index)  
+    //#pragma omp parallel for private(j,index)  
     for (i = 0; i < dg_batch_size; i++) {
         for (j = 0; j < shape_sizeX; j++) {
-            index = buffer_index * n_sizeX + i * shape_sizeX + j;
-            bufferX[index] = (float) bytesX[i * shape_sizeX + j];
+            index =  i * shape_sizeX + j;
+            bufferX[buffer_index]->ptr[index] = (float) bytesX[index];
             //if (DEBUG)
                // printf("[%d %3.1f ] ", index, bufferX[index]);
         }
@@ -1315,22 +1261,28 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
     if (DEBUG) printf("\n");
     posY = (off_t) (ndimY + 1) * sizeof (int)+(off_t) pos * n_sizeY * sizeof (unsigned char);
 
- 
+
     //printf("%s pos=%ld \n", __func__, pos);
     err = fseeko(fpY, posY, SEEK_SET);
     if (err)
         msg("Error fseek ", __func__);
     n_read = fread(bytesY, sizeof (unsigned char), n_sizeY, fpY);
     if (n_read != n_sizeY) {
-        printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeX);
+#ifdef TRUNC_DATASET 
+        printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeY);
         msg("Error freadY ", __func__);
+#else
+        // Change size
+        bufferY[buffer_index]->shape[0] = n_read / shape_sizeY;
+#endif
+
     }
     if (DEBUG) printf("LOAD:");
     #pragma omp parallel for private(j,index) 
     for (i = 0; i < dg_batch_size; i++) {
         for (j = 0; j < shape_sizeY; j++) {
-            index = buffer_index * n_sizeY + i * shape_sizeY + j;
-            bufferY[index] = (float) bytesY[i * shape_sizeY + j];
+            index =  i * shape_sizeY + j;
+            bufferY[buffer_index]->ptr[index] = (float) bytesY[index];
 //            bufferY[index] = (float) 0;
             //if (DEBUG) 
               //  printf("[%d %3.1f ] ", index, bufferY[index]);
@@ -1342,6 +1294,7 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
     
 }
 
+/*
 void loadXY_Rand(int buffer_index) {
     unsigned char bytesX[shape_sizeX];
     unsigned char bytesY[shape_sizeY];
@@ -1373,6 +1326,7 @@ void loadXY_Rand(int buffer_index) {
     }
 }
 
+
 void load(FILE* fp, int ndim, int shape, long record, float* buffer, int buffer_index) {
 	unsigned char bytes[shape*dg_batch_size];
 	int i,j,index;
@@ -1399,7 +1353,7 @@ void load(FILE* fp, int ndim, int shape, long record, float* buffer, int buffer_
 	if (DEBUG) printf("\n");
 //	sem_post(&imprimir);
 }
-
+*/
 
 
 void copy_from_buffer(float* buffer, int buffer_index, int shape, float* batch) {
@@ -1499,11 +1453,21 @@ void* get_batch(Tensor* in, Tensor* out) {
     //printf("%s running\n", __func__);
     sem_wait(&vaciar);
 
-    //printf("%s ptr_out %d count= %d\n", __func__, ptr_out, buffer_count);
-
+  
+  //  fprintf(tmp_fp,"%s ptr_out %d count= %d\n", __func__, ptr_out, buffer_count);
+  //fflush(tmp_fp);  
+  
+  Tensor::copy(bufferX[ptr_out],in);
+  Tensor::copy(bufferY[ptr_out],out);
+  
     
-    copy_from_buffer(bufferX, ptr_out, shape_sizeX, in->ptr);
-    copy_from_buffer(bufferY, ptr_out, shape_sizeY, out->ptr);
+  //in->reallocate(bufferX[ptr_out]);
+  //out->reallocate(bufferY[ptr_out]);
+    //in->ptr = bufferX[ptr_out]->ptr;
+    //out->ptr = bufferY[ptr_out]->ptr;
+    
+    //copy_from_buffer(bufferX, ptr_out, shape_sizeX, in->ptr);
+    //copy_from_buffer(bufferY, ptr_out, shape_sizeY, out->ptr);
   
     //printf("COPY FROM BUFFER");
     /*
@@ -1525,7 +1489,7 @@ void* get_batch(Tensor* in, Tensor* out) {
     
 }
 
-void prepare_data_generator(const string &filenameX, const string &filenameY, int bs, int* num_batches,  bool perfect, int num_threads, int buffer_size) {
+void prepare_data_generator(const string &filenameX, const string &filenameY, int bs, int* dataset_size, int* num_batches,  bool perfect, int num_threads, int buffer_size) {
     int check_ds_size = 0;
     size_t memsizeX =0;
     size_t memsizeY =0;
@@ -1552,18 +1516,25 @@ void prepare_data_generator(const string &filenameX, const string &filenameY, in
     vector<int> r_shapeX(ndimX);
 
     fread(r_shapeX.data(), sizeof (int), ndimX, fpX);
-    dataset_size = r_shapeX[0];
+    dg_dataset_size = r_shapeX[0];
+    *dataset_size = r_shapeX[0];
     //printf("%s %d\n", __func__, dataset_size);
     shape_sizeX = 1;
     for (int i = 1; i < ndimX; i++) {
         shape_sizeX *= r_shapeX[i];
     }
+    // Force bs length in shape:
+    r_shapeX[0]=dg_batch_size;
+
     n_sizeX = shape_sizeX*dg_batch_size;
-    
-    dg_num_batches = dataset_size/dg_batch_size;
+#ifdef TRUNC_DATASET    
+    dg_num_batches = dg_dataset_size/dg_batch_size;
+#else
+    dg_num_batches = ceil((float) dg_dataset_size/(float) dg_batch_size);
+#endif
     *num_batches = dg_num_batches;
     
-    printf("[DISTR] %s. filenameX: %s shape_sizeX=%d dataset_size=%d num_batches=%d\n",__func__, filenameX.c_str(), shape_sizeX, dataset_size, dg_num_batches );
+    printf("[DISTR] %s. filenameX: %s shape_sizeX=%d dataset_size=%d num_batches=%d\n",__func__, filenameX.c_str(), shape_sizeX, dg_dataset_size, dg_num_batches );
     
     fpY = fopen(filenameY.c_str(), "r");
     if (fpY == NULL)
@@ -1576,25 +1547,20 @@ void prepare_data_generator(const string &filenameX, const string &filenameY, in
     for (int i = 1; i < ndimY; i++) {
         shape_sizeY *= r_shapeY[i];
     }
+    // Force bs length in shape:
+    r_shapeY[0]=dg_batch_size;
     n_sizeY = shape_sizeY*dg_batch_size;
     
     printf("[DISTR] %s. filenameY: %s shape_sizeY=%d dataset_size=%d\n",__func__, filenameY.c_str(), shape_sizeY, check_ds_size );
     
+    for (int i; i< dg_buffer_size; i++) {
+        bufferX[i] = new Tensor(r_shapeX);
+        bufferY[i] = new Tensor(r_shapeY);
+    }
     memsizeX = dg_buffer_size * n_sizeX * sizeof (float);
-    bufferX = (float*) malloc(memsizeX);
-     if (bufferX==NULL)
-        msg("Error in malloc (bufferX)", __func__); // Exits
-    //printf("%s memsize bufferX= %d\n", __func__, mem_size);
     memsizeY = dg_buffer_size * n_sizeY * sizeof (float);
-    bufferY = (float*) malloc(memsizeY);
-    if (bufferY==NULL)
-        msg("Error in malloc (bufferY)", __func__); // Exits
-    //printf("%s memsize bufferY= %d\n", __func__, mem_size);
-    // Force bs length in shape:
-    //r_shapeX[0] = bs;
-    //r_shapeY[0] = bs;
     
-    if (dataset_size != check_ds_size)
+    if (dg_dataset_size != check_ds_size)
         msg("Error dataset sizes X and Y are different", __func__); // Exits
  
     
@@ -1609,7 +1575,7 @@ void prepare_data_generator(const string &filenameX, const string &filenameY, in
     
 #ifdef DEBUG_DONE
     done_batches = (int*) malloc(dg_num_batches * sizeof (int));
-    done_images = (int*) malloc(dataset_size * sizeof (int));
+    done_images = (int*) malloc(dg_dataset_size * sizeof (int));
 #endif
     srand(id*time(NULL));
      //printf("[DISTR] %s OK\n", __func__);
@@ -1628,45 +1594,43 @@ void prepare_data_generator(const string &filenameX, const string &filenameY, in
 
 }
 
-void start_data_generator(){
+void start_data_generator() {
 
-    int err; 
-    
-    
-        buffer_count=0;
-        ptr_in=0;
-        ptr_out=0;
-        ds_ptr=0;
-        if (dg_perfect) {
-            gen_unique_random_list(list, dg_num_batches);
-        }
+    int err;
+
+    buffer_count = 0;
+    ptr_in = 0;
+    ptr_out = 0;
+    ds_ptr = 0;
+    if (dg_perfect) {
+        gen_unique_random_list(list, dg_num_batches);
+    }
 #ifdef DEBUG_DONE
-        for (int i = 0; i < dg_num_batches; i++)
-            done_batches[i] = 0;
-        for (int i = 0; i < dataset_size; i++)
-            done_images[i] = 0;
+    for (int i = 0; i < dg_num_batches; i++)
+        done_batches[i] = 0;
+    for (int i = 0; i < dg_dataset_size; i++)
+        done_images[i] = 0;
 #endif
 
-        if (sem_init(&dmutex, 0, 1) != 0) exit(EXIT_FAILURE);
-        if (sem_init(&llenar, 0, dg_buffer_size) != 0) exit(EXIT_FAILURE);
-        if (sem_init(&vaciar, 0, 0) != 0) exit(EXIT_FAILURE);
-        if (sem_init(&imprimir, 0, 1) != 0) exit(EXIT_FAILURE);
+    if (sem_init(&dmutex, 0, 1) != 0) exit(EXIT_FAILURE);
+    if (sem_init(&llenar, 0, dg_buffer_size) != 0) exit(EXIT_FAILURE);
+    if (sem_init(&vaciar, 0, 0) != 0) exit(EXIT_FAILURE);
+    if (sem_init(&imprimir, 0, 1) != 0) exit(EXIT_FAILURE);
 
-        printf("[DISTR] %s creating %d thread(s): ", __func__, dg_num_threads);
-        for (int i = 0; i < dg_num_threads; i++) {
-            printf("%d ", i);
+    printf("[DISTR] %s creating %d thread(s): ", __func__, dg_num_threads);
+    for (int i = 0; i < dg_num_threads; i++) {
+        printf("%d ", i);
 
-            err = pthread_create(&t[i], NULL, &producer_perfect, NULL);
+        err = pthread_create(&t[i], NULL, &producer_perfect, NULL);
 
-            if (err) msg("Error creating thread", __func__); // Exits;
+        if (err) msg("Error creating thread", __func__); // Exits;
 
-        }
-        printf("\n");
-    
+    }
+    printf("\n");
+
 }
 
 void stop_data_generator() {
-    
     for (int i = 0; i < dg_num_threads; i++)
         pthread_cancel(t[i]);
     for (int i = 0; i < dg_num_threads; i++)

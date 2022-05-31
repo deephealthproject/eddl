@@ -325,7 +325,7 @@ void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac);
 
 void* get_batch(Tensor* in, Tensor* out);
 
-void prepare_data_generator(const string &filenameX, const string &filenameY, int bs, int* num_batches,  bool perfect, int num_threads, int buffer_size=128); 
+void prepare_data_generator(const string &filenameX, const string &filenameY, int bs, int* dataset_size, int* num_batches,  bool perfect, int num_threads, int buffer_size=128); 
 
 void start_data_generator(); 
 
