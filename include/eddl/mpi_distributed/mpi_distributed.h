@@ -100,6 +100,11 @@
 #define NO_DISTR_DS 0
 #define DISTR_DS 1
 
+#define DG_MAX 4
+#define DG_TRAIN 0
+#define DG_VAL 1
+#define DG_TEST 2
+#define DG_USER 3
 
 
 /**
@@ -325,7 +330,7 @@ void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac);
 
 void* get_batch(Tensor* in, Tensor* out);
 
-void prepare_data_generator(const string &filenameX, const string &filenameY, int bs, int* dataset_size, int* num_batches,  bool perfect, int num_threads, int buffer_size=128); 
+void prepare_data_generator(int dg_id, const string &filenameX, const string &filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp,  bool perfect, int num_threads, int buffer_size);
 
 void start_data_generator(); 
 

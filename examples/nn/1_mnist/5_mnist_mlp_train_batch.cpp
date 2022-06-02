@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
     int dataset_size;
     
     if (use_dg){
-      prepare_data_generator("train-images.bi8", "train-labels.bi8", batch_size, &dataset_size, &num_batches, use_dg_perfect, 2, 8);
+      prepare_data_generator(DG_TRAIN,"train-images.bi8", "train-labels.bi8", batch_size,false,   &dataset_size, &num_batches, use_dg_perfect, 2, 8);
     }
 
     Tensor* xbatch ;

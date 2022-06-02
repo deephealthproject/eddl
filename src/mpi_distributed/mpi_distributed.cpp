@@ -8,6 +8,7 @@
  */
 
 #define _FILE_OFFSET_BITS 64
+#define _GNU_SOURCE
 
 #include "eddl/mpi_distributed/mpi_distributed.h"
 
@@ -130,6 +131,11 @@ int DEBUG=0;
 
 FILE* fpX;
 FILE* fpY;
+#ifdef cMPI
+MPI_File mfpX;
+MPI_File mfpY;
+#endif
+
 int buffer_count=0;
 int ptr_in=0;
 int ptr_out=0;
@@ -147,7 +153,7 @@ int shape_sizeX;
 int shape_sizeY;
 
 int dg_batch_size=0;
-int dg_num_batches;
+int dg_nbpp;
 int dg_buffer_size=0;
 int dg_num_threads;
 Tensor* bufferX[MAX_BUFFER];
@@ -239,9 +245,9 @@ int init_MPI(int *argc, char ***argv) {
     id = 0;
 #ifdef cMPI
     //MPI_Init(argc, argv);
-    MPI_Init_thread(argc, argv, MPI_THREAD_FUNNELED, &provided);
+    //MPI_Init_thread(argc, argv, MPI_THREAD_FUNNELED, &provided);
     //MPI_Init_thread(argc, argv, MPI_THREAD_SERIALIZED, &provided);
-    //MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &provided);
+    MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &provided);
     if (provided==0) 
         msg("Error multiple threads not supported in MPI library", "init_MPI"); // Exits
     //fprintf(stdout, "[DISTR] MPI init. %d multiple threads\n", id);
@@ -378,7 +384,7 @@ void end_distributed() {
         return;
     }
 #ifdef cMPI 
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPICHECK(MPI_Barrier(MPI_COMM_WORLD));
     //  Get the individual process ID.
     //MPI_Comm_rank(MPI_COMM_WORLD, &id);
 #endif
@@ -548,27 +554,35 @@ int set_NBPP_distributed(int ds_size, int local_batch, bool method) {
    // int n_procs;
     int num_batches;
     int nbpp;
-
+    int discarded;
+ 
     check_MPI();
     //id = get_id_distributed();
     //n_procs = get_n_procs_distributed();  
     #ifdef TRUNC_DATASET    
     num_batches = ds_size/local_batch;
 #else
-    num_batches = ceil((float) ds_size/(float) local_batch);
+    // use all dataset only if not distributed
+    if (n_procs == 1)
+        num_batches = ceil((float) ds_size / (float) local_batch);
+    else
+        num_batches = ds_size / local_batch;
 #endif
     if (method == NO_DISTR_DS) {
         nbpp = num_batches / n_procs;
+        discarded=ds_size-(n_procs*nbpp*local_batch);
     } else if (method == DISTR_DS) {
         nbpp = num_batches;
+        discarded=ds_size-(nbpp*local_batch);
     } else {
         msg("Error num_batches_per_proc method",  __func__); // Exits
     }
+    
     if (id==0)
-        printf("[DISTR] set_NBPP. Proc: %d. Distr dataset: %s. Dataset size: %d. Local batch: %d. Num batches per proc: %d\n", id, (method==NO_DISTR_DS?"no":"yes"), ds_size, local_batch, nbpp);
+        printf("[DISTR] %s. Proc: %d. Distr dataset: %s. Dataset size: %d. Local batch: %d. Num batches per proc: %d. Discarded: %d\n", __func__, id, (method==NO_DISTR_DS?"no":"yes"), ds_size, local_batch, nbpp, discarded);
    
     barrier_distributed();
-    
+  
     return nbpp;
 }
 
@@ -1193,7 +1207,114 @@ void gen_unique_random_list_LFSR(int* vektor, int n) {
     }
 }
 
+void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
 
+    //    unsigned char bytesX[n_sizeX];
+    //    unsigned char bytesY[n_sizeY];
+    unsigned char* bytesX;
+    unsigned char* bytesY;
+    long i, j;
+    long index;
+    int err;
+    //long int pos;
+    MPI_Offset pos;
+    off_t posX, posY;
+    int n_read;
+    MPI_Status status;
+
+    // Random batches of sequential items
+    bytesX = (unsigned char*) malloc(n_sizeX);
+    bytesY = (unsigned char*) malloc(n_sizeY);
+
+    //printf("%s ds_ptr=%ld", __func__, ds_ptr);
+    if (perfect)
+        pos = list[ds_ptr];
+    else {
+        pos = rand() % dg_nbpp;
+    }
+    // fprintf(tmp_fp,"%s sizeof(size_t)=%d perfect=%d buffer_index=%d num_batches=%d sizes= %ld %ld pos=%d\n", __func__, sizeof(size_t), perfect, buffer_index, dg_num_batches, n_sizeX, n_sizeY,pos);
+    //fflush(tmp_fp);
+    //pos=0;
+
+#ifdef DEBUG_DONE
+    done_batches[pos] += 1;
+#endif 
+    posX = (off_t) (ndimX + 1) * sizeof (int)+(off_t) pos * n_sizeX * sizeof (unsigned char);
+    //    fprintf(tmp_fp,"%s ds_ptr=%d pos=%ld  \n", __func__, ds_ptr, posX);
+    //    fflush(tmp_fp);
+
+    MPICHECK(MPI_File_seek(mfpX, posX, MPI_SEEK_SET));
+    MPICHECK(MPI_File_read(mfpX, bytesX, n_sizeX, MPI_BYTE, &status));
+    MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
+
+    if (n_read != n_sizeX) {
+#ifdef TRUNC_DATASET 
+        printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeX);
+        msg("Error freadX ", __func__);
+#else
+        if (n_procs == 1)
+            // Change size
+            bufferX[buffer_index]->shape[0] = n_read / shape_sizeX;
+        else {
+            printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeX);
+            msg("Error freadX ", __func__);
+        }
+#endif
+    }
+
+    //printf("%s count=%d buffer_index=%d ptr_out=%d pos=%ld\n",__func__,buffer_count,buffer_index,ptr_out,pos);
+    if (DEBUG)
+        printf("LOAD:");
+    #pragma omp parallel for private(j,index)  
+    for (i = 0; i < dg_batch_size; i++) {
+        for (j = 0; j < shape_sizeX; j++) {
+            index = i * shape_sizeX + j;
+            bufferX[buffer_index]->ptr[index] = (float) bytesX[index];
+            //if (DEBUG)
+            // printf("[%d %3.1f ] ", index, bufferX[index]);
+        }
+    }
+    if (DEBUG) printf("\n");
+    posY = (off_t) (ndimY + 1) * sizeof (int)+(off_t) pos * n_sizeY * sizeof (unsigned char);
+
+    //MPI_File_read_at(mfpY, posY, bytesY, n_sizeY, MPI_BYTE, MPI_STATUS_IGNORE);
+    MPICHECK(MPI_File_seek(mfpY, posY, MPI_SEEK_SET));
+    MPICHECK(MPI_File_read(mfpY, bytesY, n_sizeY, MPI_BYTE, &status));
+    MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
+
+    if (n_read != n_sizeY) {
+#ifdef TRUNC_DATASET 
+        printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeY);
+        msg("Error freadY ", __func__);
+#else
+        if (n_procs == 1)
+            // Change size
+            bufferY[buffer_index]->shape[0] = n_read / shape_sizeY;
+        else {
+            printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeY);
+            msg("Error freadY ", __func__);
+        }
+#endif
+    }
+    //fprintf(tmp_fp,"process Y %d read %d bytes\n", id, n_sizeY, count);
+
+
+    if (DEBUG) printf("LOAD:");
+    #pragma omp parallel for private(j,index) 
+    for (i = 0; i < dg_batch_size; i++) {
+        for (j = 0; j < shape_sizeY; j++) {
+            index = i * shape_sizeY + j;
+            bufferY[buffer_index]->ptr[index] = (float) bytesY[index];
+            //            bufferY[index] = (float) 0;
+            //if (DEBUG) 
+            //  printf("[%d %3.1f ] ", index, bufferY[index]);
+        }
+    }
+    if (DEBUG) printf("\n");
+    free(bytesX);
+    free(bytesY);
+
+    }
 
 void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
    
@@ -1207,15 +1328,17 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
     long int pos;
     off_t posX, posY;
     size_t n_read;
+  
     // Random batches of sequential items
     bytesX=(unsigned char*) malloc(n_sizeX);
     bytesY=(unsigned char*) malloc(n_sizeY);
-    
+
+   
   //  printf("%s ds_ptr=%ld", __func__, ds_ptr);
     if (perfect)
         pos = list[ds_ptr];
     else {
-        pos = rand() % dg_num_batches;
+        pos = rand() % dg_nbpp;
     }
    // fprintf(tmp_fp,"%s sizeof(size_t)=%d perfect=%d buffer_index=%d num_batches=%d sizes= %ld %ld pos=%d\n", __func__, sizeof(size_t), perfect, buffer_index, dg_num_batches, n_sizeX, n_sizeY,pos);
     //fflush(tmp_fp);
@@ -1239,7 +1362,7 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
         msg("Error freadX ", __func__);
 #else
         // Change size
-        bufferY[buffer_index]->shape[0] = n_read / shape_sizeX;
+        bufferX[buffer_index]->shape[0] = n_read / shape_sizeX;
 #endif
 
     }
@@ -1379,36 +1502,7 @@ void copy_from_buffer(float* buffer, int buffer_index, int shape, float* batch) 
 __thread int curr_ptr = 0;
 __thread int curr_ds_ptr = 0;
 
-void * producer(void* arg) {
-    bool run_producer = true;
-    //__thread long record;
-    while (run_producer) {
-        sem_wait(&llenar);
-        sem_wait(&dmutex);
-        curr_ptr = ptr_in;
-        //curr_ds_ptr = ds_ptr;
-        //ds_ptr++;
-        //if (ds_ptr > dg_num_batches)
-        //   run_producer = false;
-        if (DEBUG)
-            // printf("%s ptr_in %d count= %d\n", __func__, ptr_in, buffer_count);
-            ptr_in++;
-        if (ptr_in >= dg_buffer_size) ptr_in = 0;
-        sem_post(&dmutex);
-        //if (run_producer) {
-        //loadXY(curr_ptr, curr_ds_ptr);
-        loadXY_perfect(curr_ptr, curr_ds_ptr, false);
-        //loadXY_Rand(curr_ptr);
-        //record=rand() % dg_num_batches;
-        //load(fpX, ndimX, shape_sizeX, record, bufferX, curr_ptr);
-        //load(fpY, ndimY, shape_sizeY, record, bufferY, curr_ptr);
-        sem_wait(&dmutex);
-        buffer_count++;
-        sem_post(&dmutex);
-        sem_post(&vaciar);
-        //}
-    }
-}
+
 
 void * producer_perfect(void* arg) {
     bool run_producer = true;
@@ -1421,7 +1515,7 @@ void * producer_perfect(void* arg) {
         curr_ptr = ptr_in;
         curr_ds_ptr = ds_ptr;
         ds_ptr++;
-        if (ds_ptr > dg_num_batches)
+        if (ds_ptr > dg_nbpp)
             run_producer = false;
         //if (DEBUG)
         //fprintf(tmp_fp,"%s ptr_in %d count= %d\n", __func__, ptr_in, buffer_count);
@@ -1430,8 +1524,10 @@ void * producer_perfect(void* arg) {
         if (ptr_in >= dg_buffer_size) ptr_in = 0;
         sem_post(&dmutex);
         if (run_producer) {
-            
-            loadXY_perfect(curr_ptr, curr_ds_ptr, dg_perfect);
+            if (use_mpi==0)
+                loadXY_perfect(curr_ptr, id*dg_nbpp+curr_ds_ptr, dg_perfect);
+            else
+                loadXY_perfect_distr(curr_ptr, id*dg_nbpp+curr_ds_ptr, dg_perfect);
             //loadXY_Rand(curr_ptr);
             //record=rand() % dg_num_batches;
             //load(fpX, ndimX, shape_sizeX, record, bufferX, curr_ptr);
@@ -1456,15 +1552,22 @@ void* get_batch(Tensor* in, Tensor* out) {
   
   //  fprintf(tmp_fp,"%s ptr_out %d count= %d\n", __func__, ptr_out, buffer_count);
   //fflush(tmp_fp);  
-  
-  Tensor::copy(bufferX[ptr_out],in);
-  Tensor::copy(bufferY[ptr_out],out);
-  
+/*
+#pragma omp parallel sections 
+    {
+#pragma omp  section 
+        {
+        Tensor::copy(bufferX[ptr_out], in);
+        }
+#pragma omp  section
+        Tensor::copy(bufferY[ptr_out], out);
+    }
+*/
     
   //in->reallocate(bufferX[ptr_out]);
   //out->reallocate(bufferY[ptr_out]);
-    //in->ptr = bufferX[ptr_out]->ptr;
-    //out->ptr = bufferY[ptr_out]->ptr;
+    in->ptr = bufferX[ptr_out]->ptr;
+    out->ptr = bufferY[ptr_out]->ptr;
     
     //copy_from_buffer(bufferX, ptr_out, shape_sizeX, in->ptr);
     //copy_from_buffer(bufferY, ptr_out, shape_sizeY, out->ptr);
@@ -1489,33 +1592,51 @@ void* get_batch(Tensor* in, Tensor* out) {
     
 }
 
-void prepare_data_generator(const string &filenameX, const string &filenameY, int bs, int* dataset_size, int* num_batches,  bool perfect, int num_threads, int buffer_size) {
+void prepare_data_generator(int dg_id, const string &filenameX, const string &filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp,  bool perfect, int num_threads, int buffer_size) {
     int check_ds_size = 0;
     size_t memsizeX =0;
     size_t memsizeY =0;
     
+    if (dg_id>=DG_MAX)
+         msg("Error number of data generators exceeded",__func__); 
     
     dg_perfect=perfect;
     dg_batch_size = bs;
-    
-    if (buffer_size>MAX_BUFFER)
-        msg("Error buffer_size is too high ",__func__); 
+
+    if (buffer_size > MAX_BUFFER)
+        msg("Error buffer_size is too high ", __func__);
     dg_buffer_size = buffer_size;
-    
-    if (num_threads>MAX_DG_THREADS)
-        msg("Error num threads is too high", __func__); 
+
+    if (num_threads > MAX_DG_THREADS)
+        msg("Error num threads is too high", __func__);
     dg_num_threads = num_threads;
-    
-    printf("[DISTR] %s. perfect=%d buffer_size=%d. num_threads=%d. bs=%d\n",__func__, dg_perfect, dg_buffer_size, dg_num_threads, dg_batch_size );
-    
-    fpX = fopen(filenameX.c_str(), "r");
-    if (fpX == NULL)
-        msg("Error opening X file", __func__); 
-    fread(&ndimX, sizeof (int),1,  fpX);
-    //printf("%s %d\n", __func__, ndimX);
+
+    if (id==0)
+    printf("[DISTR] %s. perfect=%d buffer_size=%d. num_threads=%d. bs=%d. Using %s\n", __func__, dg_perfect, dg_buffer_size, dg_num_threads, dg_batch_size, (use_mpi==0?"fopen()":"MPI_File_open()"));
+ 
+    if (use_mpi == 0) {
+        fpX = fopen(filenameX.c_str(), "r");
+        if (fpX == NULL)
+            msg("Error opening X file", __func__);
+        fread(&ndimX, sizeof (int), 1, fpX);
+    } else {
+       
+        #ifdef cMPI
+        MPI_File_open(MPI_COMM_WORLD, filenameX.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &mfpX);
+        if (mfpX == NULL)
+            msg("Error opening X file", __func__);
+        MPI_File_read_all(mfpX, &ndimX, 1, MPI_INT, MPI_STATUS_IGNORE);
+#endif
+    }
+     //printf("%s %d\n", __func__, ndimX);
     vector<int> r_shapeX(ndimX);
 
-    fread(r_shapeX.data(), sizeof (int), ndimX, fpX);
+    if (use_mpi == 0)
+        fread(r_shapeX.data(), sizeof (int), ndimX, fpX);
+    else
+         #ifdef cMPI
+        MPI_File_read_all(mfpX, r_shapeX.data(),ndimX, MPI_INT, MPI_STATUS_IGNORE);
+#endif
     dg_dataset_size = r_shapeX[0];
     *dataset_size = r_shapeX[0];
     //printf("%s %d\n", __func__, dataset_size);
@@ -1527,21 +1648,34 @@ void prepare_data_generator(const string &filenameX, const string &filenameY, in
     r_shapeX[0]=dg_batch_size;
 
     n_sizeX = shape_sizeX*dg_batch_size;
-#ifdef TRUNC_DATASET    
-    dg_num_batches = dg_dataset_size/dg_batch_size;
-#else
-    dg_num_batches = ceil((float) dg_dataset_size/(float) dg_batch_size);
+   
+    // Set nbpp
+    dg_nbpp=set_NBPP_distributed(dg_dataset_size, bs, distr_ds);
+    *nbpp = dg_nbpp;
+    
+    if (id==0)
+    printf("[DISTR] %s. filenameX: %s shape_sizeX=%d dataset_size=%d num_batches=%d\n",__func__, filenameX.c_str(), shape_sizeX, dg_dataset_size, dg_nbpp );
+
+    if (use_mpi == 0) {
+        fpY = fopen(filenameY.c_str(), "r");
+        if (fpY == NULL)
+            msg("Error opening Y file", __func__);
+        fread(&ndimY, sizeof (int), 1, fpY);
+    } else {
+         #ifdef cMPI
+        MPI_File_open(MPI_COMM_WORLD, filenameY.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &mfpY);
+        if (mfpY == NULL)
+            msg("Error opening Y file", __func__); 
+        MPI_File_read_all(mfpY, &ndimY, 1, MPI_INT, MPI_STATUS_IGNORE);
 #endif
-    *num_batches = dg_num_batches;
-    
-    printf("[DISTR] %s. filenameX: %s shape_sizeX=%d dataset_size=%d num_batches=%d\n",__func__, filenameX.c_str(), shape_sizeX, dg_dataset_size, dg_num_batches );
-    
-    fpY = fopen(filenameY.c_str(), "r");
-    if (fpY == NULL)
-        msg("Error opening Y file", __func__); 
-    fread(&ndimY, sizeof (int), 1,  fpY);
+    }
     vector<int> r_shapeY(ndimY);
-    fread(r_shapeY.data(), sizeof (int), ndimY,  fpY);
+    if (use_mpi==0)
+        fread(r_shapeY.data(), sizeof (int), ndimY,  fpY);
+    else 
+         #ifdef cMPI
+        MPI_File_read_all(mfpY, r_shapeY.data(), ndimY, MPI_INT, MPI_STATUS_IGNORE);
+#endif
     check_ds_size = r_shapeY[0];
     shape_sizeY = 1;
     for (int i = 1; i < ndimY; i++) {
@@ -1551,6 +1685,7 @@ void prepare_data_generator(const string &filenameX, const string &filenameY, in
     r_shapeY[0]=dg_batch_size;
     n_sizeY = shape_sizeY*dg_batch_size;
     
+    if (id==0)
     printf("[DISTR] %s. filenameY: %s shape_sizeY=%d dataset_size=%d\n",__func__, filenameY.c_str(), shape_sizeY, check_ds_size );
     
     for (int i; i< dg_buffer_size; i++) {
@@ -1566,12 +1701,13 @@ void prepare_data_generator(const string &filenameX, const string &filenameY, in
     
 
     if (dg_perfect) {
-        list = (int*) malloc(dg_num_batches * sizeof (int));
+        list = (int*) malloc(dg_nbpp*n_procs * sizeof (int));
         if (list == NULL)
             msg("Error in malloc (list)", __func__); // Exits
     }
     
-     printf("[DISTR] %s. buffer requirements: bufferX= %.1fMB bufferY= %.1fMB list= %.1fMB \n", __func__,(float) memsizeX/(1024*1024), (float) memsizeY/(1024*1024), ((float) dg_num_batches * sizeof (int))/(1024*1024));
+    if (id==0)
+     printf("[DISTR] %s. buffer requirements: bufferX= %.1fMB bufferY= %.1fMB list= %.1fMB \n", __func__,(float) memsizeX/(1024*1024), (float) memsizeY/(1024*1024), ((float) dg_nbpp * sizeof (int))/(1024*1024));
     
 #ifdef DEBUG_DONE
     done_batches = (int*) malloc(dg_num_batches * sizeof (int));
@@ -1597,13 +1733,21 @@ void prepare_data_generator(const string &filenameX, const string &filenameY, in
 void start_data_generator() {
 
     int err;
+    cpu_set_t cpuset;
+   
 
+    
     buffer_count = 0;
     ptr_in = 0;
     ptr_out = 0;
     ds_ptr = 0;
     if (dg_perfect) {
-        gen_unique_random_list(list, dg_num_batches);
+        if (id == 0)
+            gen_unique_random_list(list, dg_nbpp*n_procs);
+#ifdef cMPI
+        if (use_mpi)
+            MPICHECK(MPI_Bcast(list, dg_nbpp*n_procs, MPI_INT, 0, MPI_COMM_WORLD));
+#endif
     }
 #ifdef DEBUG_DONE
     for (int i = 0; i < dg_num_batches; i++)
@@ -1617,17 +1761,25 @@ void start_data_generator() {
     if (sem_init(&vaciar, 0, 0) != 0) exit(EXIT_FAILURE);
     if (sem_init(&imprimir, 0, 1) != 0) exit(EXIT_FAILURE);
 
+    if (id==0)
     printf("[DISTR] %s creating %d thread(s): ", __func__, dg_num_threads);
     for (int i = 0; i < dg_num_threads; i++) {
-        printf("%d ", i);
+         if (id==0)
+             printf("%d ", i);
 
         err = pthread_create(&t[i], NULL, &producer_perfect, NULL);
-
         if (err) msg("Error creating thread", __func__); // Exits;
+        /*
+        CPU_ZERO(&cpuset);
+        for (int j = 0; j < 4; j++)
+           CPU_SET(j, &cpuset);
 
+        err= pthread_setaffinity_np(t[i], sizeof(cpu_set_t), &cpuset);
+        if (err) msg("setting affinity creating thread", __func__); 
+        */
+        
     }
     printf("\n");
-
 }
 
 void stop_data_generator() {
@@ -1648,7 +1800,8 @@ void stop_data_generator() {
     printf("\n");
      #endif
     */
-   
+    
+if (id==0)   
     printf("[DISTR] %s count= %d\n", __func__, buffer_count);
 }
 
@@ -1659,8 +1812,15 @@ void end_data_generator() {
      free(list);
   //   free(bytesX);
   //     free(bytesY);
-     fclose(fpX);
-     fclose(fpY);
+     if (use_mpi == 0) {
+        fclose(fpX);
+        fclose(fpY);
+    } else {
+#ifdef cMPI
+        MPICHECK(MPI_File_close(&mfpX));
+        MPICHECK(MPI_File_close(&mfpY));
+#endif
+    }
      fclose(tmp_fp);
 }
 

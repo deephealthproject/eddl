@@ -366,14 +366,14 @@ void train_epoch(model danet, model net, Tensor* x_train, Tensor* y_train,  Tens
              TIME_POINT2(load, tbgsecs);
              TIME_POINT1(train);
           
-             if ((1)&(j < 2)) {
+             if ((1)&(j < 2000)) {
 //            if ((1)) {
                 Tensor* xout = xbatch->select({"0",":"});
                 Tensor* yout = ybatch->select({"0"});
                 xout->mult_(255.0f);
                 
-                sprintf(jpgfile, "file%d.jpg", j);
-                sprintf(txtfile, "file%d.txt", j);
+                sprintf(jpgfile, "%dfile_aug%d.jpg", id,j);
+                sprintf(txtfile, "%dfile_aug%d.txt", id,j);
                 xout->save(jpgfile);
                 yout->save(txtfile);
                 delete xout;
@@ -386,13 +386,13 @@ void train_epoch(model danet, model net, Tensor* x_train, Tensor* y_train,  Tens
             layer output_da = getLayer(danet, "bypass1");
             Tensor* xbatch_da = getOutput(output_da);
             
-             if ((1)&(j < 2)) {
+             if ((1)&(j < 2000)) {
 //            if ((1)) {
                 Tensor* xout = xbatch_da->select({"0"});
                 Tensor* yout = ybatch->select({"0"});
                 xout->mult_(255.0f);
-                sprintf(jpgfile, "file_aug%d.jpg", j);
-                sprintf(txtfile, "file_aug%d.txt", j);
+                sprintf(jpgfile, "%dfile_aug%d.jpg", id,j);
+                sprintf(txtfile, "%dfile_aug%d.txt", id,j);
                 xout->save(jpgfile);
                 yout->save(txtfile);
                 delete xout;
@@ -456,6 +456,7 @@ void eval_epoch (model net, Tensor* x_test, Tensor* y_test,  Tensor* xbatch, Ten
             xbatch->div_(255.0f);
             eval_batch(net,{xbatch},{ybatch});
         } else {
+            
             for (k = 0; k < local_batch; k++) {
                 if (distr_dataset)
                     sind [k] = (j * local_batch) + k;
@@ -464,6 +465,9 @@ void eval_epoch (model net, Tensor* x_test, Tensor* y_test,  Tensor* xbatch, Ten
                 //printf("id=%d  %5d",id, sind[k]);
             }
             eval_batch(net,{x_test},{y_test}, sind);
+            
+           
+            
         }
         
         //         print_loss(batches, num_batches);
@@ -482,7 +486,7 @@ void eval_epoch (model net, Tensor* x_test, Tensor* y_test,  Tensor* xbatch, Ten
     //if (early_stopping_on_metric (net, 0, 0.97, 2, i)) break;
 }
 
-void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool divide_batch, bool distr_dataset = false) {
+void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, Tensor* xbatch, Tensor* ybatch, int batch, bool divide_batch, bool distr_dataset = false) {
     int i, j, k;
     int id = get_id_distributed();
     int n_procs = get_n_procs_distributed();
@@ -509,7 +513,7 @@ void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool 
     reset_loss(net);
     mpi_id0(printf("custom_evaluate\n"));
     for (j = 0; j < nbpp; j++) {
-        
+        /*
         for (k = 0; k < local_batch; k++) {
             if (distr_dataset)
                 sind [k] = (j * local_batch) + k;
@@ -521,6 +525,22 @@ void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, int batch, bool 
         {
             y_test
         }, sind);
+        */
+         next_batch({x_test, y_test},{xbatch, ybatch});
+          if ((1)&(j < 2000)) {
+//            if ((1)) {
+                Tensor* xout = xbatch->select({"0",":"});
+                Tensor* yout = ybatch->select({"0"});
+                xout->mult_(255.0f);
+                
+                 sprintf(jpgfile, "%deval%d.jpg", id,j);
+                sprintf(txtfile, "%deval%d.txt", id,j);
+                xout->save(jpgfile);
+                yout->save(txtfile);
+                delete xout;
+                delete yout;
+            }
+          eval_batch(net,{xbatch},{ybatch});
         //         print_loss(batches, num_batches);
         print_loss(net, j + 1, false);
         mpi_id0(fprintf(stdout, "\r"));
@@ -744,11 +764,11 @@ int main(int argc, char **argv) {
             Tensor* ybatch = new Tensor({local_batch, num_classes});
             if (use_dg){
                 int num_batches;
-                prepare_data_generator(tr_images, tr_labels, local_batch, &dataset_size, &num_batches, true, dgt, 8);
-            }
+                prepare_data_generator(DG_TRAIN, tr_images, tr_labels, local_batch, use_distr_dataset, &dataset_size, &nbpp, true, dgt, 8);
+            } else {
             nbpp = set_NBPP_distributed(dataset_size, local_batch, use_distr_dataset);
-   
-           
+            }
+            
             for (int epoch = 0; epoch < epochs; epoch++) {
                 mpi_id0(printf("== Epoch %d/%d ===\n", epoch + 1, epochs));
                 //for (int chunk = 0; chunk < chunks; chunk++) {
@@ -795,10 +815,9 @@ int main(int argc, char **argv) {
                 update_batch_avg_distributed(epoch, secs_epoch, 1000);
                 barrier_distributed();
 
-                TIMED_EXEC("DISTR EVALUATE", evaluate_distr(net,{x_test},
-                {
-                    y_test
-                }), secs);              
+                        TIMED_EXEC("CUSTOM EVALUATE", custom_evaluate(net,{x_test},{y_test}, {xbatch},{ybatch},batch_size, DIV_BATCH, false), secs);
+
+                //TIMED_EXEC("DISTR EVALUATE", evaluate_distr(net,{x_test},{y_test}), secs);              
                 barrier_distributed();
                  
                                
@@ -870,10 +889,7 @@ int main(int argc, char **argv) {
             y_test
         }), secs);
         barrier_distributed();
-        TIMED_EXEC("CUSTOM EVALUATE", custom_evaluate(net,{x_test},
-        {
-            y_test
-        }, batch_size, DIV_BATCH, false), secs);
+//        TIMED_EXEC("CUSTOM EVALUATE", custom_evaluate(net,{x_test},{y_test}, {xbatch},{ybatch},batch_size, DIV_BATCH, false), secs);
     }
     //if (id==0)
     //    save_net_to_onnx_file (net,onnx_name);   
