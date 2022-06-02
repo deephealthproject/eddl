@@ -1208,7 +1208,7 @@ void gen_unique_random_list_LFSR(int* vektor, int n) {
 }
 
 void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
-
+#ifdef cMPI
     //    unsigned char bytesX[n_sizeX];
     //    unsigned char bytesY[n_sizeY];
     unsigned char* bytesX;
@@ -1217,13 +1217,11 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     long index;
     int err;
     //long int pos;
-#ifdef cMPI
     MPI_Offset pos;
     MPI_Status status;
-#endif    
     off_t posX, posY;
     int n_read;
-   
+
 
     // Random batches of sequential items
     bytesX = (unsigned char*) malloc(n_sizeX);
@@ -1245,11 +1243,10 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     posX = (off_t) (ndimX + 1) * sizeof (int)+(off_t) pos * n_sizeX * sizeof (unsigned char);
     //    fprintf(tmp_fp,"%s ds_ptr=%d pos=%ld  \n", __func__, ds_ptr, posX);
     //    fflush(tmp_fp);
-#ifdef cMPI
+
     MPICHECK(MPI_File_seek(mfpX, posX, MPI_SEEK_SET));
     MPICHECK(MPI_File_read(mfpX, bytesX, n_sizeX, MPI_BYTE, &status));
     MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
-#endif
 
     if (n_read != n_sizeX) {
 #ifdef TRUNC_DATASET 
@@ -1269,7 +1266,7 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     //printf("%s count=%d buffer_index=%d ptr_out=%d pos=%ld\n",__func__,buffer_count,buffer_index,ptr_out,pos);
     if (DEBUG)
         printf("LOAD:");
-    #pragma omp parallel for private(j,index)  
+#pragma omp parallel for private(j,index)  
     for (i = 0; i < dg_batch_size; i++) {
         for (j = 0; j < shape_sizeX; j++) {
             index = i * shape_sizeX + j;
@@ -1281,12 +1278,10 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     if (DEBUG) printf("\n");
     posY = (off_t) (ndimY + 1) * sizeof (int)+(off_t) pos * n_sizeY * sizeof (unsigned char);
 
-    #ifdef cMPI
     //MPI_File_read_at(mfpY, posY, bytesY, n_sizeY, MPI_BYTE, MPI_STATUS_IGNORE);
     MPICHECK(MPI_File_seek(mfpY, posY, MPI_SEEK_SET));
     MPICHECK(MPI_File_read(mfpY, bytesY, n_sizeY, MPI_BYTE, &status));
     MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
-#endif
 
     if (n_read != n_sizeY) {
 #ifdef TRUNC_DATASET 
@@ -1306,7 +1301,7 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
 
 
     if (DEBUG) printf("LOAD:");
-    #pragma omp parallel for private(j,index) 
+#pragma omp parallel for private(j,index) 
     for (i = 0; i < dg_batch_size; i++) {
         for (j = 0; j < shape_sizeY; j++) {
             index = i * shape_sizeY + j;
@@ -1319,8 +1314,8 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     if (DEBUG) printf("\n");
     free(bytesX);
     free(bytesY);
-
-    }
+#endif
+}
 
 void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
    
