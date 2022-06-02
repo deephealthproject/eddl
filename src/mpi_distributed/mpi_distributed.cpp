@@ -8,7 +8,7 @@
  */
 
 #define _FILE_OFFSET_BITS 64
-#define _GNU_SOURCE
+//#define _GNU_SOURCE
 
 #include "eddl/mpi_distributed/mpi_distributed.h"
 
@@ -1217,10 +1217,13 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     long index;
     int err;
     //long int pos;
+#ifdef cMPI
     MPI_Offset pos;
+    MPI_Status status;
+#endif    
     off_t posX, posY;
     int n_read;
-    MPI_Status status;
+   
 
     // Random batches of sequential items
     bytesX = (unsigned char*) malloc(n_sizeX);
@@ -1242,10 +1245,11 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     posX = (off_t) (ndimX + 1) * sizeof (int)+(off_t) pos * n_sizeX * sizeof (unsigned char);
     //    fprintf(tmp_fp,"%s ds_ptr=%d pos=%ld  \n", __func__, ds_ptr, posX);
     //    fflush(tmp_fp);
-
+#ifdef cMPI
     MPICHECK(MPI_File_seek(mfpX, posX, MPI_SEEK_SET));
     MPICHECK(MPI_File_read(mfpX, bytesX, n_sizeX, MPI_BYTE, &status));
     MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
+#endif
 
     if (n_read != n_sizeX) {
 #ifdef TRUNC_DATASET 
@@ -1277,10 +1281,12 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     if (DEBUG) printf("\n");
     posY = (off_t) (ndimY + 1) * sizeof (int)+(off_t) pos * n_sizeY * sizeof (unsigned char);
 
+    #ifdef cMPI
     //MPI_File_read_at(mfpY, posY, bytesY, n_sizeY, MPI_BYTE, MPI_STATUS_IGNORE);
     MPICHECK(MPI_File_seek(mfpY, posY, MPI_SEEK_SET));
     MPICHECK(MPI_File_read(mfpY, bytesY, n_sizeY, MPI_BYTE, &status));
     MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
+#endif
 
     if (n_read != n_sizeY) {
 #ifdef TRUNC_DATASET 
@@ -1358,7 +1364,7 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
     n_read = fread(bytesX, sizeof (unsigned char), n_sizeX, fpX);
     if (n_read != n_sizeX) {
 #ifdef TRUNC_DATASET 
-        printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeX);
+        printf("%s n_read %ld n_size %ld\n", __func__, n_read, n_sizeX);
         msg("Error freadX ", __func__);
 #else
         // Change size
@@ -1392,7 +1398,7 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
     n_read = fread(bytesY, sizeof (unsigned char), n_sizeY, fpY);
     if (n_read != n_sizeY) {
 #ifdef TRUNC_DATASET 
-        printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeY);
+        printf("%s n_read %ld n_size %ld\n", __func__, n_read, n_sizeY);
         msg("Error freadY ", __func__);
 #else
         // Change size
