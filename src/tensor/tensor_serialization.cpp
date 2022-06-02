@@ -126,7 +126,7 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
     high_resolution_clock::time_point e2 = high_resolution_clock::now();
     duration<double> epoch_time_span = e2 - e1;
     if (DEBUG) 
-    printf("[Debug] LOAD. Time=%d sec\n", epoch_time_span);
+    printf("[Debug] LOAD. Time=%2.4f sec\n", epoch_time_span.count());
     //t1->print();
     // Load content (row-major)
     /*
@@ -218,7 +218,7 @@ Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
     high_resolution_clock::time_point e2 = high_resolution_clock::now();
     duration<double> epoch_time_span = e2 - e1;
     if (DEBUG) 
-    printf("[Debug] LOAD8. Time=%d sec\n", epoch_time_span);
+    printf("[Debug] LOAD8. Time=%2.4f sec\n", epoch_time_span.count());
     //vector<unsigned char> vs(n_read);
     //char* vs = (char *) malloc(n_read * sizeof(char));
     //ifs.read(reinterpret_cast<char*>(vs.data()), n_read * sizeof(char));
