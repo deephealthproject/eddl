@@ -249,12 +249,6 @@ else
         tensorNN::Linear(this->input, this->output, alpha);
     }
   }
-/*// cout << name << "\n";
- if(name=="clone_0relu1") {
-     cout << "relu18\n";
-    this->output->print();
-           exit(0);
-}
 
     float max_h = Tensor::max(this->input);
     if (max_h > max_quant) max_quant = max_h;
@@ -265,7 +259,7 @@ else
     if (max_h > max_quant) max_quant = max_h;
      min_h = Tensor::min(this->output);
     if (min_h < min_quant) min_quant = min_h;
-    */
+
 }
 
 

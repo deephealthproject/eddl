@@ -48,6 +48,10 @@ public:
     Tensor *opa; //output pre-affine
     Tensor *work1, *work2; // workspace for backward
 
+    // Quantized tensors
+    Tensor *qmean=nullptr;
+	Tensor *qvariance=nullptr;
+
 #ifdef cCUDNN
 
       //BNSCALE = Gamma -> bn_g

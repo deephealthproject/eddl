@@ -265,9 +265,8 @@ void gpu_conv2D_quantized(ConvolDescriptor *D) {
 
   if (D->Kquant==nullptr) D->Kquant = new Tensor(D->K->getShape(), D->K->device);
   if (D->biasquant==nullptr) D->biasquant = new Tensor(D->bias->getShape(), D->bias->device);
-  if(quantization_mode<3) if(D->gpuIBquant==nullptr) D->gpuIBquant = new Tensor(D->gpuIB->getShape(), D->gpuIB->device);
   if(quantization_mode<3) if(D->Iquant==nullptr) D->Iquant = new Tensor(D->I->getShape(), D->I->device);
-  
+
   Tensor::copy(D->I, D->Iquant);
   if(quantization_mode<3)D->I->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
 
@@ -281,8 +280,11 @@ void gpu_conv2D_quantized(ConvolDescriptor *D) {
 
 #ifndef cCUDNN
   if(D->mem_level<=1){
-    Tensor::copy(D->gpuIB,D->gpuIBquant);
-    if(quantization_mode<3)D->gpuIB->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+    if(quantization_mode<3) {
+      if(D->gpuIBquant==nullptr) D->gpuIBquant = new Tensor(D->gpuIB->getShape(), D->gpuIB->device);
+      Tensor::copy(D->gpuIB,D->gpuIBquant);
+      D->gpuIB->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+    }
   }
 #endif
 
@@ -296,7 +298,7 @@ void gpu_conv2D_quantized(ConvolDescriptor *D) {
 
 
   if (D->mem_level>1) {
-    cout << "[ERROR] mem_level>1";
+    cout << "[Quantization ERROR] this mem level is not supported\n";
     exit(0);
     int threads = D->nk * D->r * D->c;
     int nb = threads / low_mem_block_size;
@@ -310,7 +312,7 @@ void gpu_conv2D_quantized(ConvolDescriptor *D) {
         1, D->sr, D->sc);
     check_cuda(cudaDeviceSynchronize(),"gpu_low_mem_conv2D");
   } else if (D->mem_level == 1) {
-    cout << "[ERROR] mem_level==1";
+    cout << "[Quantization ERROR] this mem level is not supported\n";
     exit(0);
     for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize) {
       gpu_im2col_low(D,0,b);
@@ -330,8 +332,6 @@ void gpu_conv2D_quantized(ConvolDescriptor *D) {
   }
 #else
   // FWD environment
-    cout << "[ERROR] CUDNN==1";
-    exit(0);
   float alpha = 1.0f;
   float beta = 0.0f;
   if (D->cudnn_env_init < 0){
@@ -360,10 +360,10 @@ void gpu_conv2D_quantized(ConvolDescriptor *D) {
 #endif
   }
 
-  
   Tensor::copy(D->Iquant, D->I);
   Tensor::copy(D->Kquant, D->K);
   Tensor::copy(D->biasquant, D->bias);
+
 #ifndef cCUDNN    
   D->gpuK->ptr=D->K->ptr;
   if (D->mem_level < 2) D->gpuI->ptr=D->gpuIB->ptr;

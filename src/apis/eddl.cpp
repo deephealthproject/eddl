@@ -337,18 +337,9 @@ namespace eddl {
         quantization_clipping_bits =  clip_bits;
         quantization_rounding_bits = round_bits;
         quantization_alpha = alpha;
-        cout <<"[EDDL info] Quantization mode (0 (no quant) 1 (simultated) 2 (fixed-point only) 3(integer)) " << quantization_mode << " clipping_bits" << quantization_clipping_bits << " (" << std::pow(2,quantization_clipping_bits)<< ")" << "rounding_bits " << quantization_rounding_bits<<" ("<< std::pow(2,quantization_rounding_bits) << ")" << "alpha " << alpha<<"\n";
-        //cout << "Min " << min_quant << "max " << max_quant;
         gpu_set_quant(mode, clip_bits, round_bits);
         net->set_quantization_mode(mode);
-    }
-
-    float get_min(){
-        return min_quant;
-    }
-
-    float get_max(){
-        return max_quant;
+        if(mode>=3) exit(0);
     }
 
     void set_quantized_mode(model net, int mode, int clip_bits, float scaling, int zero_p, float alpha){
@@ -357,13 +348,17 @@ namespace eddl {
         scaling_factor = scaling;
         zero_point = zero_p;
         quantization_alpha = alpha;
-        cout <<"[EDDL info] Quantization mode (1 sim 2 fixed-point 3 variable) " << quantization_mode;
-        cout << " clipping_bits" << quantization_clipping_bits << " (" << std::pow(2,quantization_clipping_bits)<< ")";
-        cout << " scaling factor " << scaling_factor << " zero point " << zero_point <<"alpha " << alpha<<"\n";
-        cout << "Min " << min_quant << "max " << max_quant;
-        gpu_set_quant(mode, clip_bits, clip_bits); //cambiar
+        gpu_set_quant(mode, clip_bits, clip_bits);
         net->set_quantization_mode(mode);
         if(mode>=3) exit(0);
+    }
+
+    float get_min(){
+        return min_quant;
+    }
+
+    float get_max(){
+        return max_quant;
     }
 
     void end_quantization(model net){

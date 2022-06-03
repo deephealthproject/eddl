@@ -187,6 +187,18 @@ void LBatchNorm::forward() {
     // Input = Output = opa = {Batch,Channels,H,W} OR {Batch,Dim}
     // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
 
+    if (quantization_mode > 0) {
+        if (qmean==nullptr) qmean = new Tensor(mean->getShape(), mean->device);
+        if (qvariance==nullptr) qvariance = new Tensor(variance->getShape(),  variance->device);
+
+        Tensor::copy(mean, qmean);
+        mean->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+        Tensor::copy(variance, qvariance);
+        variance->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+        if(quantization_mode < 3) input->quantize_(quantization_clipping_bits, quantization_rounding_bits,1);
+
+    }
+
     // new implementation for CPU / GPU
     if (input->isCPU()) {
 
@@ -258,6 +270,14 @@ void LBatchNorm::forward() {
                                     mode == TRMODE,
                                     epsilon, momentum);
 #endif
+
+        if(quantization_mode > 0) {
+            if(quantization_mode<3)output->quantize_(quantization_clipping_bits, quantization_rounding_bits, 1);
+            else  output->clipping_(std::pow(2,quantization_clipping_bits)/2-1,(std::pow(2,quantization_clipping_bits)/2-1)*-1 );
+            Tensor::copy(qmean, mean);
+            Tensor::copy(qvariance, variance);
+        }
+    
     }
 }
 
