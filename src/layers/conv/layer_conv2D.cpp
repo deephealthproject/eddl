@@ -71,8 +71,8 @@ void LConv::resize(int batch){
     cd->resize(batch);
 }
 
-void LConv::mem_delta(){
-    if(this->delta == nullptr) {
+void LConv::mem_delta() {
+    if (this->delta == nullptr) {
         // Reserve parent's delta
         parent[0]->mem_delta();
         cd->ID = parent[0]->delta;
@@ -80,9 +80,21 @@ void LConv::mem_delta(){
         delta = Tensor::zeros(cd->O->shape, cd->O->device);
         cd->D = delta;
 
-        if(this->verbosity_level >= 2) {
+        if (this->verbosity_level >= 2) {
             std::cout << "Booked delta for: " + this->name << std::endl;
         }
+    } else {
+        this->delta->resize(this->output->shape[0]);
+    }
+    if (delta->shape[0] != cd->O->shape[0]) {
+        /*
+        delete delta;
+        delta = Tensor::zeros(cd->O->shape, cd->O->device);
+        cd->D = delta;
+         */
+        char buffer[256];
+        sprintf(buffer, "LConv::mem_delta(): %s(%d)", __FILE__, __LINE__);
+        msg("Incompatible shapes", buffer);
     }
 }
 

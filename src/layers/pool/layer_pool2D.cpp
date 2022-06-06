@@ -40,8 +40,8 @@ LPool::~LPool(){
    delete pd;
 }
 
-void LPool::mem_delta(){
-    if(this->delta == nullptr) {
+void LPool::mem_delta() {
+    if (this->delta == nullptr) {
         // Reserve parent's delta
         parent[0]->mem_delta();
         pd->ID = parent[0]->delta;
@@ -49,9 +49,11 @@ void LPool::mem_delta(){
         delta = Tensor::zeros(pd->O->shape, pd->O->device);
         pd->D = delta;
 
-        if(this->verbosity_level >= 2) {
+        if (this->verbosity_level >= 2) {
             std::cout << "Booked delta for: " + this->name << std::endl;
         }
+    } else if (this->delta->shape[0] != this->output->shape[0]) {
+        this->delta->resize(this->output->shape[0]);
     }
 }
 
