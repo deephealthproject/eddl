@@ -15,11 +15,11 @@
 std::pair<unsigned int*, int> cpu_nonzero(Tensor *A){
     // This can be improved:
     // See: https://stackoverflow.com/questions/18971401/sparse-array-compression-using-simd-avx2/41958528#41958528
-    auto* indices = new unsigned int[A->size];
+    auto* indices = new unsigned long int[A->size];
     unsigned int size = 0;
 
     #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i){
+    for (unsigned long int i = 0; i < A->size; ++i){
 
         if (A->ptr[i] != 0.0f){
             #pragma omp critical
@@ -40,7 +40,7 @@ std::pair<unsigned int*, int> cpu_nonzero(Tensor *A){
 
 void cpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C){
     #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i){
+    for (unsigned long int i = 0; i < A->size; ++i){
         if((bool) condition->ptr[i]){
             C->ptr[i] = A->ptr[i];
         }else{
@@ -51,7 +51,7 @@ void cpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C){
 
 void cpu_where_back(Tensor *condition, Tensor *PD_A, Tensor *PD_B, Tensor *D){
 #pragma omp parallel for
-    for (int i = 0; i < PD_A->size; ++i){
+    for (unsigned long int i = 0; i < PD_A->size; ++i){
         if((bool) condition->ptr[i]){
             PD_A->ptr[i] += D->ptr[i];
         }else{

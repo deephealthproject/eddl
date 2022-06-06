@@ -50,9 +50,9 @@ int main(int argc, char **argv) {
     int batch_size = 50;
   
   
-    int num_classes = 1000;
-    int width = 224;
-    int height = 224;
+    int num_classes = 10;
+    int width = 32;
+    int height = 32;
     int channels = 3;
 
     /**

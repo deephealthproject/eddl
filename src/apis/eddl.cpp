@@ -308,7 +308,7 @@ namespace eddl {
     void next_batch(vector<Tensor *> in,vector<Tensor *> out){
         int i,n;
         int batch_size;
-
+  // printf("%s tam=%ld\n",__func__,in[0]->shape[0]);
         batch_size=out[0]->shape[0];
         n=in[0]->shape[0];
         vector<int> sind(batch_size);

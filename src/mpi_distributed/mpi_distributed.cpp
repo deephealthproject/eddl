@@ -1214,7 +1214,7 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     unsigned char* bytesX;
     unsigned char* bytesY;
     long i, j;
-    long index;
+    int index;
     int err;
     //long int pos;
     MPI_Offset pos;
@@ -1224,17 +1224,22 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
 
 
     // Random batches of sequential items
-    bytesX = (unsigned char*) malloc(n_sizeX);
-    bytesY = (unsigned char*) malloc(n_sizeY);
+   bytesX=(unsigned char*) malloc(n_sizeX);
+    if (bytesX==NULL)
+        msg("Error bytesX memory allocation", __func__);
+    bytesY=(unsigned char*) malloc(n_sizeY);
+    if (bytesY==NULL)
+        msg("Error bytesY memory allocation", __func__);
 
+    
     //printf("%s ds_ptr=%ld", __func__, ds_ptr);
     if (perfect)
         pos = list[ds_ptr];
     else {
         pos = rand() % dg_nbpp;
     }
-    // fprintf(tmp_fp,"%s sizeof(size_t)=%d perfect=%d buffer_index=%d num_batches=%d sizes= %ld %ld pos=%d\n", __func__, sizeof(size_t), perfect, buffer_index, dg_num_batches, n_sizeX, n_sizeY,pos);
-    //fflush(tmp_fp);
+    fprintf(tmp_fp,"%s sizeof(size_t)=%d perfect=%d buffer_index=%d num_batches=%d sizes= %ld %ld pos=%d\n", __func__, sizeof(size_t), perfect, buffer_index, dg_nbpp, n_sizeX, n_sizeY,pos);
+    fflush(tmp_fp);
     //pos=0;
 
 #ifdef DEBUG_DONE
@@ -1266,10 +1271,11 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     //printf("%s count=%d buffer_index=%d ptr_out=%d pos=%ld\n",__func__,buffer_count,buffer_index,ptr_out,pos);
     if (DEBUG)
         printf("LOAD:");
-#pragma omp parallel for private(j,index)  
+//#pragma omp parallel for private(j,index)  
     for (i = 0; i < dg_batch_size; i++) {
         for (j = 0; j < shape_sizeX; j++) {
             index = i * shape_sizeX + j;
+            //printf("%s buffer_index=%d index=%d\n",__func__,buffer_index,index);
             bufferX[buffer_index]->ptr[index] = (float) bytesX[index];
             //if (DEBUG)
             // printf("[%d %3.1f ] ", index, bufferX[index]);
@@ -1301,7 +1307,7 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
 
 
     if (DEBUG) printf("LOAD:");
-#pragma omp parallel for private(j,index) 
+//#pragma omp parallel for private(j,index) 
     for (i = 0; i < dg_batch_size; i++) {
         for (j = 0; j < shape_sizeY; j++) {
             index = i * shape_sizeY + j;
@@ -1332,7 +1338,11 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
   
     // Random batches of sequential items
     bytesX=(unsigned char*) malloc(n_sizeX);
+    if (bytesX==NULL)
+        msg("Error bytesX memory allocation", __func__);
     bytesY=(unsigned char*) malloc(n_sizeY);
+    if (bytesY==NULL)
+        msg("Error bytesY memory allocation", __func__);
 
    
   //  printf("%s ds_ptr=%ld", __func__, ds_ptr);
@@ -1553,7 +1563,7 @@ void* get_batch(Tensor* in, Tensor* out) {
   
   //  fprintf(tmp_fp,"%s ptr_out %d count= %d\n", __func__, ptr_out, buffer_count);
   //fflush(tmp_fp);  
-/*
+
 #pragma omp parallel sections 
     {
 #pragma omp  section 
@@ -1563,12 +1573,12 @@ void* get_batch(Tensor* in, Tensor* out) {
 #pragma omp  section
         Tensor::copy(bufferY[ptr_out], out);
     }
-*/
+
     
   //in->reallocate(bufferX[ptr_out]);
   //out->reallocate(bufferY[ptr_out]);
-    in->ptr = bufferX[ptr_out]->ptr;
-    out->ptr = bufferY[ptr_out]->ptr;
+    //in->ptr = bufferX[ptr_out]->ptr;
+    //out->ptr = bufferY[ptr_out]->ptr;
     
     //copy_from_buffer(bufferX, ptr_out, shape_sizeX, in->ptr);
     //copy_from_buffer(bufferY, ptr_out, shape_sizeY, out->ptr);
@@ -1762,11 +1772,11 @@ void start_data_generator() {
     if (sem_init(&vaciar, 0, 0) != 0) exit(EXIT_FAILURE);
     if (sem_init(&imprimir, 0, 1) != 0) exit(EXIT_FAILURE);
 
-    if (id==0)
-    printf("[DISTR] %s creating %d thread(s): ", __func__, dg_num_threads);
+    if (id == 0)
+        printf("[DISTR] %s creating %d thread(s): ", __func__, dg_num_threads);
     for (int i = 0; i < dg_num_threads; i++) {
-         if (id==0)
-             printf("%d ", i);
+        if (id == 0)
+            printf("%d ", i);
 
         err = pthread_create(&t[i], NULL, &producer_perfect, NULL);
         if (err) msg("Error creating thread", __func__); // Exits;
@@ -1777,10 +1787,11 @@ void start_data_generator() {
 
         err= pthread_setaffinity_np(t[i], sizeof(cpu_set_t), &cpuset);
         if (err) msg("setting affinity creating thread", __func__); 
-        */
-        
+         */
+
     }
-    printf("\n");
+    if (id == 0)
+        printf("\n");
 }
 
 void stop_data_generator() {
@@ -1808,8 +1819,11 @@ if (id==0)
 
 void end_data_generator() {
    
-    free(bufferX);
-    free(bufferY); 
+    for (int i; i< dg_buffer_size; i++) {
+        delete bufferX[i] ;
+        delete bufferY[i] ;
+    }
+    
      free(list);
   //   free(bytesX);
   //     free(bytesY);

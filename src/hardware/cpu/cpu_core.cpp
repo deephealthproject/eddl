@@ -175,14 +175,14 @@ void _profile_cpu_tensor(Tensor *T) {
   float max = -FLT_MAX;
   float sum = 0.f;
   float avg;
-  for (int i=0; i<T->size; i++) {
+  for (unsigned long int i=0; i<T->size; i++) {
     if (T->ptr[i] > max) max = T->ptr[i];
     if (T->ptr[i] < min) min = T->ptr[i];
     sum += T->ptr[i];
   }
   avg = sum / (float)T->size;
   printf("  - Tensor (cpu)  ");
-  printf(" size %10d ", T->size);
+  printf(" size %10ld ", T->size);
   printf(" dims: ");
   printf(" %6d ", T->shape[0]);
   if (T->ndim>=2) printf(" x %6d ", T->shape[1]); else printf("          ");
@@ -231,26 +231,32 @@ void _profile_remove_tensor(unsigned long int size) {
 
 void cpu_transpose(Tensor * A, Tensor * B) {
     _profile(_CPU_TRANSPOSE, 0);
+    //memcpy(B->ptr, A->ptr, A->size*sizeof(float));
+    
     #pragma omp parallel for
-    for (int i = 0; i < A->size; i++){
+    for (unsigned long int i = 0; i < A->size; i++){
         B->ptr[i] = A->ptr[i];
     }
+    
     _profile(_CPU_TRANSPOSE, 1);
 }
 
 void cpu_copy(Tensor * A, Tensor * B){
     _profile(_CPU_COPY, 0);
+    //memcpy(B->ptr, A->ptr, A->size*sizeof(float));
+    
     #pragma omp parallel for
-    for (int i = 0; i < A->size; i++){
+    for (unsigned long int i = 0; i < A->size; i++){
         B->ptr[i] = A->ptr[i];
     }
+     
     _profile(_CPU_COPY, 1);
 }
 
 void cpu_fill_(Tensor *A, float v){
     _profile(_CPU_FILL_, 0);
-    #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i){
+    //#pragma omp parallel for
+    for (unsigned long int i = 0; i < A->size; ++i){
         A->ptr[i] = v;
     }
     _profile(_CPU_FILL_, 1);
@@ -284,8 +290,8 @@ void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, in
 
 void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     _profile(_CPU_SELECT, 0);
-    #pragma omp parallel for
-    for (int i = 0; i < B->size; i++) {
+    //#pragma omp parallel for
+    for (unsigned long int i = 0; i < B->size; i++) {
         B->ptr[i] = A->ptr[sd->cpu_addresses[i]];
     }
     _profile(_CPU_SELECT, 1);
@@ -293,8 +299,8 @@ void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
 
 void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     _profile(_CPU_SELECT_BACK, 0);
-    #pragma omp parallel for
-    for (int i = 0; i < A->size; i++) {  // walk stride
+    //#pragma omp parallel for
+    for (unsigned long int i = 0; i < A->size; i++) {  // walk stride
         B->ptr[sd->cpu_addresses[i]] += A->ptr[i];  // delta_parent += delta
     }
     _profile(_CPU_SELECT_BACK, 1);
@@ -302,8 +308,8 @@ void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
 
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     _profile(_CPU_SET_SELECT, 0);
-    #pragma omp parallel for
-    for (int i = 0; i < B->size; i++) {
+    //#pragma omp parallel for
+    for (unsigned long int i = 0; i < B->size; i++) {
         A->ptr[sd->cpu_addresses[i]] = B->ptr[i];
     }
     _profile(_CPU_SET_SELECT, 1);
@@ -311,23 +317,23 @@ void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
 
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     _profile(_CPU_SET_SELECT_BACK, 0);
-    #pragma omp parallel for
-    for (int i = 0; i < B->size; i++) {
+    //#pragma omp parallel for
+    for (unsigned long int i = 0; i < B->size; i++) {
         B->ptr[i] += A->ptr[sd->cpu_addresses[i]];
     }
     _profile(_CPU_SET_SELECT_BACK, 1);
 }
 
 void cpu_gather(Tensor *A, Tensor *B, GatherDescriptor *sd){
-    #pragma omp parallel for
-    for (int i = 0; i < B->size; i++) {
+    //#pragma omp parallel for
+    for (unsigned long int i = 0; i < B->size; i++) {
         A->ptr[sd->cpu_addresses[i]] = B->ptr[i];
     }
 }
 
 void cpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
-#pragma omp parallel for
-    for (int i = 0; i < B->size; i++) {
+    //#pragma omp parallel for
+    for (unsigned long int i = 0; i < B->size; i++) {
         B->ptr[i] = A->ptr[sd->cpu_addresses[i]];
     }
 }
@@ -335,15 +341,18 @@ void cpu_expand(Tensor *A, Tensor *B, ExpandDescriptor *sd){
 void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool mask_zeros){
     _profile(_CPU_SELECT2, 0);
     unsigned long int s = A->size / A->shape[0];
+ //   printf("%s s=%ld\n",__func__,s);
  
 #pragma omp parallel for
     for (int i = ini; i < end; i++) {
         unsigned long int p  = sind[i] * s;
         unsigned long int pb = (i - ini) * s;
+   //       printf("%s sind=%ld p=%ld pb=%ld\n",__func__,sind[i],p,pb);
  
-        for (int j = 0; j < s; j++, p++, pb++)
+        for (int j = 0; j < s; j++, p++, pb++) { 
             if ((mask_zeros)&&(sind[i]==0)) B->ptr[p]=0;
             else B->ptr[pb] = A->ptr[p];
+        }
     }
     _profile(_CPU_SELECT2, 1);
 }
@@ -374,7 +383,7 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
     int steps = A->stride[axis] * A->shape[axis];  // Equivalent to A->stride[axis-1], but without the negative index problem
 
     // Walk through each tensor
-    for (unsigned int i = 0; i < t.size(); i++) {
+    for (unsigned long int i = 0; i < t.size(); i++) {
         offset += src_stride;
         src_stride = t[i]->stride[axis] * t[i]->shape[axis];
 
@@ -383,8 +392,8 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
         float *src = t[i]->ptr;
 
         // Walk tensor i
-        #pragma omp parallel for
-        for (int j = 0; j < t[i]->size; j++) {
+        //#pragma omp parallel for
+        for (unsigned long int j = 0; j < t[i]->size; j++) {
             unsigned int k = j % src_stride;  // Pos (index) in the stride (src)
             unsigned int stride_idx = j / src_stride;  // Index of the stride (src/dst)
             unsigned int dest_offset = stride_idx * steps;  // Offset in dest
@@ -404,8 +413,8 @@ void cpu_repeat(Tensor* A, Tensor *B, const vector<unsigned int>& repeats, unsig
 
     // OMP does not want 'unsigned int's in the for loop
     // Source: https://stackoverflow.com/questions/2820621/why-arent-unsigned-openmp-index-variables-allowed
-    #pragma omp parallel for
-    for (int A_address = 0; A_address < A->size; A_address++) {
+    //#pragma omp parallel for
+    for (unsigned long int A_address = 0; A_address < A->size; A_address++) {
         auto* A_indices = new unsigned int[A->ndim];
         auto* B_indices = new unsigned int[B->ndim];
 

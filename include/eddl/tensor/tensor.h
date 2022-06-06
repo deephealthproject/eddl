@@ -72,8 +72,8 @@ typedef vector<int> tshape;
 class Tensor {
 private:
     // Load methods
-    static Tensor* load_from_bin(std::ifstream &ifs, int start_row, int end_row);
-    static Tensor* load_from_bin8(std::ifstream &ifs, int start_row, int end_row);
+    static Tensor* load_from_bin(std::ifstream &ifs,  long int start_row,  long int end_row);
+    static Tensor* load_from_bin8(std::ifstream &ifs, long int start_row, long int end_row);
     static Tensor* load_from_img(const string &filename, const string &format);
 //    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);  // Deprecated
 //    static Tensor* load_from_txt(std::ifstream &ifs, char delimiter, int headerRows);  // Deprecated
@@ -313,7 +313,7 @@ public:
       *  @param end_row  Index for the last row (ends at n-1)
       *  @return    Tensor
     */
-    static Tensor* load_partial(const string& filename, int start_row=0, int end_row=-1);
+    static Tensor* load_partial(const string& filename,  long int start_row=0,  long int end_row=-1);
 
     /**
       *  @brief Save tensor to a filestream.

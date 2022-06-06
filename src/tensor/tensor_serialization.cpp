@@ -76,9 +76,12 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
     return nullptr; // To silent warnings
 }
 
-Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
+Tensor* Tensor::load_from_bin(std::ifstream &ifs,  long int start_row,  long int end_row){
     int r_ndim;
   
+     if (1) {
+        printf("[Debug] LOAD: start_row=%d end_row=%d\n",start_row, end_row);
+    }
     high_resolution_clock::time_point e1 = high_resolution_clock::now();
     // Load number of dimensions
     ifs.read(reinterpret_cast<char *>(&r_ndim),  sizeof(int));
@@ -88,11 +91,11 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
     ifs.read(reinterpret_cast<char *>(r_shape.data()), r_ndim * sizeof(int));
 
     // Compute total size
-    int r_size = 1;
+     long int r_size = 1;
     for (int i = 0; i < r_ndim; i++) {
         r_size *= r_shape[i];
     }
-    if (DEBUG) {
+    if (1) {
         printf("[Debug] LOAD: dim=%d ", r_ndim);
         for (int i = 0; i < r_ndim; i++) {
             printf("shape[%d]=%d ", i, r_shape[i]);
@@ -103,14 +106,14 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
     vector<int> tmp_stride = shape2stride(r_shape);
 
     // Compute offsets and positions to read
-    int start_offset = start_row * tmp_stride[0];
-    int n_read;
+     long int start_offset = start_row * tmp_stride[0];
+     long int n_read;
 
     if(end_row<0){
         n_read = r_size;
     }else{
         // Compute bytes to read
-        int n_rows = end_row - start_row;
+        unsigned long int n_rows = end_row - start_row;
         n_read = n_rows * tmp_stride[0];
 
         // Set new shape
@@ -119,9 +122,17 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
         // Set cursor's position
         ifs.seekg(start_offset*sizeof(float), std::ifstream::cur);
     }
+     if (1) {
+        printf("[Debug] LOAD: start_offset=%d n_read=%ld ", start_offset, n_read);
+        
+        printf("\n");
+    }
 
+ 
     auto *t1 = new Tensor(r_shape, DEV_CPU);
     ifs.read(reinterpret_cast<char*>(t1->ptr), n_read * sizeof(float));
+    if (!ifs)
+      std::cout << "error: only " << ifs.gcount() << " could be read";
     
     high_resolution_clock::time_point e2 = high_resolution_clock::now();
     duration<double> epoch_time_span = e2 - e1;
@@ -136,14 +147,19 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs, int start_row, int end_row){
     // Return new tensor
     auto *t1 = new Tensor(r_shape, r_ptr, DEV_CPU);
     */
-//    t1->info();
+    
+    //t1->info();
+    //t1->print();
     return t1;
 }
 
 
-Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
+Tensor* Tensor::load_from_bin8(std::ifstream &ifs, long int start_row, long int end_row){
     int r_ndim;
 
+     if (1) {
+        printf("[Debug] LOAD: start_row=%d end_row=%d\n",start_row, end_row);
+    }
     high_resolution_clock::time_point e1 = high_resolution_clock::now();
     // Load number of dimensions
     ifs.read(reinterpret_cast<char *>(&r_ndim),  sizeof(int));
@@ -153,10 +169,10 @@ Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
     ifs.read(reinterpret_cast<char *>(r_shape.data()), r_ndim * sizeof(int));
 
     // Compute total size
-    int r_size = 1;
+    long int r_size = 1;
     for(int i=0; i<r_ndim; i++){ r_size *= r_shape[i]; }
  
-    if (DEBUG) {
+    if (1) {
         printf("[Debug] LOAD8: dim=%d ", r_ndim);
         for (int i = 0; i < r_ndim; i++) {
             printf("shape[%d]=%d ", i, r_shape[i]);
@@ -167,8 +183,8 @@ Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
     vector<int> tmp_stride = shape2stride(r_shape);
 
     // Compute offsets and positions to read
-    int start_offset = start_row * tmp_stride[0];
-    int n_read;
+    long int start_offset = start_row * tmp_stride[0];
+    long int n_read;
 
     if(end_row<0){
         n_read = r_size;
@@ -183,7 +199,12 @@ Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
         // Set cursor's position
         ifs.seekg(start_offset*sizeof(float), std::ifstream::cur);
     }
-
+if (1) {
+        printf("[Debug] LOAD: start_offset=%d n_read=%ld ", start_offset, n_read);
+        
+        printf("\n");
+    }
+    
     auto *t1 = new Tensor(r_shape, DEV_CPU);
   
     // Data are unsigned char
@@ -196,19 +217,23 @@ Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
         t1->ptr[i] = (float) item;
     }
     */
-    int h=0;
-    
+    unsigned long h=0;
+     
     #define BUFFER_SIZE 1000
     unsigned char items[BUFFER_SIZE];
 
-    for (int i = 0; i < (n_read % BUFFER_SIZE); i++) {
+    for (long int i = 0; i < (n_read % BUFFER_SIZE); i++) {
         ifs.read(reinterpret_cast<char*> (&item), 1);
-        t1->ptr[h] = (float) item;
+        if (!ifs)
+      std::cout << "error: only " << ifs.gcount() << " could be read";
+        t1->ptr[h] = (float) (item);
         h++;
     }
     
-    for (int i = 0; i < (int)(n_read / BUFFER_SIZE); i++) {
+    for (long int i = 0; i < (int)(n_read / BUFFER_SIZE); i++) {
         ifs.read(reinterpret_cast<char*> (&items), BUFFER_SIZE);
+        if (!ifs)
+      std::cout << "error: only " << ifs.gcount() << " could be read";
         for (int k = 0; k < BUFFER_SIZE; k++) {
             t1->ptr[h] = (float) items[k];
             h++;
@@ -242,6 +267,17 @@ Tensor* Tensor::load_from_bin8(std::ifstream &ifs, int start_row, int end_row){
     */
 //    t1->info();
     //free(vs);
+    //t1->print();
+    
+    /*
+    if (n_read>50000000) {
+    auto* xout = t1->select({"0",":"});  
+    //xout->print();
+    xout->save("load.jpg");
+    delete xout;
+    }
+    */
+     
     return t1;
 }
 
@@ -305,7 +341,7 @@ Tensor* Tensor::load_from_ptr(void * src) {
 }
 
 
-Tensor* Tensor::load_partial(const string& filename, int start_row, int end_row) {
+Tensor* Tensor::load_partial(const string& filename,  long int start_row,  long int end_row) {
     // Infer format from filename
     string format = get_extension(filename);
 

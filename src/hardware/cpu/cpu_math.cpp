@@ -15,12 +15,12 @@
 
 void cpu_abs(Tensor *A, Tensor *B) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::fabs(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::fabs(A->ptr[i]);
 }
 
 void cpu_acos(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::acosf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::acosf(A->ptr[i]);
 }
 
 void cpu_add(Tensor *A, Tensor *B, float v) {
@@ -29,7 +29,7 @@ void cpu_add(Tensor *A, Tensor *B, float v) {
         _profile_cpu_tensor(A);
 #endif
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] + v;
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] + v;
 
 #ifdef CPU_DEBUG
     _profile_cpu_tensor(B);
@@ -39,22 +39,22 @@ void cpu_add(Tensor *A, Tensor *B, float v) {
 
 void cpu_asin(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::asinf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::asinf(A->ptr[i]);
 }
 
 void cpu_atan(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::atanf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::atanf(A->ptr[i]);
 }
 
 void cpu_ceil(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::ceilf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::ceilf(A->ptr[i]);
 }
 
 void cpu_clamp(Tensor *A, Tensor *B, float min, float max){
     #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i){
+    for (unsigned long int i = 0; i < A->size; ++i){
         if (A->ptr[i] < min){ B->ptr[i] = min; }
         else if(A->ptr[i] > max){ B->ptr[i] = max; }
         else { B->ptr[i] = A->ptr[i]; }
@@ -90,7 +90,7 @@ void cpu_clamp(Tensor *A, Tensor *B, float min, float max){
 
 void cpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max){
     #pragma omp parallel for
-    for (int i = 0; i < D->size; ++i){
+    for (unsigned long int i = 0; i < D->size; ++i){
         if (I->ptr[i] < min || I->ptr[i] > max){ PD->ptr[i] += 0.0f; }
         else{ PD->ptr[i] += D->ptr[i]; }  // * 1.0f
     }
@@ -98,53 +98,53 @@ void cpu_d_clamp(Tensor *D, Tensor *I, Tensor *PD, float min, float max){
 
 void cpu_cos(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::cosf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::cosf(A->ptr[i]);
 }
 
 void cpu_cosh(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::coshf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::coshf(A->ptr[i]);
 }
 
 void cpu_exp(Tensor *A, Tensor *B) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::expf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::expf(A->ptr[i]);
 }
 
 void cpu_floor(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::floorf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::floorf(A->ptr[i]);
 }
 
 void cpu_inv(Tensor *A, Tensor *B, float v){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = v/A->ptr[i];
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = v/A->ptr[i];
 }
 
 void cpu_log(Tensor *A, Tensor *B) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::logf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::logf(A->ptr[i]);
 }
 
 void cpu_log2(Tensor *A, Tensor *B) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::log2f(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::log2f(A->ptr[i]);
 }
 
 void cpu_log10(Tensor *A, Tensor *B) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::log10f(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::log10f(A->ptr[i]);
 }
 
 void cpu_logn(Tensor *A, Tensor *B, float n) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::logf(A->ptr[i])/::logf(n);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::logf(A->ptr[i])/::logf(n);
 }
 
 
 void cpu_mod(Tensor *A, Tensor *B, float v){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::fmod(A->ptr[i], v);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::fmod(A->ptr[i], v);
 }
 
 void cpu_mult(Tensor *A, Tensor *B, float v) {
@@ -152,8 +152,9 @@ void cpu_mult(Tensor *A, Tensor *B, float v) {
 	printf("cpu_mult (v = %f)\n", v);
 	_profile_cpu_tensor(A);
 #endif
+        
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] * v;
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] * v;
 #ifdef CPU_DEBUG
     _profile_cpu_tensor(B);
 #endif
@@ -166,7 +167,7 @@ void cpu_normalize(Tensor *A, Tensor *B, float min, float max){
     float min_ori = A->min();
 
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) {
+    for (unsigned long int i = 0; i < A->size; ++i) {
         B->ptr[i] = (max-min)/(max_ori-min_ori) * (A->ptr[i]-min_ori) + min;
     }
 }
@@ -176,37 +177,37 @@ void cpu_pow(Tensor *A, Tensor *B, float exp) {
     // Quite inefficient (x100 slower) in g++ except for pow_(x, 2) which is inlined as x*x
     // speed: 0.057887s
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::powf(A->ptr[i], exp);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::powf(A->ptr[i], exp);
 }
 
 void cpu_powb(Tensor *A, Tensor *B, float base) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::powf(base, A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::powf(base, A->ptr[i]);
 }
 
 void cpu_remainder(Tensor *A, Tensor *B, float v) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = fmod((v + fmod(A->ptr[i], v)), v);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = fmod((v + fmod(A->ptr[i], v)), v);
 }
 
 void cpu_round(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::roundf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::roundf(A->ptr[i]);
 }
 
 void cpu_rsqrt(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = 1.0f/::sqrtf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = 1.0f/::sqrtf(A->ptr[i]);
 }
 
 void cpu_sigmoid(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = 1.0f/(1.0f + ::expf(-A->ptr[i]));
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = 1.0f/(1.0f + ::expf(-A->ptr[i]));
 }
 
 void cpu_sign(Tensor *A, Tensor *B, float zero_sign){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) {
+    for (unsigned long int i = 0; i < A->size; ++i) {
         if(A->ptr[i] > 0.0f){
             B->ptr[i] = 1.0f;
         }else if(A->ptr[i] < 0.0f){
@@ -220,29 +221,29 @@ void cpu_sign(Tensor *A, Tensor *B, float zero_sign){
 
 void cpu_sin(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::sinf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::sinf(A->ptr[i]);
 }
 
 void cpu_sinh(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::sinhf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::sinhf(A->ptr[i]);
 }
 
 void cpu_sqr(Tensor *A, Tensor *B) {
     // pow(x, 2) == x*x  To know more, read comments in pow_'s function
     // speed: 0.000497s
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] * A->ptr[i];
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] * A->ptr[i];
 }
 
 void cpu_sqrt(Tensor *A, Tensor *B) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::sqrtf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::sqrtf(A->ptr[i]);
 }
 
 void cpu_tan(Tensor *A, Tensor *B){
 //    #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) {
+    for (unsigned long int i = 0; i < A->size; ++i) {
         float r1 = A->ptr[i];
         B->ptr[i] = ::tanf(A->ptr[i]);
         float r2 = B->ptr[i];
@@ -254,7 +255,7 @@ void cpu_tan(Tensor *A, Tensor *B){
 
 void cpu_tanh(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::tanhf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::tanhf(A->ptr[i]);
 }
 
 void cpu_trunc(Tensor *A, Tensor *B){
@@ -263,7 +264,7 @@ void cpu_trunc(Tensor *A, Tensor *B){
     _profile_cpu_tensor(A);
 #endif
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::truncf(A->ptr[i]);
+    for (unsigned long int i = 0; i < A->size; ++i) B->ptr[i] = ::truncf(A->ptr[i]);
 
 #ifdef CPU_DEBUG
     _profile_cpu_tensor(B);
@@ -282,7 +283,7 @@ void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
         printf(" input B : "); _profile_cpu_tensor(B);
 #endif
 #pragma omp parallel for
-    for (int i = 0; i < A->size; i++)
+    for (unsigned long int i = 0; i < A->size; i++)
         if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
         else C->ptr[i] = scA * A->ptr[i] + scB * B->ptr[i];
 }
@@ -292,7 +293,7 @@ void cpu_inc(Tensor *A, Tensor *B) {
 
 
     #pragma omp parallel for
-    for (int i = 0; i < A->size; i++){
+    for (unsigned long int i = 0; i < A->size; i++){
         B->ptr[i] += A->ptr[i];
     }
 
@@ -328,8 +329,8 @@ void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
 }
 
 void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
-#pragma omp parallel for
-    for (int i = 0; i < A->size; i++)
+    #pragma omp parallel for
+    for (unsigned long int i = 0; i < A->size; i++)
         if (incC) C->ptr[i] += A->ptr[i] / B->ptr[i];
         else C->ptr[i] = A->ptr[i] / B->ptr[i];
 }
@@ -342,7 +343,7 @@ void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
   _profile_cpu_tensor(B);
 #endif
 #pragma omp parallel for
-    for (int i = 0; i < A->size; i++)
+    for (unsigned long int i = 0; i < A->size; i++)
         if (incC) C->ptr[i] += A->ptr[i] * B->ptr[i];
         else C->ptr[i] = A->ptr[i] * B->ptr[i];
 #ifdef CPU_DEBUG
@@ -358,7 +359,7 @@ void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
         printf(" input B : "); _profile_cpu_tensor(B);
 #endif
 #pragma omp parallel for
-    for (int i = 0; i < A->shape[0]; i++) {
+    for (unsigned long int i = 0; i < A->shape[0]; i++) {
         int p=i*A->shape[1];
         for (int j = 0; j < A->shape[1]; j++, p++)
             C->ptr[p] = A->ptr[p] + B->ptr[j];
@@ -371,7 +372,7 @@ void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 
 #pragma omp parallel for
-    for (int i = 0; i < A->shape[0]; i++) {
+    for (unsigned long int i = 0; i < A->shape[0]; i++) {
         int p=i*A->shape[1];
         for (int j = 0; j < A->shape[1]; j++, p++)
             C->ptr[p] = A->ptr[p] + B->ptr[i];
@@ -381,28 +382,28 @@ void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 
 void cpu_maximum(Tensor* A, Tensor* B, float v){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) {
+    for (unsigned long int i = 0; i < A->size; ++i) {
         B->ptr[i] = ::max(A->ptr[i], v);
     }
 }
 
 void cpu_maximum(Tensor* A, Tensor* B, Tensor* C){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) {
+    for (unsigned long int i = 0; i < A->size; ++i) {
         C->ptr[i] = ::max(A->ptr[i], B->ptr[i]);
     }
 }
 
 void cpu_minimum(Tensor* A, Tensor* B, float v){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) {
+    for (unsigned long int i = 0; i < A->size; ++i) {
         B->ptr[i] = ::min(A->ptr[i], v);
     }
 }
 
 void cpu_minimum(Tensor* A, Tensor* B, Tensor* C){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) {
+    for (unsigned long int i = 0; i < A->size; ++i) {
         C->ptr[i] = ::min(A->ptr[i], B->ptr[i]);
     }
 }
@@ -442,7 +443,7 @@ void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 void cpu_argmax_d(Tensor *D, Tensor *O, Tensor *PD){
     int reduction_size = PD->size/D->size;
     #pragma omp parallel for
-    for (int i = 0; i < D->size; i++){
+    for (unsigned long int i = 0; i < D->size; i++){
         int argmax = (int)O->ptr[i];  // local
         int offset = i*reduction_size;
         PD->ptr[offset + argmax] += D->ptr[i];

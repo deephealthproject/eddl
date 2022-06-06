@@ -15,7 +15,7 @@ void cpu_rand_uniform(Tensor * A, float v)
 {
     _profile(_CPU_RAND_UNIFORM, 0);
     // #pragma omp parallel for # congruent random number generators are not compatible with parallel calls
-    for (int i = 0; i < A->size; ++i) A->ptr[i] = uniform() * v;
+    for (unsigned long int i = 0; i < A->size; ++i) A->ptr[i] = uniform() * v;
     _profile(_CPU_RAND_UNIFORM, 1);
 }
 
@@ -23,7 +23,7 @@ void cpu_rand_signed_uniform(Tensor * A, float v)
 {
     _profile(_CPU_RAND_SIGNED_UNIFORM, 0);
     // #pragma omp parallel for # congruent random number generators are not compatible with parallel calls
-    for (int i = 0; i < A->size; ++i) A->ptr[i] = signed_uniform() * v;
+    for (unsigned long int i = 0; i < A->size; ++i) A->ptr[i] = signed_uniform() * v;
     _profile(_CPU_RAND_SIGNED_UNIFORM, 1);
 }
 
@@ -31,7 +31,7 @@ void cpu_rand_binary(Tensor * A, float v)
 {
     _profile(_CPU_BINARY, 0);
     // #pragma omp parallel for # congruent random number generators are not compatible with parallel calls
-    for (int i = 0; i < A->size; ++i)
+    for (unsigned long int i = 0; i < A->size; ++i)
         if (uniform() < v) A->ptr[i] = 1.0;
         else A->ptr[i] = 0.0;
     _profile(_CPU_BINARY, 1);
@@ -42,9 +42,9 @@ void cpu_rand_normal(Tensor * A, float m, float s, bool fast_math) {
     int r = rand();
 
     if (fast_math) {
-        for (int i = 0; i < A->size; ++i) A->ptr[i] = fast_randn(m, s, r++);
+        for (unsigned long int i = 0; i < A->size; ++i) A->ptr[i] = fast_randn(m, s, r++);
     } else  {
-        for (int i = 0; i < A->size; ++i) A->ptr[i] = slow_randn(m, s);
+        for (unsigned long int i = 0; i < A->size; ++i) A->ptr[i] = slow_randn(m, s);
     }
     _profile(_CPU_RAND_NORMAL, 0);
 }

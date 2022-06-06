@@ -11,69 +11,66 @@
 
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
-void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map)
-{
-  _profile(_CPU_REDUCE, 0);
-  int i,j,min,max,sum;
-  int s=A->size/B->size;
+void cpu_reduce(Tensor *A, Tensor *B, string mode, int* map) {
+    _profile(_CPU_REDUCE, 0);
+    int  j, min, max, sum;
+    int s = A->size / B->size;
 
-  if (mode=="mean") {
-    B->fill_(0.0);
-    for(i=0;i<A->size;i++)
-      B->ptr[map[i]]+=A->ptr[i];
-    B->div_(s);
-  }
-  else if (mode=="variance") {
-    Tensor *C=B->clone();
-    C->fill_(0.0);
-    for(i=0;i<A->size;i++)
-      C->ptr[map[i]]+=A->ptr[i];
-    C->div_(s);
+    if (mode == "mean") {
+        B->fill_(0.0);
+        for (unsigned long i = 0; i < A->size; i++)
+            B->ptr[map[i]] += A->ptr[i];
+        B->div_(s);
+    } else if (mode == "variance") {
+        Tensor *C = B->clone();
+        C->fill_(0.0);
+        for (unsigned long i = 0; i < A->size; i++)
+            C->ptr[map[i]] += A->ptr[i];
+        C->div_(s);
 
-    B->fill_(0.0);
-    for(i=0;i<A->size;i++) {
-      float fv=A->ptr[i]-C->ptr[map[i]];
-      B->ptr[map[i]]+=fv*fv;
+        B->fill_(0.0);
+        for (unsigned long i = 0; i < A->size; i++) {
+            float fv = A->ptr[i] - C->ptr[map[i]];
+            B->ptr[map[i]] += fv*fv;
+        }
+        B->div_(s);
+
+        delete C;
+    } else {
+        throw std::invalid_argument("mode: " + mode + " not yet implemented");
     }
-    B->div_(s);
-
-    delete C;
-  }
-  else {
-    throw std::invalid_argument("mode: " + mode + " not yet implemented");
-  }
     _profile(_CPU_REDUCE, 1);
 }
-void cpu_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
-{
-    cpu_reduce(A,B,mode,MD->ind);
+
+void cpu_reduce(Tensor *A, Tensor *B, string mode, MapReduceDescriptor *MD) {
+    cpu_reduce(A, B, mode, MD->ind);
 }
 
 
 void cpu_reduce_op(Tensor *A, Tensor *B,string op,int* map)
 {
     _profile(_CPU_REDUCE_OP, 0);
-  int i,j,min,max,sum;
+  int j,min,max,sum;
   int s=A->size/B->size;
 
   if (op=="sum") {
     #pragma omp parallel for
-    for(i=0;i<A->size;i++)
+    for(unsigned long i=0;i<A->size;i++)
       B->ptr[map[i]]+=A->ptr[i];
   }
   else if (op=="diff"){
     #pragma omp parallel for
-    for(i=0;i<A->size;i++)
+    for(unsigned long i=0;i<A->size;i++)
       B->ptr[map[i]]-=A->ptr[i];
   }
   else if (op=="mult"){
     #pragma omp parallel for
-    for(i=0;i<A->size;i++)
+    for(unsigned long i=0;i<A->size;i++)
       B->ptr[map[i]]*=A->ptr[i];
   }
   else if (op=="div"){
     #pragma omp parallel for
-    for(i=0;i<A->size;i++)
+    for(unsigned long i=0;i<A->size;i++)
       B->ptr[map[i]]/=A->ptr[i];
   }
   else {
