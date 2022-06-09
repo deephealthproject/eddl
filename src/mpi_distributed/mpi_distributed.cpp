@@ -12,10 +12,14 @@
 
 #include "eddl/mpi_distributed/mpi_distributed.h"
 
+#include <chrono>
+
 #include <sys/types.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <unistd.h>
+
+using namespace std::chrono;
 
 
 #define GPU_1_distributed \
@@ -1238,8 +1242,8 @@ void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     else {
         pos = rand() % dg_nbpp;
     }
-    fprintf(tmp_fp,"%s sizeof(size_t)=%d perfect=%d buffer_index=%d num_batches=%d sizes= %ld %ld pos=%d\n", __func__, sizeof(size_t), perfect, buffer_index, dg_nbpp, n_sizeX, n_sizeY,pos);
-    fflush(tmp_fp);
+    //fprintf(tmp_fp,"%s sizeof(size_t)=%d perfect=%d buffer_index=%d num_batches=%d sizes= %ld %ld pos=%d\n", __func__, sizeof(size_t), perfect, buffer_index, dg_nbpp, n_sizeX, n_sizeY,pos);
+    //fflush(tmp_fp);
     //pos=0;
 
 #ifdef DEBUG_DONE
@@ -1518,6 +1522,7 @@ __thread int curr_ds_ptr = 0;
 void * producer_perfect(void* arg) {
     bool run_producer = true;
     pid_t tid = pthread_self();
+    double loadsecs;
     
     //__thread long record;
     while (run_producer) {
@@ -1535,10 +1540,12 @@ void * producer_perfect(void* arg) {
         if (ptr_in >= dg_buffer_size) ptr_in = 0;
         sem_post(&dmutex);
         if (run_producer) {
+            TIME_POINT1(load);
             if (use_mpi==0)
                 loadXY_perfect(curr_ptr, id*dg_nbpp+curr_ds_ptr, dg_perfect);
             else
                 loadXY_perfect_distr(curr_ptr, id*dg_nbpp+curr_ds_ptr, dg_perfect);
+            TIME_POINT2(load, loadsecs);
             //loadXY_Rand(curr_ptr);
             //record=rand() % dg_num_batches;
             //load(fpX, ndimX, shape_sizeX, record, bufferX, curr_ptr);
@@ -1549,7 +1556,7 @@ void * producer_perfect(void* arg) {
             sem_post(&vaciar);
         }
         if ((ds_ptr % 10) == 0) {
-            fprintf(tmp_fp, "Thread: %ld ptr_in=%d ptr_out=%d ds_ptr=%d buffer_count=%d\n", tid, ptr_in, ptr_out, ds_ptr, buffer_count);
+            fprintf(tmp_fp, "Thread: %ld ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d\n", tid, ptr_in, ptr_out, ds_ptr, (loadsecs*dg_num_threads)/ds_ptr, buffer_count);
             fflush(tmp_fp);
         }
     }
