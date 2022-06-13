@@ -29,6 +29,7 @@
 
 //#define FPGA_DEBUG
 //#define WRITE_TENSORS_TO_FILE
+//#define FPGA_INFERENCE_ONLY
 
 
 #define MAX_KERNELS 16
@@ -67,7 +68,9 @@ extern bool hlsinf_stm_support;
 extern bool hlsinf_maxp_support;
 extern bool hlsinf_avgp_support;
 extern bool hlsinf_bn_support;
+extern bool hlsinf_bn_relu_support;
 extern bool hlsinf_add_support;
+extern bool hlsinf_add_relu_support;
 extern bool hlsinf_upsize_support;
 extern bool hlsinf_dense_support;
 extern int  hlsinf_weight_buffer;

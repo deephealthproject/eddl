@@ -40,8 +40,11 @@ public:
     int pos_shift;               // Number of bits to shift
     int dir_shift;               // Shift direction, left or right
     int enable_batch_norm;       // Enabled batch normalization
+    int enable_bn_relu;          // Enabled relu after BN
+    float bn_relu_factor;        // relu factor for leaky relu after bn
     int enable_add;              // Enabled Tensor Add operation
-    int enable_upscale;          // Enabled Upscale operation
+    int enable_add_relu;         // Enabled ReLu activation after add operation
+    int upscale_factor;          // Upscale factor
     int dense_operation;         // Enabled dense operation to be performed
     int use_weight_buffer;       // The weight buffer must be used
     int first_row_weight_buffer; // First row to be used in the weight buffer
@@ -57,12 +60,12 @@ public:
     // Constructor with only one parent layer 
     LHLSinf(Layer * parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
               int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
-              int enable_avgp, int enable_batch_norm, int enable_add, int enable_upscale, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem) ;
+              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem) ;
 
     // Constructor with multiple parent layers
     LHLSinf(vector<Layer * >parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
               int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
-              int enable_avgp, int enable_batch_norm, int enable_add, int enable_upscale, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem);
+              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem);
 
     // Methods
     Layer *share(int c, int bs, vector<Layer *> p) override;

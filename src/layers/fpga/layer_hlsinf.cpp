@@ -22,16 +22,16 @@ int LHLSinf::total_layers = 0;
 // Constructor (one parent layer)
 LHLSinf::LHLSinf(Layer * parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
               int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
-              int enable_avgp, int enable_batch_norm, int enable_add, int enable_upscale, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem) :
+              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem) :
               LHLSinf(vector<Layer*> {parent}, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr,
-              enable_relu, relu_factor, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp, enable_batch_norm,
-              enable_add, enable_upscale, dense_operation, use_weight_buffer, first_row_weight_buffer, name, dev, mem) {  
+              enable_relu, relu_factor, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp, enable_batch_norm, enable_bn_relu, bn_relu_factor,
+              enable_add, enable_add_relu, upscale_factor, dense_operation, use_weight_buffer, first_row_weight_buffer, name, dev, mem) {  
 };
 
 // Constructor (multiple parent layers)
 LHLSinf::LHLSinf(vector<Layer * > parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
               int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
-              int enable_avgp, int enable_batch_norm, int enable_add, int enable_upscale, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem)  : MLayer(name, dev, mem) {
+              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem)  : MLayer(name, dev, mem) {
 
     if(name.empty()) this->name = "HLSinf" + to_string(++total_layers);
 
@@ -54,8 +54,11 @@ LHLSinf::LHLSinf(vector<Layer * > parent, int h, int w, int ichannels, int ochan
     this->enable_maxp       = enable_maxp;
     this->enable_avgp       = enable_avgp;
     this->enable_batch_norm = enable_batch_norm;
+    this->enable_bn_relu    = enable_bn_relu;
+    this->bn_relu_factor    = bn_relu_factor;
     this->enable_add        = enable_add;
-    this->enable_upscale    = enable_upscale;
+    this->enable_add_relu   = enable_add_relu;
+    this->upscale_factor    = upscale_factor;
     this->dense_operation   = dense_operation;
     this->use_weight_buffer = use_weight_buffer;
     this->first_row_weight_buffer = first_row_weight_buffer;
@@ -93,7 +96,9 @@ LHLSinf::LHLSinf(vector<Layer * > parent, int h, int w, int ichannels, int ochan
     int HO = (H + PT + PB - KH + SH) / SH;
     int WO = (W + PL + PR - KW + SW) / SW;
     if (enable_maxp || enable_avgp) {HO = HO / 2;  WO = WO / 2;}
-    if (enable_upscale) {HO = HO * 2; WO = WO * 2;}
+    if (upscale_factor == -1) {printf("Error, upscale factor in HLSinf layer constructor\n"); exit(1);}
+    HO = HO * upscale_factor;
+    WO = WO * upscale_factor;
 
     // Now, we create the tensors needed
     this->filter = new Tensor(vector<int>{ochannels, ichannels, KH, KW}, dev);
@@ -194,8 +199,8 @@ void LHLSinf::forward() {
       }
     }
     // Now, we call the accelerator
-    fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_batch_norm, enable_maxp, enable_avgp,
-		            enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_upscale, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized,
+    fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_maxp, enable_avgp,
+		            enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_add_relu, enable_stm, upscale_factor, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized,
                 this->filter, this->bias, this->batch_norm_values, this->output);
     // in case we initialized buffer we annotate it
     if (use_weight_buffer && !weight_buffer_initialized) weight_buffer_initialized = 1;
@@ -210,7 +215,7 @@ void LHLSinf::backward() {msg("NotImplementedError", "LHLSinf::backward");}
 Layer *LHLSinf::share(int c, int bs, vector<Layer *> p) {
  auto *n = new LHLSinf(p, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor,
                       enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp,
-                      enable_batch_norm, enable_add, enable_upscale, dense_operation, use_weight_buffer, first_row_weight_buffer, "HLSinf_"+to_string(c)+this->name, this->dev, this->mem_level);
+                      enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_add, enable_add_relu, upscale_factor, dense_operation, use_weight_buffer, first_row_weight_buffer, "HLSinf_"+to_string(c)+this->name, this->dev, this->mem_level);
 
  //share params and gradients
  for (int i = 0; i < n->params.size(); i++) delete n->params[i];
@@ -223,7 +228,7 @@ Layer *LHLSinf::share(int c, int bs, vector<Layer *> p) {
 Layer *LHLSinf::clone(int c, int bs, vector<Layer *> p, int todev) {
   auto *n = new LHLSinf(p, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor,
                     enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp,
-                    enable_batch_norm, enable_add, enable_upscale, dense_operation, use_weight_buffer, first_row_weight_buffer, name, todev, this->mem_level);
+                    enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_add, enable_add_relu, upscale_factor, dense_operation, use_weight_buffer, first_row_weight_buffer, name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

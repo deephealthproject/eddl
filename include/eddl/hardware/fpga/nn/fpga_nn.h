@@ -19,8 +19,8 @@
 // HLSinf accelerator
 void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, int Ochannels, 
                  int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, 
-                 int enable_relu, float relu_factor, int enable_batch_norm, int enable_maxp, int enable_avgp, 
-                 int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_add, int enable_stm, int enable_upscale, 
+                 int enable_relu, float relu_factor, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_maxp, int enable_avgp, 
+                 int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_add, int enable_add_relu, int enable_stm, int enable_upscale, 
                  int use_weight_buffer, int first_row_weight_buffer, int weight_buffer_initialized,
                  Tensor *filter, Tensor *bias, Tensor* batch_norm_values, Tensor *output);
 

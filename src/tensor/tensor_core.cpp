@@ -867,6 +867,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
 
 
     if ((A->isCPU()) && (B->isCPU())) {
+	printf("SELECT!\n");
         cpu_select(A, B, sind, ini, end,mask_zeros);
     }
     else if ((A->isGPU()) && (B->isCPU())) {

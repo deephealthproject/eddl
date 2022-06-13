@@ -13,6 +13,7 @@
 #include <algorithm>
 
 #include "eddl/hardware/cpu/cpu_profile.h"
+#include "eddl/hardware/fpga/fpga_hw.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -168,9 +169,12 @@ void ConvolDescriptor::build(Tensor *A) {
         if (mem_level < 2) {
             // mem for ptr, lowering im2col
             unsigned long int l_size =  (unsigned long)(A->shape[0] * r * c) * (unsigned long)(kr * kc * kz);
+	    printf("size im2col: %ld\n", l_size);
+#if !defined FPGA_INFERENCE_ONLY
             ptrI=get_fmem(l_size,"ConvolDescriptor::build");
             matI=Eigen::Map<Eigen::MatrixXf>(ptrI, r*c,kz*kr*kc);
-               _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
+            _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
+#endif
         }
     }
 #ifdef cGPU

@@ -177,10 +177,10 @@ void *fpga_create_memory(long int size) {
   printf("    (creating memory in fpga size %d)\n", size);
   #endif
 
-  //cl_mem_ext_ptr_t data_ddr;
-  //data_ddr.flags  =  0 | XCL_MEM_TOPOLOGY;
-  //data_ddr.obj = NULL;
-  //data_ddr.param = 0;
+//  cl_mem_ext_ptr_t data_ddr;
+//  data_ddr.flags  =  0 | XCL_MEM_TOPOLOGY;
+//  data_ddr.obj = NULL;
+//  data_ddr.param = 0;
 
   OCL_CHECK(err, buffer = new cl::Buffer(*context, CL_MEM_READ_WRITE /*| CL_MEM_EXT_PTR_XILINX*/, size, NULL /*&data_ddr*/, &err));
   return (void *)buffer;
@@ -407,6 +407,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
 
     for (int b=0; b<B_in; b++) {
       for (int c=0; c<C_in; c++) {
+	#pragma omp parallel for
         for (int h=0; h<H_in; h++) {
           for (int w=0; w<W_in; w++) {
             int addr_src = (b * C_in * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
@@ -422,6 +423,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     #ifdef FPGA_DEBUG
     printf("  output  "); _profile_cpu_tensor(B);
     #endif
+
     // copy to FPGA, source is in CPU and is in FP32, depending on the output format of HLSinf we convert if needed
     if (hlsinf_input_format == HLSINF_FP32) {
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
@@ -583,6 +585,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     if (hlsinf_output_format == HLSINF_FP32) {
       for (int b=0; b<B_in; b++) {
         for (int c=0; c<C_in; c++) {
+          #pragma omp parallel for
           for (int h=0; h<H_in; h++) {
             for (int w=0; w<W_in; w++) {
               int g = c / CPI;
