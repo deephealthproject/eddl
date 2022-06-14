@@ -89,6 +89,8 @@ void LConv3D::mem_delta(){
         if(this->verbosity_level >= 2) {
             std::cout << "Booked delta for: " + this->name << std::endl;
         }
+    } else {
+        this->delta->resize(this->output->shape[0]);
     }
 }
 

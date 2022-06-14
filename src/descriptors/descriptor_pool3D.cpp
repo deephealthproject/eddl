@@ -167,14 +167,19 @@ void PoolDescriptor3D::resize(int b) {
   O->resize(b);
 #ifdef cCUDNN
   if(!O->isCPU()){
-   int dims[5] = {b, iz, id, ir, ic};
-   int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
-   cudnnSetTensorNdDescriptor(xDesc, data_type,5,dims,str);
+      cudnnDestroyTensorDescriptor(xDesc);
+      cudnnDestroyTensorDescriptor(yDesc);
 
-   int ydims[5] = {b,z,d,r,c};
-   int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
-   cudnnSetTensorNdDescriptor(yDesc, data_type, 5, ydims, ystr);
+      cudnnCreateTensorDescriptor(&xDesc);
+      cudnnCreateTensorDescriptor(&yDesc);
 
+       int dims[5] = {b, iz, id, ir, ic};
+       int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
+       cudnnSetTensorNdDescriptor(xDesc, data_type,5,dims,str);
+
+       int ydims[5] = {b,z,d,r,c};
+       int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
+       cudnnSetTensorNdDescriptor(yDesc, data_type, 5, ydims, ystr);
 }
 
 

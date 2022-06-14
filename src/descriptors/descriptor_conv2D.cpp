@@ -77,6 +77,9 @@ ConvolDescriptor::~ConvolDescriptor(){
             delete gpuOB;
         }
     }
+#else
+    cudnnDestroyTensorDescriptor(xDesc);
+    cudnnDestroyTensorDescriptor(yDesc);
 #endif
 #endif
 
@@ -219,8 +222,7 @@ void ConvolDescriptor::build(Tensor *A) {
                                     convolution_mode, data_type);
 
    cudnnCreateTensorDescriptor(&xDesc);
-   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                 in,iz,ir,ic);
+   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type, in,iz,ir,ic);
 
    cudnnCreateFilterDescriptor(&wDesc);
    cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
@@ -264,11 +266,15 @@ void ConvolDescriptor::resize(int b)
 #endif
 
 #ifdef cCUDNN
-   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                 b,iz,ir,ic);
+   cudnnDestroyTensorDescriptor(xDesc);
+   cudnnDestroyTensorDescriptor(yDesc);
 
+   cudnnCreateTensorDescriptor(&xDesc);
    cudnnCreateTensorDescriptor(&yDesc);
-   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+
+   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type, b,iz,ir,ic);
+   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, b, O->shape[1],O->shape[2],O->shape[3]);
+
    cudnn_env_init = -1;
    cudnn_conv_back_init = -1;
 
