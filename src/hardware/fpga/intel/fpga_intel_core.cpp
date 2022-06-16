@@ -55,7 +55,7 @@ cl_program                  program = NULL;
 
 //cl_command_queue queues[K_SUBERNELS];
 cl_command_queue   q;
-cl_kernel          kernel_hlsinf[16][K_SUBKERNELS]; // this is kernel_hlsinf  WHY 16 SET "FORCED"
+cl_kernel          kernel_hlsinf[MAX_KERNELS][K_SUBKERNELS]; // this is kernel_hlsinf  WHY 16 SET "FORCED"
 cl_event           kernel_events[MAX_KERNELS][K_SUBKERNELS];
 
 // -------------------------------------------------------------------------------------------------------------------------------------------
@@ -83,6 +83,8 @@ extern bool hlsinf_bn_support;
 extern bool hlsinf_add_support;
 extern bool hlsinf_upsize_support;
 extern bool hlsinf_dense_support;
+
+extern bool hlsinf_intelkernel_version_implements_bn_add;
 
 // -------------------------------------------------------------------------------------------------------------------------------------------
 // OpenCL-related support functions ----------------------------------------------------------------------------------------------------------
@@ -153,6 +155,102 @@ void event_cb(cl_event event1, cl_int cmd_status, void *data) {
   #endif
 }
 
+
+//  just for debug purposes
+#define STRING_BUFFER_LEN 1024
+// Helper functions to display parameters returned by OpenCL queries
+void device_info_ulong( cl_device_id device, cl_device_info param, const char* name) {
+   cl_ulong a;
+   clGetDeviceInfo(device, param, sizeof(cl_ulong), &a, NULL);
+   printf("%-40s = %lu\n", name, a);
+}
+void device_info_uint( cl_device_id device, cl_device_info param, const char* name) {
+   cl_uint a;
+   clGetDeviceInfo(device, param, sizeof(cl_uint), &a, NULL);
+   printf("%-40s = %u\n", name, a);
+}
+void device_info_bool( cl_device_id device, cl_device_info param, const char* name) {
+   cl_bool a;
+   clGetDeviceInfo(device, param, sizeof(cl_bool), &a, NULL);
+   printf("%-40s = %s\n", name, (a?"true":"false"));
+}
+void device_info_string( cl_device_id device, cl_device_info param, const char* name) {
+   char a[STRING_BUFFER_LEN]; 
+   clGetDeviceInfo(device, param, STRING_BUFFER_LEN, &a, NULL);
+   printf("%-40s = %s\n", name, a);
+}
+void display_device_info( ) {
+
+   printf("Querying device for info:\n");
+   printf("========================\n");
+   device_info_string(device, CL_DEVICE_NAME, "CL_DEVICE_NAME");
+   device_info_string(device, CL_DEVICE_VENDOR, "CL_DEVICE_VENDOR");
+   device_info_uint(device, CL_DEVICE_VENDOR_ID, "CL_DEVICE_VENDOR_ID");
+   device_info_string(device, CL_DEVICE_VERSION, "CL_DEVICE_VERSION");
+   device_info_string(device, CL_DRIVER_VERSION, "CL_DRIVER_VERSION");
+   device_info_uint(device, CL_DEVICE_ADDRESS_BITS, "CL_DEVICE_ADDRESS_BITS");
+   device_info_bool(device, CL_DEVICE_AVAILABLE, "CL_DEVICE_AVAILABLE");
+   device_info_bool(device, CL_DEVICE_ENDIAN_LITTLE, "CL_DEVICE_ENDIAN_LITTLE");
+   device_info_ulong(device, CL_DEVICE_GLOBAL_MEM_CACHE_SIZE, "CL_DEVICE_GLOBAL_MEM_CACHE_SIZE");
+   device_info_ulong(device, CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE, "CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE");
+   device_info_ulong(device, CL_DEVICE_GLOBAL_MEM_SIZE, "CL_DEVICE_GLOBAL_MEM_SIZE");
+   device_info_bool(device, CL_DEVICE_IMAGE_SUPPORT, "CL_DEVICE_IMAGE_SUPPORT");
+   device_info_ulong(device, CL_DEVICE_LOCAL_MEM_SIZE, "CL_DEVICE_LOCAL_MEM_SIZE");
+   device_info_ulong(device, CL_DEVICE_MAX_CLOCK_FREQUENCY, "CL_DEVICE_MAX_CLOCK_FREQUENCY");
+   device_info_ulong(device, CL_DEVICE_MAX_COMPUTE_UNITS, "CL_DEVICE_MAX_COMPUTE_UNITS");
+   device_info_ulong(device, CL_DEVICE_MAX_CONSTANT_ARGS, "CL_DEVICE_MAX_CONSTANT_ARGS");
+   device_info_ulong(device, CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, "CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE");
+   device_info_uint(device, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, "CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS");
+   device_info_uint(device, CL_DEVICE_MEM_BASE_ADDR_ALIGN, "CL_DEVICE_MEM_BASE_ADDR_ALIGN");
+   device_info_uint(device, CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE, "CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE");
+   device_info_uint(device, CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR, "CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR");
+   device_info_uint(device, CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT, "CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT");
+   device_info_uint(device, CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT, "CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT");
+   device_info_uint(device, CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG, "CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG");
+   device_info_uint(device, CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT, "CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT");
+   device_info_uint(device, CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE, "CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE");
+
+   {
+      cl_command_queue_properties ccp;
+      clGetDeviceInfo(device, CL_DEVICE_QUEUE_PROPERTIES, sizeof(cl_command_queue_properties), &ccp, NULL);
+      printf("%-40s = %s\n", "Command queue out of order? ", ((ccp & CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE)?"true":"false"));
+      printf("%-40s = %s\n", "Command queue profiling enabled? ", ((ccp & CL_QUEUE_PROFILING_ENABLE)?"true":"false"));
+   }
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+size_t fpga_datatype_sizeof(int data_type) {
+  ssize_t datatype_size;
+  if (data_type == HLSINF_FP32 ) {
+    datatype_size = sizeof(float);
+  } else if (data_type == HLSINF_API8 ) {
+    datatype_size = sizeof(int8_t);
+  } else {
+    printf("@fpga_datatype_sizeof. Intel FPGA Data (%d) type not supported\n", data_type);
+    exit(1);
+  }
+  return datatype_size;
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+float fpga_buffer_get_value_in_float(float *buf, int data_format, int index) {
+  float v;
+
+  if (data_format == HLSINF_FP32) {
+    float *p = buf;
+    v = p[index];
+  } else if (data_format== HLSINF_API8) {
+    int8_t *p = (int8_t *)buf;
+    v =p[index];
+  } else {
+    printf("@fpga_buffer_get_value_in_float. Intel FPGA Data (%d) type not supported\n", data_format);
+    exit(1);
+  }
+
+  return v;
+}
+
+
 // -----------------------------------------------------------------------------------------------------------------------------------
 // FPGA initialization and finalization functions
 
@@ -172,7 +270,7 @@ void close_fpga() {
 // fpga_init()
 // Initialices the device, sets up the kernels, prepares everything related to the FPGA device and support infrastructure
 // This function must be called only once and at the begining of operations with the FPGA
-void fpga_device_init() {
+void fpga_device_init(int device_type) {
   #ifdef FPGA_DEBUG
   printf("initializing Intel FPGA\n");
   #endif
@@ -193,13 +291,27 @@ void fpga_device_init() {
   //char *binaryFile = new char [hlsinf_xclbin.length()+1];
   //std::strcpy (binaryFile, hlsinf_xclbin.c_str());
 
-  platform = findPlatform("Intel(R) FPGA SDK for OpenCL(TM)");
+  if (device_type == FPGA_PLATFORM_STRATIX_10MX_EB) {
+    platform = findPlatform("Intel(R) FPGA SDK for OpenCL(TM)");
+  }
+  else if (device_type == FPGA_PLATFORM_STRATIX_10MX_EB_EMULATION){ 
+    platform = findPlatform("Intel(R) FPGA Emulation Platform for OpenCL(TM)");;
+  }
+  else {
+    printf("ERROR at fpga_device_init: UNKNOWN platform id %d\n", device_type);
+  }
+
   err = 0;
   if (platform == NULL) {err = CL_DEVICE_NOT_FOUND;}
   OCL_CHECK(err, " -- ");
 
   // let's get the device id for the intel fpga, let's assume it is the first intel fpga in the list
   OCL_CHECK(err, err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 1, &device, 0));
+
+
+  #ifdef FPGA_DEBUG
+  display_device_info();
+  #endif
 
   //// Start everything at NULL to help identify errors
   //for(int i = 0; i < K_SUBKERNELS; ++i){
@@ -215,27 +327,14 @@ void fpga_device_init() {
   }
 
   // let's create the context
-  //OCL_CHECK(err, context = new cl::Context(device, NULL, NULL, NULL, &err));
   OCL_CHECK(err, context = clCreateContext(0, 1, &device, &oclContextCallback, 0, &err));
 
   // let's create the command queues for each subkernel
-  //OCL_CHECK(err, q = new cl::CommandQueue(*context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
-  //for(int i=0; i<K_SUBKERNELS; ++i) {
-  //    OCL_CHECK(err, queues[i] = clCreateCommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err););
-  //}
   OCL_CHECK(err, q = clCreateCommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err););
 
-
-
-  //std::string device_name = device.getInfo<CL_DEVICE_NAME>();
-  //auto fileBuf = xcl::read_binary_file(hlsinf_xclbin);
-  // let's load the kernel binary file
+  // let's load the kernel file for the stratix fpga(aocx)
   OCL_CHECK(err, bin_file = load_file(hlsinf_xclbin.c_str(), &bin_file_len, &err));
 
-  //cl::Program::Binaries bins;
-  //bins = cl::Program::Binaries{{fileBuf.data(), fileBuf.size()}};
-  //devices.resize(1);
-  //OCL_CHECK(err, program = new cl::Program(*context, devices, bins, NULL, &err));
   // let's create the program
   OCL_CHECK(err, program = clCreateProgramWithBinary(context, 1, &device, &bin_file_len, &bin_file, &bin_status, &err));
   OCL_CHECK(err, err = clBuildProgram(program, 1, &device, "", NULL, NULL));
@@ -248,12 +347,21 @@ void fpga_device_init() {
   // Now, we instatiate every possible kernel (enabled by the proper define)
   for (int k=0; k<hlsinf_num_kernels; k++) {
     for(int l=0; l<K_SUBKERNELS; ++l) {
+      #ifdef FPGA_DEBUG
+      std::cout << "Creating ocl kernel # " << k << "  subkernel # " << l << "  subkernel name " << subkernel_names[l] << std::endl;
+      #endif
+      if (!hlsinf_intelkernel_version_implements_bn_add && ((l == K_BATCH_NORM_READER) || (l ==K_ADD_DATA_READER) || (l == K_BATCH_NORM) || (l == K_ADD_DATA)) )  {
+        #ifdef FPGA_DEBUG
+        std::cout << "    skipped. " <<"  INTEL FPGA kernel does not include BatchNormalization nor ADD suuport, skip kernel " << subkernel_names[l] <<" initialization!" << std::endl;
+        #endif
+        continue;
+      }
       OCL_CHECK(err, kernel_hlsinf[k][l] = clCreateKernel(program, subkernel_names[l], &err));
     }
   }
 
   #ifdef FPGA_DEBUG
-  printf("end of fpga_init\n");
+  printf("end of intel fpga device init\n");
   #endif
 }
 
@@ -264,25 +372,41 @@ void fpga_device_init() {
 
 
 void fpga_destroy_memory(void *fpga_ptrI) {
-  #ifdef FPGA_DEBUG_VERBOSE
-  printf("   destroy_memory buffer in FPGA\n");
-  #endif
+  cl_mem tmp_ptr = (cl_mem)fpga_ptrI;
+  //#ifdef FPGA_DEBUG_VERBOSE
+  //printf("   destroy_memory buffer in FPGA\n");
+  //#endif
   
-  //if(fpga_ptrI != nullptr) {
-  //  clReleaseMemObject(fpga_ptrI);
-  //}
+  if(fpga_ptrI != nullptr) {
+    clReleaseMemObject(tmp_ptr);
+  }
 }
 
+unsigned long int dbg_global_buffers_size = 0;
+
+
+//static uint jm10fpgacnt = 0;
 void *fpga_create_memory(cl_mem_flags flags, long int size) {
   // cl_mem already is a pointer, so we can directly return a "cl_mem" type
   cl_mem buffer;
   cl_int err;
   #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (creating memory in fpga size %zu)\n", size);
+  dbg_global_buffers_size += size;
+  printf("    (creating memory in fpga size %zu  (total %zu MB))\n", size, (dbg_global_buffers_size/1024/1024));
   #endif
 
+  OCL_CHECK(err, buffer = clCreateBuffer(context, flags|CL_MEM_HETEROGENEOUS_INTELFPGA, size, nullptr, &err));
+
+ // cl_mem_flags fl_ch = jm10fpgacnt == 0 ? CL_CHANNEL_1_INTELFPGA :
+ //                      jm10fpgacnt == 1 ? CL_CHANNEL_2_INTELFPGA :
+ //                      jm10fpgacnt == 2 ? CL_CHANNEL_3_INTELFPGA :
+ //                      jm10fpgacnt == 3 ? CL_CHANNEL_4_INTELFPGA :
+ //                      jm10fpgacnt == 4 ? CL_CHANNEL_5_INTELFPGA :
+ //                      jm10fpgacnt == 5 ? CL_CHANNEL_6_INTELFPGA :
+ //                                         CL_CHANNEL_7_INTELFPGA;
+ // jm10fpgacnt = (jm10fpgacnt <= 5)? jm10fpgacnt++ : 0;
   // add to function call : cl_int mb_flags;  CL_MEM_READ_WRITE or CL_MEM_READ_ONLY or CL_MEM_WRITE_ONLY
-  OCL_CHECK(err, buffer = clCreateBuffer(context, flags, size, nullptr, &err));
+  //OCL_CHECK(err, buffer = clCreateBuffer(context, flags|CL_MEM_HETEROGENEOUS_INTELFPGA|fl_ch, size, nullptr, &err));
   
   return buffer;
 }
@@ -303,16 +427,48 @@ void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size) {
 
 void fpga_copy_memory_to_fpga_and_format(void *ptr_cpu, void *ptr_fpga, long int size, int src_format, int dst_format) {
   #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (copy memory to fpga and format: size %d, ptr_cpu %p)\n", size, ptr_cpu);
+  printf("    (copy memory to fpga and format: size %ld, ptr_cpu %p)\n", size, ptr_cpu);
   #endif
-  printf("copy with format currently not supported for Intel devices\n");
-  exit(1);
+  cl_int err;
+  cl_event blocking_event;
+
+  if ((src_format == HLSINF_FP32) && (dst_format == HLSINF_API8)) {
+    PROFILING_HEADER(Precision_Conversion);
+    float *src = (float*)ptr_cpu;
+    int8_t *cpu_buff = (int8_t *)eddl_malloc(size * sizeof(int8_t));
+    for (int x = 0; x < size; x++) cpu_buff[x] = (int8_t)src[x];
+    PROFILING_FOOTER(Precision_Conversion);
+    PROFILING_HEADER(FPGA_WRITE);
+    OCL_CHECK(err, err = clEnqueueWriteBuffer(q, (cl_mem)ptr_fpga, CL_TRUE, 0, size*sizeof(int8_t), cpu_buff, 0, nullptr, &blocking_event));
+    OCL_CHECK(err, err = clFinish(q));
+    PROFILING_FOOTER(FPGA_WRITE);
+    free(cpu_buff);
+  } else if ((src_format == HLSINF_FP32) && (dst_format == HLSINF_API32)) {
+    PROFILING_HEADER(Precision_Conversion);
+    float *src = (float*)ptr_cpu;
+    int32_t *cpu_buff = (int32_t *)eddl_malloc(size * sizeof(int32_t));
+    for (int x = 0; x < size; x++) {cpu_buff[x] = (int32_t)src[x]; /*printf("%f -> %f\n", src[x], float(cpu_buff[x]));*/}
+    PROFILING_FOOTER(Precision_Conversion);
+    PROFILING_HEADER(FPGA_WRITE);
+    OCL_CHECK(err, err = clEnqueueWriteBuffer(q, (cl_mem)ptr_fpga, CL_TRUE, 0, size*sizeof(int32_t), cpu_buff, 0, nullptr, &blocking_event));
+    OCL_CHECK(err, err = clFinish(q));
+    PROFILING_FOOTER(FPGA_WRITE);
+    free(cpu_buff);
+  } else {
+    printf("copy with format not supported\n");
+    exit(1);
+  }
+
+  // nota mental:
+  // se puede optimizar
+  //fpga_copy_memory_to_fpga( cpu_buff, ptr_fpga, size_formatted);
+  //free (cpu_buff)
 
 }
 
 void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size) {
   #ifdef FPGA_DEBUG_VERBOSE
-  printf("    (copy memory from fpga: size %ld, ptr_cpu %p)\n", size, ptr_cpu);
+  printf("    (copy memory from fpga: size %10ld, ptr_cpu %p)\n", size, ptr_cpu);
   #endif
   cl_int err;
   cl_event event;
@@ -320,6 +476,9 @@ void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size) {
   OCL_CHECK(err, err = clEnqueueReadBuffer(q, (cl_mem)ptr_fpga, CL_TRUE, 0, size, ptr_cpu, 0, nullptr, &event));
   OCL_CHECK(err, err = clFinish(q));
   PROFILING_FOOTER(FPGA_READ);
+  #ifdef FPGA_DEBUG_VERBOSE
+  printf("    (copy memory from fpga          done for ptr_cpu %p)\n", ptr_cpu);
+  #endif
 }
 
 
@@ -364,6 +523,18 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     if (hlsinf_input_format == HLSINF_FP32) {
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, size_out);
       fpga_copy_memory_to_fpga(B->ptr, B->fpga_ptr, size_out);
+    } else if (hlsinf_input_format == HLSINF_API8) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to ap_int<8>
+      int8_t *cpu_buff = (int8_t *)eddl_malloc(B->size*sizeof(int8_t));
+      for (int x = 0; x < B->size; x++) {
+        int8_t value = B->ptr[x];
+        cpu_buff[x] = value;
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, B->size * sizeof(int8_t));
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, B->size * sizeof(int8_t));
+      free(cpu_buff);
     }
     else {
       printf("Transform: input format not supported\n");
@@ -375,7 +546,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     #ifdef FPGA_DEBUG
     printf("  input   "); _profile_cpu_tensor(A);
     #endif
-
+ 
     // transformation from CHW to GHWC (cpu to FPGA)
     // B_out, H_out and W_out assuned to be equal to B_in, H_in, W_in
     int B_in = A->shape[0]; int C_in = A->shape[1]; int H_in = A->shape[2]; int W_in = A->shape[3]; int C_out = B->shape[1];
@@ -386,6 +557,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
 
     for (int b=0; b<B_in; b++) {
       for (int c=0; c<C_in; c++) {
+        #pragma omp parallel for
         for (int h=0; h<H_in; h++) {
           for (int w=0; w<W_in; w++) {
             int addr_src = (b * C_in * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
@@ -406,6 +578,20 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     if (hlsinf_input_format == HLSINF_FP32) {
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, size_out);
       fpga_copy_memory_to_fpga(B->ptr, B->fpga_ptr, size_out);
+    } else if (hlsinf_input_format == HLSINF_API8) {
+      PROFILING_HEADER(Precision_Conversion);
+      // We allocate a buffer to convert from floats to int8_t
+      int8_t *cpu_buff = (int8_t *)eddl_malloc(B->size*sizeof(int8_t));
+      #pragma omp parallel for
+      for (int x=0; x<B->size; x++) {
+        float value = B->ptr[x];
+        cpu_buff[x] = (int8_t)value;
+      }
+      PROFILING_FOOTER(Precision_Conversion);
+      size_out = C_out * H_in * W_in * B_in * sizeof(int8_t);
+      if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, size_out);
+      free(cpu_buff);
     }
     else {
       printf("Transform: input format not supported\n");
@@ -418,6 +604,12 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     if (hlsinf_output_format == HLSINF_FP32) {
       fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(float));
       memcpy(B->ptr, A->ptr, num_elements * sizeof(float));
+    } else if (hlsinf_output_format == HLSINF_API8) {
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(int8_t));
+      PROFILING_HEADER(Precision_Conversion);
+      #pragma omp parallel for
+      for (int x=0; x < num_elements; x++) {int8_t *ptr = (int8_t *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
+      PROFILING_FOOTER(Precision_Conversion);
     } 
     else {
       printf("Transform: output format not supported\n");
@@ -432,7 +624,9 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
   } else if (transform && copy_fpga_to_cpu) {
 
     // transformation from GHWC to CHW (FPGA to CPU)
-
+    #ifdef FPGA_DEBUG
+    printf("@fpga_intel_core: transformation from GHWC to CHW (FPGA to CPU)\n");
+    #endif
     int B_in = A->shape[0];
     int C_in = A->shape[1];
     int H_in = A->shape[2];
@@ -447,14 +641,18 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     int size_dst = C_out * H_in * W_in * B_in * sizeof(float);
 
     //printf("ptr_fpga %p ptr_dst %p size %d\n", A->fpga_ptr, B->ptr, size_dst);
-
+    /*
     if (hlsinf_output_format == HLSINF_FP32) {
       fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(float));
-    }
-    else {
+    } else if (hlsinf_output_format == HLSINF_API8) {
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(int8_t));
+    } else {
       printf("Transform: output format not supported\n");
       exit(1);
     }
+    */
+    fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * fpga_datatype_sizeof(hlsinf_output_format));
+
 
     #ifdef FPGA_DEBUG
     if (hlsinf_output_format == HLSINF_FP32) printf("  input   "); _profile_cpu_tensor(A);
@@ -464,6 +662,8 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     memset(ptr_dst, 0, size_dst);
 
     if (hlsinf_output_format == HLSINF_FP32) {
+    //printf("jm10 fpga_intel_core: transform and copy from fpga FP32\n");
+
       for (int b=0; b<B_in; b++) {
         for (int c=0; c<C_in; c++) {
           for (int h=0; h<H_in; h++) {
@@ -478,6 +678,30 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
           }
         }
       }
+    } else if (hlsinf_output_format == HLSINF_API8) {  
+    //printf("jm10 fpga_intel_core: transform and copy from fpga API8\n");
+
+      PROFILING_HEADER(Precision_Conversion);
+      //#pragma omp parallel for 58
+      for (int b=0; b<B_in; b++) {
+        //#pragma omp parallel for 58
+        for (int c=0; c<C_in; c++) {
+          //#pragma omp parallel for 66
+          for (int h=0; h<H_in; h++) {
+            //#pragma omp parallel for
+            for (int w=0; w<W_in; w++) {
+              int g = c / CPI;
+              int cpi = c % CPI; 
+              int addr_src = (b * C_in * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
+              int addr_dst = (b * C_out * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
+              int8_t *ptr_src = (int8_t *)A->ptr;
+              float value = float(ptr_src[addr_src]);
+              ptr_dst[addr_dst] = (int8_t)value;
+            }
+          }
+        }
+      }
+      PROFILING_FOOTER(Precision_Conversion);
     } 
     else {
       printf("Transform: output format not supported\n");

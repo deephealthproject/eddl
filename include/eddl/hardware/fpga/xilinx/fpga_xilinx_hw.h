@@ -23,14 +23,17 @@
 
 #include "eddl/hardware/fpga/xilinx/xcl2.hpp"
 
+#define MAX_KERNELS 16
+
+
 extern cl::CommandQueue *q;
 
 extern cl::Context *context;
-extern cl::Kernel kernel_hlsinf[16];
+extern cl::Kernel kernel_hlsinf[MAX_KERNELS];
 
 void set_callback(cl::Event event, const char *queue_name);
 
-void fpga_device_init();
+void fpga_device_init(int platform_type = 0);
 
 void *fpga_create_memory(long int size);
 void *fpga_create_memory(unsigned long flags, long int size);

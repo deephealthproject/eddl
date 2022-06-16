@@ -123,24 +123,24 @@ void LHLSinf::forward() {
     if (filter->fpga_ptr == NULL) {
       if (hlsinf_filter_format == HLSINF_FP32) {
         // We simply create the buffer and copy the tensor into the buffer (no data type conversion needed)
-        filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size*sizeof(float));  
-        fpga_copy_memory_to_fpga(filter->ptr, filter->fpga_ptr, filter->size*sizeof(float));
+        filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size * fpga_datatype_sizeof(hlsinf_filter_format));  
+        fpga_copy_memory_to_fpga(filter->ptr, filter->fpga_ptr, filter->size*fpga_datatype_sizeof(hlsinf_filter_format));
       } else if (hlsinf_filter_format == HLSINF_API8) {
         // Data conversion needed (FP32->API8)
-        filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size * sizeof(ap_int<8>));  
-        fpga_copy_memory_to_fpga_and_format(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size, HLSINF_FP32, HLSINF_API8);
+        filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size * fpga_datatype_sizeof(hlsinf_filter_format));  
+        fpga_copy_memory_to_fpga_and_format(filter->ptr, filter->fpga_ptr, filter->size, HLSINF_FP32, hlsinf_filter_format);
       } else if (hlsinf_filter_format == HLSINF_APF_8_4) {
         // Data conversion needed (FP32->APF<8,4,AP_RND_ZERO,AP_SAT>)
-        filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));  
-        fpga_copy_memory_to_fpga_and_format(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size, HLSINF_FP32, HLSINF_APF_8_4);
+        filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size * fpga_datatype_sizeof(hlsinf_filter_format));  
+        fpga_copy_memory_to_fpga_and_format(filter->ptr, filter->fpga_ptr, filter->size, HLSINF_FP32, hlsinf_filter_format);
       } else if (hlsinf_filter_format == HLSINF_APF_16_8) {
         // Data conversion needed (FP32->APF<16,8,AP_RND_ZERO,AP_SAT>)
-        filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));  
-        fpga_copy_memory_to_fpga_and_format(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size, HLSINF_FP32, HLSINF_APF_16_8);
+        filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size * fpga_datatype_sizeof(hlsinf_filter_format));  
+        fpga_copy_memory_to_fpga_and_format(filter->ptr, filter->fpga_ptr, filter->size, HLSINF_FP32, hlsinf_filter_format);
       } else if (hlsinf_filter_format == HLSINF_APF_32_16) {
         // Data conversion needed (FP32->APF<16,8,AP_RND_ZERO,AP_SAT>)
-        filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size * sizeof(ap_fixed<32,16>));  
-        fpga_copy_memory_to_fpga_and_format(filter->ptr, (cl::Buffer *)filter->fpga_ptr, filter->size, HLSINF_FP32, HLSINF_APF_32_16);
+        filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size * fpga_datatype_sizeof(hlsinf_filter_format));  
+        fpga_copy_memory_to_fpga_and_format(filter->ptr, filter->fpga_ptr, filter->size, HLSINF_FP32, hlsinf_filter_format);
       } else {
         printf("Error (HLSinf forward), filter format not supported\n");
         exit(1);
@@ -150,24 +150,27 @@ void LHLSinf::forward() {
     if (bias->fpga_ptr == NULL) {
       if (hlsinf_bias_format == HLSINF_FP32) {
         // No need for data conversion (FP32->FP32), we allocate the buffer and copy the bias tensor there
-        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size*sizeof(float));  
-        fpga_copy_memory_to_fpga(bias->ptr, bias->fpga_ptr, bias->size*sizeof(float));
+        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size * fpga_datatype_sizeof(hlsinf_bias_format));  
+        fpga_copy_memory_to_fpga(bias->ptr, bias->fpga_ptr, bias->size * fpga_datatype_sizeof(hlsinf_bias_format));
       } else if (hlsinf_bias_format == HLSINF_API32) {
         // Data conversion needed to API32 (FP32->API32)
-        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size*4);  
-        fpga_copy_memory_to_fpga_and_format(bias->ptr, (cl::Buffer *)bias->fpga_ptr, bias->size, HLSINF_FP32, HLSINF_API32);
+        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size * fpga_datatype_sizeof(hlsinf_bias_format));  
+        fpga_copy_memory_to_fpga_and_format(bias->ptr, bias->fpga_ptr, bias->size, HLSINF_FP32, hlsinf_bias_format);
+      }  else if (hlsinf_bias_format == HLSINF_API8) {
+        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size * fpga_datatype_sizeof(hlsinf_bias_format));
+        fpga_copy_memory_to_fpga_and_format(bias->ptr, bias->fpga_ptr, bias->size, HLSINF_FP32, hlsinf_bias_format);
       } else if (hlsinf_bias_format == HLSINF_APF_8_4) {
         // Data conversion needed to APF_8_4 (FP32->APF<8,4,AP_RND_ZERO,AP_SAT>)
-        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));  
-        fpga_copy_memory_to_fpga_and_format(bias->ptr, (cl::Buffer *)bias->fpga_ptr, bias->size, HLSINF_FP32, HLSINF_APF_8_4);
+        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size*fpga_datatype_sizeof(hlsinf_bias_format));  
+        fpga_copy_memory_to_fpga_and_format(bias->ptr, bias->fpga_ptr, bias->size, HLSINF_FP32, hlsinf_bias_format);
       } else if (hlsinf_bias_format == HLSINF_APF_16_8) {
         // Data conversion needed to APF_8_4 (FP32->APF<16,8,AP_RND_ZERO,AP_SAT>)
-        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));  
-        fpga_copy_memory_to_fpga_and_format(bias->ptr, (cl::Buffer *)bias->fpga_ptr, bias->size, HLSINF_FP32, HLSINF_APF_16_8);
+        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size*fpga_datatype_sizeof(hlsinf_bias_format));  
+        fpga_copy_memory_to_fpga_and_format(bias->ptr, bias->fpga_ptr, bias->size, HLSINF_FP32, hlsinf_bias_format);
       } else if (hlsinf_bias_format == HLSINF_APF_32_16) {
         // Data conversion needed to APF_8_4 (FP32->APF<16,8,AP_RND_ZERO,AP_SAT>)
-        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size*sizeof(ap_fixed<32,16>));  
-        fpga_copy_memory_to_fpga_and_format(bias->ptr, (cl::Buffer *)bias->fpga_ptr, bias->size, HLSINF_FP32, HLSINF_APF_32_16);
+        bias->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, bias->size*fpga_datatype_sizeof(hlsinf_bias_format));  
+        fpga_copy_memory_to_fpga_and_format(bias->ptr, bias->fpga_ptr, bias->size, HLSINF_FP32, hlsinf_bias_format);
       } else {
         printf("Error (HLSinf forward), bias format not supported\n");
         exit(1);
@@ -176,23 +179,33 @@ void LHLSinf::forward() {
     // BatchNorm
     if (enable_batch_norm && (batch_norm_values->fpga_ptr == NULL)) {
       // BatchNorm values assumed to be always in FP32 (might not be the case!)
-      batch_norm_values->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, batch_norm_values->size*sizeof(float));  
-      fpga_copy_memory_to_fpga(batch_norm_values->ptr, batch_norm_values->fpga_ptr, batch_norm_values->size*sizeof(float));
+      //batch_norm_values->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, batch_norm_values->size*sizeof(float));  
+      //fpga_copy_memory_to_fpga(batch_norm_values->ptr, batch_norm_values->fpga_ptr, batch_norm_values->size*sizeof(float));
+      if (hlsinf_batch_norm_format == HLSINF_FP32) {
+        batch_norm_values->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, batch_norm_values->size*fpga_datatype_sizeof(hlsinf_batch_norm_format));  
+        fpga_copy_memory_to_fpga(batch_norm_values->ptr, batch_norm_values->fpga_ptr, batch_norm_values->size * fpga_datatype_sizeof(hlsinf_batch_norm_format));
+      } else if (hlsinf_batch_norm_format == HLSINF_API8) {
+        batch_norm_values->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, batch_norm_values->size * fpga_datatype_sizeof(hlsinf_batch_norm_format));
+        fpga_copy_memory_to_fpga_and_format(batch_norm_values->ptr, batch_norm_values->fpga_ptr, batch_norm_values->size, HLSINF_FP32, hlsinf_batch_norm_format);
+      }else {
+        printf("Error (HLSinf forward), batch_norm format not supported\n");
+        exit(1);
+      }
     }
     // Output buffer, the buffer size depends on the data type
     if (output->fpga_ptr == NULL) {
       if (hlsinf_output_format == HLSINF_FP32) {
-        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(float));
+        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*fpga_datatype_sizeof(hlsinf_output_format));
       } else if (hlsinf_output_format == HLSINF_API8) {
-        output->fpga_ptr = fpga_create_memory(output->size);  
+        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*fpga_datatype_sizeof(hlsinf_output_format));  
       } else if (hlsinf_output_format == HLSINF_APF_8_4) {
-        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*fpga_datatype_sizeof(hlsinf_output_format));
       } else if (hlsinf_output_format == HLSINF_APF_16_8) {
-        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*fpga_datatype_sizeof(hlsinf_output_format));
       } else if (hlsinf_output_format == HLSINF_APF_32_16) {
-        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(ap_fixed<32,16>));
+        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*fpga_datatype_sizeof(hlsinf_output_format));
       } else if (hlsinf_output_format == HLSINF_APUI8) {
-        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size);  
+        output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*fpga_datatype_sizeof(hlsinf_output_format));  
       } else {
         printf("Error (HLSinf forward), output format not supported\n");
         exit(1);
@@ -202,6 +215,7 @@ void LHLSinf::forward() {
     fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_maxp, enable_avgp,
 		            enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_add_relu, enable_stm, upscale_factor, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized,
                 this->filter, this->bias, this->batch_norm_values, this->output);
+
     // in case we initialized buffer we annotate it
     if (use_weight_buffer && !weight_buffer_initialized) weight_buffer_initialized = 1;
 #else

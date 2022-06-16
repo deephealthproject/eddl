@@ -30,9 +30,16 @@
 //#define FPGA_DEBUG
 //#define WRITE_TENSORS_TO_FILE
 //#define FPGA_INFERENCE_ONLY
-
+//#define FPGA_DEBUG_VERBOSE
 
 #define MAX_KERNELS 16
+
+enum FPGA_PLATFORM {
+  FPGA_PLATFORM_NONE,
+  FPGA_PLATFORM_STRATIX_10MX_EB,
+  FPGA_PLATFORM_STRATIX_10MX_EB_EMULATION
+
+};
 
 // Debug functions
 void _debug_fpga_funcs(const char *str);
@@ -53,6 +60,7 @@ extern int hlsinf_filter_format;
 extern int hlsinf_bias_format;
 extern int hlsinf_input_format;
 extern int hlsinf_output_format;
+extern int hlsinf_batch_norm_format;
 extern int hlsinf_cpi;
 extern int hlsinf_cpo;
 extern int hlsinf_num_kernels;
@@ -76,6 +84,10 @@ extern bool hlsinf_dense_support;
 extern int  hlsinf_weight_buffer;
 extern int  hlsinf_data_buffer;
 
+extern bool hlsinf_intelkernel_version_implements_bn_add;
+extern bool hlsinf_intelkernel_version_implements_bn_relu;
+
+
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
@@ -89,6 +101,10 @@ extern int  hlsinf_data_buffer;
 #define FPGA_CLMEM_COPY_HOST_PTR                        (1 << 5)  // CL_MEM_COPY_HOST_PTR
 /* reserved                                         (1 << 6)    */
 
+
+size_t fpga_datatype_sizeof(int data_type);
+float fpga_buffer_get_value_in_float(float *buf, int data_format, int index);
+
 // vendor-specific void set_callback(cl::Event event, const char *queue_name);
 void event_cb(cl_event event1, cl_int cmd_status, void *data);
 
@@ -100,7 +116,6 @@ void fpga_init(int kernel_version, int kernel_subversion);
 //void fpga_copy_memory_from_fpga(void *ptr_fpga, void *ptr_cpu, long int size);
 //
 //void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga_to_cpu, int transform);
-
 void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B);
 void dense_to_conv(float *ptr_src, int N, int M, float *ptr_dst, int I, int O, int KH, int KW);
 void tensor_padded(Tensor *A, Tensor *B);
