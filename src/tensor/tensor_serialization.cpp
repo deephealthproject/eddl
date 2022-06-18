@@ -79,8 +79,8 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
 Tensor* Tensor::load_from_bin(std::ifstream &ifs,  long int start_row,  long int end_row){
     int r_ndim;
   
-     if (1) {
-        printf("[Debug] LOAD: start_row=%d end_row=%d\n",start_row, end_row);
+     if (0) {
+        printf("[Debug] LOAD: start_row=%ld end_row=%ld\n",start_row, end_row);
     }
     high_resolution_clock::time_point e1 = high_resolution_clock::now();
     // Load number of dimensions
@@ -95,7 +95,7 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs,  long int start_row,  long int
     for (int i = 0; i < r_ndim; i++) {
         r_size *= r_shape[i];
     }
-    if (1) {
+    if (0) {
         printf("[Debug] LOAD: dim=%d ", r_ndim);
         for (int i = 0; i < r_ndim; i++) {
             printf("shape[%d]=%d ", i, r_shape[i]);
@@ -122,8 +122,8 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs,  long int start_row,  long int
         // Set cursor's position
         ifs.seekg(start_offset*sizeof(float), std::ifstream::cur);
     }
-     if (1) {
-        printf("[Debug] LOAD: start_offset=%d n_read=%ld ", start_offset, n_read);
+     if (0) {
+        printf("[Debug] LOAD: start_offset=%ld n_read=%ld ", start_offset, n_read);
         
         printf("\n");
     }
@@ -157,8 +157,8 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs,  long int start_row,  long int
 Tensor* Tensor::load_from_bin8(std::ifstream &ifs, long int start_row, long int end_row){
     int r_ndim;
 
-     if (1) {
-        printf("[Debug] LOAD: start_row=%d end_row=%d\n",start_row, end_row);
+     if (0) {
+        printf("[Debug] LOAD: start_row=%ld end_row=%ld\n",start_row, end_row);
     }
     high_resolution_clock::time_point e1 = high_resolution_clock::now();
     // Load number of dimensions
@@ -199,8 +199,8 @@ Tensor* Tensor::load_from_bin8(std::ifstream &ifs, long int start_row, long int 
         // Set cursor's position
         ifs.seekg(start_offset*sizeof(float), std::ifstream::cur);
     }
-if (1) {
-        printf("[Debug] LOAD: start_offset=%d n_read=%ld ", start_offset, n_read);
+    if (0) {
+        printf("[Debug] LOAD: start_offset=%ld n_read=%ld ", start_offset, n_read);
         
         printf("\n");
     }
@@ -243,7 +243,7 @@ if (1) {
     high_resolution_clock::time_point e2 = high_resolution_clock::now();
     duration<double> epoch_time_span = e2 - e1;
     if (DEBUG) 
-    printf("[Debug] LOAD8. Time=%2.4f sec\n", epoch_time_span.count());
+        printf("[Debug] LOAD8. Time=%2.4f sec\n", epoch_time_span.count());
     //vector<unsigned char> vs(n_read);
     //char* vs = (char *) malloc(n_read * sizeof(char));
     //ifs.read(reinterpret_cast<char*>(vs.data()), n_read * sizeof(char));

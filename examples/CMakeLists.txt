@@ -69,6 +69,10 @@ target_link_libraries(mnist_mlp_train_batch eddl)
 add_executable(mnist_mlp_train_batch_distr "nn/1_mnist/5_mnist_mlp_train_batch_distr.cpp")
 target_link_libraries(mnist_mlp_train_batch_distr eddl)
 
+add_executable(debug "nn/1_mnist/debug.cpp")
+target_link_libraries(debug eddl)
+
+
 add_executable(mnist_auto_encoder "nn/1_mnist/6_mnist_auto_encoder.cpp")
 target_link_libraries(mnist_auto_encoder eddl)
 #distributed

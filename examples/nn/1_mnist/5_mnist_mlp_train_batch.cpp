@@ -1,11 +1,11 @@
 /*
-* EDDL Library - European Distributed Deep Learning Library.
-* Version: 1.1
-* copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
-* Date: March 2022
-* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
-* All rights reserved
-*/
+ * EDDL Library - European Distributed Deep Learning Library.
+ * Version: 1.1
+ * copyright (c) 2022, Universitat Politècnica de València (UPV), PRHLT Research Centre
+ * Date: March 2022
+ * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+ * All rights reserved
+ */
 
 #include <cstdio>
 #include <cstdlib>
@@ -23,33 +23,33 @@ using namespace eddl;
 // and eval_batch fot test
 //////////////////////////////////
 
-
-
-
 int main(int argc, char **argv) {
     bool testing = false;
     bool use_cpu = false;
-    bool use_dg =false;
-    bool use_dg_perfect =false;
-    
+    bool use_dg = false;
+    bool use_dg_perfect = false;
+
     char jpgfile[128];
     char txtfile[128];
-    
+
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--testing") == 0) testing = true;
         else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
         else if (strcmp(argv[i], "--dg") == 0) use_dg = true;
-        else if (strcmp(argv[i], "--dp") == 0) {use_dg = true; use_dg_perfect=true;}
+        else if (strcmp(argv[i], "--dp") == 0) {
+            use_dg = true;
+            use_dg_perfect = true;
+        }
     }
-    
+
     // Download mnist
     download_mnist();
 
     // Settings
-    int epochs = 2;
-    int batch_size = 50;
-  
-  
+    int epochs = 10;
+    int batch_size = 100;
+
+
     int num_classes = 10;
     int width = 32;
     int height = 32;
@@ -71,7 +71,10 @@ int main(int argc, char **argv) {
     l = ReLu(Dense(l, 1024));
 
     layer out = Softmax(Dense(l, num_classes));
-    model net = Model({in},{out});
+    model net = Model({in},
+    {
+        out
+    });
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
@@ -103,26 +106,35 @@ int main(int argc, char **argv) {
     // Load dataset
     Tensor* x_train;
     Tensor* y_train;
+    Tensor* x_test;
+             Tensor* y_test;
     if (use_dg == 0) {
         x_train = Tensor::load("train-images.bi8");
         y_train = Tensor::load("train-labels.bi8");
+    x_test = Tensor::load("val-images.bi8");
+    y_test = Tensor::load("val-labels.bi8");
     }
-    Tensor* x_test = Tensor::load("val-images.bi8");
-    Tensor* y_test = Tensor::load("val-labels.bi8");
-
-    int num_batches;
-    int dataset_size;
     
-    if (use_dg){
-      prepare_data_generator(DG_TRAIN,"train-images.bi8", "train-labels.bi8", batch_size,false,   &dataset_size, &num_batches, use_dg_perfect, 2, 8);
-    }
+     int num_batches=0;
+    int dataset_size=0;
+    int val_num_batches=0;
+    int val_dataset_size=0;
 
-    Tensor* xbatch ;
+    if (use_dg == 0) {
+        num_batches = x_train->getShape()[0] / batch_size;
+        val_num_batches = x_test->getShape()[0] / batch_size;
+    }
+    
+    //if (use_dg){
+    // prepare_data_generator(DG_TRAIN,"train-images.bi8", "train-labels.bi8", batch_size,false,   &dataset_size, &num_batches, use_dg_perfect, 2, 8);
+    //}
+
+    Tensor* xbatch;
     Tensor* ybatch;
-   
-        xbatch = Tensor::empty({batch_size, channels, height, width});
-        ybatch = Tensor::empty({batch_size, num_classes});
-   
+
+    xbatch = Tensor::empty({batch_size, channels, height, width});
+    ybatch = Tensor::empty({batch_size, num_classes});
+
     if (testing) {
         std::string _range_ = "0:" + std::to_string(2 * batch_size);
         Tensor* x_mini_train = x_train->select({_range_, ":"});
@@ -145,20 +157,21 @@ int main(int argc, char **argv) {
     //-Tensor* ybatch = new Tensor({batch_size, 10});
 
     // Preprocessing
-    if (use_dg == 0)
+    if (use_dg == 0) {
         x_train->div_(255.0f);
-    x_test->div_(255.0f);
-
+        x_test->div_(255.0f);
+    }
 
     // Train model
     int i, j;
     tshape s;
-    if (use_dg == 0) {
-        tshape s = x_train->getShape();
-        num_batches = s[0] / batch_size;
-    }
+   
 
     for (i = 0; i < epochs; i++) {
+         
+        if (use_dg) {
+            prepare_data_generator(DG_TRAIN, "train-images.bi8", "train-labels.bi8", batch_size, false, &dataset_size, &num_batches, use_dg_perfect, 2, 8);
+        }
         if (use_dg)
             start_data_generator();
         reset_loss(net);
@@ -167,13 +180,13 @@ int main(int argc, char **argv) {
 
             if (use_dg) {
                 get_batch(xbatch, ybatch);
-               
+
                 xbatch->div_(255.0f);
             }
 
-            
+
             if ((1)&(j < 5)) {
-//            if ((1)) {
+                //            if ((1)) {
                 Tensor* xout = xbatch->select({"0"});
                 Tensor* yout = ybatch->select({"0"});
                 xout->mult_(255.0f);
@@ -184,24 +197,82 @@ int main(int argc, char **argv) {
                 delete xout;
                 delete yout;
             }
-            
-           // fprintf(stderr, "Buffer count %d\n", get_buffer_count());
+
+            // fprintf(stderr, "Buffer count %d\n", get_buffer_count());
             if (use_dg == 0) {
-                next_batch({x_train, y_train}, {xbatch, ybatch});
+                next_batch({x_train, y_train},
+                {
+                    xbatch, ybatch
+                });
             }
-            train_batch(net,{xbatch},{ybatch});
+            train_batch(net,{xbatch},
+            {
+                ybatch
+            });
 
             print_loss(net, j);
             printf("\r");
 
         }
-      
+
         printf("\n");
         if (early_stopping_on_loss_var(net, 0, 10, 0.1, i)) break;
         //if (early_stopping_on_metric_var (net, 0, 0.0001, 2, i)) break;
         if (early_stopping_on_metric(net, 0, 0.97, 2, i)) break;
         if (use_dg)
             stop_data_generator();
+
+        if (use_dg) end_data_generator();
+        if (use_dg) prepare_data_generator(DG_VAL, "val-images.bi8", "val-labels.bi8", batch_size, false, &val_dataset_size, &val_num_batches, use_dg_perfect, 1, 4);
+
+        // Evaluate model
+        printf("Evaluate:\n");
+
+      
+        if (use_dg)
+            start_data_generator();
+        reset_loss(net); // Important
+        for (j = 0; j < val_num_batches; j++) {
+            if (use_dg) {
+                get_batch(xbatch, ybatch);
+
+                xbatch->div_(255.0f);
+                eval_batch(net,{xbatch},
+                {
+                    ybatch
+                });
+            } else {
+                vector<int> indices(batch_size);
+                for (int i = 0; i < indices.size(); i++)
+                    indices[i] = (j * batch_size) + i;
+
+                eval_batch(net,{x_test},
+                {
+                    y_test
+                }, indices);
+            }
+
+            print_loss(net, j);
+            printf("\r");
+
+        }
+
+        printf("\n");
+
+        // Print loss and metrics
+        vector<float> losses2 = get_losses(net);
+        vector<float> metrics2 = get_metrics(net);
+        for (int i = 0; i < losses2.size(); i++) {
+            cout << "Loss: " << losses2[i] << "\t" << "Metric: " << metrics2[i] << "   |   ";
+        }
+        cout << endl;
+
+        if (use_dg)
+            stop_data_generator();
+        if (use_dg) end_data_generator();
+
+
+
     }
     printf("\n");
 
@@ -214,22 +285,34 @@ int main(int argc, char **argv) {
     }
     cout << endl;
 
+    if (use_dg) prepare_data_generator(DG_VAL, "val-images.bi8", "val-labels.bi8", batch_size, false, &val_dataset_size, &val_num_batches, use_dg_perfect, 1, 4);
 
     // Evaluate model
     printf("Evaluate:\n");
-    s = x_test->getShape();
-    num_batches = s[0] / batch_size;
 
+ 
+    if (use_dg)
+        start_data_generator();
     reset_loss(net); // Important
-    for (j = 0; j < num_batches; j++) {
-        vector<int> indices(batch_size);
-        for (int i = 0; i < indices.size(); i++)
-            indices[i] = (j * batch_size) + i;
+    for (j = 0; j < val_num_batches; j++) {
+        if (use_dg) {
+            get_batch(xbatch, ybatch);
 
-        eval_batch(net,{x_test},
-        {
-            y_test
-        }, indices);
+            xbatch->div_(255.0f);
+            eval_batch(net,{xbatch},
+            {
+                ybatch
+            });
+        } else {
+            vector<int> indices(batch_size);
+            for (int i = 0; i < indices.size(); i++)
+                indices[i] = (j * batch_size) + i;
+
+            eval_batch(net,{x_test},
+            {
+                y_test
+            }, indices);
+        }
 
         print_loss(net, j);
         printf("\r");
@@ -246,7 +329,11 @@ int main(int argc, char **argv) {
     }
     cout << endl;
 
-     exit(1);
+    if (use_dg)
+        stop_data_generator();
+    if (use_dg) end_data_generator();
+
+    exit(1);
 
     // Quantization
     CPU_quantize_network_distributed(net, 1, 5);
@@ -282,8 +369,8 @@ int main(int argc, char **argv) {
     }
     cout << endl;
 
-   
-    
+
+
     if (use_dg == 0) {
         // Train model again
         printf("Training model again from quantized weights ... \n");
@@ -392,28 +479,31 @@ int main(int argc, char **argv) {
         cout << endl;
     }
 
-    
-    
+
+
 
     //last batch
-    if (s[0]%batch_size) {
-      int last_batch_size=s[0]%batch_size;
-      vector<int> indices(last_batch_size);
-      for(int i=0;i<indices.size();i++)
-        indices[i]=(j*batch_size)+i;
+    if (s[0] % batch_size) {
+        int last_batch_size = s[0] % batch_size;
+        vector<int> indices(last_batch_size);
+        for (int i = 0; i < indices.size(); i++)
+            indices[i] = (j * batch_size) + i;
 
-      eval_batch(net, {x_test}, {y_test}, indices);
+        eval_batch(net,{x_test},
+        {
+            y_test
+        }, indices);
 
-//      print_loss(net,j);
-//      printf("\r");
+        //      print_loss(net,j);
+        //      printf("\r");
     }
-    
+
 
 
     // Print loss and metrics
     vector<float> losses3 = get_losses(net);
     vector<float> metrics3 = get_metrics(net);
-    for(int i=0; i<losses3.size(); i++) {
+    for (int i = 0; i < losses3.size(); i++) {
         cout << "Loss: " << losses3[i] << "\t" << "Metric: " << metrics3[i] << "   |   ";
     }
     cout << endl;
@@ -430,10 +520,9 @@ int main(int argc, char **argv) {
     delete x_test;
     delete y_test;
     delete net;
-    
-    if (use_dg)
-        stop_data_generator();
-   
-    
+
+
+
+
     return EXIT_SUCCESS;
 }
