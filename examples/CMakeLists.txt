@@ -69,9 +69,15 @@ target_link_libraries(mnist_mlp_train_batch eddl)
 add_executable(mnist_mlp_train_batch_distr "nn/1_mnist/5_mnist_mlp_train_batch_distr.cpp")
 target_link_libraries(mnist_mlp_train_batch_distr eddl)
 
-add_executable(debug "nn/1_mnist/debug.cpp")
-target_link_libraries(debug eddl)
 
+add_executable(mnist_mlp_quant "nn/1_mnist/5_mnist_mlp_quant.cpp")
+target_link_libraries(mnist_mlp_quant eddl)
+
+add_executable(mnist_mlp_dg1 "nn/1_mnist/5_mnist_mlp_dg1.cpp")
+target_link_libraries(mnist_mlp_dg1 eddl)
+
+add_executable(mnist_mlp_dg2 "nn/1_mnist/5_mnist_mlp_dg2.cpp")
+target_link_libraries(mnist_mlp_dg2 eddl)
 
 add_executable(mnist_auto_encoder "nn/1_mnist/6_mnist_auto_encoder.cpp")
 target_link_libraries(mnist_auto_encoder eddl)

@@ -131,6 +131,9 @@ int DEBUG = 0;
 // Warning!! not tested with distributed
 #define TRUNC_DATASET
 
+  bool dg_created=false;
+    bool dg_running=false;
+
 FILE* dg_fpX;
 FILE* dg_fpY;
 #ifdef cMPI
@@ -992,15 +995,15 @@ bool early_stopping_on_loss_var(Net* net, int index, float delta, int patience, 
 
     if (id == 0)
         if (epoch > patience) {
-            printf("[DISTR] prev_loss: %f, loss: %f\n", prev_losses, losses);
+            printf("[EARLY] prev_loss: %f, loss: %f\n", prev_losses, losses);
             if (losses > (delta + prev_losses)) { // More losses than before
-                printf("[DISTR] Early Stopping! (loss %f  > delta %f + prev_losses %f)\n", losses, delta, prev_losses);
+                printf("[EARLY] Early Stopping! (loss %f  > delta %f + prev_losses %f)\n", losses, delta, prev_losses);
                 result = true;
             } else { // OK
                 result = false;
             }
             if (losses < prev_losses) { // new optmimal value
-                printf("[DISTR] new Best loss (prev_loss: %f, loss: %f)\n", prev_losses, losses);
+                printf("[EARLY] new Best loss (prev_loss: %f, loss: %f)\n", prev_losses, losses);
                 prev_losses = losses;
                 result = false;
             }
@@ -1024,14 +1027,14 @@ bool early_stopping_on_metric_var(Net* net, int index, float delta, int patience
         if (epoch > patience) {
             if (metrics > prev_metrics) {// OK
                 if ((metrics - prev_metrics) < delta) {
-                    printf("[DISTR] Early Stopping! ((metric %f-prev_metric %f) < delta %f)\n", metrics, prev_metrics, delta);
+                    printf("[EARLY] Early Stopping! ((metric %f-prev_metric %f) < delta %f)\n", metrics, prev_metrics, delta);
                     result = true;
                 } else { // New optimal value
                     prev_metrics = metrics;
                     result = false;
                 }
             } else if ((prev_metrics - metrics) > delta) { // Worse results
-                printf("[DISTR] Early Stopping! ((prev_metric %f-metric %f) > delta %f)\n", prev_metrics, metrics, delta);
+                printf("[EARLY] Early Stopping! ((prev_metric %f-metric %f) > delta %f)\n", prev_metrics, metrics, delta);
                 result = true;
             } else {
                 result = false;
@@ -1055,7 +1058,7 @@ bool early_stopping_on_metric(Net* net, int index, float goal, int patience, int
     if (id == 0)
         if (epoch > patience) {
             if (metrics > goal) {// OK
-                printf("[DISTR] Early Stopping! ((metric %f >goal %f)\n", metrics, goal);
+                printf("[EARLY] Early Stopping! ((metric %f >goal %f)\n", metrics, goal);
                 result = true;
             } else {
                 result = false;
@@ -1119,7 +1122,7 @@ void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
     float * myptr;
     int count;
     // int n_procs;
-    printf("[DISTR] %s bits int %d, bits_frac %d\n", __func__, nbits_int, nbits_frac);
+    printf("[QUANT] %s bits int %d, bits_frac %d\n", __func__, nbits_int, nbits_frac);
     for (int i = 0; i < net->layers.size(); i++) {
         if (net->layers[i]->trainable) {
             for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
@@ -1147,7 +1150,7 @@ void CPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
 
 void GPU_quantize_network_distributed(Net* net, int nbits_int, int nbits_frac) {
     // int n_procs;
-    printf("[DISTR] %s bits int %d, bits_frac %d\n", __func__, nbits_int, nbits_frac);
+    printf("[QUANT] %s bits int %d, bits_frac %d\n", __func__, nbits_int, nbits_frac);
     for (int i = 0; i < net->layers.size(); i++) {
         if (net->layers[i]->trainable) {
             for (int j = 0; j < net->layers[i]->get_trainable_params_count(); j++) {
@@ -1571,12 +1574,12 @@ void * producer_perfect(void* arg) {
 
 void* get_batch(Tensor* in, Tensor* out) {
 
-    //printf("%s running\n", __func__);
+    if (dg_created==false)
+        msg("Error DG was not created ", __func__);
+    if (dg_running==false)
+        msg("Error DG is not running", __func__);
+     
     sem_wait(&vaciar);
-
-
-    //  fprintf(tmp_fp,"%s ptr_out %d count= %d\n", __func__, ptr_out, buffer_count);
-    //fflush(tmp_fp);  
 
 #pragma omp parallel sections 
     {
@@ -1622,6 +1625,9 @@ void prepare_data_generator(int dg_id, const string &filenameX, const string &fi
     size_t memsizeX = 0;
     size_t memsizeY = 0;
 
+    if (dg_created)
+        msg("Error DG already prepared", __func__);
+        
     if (dg_id >= DG_MAX)
         msg("Error number of data generators exceeded", __func__);
 
@@ -1753,13 +1759,16 @@ void prepare_data_generator(int dg_id, const string &filenameX, const string &fi
     if (dg_tmp_fp == NULL)
         msg("Error opening tmp file", __func__);
 
-
+    dg_created=true;
 }
 
 void start_data_generator() {
-
     int err;
-    cpu_set_t cpuset;
+
+    if (dg_created == false)
+        msg("Error DG was not created ", __func__);
+    if (dg_running)
+        msg("Error DG is already running", __func__);
 
     dg_buffer_count = 0;
     dg_ptr_in = 0;
@@ -1784,7 +1793,6 @@ void start_data_generator() {
     if (sem_init(&llenar, 0, dg_buffer_size) != 0) exit(EXIT_FAILURE);
     if (sem_init(&vaciar, 0, 0) != 0) exit(EXIT_FAILURE);
 
-
     if (id == 0)
         printf("[DISTR] %s creating %d thread(s): ", __func__, dg_num_threads);
     for (int i = 0; i < dg_num_threads; i++) {
@@ -1793,21 +1801,18 @@ void start_data_generator() {
 
         err = pthread_create(&t[i], NULL, &producer_perfect, NULL);
         if (err) msg("Error creating thread", __func__); // Exits;
-        /*
-        CPU_ZERO(&cpuset);
-        for (int j = 0; j < 4; j++)
-           CPU_SET(j, &cpuset);
-
-        err= pthread_setaffinity_np(t[i], sizeof(cpu_set_t), &cpuset);
-        if (err) msg("setting affinity creating thread", __func__); 
-         */
-
     }
     if (id == 0)
         printf("\n");
+    dg_running=true;
 }
 
 void stop_data_generator() {
+    if (dg_created==false)
+        msg("Error DG was not created ", __func__);
+    if (dg_running==false)
+        msg("Error DG is not running", __func__);
+    
     for (int i = 0; i < dg_num_threads; i++)
         pthread_cancel(t[i]);
     for (int i = 0; i < dg_num_threads; i++)
@@ -1817,7 +1822,7 @@ void stop_data_generator() {
     sem_destroy(&llenar);
     sem_destroy(&vaciar);
 
-
+    
     /*
       #ifdef DEBUG_DONE
      for (int i = 0; i < dg_num_batches; i++)
@@ -1828,19 +1833,22 @@ void stop_data_generator() {
 
     if (id == 0)
         printf("[DISTR] %s count= %d\n", __func__, dg_buffer_count);
+    dg_running=false;
 }
 
 void end_data_generator() {
 
-
+    if (dg_created == false)
+        msg("Error DG was not created ", __func__);
+    if (dg_running)
+        msg("Error DG is still running", __func__);
+    
     for (int i = 0; i < dg_buffer_size; i++) {
         delete dg_bufferX[i];
         delete dg_bufferY[i];
-    }
-     
+    }  
      
     free(dg_list);
-
     //   free(bytesX);
     //     free(bytesY);
     if (use_mpi == 0) {
@@ -1855,6 +1863,7 @@ void end_data_generator() {
     fclose(dg_tmp_fp);
     if (id == 0)
         printf("[DISTR] %s\n", __func__);
+    dg_created=false;
 }
 
 int get_buffer_count() {
@@ -2086,6 +2095,11 @@ DataGen::DataGen(const string& filenameX, const string& filenameY, int bs, bool 
 }
 
 void DataGen::end_data_generator() {
+     if (dg_created == false)
+        msg("Error DG was not created ", __func__);
+    if (dg_running)
+        msg("Error DG is still running", __func__);
+
     for (int i = 0; i < dg_buffer_size; i++) {
         delete this->bufferX[i];
         delete this->bufferY[i];
@@ -3290,23 +3304,7 @@ void* new_DataGen(DG_Data* Data, const char* filenameX, const char* filenameY, i
     size_t memsizeY = 0;
     char tmp_name[128];
 
-    if ((total_dg>0) && (dg_batch_size!=bs))
-         msg("Error All DG should have the same batch size", __func__);
-    
-    Data->dg_id = total_dg;
-    total_dg++;
-   
-    
-    Data->batch_size = bs;
-    
-    if (Data->dg_id==0)
-        dg_batch_size=Data->batch_size;
-    
-    Data->method=method;
-    sprintf(Data->filenameX, "%s", filenameX);
-    sprintf(Data->filenameY, "%s", filenameY);
- 
-    if (Data->created)
+     if (Data->created)
         msg("Error DG already created ", __func__);
     
     if (buffer_size > MAX_BUFFER)
@@ -3316,6 +3314,22 @@ void* new_DataGen(DG_Data* Data, const char* filenameX, const char* filenameY, i
     if (num_threads > MAX_DG_THREADS)
         msg("Error num threads is too high", __func__);
     Data->num_threads=num_threads;
+    
+    if ((total_dg>0) && (dg_batch_size!=bs))
+         msg("Error All DG should have the same batch size", __func__);
+    
+    Data->dg_id = total_dg;
+    total_dg++;
+       
+    Data->batch_size = bs;
+    
+    if (Data->dg_id==0)
+        dg_batch_size=Data->batch_size;
+    
+    Data->method=method;
+    sprintf(Data->filenameX, "%s", filenameX);
+    sprintf(Data->filenameY, "%s", filenameY);
+   
 
     printf("[DG] %s. datagen %d filenameX: %s filenameY: %s bs=%d distr_ds=%s method=%d num threads=%d buffer size=%d\n", __func__, Data->dg_id, Data->filenameX, Data->filenameY, bs, (distr_ds==0?"no":"si"), Data->method, Data->num_threads, Data->buffer_size);
 
@@ -3497,8 +3511,7 @@ void* start_DataGen(DG_Data* DG) {
     
     if (nr_dg_running>0)
          msg("Error Only *one* DG can be started ", __func__);
-    if (DG->created==false)
-        
+    if (DG->created==false)        
         msg("Error DG was not created ", __func__);
     if (DG->running)
         msg("Error DG is already running", __func__);
