@@ -74,6 +74,7 @@ public:
     bool detached;
     bool do_deletes;
     unsigned int verbosity_level = 0;
+    int total_child_fw = 0;
 
     Layer(string name, int dev, int mem, const string &name_id="");
 

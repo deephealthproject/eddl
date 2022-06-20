@@ -48,8 +48,32 @@ void Net::do_reset_grads() {
 
 void Net::do_forward() {
     PROFILING_HEADER_EXTERN(forward);
-    for (int i = 0; i < vfts.size(); i++)
+    for (int i = 0; i < vfts.size(); i++){
+        // Reserve child outputs
+        for(int j=0; j<vfts[i]->child.size(); j++){
+            vfts[i]->child[j]->output->resize(this->batch_size);
+            cout << "Reserved output layer: " << vfts[i]->child[j]->name << endl;
+        }
+
+        // Do forward
         vfts[i]->forward();
+
+        // Increase counter & delele output
+        for(int j=0; j<vfts[i]->parent.size(); j++){
+            cout << "Increase counter layer: " << vfts[i]->name << " | " << vfts[i]->parent[j]->total_child_fw << "->" << vfts[i]->parent[j]->total_child_fw+1 << endl;
+            vfts[i]->parent[j]->total_child_fw += 1;
+
+            // Check layers to delete
+            if(vfts[i]->parent[j]->total_child_fw == vfts[i]->parent[j]->child.size()){
+                if(vfts[i]->parent[j]->output->ptr != nullptr){
+                    vfts[i]->parent[j]->output->deleteData();
+                    vfts[i]->parent[j]->total_child_fw = 0;
+                    cout << "Delete layer: " << vfts[i]->parent[j]->name << endl;
+                }
+            }
+        }
+    }
+
     PROFILING_FOOTER(forward);
 
 }

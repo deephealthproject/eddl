@@ -29,7 +29,7 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
 #ifdef DEBUG_FPGA
     printf("creating output for RELU\n");
 #endif
-    output = new Tensor(input->shape, dev);
+    output = new Tensor(input->shape, dev, false);
     delta_bp = 0;
 
 #ifdef cCUDNN

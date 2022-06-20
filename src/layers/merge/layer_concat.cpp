@@ -73,7 +73,7 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
     new_shape[this->axis+1] = t;
 
     input = parent[0]->output;
-    output = new Tensor(new_shape, dev);
+    output = new Tensor(new_shape, dev, false);
 
     // Set children
     for (int i = 0; i < parent.size(); ++i) {

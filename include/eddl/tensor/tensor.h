@@ -115,7 +115,7 @@ public:
     *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
     *  @return a tensor
     */
-    explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
+    explicit Tensor(const vector<int> &shape, int dev=DEV_CPU, bool reserved_mem=true);
 
     /**
     *  @brief Construct an uninitialized tensor
@@ -125,7 +125,7 @@ public:
     *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
     *  @return a tensor
     */
-    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=nullptr);
+    Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2=nullptr, bool reserved_mem=true);
 
 //    /**
 //    *  @brief Construct of an uninitialized tensor
@@ -153,8 +153,8 @@ public:
     *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
     *  @return a tensor
     */
-    Tensor(const vector<float>& data, const vector<int> &shape, int dev=DEV_CPU);
-    // TODO: There areimplicit casting problems when shape is one-dimensional (eg.: {6})
+    Tensor(const vector<float>& data, const vector<int> &shape, int dev=DEV_CPU, bool reserved_mem=true);
+    // TODO: There are implicit casting problems when shape is one-dimensional (eg.: {6})
     // It this is the case, this contructor will be casted as "Tensor(const vector<int> &shape, int dev=DEV_CPU);"
 
     // Destructors

@@ -26,7 +26,7 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
     this->use_bias = use_bias;
 
     input = parent->output;
-    output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
+    output = new Tensor(vector<int>{input->shape[0], ndim}, dev, false);
 
 
     W = new Tensor(vector<int>{input->shape[1], ndim}, dev);

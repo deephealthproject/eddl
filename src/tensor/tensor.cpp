@@ -49,7 +49,7 @@ void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title){
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
 
-Tensor::Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2){
+Tensor::Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2, bool reserved_mem){
     /*
      * Important! If we are creating a GPU tensor, "fptr" must point to a GPU pointer.
      */
@@ -67,19 +67,21 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev, void *fptr2){
     updateShape(shape);
     updateSize();
     updateStrides();
-    updateData(fptr, fptr2);
+    if (reserved_mem){
+        updateData(fptr, fptr2);
+    }
 }
 
 //Tensor::Tensor(const vector<int> &shape, string dev) : Tensor(shape, nullptr, Tensor::getDeviceID(dev)){}
 
 
 // From shape and device
-Tensor::Tensor(const vector<int> &shape, int dev) : Tensor(shape, nullptr, dev){}
+Tensor::Tensor(const vector<int> &shape, int dev, bool reserved_mem) : Tensor(shape, nullptr, dev, nullptr, reserved_mem){}
 
 // From shape and Tensor (sharing ptr)
 Tensor::Tensor(const vector<int> &shape, Tensor *T) : Tensor(shape,T->ptr, T->device) {}
 
-Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : Tensor(shape, nullptr, DEV_CPU) {
+Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev, bool reserved_mem) : Tensor(shape, nullptr, DEV_CPU,nullptr, reserved_mem) {
     isshared=false;
     // 0. Tensor in CPU
 
