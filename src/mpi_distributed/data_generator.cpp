@@ -473,6 +473,7 @@ void * producer_perfect(void* arg) {
             //fflush(dg_tmp_fp);
         }
     }
+    return NULL;
 }
 
 void* get_batch(Tensor* in, Tensor* out) {
@@ -520,10 +521,10 @@ void* get_batch(Tensor* in, Tensor* out) {
     dg_buffer_count--;
     sem_post(&dmutex);
     sem_post(&llenar);
-
+    return NULL;
 }
 
-void prepare_data_generator(int dg_id, const string &filenameX, const string &filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp, int method, int num_threads, int buffer_size) {
+void* prepare_data_generator(int dg_id, const string &filenameX, const string &filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp, int method, int num_threads, int buffer_size) {
     int check_ds_size = 0;
     size_t memsizeX = 0;
     size_t memsizeY = 0;
@@ -669,9 +670,10 @@ void prepare_data_generator(int dg_id, const string &filenameX, const string &fi
         msg("Error opening tmp file", __func__);
 
     dg_created=true;
+    return NULL;
 }
 
-void start_data_generator() {
+void* start_data_generator() {
     int err;
     int id=get_id_distributed();
      int n_procs=get_n_procs_distributed();
@@ -728,9 +730,10 @@ void start_data_generator() {
     if (id == 0)
         printf("\n");
     dg_running=true;
+    return NULL;
 }
 
-void stop_data_generator() {
+void* stop_data_generator() {
     int id=get_id_distributed();
     int n_procs=get_n_procs_distributed();
     
@@ -832,9 +835,10 @@ void stop_data_generator() {
     if (id == 0)
         printf("[DISTR] %s count= %d\n", __func__, dg_buffer_count);
     dg_running=false;
+    return NULL;
 }
 
-void end_data_generator() {
+void* end_data_generator() {
     int id=get_id_distributed();
 
     if (dg_created == false)
@@ -863,6 +867,7 @@ void end_data_generator() {
     if (id == 0)
         printf("[DISTR] %s\n", __func__);
     dg_created=false;
+    return NULL;
 }
 
 int get_buffer_count() {
@@ -936,6 +941,7 @@ void* producer_DG(void* arg) {
     fprintf(stdout, "6 %s ptr_in %d count= %d\n", __func__, DG->ptr_in, DG->buffer_count);
     fflush(stdout);
     pthread_exit(NULL);
+    return NULL;
 }
 
 
@@ -1092,10 +1098,10 @@ DataGen::DataGen(const string& filenameX, const string& filenameY, int bs, bool 
     }
 
     printf("%s SIZES %d %d\n", __func__, n_sizeX, n_sizeY);
-
+   
 }
 
-void DataGen::end_data_generator() {
+void* DataGen::end_data_generator() {
      if (dg_created == false)
         msg("Error DG was not created ", __func__);
     if (dg_running)
@@ -1121,7 +1127,7 @@ void DataGen::end_data_generator() {
     //fclose(tmp_fp);  
 }
 
-void DataGen::start_data_generator() {
+void* DataGen::start_data_generator() {
     int tid;
     printf("%s datagen %d\n", __func__, dg_id);
     buffer_count = 0;
@@ -1171,7 +1177,7 @@ void DataGen::start_data_generator() {
 }
 
 
-void DataGen::stop_data_generator() {
+void* DataGen::stop_data_generator() {
     int id=get_id_distributed();
     
     for (int i = 0; i < dg_num_threads; i++)
@@ -1197,7 +1203,7 @@ void DataGen::stop_data_generator() {
         printf("[DISTR] %s count= %d\n", __func__, buffer_count);
 }
 
-void DataGen::get_batch(Tensor* in, Tensor* out) {
+void* DataGen::get_batch(Tensor* in, Tensor* out) {
     //printf("%s running\n", __func__);
     sem_wait(&vaciar);
 
@@ -2226,11 +2232,11 @@ void create_dg_buffer(int size, const vector<int> shapeX,  const vector<int> sha
     for (int i = dg_buffer_size; i < size; i++) { 
         dg_bufferX[i] = new Tensor(shapeX); 
         dg_bufferY[i] = new Tensor(shapeY); 
-        printf("%d ", __func__, i ); 
+        printf("%d ", i ); 
     } 
     if (size>dg_buffer_size)
         dg_buffer_size = size; 
-    printf(". Buffer size: %d\n", __func__, dg_buffer_size ); 
+    printf(". Buffer size: %d\n", dg_buffer_size ); 
     }
    
 void* new_DataGen(DG_Data* Data, const char* filenameX, const char* filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp,  int method, int num_threads, int buffer_size) {
@@ -2408,7 +2414,7 @@ void* new_DataGen(DG_Data* Data, const char* filenameX, const char* filenameY, i
     //imprime_buffer(Data);
 
 
-   // return NULL;
+    return NULL;
 }
 
 void* end_DataGen(DG_Data* DG) {

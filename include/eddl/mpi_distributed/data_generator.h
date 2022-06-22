@@ -62,22 +62,22 @@
  *  @param [in] num_threads     Nr of threads to load samples
  *  @param [in] buffer_size     Size of buffer in (local) batches
  */
-void prepare_data_generator(int dg_id, const string &filenameX, const string &filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp,  int method, int num_threads, int buffer_size);
+void* prepare_data_generator(int dg_id, const string &filenameX, const string &filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp,  int method, int num_threads, int buffer_size);
 
 /**
  *  @brief Starts data generator
  */
-void start_data_generator(); 
+void* start_data_generator(); 
 
 /**
  *  @brief Stops data generator
  */
-void stop_data_generator();
+void* stop_data_generator();
 
 /**
  *  @brief Frees data structures of data generator 
  */
-void end_data_generator();
+void* end_data_generator();
 
 /**
  *  @brief Copy next batch from buffer
@@ -187,10 +187,10 @@ public:
     void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect);
     void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect);
    
-    void end_data_generator();
-    void start_data_generator(); 
-    void stop_data_generator();
-    void get_batch(Tensor* in, Tensor* out);
+    void* end_data_generator();
+    void* start_data_generator(); 
+    void* stop_data_generator();
+    void* get_batch(Tensor* in, Tensor* out);
     int get_buffer_count();
     int get_nbpp();
     int get_dataset_size();
