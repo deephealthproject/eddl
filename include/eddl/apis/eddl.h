@@ -38,7 +38,7 @@
 #include "eddl/layers/recurrent/layer_recurrent.h"
 #include "eddl/layers/fpga/layer_hlsinf.h"
 #include "eddl/mpi_distributed/mpi_distributed.h"
-
+#include "eddl/mpi_distributed/data_generator.h"
 
 // EDDL namespace defines the API
 namespace eddl {

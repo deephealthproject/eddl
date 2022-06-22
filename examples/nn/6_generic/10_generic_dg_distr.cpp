@@ -875,7 +875,7 @@ int main(int argc, char **argv) {
     } else {
         cs = CS_GPU(); // one GPU
     }
-
+    
     // Build model
     build(net,
             //            adam(0.0001), // Optimizer
@@ -931,7 +931,7 @@ int main(int argc, char **argv) {
 
             if (use_dg) {
                 int num_batches;
-                prepare_data_generator(DG_TRAIN, tr_images, tr_labels, local_batch, use_distr_dataset, &dataset_size, &nbpp, true, dgt, 8);
+                prepare_data_generator(DG_TRAIN, tr_images, tr_labels, local_batch, use_distr_dataset, &dataset_size, &nbpp, DG_PERFECT, dgt, 8);
             } else {
                 nbpp = set_NBPP_distributed(dataset_size, local_batch, use_distr_dataset);
             }
@@ -956,6 +956,7 @@ int main(int argc, char **argv) {
                     sprintf(tr_labels, "%s/%03d/train-labels.bi8", path, chunk);
                     //}
                 }
+                
                 if (id == 0) {
                     //printf("Train: %s, %s\n ", tr_images, tr_labels);
                     //printf("Val: %s, %s\n", ts_images, ts_labels);
@@ -1001,6 +1002,13 @@ int main(int argc, char **argv) {
                 {
                     ybatch
                 }, batch_size, DIV_BATCH, false), secs);
+                
+                barrier_distributed();
+       
+                TIMED_EXEC("EVALUATE", evaluate(net,{x_test},
+                {
+                y_test
+                }), secs);
 
                 //TIMED_EXEC("DISTR EVALUATE", evaluate_distr(net,{x_test},{y_test}), secs);              
                 barrier_distributed();

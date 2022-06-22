@@ -122,11 +122,11 @@ endif()
 
 
 ###########################################################################
-########################## COMPILE FOR RISK-V #############################
+########################## COMPILE FOR RISC-V #############################
 ###########################################################################
 
 if(RISKV_COMPILER_PATH)
-    message(STATUS "Compiling for Risk-V...")
+    message(STATUS "Compiling for Risc-V...")
 endif()
 
 
@@ -541,7 +541,7 @@ if(USE_FPGA)
 endif()
 if(RISKV_COMPILER_PATH)
     message(STATUS "-------------------------------------------" )
-    message(STATUS "Risk-V compiler: " ${RISKV_COMPILER_PATH} )
+    message(STATUS "Risc-V compiler: " ${RISKV_COMPILER_PATH} )
 endif()
 message(STATUS "-------------------------------------------" )
 message(STATUS "MPI enabled: " ${USE_MPI} )
