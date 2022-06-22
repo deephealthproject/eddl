@@ -116,7 +116,7 @@ void gen_unique_random_vector(vector<int> &vektor, int n) {
             vektor[im] = tmp;
         }
     }
-    printf ("%s size %d\n", __func__,vektor.size());
+    printf ("%s size %ld\n", __func__,vektor.size());
 }
 
 void gen_unique_random_list_LFSR(int* vektor, int n) {
@@ -203,7 +203,7 @@ void loadXY(int buffer_index, int ds_ptr, int method) {
     }
     
     if (n_read != dg_n_sizeX) {
-        printf("%s n_read %d n_size %ld\n", __func__, n_read, dg_n_sizeX);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, dg_n_sizeX);
         msg("Error freadX ", __func__);
     }
 
@@ -234,7 +234,7 @@ void loadXY(int buffer_index, int ds_ptr, int method) {
 #endif
     }
     if (n_read != dg_n_sizeY) {
-        printf("%s n_read %d n_size %ld\n", __func__, n_read, dg_n_sizeY);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, dg_n_sizeY);
         msg("Error freadY ", __func__);
     }
 
@@ -296,7 +296,7 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
 
     n_read = fread(bytesX, sizeof (unsigned char), dg_n_sizeX, dg_fpX);
     if (n_read != dg_n_sizeX) {
-        printf("%s n_read %ld n_size %ld\n", __func__, n_read, dg_n_sizeX);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, dg_n_sizeX);
         msg("Error freadX ", __func__);
     }
     //printf("%s count=%d buffer_index=%d ptr_out=%d pos=%ld\n",__func__,buffer_count,buffer_index,ptr_out,pos);
@@ -321,7 +321,7 @@ void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
         msg("Error fseek ", __func__);
     n_read = fread(bytesY, sizeof (unsigned char), dg_n_sizeY, dg_fpY);
     if (n_read != dg_n_sizeY) {
-        printf("%s n_read %ld n_size %ld\n", __func__, n_read, dg_n_sizeY);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, dg_n_sizeY);
         msg("Error freadY ", __func__);
     }
     if (DEBUG) printf("LOAD:");
@@ -469,7 +469,7 @@ void * producer_perfect(void* arg) {
             sem_post(&vaciar);
         }
         if ((dg_ds_ptr % 10) == 0) {
-            fprintf(dg_tmp_fp, "Thread: %ld ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d\n", tid, dg_ptr_in, dg_ptr_out, id * dg_nbpp +dg_ds_ptr, (loadsecs * dg_num_threads) / dg_ds_ptr, dg_buffer_count);
+            fprintf(dg_tmp_fp, "Thread: %d ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d\n", tid, dg_ptr_in, dg_ptr_out, id * dg_nbpp +dg_ds_ptr, (loadsecs * dg_num_threads) / dg_ds_ptr, dg_buffer_count);
             //fflush(dg_tmp_fp);
         }
     }
@@ -878,7 +878,7 @@ void* producer_DG(void* arg) {
     DataGen* DG = (DataGen*) arg;
     int id=get_id_distributed();
 
-    printf("%s tid=%ld\n", __func__, tid);
+    printf("%s tid=%d\n", __func__, tid);
     fflush(stdout);
 
     //   pthread_detach(tid);
@@ -1170,9 +1170,6 @@ void DataGen::start_data_generator() {
     printf("%s SIZES %d %d\n", __func__, dg_n_sizeX, dg_n_sizeY);
 }
 
-int DataGen::get_oj() {
-    return dg_n_sizeY;
-}
 
 void DataGen::stop_data_generator() {
     int id=get_id_distributed();
@@ -1286,7 +1283,7 @@ void DataGen::loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
 
     n_read = fread(bytesX, sizeof (unsigned char), n_sizeX, fpX);
     if (n_read != n_sizeX) {
-        printf("%s n_read %ld n_size %ld\n", __func__, n_read, n_sizeX);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, n_sizeX);
         msg("Error freadX ", __func__);
     }
     // printf("2 %s ds_ptr=%ld\n", __func__, ds_ptr);
@@ -1314,7 +1311,7 @@ void DataGen::loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
         msg("Error fseek ", __func__);
     n_read = fread(bytesY, sizeof (unsigned char), n_sizeY, fpY);
     if (n_read != n_sizeY) {
-        printf("%s n_read %ld n_size %ld\n", __func__, n_read, n_sizeY);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, n_sizeY);
         msg("Error freadY ", __func__);
     }
     //    printf("3 %s ds_ptr=%ld\n", __func__, ds_ptr);
@@ -1384,7 +1381,7 @@ void DataGen::loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
 
     if (n_read != n_sizeX) {
-        printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeX);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, n_sizeX);
         msg("Error freadX ", __func__);
     }
 
@@ -1410,7 +1407,7 @@ void DataGen::loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) {
     MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
 
     if (n_read != n_sizeY) {
-        printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeY);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, n_sizeY);
         msg("Error freadY ", __func__);
     }
     //fprintf(tmp_fp,"process Y %d read %d bytes\n", id, n_sizeY, count);
@@ -1505,8 +1502,6 @@ DataGen2::DataGen2(const string& filenameX, const string& filenameY, int bs, boo
     r_shapeX[0] = dg_batch_size;
 
     printf("===ndimX %d shape_size %d batch %d\n", ndimX, shape_sizeX, dg_batch_size);
-
-
 
     dg_n_sizeX = shape_sizeX*dg_batch_size;
 
@@ -1791,7 +1786,7 @@ void DataGen2::loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
 
     n_read = fread(bytesX, sizeof (unsigned char), n_sizeX, fpX);
     if (n_read != n_sizeX) {
-        printf("%s n_read %ld n_size %ld\n", __func__, n_read, n_sizeX);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, n_sizeX);
         msg("Error freadX ", __func__);
     }
     // printf("2 %s ds_ptr=%ld\n", __func__, ds_ptr);
@@ -1819,7 +1814,7 @@ void DataGen2::loadXY_perfect(int buffer_index, int ds_ptr, bool perfect) {
         msg("Error fseek ", __func__);
     n_read = fread(bytesY, sizeof (unsigned char), n_sizeY, fpY);
     if (n_read != n_sizeY) {
-        printf("%s n_read %ld n_size %ld\n", __func__, n_read, n_sizeY);
+        printf("%s n_read %ld n_size %d\n", __func__, n_read, n_sizeY);
         msg("Error freadY ", __func__);
    }
     //    printf("3 %s ds_ptr=%ld\n", __func__, ds_ptr);
@@ -1890,7 +1885,7 @@ void DataGen2::loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) 
     MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
 
     if (n_read != n_sizeX) {
-        printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeX);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, n_sizeX);
         msg("Error freadX ", __func__);
     }
 
@@ -1916,7 +1911,7 @@ void DataGen2::loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect) 
     MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
 
     if (n_read != n_sizeY) {
-        printf("%s n_read %d n_size %ld\n", __func__, n_read, n_sizeY);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, n_sizeY);
         msg("Error freadY ", __func__);
     }
     //fprintf(tmp_fp,"process Y %d read %d bytes\n", id, n_sizeY, count);
@@ -2077,7 +2072,7 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
     }
 
     if (n_read != DG->n_sizeX) {
-        printf("%s n_read %ld n_size %ld\n", __func__, n_read, DG->n_sizeX);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeX);
         msg("Error freadX ", __func__);
     }
     // printf("2 %s ds_ptr=%ld\n", __func__, ds_ptr);
@@ -2114,7 +2109,7 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
 #endif
     }
     if (n_read != DG->n_sizeY) {
-        printf("%s n_read %ld n_size %ld\n", __func__, n_read, DG->n_sizeY);
+        printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeY);
         msg("Error freadY ", __func__);
  }
 

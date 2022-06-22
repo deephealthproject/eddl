@@ -194,7 +194,6 @@ public:
     int get_buffer_count();
     int get_nbpp();
     int get_dataset_size();
-     int get_oj();
 };
 
 // Did not worked
