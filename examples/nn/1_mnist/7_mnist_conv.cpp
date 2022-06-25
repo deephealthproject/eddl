@@ -23,20 +23,33 @@ using namespace eddl;
 //////////////////////////////////
 
 int main(int argc, char **argv) {
+
+    // Settings
+    int epochs = 10;
+    int batch_size = 100;
+    int num_classes = 10;
     bool testing = false;
     bool use_cpu = false;
+    int num_cpu_threads = -1; // -1 = the maximum available cores
+
     for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--testing") == 0) testing = true;
-        else if (strcmp(argv[i], "--cpu") == 0) use_cpu = true;
+        if (strcmp(argv[i], "--testing") == 0) {
+            testing = true;
+            epochs = 2;
+        } else if (strcmp(argv[i], "--cpu") == 0) {
+            use_cpu = true;
+        } else if (strcmp(argv[i], "--threads") == 0) {
+            num_cpu_threads = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--epochs") == 0) {
+            epochs = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--batch-size") == 0) {
+            batch_size = atoi(argv[++i]);
+        }
     }
 
     // Download mnist
     download_mnist();
 
-    // Settings
-    int epochs = (testing) ? 2 : 10;
-    int batch_size = 100;
-    int num_classes = 10;
 
     // Define network
     layer in = Input({784});
@@ -62,7 +75,7 @@ int main(int argc, char **argv) {
 
     compserv cs = nullptr;
     if (use_cpu) {
-        cs = CS_CPU();
+        cs = CS_CPU(num_cpu_threads);
     } else {
         cs = CS_GPU({1}, "full_mem"); // one GPU
         // cs = CS_GPU({1,1},100); // two GPU with weight sync every 100 batches
