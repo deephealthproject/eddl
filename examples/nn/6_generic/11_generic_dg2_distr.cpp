@@ -438,7 +438,7 @@ void save_image_from_tensor(Tensor* X, Tensor* Y, unsigned long int from, unsign
 
 }
 
-void train_epoch(model danet, model net, Tensor* x_train, Tensor* y_train, Tensor* xbatch, Tensor* ybatch, int nbpp, int local_batch, bool data_generator, bool distr_dataset = false) {
+void train_epoch(model danet, model net, DG_Data* DG, Tensor* x_train, Tensor* y_train, Tensor* xbatch, Tensor* ybatch, int nbpp, int local_batch, bool data_generator, bool distr_dataset = false) {
 
     int i, j;
     int id = get_id_distributed();
@@ -500,7 +500,7 @@ void train_epoch(model danet, model net, Tensor* x_train, Tensor* y_train, Tenso
             TIME_POINT1(load);
 
             if (data_generator) {
-                get_batch(xbatch, ybatch);
+                get_batch_DataGen(DG,xbatch, ybatch);
                 xbatch->div_(255.0f);
             } else {
                 next_batch({x_train, y_train},
@@ -512,7 +512,7 @@ void train_epoch(model danet, model net, Tensor* x_train, Tensor* y_train, Tenso
             TIME_POINT1(train);
 
             if ((1)&(j < 2)) {
-                save_image_from_tensor(xbatch, ybatch, 0, 5, j, "input");
+                save_image_from_tensor(xbatch, ybatch, 0, 1, j, "input");
             }
 
             // DA
@@ -522,7 +522,7 @@ void train_epoch(model danet, model net, Tensor* x_train, Tensor* y_train, Tenso
             Tensor* xbatch_da = getOutput(output_da);
 
             if ((1)&(j < 2)) {
-                save_image_from_tensor(xbatch, ybatch, 0, 5, j, "input_da");
+                save_image_from_tensor(xbatch, ybatch, 0, 1, j, "input_da");
             }
 
             train_batch(net,{xbatch_da},
@@ -561,7 +561,7 @@ void train_epoch(model danet, model net, Tensor* x_train, Tensor* y_train, Tenso
 
 }
 
-void eval_epoch(model net, Tensor* x_test, Tensor* y_test, Tensor* xbatch, Tensor* ybatch, int nbpp, int local_batch, bool data_generator, bool distr_dataset = false) {
+void eval_epoch(model net, DG_Data* DG, Tensor* x_test, Tensor* y_test, Tensor* xbatch, Tensor* ybatch, int nbpp, int local_batch, bool data_generator, bool distr_dataset = false) {
 
     int i, j, k;
     int id = get_id_distributed();
@@ -578,7 +578,7 @@ void eval_epoch(model net, Tensor* x_test, Tensor* y_test, Tensor* xbatch, Tenso
     mpi_id0(printf("eval_epoch\n"));
     for (j = 0; j < nbpp; j++) {
         if (data_generator) {
-            get_batch(xbatch, ybatch);
+             get_batch_DataGen(DG, xbatch, ybatch);
             xbatch->div_(255.0f);
             eval_batch(net,{xbatch},{ybatch});
         } else {
@@ -672,7 +672,7 @@ void custom_evaluate(model net, Tensor* x_test, Tensor* y_test, Tensor* xbatch, 
         });
 
         if ((1)&(j < 5)) {
-            save_image_from_tensor(xbatch, ybatch, 0, 5, j, "eval");
+            save_image_from_tensor(xbatch, ybatch, 0, 1, j, "eval");
         }
 
         eval_batch(net,{xbatch},
@@ -732,10 +732,14 @@ int main(int argc, char **argv) {
     bool use_dg;
 
     int dataset_size = 0;
+    int val_dataset_size=0;
+    int test_dataset_size=0;
     int num_batches;
     int local_batch;
     int global_batch;
     int nbpp;
+    int val_nbpp;
+    int test_nbpp;
 
     double secs;
     double secs_epoch;
@@ -747,6 +751,7 @@ int main(int argc, char **argv) {
     
     struct DG_Data Train;
     struct DG_Data Val;
+     struct DG_Data Test;
     
 
     // Auxiliary variables to store the results
@@ -904,9 +909,9 @@ int main(int argc, char **argv) {
     }
 
     // Load val dataset
-    Tensor* x_test = Tensor::load(ts_images);
-    Tensor* y_test = Tensor::load(ts_labels);
-    x_test->div_(255.0f);
+    Tensor* x_test;
+    Tensor* y_test;
+ 
 
     // This code will be removed once onnx import is working
     //if (strlen(test_file)!=0) { // Load weights and test
@@ -923,6 +928,7 @@ int main(int argc, char **argv) {
         Tensor* x_train;
         Tensor* y_train;
 
+
         bcast_weights_distributed(net);
        
         if (chunks == 1) {
@@ -934,19 +940,29 @@ int main(int argc, char **argv) {
                 tshape s = x_train->getShape();
                 dataset_size = s[0];
             }
+            if (use_dg == 0) {
+                x_test = Tensor::load(ts_images);
+                y_test = Tensor::load(ts_labels);
+                x_test->div_(255.0f);
+                tshape s = x_test->getShape();
+                val_dataset_size = s[0];
+            }
 
             if (use_dg) {
                 int num_batches;
-                prepare_data_generator(DG_TRAIN, tr_images, tr_labels, local_batch, use_distr_dataset, &dataset_size, &nbpp, DG_PERFECT, dgt, 8);
+                new_DataGen(&Train, tr_images, tr_labels, local_batch, use_distr_dataset, &dataset_size, &nbpp, DG_PERFECT, dgt, 8);
+                new_DataGen(&Val, ts_images, ts_labels, local_batch, use_distr_dataset, &val_dataset_size, &val_nbpp, DG_PERFECT, 1, 2);    
+                new_DataGen(&Test, ts_images, ts_labels, local_batch, use_distr_dataset, &test_dataset_size, &test_nbpp, DG_PERFECT, 1, 2);    
             } else {
                 nbpp = set_NBPP_distributed(dataset_size, local_batch, use_distr_dataset);
+                val_nbpp = set_NBPP_distributed(val_dataset_size, local_batch, use_distr_dataset);
             }
 
             for (int epoch = 0; epoch < epochs; epoch++) {
                 mpi_id0(printf("== Epoch %d/%d ===\n", epoch + 1, epochs));
                 //for (int chunk = 0; chunk < chunks; chunk++) {
                 if (use_dg)
-                    start_data_generator();
+                    start_DataGen(&Train);
 
                 int chunk = 0;
                 //    mpi_id0(printf("-- Chunk %d/%d ---\n", chunk + 1, chunks));
@@ -976,7 +992,7 @@ int main(int argc, char **argv) {
                 //mpi_id0(printf("CUSTOM FIT Mul :\n"));        
                 //custom_fit(net,{x_train},{y_train},batch_size, epochs, false, use_distr_dataset);
 
-                TIMED_EXEC("CUSTOM TRAIN_BATCH", train_epoch(danet, net,{x_train},
+                TIMED_EXEC("CUSTOM TRAIN_BATCH", train_epoch(danet, net, &Train, {x_train},
                 {
                     y_train
                 },
@@ -997,28 +1013,18 @@ int main(int argc, char **argv) {
 
                 update_batch_avg_distributed(epoch, secs_epoch, 1000);
                 barrier_distributed();
-
-                TIMED_EXEC("CUSTOM EVALUATE", custom_evaluate(net,{x_test},
-                {
-                    y_test
-                },
-                {
-                    xbatch
-                },
-                {
-                    ybatch
-                }, batch_size, DIV_BATCH, false), secs);
+                
+                
+                if (use_dg)
+                    stop_DataGen(&Train);
+                if (use_dg)
+                    start_DataGen(&Val);
+                
+                TIMED_EXEC("EVAL EPOCH", eval_epoch(net, &Val, {x_test},{y_test},{xbatch},{ybatch}, val_nbpp, batch_size, use_dg, false), secs);
                 
                 barrier_distributed();
        
-                TIMED_EXEC("EVALUATE", evaluate(net,{x_test},
-                {
-                y_test
-                }), secs);
-
-                //TIMED_EXEC("DISTR EVALUATE", evaluate_distr(net,{x_test},{y_test}), secs);              
-                barrier_distributed();
-
+               
                 if (id == 0) {
                     // Get the current losses and metrics
                     curr_loss = get_losses(net)[0];
@@ -1055,9 +1061,17 @@ int main(int argc, char **argv) {
                 }
                 barrier_distributed();
 
+                if (use_dg)
+                    stop_DataGen(&Val);
+               
+                
+            }
+            if (use_dg)
+                    start_DataGen(&Test);
+                barrier_distributed();
                 if (id == 0) {
                     // Predict
-
+            
                     string class_names_file = classes;
                     std::cout << "Reading imagenet class names..." << std::endl;
                     vector<string> class_names(num_classes);
@@ -1065,12 +1079,24 @@ int main(int argc, char **argv) {
 
                     printf("\nPREDICTIONS:\n");
 
-                    for (int item = 0; item < 10; item++) {
+                    if (use_dg) {
+                        get_batch_DataGen(&Test, xbatch, ybatch);
+                        xbatch->div_(255.0f);
+                    }
+                    for (int item = 0; item < 5; item++) {
 
                         printf("Item nr: %d\n", item);
+
                         std::string _range_ = std::to_string(item);
-                        Tensor* xout = x_test->select({_range_});
-                        Tensor* yout = y_test->select({_range_});
+                        Tensor* xout;
+                        Tensor* yout;
+                        if (use_dg) {
+                            xout = xbatch->select({_range_});
+                            yout = ybatch->select({_range_});
+                        } else {
+                            xout = x_test->select({_range_});
+                            yout = y_test->select({_range_});
+                        }
                         save_image_from_tensor(xout, yout, 0, 1, item, "pred");
                         vtensor preds = predict(net,{xout});
                         //preds[0]->print();
@@ -1091,17 +1117,15 @@ int main(int argc, char **argv) {
                     }
 
                 }
-
                 barrier_distributed();
-
                 if (use_dg)
-                    stop_data_generator();
-
-            }
+                   stop_DataGen(&Test);
           
             if (use_dg == 0) {
                 delete x_train;
                 delete y_train;
+                delete x_test;
+                delete y_test;
             }
         } else { // Chunks>1
             printf("Chunks not supported\n");
@@ -1132,11 +1156,12 @@ int main(int argc, char **argv) {
     delete ybatch;
     //delete x_train;
     //delete y_train;
-    delete x_test;
-    delete y_test;
+    //delete x_test;
+    //delete y_test;
     delete net;
 
-    end_data_generator;
+    end_DataGen(&Train);
+    end_DataGen(&Val);
     end_distributed();
 
     return EXIT_SUCCESS;

@@ -143,6 +143,7 @@ void* imprime_buffer(DG_Data* DG);
 
 
 // Did not worked
+/*
 class DataGen {
 private:
     Tensor* bufferX[MAX_BUFFER];
@@ -239,7 +240,6 @@ public:
     int dg_nbpp;
      int dg_buffer_size;
       bool dg_perfect;
-    // Constructor with two parameters, one parameter having a default value
     DataGen2(const string& filenameX, const string& filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp, bool perfect, int num_threads, int buffer_size);
    
     double getValue() { return static_cast<double>(m_numerator) / m_denominator; }
@@ -249,12 +249,13 @@ public:
     void get_batch(Tensor* in, Tensor* out);
     void loadXY_perfect(int buffer_index, int ds_ptr, bool perfect);
     void loadXY_perfect_distr(int buffer_index, int ds_ptr, bool perfect);
-  //  static void * InternalThreadEntryFunc(void * This) {((Fraction *)This)->InternalThreadEntry(); return NULL;}
+   //  static void * InternalThreadEntryFunc(void * This) {((Fraction *)This)->InternalThreadEntry(); return NULL;} 
 
  protected:
-   /** Implement this method in your subclass with the code you want your thread to run. */
+   // Implement this method in your subclass with the code you want your thread to run. 
   // virtual void InternalThreadEntry();
 };
+*/
 
 
 #endif /* DATA_GENERATOR_H */
