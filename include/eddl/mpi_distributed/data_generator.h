@@ -46,15 +46,13 @@
 #define DG_LIN 2
 
 
-
-
 /**
  *  @brief Initializes data generator
  *
  *  @param [in] dg_id           Id of data generator. Only *one* data generator is allowed. 
  *  @param [in] filenameX       Name of dataset file with samples
  *  @param [in] filenameY       Name of dataset file with labels
- *  @param [in] ds              (global) Batch size
+ *  @param [in] bs              (global) Batch size
  *  @param [in] distr_ds        DISTR_DS or NO_DISTR_DS
  *  @param [out] dataset_size   Dataset size
  *  @param [out] nbpp           Nr of batches per proc
@@ -132,12 +130,57 @@ struct DG_Data {
     char filenameY[128]="";
 };
 
-
+/**
+ *  @brief Creates and initializes a new data generator structure
+ *
+ *  @param [in] DG              Pointer to data generator var
+ *  @param [in] filenameX       Name of dataset file with samples
+ *  @param [in] filenameY       Name of dataset file with labels
+ *  @param [in] bs              (global) Batch size
+ *  @param [in] distr_ds        DISTR_DS or NO_DISTR_DS
+ *  @param [out] dataset_size   Dataset size
+ *  @param [out] nbpp           Nr of batches per proc
+ *  @param [in] method          DG_LIN, DG_RANDOM or DG_PERFECT
+ *  @param [in] num_threads     Nr of threads to load samples
+ *  @param [in] buffer_size     Size of buffer in (local) batches
+ */
 void* new_DataGen(DG_Data* DG, const char* filenameX, const char* filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp,  int method, int num_threads, int buffer_size);
+
+/**
+ *  @brief Starts data generator
+ *  @param [in] DG  Pointer to data generator var
+ */
 void* start_DataGen(DG_Data* DG);
+
+/**
+ *  @brief Stops data generator
+ * 
+ *  @param [in] DG  Pointer to data generator var
+ */
 void* stop_DataGen(DG_Data* DG);
+
+/**
+ *  @brief Copy next batch from buffer
+ * 
+ *  @param [in] DG  Pointer to data generator var
+ *  @param [out] in     Tensor of batch samples
+ *  @param [out] out    Tensor of batch labels
+ */
 void* get_batch_DataGen(DG_Data* DG, Tensor* in, Tensor* out);  
+
+/**
+ *  @brief Frees data structures of data generator 
+ *  @param [in] DG  Pointer to data generator var
+ */
 void* end_DataGen (DG_Data* DG) ;
+
+/**
+ *  @brief Aux functions to print DG data
+ * 
+ *  @param [in] titulo  Text to print before DG Data
+ *  @param [in] DG  Pointer to data generator var
+ * 
+ */
 void* imprime_DG(const char* titulo, DG_Data* DG);
 void* imprime_buffer(DG_Data* DG);
 
