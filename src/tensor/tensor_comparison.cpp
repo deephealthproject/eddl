@@ -313,6 +313,7 @@ bool Tensor::allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_n
 
     if (A->isCPU()) {
         return cpu_allclose(A, B, rtol, atol, equal_nan);
+        //return cpu_allclose_verbose(A, B, rtol, atol, equal_nan);
     }
 #ifdef cGPU
     else if (A->isGPU())

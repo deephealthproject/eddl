@@ -49,6 +49,7 @@ int hlsinf_filter_format;
 int hlsinf_bias_format;
 int hlsinf_input_format;
 int hlsinf_output_format;
+int hlsinf_batch_norm_format;
 int hlsinf_cpi;
 int hlsinf_cpo;
 int hlsinf_num_kernels;
@@ -73,6 +74,9 @@ bool hlsinf_dense_support;
 bool hlsinf_noconv_support = 0;
 int  hlsinf_weight_buffer;
 int  hlsinf_data_buffer;
+
+bool hlsinf_intelkernel_version_implements_bn_add;
+bool hlsinf_intelkernel_version_implements_bn_relu;
 
 // -------------------------------------------------------------------------------------------------------------------------------------------
 // Global variables for profiling
@@ -130,6 +134,7 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor, int fi
 
   std::string tmp_name = std::string(str) + "_profile";
 
+  printf("_profile_fpga_tensor fpga_copy_memory_from_fpga %p\n",(void *)T->fpga_ptr );
   float *buf = (float *)eddl_malloc(size, tmp_name.c_str());
   fpga_copy_memory_from_fpga(T->fpga_ptr, buf, size);
 
@@ -141,8 +146,14 @@ void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor, int fi
   int num_elements = last - first + 1;
   for (int i=first; i<=last; i++) {
     float v;
+
+    //v = fpga_buffer_get_value_in_float(buf, i);
+
     if (format_tensor == HLSINF_FP32) {float *p = buf; v = p[i];
     }
+    #ifdef cFPGA_VENDOR_INTEL
+    else if (format_tensor == HLSINF_API8) {int8_t *p = (int8_t *)buf; v = float(p[i]);}
+    #endif
     #ifdef cFPGA_VENDOR_XILINX
     else if (format_tensor == HLSINF_API32) {ap_int<32> *p = (ap_int<32> *)buf; v = float(p[i]);}
     else if (format_tensor == HLSINF_API8) {ap_int<8> *p = (ap_int<8> *)buf; v = float(p[i]);}
@@ -249,6 +260,12 @@ void fpga_init(int kernel_version, int kernel_subversion) {
   #endif
 
   cl_int      err;
+  int         hlsinf_intel_platform_type;
+
+  // set default to false
+  hlsinf_intelkernel_version_implements_bn_add = false;
+  hlsinf_intelkernel_version_implements_bn_relu = false;
+  int platform_type = FPGA_PLATFORM_NONE;
 
   // We need to instantiate the proper number of kernels, we also take the specifities of the kernels
   //
@@ -275,7 +292,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
   //   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   if ((kernel_version == 1) && (kernel_subversion == 0)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.0.xclbin";
@@ -290,7 +307,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 1)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.0.xclbin";
@@ -305,7 +322,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : Yes\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 2)) {
-    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
+    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.1.xclbin";
@@ -320,7 +337,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 3)) {
-    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8;
+    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API32; hlsinf_input_format = HLSINF_APUI8; hlsinf_output_format = HLSINF_APUI8; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.1.xclbin";
@@ -335,7 +352,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : Yes\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 4)) {
-    hlsinf_filter_format = HLSINF_APF_16_8; hlsinf_bias_format = HLSINF_APF_32_16; hlsinf_input_format = HLSINF_APF_32_16; hlsinf_output_format = HLSINF_APF_32_16;
+    hlsinf_filter_format = HLSINF_APF_16_8; hlsinf_bias_format = HLSINF_APF_32_16; hlsinf_input_format = HLSINF_APF_32_16; hlsinf_output_format = HLSINF_APF_32_16; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.5.xclbin";
@@ -350,7 +367,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 5)) {
-    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_32_16; hlsinf_input_format = HLSINF_APF_32_16; hlsinf_output_format = HLSINF_APF_32_16;
+    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_32_16; hlsinf_input_format = HLSINF_APF_32_16; hlsinf_output_format = HLSINF_APF_32_16; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.6.xclbin";
@@ -365,7 +382,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
  } else if ((kernel_version == 1) && (kernel_subversion == 6)) {
-    hlsinf_filter_format = HLSINF_APF_16_8; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_16_8; hlsinf_output_format = HLSINF_APF_16_8;
+    hlsinf_filter_format = HLSINF_APF_16_8; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_16_8; hlsinf_output_format = HLSINF_APF_16_8; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.7.xclbin";
@@ -380,7 +397,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 7)) {
-    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_8_4; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4;
+    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_8_4; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.8.xclbin";
@@ -395,7 +412,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 8)) {
-    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4;
+    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.9.xclbin";
@@ -410,7 +427,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 9)) {
-    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4;
+    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4; hlsinf_batch_norm_format = hlsinf_output_format;
     //hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
     hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
@@ -427,7 +444,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 14)) {
-    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4;
+    hlsinf_filter_format = HLSINF_APF_8_4; hlsinf_bias_format = HLSINF_APF_16_8; hlsinf_input_format = HLSINF_APF_8_4; hlsinf_output_format = HLSINF_APF_8_4; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 16; hlsinf_cpo = 16; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.14.xclbin";
@@ -442,7 +459,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 15)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.15.xclbin";
@@ -457,7 +474,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf(" Dense layer support  : Yes\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 16)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.16.xclbin";
@@ -472,7 +489,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf(" Dense layer support  : Yes\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 17)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.17.xclbin";
@@ -487,7 +504,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 18)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.18.xclbin";
@@ -502,7 +519,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 19)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.19.xclbin";
@@ -517,7 +534,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
   } else if ((kernel_version == 1) && (kernel_subversion == 20)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 16; hlsinf_cpo = 16; hlsinf_num_kernels = 2;
     hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_v1.20.xclbin";
@@ -564,67 +581,428 @@ void fpga_init(int kernel_version, int kernel_subversion) {
   } else if ((kernel_version == 2) && (kernel_subversion == 0)) {
     hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
     hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
-    hlsinf_ho_max = 256; hlsinf_wo_max = 256; hlsinf_max_rows = 256;
+    hlsinf_ho_max = 128; hlsinf_wo_max = 128; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_stratix_v2.0.aocx";
     hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
     hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
-    hlsinf_avgp_support = true;  hlsinf_bn_support = false;    hlsinf_bn_relu_support = false; hlsinf_add_support = true; hlsinf_add_relu_support = false; 
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = false;
     hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = false;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
-    printf("HLSinf accelerator v2.0: \n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
     printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
     printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 19.3\n");
     printf("  kernel freq          : 375.00 MHz\n");
     printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
   } else if ((kernel_version == 2) && (kernel_subversion == 1)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 1;
     hlsinf_ho_max = 256; hlsinf_wo_max = 256; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_stratix_v2.1.aocx";
     hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
     hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
-    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_bn_relu_support = false; hlsinf_add_support = false; hlsinf_add_relu_support = false; 
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = false;
     hlsinf_upsize_support = false;  hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = false;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
-    printf("HLSinf accelerator v2.1: \n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
     printf("  Kernel configuration : FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
     printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 20.1\n");
     printf("  kernel freq          : 268.75 MHz\n");
     printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
   } else if ((kernel_version == 2) && (kernel_subversion == 2)) {
-    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32;
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
     hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 1;
     hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
     hlsinf_xclbin = "hlsinf_stratix_v2.2.aocx";
     hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
     hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
-    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_bn_relu_support = false; hlsinf_add_support = false; hlsinf_add_relu_support = false; 
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = false;
     hlsinf_upsize_support = false;  hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = false;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
-    printf("HLSinf accelerator v2.2: \n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
     printf("  Kernel configuration : FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
     printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 20.1\n");
     printf("  kernel freq          : 268.75 MHz\n");
     printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
+  } else if ((kernel_version == 2) && (kernel_subversion == 3)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 128; hlsinf_wo_max = 128; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.3.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = false;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = false;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 19.3\n");
+    printf("  kernel freq          : 420.00 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
+  } else if ((kernel_version == 2) && (kernel_subversion == 4)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.4.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = false;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = false;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 20.1\n");
+    printf("  kernel freq          : 254.00 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
+  }
+  else if ((kernel_version == 2) && (kernel_subversion == 5)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 1024; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.5.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = false;   hlsinf_add_support = false;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = false;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 19.3\n");
+    printf("  kernel freq          : 350.00 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
+  }
+   else if ((kernel_version == 2) && (kernel_subversion == 6)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.6.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;   hlsinf_add_support = true;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 19.3\n");
+    printf("  kernel freq          : 350.00 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  }
+  else if ((kernel_version == 2) && (kernel_subversion == 7)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 128; hlsinf_wo_max =  128; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.7.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;   hlsinf_add_support = true;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 20.1\n");
+    printf("  kernel freq          : 268.00 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
+  }
+   else if ((kernel_version == 2) && (kernel_subversion == 8)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 128; hlsinf_wo_max = 256; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.8.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;   hlsinf_add_support = true;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 20.1\n");
+    printf("  kernel freq          : 285.00 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
+  }
+  else if ((kernel_version == 2) && (kernel_subversion == 9)) {
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 128; hlsinf_wo_max =  256; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.9.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;   hlsinf_add_support = true;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 20.1\n");
+    printf("  kernel freq          : 280.00 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add\n");
+    printf("  Dense layer support  : No\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n"); hlsinf_batch_norm_format = hlsinf_output_format;
+
+  }
+  */
+  else if ((kernel_version == 2) && (kernel_subversion == 10)) {
+    // new kernels version with asymetric padding support
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 1024;
+    hlsinf_xclbin = "hlsinf_stratix_v2.10.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;    hlsinf_add_support = true; hlsinf_add_relu_support = false;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 20.1\n");
+    printf("  kernel freq          : 281.25 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add\n");
+    printf("  Dense layer support  : No\n");
+    printf("  Batch Norm EPSILON   : 1e-3\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  }
+  else if ((kernel_version == 2) && (kernel_subversion == 11)) {
+    // new kernels version with asymetric padding support
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 1024;
+    hlsinf_xclbin = "hlsinf_stratix_v2.11.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;    hlsinf_add_support = true; hlsinf_add_relu_support = false;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 20.1\n");
+    printf("  kernel freq          : 276.00 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add\n");
+    printf("  Dense layer support  : No\n");
+    printf("  Batch Norm EPSILON   : 1e-5\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+  }
+  else if ((kernel_version == 2) && (kernel_subversion == 12)) {
+    // new kernels version with asymetric padding support
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.12.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;    hlsinf_add_support = true; hlsinf_add_relu_support = false;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 19.3\n");
+    printf("  kernel freq          : 444.44 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add\n");
+    printf("  Dense layer support  : No\n");
+    printf("  Batch Norm EPSILON   : 1e-5\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
+  }
+  else if ((kernel_version == 2) && (kernel_subversion == 13)) {
+    // new kernels version with asymetric padding support
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.13.aocx"; //"hlsinf_stratix_v2.13_gmemtest.aocx"
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;    hlsinf_add_support = true; hlsinf_add_relu_support = false;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("----- jm10 test for hbm buffers access\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 19.3\n");
+    printf("  kernel freq          : 433.33 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add\n");
+    printf("  Dense layer support  : No\n");
+    printf("  Batch Norm EPSILON   : 1e-5\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
+  }
+  else if ((kernel_version == 2) && (kernel_subversion == 14)) {
+    // new kernels version with asymetric padding support
+    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API8; hlsinf_input_format = HLSINF_API8; hlsinf_output_format = HLSINF_API8; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.14.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;    hlsinf_add_support = true; hlsinf_add_relu_support = false;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : INT8, INT8, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 19.3\n");
+    printf("  kernel freq          : 395.00 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add\n");
+    printf("  Dense layer support  : No\n");
+    printf("  Batch Norm EPSILON   : 1e-5\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
   } 
-  else {
+  else if ((kernel_version == 2) && (kernel_subversion == 15)) {
+    // new kernels version with asymetric padding support
+    hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 4; hlsinf_cpo = 4; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.15.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;    hlsinf_add_support = true; hlsinf_add_relu_support = true;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : FP32, FP32, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 19.3\n");
+    printf("  kernel freq          : 347.50 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add (with relu)\n");
+    printf("  Dense layer support  : No\n");
+    printf("  Batch Norm EPSILON   : 1e-5\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
+  }
+  else if ((kernel_version == 2) && (kernel_subversion == 16)) {
+    // new kernels version with asymetric padding support
+    hlsinf_filter_format = HLSINF_API8; hlsinf_bias_format = HLSINF_API8; hlsinf_input_format = HLSINF_API8; hlsinf_output_format = HLSINF_API8; hlsinf_batch_norm_format = hlsinf_output_format;
+    hlsinf_cpi = 8; hlsinf_cpo = 8; hlsinf_num_kernels = 1;
+    hlsinf_ho_max = 256; hlsinf_wo_max = 512; hlsinf_max_rows = 256;
+    hlsinf_xclbin = "hlsinf_stratix_v2.16.aocx";
+    hlsinf_conv_support = true;  hlsinf_shift_support = true; hlsinf_clip_support = true;
+    hlsinf_relu_support = true;  hlsinf_stm_support = false;  hlsinf_maxp_support = true;
+    hlsinf_avgp_support = true;  hlsinf_bn_support = true;    hlsinf_add_support = true; hlsinf_add_relu_support = true;
+    hlsinf_upsize_support = false; hlsinf_dense_support = false;
+    hlsinf_intelkernel_version_implements_bn_add = true;
+    hlsinf_intelkernel_version_implements_bn_relu = false;
+    platform_type = FPGA_PLATFORM_STRATIX_10MX_EB;
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("HLSinf accelerator v%d.%d: %s\n", kernel_version, kernel_subversion, hlsinf_xclbin.c_str());
+    printf("  Kernel configuration : INT8, INT8, CPIxCPO: %dx%d, WMAX %d  HMAX %d  %d kernel (%s)\n", hlsinf_cpi, hlsinf_cpo,hlsinf_wo_max, hlsinf_ho_max, hlsinf_num_kernels, hlsinf_xclbin.c_str());
+    printf("  Platform             : Intel Stratix10 MX board\n");
+    printf("  BSP version          : 19.3\n");
+    printf("  kernel freq          : 408.33 MHz\n");
+    printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add (with relu)\n");
+    printf("  Dense layer support  : No\n");
+    printf("  Batch Norm EPSILON   : 1e-5\n");
+    printf("------------------------------------------------------------------------------------------------------------------------------\n");
+
+  } 
+    else {
     printf("Error, kernel version %d.%d not supported\n", kernel_version, kernel_subversion);
     exit(1);
   }
 
-  fpga_device_init();
+  fpga_device_init(platform_type);
  
   #ifdef FPGA_DEBUG
   printf("end of fpga_init\n");
   #endif
 }
 
+// ------------------------------------------------------------------------------------------------------------------------
+// Copy operations
+//
+// specific for each vendor, implemented in src/hardware/fpga/<vendor>/fpga_<vendor>_core.cpp
+
+// ----------------------------------------------------------------------------------------------------------------------------------------
+// Support functions
+
+
+// -----------------------------------------------------------------
+// transform_nn
+//
 
 // function to convert IHW data format into GIHWCPI data format
 void filter_IHW_to_GIHWCPI(Tensor *A, Tensor *B) {

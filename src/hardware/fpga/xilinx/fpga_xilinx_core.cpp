@@ -107,6 +107,63 @@ void event_cb(cl_event event1, cl_int cmd_status, void *data) {
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------
+// FPGA 
+size_t fpga_datatype_sizeof(int data_type) {
+  size_t datatype_size;
+  if (data_type == HLSINF_FP32 ) {
+    datatype_size = sizeof(float);
+  } else if (data_type == HLSINF_API8 ) {
+    datatype_size = sizeof(ap_int<8>);
+  } else if (data_type == HLSINF_APUI8) {
+    datatype_size = sizeof(ap_uint<8>);
+  } else if (data_type == HLSINF_API32 ) {
+    datatype_size = sizeof(ap_int<32>);
+  } else if (data_type == HLSINF_APF_8_4) {
+    datatype_size = sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>);
+  } else if (data_type == HLSINF_APF_16_8) {
+    datatype_size = sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>);
+  } else if (data_type == HLSINF_APF_32_16 ) {
+    datatype_size =  sizeof(ap_fixed<32,16>);
+  } else {
+    printf("Xilinx FPGA Data (%d) type not supported\n", data_type);
+    exit(1);
+  }
+  return datatype_size;
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+float fpga_buffer_get_value_in_float(float *buf, int data_format, int index) {
+  float v;
+ 
+  if (data_format == HLSINF_FP32) {
+    float *p = buf;
+    v = p[index];
+  } else if (data_format == HLSINF_API32) {
+    ap_int<32> *p = (ap_int<32> *) buf; 
+    v = float(p[index]);
+  } else if (data_format == HLSINF_API8) {
+    ap_int<8> *p = (ap_int<8> *)buf;
+    v = float(p[index]);
+  } else if (data_format == HLSINF_APUI8) {
+    ap_uint<8> *p = (ap_uint<8> *)buf;
+    v = p[index];
+  } else if (data_format == HLSINF_APF_8_4) {
+    ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *p = (ap_fixed<8,4,AP_RND_ZERO,AP_SAT> *)buf;
+    v = p[index];
+  } else if (data_format == HLSINF_APF_16_8) {
+    ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *p = (ap_fixed<16,8,AP_RND_ZERO,AP_SAT> *)buf;
+    v = p[index];
+  } else if (data_format == HLSINF_APF_32_16) {
+    ap_fixed<32,16> *p = (ap_fixed<32,16> *)buf;
+    v = p[index];
+  } else {
+    printf("Xilinx FPGA Data (%d) format not supported\n", data_format);
+    exit(1);
+  }
+
+  return v;
+}
+// -----------------------------------------------------------------------------------------------------------------------------------
 // FPGA initialization and finalization functions
 
 void close_fpga() {
@@ -118,7 +175,8 @@ void close_fpga() {
 // fpga_init()
 // Initialices the device, sets up the kernels, prepares everything related to the FPGA device and support infrastructure
 // This function must be called only once and at the begining of operations with the FPGA
-void fpga_device_init() {
+//   platform_type currently not used for Xilinx devices
+void fpga_device_init(int platform_type) {
   #ifdef FPGA_DEBUG
   printf("initializing Xilinx FPGA\n");
   #endif
@@ -330,7 +388,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     // copy to FPGA, source is in CPU and is in FP32, depending on the output format of HLSinf we convert if needed
     if (hlsinf_input_format == HLSINF_FP32) {
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(B->ptr, (cl::Buffer *)B->fpga_ptr, size_out);
+      fpga_copy_memory_to_fpga(B->ptr, B->fpga_ptr, size_out);
     } else if (hlsinf_input_format == HLSINF_API8) {
       PROFILING_HEADER(Precision_Conversion);
       // We allocate a buffer to convert from floats to ap_int<8>
@@ -341,7 +399,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       }
       PROFILING_FOOTER(Precision_Conversion);
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size * sizeof(ap_int<8>));
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size * sizeof(ap_int<8>));
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, B->size * sizeof(ap_int<8>));
       free(cpu_buff);
     } else if (hlsinf_input_format == HLSINF_APUI8) {
       PROFILING_HEADER(Precision_Conversion);
@@ -353,7 +411,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       }
       PROFILING_FOOTER(Precision_Conversion);
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size*sizeof(ap_uint<8>));
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size*sizeof(ap_uint<8>));
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, B->size*sizeof(ap_uint<8>));
       free(cpu_buff);
     } else if (hlsinf_input_format == HLSINF_APF_8_4) {
       PROFILING_HEADER(Precision_Conversion);
@@ -365,7 +423,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       }
       PROFILING_FOOTER(Precision_Conversion);
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, B->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
       free(cpu_buff);
     } else if (hlsinf_input_format == HLSINF_APF_16_8) {
       PROFILING_HEADER(Precision_Conversion);
@@ -377,7 +435,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       }
       PROFILING_FOOTER(Precision_Conversion);
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
       free(cpu_buff);
     } else if (hlsinf_input_format == HLSINF_APF_32_16) {
       PROFILING_HEADER(Precision_Conversion);
@@ -389,7 +447,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       }
       PROFILING_FOOTER(Precision_Conversion);
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, B->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
       free(cpu_buff);
     } else {
       printf("Transform: input format not supported\n");
@@ -431,7 +489,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     // copy to FPGA, source is in CPU and is in FP32, depending on the output format of HLSinf we convert if needed
     if (hlsinf_input_format == HLSINF_FP32) {
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(B->ptr, (cl::Buffer *)B->fpga_ptr, size_out);
+      fpga_copy_memory_to_fpga(B->ptr, B->fpga_ptr, size_out);
     } else if (hlsinf_input_format == HLSINF_API8) {
       PROFILING_HEADER(Precision_Conversion);
       // We allocate a buffer to convert from floats to ap_int<8>
@@ -443,7 +501,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       PROFILING_FOOTER(Precision_Conversion);
       size_out = C_out * H_in * W_in * B_in * sizeof(ap_int<8>);
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, size_out);
       free(cpu_buff);
     } else if (hlsinf_input_format == HLSINF_APUI8) {
       PROFILING_HEADER(Precision_Conversion);
@@ -456,7 +514,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       PROFILING_FOOTER(Precision_Conversion);
       size_out = C_out * H_in * W_in * B_in * sizeof(ap_uint<8>);
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, size_out);
       free(cpu_buff);
     } else if (hlsinf_input_format == HLSINF_APF_8_4) {
       PROFILING_HEADER(Precision_Conversion);
@@ -469,7 +527,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       PROFILING_FOOTER(Precision_Conversion);
       size_out = C_out * H_in * W_in * B_in * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>);
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, size_out);
       free(cpu_buff);
     } else if (hlsinf_input_format == HLSINF_APF_16_8) {
       PROFILING_HEADER(Precision_Conversion);
@@ -482,7 +540,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       PROFILING_FOOTER(Precision_Conversion);
       size_out = C_out * H_in * W_in * B_in * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>);
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, size_out);
       free(cpu_buff);
     } else if (hlsinf_input_format == HLSINF_APF_32_16) {
       PROFILING_HEADER(Precision_Conversion);
@@ -495,7 +553,7 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
       PROFILING_FOOTER(Precision_Conversion);
       size_out = C_out * H_in * W_in * B_in * sizeof(ap_fixed<32,16>);
       if (B->fpga_ptr == NULL) B->fpga_ptr = fpga_create_memory(size_out);
-      fpga_copy_memory_to_fpga(cpu_buff, (cl::Buffer *)B->fpga_ptr, size_out);
+      fpga_copy_memory_to_fpga(cpu_buff, B->fpga_ptr, size_out);
       free(cpu_buff);
     } else {
       printf("Transform: input format not supported\n");
@@ -507,30 +565,30 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     int num_elements = B->size;
 
     if (hlsinf_output_format == HLSINF_FP32) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(float));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(float));
       memcpy(B->ptr, A->ptr, num_elements * sizeof(float));
     } else if (hlsinf_output_format == HLSINF_API8) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_int<8>));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(ap_int<8>));
       PROFILING_HEADER(Precision_Conversion);
       for (int x=0; x < num_elements; x++) {ap_int<8> *ptr = (ap_int<8> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
       PROFILING_FOOTER(Precision_Conversion);
     } else if (hlsinf_output_format == HLSINF_APUI8) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_uint<8>));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(ap_uint<8>));
       PROFILING_HEADER(Precision_Conversion);
       for (int x=0; x < num_elements; x++) {ap_uint<8> *ptr = (ap_uint<8> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
       PROFILING_FOOTER(Precision_Conversion);
     } else if (hlsinf_output_format == HLSINF_APF_8_4) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<8, 2,AP_RND_ZERO,AP_SAT>));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<8, 2,AP_RND_ZERO,AP_SAT>));
       PROFILING_HEADER(Precision_Conversion);
       for (int x=0; x < num_elements; x++) {ap_fixed<8, 2,AP_RND_ZERO,AP_SAT> *ptr = (ap_fixed<8, 2,AP_RND_ZERO,AP_SAT> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
       PROFILING_FOOTER(Precision_Conversion);
     } else if (hlsinf_output_format == HLSINF_APF_16_8) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<16, 8,AP_RND_ZERO,AP_SAT>));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<16, 8,AP_RND_ZERO,AP_SAT>));
       PROFILING_HEADER(Precision_Conversion);
       for (int x=0; x < num_elements; x++) {ap_fixed<16, 8,AP_RND_ZERO,AP_SAT> *ptr = (ap_fixed<16, 8,AP_RND_ZERO,AP_SAT> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
       PROFILING_FOOTER(Precision_Conversion);
     } else if (hlsinf_output_format == HLSINF_APF_32_16) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<32,16>));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<32,16>));
       PROFILING_HEADER(Precision_Conversion);
       for (int x=0; x < num_elements; x++) {ap_fixed<32, 16> *ptr = (ap_fixed<32, 16> *)A->ptr; float value = ptr[x]; B->ptr[x] = value;}
       PROFILING_FOOTER(Precision_Conversion);
@@ -564,17 +622,17 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
     //printf("ptr_fpga %p ptr_dst %p size %d\n", A->fpga_ptr, B->ptr, size_dst);
 
     if (hlsinf_output_format == HLSINF_FP32) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(float));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(float));
     } else if (hlsinf_output_format == HLSINF_API8) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_int<8>));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(ap_int<8>));
     } else if (hlsinf_output_format == HLSINF_APUI8) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_uint<8>));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(ap_uint<8>));
     } else if (hlsinf_output_format == HLSINF_APF_8_4) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
     } else if (hlsinf_output_format == HLSINF_APF_16_8) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
     } else if (hlsinf_output_format == HLSINF_APF_32_16) {
-      fpga_copy_memory_from_fpga((cl::Buffer *)A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<32,16>));
+      fpga_copy_memory_from_fpga(A->fpga_ptr, A->ptr, num_elements * sizeof(ap_fixed<32,16>));
     } else {
       printf("Transform: output format not supported\n");
       exit(1);

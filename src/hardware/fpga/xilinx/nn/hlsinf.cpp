@@ -72,9 +72,11 @@ PROFILING_ENABLE_EXTERN(fpga_hlsinf);
 //   kernel_id: Kernel ID (which kernel to use in a multi-kernel setting)
 //
 void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, int WO, int rows, int PT, int PB, int PL, int PR, int SH, int SW, int Ichannels, int Ochannels,  
-                          int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, cl::Buffer K, cl::Buffer B, cl::Buffer BN_values, cl::Buffer O, 
+                          int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor,
+                          cl::Buffer K, cl::Buffer B, cl::Buffer BN_values, cl::Buffer O, 
                           int read_offset, int write_offset, int enable_maxp, int enable_avgp, int enable_clipping,
-                          int enable_shift, int enable_add, int enable_add_relu, int enable_upscale, int use_weight_buffer, int first_row_weight_buffer, int weight_buffer_initialized, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
+                          int enable_shift, int enable_add, int enable_add_relu, int enable_upscale, int use_weight_buffer, int first_row_weight_buffer, int weight_buffer_initialized,
+                          int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
 
   // Error variable
   cl_int err;
