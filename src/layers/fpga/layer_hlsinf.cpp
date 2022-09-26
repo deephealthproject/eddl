@@ -22,22 +22,25 @@ int LHLSinf::total_layers = 0;
 // Constructor (one parent layer)
 LHLSinf::LHLSinf(Layer * parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
               int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
-              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem) :
+              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, 
+	      int input_offset, int output_offset, string name, int dev, int mem) :
               LHLSinf(vector<Layer*> {parent}, h, w, ichannels, ochannels, kh, kw, sh, sw, pt, pb, pl, pr,
               enable_relu, relu_factor, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp, enable_batch_norm, enable_bn_relu, bn_relu_factor,
-              enable_add, enable_add_relu, upscale_factor, dense_operation, use_weight_buffer, first_row_weight_buffer, name, dev, mem) {  
+              enable_add, enable_add_relu, upscale_factor, dense_operation, use_weight_buffer, first_row_weight_buffer, input_offset, output_offset, name, dev, mem) {  
 };
 
 // Constructor (multiple parent layers)
 LHLSinf::LHLSinf(vector<Layer * > parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
               int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
-              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem)  : MLayer(name, dev, mem) {
+              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, 
+	      int input_offset, int output_offset, string name, int dev, int mem)  : MLayer(name, dev, mem) {
 
     if(name.empty()) this->name = "HLSinf" + to_string(++total_layers);
 
     // HLSinf parameters
     this->H = h;   this->W = w;
-    this->Ichannels = ichannels;  this->Ochannels = ochannels;
+    this->Ichannels = ichannels;  
+    this->Ochannels = ochannels;
     this->KH = 3;  this->KW = 3;
     this->SH = sh; this->SW = sw;
     this->PT = pt; this->PB = pb;
@@ -63,10 +66,12 @@ LHLSinf::LHLSinf(vector<Layer * > parent, int h, int w, int ichannels, int ochan
     this->use_weight_buffer = use_weight_buffer;
     this->first_row_weight_buffer = first_row_weight_buffer;
     this->weight_buffer_initialized = 0;
+    this->input_offset      = input_offset;
+    this->output_offset     = output_offset;
 
     // HLSinf supports KHxKW = 1x1 by playing with paddings and zeroing filters
     if ((kh == 1) && (kw == 1)) {
-      #ifdef DEBUG_FPGA
+      #ifdef FPGA_DEBUG
         printf("WARNING: Adjusting HLSinf layer to support 1x1 convolutions\n");
         if ((sh != 1) && (sw != 1)) printf("WARNING: 1x1 filter adjustment with strides different from 1\n");
       #endif
@@ -102,6 +107,7 @@ LHLSinf::LHLSinf(vector<Layer * > parent, int h, int w, int ichannels, int ochan
 
     // Now, we create the tensors needed
     this->filter = new Tensor(vector<int>{ochannels, ichannels, KH, KW}, dev);
+
     this->bias = new Tensor(vector<int>{ochannels}, dev);
     this->batch_norm_values = new Tensor(vector<int>{ochannels*4}, dev);
     if (dense_operation) output = new Tensor({input->shape[0], ochannels * HO * WO}, dev); else output = new Tensor(vector<int>{input->shape[0], Ochannels, HO, WO}, dev);
@@ -110,17 +116,44 @@ LHLSinf::LHLSinf(vector<Layer * > parent, int h, int w, int ichannels, int ochan
     params.push_back(this->batch_norm_values);
 }
 
+void LHLSinf::allocate_output_fpga_buffer() {
+  if (output->fpga_ptr == NULL) {
+    if (hlsinf_output_format == HLSINF_FP32) {
+      output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(float));
+    } else if (hlsinf_output_format == HLSINF_API8) {
+      output->fpga_ptr = fpga_create_memory(output->size);
+    } else if (hlsinf_output_format == HLSINF_APF_8_4) {
+      output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+    } else if (hlsinf_output_format == HLSINF_APF_16_8) {
+      output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+    } else if (hlsinf_output_format == HLSINF_APF_32_16) {
+      output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(ap_fixed<32,16>));
+    } else if (hlsinf_output_format == HLSINF_APUI8) {
+      output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size);
+    } else {
+      printf("Error (HLSinf forward), output format not supported\n");
+      exit(1);
+    }
+  }
+}
+
+void LHLSinf::deallocate_output_fpga_buffer() {
+  fpga_destroy_memory(output->fpga_ptr);
+  output->fpga_ptr = NULL;
+}
+
 int LHLSinf::get_trainable_params_count() {return 0;}
 
 void LHLSinf::resize(int batch){output->resize(batch);}
 
 void LHLSinf::forward() {
+
 #ifdef cFPGA
     // The first time we perform a forward operation we need to check whether buffers have been created on the FPGA device
     // If not, then we allocate them and copy the tensor into the buffer, performing data type conversion if needed
     //
     // Filters
-    if (filter->fpga_ptr == NULL) {
+  /*  if (filter->fpga_ptr == NULL) {
       if (hlsinf_filter_format == HLSINF_FP32) {
         // We simply create the buffer and copy the tensor into the buffer (no data type conversion needed)
         filter->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, filter->size*sizeof(float));  
@@ -178,7 +211,7 @@ void LHLSinf::forward() {
       // BatchNorm values assumed to be always in FP32 (might not be the case!)
       batch_norm_values->fpga_ptr = fpga_create_memory(FPGA_CLMEM_READ_ONLY, batch_norm_values->size*sizeof(float));  
       fpga_copy_memory_to_fpga(batch_norm_values->ptr, batch_norm_values->fpga_ptr, batch_norm_values->size*sizeof(float));
-    }
+    }*/
     // Output buffer, the buffer size depends on the data type
     if (output->fpga_ptr == NULL) {
       if (hlsinf_output_format == HLSINF_FP32) {
@@ -201,7 +234,7 @@ void LHLSinf::forward() {
     // Now, we call the accelerator
     fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_maxp, enable_avgp,
 		            enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_add_relu, enable_stm, upscale_factor, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized,
-                this->filter, this->bias, this->batch_norm_values, this->output);
+                            input_offset, output_offset, this->filter, this->bias, this->batch_norm_values, this->output);
     // in case we initialized buffer we annotate it
     if (use_weight_buffer && !weight_buffer_initialized) weight_buffer_initialized = 1;
 #else
@@ -215,7 +248,7 @@ void LHLSinf::backward() {msg("NotImplementedError", "LHLSinf::backward");}
 Layer *LHLSinf::share(int c, int bs, vector<Layer *> p) {
  auto *n = new LHLSinf(p, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor,
                       enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp,
-                      enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_add, enable_add_relu, upscale_factor, dense_operation, use_weight_buffer, first_row_weight_buffer, "HLSinf_"+to_string(c)+this->name, this->dev, this->mem_level);
+                      enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_add, enable_add_relu, upscale_factor, dense_operation, use_weight_buffer, first_row_weight_buffer, input_offset, output_offset, "HLSinf_"+to_string(c)+this->name, this->dev, this->mem_level);
 
  //share params and gradients
  for (int i = 0; i < n->params.size(); i++) delete n->params[i];
@@ -228,7 +261,7 @@ Layer *LHLSinf::share(int c, int bs, vector<Layer *> p) {
 Layer *LHLSinf::clone(int c, int bs, vector<Layer *> p, int todev) {
   auto *n = new LHLSinf(p, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor,
                     enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_stm, enable_maxp, enable_avgp,
-                    enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_add, enable_add_relu, upscale_factor, dense_operation, use_weight_buffer, first_row_weight_buffer, name, todev, this->mem_level);
+                    enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_add, enable_add_relu, upscale_factor, dense_operation, use_weight_buffer, first_row_weight_buffer, input_offset, output_offset, name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

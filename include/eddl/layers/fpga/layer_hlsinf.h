@@ -49,6 +49,8 @@ public:
     int use_weight_buffer;       // The weight buffer must be used
     int first_row_weight_buffer; // First row to be used in the weight buffer
     int weight_buffer_initialized; // Whether the weight buffer has been initialized or not
+    int input_offset = 0;           // Input offset
+    int output_offset = 0;          // Output offset
 
     Tensor *filter= nullptr;              // Filter tensor
     Tensor *bias= nullptr;                // Bias tensor
@@ -60,14 +62,18 @@ public:
     // Constructor with only one parent layer 
     LHLSinf(Layer * parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
               int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
-              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem) ;
+              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, 
+	      int input_offset, int output_offset, string name, int dev, int mem) ;
 
     // Constructor with multiple parent layers
     LHLSinf(vector<Layer * >parent, int h, int w, int ichannels, int ochannels, int kh, int kw, int sh, int sw, int pt, int pb, int pl, int pr,
               int enable_relu, float relu_factor, int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_stm, int enable_maxp,
-              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, string name, int dev, int mem);
+              int enable_avgp, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_add, int enable_add_relu, int upscale_factor, int dense_operation, int use_weight_buffer, int first_row_weight_buffer, 
+	      int input_offset, int output_offset, string name, int dev, int mem);
 
     // Methods
+    void allocate_output_fpga_buffer();
+    void deallocate_output_fpga_buffer();
     Layer *share(int c, int bs, vector<Layer *> p) override;
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
     void resize(int batch) override;

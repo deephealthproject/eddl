@@ -165,6 +165,38 @@ public:
 
     string plot(int c) override;
 
+#ifdef cFPGA
+    int layer_disabled = 0;
+    void disable_layer() {layer_disabled = 1; this->name = "concat (disabled)";}
+    void allocate_output_fpga_buffer();
+#endif
+
 };
+
+/// Concat Layer
+class LDConcat : public MLayer {
+public:
+    unsigned int axis;
+    vector<int> index;
+    static int total_layers;
+
+    // constructors and clones
+    LDConcat(vector<Layer *> in, unsigned int axis, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    // Params
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+
+};
+
 
 #endif //EDDL_LAYER_MERGE_H

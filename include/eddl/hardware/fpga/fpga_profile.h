@@ -19,6 +19,6 @@
 
 extern int num_instances_fpga[_NUM_FPGA_FUNCS];
 void _profile_fpga(int f_id, int end);
-void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor);
+void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor, int first, int last);
 void _profile_fpga_tensor_print(Tensor *T);
 #endif

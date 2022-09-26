@@ -72,7 +72,9 @@ extern bool hlsinf_bn_relu_support;
 extern bool hlsinf_add_support;
 extern bool hlsinf_add_relu_support;
 extern bool hlsinf_upsize_support;
+extern bool hlsinf_input_offset_support;
 extern bool hlsinf_dense_support;
+extern bool hlsinf_noconv_support;
 extern int  hlsinf_weight_buffer;
 extern int  hlsinf_data_buffer;
 

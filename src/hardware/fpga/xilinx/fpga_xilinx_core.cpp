@@ -189,6 +189,10 @@ void *fpga_create_memory(unsigned long flags, long int size) {
   return fpga_create_memory(size);
 }
 
+void fpga_destroy_memory(void *ptr) {
+  // TO be filled
+}
+
 
 
 void fpga_copy_memory_to_fpga(void *ptr_cpu, void *ptr_fpga, long int size) {
@@ -407,12 +411,12 @@ void fpga_transform_nn(Tensor *A, Tensor *B, int copy_cpu_to_fpga, int copy_fpga
 
     for (int b=0; b<B_in; b++) {
       for (int c=0; c<C_in; c++) {
+	int g = c / CPI;
+	int cpi = c % CPI;
 	#pragma omp parallel for
         for (int h=0; h<H_in; h++) {
           for (int w=0; w<W_in; w++) {
             int addr_src = (b * C_in * H_in * W_in) + (c * H_in * W_in) + (h * W_in) + w;
-            int g = c / CPI;
-            int cpi = c % CPI;
             int addr_dst = (b * C_out * H_in * W_in) + (g * H_in * W_in * CPI) + (h * W_in * CPI) + (w * CPI) + cpi;
             ptr_dst[addr_dst] = ptr_src[addr_src];
           }
