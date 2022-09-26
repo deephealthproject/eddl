@@ -802,9 +802,7 @@ void fpga_init(int kernel_version, int kernel_subversion) {
     printf("  Supported layers     : CONV, Shift, CLIP, ReLU, MaxPool, AvgPool, BN, Add\n");
     printf("  Dense layer support  : No\n");
     printf("------------------------------------------------------------------------------------------------------------------------------\n"); hlsinf_batch_norm_format = hlsinf_output_format;
-
   }
-  */
   else if ((kernel_version == 2) && (kernel_subversion == 10)) {
     // new kernels version with asymetric padding support
     hlsinf_filter_format = HLSINF_FP32; hlsinf_bias_format = HLSINF_FP32; hlsinf_input_format = HLSINF_FP32; hlsinf_output_format = HLSINF_FP32; hlsinf_batch_norm_format = hlsinf_output_format;
