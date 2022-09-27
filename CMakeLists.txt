@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.9.2)
 
 # User options
 option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
+option(BUILD_RISCV "Compile for a RISCV cpu" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
 option(BUILD_HPC "Compile using aggressive flags for performance" ON)
@@ -82,6 +83,11 @@ if(UNIX)
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+    if(${BUILD_TARGET} STREQUAL "RISCV")
+    	set(CMAKE_C_FLAGS_RELEASE "-O2 -march=rv64imafdc -mabi=lp64d ")
+    	set(CMAKE_CXX_FLAGS_RELEASE "-O2 -march=rv64imafdc -mabi=lp64d ")
+    endif()
 
     # Flags: Sanitizers
     # For the visualized output to be available, switch to Clang at least 3.8.0 or GCC at least 5.0.0
