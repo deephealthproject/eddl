@@ -438,7 +438,9 @@ SET(USE_FPGA_XILINX ${USE_FPGA_XILINX} PARENT_SCOPE)  # Parent's scope
 
 if(USE_FPGA_SELENE)
    target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include>")
-   target_link_libraries(${PROJECT_NAME} PUBLIC /home/carherlu/OCL/libSAF.a -lpthread)
+   #target_link_libraries(${PROJECT_NAME} PUBLIC /home/carherlu/OCL/libSAF.a -lpthread)
+   link_directories(${PROJECT_NAME} PUBLIC /home/carherlu/OCL/)
+   target_link_libraries(${PROJECT_NAME} PUBLIC /home/carherlu/OCL/libSAF.so)
    target_include_directories(${PROJECT_NAME} PUBLIC /home/carherlu/OCL/saf/include/)
    # Add extra files
    target_sources(${PROJECT_NAME} PRIVATE ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_SELENE_HEADERS} ${FPGA_SELENE_SOURCES})
