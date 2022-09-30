@@ -9,8 +9,8 @@ set(FPGA_VENDOR "unset" CACHE STRING "Compile library for FPGA device Vendor {IN
 #option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
-set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA_INTEL FPGA_XILINX)
-set_property(CACHE FPGA_VENDOR PROPERTY STRINGS INTEL XILINX)
+set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA_INTEL FPGA_XILINX FPGA_SELENE)
+set_property(CACHE FPGA_VENDOR PROPERTY STRINGS INTEL XILINX SELENE)
 # Initializations (Local's scope)
 
 SET(USE_OPENMP OFF)
@@ -21,6 +21,7 @@ SET(USE_PROTOBUF OFF)
 
 SET(USE_FPGA_INTEL OFF)
 SET(USE_FPGA_XILINX OFF)
+SET(USE_FPGA_SELENE OFF)
 
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
@@ -36,10 +37,13 @@ elseif(${BUILD_TARGET} STREQUAL "FPGA")
         SET(USE_FPGA_INTEL ON) # Local's scope
     elseif(${FPGA_VENDOR} STREQUAL "XILINX")
         SET(USE_FPGA_XILINX ON)# Local's scope
+    elseif(${FPGA_VENDOR} STREQUAL "SELENE")
+        SET(USE_FPGA_SELENE ON)# Local's scope
     else()
         SET(USE_FPGA_INTEL OFF) # Local's scope
         SET(USE_FPGA_XILINX OFF)# Local's scope
-        SET(USE_FPGA OFF) # Local's scope
+	SET(USE_FPGA_SELENE OFF) # Local's scope
+	SET(USE_FPGA OFF)
         message(FATAL_ERROR "Build target '${BUILD_TARGET}' for unsupported vendor '${FPGA_VENDOR}', set one of the supported vendors -DFPGA_VENDOR={INTEL, XILINX}, CMake will exit." )
     endif()
 else()
@@ -103,20 +107,25 @@ file(GLOB_RECURSE FPGA_INTEL_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/in
 # FPGA XILINX
 file(GLOB_RECURSE FPGA_XILINX_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/xilinx/*" *.{h, hpp})
 file(GLOB_RECURSE FPGA_XILINX_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/xilinx/*" *.{cc, cpp})
+#SELENE
+file(GLOB_RECURSE FPGA_SELENE_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/selene/*" *.{h, hpp})
+file(GLOB_RECURSE FPGA_SELENE_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/selene/*" *.{cc, cpp})
 
-SET(SPECIAL_FILES ${FPGA_INTEL_SOURCES} ${FPGA_XILINX_SOURCES} )
+
+SET(SPECIAL_FILES ${FPGA_INTEL_SOURCES} ${FPGA_XILINX_SOURCES} ${FPGA_SELENE_SOURCES})
 FOREACH(item ${SPECIAL_FILES})
     LIST(REMOVE_ITEM FPGA_COMMON_SOURCES ${item})
 ENDFOREACH(item)
 
-SET(SPECIAL_FILES ${FPGA_INTEL_HEADERS} ${FPGA_XILINX_HEADERS} )
+SET(SPECIAL_FILES ${FPGA_INTEL_HEADERS} ${FPGA_XILINX_HEADERS} ${FPGA_SELENE_HEADERS})
 FOREACH(item ${SPECIAL_FILES})
     LIST(REMOVE_ITEM FPGA_COMMON_HEADERS ${item})
 ENDFOREACH(item)
 
 
+
 # Remove setup-dependent files (later we'll add the ones we need)
-SET(SPECIAL_FILES ${CUDA_HEADERS} ${CUDA_SOURCES} ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_INTEL_SOURCES} ${FPGA_INTEL_HEADERS} ${FPGA_XILINX_SOURCES} ${FPGA_XILINX_HEADERS})
+SET(SPECIAL_FILES ${CUDA_HEADERS} ${CUDA_SOURCES} ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_INTEL_SOURCES} ${FPGA_INTEL_HEADERS} ${FPGA_XILINX_SOURCES} ${FPGA_XILINX_HEADERS} ${FPGA_SELENE_SOURCES} ${FPGA_SELENE_HEADERS})
 FOREACH(item ${SPECIAL_FILES})
     LIST(REMOVE_ITEM ALL_FILES ${item})
 ENDFOREACH(item)
@@ -155,7 +164,7 @@ endif()
 ###########################################################################
 
 if(RISKV_COMPILER_PATH)
-    message(STATUS "Compiling for Risk-V...")
+    message(STATUS "Compiling for RISC-V...")
 endif()
 
 
@@ -427,6 +436,17 @@ endif()
 SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)
 SET(USE_FPGA_XILINX ${USE_FPGA_XILINX} PARENT_SCOPE)  # Parent's scope
 
+if(USE_FPGA_SELENE)
+   target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR};$ENV{XILINX_VIVADO}/include>")
+   target_link_libraries(${PROJECT_NAME} PUBLIC /home/carherlu/OCL/libSAF.a -lpthread)
+   target_include_directories(${PROJECT_NAME} PUBLIC /home/carherlu/OCL/saf/include/)
+   # Add extra files
+   target_sources(${PROJECT_NAME} PRIVATE ${FPGA_COMMON_HEADERS} ${FPGA_COMMON_SOURCES} ${FPGA_SELENE_HEADERS} ${FPGA_SELENE_SOURCES})
+endif()
+
+SET(USE_FPGA ${USE_FPGA} PARENT_SCOPE)  # Parent's scope
+SET(USE_FPGA_SELENE ${USE_FPGA_SELENE} PARENT_SCOPE)  
+
 
 if(BUILD_DIST)
     # ZLIB  ***************************************
@@ -518,7 +538,11 @@ if(USE_FPGA_XILINX)
     add_definitions(-DcFPGA_VENDOR_XILINX)
 #    SET(BUILD_TARGET "FPGA" PARENT_SCOPE)
 endif()
-
+if(USE_FPGA_SELENE)
+    add_definitions(-DcFPGA)
+    add_definitions(-DcFPGA_VENDOR_SELENE)
+#    SET(BUILD_TARGET "FPGA" PARENT_SCOPE)
+endif()
 
 ##########################################################################
 ############################ INSTALLATION ################################
@@ -606,6 +630,8 @@ if(USE_FPGA_XILINX)
     message(STATUS "OpenCL include: " ${OpenCL_INCLUDE_DIRS} )
     message(STATUS "OpenCL libraries: " ${OpenCL_LIBRARIES} )
 endif()
+message(STATUS "-------------------------------------------" )
+message(STATUS "FPGA SELENE enabled: " ${USE_FPGA_SELENE} )
 if(RISKV_COMPILER_PATH)
     message(STATUS "-------------------------------------------" )
     message(STATUS "Risk-V compiler: " ${RISKV_COMPILER_PATH} )

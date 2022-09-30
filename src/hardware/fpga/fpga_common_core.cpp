@@ -27,6 +27,10 @@
  #include "eddl/hardware/fpga/intel/fpga_intel_hw.h"
 #endif
 
+#ifdef cFPGA_VENDOR_SELENE
+  #include "eddl/hardware/fpga/selene/fpga_selene_hw.h"
+#endif
+
 
 #include "eddl/tensor/tensor.h"             // EDDL Tensors
 #include "eddl/descriptors/descriptors.h"   // EDDL Descriptors

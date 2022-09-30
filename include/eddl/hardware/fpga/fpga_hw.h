@@ -6,7 +6,6 @@
 * Author: GAP Research Group (UPV), contact: jflich@disca.upv.es
 * All rights reserved
 */
-
 #ifdef cFPGA
 
 #ifndef EDDL_FPGA_HW_H
@@ -20,6 +19,12 @@
 #ifdef cFPGA_VENDOR_INTEL
  #include "eddl/hardware/fpga/intel/fpga_intel_hw.h"
 #endif
+
+#ifdef cFPGA_VENDOR_SELENE
+ #include "eddl/hardware/fpga/selene/fpga_selene_hw.h"
+ #include <saf/saf_ocl.hpp>
+#endif
+
 
 // --------------------------------------------------------------------------------------------------------
 #include "fpga_profile.h"
@@ -108,7 +113,9 @@ size_t fpga_datatype_sizeof(int data_type);
 float fpga_buffer_get_value_in_float(float *buf, int data_format, int index);
 
 // vendor-specific void set_callback(cl::Event event, const char *queue_name);
+#ifndef cFPGA_VENDOR_SELENE
 void event_cb(cl_event event1, cl_int cmd_status, void *data);
+#endif
 
 void fpga_init(int kernel_version, int kernel_subversion);
 
