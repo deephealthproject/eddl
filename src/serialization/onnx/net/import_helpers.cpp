@@ -189,6 +189,14 @@ vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor, INPUT_TYPE input_typ
   if (input_type == INPUT_TYPE::SEQUENCE_DECODER || input_type == INPUT_TYPE::SEQUENCE_ENCODER)
     start_index = 2; // Avoid sequence dim
 
+  // PROVISIONAL 2022-10-10
+  // Let us assume that if tensorShape.dim_size() is 1 we have to add tensorShape.dim(0) to the EDDL.Tensor shape
+  if (tensorShape.dim_size() == 1) {
+    shape.push_back(tensorShape.dim(0).dim_value());
+    return shape;
+  }
+  // PROVISIONAL 2022-10-10
+
   for (int i = start_index; i < tensorShape.dim_size(); i++)
   {
     shape.push_back(tensorShape.dim(i).dim_value());
