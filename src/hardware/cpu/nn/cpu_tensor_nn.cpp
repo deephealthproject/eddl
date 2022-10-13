@@ -51,10 +51,12 @@ void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){ // Deprecated. Use
 
 
 void cpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
-    #pragma omp parallel for
     for (int b = 0; b < B->shape[0]; b++) {
+	int b_pos = b * B->stride[0];
+	int a_pos = b * A->stride[0];
+	#pragma omp parallel for
         for (int i = 0; i < B->stride[0]; i++) {
-            B->ptr[b*B->stride[0] + i] = A->ptr[b*A->stride[0] + sd->cpu_addresses[i]];
+            B->ptr[b_pos + i] = A->ptr[a_pos + sd->cpu_addresses[i]];
         }
     }
     _profile_cpu_tensor(A);

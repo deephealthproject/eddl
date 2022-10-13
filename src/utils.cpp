@@ -78,8 +78,13 @@ void set_text_default(){
   printf("\033[0m");
 }
 
+//size_t total = 0;
+
 void * eddl_malloc(size_t size, const string & str_info){
     constexpr size_t alignment_block_size = 64;
+
+    //total+=size;
+    //cout << "allocating " << str_info << ": size " << size << " current total: " << total / 1024 / 1024 << "MB \n";
 
     // Careful with memory overcommitment:
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting

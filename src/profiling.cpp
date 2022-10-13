@@ -88,6 +88,7 @@ PROFILING_ENABLE(sum2D_rowwise);
 PROFILING_ENABLE(reduce_sum2D);
 PROFILING_ENABLE(sum2D_colwise);
 PROFILING_ENABLE(ceil);
+PROFILING_ENABLE(concat);
 // da
 PROFILING_ENABLE(shift);
 PROFILING_ENABLE(rotate);
@@ -273,6 +274,7 @@ void __show_profile() {
   PROFILING_PRINTF(reduce_sum2D);
   PROFILING_PRINTF(sum2D_colwise);
   PROFILING_PRINTF(ceil);
+  PROFILING_PRINTF(concat);
   // da
   PROFILING_PRINTF(shift);
   PROFILING_PRINTF(rotate);
@@ -451,6 +453,7 @@ void __reset_profile() {
   PROFILING_RESET(reduce_sum2D);
   PROFILING_RESET(sum2D_colwise);
   PROFILING_RESET(ceil);
+  PROFILING_RESET(concat);
   // da
   PROFILING_RESET(shift);
   PROFILING_RESET(rotate);

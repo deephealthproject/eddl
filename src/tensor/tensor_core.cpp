@@ -10,6 +10,7 @@
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
+#include "eddl/profiling.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -410,6 +411,7 @@ void Tensor::argsort(Tensor* A, Tensor* B, bool descending, bool stable){
 }
 
 Tensor* Tensor::concat(const vector<Tensor*> A, unsigned int axis, Tensor* output){
+    PROFILING_HEADER_EXTERN(concat);
     // Check number of vectors to concat
     if(A.size()<2){
         msg("Concat requires a minimum of two tensors", "Tensor::concat");
@@ -472,6 +474,7 @@ Tensor* Tensor::concat(const vector<Tensor*> A, unsigned int axis, Tensor* outpu
         gpu_concat(output, A, axis, false);
       }
 #endif
+    PROFILING_FOOTER(concat);
     return output;
 }
 
@@ -867,6 +870,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
 
 
     if ((A->isCPU()) && (B->isCPU())) {
+	printf("SELECT!\n");
         cpu_select(A, B, sind, ini, end,mask_zeros);
     }
     else if ((A->isGPU()) && (B->isCPU())) {

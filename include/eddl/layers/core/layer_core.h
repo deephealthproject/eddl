@@ -531,6 +531,9 @@ public:
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    int layer_disabled = 0;
+    void disable_layer() {layer_disabled = 1; this->name = "transform (disabled)";}
 };
 
 /// Split Layer

@@ -17,6 +17,7 @@
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 #include "eddl/profiling.h"
+#include "eddl/hardware/fpga/fpga_hw.h"
 
 using namespace std;
 
@@ -83,8 +84,36 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
 
 }
 
+#ifdef cFPGA
+void LConcat::allocate_output_fpga_buffer() {
+   if (output->fpga_ptr == NULL) {
+    if (hlsinf_output_format == HLSINF_FP32) {
+      output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(float));
+    } else if (hlsinf_output_format == HLSINF_API8) {
+      output->fpga_ptr = fpga_create_memory(output->size);
+    } else if (hlsinf_output_format == HLSINF_APF_8_4) {
+      output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(ap_fixed<8,4,AP_RND_ZERO,AP_SAT>));
+    } else if (hlsinf_output_format == HLSINF_APF_16_8) {
+      output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(ap_fixed<16,8,AP_RND_ZERO,AP_SAT>));
+    } else if (hlsinf_output_format == HLSINF_APF_32_16) {
+      output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size*sizeof(ap_fixed<32,16>));
+    } else if (hlsinf_output_format == HLSINF_APUI8) {
+      output->fpga_ptr = fpga_create_memory(FPGA_CLMEM_WRITE_ONLY, output->size);
+    } else {
+      printf("Error (HLSinf forward), output format not supported\n");
+      exit(1);
+    }
+  }
+}
+#endif
+
 
 void LConcat::forward() {
+
+#ifdef cFPGA
+    if (layer_disabled) return;
+#endif
+
     // Get output tensors
     vector<Tensor*> outputs;
     for (auto & p : this->parent) { outputs.push_back(p->output); }

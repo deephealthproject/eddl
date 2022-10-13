@@ -61,6 +61,7 @@ PROFILING_ENABLE_EXTERN(fpga_hlsinf);
 //   enable_clipping: Activates the Clipping layer
 //   enable_shift: Activates the shift layer
 //   enable_add: Activates the Add layer
+//   enable_add_relu: Enables ReLu activation after add layer
 //   min_clip: Minimum clipping value
 //   max_clip: Maximum clipping value
 //   dir_shift: Direction for shift Layer
@@ -70,9 +71,11 @@ PROFILING_ENABLE_EXTERN(fpga_hlsinf);
 //   kernel_id: Kernel ID (which kernel to use in a multi-kernel setting)
 //
 void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, int WO, int rows, int PT, int PB, int PL, int PR, int SH, int SW, int Ichannels, int Ochannels,  
-                          int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor, int enable_batch_norm, cl::Buffer K, cl::Buffer B, cl::Buffer BN_values, cl::Buffer O, 
+                          int first_o_iter, int last_o_iter, int enable_relu, int enable_stm, float relu_factor, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor,
+                          cl::Buffer K, cl::Buffer B, cl::Buffer BN_values, cl::Buffer O, 
                           int read_offset, int write_offset, int enable_maxp, int enable_avgp, int enable_clipping,
-                          int enable_shift, int enable_add, int enable_upscale, int use_weight_buffer, int first_row_weight_buffer, int weight_buffer_initialized, int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
+                          int enable_shift, int enable_add, int enable_add_relu, int enable_upscale, int use_weight_buffer, int first_row_weight_buffer, int weight_buffer_initialized,
+                          int min_clip, int max_clip, int dir_shift, int pos_shift, int CPI, int CPO, int kernel_id) {
 
   // Error variable
   cl_int err;
@@ -86,6 +89,9 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
   int write_to_b0 = 0;
   int write_to_b1 = 0;
 
+  write_to_weight_buffer = 0;
+  read_from_weight_buffer = 0;
+
   // set kernel arguments
   int arg = 0;
 
@@ -93,9 +99,9 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
   int I_ITER = (Ichannels + (CPI-1)) / CPI;
 
 #ifdef DEBUG_VERBOSE
-  printf("I_ITER %d, first %d last %d enable_relu %d relu_factor %f enable_stm %d enable_maxp %d enable_avgp %d enable_clip %d min_clip %d max_clip %d enable_shift %d enable_add %d\n PT %d PB %d PL %d PR %d SH %d SW %d upscale %d batch_norm %d\n",
+  printf("I_ITER %d, first %d last %d enable_relu %d relu_factor %f enable_stm %d enable_maxp %d enable_avgp %d enable_clip %d min_clip %d max_clip %d enable_shift %d enable_add %d enable_add_relu %d\n PT %d PB %d PL %d PR %d SH %d SW %d upscale %d batch_norm %d\n",
                   I_ITER, first_o_iter, last_o_iter, enable_relu, relu_factor, enable_stm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift,
-                  enable_add, PT, PB, PL, PR, SH, SW, enable_upscale, enable_batch_norm);
+                  enable_add, enable_add_relu, PT, PB, PL, PR, SH, SW, enable_upscale, enable_batch_norm);
   printf("H %d W %d rows %d Ich %d Och %d\n", H, W, rows, Ichannels, Ochannels);
   printf("min_clip %d max_clip %d, shifts %d, direction %d enable_upscale %d\n", min_clip, max_clip, pos_shift, dir_shift, enable_upscale);
 #endif
@@ -122,6 +128,8 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_stm));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, relu_factor));
   if (hlsinf_bn_support) OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_batch_norm));
+  if (hlsinf_bn_relu_support) OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_bn_relu));
+  if (hlsinf_bn_relu_support) OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, bn_relu_factor));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, K));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, B));
   if (hlsinf_bn_support) OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, BN_values));
@@ -133,6 +141,7 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_clipping));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_shift));
   if (hlsinf_add_support) OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_add));
+  if (hlsinf_add_relu_support) OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, enable_add_relu));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, min_clip));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, max_clip));
   OCL_CHECK(err, err = kernel_hlsinf[kernel_id].setArg(arg++, dir_shift));
@@ -183,6 +192,7 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
 //   - enable_shift: Activates the Shift layer
 //   - pos_shift: Number of bit shifts
 //   - enable_add: Activates the Add layer
+//   - enable_add_relu: Enables ReLu activation after add layer
 //   - enable_stm: Activates the STM layer (Sigmoid + Tanh + Multiply)
 //   - filter: Filter tensor object (filters)
 //   - bias: Bias tensor object (bias)
@@ -191,14 +201,17 @@ void HLSinf_launch_kernel(cl::Buffer I, cl::Buffer I_add, int H, int W, int HO, 
 //   - write_offset: Offset for writting output data
 //   - rows: Number of rows to read for input data
 //   - HO, WO: Height and Width of output data channel
-//
+//   - input_offset: input offset to read from
+//   - output_offset: output offset to write to
 //
 // If more than one accelerator is present on the FPGA, this function splits
 // the operation in disjoint output channels, thus each accelerator computes
 // in parallel a disjoint set of output channels
 //
-void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, int Ochannels, int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, int enable_relu, float relu_factor, int enable_batch_norm, int enable_maxp, int enable_avgp,
-                   int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_add, int enable_stm, int enable_upscale, int use_weight_buffer, int first_row_weight_buffer, int weight_buffer_initialized, Tensor *filter, Tensor *bias, Tensor *batch_norm_values, Tensor *output, int read_offset, int write_offset, int rows, int HO, int WO) {
+void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, int Ochannels, int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, int enable_relu, float relu_factor, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_maxp, int enable_avgp,
+                   int enable_clipping, int min_clip, int max_clip, int enable_shift, int pos_shift, int dir_shift, int enable_add, 
+		   int enable_add_relu, int enable_stm, int enable_upscale, int use_weight_buffer, int first_row_weight_buffer, int weight_buffer_initialized, 
+		   Tensor *filter, Tensor *bias, Tensor *batch_norm_values, Tensor *output, int read_offset, int write_offset, int rows, int HO, int WO) {
 
   // accelerator geometry
   int num_kernels = hlsinf_num_kernels;
@@ -236,7 +249,7 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
     int first_o_iter = 0;
     int last_o_iter = ((Ochannels + (CPO-1)) / CPO) - 1;
 
-    HLSinf_launch_kernel(I, I_add, H, W, HO, WO, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu, enable_stm, relu_factor, enable_batch_norm, K, B, BN_values, O, read_offset, write_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, enable_upscale, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, 0);
+    HLSinf_launch_kernel(I, I_add, H, W, HO, WO, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu, enable_stm, relu_factor, enable_batch_norm, enable_bn_relu, bn_relu_factor, K, B, BN_values, O, read_offset, write_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, enable_add_relu, enable_upscale, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, 0);
 
   } else {
     // several kernels available, let's split the operation in sets of output channels
@@ -266,7 +279,7 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
         first_o_iter = o_iter_per_kernel * k + extra_iter ;
         last_o_iter = first_o_iter + o_iter_per_kernel - 1;
       }
-      HLSinf_launch_kernel(I, I_add, H, W, HO, WO, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu, enable_stm, relu_factor, enable_batch_norm, K, B, BN_values, O, read_offset, write_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, enable_upscale, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, k);
+      HLSinf_launch_kernel(I, I_add, H, W, HO, WO, rows, PT, PB, PL, PR, SH, SW, Ichannels, Ochannels, first_o_iter, last_o_iter, enable_relu, enable_stm, relu_factor, enable_batch_norm, enable_bn_relu, bn_relu_factor, K, B, BN_values, O, read_offset, write_offset, enable_maxp, enable_avgp, enable_clipping, enable_shift, enable_add, enable_add_relu, enable_upscale, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized, min_clip, max_clip, dir_shift, pos_shift, CPI, CPO, k);
     }
   }
   PROFILING_FOOTER(fpga_hlsinf);
@@ -274,8 +287,8 @@ void HLSinf_launch(Tensor *input, Tensor *input_add, int H, int W, int Ichannels
 }
 
 void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, int Ochannels, int KH, int KW, int SH, int SW, int PT, int PB, int PL, int PR, 
-                 int enable_relu, float relu_factor, int enable_batch_norm, int enable_maxp, int enable_avgp, int enable_clipping, int min_clip, int max_clip, 
-                 int enable_shift, int pos_shift, int dir_shift, int enable_add, int enable_stm, int enable_upscale, int use_weight_buffer, int first_row_weight_buffer, int weight_buffer_initialized, Tensor *filter, Tensor *bias, Tensor *batch_norm_values, Tensor *output) {
+                 int enable_relu, float relu_factor, int enable_batch_norm, int enable_bn_relu, float bn_relu_factor, int enable_maxp, int enable_avgp, int enable_clipping, int min_clip, int max_clip, 
+                 int enable_shift, int pos_shift, int dir_shift, int enable_add, int enable_add_relu, int enable_stm, int enable_upscale, int use_weight_buffer, int first_row_weight_buffer, int weight_buffer_initialized, int input_offset, int output_offset, Tensor *filter, Tensor *bias, Tensor *batch_norm_values, Tensor *output) {
  
   // profiling and debug	
   _profile_fpga(_FPGA_HLSINF, 0);
@@ -287,14 +300,18 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
 
   #ifdef FPGA_DEBUG
   printf("HLSinf\n");
-  printf("  params: %0dx%0dx%0dx%0d (KHxKW: %0dx%0d, PAD: %0d-%0d-%0d-%0d, SHxSW: %0dx%0d). ReLU %d, ReLU factor %f, Maxp %d, AvgP %d, Clip %d, min_clip %d, max_clip %d, Shift %d, bit shifts %d, dir_shift %d, Add %d, STM %d BN %d UPSCALE %d\n", 
-                   Ochannels, Ichannels, H, W, KH, KW, PT, PB, PL, PR, SH, SW, enable_relu, relu_factor, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_batch_norm, enable_upscale);
+  printf("  params: %0dx%0dx%0dx%0d (KHxKW: %0dx%0d, PAD: %0d-%0d-%0d-%0d, SHxSW: %0dx%0d). ReLU %d, ReLU factor %f, Maxp %d, AvgP %d\n", 
+                   Ochannels, Ichannels, H, W, KH, KW, PT, PB, PL, PR, SH, SW, enable_relu, relu_factor, enable_maxp, enable_avgp);
+  printf("          Clip %d, min_clip %d, max_clip %d, Shift %d, bit shifts %d, dir_shift %d, Add %d, AddReLu %d, STM %d\n",
+                   enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_add_relu, enable_stm);
+  printf("          BN %d BN_RELU %d BN_RELU_FACTOR %f UPSCALE %d Input offset %d Output offset %d\n",
+                   enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_upscale, input_offset, output_offset);
   #endif
-                        _profile_fpga_tensor("  input   ", input, hlsinf_input_format);
-  if(enable_add)        _profile_fpga_tensor("  input add: ", input_add, hlsinf_input_format);
-                        _profile_fpga_tensor("  filter  ", filter, hlsinf_filter_format);
-                        _profile_fpga_tensor("  bias    ", bias, hlsinf_bias_format);
-  if(enable_batch_norm) _profile_fpga_tensor("  bn_v    ", batch_norm_values, hlsinf_output_format);
+                        _profile_fpga_tensor("  input   ", input, hlsinf_input_format, input_offset, input_offset + (Ichannels * H * W) - 1);
+  if(enable_add)        _profile_fpga_tensor("  input add: ", input_add, hlsinf_input_format, 0, input_add->size - 1);
+                        _profile_fpga_tensor("  filter  ", filter, hlsinf_filter_format, 0, filter->size - 1);
+                        _profile_fpga_tensor("  bias    ", bias, hlsinf_bias_format, 0, bias->size - 1);
+  if(enable_batch_norm) _profile_fpga_tensor("  bn_v    ", batch_norm_values, hlsinf_output_format, 0, batch_norm_values->size - 1);
 
   // output geometry
   int HO;
@@ -352,14 +369,20 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
       #endif
 
       // run kernel
-      HLSinf_launch(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT_frame, PB_frame, PL_frame, PR_frame, enable_relu, relu_factor, enable_batch_norm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip,enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_upscale, 
-            use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized,
-            filter, bias, batch_norm_values, output, 
-		        read_offset_frame, write_offset_frame, rows_to_read, HO, WO);
+      HLSinf_launch(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, 
+		    PT_frame, PB_frame, PL_frame, PR_frame, enable_relu, relu_factor, 
+		    enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_maxp, enable_avgp, enable_clipping, min_clip, 
+		    max_clip,enable_shift, pos_shift, dir_shift, enable_add, enable_add_relu, enable_stm, enable_upscale, 
+                    use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized,
+                    filter, bias, batch_norm_values, output, 
+		    (input_offset/hlsinf_cpi) + read_offset_frame, (output_offset/hlsinf_cpo) + write_offset_frame, rows_to_read, HO, WO);
     }
   } else {
     // single frame operation
-    HLSinf_launch(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_batch_norm, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_upscale, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized, filter, bias, batch_norm_values, output, 0, 0, H, HO, WO);
+    HLSinf_launch(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, 
+		  enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_maxp, enable_avgp, enable_clipping, min_clip, max_clip, 
+		  enable_shift, pos_shift, dir_shift, enable_add, enable_add_relu, enable_stm, enable_upscale, use_weight_buffer, 
+		  first_row_weight_buffer, weight_buffer_initialized, filter, bias, batch_norm_values, output, input_offset / hlsinf_cpi, output_offset / hlsinf_cpo, H, HO, WO);
   }
 
   gettimeofday(&time2, NULL);
@@ -369,7 +392,7 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   #endif
 
   // profiling
-  _profile_fpga_tensor("  output  ", output, hlsinf_output_format);
+  _profile_fpga_tensor("  output  ", output, hlsinf_output_format, output_offset, output_offset + (HO * WO * Ochannels) - 1);
   _profile_fpga_tensor_print(output);
   _profile_fpga(_FPGA_HLSINF, 1);
 

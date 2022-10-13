@@ -65,6 +65,7 @@ void LTransform::resize(int b){
 }
 
 void LTransform::forward(){
+    if (layer_disabled) return;
     tensorNN::transform(this->input, this->output, this->copy_cpu_to_fpga, this->copy_fpga_to_cpu, this->transform);
 }
 
