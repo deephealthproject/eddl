@@ -647,13 +647,40 @@ void fpga_write_buffer(char *file_name, void *ptr, int size, int data_format) {
   if (data_format == HLSINF_APUI8) data_size = 1; else
   if (data_format == HLSINF_API8) data_size = 1; else
   {printf("Error, no data format recognized\n"); exit(1);}
-  printf("data_format %d data_size %d\n", data_format, data_size);
+  //printf("data_format %d data_size %d\n", data_format, data_size);
   
   void *buff = eddl_malloc(size * data_size);
   fpga_copy_memory_from_fpga(ptr, buff, size*data_size);
   float *buff1 = (float *)buff;
   fwrite(buff, data_size, size, fd);
   fclose(fd);
+}
+#endif
+#ifdef WRITE_TENSORS_TO_FILE_ASCI
+void fpga_write_buffer(char *file_name, Tensor* A, int size, int data_format) {
+  //printf("[fpga_write_buffer]  ENTER\n");
+  FILE *fd = fopen(file_name, "w");
+  if (fd == NULL) {printf("Error, not able to open file for write\n"); exit(1);}
+
+  int data_size;
+  if (data_format == HLSINF_API32) data_size = 4; else
+  if (data_format == HLSINF_FP32) data_size = 4; else
+  if (data_format == HLSINF_APUI8) data_size = 1; else
+  if (data_format == HLSINF_API8) data_size = 1; else
+  {printf("Error, no data format recognized\n"); exit(1);}
+  //printf("[fpga_write_buffer] data_format %d data_size %d\n", data_format, data_size);
+  
+  Tensor* B = new Tensor(A->shape);
+  fpga_transform_nn(A, B, 0, 1, 1); // copy from cpu and transform
+  /*for(int i = 0; i < B->size/2; i++) {
+    printf("%f ", B->ptr[i]); 
+  }*/
+  for(int i = 0; i < B->size; i++) {
+    fprintf(fd, "%f ", B->ptr[i]); 
+  }
+  fclose(fd);
+  // printf("[fpga_write_buffer] END\n");
+//exit(0);
 }
 #endif
 

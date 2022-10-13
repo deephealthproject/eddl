@@ -197,6 +197,17 @@ void LHLSinf::forward() {
     fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_batch_norm, enable_maxp, enable_avgp,
 		            enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_upscale, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized,
                 this->filter, this->bias, this->batch_norm_values, this->output);
+
+  int data_size;
+  if (hlsinf_input_format == HLSINF_API32) data_size = 4; else
+  if (hlsinf_input_format == HLSINF_FP32) data_size = 4; else
+  if (hlsinf_input_format == HLSINF_APUI8) data_size = 1; else
+  if (hlsinf_input_format == HLSINF_API8) data_size = 1; else
+  {printf("Error, no data format recognized\n"); exit(1);}
+
+//fpga_copy_memory_from_fpga(input->fpga_ptr, input->ptr, input->size * data_size);
+    //fpga_copy_memory_to_fpga_and_format(input->ptr, input->fpga_ptr, input->size*data_size, HLSINF_FP32, hlsinf_input_format);
+
     // in case we initialized buffer we annotate it
     if (use_weight_buffer && !weight_buffer_initialized) weight_buffer_initialized = 1;
 #else

@@ -19,6 +19,14 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#ifdef cFPGA_VENDOR_XILINX
+#include "eddl/hardware/fpga/xilinx/fpga_xilinx_hw.h"
+#else
+#include "eddl/hardware/fpga/intel/fpga_intel_hw.h"
+#endif
+#endif
 using namespace std;
 
 // TODO: Don't like here
@@ -206,7 +214,7 @@ void Tensor::updateData(float *fptr, void *fptr2, bool setshared){
 
 void Tensor::toCPU(int dev){
     if (this->isCPU()) {
-        // printf("Tensor already in CPU\n");
+         printf("Tensor already in CPU\n");
     }else{
         float *cpu_ptr = nullptr;
 
@@ -217,6 +225,14 @@ void Tensor::toCPU(int dev){
 
             // Copy GPU data to CPU
             gpu_copy_from_gpu(this, cpu_ptr);
+        }
+#endif
+#ifdef cFPGA
+        if (this->isFPGA()){
+            // Reserve memory for CPU
+            cpu_ptr = get_fmem(size, "Tensor::toCPU");
+            // Copy FPGA data to CPU
+            fpga_copy_memory_from_fpga(this->fpga_ptr, cpu_ptr, size);
         }
 #endif
         // COMMON: Delete data in HW + reassign pointer

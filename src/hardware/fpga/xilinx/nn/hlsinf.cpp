@@ -21,8 +21,7 @@
 #include "eddl/profiling.h"
 
 extern vector<cl::Event> kernel_events; // Kernel events (completion)
-
-#ifdef WRITE_TENSORS_TO_FILE
+#if defined(WRITE_TENSORS_TO_FILE) || defined(WRITE_TENSORS_TO_FILE_ASCI)
 int id_write_tensors_to_file = 0;
 #endif
 
@@ -392,6 +391,27 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   }
   sprintf(dummy, "output_%03d.bin", id_write_tensors_to_file);
   fpga_write_buffer(dummy, output->fpga_ptr, output->size, hlsinf_output_format);
+  id_write_tensors_to_file++;
+  #endif
+
+  #ifdef WRITE_TENSORS_TO_FILE_ASCI
+  char dummy[100];
+  sprintf(dummy, "input_%03d.txt", id_write_tensors_to_file);
+  fpga_write_buffer(dummy, input, input->size, hlsinf_input_format);
+  //sprintf(dummy, "weights_%03d.txt", id_write_tensors_to_file);
+  //fpga_write_buffer(dummy, filter, filter->size, hlsinf_filter_format); //commented because fpga_write_buffer performs the transpose operation -  GHW CHW
+  //sprintf(dummy, "bias_%03d.txt", id_write_tensors_to_file);     
+  //fpga_write_buffer(dummy, bias, bias->size, hlsinf_bias_format); //commented because fpga_write_buffer performs the transpose operation -  GHW CHW
+  if (enable_add) {
+    sprintf(dummy, "add_%03d.txt", id_write_tensors_to_file);
+    fpga_write_buffer(dummy, input_add, input_add->size, hlsinf_input_format);
+  }
+  if (enable_batch_norm) {
+    sprintf(dummy, "batchnorm_%03d.txt", id_write_tensors_to_file);
+    fpga_write_buffer(dummy, batch_norm_values, batch_norm_values->size, hlsinf_input_format);
+  }
+  //sprintf(dummy, "output_%03d.txt", id_write_tensors_to_file);
+  //fpga_write_buffer(dummy, output, output->size, hlsinf_output_format);
   id_write_tensors_to_file++;
   #endif
 

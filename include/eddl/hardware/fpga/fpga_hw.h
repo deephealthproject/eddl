@@ -29,6 +29,7 @@
 
 //#define FPGA_DEBUG
 //#define WRITE_TENSORS_TO_FILE
+#define WRITE_TENSORS_TO_FILE_ASCI
 
 
 #define MAX_KERNELS 16
@@ -103,6 +104,7 @@ void dense_to_conv(float *ptr_src, int N, int M, float *ptr_dst, int I, int O, i
 void tensor_padded(Tensor *A, Tensor *B);
 void get_batch_norm_values(int ochannels, Tensor *global_mean, Tensor *global_variance, Tensor* affine_g, Tensor* affine_b, Tensor* output); 
 void fpga_write_buffer(char *file_name, void *ptr, int size, int data_size);
+void fpga_write_buffer(char *file_name, Tensor *ptr, int size, int data_size);
 
 #endif //EDDL_FPGA_HW_H
 

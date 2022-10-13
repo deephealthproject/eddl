@@ -899,7 +899,7 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
       use_weight_buffer = 0;
       first_row_weight_buffer = 0;
     }
-    printf("HLSinf layer, weight buffer: Layer needs %8d weight buffer rows -> use the buffer: %s, remaining rows: %7d\n", rows_weight_buffer_needed, use_weight_buffer?"yes":"no ", remaining_rows_weight_buffer);
+    //printf("HLSinf layer, weight buffer: Layer needs %8d weight buffer rows -> use the buffer: %s, remaining rows: %7d\n", rows_weight_buffer_needed, use_weight_buffer?"yes":"no ", remaining_rows_weight_buffer);
 
     if (add_layer != NULL) {
       prev_layer = new LHLSinf(parent, 
@@ -1175,9 +1175,8 @@ model toFPGA(model m_src, int kernel_version, int kernel_subversion) {
 
   // now we create the model
   net = Model({ first }, { last });
-  //build(net, nullptr, { "soft_cross_entropy" }, { "categorical_accuracy" }, CS_CPU({1}), false);
-
-  build(net, nullptr, { "soft_cross_entropy" }, { "categorical_accuracy" }, CS_CPU({1}), 0); 
+  //build(net, nullptr, { "soft_cross_entropy" }, { "categorical_accuracy" }, CS_CPU({1}), 0);
+  build(net, nullptr, {"mse", "mse"}, {"mse", "mse"}, CS_CPU({1}), 0); 
   #ifdef FPGA_DEBUG
   summary(net);
   #endif
