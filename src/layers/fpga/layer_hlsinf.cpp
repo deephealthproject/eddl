@@ -235,9 +235,9 @@ void LHLSinf::forward() {
       }
     }
     // Now, we call the accelerator
-    fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_batch_norm, enable_maxp, enable_avgp,
-		            enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_stm, enable_upscale, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized,
-                this->filter, this->bias, this->batch_norm_values, this->output);
+    fpga_hlsinf(input, input_add, H, W, Ichannels, Ochannels, KH, KW, SH, SW, PT, PB, PL, PR, enable_relu, relu_factor, enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_maxp, enable_avgp,
+		            enable_clipping, min_clip, max_clip, enable_shift, pos_shift, dir_shift, enable_add, enable_add_relu, enable_stm, upscale_factor, use_weight_buffer, first_row_weight_buffer, weight_buffer_initialized,
+                input_offset, output_offset, this->filter, this->bias, this->batch_norm_values, this->output);
     int data_size;
     if (hlsinf_input_format == HLSINF_API32) data_size = 4; else
     if (hlsinf_input_format == HLSINF_FP32) data_size = 4; else
