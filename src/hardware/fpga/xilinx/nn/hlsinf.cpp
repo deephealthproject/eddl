@@ -307,11 +307,20 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   printf("          BN %d BN_RELU %d BN_RELU_FACTOR %f UPSCALE %d Input offset %d Output offset %d\n",
                    enable_batch_norm, enable_bn_relu, bn_relu_factor, enable_upscale, input_offset, output_offset);
   #endif
+
+    printf("Profiling...\n");
+    printf("input...\n");
+
                         _profile_fpga_tensor("  input   ", input, hlsinf_input_format, input_offset, input_offset + (Ichannels * H * W) - 1);
   if(enable_add)        _profile_fpga_tensor("  input add: ", input_add, hlsinf_input_format, 0, input_add->size - 1);
+      printf("filter...\n");
+
                         _profile_fpga_tensor("  filter  ", filter, hlsinf_filter_format, 0, filter->size - 1);
+      printf("bias...\n");
+
                         _profile_fpga_tensor("  bias    ", bias, hlsinf_bias_format, 0, bias->size - 1);
   if(enable_batch_norm) _profile_fpga_tensor("  bn_v    ", batch_norm_values, hlsinf_output_format, 0, batch_norm_values->size - 1);
+  printf("END Profiling!\n");
 
   // output geometry
   int HO;
@@ -392,9 +401,11 @@ void fpga_hlsinf(Tensor *input, Tensor *input_add, int H, int W, int Ichannels, 
   #endif
 
   // profiling
+  printf("Profiling...\n");
   _profile_fpga_tensor("  output  ", output, hlsinf_output_format, output_offset, output_offset + (HO * WO * Ochannels) - 1);
   _profile_fpga_tensor_print(output);
   _profile_fpga(_FPGA_HLSINF, 1);
+  printf("End Profiling!\n");
 
   #ifdef WRITE_TENSORS_TO_FILE
   char dummy[100];

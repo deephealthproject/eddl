@@ -27,7 +27,7 @@
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"
 
-//#define FPGA_DEBUG
+#define FPGA_DEBUG
 //#define WRITE_TENSORS_TO_FILE
 //#define WRITE_TENSORS_TO_FILE_ASCI
 //#define FPGA_INFERENCE_ONLY

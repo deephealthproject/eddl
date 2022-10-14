@@ -269,13 +269,19 @@ void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
 
 
 void cpu_inc(Tensor *A, Tensor *B) {
-
-
+#ifdef CPU_DEBUG
+    printf("cpu_inc\n");
+    _profile_cpu_tensor(A);
+#endif  
+    _profile(_CPU_INC, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++){
         B->ptr[i] += A->ptr[i];
     }
-
+    _profile(_CPU_INC, 1);
+#ifdef CPU_DEBUG
+    _profile_cpu_tensor(B);
+#endif
 
 }
 

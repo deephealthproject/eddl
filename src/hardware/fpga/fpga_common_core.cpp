@@ -117,10 +117,10 @@ void _profile_fpga(int f_id, int end) {
 void _profile_fpga_tensor(const char str[], Tensor *T, int format_tensor, int first, int last) {
 
   int size_elements = T->size > last?T->size:last+1;
-
+  printf("(_profile_fpga_tensor For size) First %d Last %d (T->size %ld) . Size_element %d\n", first, last, (long int) T->size, size_elements);
   #ifdef FPGA_DEBUG
   // We read the tensor from FPGA first
-  int size;
+  long int size;
   if (format_tensor == HLSINF_FP32) size = size_elements * sizeof(float);
   #ifdef cFPGA_VENDOR_XILINX
   else if (format_tensor == HLSINF_API32) size = size_elements * sizeof(ap_int<32>);
