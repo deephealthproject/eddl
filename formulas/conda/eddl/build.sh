@@ -11,8 +11,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
 # If I don't do this, I get errors like: "undefined reference to `expf@GLIBC_2.27'"
 elif [[ "$OSTYPE" == "linux"* ]]; then
-    CXX=g++-7
-    CC=gcc-7
+    #CXX=g++-7
+    #CC=gcc-7
+    CXX=g++-11
+    CC=gcc-11
 fi
 
 # Prints vars
@@ -36,7 +38,7 @@ mkdir build && cd build/ && cmake .. -DBUILD_TARGET=CUDNN \
       -DBUILD_TESTS=OFF \
       -DCMAKE_C_COMPILER=$CC \
       -DCMAKE_CXX_COMPILER=$CXX \
-      -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
+      -DCMAKE_CUDA_COMPILER=$(which nvcc) \
       -DCMAKE_PREFIX_PATH=$PREFIX \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \
       -DCMAKE_BUILD_TYPE=Release
